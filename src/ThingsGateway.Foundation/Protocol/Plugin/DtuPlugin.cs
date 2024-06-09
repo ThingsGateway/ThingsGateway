@@ -8,7 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using NewLife.Extension;
+
 using System.ComponentModel.DataAnnotations;
+
+using ThingsGateway.Foundation.Extension.String;
 
 using TouchSocket.Core;
 
@@ -26,6 +30,7 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
 
     public async Task OnTcpReceiving(ITcpSession client, ByteBlockEventArgs e)
     {
+        var len = DtuService.HeartbeatHexString.HexStringToBytes().Length;
         if (client is TcpSessionClientChannel socket)
         {
             if (!socket.Id.StartsWith("ID="))
@@ -35,13 +40,16 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
                 client.Logger.Info(DefaultResource.Localizer["DtuConnected", id]);
                 e.Handled = true;
             }
-            if (DtuService.HeartbeatHexString == e.ByteBlock.AsSegment().ToHexString(default))
+            if (len > 0)
             {
-                //回应心跳包
-                socket.Send(e.ByteBlock.AsSegment());
-                e.Handled = true;
-                if (socket.Logger.LogLevel <= LogLevel.Trace)
-                    socket.Logger?.Trace($"{socket}- Heartbeat");
+                if (DtuService.HeartbeatHexString == e.ByteBlock.AsSegment(0, len).ToHexString(default))
+                {
+                    //回应心跳包
+                    socket.Send(e.ByteBlock.AsSegment());
+                    e.Handled = true;
+                    if (socket.Logger.LogLevel <= LogLevel.Trace)
+                        socket.Logger?.Trace($"{socket}- Heartbeat");
+                }
             }
         }
         await e.InvokeNext().ConfigureAwait(false);//如果本插件无法处理当前数据，请将数据转至下一个插件。

@@ -326,6 +326,7 @@
     "ImportNullError": "Unable to recognize",
     "NotOther": "Not supporting other channel types",
     "Connect": "Connect",
+    "Confim": "Confim",
     "Disconnect": "Disconnect",
     "Channel": "Channel"
   },

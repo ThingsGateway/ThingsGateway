@@ -38,9 +38,6 @@ public partial class SiemensS7Master : IDisposable
 
     private async Task OnConnectClick(ChannelData channelData)
     {
-        ChannelData = channelData;
-        _plc = new ThingsGateway.Foundation.SiemensS7.SiemensS7Master(channelData.Channel);
-        LogPath = channelData.Id.GetDebugLogPath();
         try
         {
             await ChannelData.Channel.ConnectAsync(_plc.ConnectTimeout, default);
@@ -50,6 +47,13 @@ public partial class SiemensS7Master : IDisposable
             ChannelData.Channel.Logger.Exception(ex);
         }
         await InvokeAsync(StateHasChanged);
+    }
+
+    private void OnConfimClick(ChannelData channelData)
+    {
+        ChannelData = channelData;
+        _plc = new ThingsGateway.Foundation.SiemensS7.SiemensS7Master(channelData.Channel);
+        LogPath = channelData.Id.GetDebugLogPath();
     }
 
     private async Task OnDisConnectClick()

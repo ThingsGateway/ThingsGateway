@@ -40,9 +40,6 @@ public partial class ModbusSlave : ComponentBase, IDisposable
 
     private async Task OnConnectClick(ChannelData channelData)
     {
-        ChannelData = channelData;
-        _plc = new ThingsGateway.Foundation.Modbus.ModbusSlave(channelData.Channel);
-        LogPath = channelData.Id.GetDebugLogPath();
         try
         {
             await ChannelData.Channel.ConnectAsync(_plc.ConnectTimeout, default);
@@ -52,6 +49,13 @@ public partial class ModbusSlave : ComponentBase, IDisposable
             ChannelData.Channel.Logger.Exception(ex);
         }
         await InvokeAsync(StateHasChanged);
+    }
+
+    private void OnConfimClick(ChannelData channelData)
+    {
+        ChannelData = channelData;
+        _plc = new ThingsGateway.Foundation.Modbus.ModbusSlave(channelData.Channel);
+        LogPath = channelData.Id.GetDebugLogPath();
     }
 
     private async Task OnDisConnectClick()

@@ -243,18 +243,18 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                     if (ModbusType == ModbusTypeEnum.ModbusRtu)
                     {
                         var sendData = DataTransUtil.SpliceArray(modbusServerMessage.ReceivedBytes.ToArray(0, 2), new byte[] { (byte)coreData.Length }, coreData);
-                        ReturnData(client, e, sendData);
+                        await ReturnData(client, e, sendData);
                     }
                     else
                     {
                         var sendData = DataTransUtil.SpliceArray(modbusServerMessage.ReceivedBytes.ToArray(0, 8), new byte[] { (byte)coreData.Length }, coreData);
                         sendData[5] = (byte)(sendData.Length - 6);
-                        ReturnData(client, e, sendData);
+                        await ReturnData(client, e, sendData);
                     }
                 }
                 else
                 {
-                    WriteError(this.ModbusType, client, modbusServerMessage, e);//返回错误码
+                    await WriteError(this.ModbusType, client, modbusServerMessage, e);//返回错误码
                 }
             }
             else//写入
@@ -268,21 +268,21 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                         // 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
                         if ((await this.WriteData(modbusServerMessage.ModbusAddress, modbusServerMessage.Content, this.ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
                         {
-                            WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
+                            await WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
                             if (this.IsWriteMemory)
                             {
                                 var result = this.Write(modbusServerMessage.ModbusAddress.ToString(), coreData.ByteToBoolArray(modbusServerMessage.Length));
                                 if (result.IsSuccess)
-                                    WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
+                                    await WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
                                 else
-                                    WriteError(this.ModbusType, client, modbusServerMessage, e);
+                                    await WriteError(this.ModbusType, client, modbusServerMessage, e);
                             }
                             else
-                                WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
+                                await WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
                         }
                         else
                         {
-                            WriteError(this.ModbusType, client, modbusServerMessage, e);
+                            await WriteError(this.ModbusType, client, modbusServerMessage, e);
                         }
                     }
                     else
@@ -291,11 +291,11 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                         var result = this.Write(modbusServerMessage.ModbusAddress.ToString(), coreData.ByteToBoolArray(modbusServerMessage.Length));
                         if (result.IsSuccess)
                         {
-                            WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
+                            await WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
                         }
                         else
                         {
-                            WriteError(this.ModbusType, client, modbusServerMessage, e);
+                            await WriteError(this.ModbusType, client, modbusServerMessage, e);
                         }
                     }
                 }
@@ -310,16 +310,16 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                             {
                                 var result = this.Write(modbusServerMessage.ModbusAddress.ToString(), coreData);
                                 if (result.IsSuccess)
-                                    WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
+                                    await WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
                                 else
-                                    WriteError(this.ModbusType, client, modbusServerMessage, e);
+                                    await WriteError(this.ModbusType, client, modbusServerMessage, e);
                             }
                             else
-                                WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
+                                await WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
                         }
                         else
                         {
-                            WriteError(this.ModbusType, client, modbusServerMessage, e);
+                            await WriteError(this.ModbusType, client, modbusServerMessage, e);
                         }
                     }
                     else
@@ -327,11 +327,11 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                         var result = this.Write(modbusServerMessage.ModbusAddress.ToString(), coreData);
                         if (result.IsSuccess)
                         {
-                            WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
+                            await WriteSuccess(this.ModbusType, client, modbusServerMessage, e);
                         }
                         else
                         {
-                            WriteError(this.ModbusType, client, modbusServerMessage, e);
+                            await WriteError(this.ModbusType, client, modbusServerMessage, e);
                         }
                     }
                 }
@@ -339,25 +339,31 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
         }
     }
 
-    private static void ReturnData(IClientChannel client, ReceivedDataEventArgs e, byte[] sendData)
+    private async Task ReturnData(IClientChannel client, ReceivedDataEventArgs e, byte[] sendData)
     {
         if (client is IUdpClientSender udpClientSender)
-            udpClientSender.Send(((UdpReceivedDataEventArgs)e).EndPoint, sendData);
+            if (ModbusType == ModbusTypeEnum.ModbusRtu)
+                await udpClientSender.SendAsync(((UdpReceivedDataEventArgs)e).EndPoint, new SendMessage(sendData));
+            else
+                await udpClientSender.SendAsync(((UdpReceivedDataEventArgs)e).EndPoint, sendData);
         else
-            client.Send(sendData);
+            if (ModbusType == ModbusTypeEnum.ModbusRtu)
+            await client.SendAsync(new SendMessage(sendData));
+        else
+            await client.SendAsync(sendData);
     }
 
     /// <summary>
     /// 返回错误码
     /// </summary>
-    private static void WriteError(ModbusTypeEnum modbusType, IClientChannel client, IModbusServerMessage modbusServerMessage, ReceivedDataEventArgs e)
+    private async Task WriteError(ModbusTypeEnum modbusType, IClientChannel client, IModbusServerMessage modbusServerMessage, ReceivedDataEventArgs e)
     {
         if (modbusType == ModbusTypeEnum.ModbusRtu)
         {
             var sendData = DataTransUtil
 .SpliceArray(modbusServerMessage.ReceivedBytes.ToArray(0, 2), new byte[] { (byte)1 });//01 lllegal function
             sendData[1] = (byte)(sendData[1] + 128);
-            ReturnData(client, e, sendData);
+            await ReturnData(client, e, sendData);
         }
         else
         {
@@ -365,25 +371,25 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
 .SpliceArray(modbusServerMessage.ReceivedBytes.ToArray(0, 8), new byte[] { (byte)1 });//01 lllegal function
             sendData[5] = (byte)(sendData.Length - 6);
             sendData[7] = (byte)(sendData[7] + 128);
-            ReturnData(client, e, sendData);
+            await ReturnData(client, e, sendData);
         }
     }
 
     /// <summary>
     /// 返回成功
     /// </summary>
-    internal static void WriteSuccess(ModbusTypeEnum modbusType, IClientChannel client, IModbusServerMessage modbusServerMessage, ReceivedDataEventArgs e)
+    internal async Task WriteSuccess(ModbusTypeEnum modbusType, IClientChannel client, IModbusServerMessage modbusServerMessage, ReceivedDataEventArgs e)
     {
         if (modbusType == ModbusTypeEnum.ModbusRtu)
         {
             var sendData = modbusServerMessage.ReceivedBytes.ToArray(0, 6);
-            ReturnData(client, e, sendData);
+            await ReturnData(client, e, sendData);
         }
         else
         {
             var sendData = modbusServerMessage.ReceivedBytes.ToArray(0, 12);
             sendData[5] = (byte)(sendData.Length - 6);
-            ReturnData(client, e, sendData);
+            await ReturnData(client, e, sendData);
         }
     }
 

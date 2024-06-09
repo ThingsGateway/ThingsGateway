@@ -30,6 +30,9 @@ public partial class ChannelDataDebugComponent : ComponentBase
     public EventCallback<ChannelData> OnConnectClick { get; set; }
 
     [Parameter]
+    public EventCallback<ChannelData> OnConfimClick { get; set; }
+
+    [Parameter]
     public EventCallback OnDisConnectClick { get; set; }
 
     private ChannelData? Model { get; set; } = new();
@@ -117,28 +120,29 @@ public partial class ChannelDataDebugComponent : ComponentBase
         }
     }
 
+    private async Task ConfimClick()
+    {
+        try
+        {
+            ChannelData.CreateChannel(Model);
+            if (OnConfimClick.HasDelegate)
+                await OnConfimClick.InvokeAsync(Model);
+        }
+        catch (Exception ex)
+        {
+            Model.Channel.Logger.Exception(ex);
+        }
+    }
+
     private async Task ConnectClick()
     {
-        ChannelData.CreateChannel(Model);
         if (Model != null)
         {
             try
             {
-                if (OnConnectClick.HasDelegate)
-                    await OnConnectClick.InvokeAsync(Model);
-            }
-            catch (ObjectDisposedException)
-            {
-                try
-                {
-                    ChannelData.CreateChannel(Model);
+                if (Model.Channel != null)
                     if (OnConnectClick.HasDelegate)
                         await OnConnectClick.InvokeAsync(Model);
-                }
-                catch (Exception ex)
-                {
-                    Model.Channel.Logger.Exception(ex);
-                }
             }
             catch (Exception ex)
             {

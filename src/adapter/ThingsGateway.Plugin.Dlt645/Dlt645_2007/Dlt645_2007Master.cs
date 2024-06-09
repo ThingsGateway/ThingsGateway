@@ -32,6 +32,13 @@ public class Dlt645_2007Master : CollectBase
     /// <inheritdoc/>
     public override IProtocol Protocol => _plc;
 
+    protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
+    {
+        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
+        if (CurrentDevice.Channel.ChannelType == ChannelTypeEnum.TcpService)
+            await Task.Delay(6000).ConfigureAwait(false);//等待6秒连接
+    }
+
     /// <inheritdoc/>
     public override void Init(IChannel? channel = null)
     {

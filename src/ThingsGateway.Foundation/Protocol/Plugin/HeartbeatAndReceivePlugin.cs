@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 using System.ComponentModel.DataAnnotations;
+using System.Drawing;
 
 using ThingsGateway.Foundation.Extension.String;
 
@@ -78,11 +79,15 @@ internal class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcp
 
         if (client is ITcpClient tcpClient)
         {
-            if (DtuClient.HeartbeatHexString == e.ByteBlock.AsSegment().ToHexString(default))
+            var len = DtuClient.HeartbeatHexString.HexStringToBytes().Length;
+            if (len > 0)
             {
-                e.Handled = true;
+                if (DtuClient.HeartbeatHexString == e.ByteBlock.AsSegment(0, len).ToHexString(default))
+                {
+                    e.Handled = true;
+                }
             }
+            await e.InvokeNext().ConfigureAwait(false);//如果本插件无法处理当前数据，请将数据转至下一个插件。
         }
-        await e.InvokeNext().ConfigureAwait(false);//如果本插件无法处理当前数据，请将数据转至下一个插件。
     }
 }
