@@ -20,6 +20,7 @@ public static class VariableValuePraseExtensions
     /// 根据每个变量的<see cref="IVariable.Index"/>
     /// 不支持变长字符串类型变量，不能存在于变量List中
     /// </summary>
+    /// <param name="protocol">设备</param>
     /// <param name="variables">设备变量List</param>
     /// <param name="buffer">返回的字节数组</param>
     /// <param name="exWhenAny">任意一个失败时抛出异常</param>
