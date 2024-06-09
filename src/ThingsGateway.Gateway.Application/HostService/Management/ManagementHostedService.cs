@@ -233,6 +233,11 @@ public class ManagementHostedService : BackgroundService
                                         online = await tcpDmtpClient.PingAsync(10000).ConfigureAwait(false);
                                         if (online)
                                             break;
+                                        else
+                                        {
+                                            readErrorCount++;
+                                            await Task.Delay(1000);
+                                        }
                                     }
                                     catch
                                     {
