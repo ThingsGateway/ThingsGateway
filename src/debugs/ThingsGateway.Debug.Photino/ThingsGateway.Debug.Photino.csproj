@@ -7,7 +7,7 @@
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
-		<TargetFrameworks>net8.0</TargetFrameworks>
+		<TargetFrameworks>net6.0</TargetFrameworks>
 	</PropertyGroup>
 
 	<ItemGroup>
