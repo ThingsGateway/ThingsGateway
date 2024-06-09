@@ -9,9 +9,6 @@ COPY .  /app
 WORKDIR /app
 #默认web
 EXPOSE 5000
-#图像库
-RUN echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ sid main contrib non-free" > /etc/apt/sources.list
-RUN apt-get update && apt-get -y install libfontconfig1
 
 # 添加时区环境变量，亚洲，上海
 ENV TimeZone=Asia/Shanghai
