@@ -5,7 +5,7 @@
     "LocalTSAP": "LocalTSAP",
     "Slot": "Slot",
 
-    "EndianType": "EndianType",
+    "DataFormat": "DataFormat",
     "IsStringReverseByteWord": "StringReverseByteWord",
     "CheckClearTime": "CheckClearTime",
     "Timeout": "Timeout",

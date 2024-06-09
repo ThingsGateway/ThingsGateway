@@ -27,7 +27,7 @@ public interface IThingsGatewayBitConverter
     /// <summary>
     /// 指定大小端。
     /// </summary>
-    EndianType EndianType { get; set; }
+    EndianType EndianType { get; }
 
     /// <summary>
     /// 当前的字符串编码类型
@@ -60,6 +60,8 @@ public interface IThingsGatewayBitConverter
     /// 获取或设置在解析字符串的时候是否将字节按照字单位反转
     /// </summary>
     bool IsStringReverseByteWord { get; set; }
+
+    DataFormatEnum DataFormat { get; set; }
 
     #region GetBytes
 

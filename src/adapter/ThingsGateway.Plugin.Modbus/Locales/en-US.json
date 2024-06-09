@@ -4,7 +4,7 @@
     "HeartbeatHexString": "HeartbeatHexString",
     "Station": "DefaultStation",
     "DtuId": "DefaultDtuId",
-    "EndianType": "EndianType",
+    "DataFormat": "DataFormat",
     "IsStringReverseByteWord": "StringReverseByteWord",
     "CheckClearTime": "CheckClearTime",
     "Timeout": "Timeout",
@@ -24,7 +24,7 @@
   "ThingsGateway.Plugin.Modbus.ModbusSlaveProperty": {
     "ModbusType": "ModbusType",
     "Station": "DefaultStation",
-    "EndianType": "EndianType",
+    "DataFormat": "DataFormat",
     "IsStringReverseByteWord": "IsStringReverseByteWord",
     "CheckClearTime": "CheckClearTime",
     "DeviceRpcEnable": "DeviceRpcEnable",

@@ -32,11 +32,6 @@ public interface IProtocol : IDisposable
     /// <summary>
     /// 数据解析规则
     /// </summary>
-    EndianType EndianType { get; set; }
-
-    /// <summary>
-    /// 数据解析规则
-    /// </summary>
     IThingsGatewayBitConverter ThingsGatewayBitConverter { get; }
 
     /// <summary>
@@ -71,6 +66,11 @@ public interface IProtocol : IDisposable
     /// 连接超时时间
     /// </summary>
     ushort ConnectTimeout { get; set; }
+
+    /// <summary>
+    /// 数据解析规则
+    /// </summary>
+    DataFormatEnum DataFormat { get; set; }
 
     #endregion 属性
 

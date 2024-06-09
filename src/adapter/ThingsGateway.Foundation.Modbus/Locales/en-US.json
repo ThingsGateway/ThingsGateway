@@ -8,7 +8,7 @@
 
     "CacheTimeout": "CacheTimeout",
     "SendDelayTime": "SendDelayTime",
-    "EndianType": "EndianType",
+    "DataFormat": "DataFormat",
     "Timeout": "Timeout",
     "ConnectTimeout": "ConnectTimeout",
     "IsStringReverseByteWord": "IsStringReverseByteWord"
@@ -27,7 +27,7 @@
 
     "CacheTimeout": "CacheTimeout",
     "SendDelayTime": "SendDelayTime",
-    "EndianType": "EndianType",
+    "DataFormat": "DataFormat",
     "Timeout": "Timeout",
     "ConnectTimeout": "ConnectTimeout",
     "IsStringReverseByteWord": "IsStringReverseByteWord"

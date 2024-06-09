@@ -78,7 +78,7 @@ public class ModbusSlave : BusinessBase
         //载入配置
         _plc = new(channel)
         {
-            EndianType = _driverPropertys.EndianType,
+            DataFormat = _driverPropertys.DataFormat,
             IsStringReverseByteWord = _driverPropertys.IsStringReverseByteWord,
             CacheTimeout = _driverPropertys.CacheTimeout,
             Station = _driverPropertys.Station,

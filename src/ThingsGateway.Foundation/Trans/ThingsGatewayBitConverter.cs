@@ -10,6 +10,8 @@
 
 using Newtonsoft.Json;
 
+using System;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 using ThingsGateway.Foundation.Extension.Generic;
@@ -61,7 +63,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     }
 
     /// <inheritdoc/>
-    public virtual EndianType EndianType { get; set; }
+    public virtual EndianType EndianType { get; }
 
     /// <inheritdoc/>
     public virtual bool IsStringReverseByteWord { get; set; }
@@ -111,7 +113,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 2);
         for (int index = 0; index < value.Length; ++index)
         {
-            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byte[] bytes = GetBytes(value[index]);
             byteBlock.Write(bytes);
         }
         return byteBlock.ToArray();
@@ -123,7 +125,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 2);
         for (int index = 0; index < value.Length; ++index)
         {
-            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byte[] bytes = GetBytes(value[index]);
             byteBlock.Write(bytes);
         }
         return byteBlock.ToArray();
@@ -135,7 +137,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 4);
         for (int index = 0; index < value.Length; ++index)
         {
-            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byte[] bytes = GetBytes(value[index]);
             byteBlock.Write(bytes);
         }
         return byteBlock.ToArray();
@@ -147,7 +149,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 4);
         for (int index = 0; index < value.Length; ++index)
         {
-            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byte[] bytes = GetBytes(value[index]);
             byteBlock.Write(bytes);
         }
         return byteBlock.ToArray();
@@ -159,7 +161,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 4);
         for (int index = 0; index < value.Length; ++index)
         {
-            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byte[] bytes = GetBytes(value[index]);
             byteBlock.Write(bytes);
         }
         return byteBlock.ToArray();
@@ -171,7 +173,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 4);
         for (int index = 0; index < value.Length; ++index)
         {
-            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byte[] bytes = GetBytes(value[index]);
             byteBlock.Write(bytes);
         }
         return byteBlock.ToArray();
@@ -183,7 +185,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 4);
         for (int index = 0; index < value.Length; ++index)
         {
-            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byte[] bytes = GetBytes(value[index]);
             byteBlock.Write(bytes);
         }
         return byteBlock.ToArray();
@@ -195,7 +197,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         using ValueByteBlock byteBlock = new ValueByteBlock(value.Length * 4);
         for (int index = 0; index < value.Length; ++index)
         {
-            byte[] bytes = TouchSocketBitConverter.GetBytes(value[index]);
+            byte[] bytes = GetBytes(value[index]);
             byteBlock.Write(bytes);
         }
         return byteBlock.ToArray();
@@ -244,13 +246,55 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <inheritdoc/>
     public virtual int ToInt32(byte[] buffer, int offset)
     {
-        return TouchSocketBitConverter.ToInt32(buffer, offset);
+        if (buffer.Length - offset < 4)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset));
+        }
+
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (DataFormat == DataFormatEnum.DCBA)
+                {
+                    return Unsafe.Read<int>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<int>(p);
+                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     /// <inheritdoc/>
     public virtual long ToInt64(byte[] buffer, int offset)
     {
-        return TouchSocketBitConverter.ToInt64(buffer, offset);
+        if (buffer.Length - offset < 8)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset));
+        }
+
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (DataFormat == DataFormatEnum.DCBA)
+                {
+                    return Unsafe.Read<long>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<long>(p);
+                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     /// <inheritdoc/>
@@ -262,24 +306,108 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <inheritdoc/>
     public virtual uint ToUInt32(byte[] buffer, int offset)
     {
-        return TouchSocketBitConverter.ToUInt32(buffer, offset);
+        if (buffer.Length - offset < 4)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset));
+        }
+
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (DataFormat == DataFormatEnum.DCBA)
+                {
+                    return Unsafe.Read<uint>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<uint>(p);
+                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     /// <inheritdoc/>
     public virtual ulong ToUInt64(byte[] buffer, int offset)
     {
-        return TouchSocketBitConverter.ToUInt64(buffer, offset);
+        if (buffer.Length - offset < 8)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset));
+        }
+
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (DataFormat == DataFormatEnum.DCBA)
+                {
+                    return Unsafe.Read<ulong>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<ulong>(p);
+                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     /// <inheritdoc/>
     public virtual float ToSingle(byte[] buffer, int offset)
     {
-        return TouchSocketBitConverter.ToSingle(buffer, offset);
+        if (buffer.Length - offset < 4)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset));
+        }
+
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (DataFormat == DataFormatEnum.DCBA)
+                {
+                    return Unsafe.Read<float>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<float>(p);
+                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     public virtual double ToDouble(byte[] buffer, int offset)
     {
-        return TouchSocketBitConverter.ToDouble(buffer, offset);
+        if (buffer.Length - offset < 8)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset));
+        }
+
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (DataFormat == DataFormatEnum.DCBA)
+                {
+                    return Unsafe.Read<double>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<double>(p);
+                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     /// <inheritdoc/>
@@ -402,7 +530,13 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
 
     public virtual byte[] GetBytes(decimal value)
     {
-        return TouchSocketBitConverter.GetBytes(value);
+        var bytes = new byte[16];
+        Unsafe.As<byte, decimal>(ref bytes[0]) = value;
+        if (DataFormat != DataFormatEnum.DCBA)
+        {
+            this.ByteTransDataFormat16_Net6(ref bytes[0]);
+        }
+        return bytes;
     }
 
     public virtual byte[] GetBytes(char value)
@@ -432,41 +566,325 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
 
     public virtual byte[] GetBytes(int value)
     {
-        return TouchSocketBitConverter.GetBytes(value);
+        var bytes = BitConverter.GetBytes(value);
+
+        if (DataFormat != DataFormatEnum.DCBA)
+            bytes = this.ByteTransDataFormat4(bytes, 0);
+
+        return bytes;
     }
 
     public virtual byte[] GetBytes(uint value)
     {
-        return TouchSocketBitConverter.GetBytes(value);
+        var bytes = BitConverter.GetBytes(value);
+
+        if (DataFormat != DataFormatEnum.DCBA)
+            bytes = this.ByteTransDataFormat4(bytes, 0);
+
+        return bytes;
     }
 
     public virtual byte[] GetBytes(long value)
     {
-        return TouchSocketBitConverter.GetBytes(value);
+        var bytes = BitConverter.GetBytes(value);
+
+        if (DataFormat != DataFormatEnum.DCBA)
+            bytes = this.ByteTransDataFormat8(bytes, 0);
+
+        return bytes;
     }
 
     public virtual byte[] GetBytes(ulong value)
     {
-        return TouchSocketBitConverter.GetBytes(value);
+        var bytes = BitConverter.GetBytes(value);
+
+        if (DataFormat != DataFormatEnum.DCBA)
+            bytes = this.ByteTransDataFormat8(bytes, 0);
+
+        return bytes;
     }
 
     public virtual byte[] GetBytes(float value)
     {
-        return TouchSocketBitConverter.GetBytes(value);
+        var bytes = BitConverter.GetBytes(value);
+
+        if (DataFormat != DataFormatEnum.DCBA)
+            bytes = this.ByteTransDataFormat4(bytes, 0);
+
+        return bytes;
     }
 
     public virtual byte[] GetBytes(double value)
     {
-        return TouchSocketBitConverter.GetBytes(value);
+        var bytes = BitConverter.GetBytes(value);
+
+        if (DataFormat != DataFormatEnum.DCBA)
+            bytes = this.ByteTransDataFormat8(bytes, 0);
+
+        return bytes;
     }
 
     public virtual decimal ToDecimal(byte[] buffer, int offset)
     {
-        return TouchSocketBitConverter.ToDecimal(buffer, offset);
+        if (buffer.Length - offset < 16)
+        {
+            throw new ArgumentOutOfRangeException(nameof(offset));
+        }
+
+        unsafe
+        {
+            fixed (byte* p = &buffer[offset])
+            {
+                if (DataFormat == DataFormatEnum.DCBA)
+                {
+                    return Unsafe.Read<decimal>(p);
+                }
+                else
+                {
+                    this.ByteTransDataFormat16_Net6(ref buffer[offset]);
+                    var v = Unsafe.Read<decimal>(p);
+                    this.ByteTransDataFormat16_Net6(ref buffer[offset]);
+                    return v;
+                }
+            }
+        }
     }
 
     public virtual char ToChar(byte[] buffer, int offset)
     {
         return TouchSocketBitConverter.ToChar(buffer, offset);
     }
+
+    public DataFormatEnum DataFormat { get; set; }
+
+    #region Tool
+
+    /// <summary>反转多字节的数据信息</summary>
+    /// <param name="value">数据字节</param>
+    /// <param name="offset">起始索引，默认值为0</param>
+    /// <returns>实际字节信息</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private byte[] ByteTransDataFormat4(byte[] value, int offset)
+
+    {
+        var numArray = new byte[4];
+        switch (this.DataFormat)
+        {
+            case DataFormatEnum.ABCD:
+                numArray[0] = value[offset + 3];
+                numArray[1] = value[offset + 2];
+                numArray[2] = value[offset + 1];
+                numArray[3] = value[offset];
+                break;
+
+            case DataFormatEnum.BADC:
+                numArray[0] = value[offset + 2];
+                numArray[1] = value[offset + 3];
+                numArray[2] = value[offset];
+                numArray[3] = value[offset + 1];
+                break;
+
+            case DataFormatEnum.CDAB:
+                numArray[0] = value[offset + 1];
+                numArray[1] = value[offset];
+                numArray[2] = value[offset + 3];
+                numArray[3] = value[offset + 2];
+                break;
+
+            case DataFormatEnum.DCBA:
+                numArray[0] = value[offset];
+                numArray[1] = value[offset + 1];
+                numArray[2] = value[offset + 2];
+                numArray[3] = value[offset + 3];
+                break;
+        }
+        return numArray;
+    }
+
+    /// <summary>反转多字节的数据信息</summary>
+    /// <param name="value">数据字节</param>
+    /// <param name="offset">起始索引，默认值为0</param>
+    /// <returns>实际字节信息</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private byte[] ByteTransDataFormat8(byte[] value, int offset)
+    {
+        var numArray = new byte[8];
+        switch (this.DataFormat)
+        {
+            case DataFormatEnum.ABCD:
+                numArray[0] = value[offset + 7];
+                numArray[1] = value[offset + 6];
+                numArray[2] = value[offset + 5];
+                numArray[3] = value[offset + 4];
+                numArray[4] = value[offset + 3];
+                numArray[5] = value[offset + 2];
+                numArray[6] = value[offset + 1];
+                numArray[7] = value[offset];
+                break;
+
+            case DataFormatEnum.BADC:
+                numArray[0] = value[offset + 6];
+                numArray[1] = value[offset + 7];
+                numArray[2] = value[offset + 4];
+                numArray[3] = value[offset + 5];
+                numArray[4] = value[offset + 2];
+                numArray[5] = value[offset + 3];
+                numArray[6] = value[offset];
+                numArray[7] = value[offset + 1];
+                break;
+
+            case DataFormatEnum.CDAB:
+                numArray[0] = value[offset + 1];
+                numArray[1] = value[offset];
+                numArray[2] = value[offset + 3];
+                numArray[3] = value[offset + 2];
+                numArray[4] = value[offset + 5];
+                numArray[5] = value[offset + 4];
+                numArray[6] = value[offset + 7];
+                numArray[7] = value[offset + 6];
+                break;
+
+            case DataFormatEnum.DCBA:
+                numArray[0] = value[offset];
+                numArray[1] = value[offset + 1];
+                numArray[2] = value[offset + 2];
+                numArray[3] = value[offset + 3];
+                numArray[4] = value[offset + 4];
+                numArray[5] = value[offset + 5];
+                numArray[6] = value[offset + 6];
+                numArray[7] = value[offset + 7];
+                break;
+        }
+        return numArray;
+    }
+
+    #endregion Tool
+
+    #region Tool
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ByteTransDataFormat4_Net6(ref byte value)
+    {
+        unsafe
+        {
+            fixed (byte* p = &value)
+            {
+                var a = Unsafe.ReadUnaligned<byte>(p);
+                var b = Unsafe.ReadUnaligned<byte>(p + 1);
+                var c = Unsafe.ReadUnaligned<byte>(p + 2);
+                var d = Unsafe.ReadUnaligned<byte>(p + 3);
+
+                switch (this.DataFormat)
+                {
+                    case DataFormatEnum.ABCD:
+                        Unsafe.WriteUnaligned(p, d);
+                        Unsafe.WriteUnaligned(p + 1, c);
+                        Unsafe.WriteUnaligned(p + 2, b);
+                        Unsafe.WriteUnaligned(p + 3, a);
+                        break;
+
+                    case DataFormatEnum.BADC:
+                        Unsafe.WriteUnaligned(p, c);
+                        Unsafe.WriteUnaligned(p + 1, d);
+                        Unsafe.WriteUnaligned(p + 2, a);
+                        Unsafe.WriteUnaligned(p + 3, b);
+                        break;
+
+                    case DataFormatEnum.CDAB:
+                        Unsafe.WriteUnaligned(p, b);
+                        Unsafe.WriteUnaligned(p + 1, a);
+                        Unsafe.WriteUnaligned(p + 2, d);
+                        Unsafe.WriteUnaligned(p + 3, c);
+                        break;
+
+                    case DataFormatEnum.DCBA:
+                        return;
+                }
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ByteTransDataFormat8_Net6(ref byte value)
+    {
+        unsafe
+        {
+            fixed (byte* p = &value)
+            {
+                var a = Unsafe.ReadUnaligned<byte>(p);
+                var b = Unsafe.ReadUnaligned<byte>(p + 1);
+                var c = Unsafe.ReadUnaligned<byte>(p + 2);
+                var d = Unsafe.ReadUnaligned<byte>(p + 3);
+                var e = Unsafe.ReadUnaligned<byte>(p + 4);
+                var f = Unsafe.ReadUnaligned<byte>(p + 5);
+                var g = Unsafe.ReadUnaligned<byte>(p + 6);
+                var h = Unsafe.ReadUnaligned<byte>(p + 7);
+
+                switch (this.DataFormat)
+                {
+                    case DataFormatEnum.ABCD:
+                        Unsafe.WriteUnaligned(p, h);
+                        Unsafe.WriteUnaligned(p + 1, g);
+                        Unsafe.WriteUnaligned(p + 2, f);
+                        Unsafe.WriteUnaligned(p + 3, e);
+                        Unsafe.WriteUnaligned(p + 4, d);
+                        Unsafe.WriteUnaligned(p + 5, c);
+                        Unsafe.WriteUnaligned(p + 6, b);
+                        Unsafe.WriteUnaligned(p + 7, a);
+                        break;
+
+                    case DataFormatEnum.BADC:
+                        Unsafe.WriteUnaligned(p, g);
+                        Unsafe.WriteUnaligned(p + 1, h);
+                        Unsafe.WriteUnaligned(p + 2, e);
+                        Unsafe.WriteUnaligned(p + 3, f);
+                        Unsafe.WriteUnaligned(p + 4, c);
+                        Unsafe.WriteUnaligned(p + 5, d);
+                        Unsafe.WriteUnaligned(p + 6, a);
+                        Unsafe.WriteUnaligned(p + 7, b);
+                        break;
+
+                    case DataFormatEnum.CDAB:
+                        Unsafe.WriteUnaligned(p, b);
+                        Unsafe.WriteUnaligned(p + 1, a);
+                        Unsafe.WriteUnaligned(p + 2, d);
+                        Unsafe.WriteUnaligned(p + 3, c);
+                        Unsafe.WriteUnaligned(p + 4, f);
+                        Unsafe.WriteUnaligned(p + 5, e);
+                        Unsafe.WriteUnaligned(p + 6, h);
+                        Unsafe.WriteUnaligned(p + 7, g);
+                        break;
+
+                    case DataFormatEnum.DCBA:
+                        break;
+                }
+            }
+        }
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private void ByteTransDataFormat16_Net6(ref byte value)
+    {
+        unsafe
+        {
+            fixed (byte* p = &value)
+            {
+                switch (this.DataFormat)
+                {
+                    case DataFormatEnum.ABCD:
+                        var span = new Span<byte>(p, 16);
+                        span.Reverse();
+                        break;
+
+                    case DataFormatEnum.DCBA:
+                        return;
+
+                    default:
+                        throw new NotSupportedException();
+                }
+            }
+        }
+    }
+
+    #endregion Tool
 }

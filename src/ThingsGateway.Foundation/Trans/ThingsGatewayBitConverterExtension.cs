@@ -24,7 +24,7 @@ namespace ThingsGateway.Foundation;
 public static class ThingsGatewayBitConverterExtension
 {
     /// <summary>
-    /// 从设备地址中解析附加信息，包括 endianType=XX;4字节数据解析规则、encoding=XX;字符串解析规则、len=XX;读写长度、bcdFormat=XX; bcd解析规则等。
+    /// 从设备地址中解析附加信息，包括 dataFormat=XX;4字节数据解析规则、encoding=XX;字符串解析规则、len=XX;读写长度、bcdFormat=XX; bcd解析规则等。
     /// 这个方法获取<see cref="IThingsGatewayBitConverter"/>，并去掉地址中的所有额外信息。
     /// 解析步骤将被缓存。
     /// </summary>
@@ -49,7 +49,7 @@ public static class ThingsGatewayBitConverterExtension
         // 根据分号拆分附加信息
         var strs = registerAddress.SplitStringBySemicolon();
 
-        EndianType? endianType = null;
+        DataFormatEnum? dataFormat = null;
         Encoding? encoding = null;
         int? length = null;
         int? stringlength = null;
@@ -57,11 +57,11 @@ public static class ThingsGatewayBitConverterExtension
         StringBuilder sb = new();
         foreach (var str in strs)
         {
-            // 解析 endianType
+            // 解析 dataFormat
             if (str.ToLower().StartsWith("data="))
             {
-                var endianTypeName = str.Substring(5);
-                try { if (Enum.TryParse<EndianType>(endianTypeName, true, out var endianType1)) endianType = endianType1; } catch { }
+                var dataFormatName = str.Substring(5);
+                try { if (Enum.TryParse<DataFormatEnum>(dataFormatName, true, out var dataFormat1)) dataFormat = dataFormat1; } catch { }
             }
             // 解析 encoding
             else if (str.ToLower().StartsWith("encoding="))
@@ -101,7 +101,7 @@ public static class ThingsGatewayBitConverterExtension
         registerAddress = sb.ToString();
 
         // 如果没有解析出任何附加信息，则直接返回默认的数据转换器
-        if (bcdFormat == null && length == null && stringlength == null && encoding == null && endianType == null)
+        if (bcdFormat == null && length == null && stringlength == null && encoding == null && dataFormat == null)
         {
             return defaultBitConverter;
         }
@@ -126,9 +126,9 @@ public static class ThingsGatewayBitConverterExtension
         {
             converter.StringLength = stringlength.Value;
         }
-        if (endianType != null)
+        if (dataFormat != null)
         {
-            converter.EndianType = endianType.Value;
+            converter.DataFormat = dataFormat.Value;
         }
 
         // 将解析结果添加到缓存中，缓存有效期为3600秒

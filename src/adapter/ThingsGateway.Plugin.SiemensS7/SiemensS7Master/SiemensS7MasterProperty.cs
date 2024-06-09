@@ -75,7 +75,7 @@ public class SiemensS7MasterProperty : CollectPropertyBase
     /// 默认解析顺序
     /// </summary>
     [DynamicProperty]
-    public EndianType EndianType { get; set; } = EndianType.Big;
+    public DataFormatEnum DataFormat { get; set; }
 
     public override int ConcurrentCount { get; set; } = 1;
 }

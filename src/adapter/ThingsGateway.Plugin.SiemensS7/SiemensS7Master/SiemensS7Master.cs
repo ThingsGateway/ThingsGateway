@@ -42,7 +42,7 @@ public class SiemensS7Master : CollectBase
         //载入配置
         _plc = new(channel)
         {
-            EndianType = _driverPropertys.EndianType,
+            DataFormat = _driverPropertys.DataFormat,
             SendDelayTime = _driverPropertys.SendDelayTime,
             CacheTimeout = _driverPropertys.CacheTimeout,
             ConnectTimeout = _driverPropertys.ConnectTimeout,

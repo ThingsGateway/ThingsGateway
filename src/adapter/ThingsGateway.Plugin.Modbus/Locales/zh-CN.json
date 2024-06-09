@@ -4,7 +4,7 @@
     "HeartbeatHexString": "心跳验证(HexString)",
     "Station": "默认站号",
     "DtuId": "默认DtuId",
-    "EndianType": "解析规则",
+    "DataFormat": "解析规则",
     "IsStringReverseByteWord": "字符串反转",
     "CheckClearTime": "客户端连接滑动过期时间",
     "Timeout": "读写超时时间",
@@ -25,7 +25,7 @@
   "ThingsGateway.Plugin.Modbus.ModbusSlaveProperty": {
     "ModbusType": "协议类型",
     "Station": "默认站号",
-    "EndianType": "解析规则",
+    "DataFormat": "解析规则",
     "IsStringReverseByteWord": "字符串反转",
     "CheckClearTime": "客户端连接滑动过期时间",
     "DeviceRpcEnable": "允许写入",

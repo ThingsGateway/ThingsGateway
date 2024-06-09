@@ -47,13 +47,6 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual int CacheTimeout { get; set; } = 1000;
 
     /// <inheritdoc/>
-    public virtual EndianType EndianType
-    {
-        get => ThingsGatewayBitConverter.EndianType;
-        set => ThingsGatewayBitConverter.EndianType = value;
-    }
-
-    /// <inheritdoc/>
     public virtual int SendDelayTime { get; set; }
 
     /// <inheritdoc/>
@@ -75,6 +68,13 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         {
             ThingsGatewayBitConverter.IsStringReverseByteWord = value;
         }
+    }
+
+    /// <inheritdoc/>
+    public virtual DataFormatEnum DataFormat
+    {
+        get => ThingsGatewayBitConverter.DataFormat;
+        set => ThingsGatewayBitConverter.DataFormat = value;
     }
 
     /// <inheritdoc/>

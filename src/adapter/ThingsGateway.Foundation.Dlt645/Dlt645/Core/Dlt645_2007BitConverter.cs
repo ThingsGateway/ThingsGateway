@@ -12,6 +12,8 @@ using System.Text;
 
 using ThingsGateway.Foundation.Extension.Generic;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Foundation.Dlt645;
 
 /// <summary>
@@ -19,6 +21,10 @@ namespace ThingsGateway.Foundation.Dlt645;
 /// </summary>
 public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
 {
+    public Dlt645_2007BitConverter(EndianType endianType) : base(endianType)
+    {
+    }
+
     /// <inheritdoc/>
     public override short ToInt16(byte[] buffer, int offset)
     {

@@ -39,7 +39,7 @@ public class Dlt645_2007Master : CollectBase
         //载入配置
         _plc = new(channel)
         {
-            EndianType = _driverPropertys.EndianType,
+            DataFormat = _driverPropertys.DataFormat,
             DtuId = _driverPropertys.DtuId,
             SendDelayTime = _driverPropertys.SendDelayTime,
             CacheTimeout = _driverPropertys.CacheTimeout,

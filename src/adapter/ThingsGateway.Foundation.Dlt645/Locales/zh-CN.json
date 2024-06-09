@@ -10,7 +10,7 @@
 
     "CacheTimeout": "组包缓存时间",
     "SendDelayTime": "发送延时",
-    "EndianType": "解析规则",
+    "DataFormat": "解析规则",
     "Timeout": "读写超时",
     "ConnectTimeout": "连接超时",
     "IsStringReverseByteWord": "字符串反转"

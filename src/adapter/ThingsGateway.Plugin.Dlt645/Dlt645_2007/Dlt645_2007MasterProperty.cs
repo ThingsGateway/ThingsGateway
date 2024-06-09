@@ -59,7 +59,7 @@ public class Dlt645_2007MasterProperty : CollectPropertyBase
     /// 默认解析顺序
     /// </summary>
     [DynamicProperty]
-    public EndianType EndianType { get; set; } = EndianType.Big;
+    public DataFormatEnum DataFormat { get; set; }
 
     /// <summary>
     /// 默认地址

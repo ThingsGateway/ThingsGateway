@@ -1,6 +1,7 @@
 ﻿@namespace ThingsGateway.Gateway.Razor
 @using ThingsGateway.Admin.Application
 @using ThingsGateway.Admin.Razor
+@using ThingsGateway.Foundation
 @using ThingsGateway.Gateway.Application
 @inherits ComponentDefault
 
@@ -20,7 +21,15 @@
                     </EditTemplate>
                 </EditorItem>
                 <EditorItem @bind-Field="@context.Name" Readonly=BatchEditEnable />
-                <EditorItem @bind-Field="@context.ChannelType" />
+                <EditorItem @bind-Field="@context.ChannelType">
+
+                    <EditTemplate Context="value">
+                        <div class="col-12 col-sm-6">
+                            <Select SkipValidate="true" @bind-Value="@value.ChannelType" OnSelectedItemChanged=@((a)=>InvokeAsync(StateHasChanged)) />
+                        </div>
+                    </EditTemplate>
+
+                </EditorItem>
                 <EditorItem @bind-Field="@context.Enable" />
                 <EditorItem @bind-Field="@context.LogEnable" />
 
@@ -32,15 +41,16 @@
                     </EditTemplate>
                 </EditorItem>
 
-                <EditorItem @bind-Field="@context.RemoteUrl" />
-                <EditorItem @bind-Field="@context.BindUrl" />
-                <EditorItem @bind-Field="@context.PortName" />
-                <EditorItem @bind-Field="@context.BaudRate" />
-                <EditorItem @bind-Field="@context.DataBits" />
-                <EditorItem @bind-Field="@context.Parity" />
-                <EditorItem @bind-Field="@context.StopBits" />
-                <EditorItem @bind-Field="@context.DtrEnable" />
-                <EditorItem @bind-Field="@context.RtsEnable" />
+                <EditorItem @bind-Field="@context.RemoteUrl" Ignore=@(context.ChannelType!=ChannelTypeEnum.TcpClient&&context.ChannelType!=ChannelTypeEnum.UdpSession) />
+                <EditorItem @bind-Field="@context.BindUrl" Ignore=@(context.ChannelType!=ChannelTypeEnum.TcpClient&&context.ChannelType!=ChannelTypeEnum.UdpSession&&context.ChannelType!=ChannelTypeEnum.TcpService) />
+
+                <EditorItem @bind-Field="@context.PortName" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                <EditorItem @bind-Field="@context.BaudRate" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                <EditorItem @bind-Field="@context.DataBits" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                <EditorItem @bind-Field="@context.Parity" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                <EditorItem @bind-Field="@context.StopBits" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                <EditorItem @bind-Field="@context.DtrEnable" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                <EditorItem @bind-Field="@context.RtsEnable" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
 
             </FieldItems>
             <Buttons>
@@ -67,7 +77,15 @@ else
                 </EditTemplate>
             </EditorItem>
             <EditorItem @bind-Field="@context.Name" />
-            <EditorItem @bind-Field="@context.ChannelType" />
+            <EditorItem @bind-Field="@context.ChannelType">
+
+                <EditTemplate Context="value">
+                    <div class="col-12 col-sm-6">
+                        <Select SkipValidate="true" @bind-Value="@value.ChannelType" OnSelectedItemChanged=@((a)=>InvokeAsync(StateHasChanged)) />
+                    </div>
+                </EditTemplate>
+
+            </EditorItem>
             <EditorItem @bind-Field="@context.Enable" />
             <EditorItem @bind-Field="@context.LogEnable" />
 
@@ -79,16 +97,17 @@ else
                 </EditTemplate>
             </EditorItem>
 
-            <EditorItem @bind-Field="@context.RemoteUrl" />
-            <EditorItem @bind-Field="@context.BindUrl" />
-            <EditorItem @bind-Field="@context.PortName" />
-            <EditorItem @bind-Field="@context.BaudRate" />
-            <EditorItem @bind-Field="@context.DataBits" />
-            <EditorItem @bind-Field="@context.Parity" />
-            <EditorItem @bind-Field="@context.StopBits" />
-            <EditorItem @bind-Field="@context.DtrEnable" />
-            <EditorItem @bind-Field="@context.RtsEnable" />
+            <EditorItem @bind-Field="@context.RemoteUrl" Ignore=@(context.ChannelType!=ChannelTypeEnum.TcpClient&&context.ChannelType!=ChannelTypeEnum.UdpSession) />
+            <EditorItem @bind-Field="@context.BindUrl" Ignore=@(context.ChannelType!=ChannelTypeEnum.TcpClient&&context.ChannelType!=ChannelTypeEnum.UdpSession&&context.ChannelType!=ChannelTypeEnum.TcpService) />
 
+
+            <EditorItem @bind-Field="@context.PortName" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+            <EditorItem @bind-Field="@context.BaudRate" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+            <EditorItem @bind-Field="@context.DataBits" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+            <EditorItem @bind-Field="@context.Parity" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+            <EditorItem @bind-Field="@context.StopBits" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+            <EditorItem @bind-Field="@context.DtrEnable" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+            <EditorItem @bind-Field="@context.RtsEnable" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
         </FieldItems>
 
     </EditorForm>

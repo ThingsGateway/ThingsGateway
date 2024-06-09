@@ -67,7 +67,7 @@ public class Variable : PrimaryIdEntity
     public virtual int? IntervalTime { get; set; }
 
     /// <summary>
-    /// 变量地址，可能带有额外的信息，比如<see cref="EndianType"/> ，以;分割
+    /// 变量地址，可能带有额外的信息，比如<see cref="DataFormatEnum"/> ，以;分割
     /// </summary>
     [SugarColumn(ColumnDescription = "变量地址", Length = 200, IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]

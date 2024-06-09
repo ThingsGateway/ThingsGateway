@@ -7,7 +7,7 @@
     "DtuId": "DefaultDtuId",
 
     "HeartbeatHexString": "HeartbeatHexString",
-    "EndianType": "EndianType",
+    "DataFormat": "DataFormat",
     "IsStringReverseByteWord": "StringReverseByteWord",
     "CheckClearTime": "CheckClearTime",
     "Timeout": "Timeout",
