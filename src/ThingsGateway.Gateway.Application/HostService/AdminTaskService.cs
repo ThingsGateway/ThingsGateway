@@ -97,7 +97,6 @@ internal class AdminTaskService : BackgroundService
     .Select(a => Path.GetFileName(a))
     .ToArray();
 
-        ChannelConfig channelConfig = AppConfigBase.GetNewDefault<ChannelConfig>();
         foreach (var item in debugDirs)
         {
             if (stoppingToken.IsCancellationRequested)
@@ -107,10 +106,7 @@ internal class AdminTaskService : BackgroundService
             //删除文件夹
             try
             {
-                if (!channelConfig.ChannelDatas.Select(a => a.Id.ToString()).Contains(item))
-                {
-                    Directory.Delete(debugDir.CombinePathWithOs(item), true);
-                }
+                Directory.Delete(debugDir.CombinePathWithOs(item), true);
             }
             catch { }
         }

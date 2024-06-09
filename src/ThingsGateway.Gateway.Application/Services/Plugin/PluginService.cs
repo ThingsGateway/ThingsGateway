@@ -349,7 +349,7 @@ public class PluginService : IPluginService
         foreach (var propertyInfo in pluginProperties ?? new List<PropertyInfo>())
         {
             // 在设备属性列表中查找与当前属性相同名称的属性
-            if (!deviceProperties.TryGetValue(propertyInfo.Name.ToLower(), out var deviceProperty))
+            if (!deviceProperties.TryGetValue(propertyInfo.Name, out var deviceProperty))
             {
                 continue;
             }

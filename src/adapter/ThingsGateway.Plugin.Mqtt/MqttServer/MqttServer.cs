@@ -11,6 +11,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 using MQTTnet.AspNetCore;
 
@@ -60,7 +61,6 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         webBuilder.UseStartup<MqttServerStartup>();
         _webHost = webBuilder.UseConfiguration(configuration)
            .Build();
-
         _mqttServer = _webHost.Services.GetRequiredService<MqttHostedServer>();
 
         #endregion 初始化
@@ -68,7 +68,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
-        _ = _webHost.StartAsync(cancellationToken);
+        _ = _webHost.RunAsync();
         if (_mqttServer != null)
         {
             _mqttServer.ValidatingConnectionAsync -= MqttServer_ValidatingConnectionAsync;

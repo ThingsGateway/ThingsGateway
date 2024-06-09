@@ -31,11 +31,6 @@ public class Startup : AppStartup
               .NameMatchingStrategy(NameMatchingStrategy.Flexible)
               .PreserveReference(true);
 
-        // 配置默认全局映射（忽略大小写敏感）
-        TypeAdapterConfig.GlobalSettings.Default
-              .NameMatchingStrategy(NameMatchingStrategy.IgnoreCase)
-              .PreserveReference(true);
-
         //运行日志写入数据库配置
         services.AddDatabaseLogging<BackendLogDatabaseLoggingWriter>(options =>
         {
