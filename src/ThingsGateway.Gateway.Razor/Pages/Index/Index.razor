@@ -47,7 +47,7 @@
 
         </div>
     </div>
-    
+
     <div class="row g-2 mx-1 form-inline">
 
         <div class="col-12  col-md-6 sh">
@@ -63,7 +63,7 @@
             </Card>
         </div>
 
-        <div class="col-12  col-md-6 sh" >
+        <div class="col-12  col-md-6 sh">
 
             <Card IsShadow=true class="m-2 flex-fill">
                 <HeaderTemplate>
@@ -78,15 +78,18 @@
         </div>
     </div>
 
-    <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
-        <HeaderTemplate>
-            @Localizer["HardwareInfoChart"]
-        </HeaderTemplate>
+    <div class="row g-2 mx-1 form-inline">
+        <div class="col-12  col-md-12 sh">
+            <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+                <HeaderTemplate>
+                    @Localizer["HardwareInfoChart"]
+                </HeaderTemplate>
 
-        <BodyTemplate>
-            <Chart @ref=CPULineChart OnInitAsync="OnCPUInit" Height="var(--line-chart-height)" Width="100%" OnAfterInitAsync="()=>{chartInit=true;return Task.CompletedTask;}" />
-        </BodyTemplate>
-    </Card>
-
+                <BodyTemplate>
+                    <Chart @ref=CPULineChart OnInitAsync="OnCPUInit" Height="var(--line-chart-height)" Width="100%" OnAfterInitAsync="()=>{chartInit=true;return Task.CompletedTask;}" />
+                </BodyTemplate>
+            </Card>
+        </div>
+    </div>
 #endif
 }

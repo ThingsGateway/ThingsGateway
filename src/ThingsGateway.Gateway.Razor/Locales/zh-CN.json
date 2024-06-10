@@ -32,6 +32,13 @@
     "ChoiceModule": "切换模块",
     "GiteePostTitleText": "代码提交推送通知",
 
+    "LoginErrorh1": "登录异常",
+    "LoginSuccessh1": "登录成功",
+    "LoginSuccessc1": "即将跳转页面",
+    "LoginErrorh2": "登录失败",
+    "LoginErrorc2": "请联系管理员!",
+    "Logout": "注销",
+
     "系统首页": "系统首页",
     "权限管理": "权限管理",
     "用户管理": "用户管理",

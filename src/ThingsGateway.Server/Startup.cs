@@ -68,7 +68,7 @@ public class Startup : AppStartup
         var authenticationBuilder = services.AddAuthentication(nameof(ThingsGateway)).AddCookie(nameof(ThingsGateway), a =>
          {
              a.AccessDeniedPath = "/Account/AccessDenied/";
-             a.LogoutPath = "/api/auth/logout";
+             a.LogoutPath = "/Account/Logout/";
              a.LoginPath = "/Account/Login/";
          });
 

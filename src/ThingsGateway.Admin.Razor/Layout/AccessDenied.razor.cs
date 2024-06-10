@@ -15,7 +15,9 @@ public partial class AccessDenied
     [Inject]
     [NotNull]
     private IStringLocalizer<AccessDenied>? Localizer { get; set; }
-
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public string? ReturnUrl { get; set; }
     [Inject]
     [NotNull]
     private NavigationManager? NavigationManager { get; set; }

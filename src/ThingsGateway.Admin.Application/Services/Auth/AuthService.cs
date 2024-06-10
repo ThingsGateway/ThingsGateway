@@ -205,7 +205,8 @@ public class AuthService : IAuthService
             identity.AddClaim(new Claim(ClaimConst.Account, sysUser.Account));
             identity.AddClaim(new Claim(ClaimConst.SuperAdmin, sysUser.RoleCodeList.Contains(RoleConst.SuperAdmin).ToString()));
 
-            var diffTime = DateTime.Now.AddMinutes(expire);
+            var diffTime = DateTime.MaxValue;
+            //var diffTime = DateTime.Now.AddMinutes(expire);
             await App.HttpContext!.SignInAsync(nameof(ThingsGateway), new ClaimsPrincipal(identity), new AuthenticationProperties()
             {
                 IsPersistent = true,

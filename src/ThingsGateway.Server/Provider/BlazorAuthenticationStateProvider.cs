@@ -196,9 +196,9 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
 
             if (verificatInfo != null)
             {
-                if (verificatInfo.VerificatTimeout < DateTime.Now.AddMinutes(30))
+                if (verificatInfo.VerificatTimeout < DateTime.Now.AddMinutes(5))
                 {
-                    verificatInfo.VerificatTimeout = DateTime.Now.AddMinutes(expire); //新的过期时间
+                    verificatInfo.VerificatTimeout = DateTime.Now.AddMinutes(30); //新的过期时间
                     _verificatInfoService.Update(verificatInfo); //更新tokne信息到cache
                 }
                 return true;
@@ -217,9 +217,9 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
                 var verificatInfo = userId != null ? _verificatInfoService.GetOne(verificatId ?? 0) : null;//获取token信息
                 if (verificatInfo != null)
                 {
-                    if (verificatInfo.VerificatTimeout < DateTime.Now.AddMinutes(30))
+                    if (verificatInfo.VerificatTimeout < DateTime.Now.AddMinutes(5))
                     {
-                        verificatInfo.VerificatTimeout = DateTime.Now.AddMinutes(expire); //新的过期时间
+                        verificatInfo.VerificatTimeout = DateTime.Now.AddMinutes(verificatInfo.Expire); //新的过期时间
                         _verificatInfoService.Update(verificatInfo); //更新tokne信息到cache
                     }
                     return true;

@@ -21,7 +21,8 @@
   "ThingsGateway.Admin.Razor.AccessDenied": {
     "404": "Sorry, the page you are looking for does not exist.",
     "401": "Sorry, you do not have permission to access this page.",
-    "Home": "Back to Home"
+    "Home": "Back to Home",
+    "Login": "Login"
   },
   "ThingsGateway.Admin.Razor.Login": {
     "LoginErrorh1": "Login Error",
@@ -46,6 +47,13 @@
     "UserCenter": "User Center",
     "ChoiceModule": "Switch Module",
     "GiteePostTitleText": "Code Commit Push Notification",
+
+    "LoginErrorh1": "Login Error",
+    "LoginSuccessh1": "Login Success",
+    "LoginSuccessc1": "Redirecting to the page",
+    "LoginErrorh2": "Login Failed",
+    "LoginErrorc2": "Please contact the administrator!",
+    "Logout": "Logout",
 
     "系统首页": "Home",
     "权限管理": "Permission",

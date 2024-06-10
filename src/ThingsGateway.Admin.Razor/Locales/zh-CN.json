@@ -20,7 +20,8 @@
   "ThingsGateway.Admin.Razor.AccessDenied": {
     "404": "抱歉，您访问的页面不存在。",
     "401": "抱歉，您无权限访问该页面。",
-    "Home": "回到首页"
+    "Home": "回到首页",
+    "Login": "重新登录"
   },
 
   "ThingsGateway.Admin.Razor.Login": {
@@ -47,6 +48,14 @@
     "UserCenter": "个人中心",
     "ChoiceModule": "切换模块",
     "GiteePostTitleText": "代码提交推送通知",
+
+
+    "LoginErrorh1": "登录异常",
+    "LoginSuccessh1": "登录成功",
+    "LoginSuccessc1": "即将跳转页面",
+    "LoginErrorh2": "登录失败",
+    "LoginErrorc2": "请联系管理员!",
+    "Logout": "注销",
 
     "系统首页": "系统首页",
     "权限管理": "权限管理",

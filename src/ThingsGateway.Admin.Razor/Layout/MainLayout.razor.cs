@@ -8,8 +8,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.WebUtilities;
+
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core;
+using ThingsGateway.Core.Json.Extension;
 
 namespace ThingsGateway.Admin.Razor;
 
@@ -118,6 +122,44 @@ public partial class MainLayout : IDisposable
     });
 
     #endregion 个人信息修改
+
+    #region 注销
+    [Inject]
+    AjaxService AjaxService { get; set; }
+    private async Task LogoutAsync()
+    {
+        var ajaxOption = new AjaxOption
+        {
+            Url = "/api/auth/logout",
+            Method = "POST",
+        };
+        using var str = await AjaxService.InvokeAsync(ajaxOption);
+        if (str != null)
+        {
+            var ret = str.RootElement.GetRawText().FromSystemTextJsonString<UnifyResult<object>>();
+            if (ret.Code != 200)
+            {
+                await ToastService.Error(Localizer["LoginErrorh1"], $"{ret.Msg}");
+            }
+            else
+            {
+                await ToastService.Information(Localizer["LoginSuccessh1"], Localizer["LoginSuccessc1"]);
+                await Task.Delay(1000);
+                var url = QueryHelpers.AddQueryString(CookieAuthenticationDefaults.LoginPath, new Dictionary<string, string?>
+                {
+                    ["ReturnUrl"] = NavigationManager.ToBaseRelativePath(NavigationManager.Uri)
+                });
+                await AjaxService.Goto(url);
+            }
+        }
+        else
+        {
+            await ToastService.Error(Localizer["LoginErrorh2"], Localizer["LoginErrorc2"]);
+        }
+    }
+
+
+    #endregion
 
     private async Task ShowAbout()
     {

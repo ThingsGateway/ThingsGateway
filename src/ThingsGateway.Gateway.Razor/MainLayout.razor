@@ -44,7 +44,7 @@
                             @* 切换模块 *@
                             <a @onclick="ChoiceModule"><i class="fas fa-arrow-right-arrow-left me-2" />@Localizer["ChoiceModule"]</a>
                             <a @onclick="@OnUserInfoDialog"><i class="fa-solid fa-suitcase me-2"></i>@Localizer["UserCenter"]</a>
-                            <LogoutLink Url=@("api/auth/logout?returnUrl="+NavigationManager.ToBaseRelativePath(NavigationManager.Uri)) />
+                            <a @onclick="@LogoutAsync"><i class="fa-solid fa-key me-2"></i>@Localizer["Logout"]</a>
 
                         </LinkTemplate>
                     </Logout>
@@ -68,10 +68,9 @@
 
                 </Main>
                 <NotAuthorized>
-                    <Redirect />
+                    <Redirect/>
                 </NotAuthorized>
             </Layout>
-
 
             <QuickActions></QuickActions>
         </div>

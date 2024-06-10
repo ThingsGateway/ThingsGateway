@@ -10,10 +10,8 @@
 
 using Mapster;
 
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace ThingsGateway.Admin.Application;
 
@@ -39,15 +37,12 @@ public class OpenApiController : ControllerBase
         return openApiLoginOutput;
     }
 
-    [HttpGet("logout")]
+    [HttpPost("logout")]
     [Authorize]
     [IgnoreRolePermission]
-    public async Task<IActionResult> LogoutAsync([FromQuery] string returnUrl)
+    public async Task LogoutAsync()
     {
         await _authService.LoginOutAsync();
-        return Redirect(QueryHelpers.AddQueryString(Request.PathBase + CookieAuthenticationDefaults.LoginPath, new Dictionary<string, string?>
-        {
-            ["ReturnUrl"] = returnUrl
-        }));
+
     }
 }

@@ -34,6 +34,13 @@
     "ChoiceModule": "Switch Module",
     "GiteePostTitleText": "Code Commit Push Notification",
 
+    "LoginErrorh1": "Login Error",
+    "LoginSuccessh1": "Login Success",
+    "LoginSuccessc1": "Redirecting to the page",
+    "LoginErrorh2": "Login Failed",
+    "LoginErrorc2": "Please contact the administrator!",
+    "Logout": "Logout",
+
     "系统首页": "Home",
     "权限管理": "Permission",
     "用户管理": "User",
