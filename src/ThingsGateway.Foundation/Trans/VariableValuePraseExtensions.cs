@@ -42,7 +42,7 @@ public static class VariableValuePraseExtensions
             }
             catch (Exception ex)
             {
-                return new OperResult($"Error parsing byte array, array length: {buffer.Length}, index: {index}, type: {dataType}", ex);
+                return new OperResult($"Error parsing byte array, address: {variable.RegisterAddress}, array length: {buffer.Length}, index: {index}, type: {dataType}", ex);
             }
         }
         return new();
