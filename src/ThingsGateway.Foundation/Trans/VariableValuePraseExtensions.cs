@@ -25,21 +25,30 @@ public static class VariableValuePraseExtensions
     /// <param name="buffer">返回的字节数组</param>
     /// <param name="exWhenAny">任意一个失败时抛出异常</param>
     /// <returns>解析结果</returns>
-    public static void PraseStructContent<T>(this IEnumerable<T> variables, IProtocol protocol, byte[] buffer, bool exWhenAny = false) where T : IVariable
+    public static OperResult PraseStructContent<T>(this IEnumerable<T> variables, IProtocol protocol, byte[] buffer, bool exWhenAny) where T : IVariable
     {
         foreach (var variable in variables)
         {
             IThingsGatewayBitConverter byteConverter = variable.ThingsGatewayBitConverter;
             var dataType = variable.DataType;
             int index = variable.Index;
-            var data = byteConverter.GetDataFormBytes(protocol, variable.RegisterAddress, buffer, index, dataType);
-            Set(variable, data);
+            try
+            {
+                var data = byteConverter.GetDataFormBytes(protocol, variable.RegisterAddress, buffer, index, dataType);
+                var result = Set(variable, data);
+                if (exWhenAny)
+                    if (!result.IsSuccess)
+                        return result;
+            }
+            catch (Exception ex)
+            {
+                return new OperResult($"Error parsing byte array, array length: {buffer.Length}, index: {index}, type: {dataType}", ex);
+            }
         }
-        void Set(IVariable organizedVariable, object num)
+        return new();
+        OperResult Set(IVariable organizedVariable, object num)
         {
-            var result = organizedVariable.SetValue(num);
-            if (!result.IsSuccess && exWhenAny)
-                throw result.Exception ?? new Exception(result.ErrorMessage);
+            return organizedVariable.SetValue(num);
         }
     }
 }

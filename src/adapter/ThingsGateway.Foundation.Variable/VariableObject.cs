@@ -66,7 +66,13 @@ public abstract class VariableObject
                 var result = await Protocol.ReadAsync(item.RegisterAddress, item.Length, cancellationToken).ConfigureAwait(false);
                 if (result.IsSuccess)
                 {
-                    item.VariableRunTimes.PraseStructContent(Protocol, result.Content, exWhenAny: true);
+                    var result1 = item.VariableRunTimes.PraseStructContent(Protocol, result.Content, exWhenAny: true);
+                    if (!result1.IsSuccess)
+                    {
+                        item.LastErrorMessage = result1.ErrorMessage;
+                        item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+                        return new OperResult(result1);
+                    }
                 }
                 else
                 {

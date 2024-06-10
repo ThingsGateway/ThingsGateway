@@ -76,7 +76,13 @@ public partial class AdapterDebugComponent : AdapterDebugBase
                 {
                     try
                     {
-                        item.VariableRunTimes.PraseStructContent(Plc, result.Content, exWhenAny: true);
+                        var result1 = item.VariableRunTimes.PraseStructContent(Plc, result.Content, exWhenAny: true);
+                        if (!result1.IsSuccess)
+                        {
+                            item.LastErrorMessage = result1.ErrorMessage;
+                            item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+                            Plc.Logger.Warning(result1.ToString());
+                        }
                     }
                     catch (Exception ex)
                     {
