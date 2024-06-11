@@ -282,6 +282,18 @@ public partial class AdminTable<TItem> where TItem : class, new()
     [Parameter]
     public Func<TItem, bool>? ShowDeleteButtonCallback { get; set; }
 
+    /// <inheritdoc cref="Table{TItem}.SetRowClassFormatter"/>
+    [Parameter]
+    public Func<TItem, string?>? SetRowClassFormatter { get; set; }
+
+    /// <inheritdoc cref="Table{TItem}.OnAfterSaveAsync"/>
+    [Parameter]
+    public Func<TItem, Task>? OnAfterSaveAsync { get; set; }
+
+    /// <inheritdoc cref="Table{TItem}.OnAfterDeleteAsync"/>
+    [Parameter]
+    public Func<List<TItem>, Task>? OnAfterDeleteAsync { get; set; }
+
     /// <inheritdoc cref="Table{TItem}.OnAfterModifyAsync"/>
     [Parameter]
     public Func<Task>? OnAfterModifyAsync { get; set; }
