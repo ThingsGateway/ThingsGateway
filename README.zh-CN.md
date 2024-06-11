@@ -53,7 +53,7 @@
 ## Docker 
 ```shell
 
-docker pull diego2098/thingsgateway:latest
+docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway
 
 ```
 
