@@ -8,12 +8,14 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using TouchSocket.Resources;
+
 namespace ThingsGateway.Foundation;
 
 /// <summary>
 /// 协议基类
 /// </summary>
-public static class ProtocolBaseExtension
+public static partial class ProtocolBaseExtension
 {
     #region 读取
 

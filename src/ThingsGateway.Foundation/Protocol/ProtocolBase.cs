@@ -335,9 +335,16 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             waitData.SetCancellationToken(cancellationToken);
             await clientChannel.SendAsync(item).ConfigureAwait(false);
             var waitDataStatus = await waitData.WaitAsync(timeout).ConfigureAwait(false);
-            waitDataStatus.ThrowIfNotRunning();
-            var response = waitData.WaitResult;
-            return response;
+            var result = waitDataStatus.Check();
+            if (result.IsSuccess)
+            {
+                var response = waitData.WaitResult;
+                return response;
+            }
+            else
+            {
+                return new MessageBase(result);
+            }
         }
         finally
         {

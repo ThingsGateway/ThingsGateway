@@ -11,13 +11,33 @@
 namespace ThingsGateway.Foundation;
 
 /// <inheritdoc cref="IResultMessage"/>
-public abstract class MessageBase : OperResultClass<byte[]>, IResultMessage, IWaitHandle
+public class MessageBase : OperResultClass<byte[]>, IResultMessage, IWaitHandle
 {
+    public MessageBase()
+    {
+    }
+
+    public MessageBase(IOperResult operResult) : base(operResult)
+    {
+    }
+
+    public MessageBase(string msg) : base(msg)
+    {
+    }
+
+    public MessageBase(Exception ex) : base(ex)
+    {
+    }
+
+    public MessageBase(string msg, Exception ex) : base(msg, ex)
+    {
+    }
+
     /// <inheritdoc/>
     public int BodyLength { get; set; }
 
     /// <inheritdoc/>
-    public abstract int HeadBytesLength { get; }
+    public virtual int HeadBytesLength { get; }
 
     /// <inheritdoc/>
     public virtual int Sign { get; set; }
@@ -26,7 +46,10 @@ public abstract class MessageBase : OperResultClass<byte[]>, IResultMessage, IWa
     public IByteBlock ReceivedBytes { get; set; }
 
     /// <inheritdoc/>
-    public abstract bool CheckHeadBytes(byte[]? headBytes);
+    public virtual bool CheckHeadBytes(byte[]? headBytes)
+    {
+        return true;
+    }
 
     /// <inheritdoc/>
     public virtual void SendInfo(byte[]? sendBytes)

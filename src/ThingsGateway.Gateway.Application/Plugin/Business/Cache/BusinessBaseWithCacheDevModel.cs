@@ -28,7 +28,7 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
     /// <param name="data"></param>
     protected virtual void AddCache(List<CacheDBItem<DevModel>> data)
     {
-        if (data?.Count > 0)
+        if (_businessPropertyWithCache.CacheEnable && data?.Count > 0)
         {
             try
             {
@@ -87,8 +87,22 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
                 AddCache(list);
             }
         }
-
-        _memoryDevModelQueue.Enqueue(data);
+        if (_memoryDevModelQueue.Count > _businessPropertyWithCache.QueueMaxCount)
+        {
+            lock (_memoryDevModelQueue)
+            {
+                if (_memoryDevModelQueue.Count > _businessPropertyWithCache.QueueMaxCount)
+                {
+                    _memoryDevModelQueue.Clear();
+                    _memoryDevModelQueue.Enqueue(data);
+                    return;
+                }
+            }
+        }
+        else
+        {
+            _memoryDevModelQueue.Enqueue(data);
+        }
     }
 
     private volatile bool LocalDBCacheDevModelInited;

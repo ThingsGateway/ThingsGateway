@@ -70,6 +70,22 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
 
     internal TouchSocketBitConverter TouchSocketBitConverter => TouchSocketBitConverter.GetBitConverter(EndianType);
 
+    static ThingsGatewayBitConverter()
+    {
+        BigEndian = new ThingsGatewayBitConverter(EndianType.Big);
+        LittleEndian = new ThingsGatewayBitConverter(EndianType.Little);
+    }
+
+    /// <summary>
+    /// 以大端
+    /// </summary>
+    public static readonly ThingsGatewayBitConverter BigEndian;
+
+    /// <summary>
+    /// 以小端
+    /// </summary>
+    public static readonly ThingsGatewayBitConverter LittleEndian;
+
     #region GetBytes
 
     /// <inheritdoc/>

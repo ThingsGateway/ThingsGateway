@@ -40,13 +40,16 @@ public partial class ModbusMaster : ComponentBase, IDisposable
 
     private async Task OnConnectClick(ChannelData channelData)
     {
-        try
+        if (ChannelData?.Channel != null)
         {
-            await ChannelData.Channel.ConnectAsync(_plc.ConnectTimeout, default);
-        }
-        catch (Exception ex)
-        {
-            ChannelData.Channel.Logger.Exception(ex);
+            try
+            {
+                await ChannelData.Channel.ConnectAsync(_plc.ConnectTimeout, default);
+            }
+            catch (Exception ex)
+            {
+                ChannelData.Channel.Logger.Exception(ex);
+            }
         }
         await InvokeAsync(StateHasChanged);
     }

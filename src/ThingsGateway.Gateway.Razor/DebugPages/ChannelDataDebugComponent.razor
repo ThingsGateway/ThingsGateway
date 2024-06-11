@@ -9,14 +9,14 @@
     <BodyTemplate>
         <ValidateForm Model="Model" OnValidSubmit="ValidSubmit">
 
-            <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=4 LabelWidth=100 Model="Model" >
+            <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=3 LabelWidth=100 Model="Model" >
 
                 <FieldItems>
 
                     <EditorItem @bind-Field="@context.ChannelType">
 
                         <EditTemplate Context="value">
-                            <div class="col-12 col-sm-6 col-md-3">
+                            <div class="col-12 col-sm-6 col-md-4">
                                 <Select SkipValidate="true" @bind-Value="@value.ChannelType" OnSelectedItemChanged=@((a)=>InvokeAsync(StateHasChanged)) />
                             </div>
                         </EditTemplate>

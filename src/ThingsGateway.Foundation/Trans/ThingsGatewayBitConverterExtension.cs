@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using System.Text;
 
 using ThingsGateway.Foundation.Extension.String;
+using ThingsGateway.Foundation.Json.Extension;
 
 namespace ThingsGateway.Foundation;
 
@@ -37,7 +38,7 @@ public static class ThingsGatewayBitConverterExtension
 
         var type = defaultBitConverter.GetType();
         // 尝试从缓存中获取解析结果
-        var cacheKey = $"{nameof(ThingsGatewayBitConverterExtension)}_{nameof(GetTransByAddress)}_{type.FullName}_{defaultBitConverter.ToJsonString()}_{registerAddress}";
+        var cacheKey = $"{nameof(ThingsGatewayBitConverterExtension)}_{nameof(GetTransByAddress)}_{type.FullName}_{defaultBitConverter.ToJsonNetString()}_{registerAddress}";
         if (MemoryCache.Instance.TryGetValue(cacheKey, out IThingsGatewayBitConverter cachedConverter))
         {
             return (IThingsGatewayBitConverter)cachedConverter!.Map(type);

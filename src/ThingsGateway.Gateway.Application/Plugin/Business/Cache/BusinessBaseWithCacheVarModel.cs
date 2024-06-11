@@ -34,7 +34,7 @@ public abstract class BusinessBaseWithCacheVarModel<VarModel> : BusinessBase
     /// <param name="data"></param>
     protected virtual void AddCache(List<CacheDBItem<VarModel>> data)
     {
-        if (data?.Count > 0)
+        if (_businessPropertyWithCache.CacheEnable && data?.Count > 0)
         {
             try
             {
@@ -91,8 +91,22 @@ public abstract class BusinessBaseWithCacheVarModel<VarModel> : BusinessBase
                 AddCache(list);
             }
         }
-
-        _memoryVarModelQueue.Enqueue(data);
+        if (_memoryVarModelQueue.Count > _businessPropertyWithCache.QueueMaxCount)
+        {
+            lock (_memoryVarModelQueue)
+            {
+                if (_memoryVarModelQueue.Count > _businessPropertyWithCache.QueueMaxCount)
+                {
+                    _memoryVarModelQueue.Clear();
+                    _memoryVarModelQueue.Enqueue(data);
+                    return;
+                }
+            }
+        }
+        else
+        {
+            _memoryVarModelQueue.Enqueue(data);
+        }
     }
 
     private volatile bool LocalDBCacheVarModelInited;

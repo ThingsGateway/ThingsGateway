@@ -53,7 +53,7 @@ internal class ModbusMasterTest
            , 10, 10000
           );
 
-        Console.WriteLine(waitResult.ToJsonString());
+        Console.WriteLine(waitResult.ToJsonNetString());
         //构造实体类对象，传入协议对象与连读打包的最大数量
         ModbusVariable modbusVariable = new(modbusMaster, 100);
 

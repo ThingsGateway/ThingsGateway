@@ -15,11 +15,6 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 internal class ModbusUdpServerDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<ModbusTcpServerMessage>
 {
-    public override byte[] PackCommand(ISendMessage item)
-    {
-        throw new NotImplementedException();
-    }
-
     /// <inheritdoc/>
     protected override AdapterResult UnpackResponse(ModbusTcpServerMessage request, IByteBlock byteBlock)
     {

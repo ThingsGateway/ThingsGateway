@@ -68,7 +68,17 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
-        _ = _webHost.RunAsync();
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await _webHost.RunAsync();
+            }
+            catch (Exception ex)
+            {
+                LogMessage.Exception(ex);
+            }
+        });
         if (_mqttServer != null)
         {
             _mqttServer.ValidatingConnectionAsync -= MqttServer_ValidatingConnectionAsync;

@@ -28,7 +28,7 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
     /// <param name="data"></param>
     protected virtual void AddCache(List<CacheDBItem<AlarmModel>> data)
     {
-        if (data?.Count > 0)
+        if (_businessPropertyWithCache.CacheEnable && data?.Count > 0)
         {
             try
             {
@@ -87,8 +87,22 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
                 AddCache(list);
             }
         }
-
-        _memoryAlarmModelQueue.Enqueue(data);
+        if (_memoryAlarmModelQueue.Count > _businessPropertyWithCache.QueueMaxCount)
+        {
+            lock (_memoryAlarmModelQueue)
+            {
+                if (_memoryAlarmModelQueue.Count > _businessPropertyWithCache.QueueMaxCount)
+                {
+                    _memoryAlarmModelQueue.Clear();
+                    _memoryAlarmModelQueue.Enqueue(data);
+                    return;
+                }
+            }
+        }
+        else
+        {
+            _memoryAlarmModelQueue.Enqueue(data);
+        }
     }
 
     private volatile bool LocalDBCacheAlarmModelInited;

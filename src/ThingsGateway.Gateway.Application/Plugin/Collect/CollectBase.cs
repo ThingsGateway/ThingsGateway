@@ -93,7 +93,7 @@ public abstract class CollectBase : DriverBase
             //    await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             if (cancellationToken.IsCancellationRequested)
-                throw new OperationCanceledException();
+                return new(new OperationCanceledException());
             // 从协议读取数据
             var read = await Protocol.ReadAsync(variableSourceRead.RegisterAddress, variableSourceRead.Length, cancellationToken).ConfigureAwait(false);
 
