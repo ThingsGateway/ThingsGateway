@@ -82,12 +82,10 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
             Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.AsSegment().ToHexString() : byteBlock.ToString())}");
 
         TRequest request = null;
-        //非并发协议,复用对象
         if (IsSingleThread)
-            request = request == null ? GetInstance() : request;
+            request = Request == null ? GetInstance() : Request;
         else
         {
-            //并发协议非缓存模式下，重新获取对象
             request = GetInstance();
         }
         ArraySegment<byte>? header = null;
