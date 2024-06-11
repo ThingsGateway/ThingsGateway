@@ -2,6 +2,7 @@
 
 #构建：docker build -t registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway:latest .
 #拉取：docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway
+#推送：docker push registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway
 
 #aspnetcore8.0环境
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
