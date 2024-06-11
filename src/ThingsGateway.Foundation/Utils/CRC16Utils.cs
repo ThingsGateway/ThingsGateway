@@ -22,28 +22,37 @@ public class CRC16Utils
     /// <returns>返回校验成功与否</returns>
     public static bool CheckCRC16(byte[] value)
     {
-        return CheckCRC16(value, 160, 1);
+        return CheckCRC16(value, 0, value.Length);
+    }
+
+    /// <summary>
+    /// 来校验对应的接收数据的CRC校验码，默认多项式码为0xA001
+    /// </summary>
+    /// <param name="value">需要校验的数据，带CRC校验码</param>
+    /// <returns>返回校验成功与否</returns>
+    public static bool CheckCRC16(byte[] value, bool crc16 = true)
+    {
+        return CheckCRC16(value, 0, value.Length);
     }
 
     /// <summary>
     /// 指定多项式码来校验对应的接收数据的CRC校验码
     /// </summary>
     /// <param name="value">需要校验的数据，带CRC校验码</param>
-    /// <param name="CH">多项式码高位</param>
-    /// <param name="CL">多项式码低位</param>
+    /// <param name="index">计算的起始字节索引</param>
+    /// <param name="length">计算的字节长度</param>
     /// <returns>返回校验成功与否</returns>
-    public static bool CheckCRC16(byte[] value, byte CH, byte CL)
+    public static bool CheckCRC16(byte[] value, int index, int length)
     {
         if (value == null || value.Length < 2)
         {
             return false;
         }
 
-        int length = value.Length;
         byte[] destinationArray = new byte[length - 2];
-        Array.Copy(value, 0, destinationArray, 0, destinationArray.Length);
-        byte[] numArray = CRC16(destinationArray, CH, CL);
-        return numArray[length - 2] == value[length - 2] && numArray[length - 1] == value[length - 1];
+        Array.Copy(value, index, destinationArray, 0, destinationArray.Length);
+        byte[] numArray = Crc16Only(destinationArray);
+        return numArray[0] == value[length - 2] && numArray[1] == value[length - 1];
     }
 
     /// <summary>
@@ -51,49 +60,23 @@ public class CRC16Utils
     /// </summary>
     /// <param name="value">需要校验的数据，不包含CRC字节</param>
     /// <returns>返回带CRC校验码的字节数组，可用于串口发送</returns>
-    public static byte[] CRC16(byte[] value)
+    public static byte[] Crc16(byte[] value)
     {
-        return CRC16(value, 160, 1);
+        return Crc16(value, 0, value.Length);
     }
 
     /// <summary>
     /// 通过指定多项式码来获取对应的数据的CRC校验码
     /// </summary>
     /// <param name="value">需要校验的数据，不包含CRC字节</param>
-    /// <param name="CL">多项式码地位</param>
-    /// <param name="CH">多项式码高位</param>
-    /// <param name="preH">预置的高位值</param>
-    /// <param name="preL">预置的低位值</param>
-    /// <returns>返回带CRC校验码的字节数组，可用于串口发送</returns>
-    public static byte[] CRC16(byte[] value, byte CH, byte CL, byte preH = 255, byte preL = 255)
+    /// <param name="index">计算的起始字节索引</param>
+    /// <param name="length">计算的字节长度</param>
+    public static byte[] Crc16(byte[] value, int index, int length)
     {
         byte[] numArray = new byte[value.Length + 2];
-        value.CopyTo(numArray, 0);
-        byte num1 = preL;
-        byte num2 = preH;
-        foreach (byte num3 in value)
-        {
-            num1 ^= num3;
-            for (int index = 0; index <= 7; ++index)
-            {
-                byte num4 = num2;
-                byte num5 = num1;
-                num2 >>= 1;
-                num1 >>= 1;
-                if ((num4 & 1) == 1)
-                {
-                    num1 |= 128;
-                }
-
-                if ((num5 & 1) == 1)
-                {
-                    num2 ^= CH;
-                    num1 ^= CL;
-                }
-            }
-        }
-        numArray[numArray.Length - 2] = num1;
-        numArray[numArray.Length - 1] = num2;
+        Array.Copy(value, index, numArray, 0, length);
+        var crc = Crc16Only(value, index, length);
+        Array.Copy(crc, 0, numArray, numArray.Length - 2, 2);
         return numArray;
     }
 
@@ -101,14 +84,10 @@ public class CRC16Utils
     /// 通过指定多项式码来获取对应的数据的CRC校验码
     /// </summary>
     /// <param name="value">需要校验的数据，不包含CRC字节</param>
-    /// <param name="index">计算的起始字节索引</param>
-    /// <param name="length">计算的字节长度</param>
     /// <returns>返回带CRC校验码的字节数组，可用于串口发送</returns>
-    public static byte[] CRC16Only(byte[] value,
-      int index,
-      int length)
+    public static byte[] Crc16Only(byte[] value)
     {
-        return CRC16Only(value, index, length, 160, 1);
+        return Crc16Only(value, 0, value.Length);
     }
 
     /// <summary>
@@ -117,40 +96,48 @@ public class CRC16Utils
     /// <param name="value">需要校验的数据，不包含CRC字节</param>
     /// <param name="index">计算的起始字节索引</param>
     /// <param name="length">计算的字节长度</param>
-    /// <param name="CL">多项式码地位</param>
-    /// <param name="CH">多项式码高位</param>
-    /// <param name="preH">预置的高位值</param>
-    /// <param name="preL">预置的低位值</param>
     /// <returns>返回带CRC校验码的字节数组，可用于串口发送</returns>
-    public static byte[] CRC16Only(
-      byte[] value,
+    public static byte[] Crc16Only(byte[] value,
       int index,
-      int length,
-      byte CH,
-      byte CL,
-      byte preH = 255,
-      byte preL = 255)
+      int length)
     {
-        byte num1 = preL;
-        byte num2 = preH;
-        for (int index1 = index; index1 < index + length; ++index1)
+        return Crc16Only(value, index, length, 0xA001);
+    }
+
+    /// <summary>
+    /// 通过指定多项式码来获取对应的数据的CRC校验码
+    /// </summary>
+    /// <param name="data">需要校验的数据，不包含CRC字节</param>
+    /// <param name="index">计算的起始字节索引</param>
+    /// <param name="length">计算的字节长度</param>
+    /// <param name="xdapoly">多项式</param>
+    /// <param name="crc16">crc16</param>
+    /// <returns>返回带CRC校验码的字节数组，可用于串口发送</returns>
+    public static byte[] Crc16Only(byte[] data, int index, int length, int xdapoly, bool crc16 = true)
+    {
+        int num = 65535;
+        for (int i = 0; i < length; i++)
         {
-            num1 ^= value[index1];
-            for (int index2 = 0; index2 <= 7; ++index2)
+            num = (num >> ((!crc16) ? 8 : 0)) ^ data[i];
+            for (int j = 0; j < 8; j++)
             {
-                byte num3 = num2;
-                byte num4 = num1;
-                num2 >>= 1;
-                num1 >>= 1;
-                if ((num3 & 1) == 1)
-                    num1 |= 128;
-                if ((num4 & 1) == 1)
+                int num2 = num & 1;
+                num >>= 1;
+                if (num2 == 1)
                 {
-                    num2 ^= CH;
-                    num1 ^= CL;
+                    num ^= xdapoly;
                 }
             }
         }
-        return new byte[2] { num1, num2 };
+
+        return (!crc16) ? new byte[2]
+        {
+            (byte)(num >> 8),
+            (byte)((uint)num & 0xFFu)
+        } : new byte[2]
+        {
+            (byte)((uint)num & 0xFFu),
+            (byte)(num >> 8)
+        };
     }
 }

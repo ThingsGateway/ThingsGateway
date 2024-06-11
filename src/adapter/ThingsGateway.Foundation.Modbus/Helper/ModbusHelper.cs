@@ -167,7 +167,7 @@ internal class ModbusHelper
     {
         //crc校验
         var dataLen = response.Length;
-        var crc = CRC16Utils.CRC16Only(response.AsSegment().Array, 0, dataLen - 2);
+        var crc = CRC16Utils.Crc16Only(response.AsSegment().Array, 0, dataLen - 2);
         if ((response[dataLen - 2] != crc[0] || response[dataLen - 1] != crc[1]))
             return new OperResult($"{ModbusResource.Localizer["CrcError"]} {DataTransUtil.ByteToHexString(response.Span, ' ')}")
             {
@@ -202,7 +202,7 @@ internal class ModbusHelper
 
     public static byte[] AddCrc(ISendMessage item)
     {
-        var crc = CRC16Utils.CRC16(item.SendBytes);
+        var crc = CRC16Utils.Crc16(item.SendBytes);
         return crc;
     }
 
