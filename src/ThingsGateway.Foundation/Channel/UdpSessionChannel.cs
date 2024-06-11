@@ -79,7 +79,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
         {
             await base.StopAsync().ConfigureAwait(false);
             if (Monitor == null)
-                Logger.Info($"{Monitor.IPHost}{DefaultResource.Localizer["ServiceStoped"]}");
+                Logger.Info($"{DefaultResource.Localizer["ServiceStoped"]}");
         }
         else
         {

@@ -103,6 +103,7 @@ public class ChannelData
     {
         if (channelData.Channel != null)
         {
+            channelData.Channel.Close();
             channelData.Channel.SafeDispose();
         }
         channelData.TouchSocketConfig?.Dispose();
