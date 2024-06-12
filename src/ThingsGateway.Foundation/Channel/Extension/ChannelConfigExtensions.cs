@@ -8,7 +8,10 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using ThingsGateway.Foundation.Extension.String;
+
 using TouchSocket.SerialPorts;
+using TouchSocket.Sockets;
 
 namespace ThingsGateway.Foundation;
 
@@ -60,7 +63,7 @@ public static class ChannelConfigExtensions
     /// 获取一个新的Tcp客户端通道。传入远程服务端地址
     /// </summary>
     /// <returns></returns>
-    public static TcpClientChannel GetTcpClientWithIPHost(this TouchSocketConfig config, IPHost remoteUrl, string? bindUrl = default)
+    public static TcpClientChannel GetTcpClientWithIPHost(this TouchSocketConfig config, string remoteUrl, string? bindUrl = default)
     {
         if (remoteUrl == null)
             throw new ArgumentNullException(nameof(IPHost));
@@ -77,10 +80,11 @@ public static class ChannelConfigExtensions
     /// 获取一个新的Tcp服务端通道。传入绑定地址
     /// </summary>
     /// <returns></returns>
-    public static TcpServiceChannel GetTcpServiceWithBindIPHost(this TouchSocketConfig config, IPHost bindUrl)
+    public static TcpServiceChannel GetTcpServiceWithBindIPHost(this TouchSocketConfig config, string bindUrl)
     {
         if (bindUrl == null) throw new ArgumentNullException(nameof(IPHost));
-        config.SetListenIPHosts(new IPHost[] { bindUrl });
+       var urls= bindUrl.SplitStringBySemicolon();
+        config.SetListenIPHosts(IPHost.ParseIPHosts(urls));
         //载入配置
         TcpServiceChannel tcpServiceChannel = new TcpServiceChannel();
         tcpServiceChannel.Setup(config);
