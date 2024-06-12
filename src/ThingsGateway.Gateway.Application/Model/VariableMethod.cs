@@ -53,7 +53,7 @@ public class VariableMethod
     /// <param name="value">以,逗号分割的参数</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async ValueTask<OperResult> InvokeMethodAsync(object driverBase, string? value = null, CancellationToken cancellationToken = default)
+    public async ValueTask<IOperResult> InvokeMethodAsync(object driverBase, string? value = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -119,8 +119,17 @@ public class VariableMethod
             {
                 os[i] = cancellationToken;
             }
+            else if(ps[i].HasDefaultValue)
+            {
+                if (strs.Length <= index)
+                {
+                    os[i] = ps[i].DefaultValue;
+                }
+            }
             else
             {
+                if (strs.Length <= index)
+                    break;
                 os[i] = ThingsGatewayStringConverter.Default.Deserialize(null, strs[index], ps[i].ParameterType);
                 index++;
             }

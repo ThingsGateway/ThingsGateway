@@ -70,7 +70,7 @@ public class SiemensS7Master : CollectBase
     /// </summary>
     /// <returns></returns>
     [DynamicMethod("ReadWriteDateAsync", "读写日期格式")]
-    public async ValueTask<OperResult<System.DateTime>> ReadWriteDateAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
+    public async Task<IOperResult<System.DateTime>> ReadWriteDateAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
     {
         if (value == null)
             return await _plc.ReadDateAsync(address, cancellationToken).ConfigureAwait(false);
@@ -86,7 +86,7 @@ public class SiemensS7Master : CollectBase
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     [DynamicMethod("ReadWriteDateTimeAsync", "读写日期时间格式")]
-    public async ValueTask<OperResult<System.DateTime>> ReadWriteDateTimeAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
+    public async Task<IOperResult<System.DateTime>> ReadWriteDateTimeAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
     {
         if (value == null)
             return await _plc.ReadDateTimeAsync(address, cancellationToken);
