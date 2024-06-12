@@ -206,6 +206,26 @@ public partial class AdminTable<TItem> where TItem : class, new()
     [Parameter]
     public bool? ShowExtendEditButton { get; set; }
 
+    /// <inheritdoc cref="Table{TItem}.ShowExtendEditButtonCallback"/>
+    [Parameter]
+    public Func<TItem, bool>? ShowExtendEditButtonCallback { get; set; }
+
+    /// <inheritdoc cref="Table{TItem}.DisableExtendEditButton"/>
+    [Parameter]
+    public bool DisableExtendEditButton { get; set; }
+
+    /// <inheritdoc cref="Table{TItem}.DisableExtendEditButtonCallback"/>
+    [Parameter]
+    public Func<TItem, bool>? DisableExtendEditButtonCallback { get; set; }
+
+    /// <inheritdoc cref="Table{TItem}.DisableExtendDeleteButton"/>
+    [Parameter]
+    public bool DisableExtendDeleteButton { get; set; }
+
+    /// <inheritdoc cref="Table{TItem}.DisableExtendDeleteButtonCallback"/>
+    [Parameter]
+    public Func<TItem, bool>? DisableExtendDeleteButtonCallback { get; set; }
+
     /// <inheritdoc cref="Table{TItem}.ShowExportButton"/>
     [Parameter]
     public bool ShowExportButton { get; set; } = false;
@@ -233,6 +253,10 @@ public partial class AdminTable<TItem> where TItem : class, new()
     /// <inheritdoc cref="Table{TItem}.ShowExtendDeleteButton"/>
     [Parameter]
     public bool? ShowExtendDeleteButton { get; set; }
+
+    /// <inheritdoc cref="Table{TItem}.ShowExtendDeleteButtonCallback"/>
+    [Parameter]
+    public Func<TItem, bool>? ShowExtendDeleteButtonCallback { get; set; }
 
     /// <inheritdoc cref="Table{TItem}.ShowExtendButtons"/>
     [Parameter]
