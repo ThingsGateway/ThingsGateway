@@ -83,17 +83,38 @@ public static class ExpressionEvaluatorExtension
             try
             {
                 m_waiterLock.Wait();
-                runScript = Instance.Get<ReadWriteExpressions>(field);
-                if (runScript == null)
                 {
-                    if (!source.Contains("return"))
-                    {
-                        source = $"return {source}";//只判断简单脚本中可省略return字符串
-                    }
 
-                    // 动态加载并执行代码
-                    runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<ReadWriteExpressions>(
-                       $@"
+                    runScript = Instance.Get<ReadWriteExpressions>(field);
+                    if (runScript == null)
+                    {
+                        runScript = AddScript(source);
+                    }
+                }
+            }
+            finally
+            {
+                m_waiterLock.Release();
+            }
+        }
+        Instance.SetExpire(field, TimeSpan.FromHours(1));
+
+
+        return runScript;
+    }
+
+    internal static ReadWriteExpressions AddScript(string source)
+    {
+        var field = $"{CacheKey}-{source}";
+        ReadWriteExpressions? runScript;
+        if (!source.Contains("return"))
+        {
+            source = $"return {source}";//只判断简单脚本中可省略return字符串
+        }
+
+        // 动态加载并执行代码
+        runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<ReadWriteExpressions>(
+           $@"
         using System;
         using System.Linq;
         using System.Collections.Generic;
@@ -110,18 +131,8 @@ public static class ExpressionEvaluatorExtension
             }}
         }}
     ");
-                    GC.Collect();
-                    Instance.Set(field, runScript);
-                }
-            }
-            finally
-            {
-                m_waiterLock.Release();
-            }
-        }
-        Instance.SetExpire(field, TimeSpan.FromHours(1));
-
-
+        GC.Collect();
+        Instance.Set(field, runScript);
         return runScript;
     }
 

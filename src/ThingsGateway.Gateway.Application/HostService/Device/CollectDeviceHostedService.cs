@@ -11,6 +11,8 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
@@ -69,12 +71,15 @@ public class CollectDeviceHostedService : DeviceHostedService
             _logger.LogInformation(Localizer["DeviceRuntimeGeted"]);
             var idSet = collectDeviceRunTimes.Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet().ToDictionary(a => a);
             var result = collectDeviceRunTimes.Where(a => !idSet.ContainsKey(a.Id));
+
+            var scripts = collectDeviceRunTimes.SelectMany(a => a.VariableRunTimes.Select(b => b.Value.ReadExpressions)).Concat(collectDeviceRunTimes.SelectMany(a => a.VariableRunTimes.Select(b => b.Value.WriteExpressions))).Distinct().ToList();
             result.ParallelForEach(collectDeviceRunTime =>
             {
                 if (!_stoppingToken.IsCancellationRequested)
                 {
                     try
                     {
+
                         DriverBase driverBase = collectDeviceRunTime.CreateDriver(PluginService);
                         GetChannelThread(driverBase);
                     }
@@ -84,6 +89,21 @@ public class CollectDeviceHostedService : DeviceHostedService
                     }
                 }
             });
+
+            scripts.ParallelForEach(script =>
+            {
+                if (!_stoppingToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        ExpressionEvaluatorExtension.AddScript(script);
+                    }
+                    catch
+                    {
+                    }
+                }
+            });
+
         }
         for (int i = 0; i < 3; i++)
         {
