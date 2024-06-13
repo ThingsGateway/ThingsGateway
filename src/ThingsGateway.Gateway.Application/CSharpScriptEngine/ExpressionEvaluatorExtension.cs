@@ -8,16 +8,20 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using CSScripting;
+
 using CSScriptLib;
 
-namespace ThingsGateway.Gateway.Application.Extensions;
+using NewLife.Caching;
+
+namespace ThingsGateway.Foundation;
 
 /// <summary>
 /// 读写表达式脚本
 /// </summary>
 public interface ReadWriteExpressions
 {
-    object GetNewValue(dynamic a);
+    object GetNewValue(object a);
 }
 
 /// <summary>
@@ -25,25 +29,71 @@ public interface ReadWriteExpressions
 /// </summary>
 public static class ExpressionEvaluatorExtension
 {
+    static ExpressionEvaluatorExtension()
+    {
+        Task.Factory.StartNew(async () =>
+        {
+            while (true)
+            {
+                await Task.Delay(30000);
+                //检测缓存
+                try
+                {
+                    var data = Instance.GetAll();
+                    m_waiterLock.Wait();
+
+                    foreach (var item in data)
+                    {
+                        if (item.Value.ExpiredTime < item.Value.VisitTime + 1800_000)
+                        {
+                            Instance.Remove(item.Key);
+                            item.Value?.Value?.GetType().Assembly.Unload();
+                            GC.Collect();
+                        }
+                    }
+                }
+                catch
+                {
+
+                }
+                finally
+                {
+                    m_waiterLock.Release();
+                }
+
+                await Task.Delay(30000);
+            }
+        });
+    }
+
+
+
+    static MemoryCache Instance { get; set; } = new MemoryCache();
+    static EasyLock m_waiterLock = new EasyLock();
+    static string CacheKey = $"{nameof(ExpressionEvaluatorExtension)}-{nameof(GetReadWriteExpressions)}";
     /// <summary>
     /// 执行脚本获取返回值ReadWriteExpressions
     /// </summary>
     public static ReadWriteExpressions GetReadWriteExpressions(string source)
     {
-        // 生成缓存键
-        var cacheKey = $"{nameof(ExpressionEvaluatorExtension)}-{nameof(GetReadWriteExpressions)}-{source}";
-        var runScript = App.CacheService.GetOrCreate(cacheKey, c =>
+        var field = $"{CacheKey}-{source}";
+        var runScript = Instance.Get<ReadWriteExpressions>(field);
+        if (runScript == null)
         {
-            // 清理输入源字符串
-            source = source.Trim();
-            if (!source.Contains("return"))
+            try
             {
-                source = $"return {source}";//只判断简单脚本中可省略return字符串
-            }
+                m_waiterLock.Wait();
+                runScript = Instance.Get<ReadWriteExpressions>(field);
+                if (runScript == null)
+                {
+                    if (!source.Contains("return"))
+                    {
+                        source = $"return {source}";//只判断简单脚本中可省略return字符串
+                    }
 
-            // 动态加载并执行代码
-            var runScript = CSScript.Evaluator.LoadCode<ReadWriteExpressions>(
-                $@"
+                    // 动态加载并执行代码
+                    runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<ReadWriteExpressions>(
+                       $@"
         using System;
         using System.Linq;
         using System.Collections.Generic;
@@ -53,19 +103,29 @@ public static class ExpressionEvaluatorExtension
         using ThingsGateway.Gateway.Application.Extensions;
         public class Script:ReadWriteExpressions
         {{
-            public object GetNewValue(dynamic raw)
+            public object GetNewValue(object raw)
             {{
                 {source};
             }}
         }}
     ");
-            return runScript;
-        });
+                    GC.Collect();
+                    Instance.Set(field, runScript);
+                }
+            }
+            finally
+            {
+                m_waiterLock.Release();
+            }
+        }
+        Instance.SetExpire(field, TimeSpan.FromHours(1));
+
+
         return runScript;
     }
 
     /// <summary>
-    /// 计算表达式：例如：raw*100，raw为原始值
+    /// 计算表达式：例如：(int)raw*100，raw为原始值
     /// </summary>
     public static object GetExpressionsResult(this string expressions, object? rawvalue)
     {
@@ -73,7 +133,6 @@ public static class ExpressionEvaluatorExtension
         {
             return rawvalue;
         }
-
         var readWriteExpressions = GetReadWriteExpressions(expressions);
         var value = readWriteExpressions.GetNewValue(rawvalue);
         return value;

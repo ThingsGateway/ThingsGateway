@@ -9,3 +9,5 @@
 //------------------------------------------------------------------------------
 
 global using TouchSocket.Core;
+
+global using ThingsGateway.Foundation;

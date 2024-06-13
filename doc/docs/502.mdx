@@ -16,11 +16,12 @@ import Highlight from '@site/src/components/Highlight.js';
 //只传输变量名称，变量值，变量在线状态，变量值改变时间
     public class DemoScript:IDynamicModel
     {
-        public IEnumerable<dynamic> GetList(IEnumerable<dynamic> datas)
+        public IEnumerable<dynamic> GetList(IEnumerable<object> datas)
         {
             List<DemoData> demoDatas = new List<DemoData>();
-            foreach (var data in datas)
+            foreach (var v in datas)
             {
+                var data=(VariableData)v;
                 DemoData demoData = new DemoData();
                 demoData.Value = data.Value;
                 demoData.Name = data.Name;
@@ -57,11 +58,11 @@ import Highlight from '@site/src/components/Highlight.js';
 
 public class AliYunIotScript:IDynamicModel
 {
-   public IEnumerable<dynamic> GetList(IEnumerable<dynamic> datas)
+   public IEnumerable<dynamic> GetList(IEnumerable<object> datas)
     {
         List<AliYunIot> aliYunIots = new();
         // 对输入列表进行分组，根据 Remark1属性分组
-        var groups = datas.Where(a => !string.IsNullOrEmpty(a.Remark1)).GroupBy(a => a.Remark1);
+        var groups = datas.Where(a => !string.IsNullOrEmpty(((VariableData)a).Remark1)).GroupBy(a => ((VariableData)a).Remark1,a=> ((VariableData)a));
         // 遍历每一个分组
         foreach (var item in groups)
         {

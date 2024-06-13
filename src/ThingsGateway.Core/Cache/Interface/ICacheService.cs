@@ -17,6 +17,7 @@ namespace ThingsGateway.Core;
 /// </summary>
 public partial interface ICacheService
 {
+
     #region 基础操作
 
     T? GetOrCreate<T>(string key, Func<string, T> callback, int expire = -1);

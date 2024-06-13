@@ -26,16 +26,6 @@ public class CRC16Utils
     }
 
     /// <summary>
-    /// 来校验对应的接收数据的CRC校验码，默认多项式码为0xA001
-    /// </summary>
-    /// <param name="value">需要校验的数据，带CRC校验码</param>
-    /// <returns>返回校验成功与否</returns>
-    public static bool CheckCRC16(byte[] value, bool crc16 = true)
-    {
-        return CheckCRC16(value, 0, value.Length);
-    }
-
-    /// <summary>
     /// 指定多项式码来校验对应的接收数据的CRC校验码
     /// </summary>
     /// <param name="value">需要校验的数据，带CRC校验码</param>

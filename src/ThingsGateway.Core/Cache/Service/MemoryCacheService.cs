@@ -16,7 +16,7 @@ namespace ThingsGateway.Core;
 /// <inheritdoc cref="ICacheService"/>
 /// 内存缓存
 /// </summary>
-public partial class MemoryCacheService : ICacheService
+public partial class MemoryCacheService : ICacheService,IDisposable
 {
     private readonly MemoryCache _memoryCache;
 
@@ -26,6 +26,15 @@ public partial class MemoryCacheService : ICacheService
     public MemoryCacheService()
     {
         _memoryCache = new MemoryCache();
+    }
+    ~ MemoryCacheService()
+    {
+        this.Dispose();
+    }
+    public void Dispose()
+    {
+        _memoryCache.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     #region 普通操作
@@ -228,6 +237,8 @@ public partial class MemoryCacheService : ICacheService
     {
         return _memoryCache.AcquireLock(key, msTimeout, msExpire, throwOnFailure);
     }
+
+
 
     #endregion 事务
 }

@@ -118,6 +118,9 @@ public class MemoryCache : Cache
         return (T?)ci.Visit();
     }
 
+    /// <summary>返回全部</summary>
+    public  IReadOnlyDictionary<string, CacheItem> GetAll() => _cache;
+
     #endregion 方法
 
     #region 基本操作
@@ -456,7 +459,7 @@ public class MemoryCache : Cache
     #region 缓存项
 
     /// <summary>缓存项</summary>
-    protected class CacheItem
+    public class CacheItem
     {
         private Object? _Value;
 
@@ -464,7 +467,7 @@ public class MemoryCache : Cache
         public Object? Value { get => _Value; set => _Value = value; }
 
         /// <summary>过期时间</summary>
-        public Int64 ExpiredTime { get; set; }
+        public Int64 ExpiredTime { get;internal set; }
 
         /// <summary>是否过期</summary>
         public Boolean Expired => ExpiredTime <= Runtime.TickCount64;
@@ -480,7 +483,7 @@ public class MemoryCache : Cache
         /// <summary>设置数值和过期时间</summary>
         /// <param name="value"></param>
         /// <param name="expire">过期时间，秒</param>
-        public void Set(Object? value, Int32 expire)
+        internal void Set(Object? value, Int32 expire)
         {
             Value = value;
 
@@ -493,7 +496,7 @@ public class MemoryCache : Cache
 
         /// <summary>更新访问时间并返回数值</summary>
         /// <returns></returns>
-        public Object? Visit()
+        internal Object? Visit()
         {
             VisitTime = Runtime.TickCount64;
             return Value;
@@ -502,7 +505,7 @@ public class MemoryCache : Cache
         /// <summary>递增</summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public Int64 Inc(Int64 value)
+        internal Int64 Inc(Int64 value)
         {
             // 原子操作
             Int64 newValue;
@@ -521,7 +524,7 @@ public class MemoryCache : Cache
         /// <summary>递增</summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public Double Inc(Double value)
+        internal Double Inc(Double value)
         {
             // 原子操作
             Double newValue;
@@ -540,7 +543,7 @@ public class MemoryCache : Cache
         /// <summary>递减</summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public Int64 Dec(Int64 value)
+        internal Int64 Dec(Int64 value)
         {
             // 原子操作
             Int64 newValue;
@@ -559,7 +562,7 @@ public class MemoryCache : Cache
         /// <summary>递减</summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public Double Dec(Double value)
+        internal Double Dec(Double value)
         {
             // 原子操作
             Double newValue;
@@ -621,6 +624,7 @@ public class MemoryCache : Cache
                     ss.Add(item.Key);
                 }
             }
+
         }
 
         // 如果满了，删除前面

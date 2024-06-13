@@ -8,7 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using CSScripting;
+
 using CSScriptLib;
+
+using NewLife.Caching;
 
 using System.Reflection;
 
@@ -76,12 +80,12 @@ public class DemoData
 
 public interface IDynamicModel
 {
-    IEnumerable<dynamic> GetList(IEnumerable<dynamic> datas);
+    IEnumerable<dynamic> GetList(IEnumerable<object> datas);
 }
 
 public interface IDynamicModelData
 {
-    dynamic GeData(dynamic datas);
+    dynamic GeData(object datas);
 }
 
 /// <summary>
@@ -89,28 +93,96 @@ public interface IDynamicModelData
 /// </summary>
 public static class CSharpScriptEngineExtension
 {
-    /// <summary>
-    /// 执行脚本获取返回值，通常用于上传实体返回脚本，参数为input
-    /// </summary>
-    public static T Do<T>(string _source) where T : class
+
+    static CSharpScriptEngineExtension()
     {
-        var cacheKey = $"{nameof(CSharpScriptEngineExtension)}-{Do<T>}-{_source}";
-        var runscript = App.CacheService.GetOrCreate(cacheKey, c =>
+        Task.Factory.StartNew(async () =>
         {
-            var eva = CSScript.Evaluator
-              .LoadCode<T>(
-@$"
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using ThingsGateway.Core.Json.Extension;
-using ThingsGateway.Gateway.Application;
-{_source}
-");
-            return eva;
-        }, 3600);
-        return runscript;
+            while (true)
+            {
+                await Task.Delay(30000);
+                //检测缓存
+                try
+                {
+                    var data = Instance.GetAll();
+                    m_waiterLock.Wait();
+
+                    foreach (var item in data)
+                    {
+                        if (item.Value.ExpiredTime < item.Value.VisitTime + 1800_000)
+                        {
+                            Instance.Remove(item.Key);
+                            item.Value?.Value?.GetType().Assembly.Unload();
+                            GC.Collect();
+                        }
+                    }
+                }
+                catch
+                {
+
+                }
+                finally
+                {
+                    m_waiterLock.Release();
+                }
+
+                await Task.Delay(30000);
+            }
+        });
     }
+
+
+
+    static MemoryCache Instance { get; set; } = new MemoryCache();
+    static EasyLock m_waiterLock = new EasyLock();
+    static string CacheKey = $"{nameof(CSharpScriptEngineExtension)}-{nameof(Do)}";
+    /// <summary>
+    /// 执行脚本获取返回值ReadWriteExpressions
+    /// </summary>
+    public static T Do<T>(string source) where T : class
+    {
+        var field = $"{CacheKey}-{source}";
+        var runScript = Instance.Get<T>(field);
+        if (runScript == null)
+        {
+            try
+            {
+                m_waiterLock.Wait();
+                runScript = Instance.Get<T>(field);
+                if (runScript == null)
+                {
+                    if (!source.Contains("return"))
+                    {
+                        source = $"return {source}";//只判断简单脚本中可省略return字符串
+                    }
+
+                    // 动态加载并执行代码
+                    runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<T>(
+                       $@"
+        using System;
+        using System.Linq;
+        using System.Collections.Generic;
+        using Newtonsoft.Json;
+        using Newtonsoft.Json.Linq;
+        using ThingsGateway.Core.Json.Extension;
+        using ThingsGateway.Gateway.Application;
+        using ThingsGateway.Gateway.Application.Extensions;
+         {source};
+    ");
+                    GC.Collect();
+                    Instance.Set(field, runScript);
+                }
+            }
+            finally
+            {
+                m_waiterLock.Release();
+            }
+        }
+        Instance.SetExpire(field, TimeSpan.FromHours(1));
+
+        return runScript;
+    }
+
 
     /// <summary>
     /// GetDynamicModel

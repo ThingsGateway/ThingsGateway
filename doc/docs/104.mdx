@@ -37,27 +37,11 @@ import Highlight from '@site/src/components/Highlight.js';
 |执行间隔| 读取时间间隔/执行特殊方法读取的间隔 ||
 |特殊方法| 某些插件特有的方法 |对于不同的插件,特殊方法配置不相同,查看对应的插件说明|
 |数据类型| 对应的数据类型 |注意除了特殊驱动，一般不应该选择object|
-|读取表达式| 动态解析的表达式 ,原始值的代码为raw|示例：``raw*10+3`` 结果：原始值raw为8,输出实时值83 。具体可查看 [ExpressionEvaluator WiKi](https://github.com/codingseb/ExpressionEvaluator)|
-|写入表达式| 动态解析的表达式，在写入值时转化,原始值的代码为raw|示例：``raw/10`` 结果：写入值为230时，会下发23到PLC 。具体可查看 [ExpressionEvaluator WiKi](https://github.com/codingseb/ExpressionEvaluator)|
+|读取表达式| 动态解析的表达式 ,原始值的代码为raw|示例：``raw.ToInt()*10+3`` 结果：原始值raw为8,输出实时值83 。|
+|写入表达式| 动态解析的表达式，在写入值时转化,原始值的代码为raw|示例：``raw.ToInt()/10`` 结果：写入值为230时，会下发23到PLC 。|
 |备用字段| 存储自定义信息 |
 
-:::tip `表达式特别说明`
 
-网关还支持表达式的动态传入,除了raw表示该变量读取的原始值外,还支持其他变量的值传入表达式
-举例：
-  ```csharp
-  
-  //新建testInt1,testInt2两个变量
-
-  //在testInt1的读取表达式中定义
-
-    raw*testInt2+3
-
-  //原始值raw为8,testInt2为100，输出实时值803
-
-  ```
-
-:::
 
 :::tip `变量地址通用说明`
 
