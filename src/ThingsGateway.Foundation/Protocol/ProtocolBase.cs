@@ -204,6 +204,18 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
 
     #region 设备异步返回
 
+    /// <inheritdoc/>
+    public Task ConnectAsync(CancellationToken cancellationToken=default)
+    {
+      return  Channel.ConnectAsync(ConnectTimeout, cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public Task Close(string msg=default)
+    {
+        return Channel.CloseAsync(msg);
+    }
+
     /// <summary>
     /// 接收,非主动发送的情况，重写实现非主从并发通讯协议
     /// </summary>

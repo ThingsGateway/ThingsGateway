@@ -466,4 +466,18 @@ public interface IProtocol : IDisposable
     /// <param name="address">变量地址</param>
     /// <returns></returns>
     bool BitReverse(string address);
+
+    /// <summary>
+    /// 断开连接
+    /// </summary>
+    /// <param name="msg"></param>
+    /// <returns></returns>
+    Task Close(string msg = null);
+
+    /// <summary>
+    /// 连接
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task ConnectAsync(CancellationToken cancellationToken = default);
 }

@@ -17,8 +17,8 @@ internal class ModbusMasterTest
 {
     private static ModbusMaster GetMaster()
     {
-        var clientConfig = new TouchSocketConfig();
         ConsoleLogger.Default.LogLevel = LogLevel.Trace;
+        var clientConfig = new TouchSocketConfig();
         clientConfig.ConfigureContainer(a => a.AddConsoleLogger());
         //创建通道，也可以通过TouchSocketConfig.GetChannel扩展获取
         //var clientChannel = clientConfig.GetTcpServiceWithBindIPHost("tcp://127.0.0.1:502");
@@ -38,7 +38,7 @@ internal class ModbusMasterTest
     {
         using ModbusMaster modbusMaster = GetMaster();
         //modbusMaster.HeartbeatHexString = "ccccdddd";//心跳
-        await modbusMaster.Channel.ConnectAsync();
+        await modbusMaster.ConnectAsync();
         //Console.WriteLine("回车后读取注册包为abcd的客户端");
         Console.ReadLine();
         var data = await modbusMaster.ReadInt16Async("40001;id=abcd");//寄存器;{id=注册包}
