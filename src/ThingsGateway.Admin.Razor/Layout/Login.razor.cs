@@ -41,12 +41,21 @@ public partial class Login
     [Inject]
     [NotNull]
     private ToastService? ToastService { get; set; }
+    [Inject]
+    [NotNull]
+    private IAppVersionService? VersionService { get; set; }
 
     [Inject]
     [NotNull]
     private IOptions<WebsiteOptions>? WebsiteOption { get; set; }
+    private string _versionString = string.Empty;
 
-    private Task OnChanged(BreakPoint breakPoint)
+    protected override  Task OnInitializedAsync()
+    {
+        _versionString = $"v{VersionService.Version}";
+        return base.OnInitializedAsync();
+    }
+        private Task OnChanged(BreakPoint breakPoint)
     {
         authDeviceTypeEnum = breakPoint > BreakPoint.Medium ? AuthDeviceTypeEnum.PC : AuthDeviceTypeEnum.APP;
         return Task.CompletedTask;
