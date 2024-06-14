@@ -34,6 +34,12 @@ internal class Program
         // 增加中文编码支持
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
+#if Pro
+
+        MenuConfigs.Default.MenuItems.AddRange(ThingsGateway.Debug.ProRcl.ProMenuConfigs.Default.MenuItems);
+
+#endif
+
         var builder = PhotinoBlazorAppBuilder.CreateDefault(args);
 
         builder.Services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));

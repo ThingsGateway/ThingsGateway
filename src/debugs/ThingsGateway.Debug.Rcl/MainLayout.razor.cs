@@ -24,7 +24,17 @@ namespace ThingsGateway.Debug;
 
 public partial class MainLayout
 {
-    private IEnumerable<Assembly> _assemblyList => new List<Assembly>() { typeof(MainLayout).Assembly };
+    private List<Assembly> _assemblyList = new();
+
+    protected override void OnInitialized()
+    {
+        _assemblyList = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
+ a.GetTypes()).Where(u => !u.IsInterface && !u.IsAbstract && u.IsClass
+&& u.IsDefined(typeof(Microsoft.AspNetCore.Components.RouteAttribute), true)).Select(a => a.Assembly)
+//.Where(a => a != typeof(BlazorApp).Assembly)
+.Distinct().ToList();
+        base.OnInitialized();
+    }
 
     [Inject]
     [NotNull]

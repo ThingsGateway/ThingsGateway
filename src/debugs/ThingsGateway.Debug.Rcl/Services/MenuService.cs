@@ -15,7 +15,7 @@ using ThingsGateway.Razor;
 
 using TouchSocket.Core;
 
-namespace ThingsGateway.Admin.Razor;
+namespace ThingsGateway.Debug;
 
 /// <inheritdoc/>
 public class MenuConfigs : AppConfigBase
