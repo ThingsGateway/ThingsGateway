@@ -72,7 +72,7 @@ public class CollectDeviceHostedService : DeviceHostedService
             var idSet = collectDeviceRunTimes.Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet().ToDictionary(a => a);
             var result = collectDeviceRunTimes.Where(a => !idSet.ContainsKey(a.Id));
 
-            var scripts = collectDeviceRunTimes.SelectMany(a => a.VariableRunTimes.Select(b => b.Value.ReadExpressions)).Concat(collectDeviceRunTimes.SelectMany(a => a.VariableRunTimes.Select(b => b.Value.WriteExpressions))).Distinct().ToList();
+            var scripts = collectDeviceRunTimes.SelectMany(a => a.VariableRunTimes.Where(a=>!a.Value.ReadExpressions.IsNullOrWhiteSpace()).Select(b => b.Value.ReadExpressions)).Concat(collectDeviceRunTimes.SelectMany(a => a.VariableRunTimes.Where(a => !a.Value.WriteExpressions.IsNullOrWhiteSpace()).Select(b => b.Value.WriteExpressions))).Distinct().ToList();
             result.ParallelForEach(collectDeviceRunTime =>
             {
                 if (!_stoppingToken.IsCancellationRequested)

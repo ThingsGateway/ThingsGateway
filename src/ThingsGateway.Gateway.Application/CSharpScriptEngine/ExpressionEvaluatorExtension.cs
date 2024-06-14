@@ -106,15 +106,14 @@ public static class ExpressionEvaluatorExtension
     internal static ReadWriteExpressions AddScript(string source)
     {
         var field = $"{CacheKey}-{source}";
-        ReadWriteExpressions? runScript;
         if (!source.Contains("return"))
         {
             source = $"return {source}";//只判断简单脚本中可省略return字符串
         }
 
         // 动态加载并执行代码
-        runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<ReadWriteExpressions>(
-           $@"
+        var runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<ReadWriteExpressions>(
+              $@"
         using System;
         using System.Linq;
         using System.Collections.Generic;
