@@ -54,7 +54,6 @@ public static class ExpressionEvaluatorExtension
                 }
                 catch
                 {
-
                 }
                 finally
                 {
@@ -66,11 +65,10 @@ public static class ExpressionEvaluatorExtension
         });
     }
 
+    private static MemoryCache Instance { get; set; } = new MemoryCache();
+    private static EasyLock m_waiterLock = new EasyLock();
+    private static string CacheKey = $"{nameof(ExpressionEvaluatorExtension)}-{nameof(GetReadWriteExpressions)}";
 
-
-    static MemoryCache Instance { get; set; } = new MemoryCache();
-    static EasyLock m_waiterLock = new EasyLock();
-    static string CacheKey = $"{nameof(ExpressionEvaluatorExtension)}-{nameof(GetReadWriteExpressions)}";
     /// <summary>
     /// 执行脚本获取返回值ReadWriteExpressions
     /// </summary>
@@ -84,7 +82,6 @@ public static class ExpressionEvaluatorExtension
             {
                 m_waiterLock.Wait();
                 {
-
                     runScript = Instance.Get<ReadWriteExpressions>(field);
                     if (runScript == null)
                     {
@@ -98,7 +95,6 @@ public static class ExpressionEvaluatorExtension
             }
         }
         Instance.SetExpire(field, TimeSpan.FromHours(1));
-
 
         return runScript;
     }

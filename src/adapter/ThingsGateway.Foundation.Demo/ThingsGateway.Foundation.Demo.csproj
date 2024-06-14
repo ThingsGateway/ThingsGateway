@@ -6,7 +6,7 @@
     <OutputType>Exe</OutputType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ThingsGateway.Foundation.Variable" Version="8.3.0" />
+    <PackageReference Include="ThingsGateway.Foundation.Variable" Version="8.4.0" />
   </ItemGroup>
 
 
