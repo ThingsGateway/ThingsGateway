@@ -16,7 +16,7 @@
   "ThingsGateway.Foundation.SiemensS7.SiemensS7Resource": {
     "AddressDes": "S7协议寄存器地址格式\nTxxxxx Timer寄存器，例如T100/T100.1\nCxxxxx，Counter寄存器，例如C100/C100.1\nAIxxxxx，AI寄存器，例如AI100/AI100.1\nAQxxxxx，AQ寄存器，例如AQ100/AQ100.1\nIxxxxx，I寄存器，例如I100/I100.1\nQxxxxx，Q寄存器，例如Q100/Q100.1\nMxxxxx，M寄存器，例如M100/M100.1\nDBxxxxx，DB寄存器，例如DB100.1/DB100.1.1",
     "ReturnError": "PLC返回错误码，错误类型 {0} 错误代码 {1} ",
-    "ReturnCode": "PLC返回代码 {1} ",
+    "ReturnCode": "PLC返回代码 {0} ",
     "DataLengthError": "数据块长度校验失败",
     "ValidateDataError": "验证错误，代码 {0}，类型 {1}",
     "NotString": "PLC中的数据类型不是String",

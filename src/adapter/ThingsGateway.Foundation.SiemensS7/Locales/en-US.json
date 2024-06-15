@@ -16,7 +16,7 @@
   "ThingsGateway.Foundation.SiemensS7.SiemensS7Resource": {
     "AddressDes": "S7 Protocol Register Address Format\nTxxxxx Timer Register, for example T100/T100.1\nCxxxxx Counter Register, for example C100/C100.1\nAIxxxxx AI Register, for example AI100/AI100.1\nAQxxxxx AQ Register, for example AQ100/AQ100.1\nIxxxxx I Register, for example I100/I100.1\nQxxxxx Q Register, for example Q100/Q100.1\nMxxxxx M Register, for example M100/M100.1\nDBxxxxx DB Register, for example DB100.1/DB100.1.1",
     "ReturnError": "PLC returns error code, error type {0}, error code {1}",
-    "ReturnCode": "PLC return code {1}",
+    "ReturnCode": "PLC return code {0}",
     "DataLengthError": "Data block length check failed",
     "ValidateDataError": "Validation error, code {0}, type {1}",
     "NotString": "Data type in PLC is not String",
