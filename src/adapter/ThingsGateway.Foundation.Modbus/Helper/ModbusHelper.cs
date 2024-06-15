@@ -114,7 +114,7 @@ internal class ModbusHelper
                 {
                     Content = new()
                     {
-                        Content = response.ToArray(response.Position + 3),
+                        Content = response.ToArray(response.Position + 3, response[response.Position + 2]),
                         FilterResult = FilterResult.Success
                     }
                 };
@@ -141,7 +141,7 @@ internal class ModbusHelper
             {
                 Content = new()
                 {
-                    Content = response.ToArray(response.Position + 3),
+                    Content = response.ToArray(response.Position + 3, response[response.Position + 2]),
                     FilterResult = FilterResult.Success
                 }
             };

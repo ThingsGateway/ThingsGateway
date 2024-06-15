@@ -63,8 +63,6 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
 
     protected override FilterResult Filter<TByteBlock>(ref TByteBlock byteBlock, bool beCached, ref TRequest request, ref int tempCapacity)
     {
-        //整个流程都不会改变流的游标位置，所以对于是否缓存的情况都是一样的处理
-
         if (Logger.LogLevel <= LogLevel.Trace)
             Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.AsSegment().ToHexString() : byteBlock.ToString())}");
         {
@@ -77,6 +75,8 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                     request = GetInstance();
             }
 
+            var pos = byteBlock.Position;
+
             if (request.HeadBytesLength > byteBlock.CanReadLength)
             {
                 return FilterResult.Cache;//当头部都无法解析时，直接缓存
@@ -86,7 +86,7 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
             //当解析消息设定固定头长度大于0时，获取头部字节
             if (request.HeadBytesLength > 0)
             {
-                header = byteBlock.AsSegment(0, request.HeadBytesLength);
+                header = byteBlock.AsSegment(byteBlock.Position, request.HeadBytesLength);
             }
             else
             {
@@ -125,7 +125,7 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
                 }
                 else if (result.FilterResult == FilterResult.Success)
                 {
-                    byteBlock.Position = byteBlock.Length;
+                    byteBlock.Position = request.HeadBytesLength + request.BodyLength + pos;
                     if (request.IsSuccess)
                     {
                         request.Content = result.Content;

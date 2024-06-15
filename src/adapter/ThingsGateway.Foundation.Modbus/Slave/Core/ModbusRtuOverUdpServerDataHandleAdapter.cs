@@ -28,13 +28,15 @@ internal class ModbusRtuOverUdpServerDataHandleAdapter : ReadWriteDevicesUdpData
     /// <inheritdoc/>
     protected override AdapterResult UnpackResponse(ModbusRtuServerMessage request, IByteBlock byteBlock)
     {
+        var pos = byteBlock.Position;
         var result = ModbusHelper.CheckCrc(byteBlock);
         request.OperCode = result.OperCode;
         request.ErrorMessage = result.ErrorMessage;
         if (result.IsSuccess)
         {
-            byteBlock.Position = 0;
+            byteBlock.Position = pos;
             var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, byteBlock);
+            request.Bytes = byteBlock.AsSegment(pos, request.HeadBytesLength + request.BodyLength);
             return new AdapterResult() { FilterResult = FilterResult.Success, Content = bytes };
         }
         else

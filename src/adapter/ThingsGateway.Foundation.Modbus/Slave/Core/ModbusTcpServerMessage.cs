@@ -21,6 +21,11 @@ internal class ModbusTcpServerMessage : MessageBase, IResultMessage, IModbusServ
     public ModbusAddress ModbusAddress { get; set; }
 
     /// <summary>
+    /// 当前关联的字节数组
+    /// </summary>
+    public ReadOnlyMemory<byte> Bytes { get; set; }
+
+    /// <summary>
     /// 当前读写的数据长度
     /// </summary>
     public int Length { get; set; }

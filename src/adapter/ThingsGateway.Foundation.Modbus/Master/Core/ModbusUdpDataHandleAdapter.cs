@@ -30,12 +30,13 @@ internal class ModbusUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter
     /// <inheritdoc/>
     protected override AdapterResult UnpackResponse(ModbusTcpMessage request, IByteBlock byteBlock)
     {
-        byteBlock.Position = 6;
+        var pos = byteBlock.Position;
+        byteBlock.Position = byteBlock.Position + 6;
         var result = ModbusHelper.GetModbusData(null, byteBlock);
         request.OperCode = result.OperCode;
         request.ErrorMessage = result.ErrorMessage;
 
-        byteBlock.Position = 0;
+        byteBlock.Position = pos;
         request.Sign = byteBlock.ReadUInt16(EndianType.Big);
         return result.Content;
     }

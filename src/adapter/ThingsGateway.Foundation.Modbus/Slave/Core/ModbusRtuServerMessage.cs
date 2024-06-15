@@ -18,6 +18,11 @@ internal class ModbusRtuServerMessage : MessageBase, IResultMessage, IModbusServ
     /// <inheritdoc/>
     public ModbusAddress ModbusAddress { get; set; }
 
+    /// <summary>
+    /// 当前关联的字节数组
+    /// </summary>
+    public ReadOnlyMemory<byte> Bytes { get; set; }
+
     /// <inheritdoc/>
     public int Length { get; set; }
 

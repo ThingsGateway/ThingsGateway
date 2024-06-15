@@ -205,13 +205,13 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     #region 设备异步返回
 
     /// <inheritdoc/>
-    public Task ConnectAsync(CancellationToken cancellationToken=default)
+    public Task ConnectAsync(CancellationToken cancellationToken = default)
     {
-      return  Channel.ConnectAsync(ConnectTimeout, cancellationToken);
+        return Channel.ConnectAsync(ConnectTimeout, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public Task Close(string msg=default)
+    public Task Close(string msg = default)
     {
         return Channel.CloseAsync(msg);
     }

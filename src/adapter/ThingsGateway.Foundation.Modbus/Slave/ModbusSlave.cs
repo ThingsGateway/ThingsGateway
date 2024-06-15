@@ -242,12 +242,12 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                     //rtu返回头
                     if (ModbusType == ModbusTypeEnum.ModbusRtu)
                     {
-                        var sendData = DataTransUtil.SpliceArray(modbusServerMessage.ReceivedBytes.ToArray(0, 2), new byte[] { (byte)coreData.Length }, coreData);
+                        var sendData = DataTransUtil.SpliceArray(modbusServerMessage.Bytes.Slice(0, 2).ToArray(), new byte[] { (byte)coreData.Length }, coreData);
                         await ReturnData(client, e, sendData);
                     }
                     else
                     {
-                        var sendData = DataTransUtil.SpliceArray(modbusServerMessage.ReceivedBytes.ToArray(0, 8), new byte[] { (byte)coreData.Length }, coreData);
+                        var sendData = DataTransUtil.SpliceArray(modbusServerMessage.Bytes.Slice(0, 8).ToArray(), new byte[] { (byte)coreData.Length }, coreData);
                         sendData[5] = (byte)(sendData.Length - 6);
                         await ReturnData(client, e, sendData);
                     }
@@ -361,14 +361,14 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
         if (modbusType == ModbusTypeEnum.ModbusRtu)
         {
             var sendData = DataTransUtil
-.SpliceArray(modbusServerMessage.ReceivedBytes.ToArray(0, 2), new byte[] { (byte)1 });//01 lllegal function
+.SpliceArray(modbusServerMessage.Bytes.Slice(0, 2).ToArray(), new byte[] { (byte)1 });//01 lllegal function
             sendData[1] = (byte)(sendData[1] + 128);
             await ReturnData(client, e, sendData);
         }
         else
         {
             var sendData = DataTransUtil
-.SpliceArray(modbusServerMessage.ReceivedBytes.ToArray(0, 8), new byte[] { (byte)1 });//01 lllegal function
+.SpliceArray(modbusServerMessage.Bytes.Slice(0, 8).ToArray(), new byte[] { (byte)1 });//01 lllegal function
             sendData[5] = (byte)(sendData.Length - 6);
             sendData[7] = (byte)(sendData[7] + 128);
             await ReturnData(client, e, sendData);
@@ -382,12 +382,12 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
     {
         if (modbusType == ModbusTypeEnum.ModbusRtu)
         {
-            var sendData = modbusServerMessage.ReceivedBytes.ToArray(0, 6);
+            var sendData = modbusServerMessage.Bytes.Slice(0, 6).ToArray();
             await ReturnData(client, e, sendData);
         }
         else
         {
-            var sendData = modbusServerMessage.ReceivedBytes.ToArray(0, 12);
+            var sendData = modbusServerMessage.Bytes.Slice(0, 12).ToArray();
             sendData[5] = (byte)(sendData.Length - 6);
             await ReturnData(client, e, sendData);
         }

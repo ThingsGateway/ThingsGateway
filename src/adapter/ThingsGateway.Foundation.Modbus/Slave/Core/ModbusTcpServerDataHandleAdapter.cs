@@ -16,8 +16,10 @@ internal class ModbusTcpServerDataHandleAdapter : ReadWriteDevicesSingleStreamDa
     /// <inheritdoc/>
     protected override AdapterResult UnpackResponse(ModbusTcpServerMessage request, IByteBlock byteBlock)
     {
-        byteBlock.Position = 6;
+        var pos = byteBlock.Position;
+        byteBlock.Position = byteBlock.Position + 6;
         var bytes = ModbusHelper.ModbusServerAnalysisAddressValue(request, byteBlock);
+        request.Bytes = byteBlock.AsSegment(pos, request.HeadBytesLength + request.BodyLength);
         return new AdapterResult() { FilterResult = FilterResult.Success, Content = bytes };
     }
 }

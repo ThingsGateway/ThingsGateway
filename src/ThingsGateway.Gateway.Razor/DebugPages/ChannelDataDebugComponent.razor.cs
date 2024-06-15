@@ -130,7 +130,7 @@ public partial class ChannelDataDebugComponent : ComponentBase
         }
         catch (Exception ex)
         {
-            Model.Channel.Logger.Exception(ex);
+            Model.Channel?.Logger.Exception(ex);
         }
     }
 
