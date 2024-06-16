@@ -189,7 +189,7 @@ public class APPInfo
     public string UpdateTime { get; set; }
 }
 
-[SugarTable("tg_hardwareinfo", TableDescription = "硬件信息历史表")]
+[SugarTable("his_hardwareinfo", TableDescription = "硬件信息历史表")]
 [Tenant(SqlSugarConst.DB_HardwareInfo)]
 public class HisHardwareInfo
 {

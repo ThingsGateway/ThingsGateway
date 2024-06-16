@@ -19,7 +19,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 后台日志表
 ///</summary>
-[SugarTable("tg_log_backend", TableDescription = "后台日志表")]
+[SugarTable("backend_log", TableDescription = "后台日志表")]
 [Tenant(SqlSugarConst.DB_Log)]
 public class BackendLog : PrimaryIdEntity
 {
@@ -33,7 +33,7 @@ public class BackendLog : PrimaryIdEntity
     /// <summary>
     /// 日志级别
     /// </summary>
-    [SugarColumn(ColumnDescription = "日志级别", SqlParameterDbType = typeof(SqlSugar.DbConvert.EnumToStringConvert), IsNullable = false)]
+    [SugarColumn(ColumnDescription = "日志级别", IsNullable = false)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public LogLevel LogLevel { get; set; }
 
