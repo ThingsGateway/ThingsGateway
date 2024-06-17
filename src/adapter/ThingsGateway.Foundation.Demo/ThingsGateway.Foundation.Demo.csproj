@@ -1,19 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="$(SolutionDir)Foundation.props" />
   <PropertyGroup>
     <TargetFrameworks>net6.0;</TargetFrameworks>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
+
   <ItemGroup>
-    <PackageReference Include="ThingsGateway.Foundation.Variable" Version="8.4.0" />
+    <Compile Remove="ModbusMasterTest.cs" />
+    <Compile Remove="ModbusVariable.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
+    <PackageReference Include="HslCommunication" Version="12.0.2" />
+    <PackageReference Include="NModbus" Version="3.0.81" />
+    <PackageReference Include="ThingsGateway.Foundation.Variable" Version="8.5.0" />
+    <PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.13" />
+    <PackageReference Include="TouchSocket.Modbus" Version="2.1.0-alpha.19" />
   </ItemGroup>
 
 
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
-    <ProjectReference Include="..\ThingsGateway.Foundation.Modbus\ThingsGateway.Foundation.Modbus.csproj" />
-  </ItemGroup>
 
 
 </Project>

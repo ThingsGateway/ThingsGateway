@@ -19,7 +19,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     }
 
     /// <inheritdoc/>
-    public EasyLock WaitLock { get; } = new EasyLock();
+    public AsyncAutoResetEvent WaitLock { get; } = new AsyncAutoResetEvent();
 
     /// <summary>
     /// 等待池

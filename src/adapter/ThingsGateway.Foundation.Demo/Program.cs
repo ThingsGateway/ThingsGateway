@@ -8,13 +8,30 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BenchmarkDotNet.Columns;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Loggers;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Validators;
+
 namespace ThingsGateway.Foundation;
 
 internal class Program
 {
-    private static async Task Main(string[] args)
+    private static void Main(string[] args)
     {
-        await ModbusMasterTest.Test();
+        //ModbusBenchmarker modbusBenchmarker = new ModbusBenchmarker();
+        //await modbusBenchmarker.ThingsGateway();
+        //await modbusBenchmarker.Touchsocket();
+        //await modbusBenchmarker.NModbus4();
+        //await modbusBenchmarker.HslCommunication();
+        var summary = BenchmarkRunner.Run<ModbusBenchmarker>(new ManualConfig()
+            .WithOptions(ConfigOptions.DisableOptimizationsValidator)
+        .AddValidator(JitOptimizationsValidator.DontFailOnError)
+        .AddLogger(ConsoleLogger.Default)
+        .AddColumnProvider(DefaultColumnProviders.Instance));
+        Console.ReadLine();
+        //await ModbusMasterTest.Test();
         //S7MatserTest.Test();
     }
 }

@@ -10,19 +10,19 @@
 
 namespace ThingsGateway.Foundation;
 
-/// <summary>
-/// 单个通道
-/// </summary>
-public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IOnlineClient, IAdapterObject
+[GeneratorVariable]
+public partial class ModbusVariable : VariableObject
 {
-    #region 属性
+    [VariableRuntime(RegisterAddress = "400001;arraylen=2")]
+    public ushort[] Data1 { get; set; }
 
-    /// <summary>
-    /// 收发等待锁，对于大部分工业主从协议是必须的，一个通道一个实现
-    /// </summary>
-    AsyncAutoResetEvent WaitLock { get; }
+    [VariableRuntime(RegisterAddress = "400051")]
+    public ushort Data2 { get; set; }
 
-    WaitHandlePool<MessageBase> WaitHandlePool { get; }
+    [VariableRuntime(RegisterAddress = "400061;len=10")]
+    public string Data3 { get; set; }
 
-    #endregion 属性
+    public ModbusVariable(IProtocol protocol, int maxPack) : base(protocol, maxPack)
+    {
+    }
 }

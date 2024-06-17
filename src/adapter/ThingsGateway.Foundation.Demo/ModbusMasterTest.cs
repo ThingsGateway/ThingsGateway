@@ -11,6 +11,8 @@
 using ThingsGateway.Foundation.Json.Extension;
 using ThingsGateway.Foundation.Modbus;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Foundation;
 
 internal class ModbusMasterTest
@@ -40,7 +42,6 @@ internal class ModbusMasterTest
         //modbusMaster.HeartbeatHexString = "ccccdddd";//心跳
         await modbusMaster.ConnectAsync();
         //Console.WriteLine("回车后读取注册包为abcd的客户端");
-        Console.ReadLine();
         var data = await modbusMaster.ReadInt16Async("40001;id=abcd");//寄存器;{id=注册包}
         Console.WriteLine(data.ToJsonNetString());
         //Console.ReadLine();
@@ -75,22 +76,5 @@ internal class ModbusMasterTest
             await modbusVariable.MultiReadAsync();
             Console.WriteLine(modbusVariable.ToJsonString());
         }
-    }
-}
-
-[GeneratorVariable]
-public partial class ModbusVariable : VariableObject
-{
-    [VariableRuntime(RegisterAddress = "400001;arraylen=2")]
-    public ushort[] Data1 { get; set; }
-
-    [VariableRuntime(RegisterAddress = "400051")]
-    public ushort Data2 { get; set; }
-
-    [VariableRuntime(RegisterAddress = "400061;len=10")]
-    public string Data3 { get; set; }
-
-    public ModbusVariable(IProtocol protocol, int maxPack) : base(protocol, maxPack)
-    {
     }
 }

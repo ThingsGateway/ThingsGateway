@@ -23,7 +23,7 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     private readonly EasyLock m_semaphoreForConnect = new EasyLock();
 
     /// <inheritdoc/>
-    public EasyLock WaitLock { get; } = new EasyLock();
+    public AsyncAutoResetEvent WaitLock { get; } = new AsyncAutoResetEvent();
 
     /// <summary>
     /// 等待池
@@ -75,20 +75,23 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
 
     public new async Task ConnectAsync(int millisecondsTimeout, CancellationToken token)
     {
-        try
+        if (!this.Online)
         {
-            await this.m_semaphoreForConnect.WaitAsync(token).ConfigureAwait(false);
-            if (!this.Online)
+            try
             {
-                await base.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
-                Logger?.Debug($"{ToString()}  Connected");
-                if (Started != null)
-                    await Started.Invoke(this).ConfigureAwait(false);
+                await this.m_semaphoreForConnect.WaitAsync(token).ConfigureAwait(false);
+                if (!this.Online)
+                {
+                    await base.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
+                    Logger?.Debug($"{ToString()}  Connected");
+                    if (Started != null)
+                        await Started.Invoke(this).ConfigureAwait(false);
+                }
             }
-        }
-        finally
-        {
-            this.m_semaphoreForConnect.Release();
+            finally
+            {
+                this.m_semaphoreForConnect.Release();
+            }
         }
     }
 
