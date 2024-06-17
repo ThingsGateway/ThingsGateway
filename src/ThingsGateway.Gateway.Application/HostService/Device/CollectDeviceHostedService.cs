@@ -11,6 +11,8 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
+using ThingsGateway.Gateway.Application.Extensions;
+
 using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Application;
@@ -72,14 +74,13 @@ public class CollectDeviceHostedService : DeviceHostedService
             var idSet = collectDeviceRunTimes.Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet().ToDictionary(a => a);
             var result = collectDeviceRunTimes.Where(a => !idSet.ContainsKey(a.Id));
 
-            var scripts = collectDeviceRunTimes.SelectMany(a => a.VariableRunTimes.Where(a=>!a.Value.ReadExpressions.IsNullOrWhiteSpace()).Select(b => b.Value.ReadExpressions)).Concat(collectDeviceRunTimes.SelectMany(a => a.VariableRunTimes.Where(a => !a.Value.WriteExpressions.IsNullOrWhiteSpace()).Select(b => b.Value.WriteExpressions))).Distinct().ToList();
+            var scripts = collectDeviceRunTimes.SelectMany(a => a.VariableRunTimes.Where(a => !a.Value.ReadExpressions.IsNullOrWhiteSpace()).Select(b => b.Value.ReadExpressions)).Concat(collectDeviceRunTimes.SelectMany(a => a.VariableRunTimes.Where(a => !a.Value.WriteExpressions.IsNullOrWhiteSpace()).Select(b => b.Value.WriteExpressions))).Distinct().ToList();
             result.ParallelForEach(collectDeviceRunTime =>
             {
                 if (!_stoppingToken.IsCancellationRequested)
                 {
                     try
                     {
-
                         DriverBase driverBase = collectDeviceRunTime.CreateDriver(PluginService);
                         GetChannelThread(driverBase);
                     }
@@ -103,7 +104,6 @@ public class CollectDeviceHostedService : DeviceHostedService
                     }
                 }
             });
-
         }
         for (int i = 0; i < 3; i++)
         {

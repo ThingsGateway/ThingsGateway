@@ -42,7 +42,7 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     /// </summary>
     /// <param name="ex">异常</param>
     /// <param name="error">错误异常</param>
-    /// <param name="reset">是否调用<see cref="Reset"/></param>
+    /// <param name="reset">是否调用Reset/></param>
     /// <param name="log">是否记录日志</param>
     protected override void OnError(Exception ex, string error, bool reset, bool log)
     {

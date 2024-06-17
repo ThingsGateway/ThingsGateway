@@ -14,7 +14,7 @@ using CSScriptLib;
 
 using NewLife.Caching;
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.Gateway.Application.Extensions;
 
 /// <summary>
 /// 读写表达式脚本
@@ -82,11 +82,7 @@ public static class ExpressionEvaluatorExtension
             {
                 m_waiterLock.Wait();
                 {
-                    runScript = Instance.Get<ReadWriteExpressions>(field);
-                    if (runScript == null)
-                    {
-                        runScript = AddScript(source);
-                    }
+                    runScript = AddScript(source);
                 }
             }
             finally
@@ -102,14 +98,16 @@ public static class ExpressionEvaluatorExtension
     internal static ReadWriteExpressions AddScript(string source)
     {
         var field = $"{CacheKey}-{source}";
-        if (!source.Contains("return"))
+        var runScript = Instance.Get<ReadWriteExpressions>(field);
+        if (runScript == null)
         {
-            source = $"return {source}";//只判断简单脚本中可省略return字符串
-        }
-
-        // 动态加载并执行代码
-        var runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<ReadWriteExpressions>(
-              $@"
+            if (!source.Contains("return"))
+            {
+                source = $"return {source}";//只判断简单脚本中可省略return字符串
+            }
+            // 动态加载并执行代码
+            runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<ReadWriteExpressions>(
+                $@"
         using System;
         using System.Linq;
         using System.Collections.Generic;
@@ -126,8 +124,9 @@ public static class ExpressionEvaluatorExtension
             }}
         }}
     ");
-        GC.Collect();
-        Instance.Set(field, runScript);
+            GC.Collect();
+            Instance.Set(field, runScript);
+        }
         return runScript;
     }
 

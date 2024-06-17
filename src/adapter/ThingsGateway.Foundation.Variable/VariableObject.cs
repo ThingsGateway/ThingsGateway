@@ -13,6 +13,8 @@ using NewLife.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using ThingsGateway.Gateway.Application.Extensions;
+
 namespace ThingsGateway.Foundation;
 
 /// <summary>
