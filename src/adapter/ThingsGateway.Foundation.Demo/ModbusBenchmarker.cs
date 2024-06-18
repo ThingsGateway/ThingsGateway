@@ -28,7 +28,7 @@ namespace ThingsGateway.Foundation;
 [MemoryDiagnoser, RankColumn]
 public class ModbusBenchmarker
 {
-    private int NumberOfItems = 1;
+    private int NumberOfItems = 10000;
     private ModbusMaster thingsgatewaymodbus;
     private TouchSocket.Modbus.ModbusTcpMaster touchsocketmodbus;
     private IModbusMaster nmodbus;
@@ -67,19 +67,22 @@ public class ModbusBenchmarker
     public async Task ThingsGateway()
     {
         List<Task> tasks = new List<Task>();
-        for (int i = 0; i < NumberOfItems; i++)
+        tasks.Add(Task.Run(async () =>
         {
-            //tasks.Add(Task.Run(async () =>
+            for (int i = 0; i < NumberOfItems; i++)
             {
-                var result = await thingsgatewaymodbus.ReadAsync("40001", 100);
-                if (!result.IsSuccess)
+                //tasks.Add(Task.Run(async () =>
                 {
-                    Console.WriteLine(result);
+                    var result = await thingsgatewaymodbus.ReadAsync("40001", 100);
+                    if (!result.IsSuccess)
+                    {
+                        Console.WriteLine(result);
+                    }
                 }
             }
-        }
+        }));
 
-        //await Task.WhenAll(tasks);
+        await Task.WhenAll(tasks);
     }
 
     [Benchmark]
@@ -88,7 +91,7 @@ public class ModbusBenchmarker
         List<Task> tasks = new List<Task>();
         for (int i = 0; i < NumberOfItems; i++)
         {
-            //tasks.Add(Task.Run(async () =>
+            tasks.Add(Task.Run(async () =>
             {
                 try
                 {
@@ -102,8 +105,8 @@ public class ModbusBenchmarker
                 {
                     Console.WriteLine(ex);
                 }
-            }
-            //await Task.WhenAll(tasks);
+            }));
+            await Task.WhenAll(tasks);
         }
     }
 
@@ -113,6 +116,7 @@ public class ModbusBenchmarker
         List<Task> tasks = new List<Task>();
         for (int i = 0; i < NumberOfItems; i++)
         {
+            tasks.Add(Task.Run(async () =>
             {
                 try
                 {
@@ -122,7 +126,8 @@ public class ModbusBenchmarker
                 {
                     Console.WriteLine(ex);
                 }
-            }
+            }));
+            await Task.WhenAll(tasks);
         }
     }
 
@@ -132,13 +137,15 @@ public class ModbusBenchmarker
         List<Task> tasks = new List<Task>();
         for (int i = 0; i < NumberOfItems; i++)
         {
+            tasks.Add(Task.Run(async () =>
             {
                 var result = await hslmodbus.ReadAsync("0", 100);
                 if (!result.IsSuccess)
                 {
                     Console.WriteLine(result);
                 }
-            }
+            }));
+            await Task.WhenAll(tasks);
         }
     }
 }

@@ -14,8 +14,8 @@
     <PackageReference Include="HslCommunication" Version="12.0.2" />
     <PackageReference Include="NModbus" Version="3.0.81" />
     <PackageReference Include="ThingsGateway.Foundation.Variable" Version="8.5.0" />
-    <PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.20" />
-    <PackageReference Include="TouchSocket.Modbus" Version="2.1.0-alpha.19" />
+    <PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.13" />
+    <PackageReference Include="TouchSocket.Modbus" Version="2.1.0-alpha.20" />
   </ItemGroup>
 
 

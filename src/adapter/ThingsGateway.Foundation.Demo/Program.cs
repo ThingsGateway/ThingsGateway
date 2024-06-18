@@ -27,19 +27,19 @@ internal class Program
         stopwatch.Start();
         await modbusBenchmarker.ThingsGateway();
         stopwatch.Stop();
-        Console.WriteLine(stopwatch.ElapsedMilliseconds);
+        Console.WriteLine($"ThingsGateway 多线程读取1W次 耗时:{stopwatch.ElapsedMilliseconds}");
         stopwatch.Restart();
         await modbusBenchmarker.Touchsocket();
         stopwatch.Stop();
-        Console.WriteLine(stopwatch.ElapsedMilliseconds);
+        Console.WriteLine($"Touchsocket 多线程读取1W次 耗时:{stopwatch.ElapsedMilliseconds}");
         stopwatch.Restart();
         await modbusBenchmarker.NModbus4();
         stopwatch.Stop();
-        Console.WriteLine(stopwatch.ElapsedMilliseconds);
+        Console.WriteLine($"NModbus4 多线程读取1W次 耗时:{stopwatch.ElapsedMilliseconds}");
         stopwatch.Restart();
         await modbusBenchmarker.HslCommunication();
         stopwatch.Stop();
-        Console.WriteLine(stopwatch.ElapsedMilliseconds);
+        Console.WriteLine($"HslCommunication 多线程读取1W次 耗时:{stopwatch.ElapsedMilliseconds}");
         Console.ReadLine();
         var summary = BenchmarkRunner.Run<ModbusBenchmarker>(new ManualConfig()
             .WithOptions(ConfigOptions.DisableOptimizationsValidator)
