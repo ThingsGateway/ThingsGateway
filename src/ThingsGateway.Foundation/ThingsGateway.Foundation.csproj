@@ -16,10 +16,6 @@
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.NewLife.X\ThingsGateway.NewLife.X.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'!='net462'">
-    <PackageReference Include="System.IO.Ports" Version="8.0.0" />
-  </ItemGroup>
-
   <ItemGroup Condition="'$(TargetFramework)'!='net6.0'">
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
