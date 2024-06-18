@@ -20,27 +20,8 @@ namespace ThingsGateway.Foundation;
 
 internal class Program
 {
-    private static async Task Main(string[] args)
+    private static void Main(string[] args)
     {
-        ModbusBenchmarker modbusBenchmarker = new ModbusBenchmarker();
-        Stopwatch stopwatch = new();
-        stopwatch.Start();
-        await modbusBenchmarker.ThingsGateway();
-        stopwatch.Stop();
-        Console.WriteLine($"ThingsGateway 多线程读取1W次 耗时:{stopwatch.ElapsedMilliseconds}");
-        stopwatch.Restart();
-        await modbusBenchmarker.Touchsocket();
-        stopwatch.Stop();
-        Console.WriteLine($"Touchsocket 多线程读取1W次 耗时:{stopwatch.ElapsedMilliseconds}");
-        stopwatch.Restart();
-        await modbusBenchmarker.NModbus4();
-        stopwatch.Stop();
-        Console.WriteLine($"NModbus4 多线程读取1W次 耗时:{stopwatch.ElapsedMilliseconds}");
-        stopwatch.Restart();
-        await modbusBenchmarker.HslCommunication();
-        stopwatch.Stop();
-        Console.WriteLine($"HslCommunication 多线程读取1W次 耗时:{stopwatch.ElapsedMilliseconds}");
-        Console.ReadLine();
         var summary = BenchmarkRunner.Run<ModbusBenchmarker>(new ManualConfig()
             .WithOptions(ConfigOptions.DisableOptimizationsValidator)
         .AddValidator(JitOptimizationsValidator.DontFailOnError)

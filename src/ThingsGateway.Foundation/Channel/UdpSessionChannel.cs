@@ -19,7 +19,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     }
 
     /// <inheritdoc/>
-    public AsyncAutoResetEvent WaitLock { get; } = new AsyncAutoResetEvent();
+    public EasyLock WaitLock { get; } = new EasyLock();
 
     /// <summary>
     /// 等待池

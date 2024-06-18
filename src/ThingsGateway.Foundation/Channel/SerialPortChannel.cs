@@ -23,7 +23,7 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     private readonly EasyLock m_semaphoreForConnect = new EasyLock();
 
     /// <inheritdoc/>
-    public AsyncAutoResetEvent WaitLock { get; } = new AsyncAutoResetEvent();
+    public EasyLock WaitLock { get; } = new EasyLock();
 
     /// <summary>
     /// 等待池

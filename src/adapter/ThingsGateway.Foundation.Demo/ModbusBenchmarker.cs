@@ -28,6 +28,7 @@ namespace ThingsGateway.Foundation;
 [MemoryDiagnoser, RankColumn]
 public class ModbusBenchmarker
 {
+    private int TaskNumberOfItems = 1;
     private int NumberOfItems = 10000;
     private ModbusMaster thingsgatewaymodbus;
     private TouchSocket.Modbus.ModbusTcpMaster touchsocketmodbus;
@@ -63,15 +64,15 @@ public class ModbusBenchmarker
         hslmodbus.ConnectServer();
     }
 
-    [Benchmark]
+    [Benchmark(Description = "ThingsGateway Modbus读取1W次")]
     public async Task ThingsGateway()
     {
         List<Task> tasks = new List<Task>();
-        tasks.Add(Task.Run(async () =>
+        for (int i = 0; i < TaskNumberOfItems; i++)
         {
-            for (int i = 0; i < NumberOfItems; i++)
+            tasks.Add(Task.Run(async () =>
             {
-                //tasks.Add(Task.Run(async () =>
+                for (int i = 0; i < NumberOfItems; i++)
                 {
                     var result = await thingsgatewaymodbus.ReadAsync("40001", 100);
                     if (!result.IsSuccess)
@@ -79,73 +80,81 @@ public class ModbusBenchmarker
                         Console.WriteLine(result);
                     }
                 }
-            }
-        }));
-
+            }));
+        }
         await Task.WhenAll(tasks);
     }
 
-    [Benchmark]
+    [Benchmark(Description = "Touchsocket Modbus读取1W次")]
     public async Task Touchsocket()
     {
         List<Task> tasks = new List<Task>();
-        for (int i = 0; i < NumberOfItems; i++)
+        for (int i = 0; i < TaskNumberOfItems; i++)
         {
             tasks.Add(Task.Run(async () =>
             {
-                try
+                for (int i = 0; i < NumberOfItems; i++)
                 {
-                    var result = await touchsocketmodbus.ReadHoldingRegistersAsync(1, 0, 100, 60000, CancellationToken.None);
-                    if (result.ErrorCode != ModbusErrorCode.Success)
+                    try
+                    {
+                        var result = await touchsocketmodbus.ReadHoldingRegistersAsync(1, 0, 100, 60000, CancellationToken.None);
+                        if (result.ErrorCode != ModbusErrorCode.Success)
+                        {
+                            Console.WriteLine(result);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+            }));
+        }
+        await Task.WhenAll(tasks);
+    }
+
+    [Benchmark(Description = "NModbus4 Modbus读取1W次")]
+    public async Task NModbus4()
+    {
+        List<Task> tasks = new List<Task>();
+        for (int i = 0; i < TaskNumberOfItems; i++)
+        {
+            tasks.Add(Task.Run(async () =>
+            {
+                for (int i = 0; i < NumberOfItems; i++)
+                {
+                    try
+                    {
+                        var result = await nmodbus.ReadHoldingRegistersAsync(1, 0, 100);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+            }));
+        }
+        await Task.WhenAll(tasks);
+    }
+
+    [Benchmark(Description = "HslCommunication Modbus读取1W次")]
+    public async Task HslCommunication()
+    {
+        List<Task> tasks = new List<Task>();
+        for (int i = 0; i < TaskNumberOfItems; i++)
+        {
+            tasks.Add(Task.Run(async () =>
+            {
+                for (int i = 0; i < NumberOfItems; i++)
+                {
+                    var result = await hslmodbus.ReadAsync("0", 100);
+                    if (!result.IsSuccess)
                     {
                         Console.WriteLine(result);
                     }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
             }));
-            await Task.WhenAll(tasks);
         }
-    }
-
-    [Benchmark]
-    public async Task NModbus4()
-    {
-        List<Task> tasks = new List<Task>();
-        for (int i = 0; i < NumberOfItems; i++)
-        {
-            tasks.Add(Task.Run(async () =>
-            {
-                try
-                {
-                    var result = await nmodbus.ReadHoldingRegistersAsync(1, 0, 100);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
-                }
-            }));
-            await Task.WhenAll(tasks);
-        }
-    }
-
-    [Benchmark]
-    public async Task HslCommunication()
-    {
-        List<Task> tasks = new List<Task>();
-        for (int i = 0; i < NumberOfItems; i++)
-        {
-            tasks.Add(Task.Run(async () =>
-            {
-                var result = await hslmodbus.ReadAsync("0", 100);
-                if (!result.IsSuccess)
-                {
-                    Console.WriteLine(result);
-                }
-            }));
-            await Task.WhenAll(tasks);
-        }
+        await Task.WhenAll(tasks);
     }
 }
