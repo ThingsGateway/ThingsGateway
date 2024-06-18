@@ -98,7 +98,7 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     protected override async Task PreviewReceived(EndPoint remoteEndPoint, ByteBlock byteBlock)
     {
         if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.AsSegment().ToHexString() : byteBlock.ToString())}");
+            Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.AsSegmentTake().ToHexString() : byteBlock.ToString(byteBlock.Position))}");
 
         TRequest request = null;
         if (IsSingleThread)

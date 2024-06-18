@@ -18,6 +18,7 @@ internal class ModbusUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter
     public ModbusUdpDataHandleAdapter()
     {
         IsSendPackCommand = true;
+        this.MaxPackageSize = 1024 * 1024 * 1024;
     }
 
     public override byte[] PackCommand(ISendMessage item)

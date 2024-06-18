@@ -362,7 +362,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         {
             clientChannel.WaitHandlePool.Destroy(waitData);
             if (IsSingleThread)
-                clientChannel.WaitLock.Reset();
+                clientChannel.WaitLock.Set();
         }
     }
 

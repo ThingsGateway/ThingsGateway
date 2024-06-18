@@ -63,29 +63,39 @@ public partial class LogConsole : IDisposable
 
     private async Task HandleOnExportClick(MouseEventArgs args)
     {
-        if (IsPause)
+        try
         {
-            using var memoryStream = new MemoryStream();
-            using StreamWriter writer = new(memoryStream);
-            foreach (var item in PauseMessagesText)
+            if (IsPause)
             {
-                writer.WriteLine(item.Message);
-            }
-            writer.Flush();
-            memoryStream.Seek(0, SeekOrigin.Begin);
+                using var memoryStream = new MemoryStream();
+                using StreamWriter writer = new(memoryStream);
+                foreach (var item in PauseMessagesText)
+                {
+                    writer.WriteLine(item.Message);
+                }
+                writer.Flush();
+                memoryStream.Seek(0, SeekOrigin.Begin);
 
-            // 定义文件名称规则的正则表达式模式
-            string pattern = @"[\\/:*?""<>|]";
-            // 使用正则表达式将不符合规则的部分替换为下划线
-            string sanitizedFileName = Regex.Replace(HeaderText, pattern, "_");
-            await DownloadService.DownloadFromStreamAsync(sanitizedFileName + DateTime.Now.ToFileDateTimeFormat(), memoryStream);
+                // 定义文件名称规则的正则表达式模式
+                string pattern = @"[\\/:*?""<>|]";
+                // 使用正则表达式将不符合规则的部分替换为下划线
+                string sanitizedFileName = Regex.Replace(HeaderText, pattern, "_");
+                await DownloadService.DownloadFromStreamAsync(sanitizedFileName + DateTime.Now.ToFileDateTimeFormat(), memoryStream);
+            }
+            else
+            {
+                if (PlatformService != null)
+                    await PlatformService.OnLogExport(LogPath);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            if (PlatformService != null)
-                await PlatformService.OnLogExport(LogPath);
+            await ToastService.Warn(ex);
         }
     }
+
+    [Inject]
+    private ToastService ToastService { get; set; }
 
     [Parameter, EditorRequired]
     public string LogPath { get; set; }

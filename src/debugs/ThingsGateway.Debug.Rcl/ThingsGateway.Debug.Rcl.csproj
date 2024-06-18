@@ -37,7 +37,6 @@
     <Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\AdapterDebugComponent.razor.cs" Link="DebugPages\AdapterDebugComponent.razor.cs" />
     <Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\ChannelDataDebugComponent.razor.cs" Link="DebugPages\ChannelDataDebugComponent.razor.cs" />
     <Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\LogConsole.razor.cs" Link="DebugPages\LogConsole.razor.cs" />
-    <Compile Include="..\..\ThingsGateway.Gateway.Razor\Services\PlatformService.cs" Link="Services\PlatformService.cs" />
   </ItemGroup>
 
 

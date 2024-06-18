@@ -14,8 +14,6 @@ using HslCommunication.ModBus;
 
 using NModbus;
 
-using System.Net.Sockets;
-
 using ThingsGateway.Foundation.Modbus;
 
 using TouchSocket.Core;
@@ -30,7 +28,7 @@ namespace ThingsGateway.Foundation;
 [MemoryDiagnoser, RankColumn]
 public class ModbusBenchmarker
 {
-    private int NumberOfItems = 1000;
+    private int NumberOfItems = 1;
     private ModbusMaster thingsgatewaymodbus;
     private TouchSocket.Modbus.ModbusTcpMaster touchsocketmodbus;
     private IModbusMaster nmodbus;
@@ -47,6 +45,7 @@ public class ModbusBenchmarker
                 ModbusType = Modbus.ModbusTypeEnum.ModbusTcp,
             };
             thingsgatewaymodbus.Channel.Connect();
+            thingsgatewaymodbus.Timeout = 60000;
         }
         {
             var clientConfig = new TouchSocket.Core.TouchSocketConfig().SetRemoteIPHost("127.0.0.1:502");
@@ -70,16 +69,17 @@ public class ModbusBenchmarker
         List<Task> tasks = new List<Task>();
         for (int i = 0; i < NumberOfItems; i++)
         {
-            tasks.Add(Task.Run(async () =>
+            //tasks.Add(Task.Run(async () =>
             {
                 var result = await thingsgatewaymodbus.ReadAsync("40001", 100);
                 if (!result.IsSuccess)
                 {
                     Console.WriteLine(result);
                 }
-            }));
+            }
         }
-        await Task.WhenAll(tasks);
+
+        //await Task.WhenAll(tasks);
     }
 
     [Benchmark]
@@ -88,16 +88,23 @@ public class ModbusBenchmarker
         List<Task> tasks = new List<Task>();
         for (int i = 0; i < NumberOfItems; i++)
         {
-            tasks.Add(Task.Run(async () =>
+            //tasks.Add(Task.Run(async () =>
             {
-                var result = await touchsocketmodbus.ReadHoldingRegistersAsync(0, 100);
-                if (result.ErrorCode != ModbusErrorCode.Success)
+                try
                 {
-                    Console.WriteLine(result);
+                    var result = await touchsocketmodbus.ReadHoldingRegistersAsync(1, 0, 100, 60000, CancellationToken.None);
+                    if (result.ErrorCode != ModbusErrorCode.Success)
+                    {
+                        Console.WriteLine(result);
+                    }
                 }
-            }));
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
+            //await Task.WhenAll(tasks);
         }
-        await Task.WhenAll(tasks);
     }
 
     [Benchmark]
@@ -106,7 +113,6 @@ public class ModbusBenchmarker
         List<Task> tasks = new List<Task>();
         for (int i = 0; i < NumberOfItems; i++)
         {
-            tasks.Add(Task.Run(async () =>
             {
                 try
                 {
@@ -116,9 +122,8 @@ public class ModbusBenchmarker
                 {
                     Console.WriteLine(ex);
                 }
-            }));
+            }
         }
-        await Task.WhenAll(tasks);
     }
 
     [Benchmark]
@@ -127,15 +132,13 @@ public class ModbusBenchmarker
         List<Task> tasks = new List<Task>();
         for (int i = 0; i < NumberOfItems; i++)
         {
-            tasks.Add(Task.Run(async () =>
             {
                 var result = await hslmodbus.ReadAsync("0", 100);
                 if (!result.IsSuccess)
                 {
                     Console.WriteLine(result);
                 }
-            }));
+            }
         }
-        await Task.WhenAll(tasks);
     }
 }

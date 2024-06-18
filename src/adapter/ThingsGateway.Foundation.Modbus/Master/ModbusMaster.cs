@@ -10,8 +10,6 @@
 
 using ThingsGateway.Foundation.Extension.Generic;
 
-using TouchSocket.Sockets;
-
 namespace ThingsGateway.Foundation.Modbus;
 
 /// <inheritdoc/>

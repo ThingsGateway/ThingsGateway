@@ -16,8 +16,6 @@ using ThingsGateway.Foundation.Extension.String;
 
 using TouchSocket.Core;
 
-using static System.Collections.Specialized.BitVector32;
-
 namespace ThingsGateway.Foundation.Dlt645;
 
 /// <summary>
@@ -83,7 +81,7 @@ public class Dlt645_2007Address
         var cacheKey = $"{nameof(ParseFrom)}_{typeof(Dlt645_2007Address).FullName}_{typeof(Dlt645_2007Address).TypeHandle.Value}_{address}";
         if (isCache)
             if (MemoryCache.Instance.TryGetValue(cacheKey, out Dlt645_2007Address dAddress))
-                return dAddress.Map();
+                return dAddress;
 
         Dlt645_2007Address dlt645_2007Address = new();
         if (defaultStation != null)
@@ -132,7 +130,7 @@ public class Dlt645_2007Address
         dlt645_2007Address.DataId = array;
 
         if (isCache)
-            MemoryCache.Instance.Set(cacheKey, dlt645_2007Address.Map<Dlt645_2007Address>(), 3600);
+            MemoryCache.Instance.Set(cacheKey, dlt645_2007Address, 3600);
 
         return dlt645_2007Address;
     }

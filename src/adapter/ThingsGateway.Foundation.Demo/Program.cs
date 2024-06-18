@@ -14,17 +14,33 @@ using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Validators;
 
+using System.Diagnostics;
+
 namespace ThingsGateway.Foundation;
 
 internal class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
-        //ModbusBenchmarker modbusBenchmarker = new ModbusBenchmarker();
-        //await modbusBenchmarker.ThingsGateway();
-        //await modbusBenchmarker.Touchsocket();
-        //await modbusBenchmarker.NModbus4();
-        //await modbusBenchmarker.HslCommunication();
+        ModbusBenchmarker modbusBenchmarker = new ModbusBenchmarker();
+        Stopwatch stopwatch = new();
+        stopwatch.Start();
+        await modbusBenchmarker.ThingsGateway();
+        stopwatch.Stop();
+        Console.WriteLine(stopwatch.ElapsedMilliseconds);
+        stopwatch.Restart();
+        await modbusBenchmarker.Touchsocket();
+        stopwatch.Stop();
+        Console.WriteLine(stopwatch.ElapsedMilliseconds);
+        stopwatch.Restart();
+        await modbusBenchmarker.NModbus4();
+        stopwatch.Stop();
+        Console.WriteLine(stopwatch.ElapsedMilliseconds);
+        stopwatch.Restart();
+        await modbusBenchmarker.HslCommunication();
+        stopwatch.Stop();
+        Console.WriteLine(stopwatch.ElapsedMilliseconds);
+        Console.ReadLine();
         var summary = BenchmarkRunner.Run<ModbusBenchmarker>(new ManualConfig()
             .WithOptions(ConfigOptions.DisableOptimizationsValidator)
         .AddValidator(JitOptimizationsValidator.DontFailOnError)

@@ -21,7 +21,7 @@ public static class ServiceExtension
     /// <inheritdoc/>
     public static IServiceCollection AddDebugRcl(this IServiceCollection services)
     {
-        return services.AddScoped<IPlatformService, PlatformService>()
+        return services.AddScoped<IPlatformService, PhotinoPlatformService>()
             .AddScoped<IAppVersionService, VersionService>()
             .AddScoped<IMenuService, MenuService>();
     }

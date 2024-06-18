@@ -32,14 +32,16 @@ public class PlatformService : IPlatformService
         {
             return;
         }
+        //打开文件夹
+
+        string url = "api/file/download";
         //统一web下载
         foreach (var item in files)
         {
+            await using var jSObject = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
             var path = Path.GetRelativePath("wwwroot", item.FullName);
-            await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
-            string url = "api/file/download";
             string fileName = DateTime.Now.ToFileDateTimeFormat();
-            await ajaxJS.InvokeVoidAsync("blazor_downloadFile", url, fileName, new { FileName = path });
+            await jSObject.InvokeVoidAsync("blazor_downloadFile", url, fileName, new { FileName = path });
         }
     }
 }

@@ -15,7 +15,6 @@ using Newtonsoft.Json.Linq;
 using System.Text;
 
 using ThingsGateway.Foundation.Extension.String;
-using ThingsGateway.Foundation.Json.Extension;
 
 namespace ThingsGateway.Foundation;
 
@@ -38,10 +37,10 @@ public static class ThingsGatewayBitConverterExtension
 
         var type = defaultBitConverter.GetType();
         // 尝试从缓存中获取解析结果
-        var cacheKey = $"{nameof(ThingsGatewayBitConverterExtension)}_{nameof(GetTransByAddress)}_{type.FullName}_{defaultBitConverter.ToJsonNetString()}_{registerAddress}";
+        var cacheKey = $"{nameof(ThingsGatewayBitConverterExtension)}_{nameof(GetTransByAddress)}_{type.FullName}_{defaultBitConverter.ToJsonString()}_{registerAddress}";
         if (MemoryCache.Instance.TryGetValue(cacheKey, out IThingsGatewayBitConverter cachedConverter))
         {
-            return (IThingsGatewayBitConverter)cachedConverter!.Map(type);
+            return cachedConverter!;
         }
 
         // 去除设备地址两端的空格
@@ -133,7 +132,7 @@ public static class ThingsGatewayBitConverterExtension
         }
 
         // 将解析结果添加到缓存中，缓存有效期为3600秒
-        MemoryCache.Instance.Set(cacheKey, (IThingsGatewayBitConverter)converter!.Map(type), 3600);
+        MemoryCache.Instance.Set(cacheKey, converter!, 3600);
         return converter;
     }
 

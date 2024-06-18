@@ -12,7 +12,6 @@ using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.Extension.String;
 
 using TouchSocket.Core;
-using TouchSocket.Sockets;
 
 namespace ThingsGateway.Foundation.Dlt645;
 

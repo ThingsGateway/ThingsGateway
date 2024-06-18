@@ -125,7 +125,7 @@ public class ModbusAddress
         var cacheKey = $"{nameof(ParseFrom)}_{typeof(ModbusAddress).FullName}_{typeof(ModbusAddress).TypeHandle.Value}_{station}_{dtuid}_{address}";
         if (isCache)
             if (MemoryCache.Instance.TryGetValue(cacheKey, out ModbusAddress mAddress))
-                return mAddress.Map();
+                return mAddress;
 
         var modbusAddress = new ModbusAddress();
         if (station != null)
@@ -163,7 +163,7 @@ public class ModbusAddress
         }
 
         if (isCache)
-            MemoryCache.Instance.Set(cacheKey, modbusAddress.Map(), 3600);
+            MemoryCache.Instance.Set(cacheKey, modbusAddress, 3600);
 
         return modbusAddress;
 

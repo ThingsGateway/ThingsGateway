@@ -13,6 +13,11 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <inheritdoc/>
 internal class ModbusTcpServerDataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<ModbusTcpServerMessage>
 {
+    public ModbusTcpServerDataHandleAdapter()
+    {
+        this.MaxPackageSize = 1024 * 1024 * 1024;
+    }
+
     /// <inheritdoc/>
     protected override AdapterResult UnpackResponse(ModbusTcpServerMessage request, IByteBlock byteBlock)
     {

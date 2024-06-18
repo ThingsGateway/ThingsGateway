@@ -18,6 +18,7 @@ internal class ModbusTcpDataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
     public ModbusTcpDataHandleAdapter()
     {
         IsSendPackCommand = true;
+        this.MaxPackageSize = 1024 * 1024 * 1024;
     }
 
     public override byte[] PackCommand(ISendMessage item)
@@ -39,7 +40,6 @@ internal class ModbusTcpDataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
 
         byteBlock.Position = pos;
         request.Sign = byteBlock.ReadUInt16(EndianType.Big);
-
         return result.Content;
     }
 }

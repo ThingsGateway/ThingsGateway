@@ -83,7 +83,7 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     protected override FilterResult Filter<TByteBlock>(ref TByteBlock byteBlock, bool beCached, ref TRequest request, ref int tempCapacity)
     {
         if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.AsSegment().ToHexString() : byteBlock.ToString())}");
+            Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.AsSegmentTake().ToHexString() : byteBlock.ToString(byteBlock.Position))}");
         {
             //非并发协议,复用对象
             if (IsSingleThread)
