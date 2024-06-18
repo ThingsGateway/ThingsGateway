@@ -31,7 +31,6 @@ public class ModbusBenchmarker
     private int TaskNumberOfItems = 1;
     private int NumberOfItems = 10000;
     private ModbusMaster thingsgatewaymodbus;
-    private TouchSocket.Modbus.ModbusTcpMaster touchsocketmodbus;
     private IModbusMaster nmodbus;
     private ModbusTcpNet hslmodbus;
 
@@ -48,14 +47,6 @@ public class ModbusBenchmarker
             thingsgatewaymodbus.Channel.Connect();
             thingsgatewaymodbus.Timeout = 60000;
         }
-        {
-            var clientConfig = new TouchSocket.Core.TouchSocketConfig().SetRemoteIPHost("127.0.0.1:502");
-            touchsocketmodbus = new()
-            {
-            };
-            touchsocketmodbus.Setup(clientConfig);
-            touchsocketmodbus.Connect();
-        }
 
         TcpClient client = new TcpClient("127.0.0.1", 502);
         var factory = new ModbusFactory();
@@ -64,7 +55,7 @@ public class ModbusBenchmarker
         hslmodbus.ConnectServer();
     }
 
-    [Benchmark(Description = "ThingsGateway Modbus读取1W次")]
+    [Benchmark(Description = "ThingsGateway Modbus")]
     public async Task ThingsGateway()
     {
         List<Task> tasks = new List<Task>();
@@ -85,35 +76,7 @@ public class ModbusBenchmarker
         await Task.WhenAll(tasks);
     }
 
-    [Benchmark(Description = "Touchsocket Modbus读取1W次")]
-    public async Task Touchsocket()
-    {
-        List<Task> tasks = new List<Task>();
-        for (int i = 0; i < TaskNumberOfItems; i++)
-        {
-            tasks.Add(Task.Run(async () =>
-            {
-                for (int i = 0; i < NumberOfItems; i++)
-                {
-                    try
-                    {
-                        var result = await touchsocketmodbus.ReadHoldingRegistersAsync(1, 0, 100, 60000, CancellationToken.None);
-                        if (result.ErrorCode != ModbusErrorCode.Success)
-                        {
-                            Console.WriteLine(result);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-                }
-            }));
-        }
-        await Task.WhenAll(tasks);
-    }
-
-    [Benchmark(Description = "NModbus4 Modbus读取1W次")]
+    [Benchmark(Description = "NModbus4 Modbus")]
     public async Task NModbus4()
     {
         List<Task> tasks = new List<Task>();
@@ -137,7 +100,7 @@ public class ModbusBenchmarker
         await Task.WhenAll(tasks);
     }
 
-    [Benchmark(Description = "HslCommunication Modbus读取1W次")]
+    [Benchmark(Description = "HslCommunication Modbus")]
     public async Task HslCommunication()
     {
         List<Task> tasks = new List<Task>();
