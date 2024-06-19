@@ -60,7 +60,7 @@ public partial class ModbusSlave : ComponentBase, IDisposable
 
     private async Task OnDisConnectClick()
     {
-        _plc?.SafeDispose();
+        _plc?.Close();
         await InvokeAsync(StateHasChanged);
     }
 }

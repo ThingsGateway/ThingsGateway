@@ -28,7 +28,7 @@ public sealed class TgMqttRpcClientTopicGenerationStrategy : IMqttRpcClientTopic
             throw new ArgumentException("The method name cannot contain /, + or #.");
         }
 
-        var requestTopic = $"ThingsGateway/{Guid.NewGuid():N}/{context.MethodName}";
+        var requestTopic = $"{context.MethodName}/{Guid.NewGuid():N}";
         var responseTopic = requestTopic + "/response";
 
         return new MqttRpcTopicPair

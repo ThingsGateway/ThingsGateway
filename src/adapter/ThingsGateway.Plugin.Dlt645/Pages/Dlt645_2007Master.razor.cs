@@ -65,7 +65,7 @@ public partial class Dlt645_2007Master : ComponentBase, IDisposable
 
     private async Task OnDisConnectClick()
     {
-        _plc?.SafeDispose();
+        _plc?.Close();
         await InvokeAsync(StateHasChanged);
     }
 }
