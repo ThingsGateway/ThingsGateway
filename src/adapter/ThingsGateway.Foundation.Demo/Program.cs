@@ -14,10 +14,12 @@ namespace ThingsGateway.Foundation;
 
 internal class Program
 {
+    private static int ClientCount = 100;
+
     private static async Task Main(string[] args)
     {
         Console.WriteLine("开始测试前，请先启动ModbusSlave，建议使用本项目自带的ThingsGateway.Debug.Photino软件开启，或者ModbusSim");
-        Console.WriteLine("输入任意键，开始多客户端(1000),多线程(100)并发读取(10次)测试");
+        Console.WriteLine($"输入任意键，开始多客户端({ClientCount}),多线程({ModbusCompare.TaskNumberOfItems})并发读取({ModbusCompare.NumberOfItems})测试，共{ClientCount * ModbusCompare.TaskNumberOfItems * ModbusCompare.NumberOfItems}次");
         Console.ReadKey();
 
         await ThingsGateway();
@@ -32,89 +34,117 @@ internal class Program
 
     private static async Task ThingsGateway()
     {
-        Console.WriteLine("输入任意键，开始 ThingsGateway 测试");
-        Console.ReadKey();
-        Console.WriteLine(" ThingsGateway 测试已开始");
-        Stopwatch stopwatch = new();
-        stopwatch.Start();
-        List<Task> tasks = new List<Task>();
-        for (int i = 0; i < 1000; i++)
+        try
         {
-            tasks.Add(Task.Run(async () =>
+            Console.WriteLine("输入任意键，开始 ThingsGateway 测试");
+            Console.ReadKey();
+            Console.WriteLine(" ThingsGateway 测试已开始");
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
+            List<Task> tasks = new List<Task>();
+            for (int i = 0; i < ClientCount; i++)
             {
-                ModbusCompare modbusBenchmarker = new();
-                await modbusBenchmarker.ThingsGateway();
-                modbusBenchmarker.Dispose();
-            }));
+                tasks.Add(Task.Run(async () =>
+                {
+                    ModbusCompare modbusBenchmarker = new();
+                    await modbusBenchmarker.ThingsGateway();
+                    modbusBenchmarker.Dispose();
+                }));
+            }
+            await Task.WhenAll(tasks);
+            stopwatch.Stop();
+            Console.WriteLine($" ThingsGateway 耗时：{stopwatch.ElapsedMilliseconds}");
         }
-        await Task.WhenAll(tasks);
-        stopwatch.Stop();
-        Console.WriteLine($" ThingsGateway 耗时：{stopwatch.ElapsedMilliseconds}");
+        catch (Exception ex)
+        {
+            Console.WriteLine($" ThingsGateway 发生错误：{ex.Message}");
+        }
     }
 
     private static async Task TouchSocket()
     {
-        Console.WriteLine("输入任意键，开始 TouchSocket 测试");
-        Console.ReadKey();
-        Console.WriteLine(" TouchSocket 测试已开始");
-        Stopwatch stopwatch = new();
-        stopwatch.Start();
-        List<Task> tasks = new List<Task>();
-        for (int i = 0; i < 1000; i++)
+        try
         {
-            tasks.Add(Task.Run(async () =>
+            Console.WriteLine("输入任意键，开始 TouchSocket 测试");
+            Console.ReadKey();
+            Console.WriteLine(" TouchSocket 测试已开始");
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
+            List<Task> tasks = new List<Task>();
+            for (int i = 0; i < ClientCount; i++)
             {
-                ModbusCompare modbusBenchmarker = new();
-                await modbusBenchmarker.TouchSocket();
-                modbusBenchmarker.Dispose();
-            }));
+                tasks.Add(Task.Run(async () =>
+                {
+                    ModbusCompare modbusBenchmarker = new();
+                    await modbusBenchmarker.TouchSocket();
+                    modbusBenchmarker.Dispose();
+                }));
+            }
+            await Task.WhenAll(tasks);
+            stopwatch.Stop();
+            Console.WriteLine($" TouchSocket 耗时：{stopwatch.ElapsedMilliseconds}");
         }
-        await Task.WhenAll(tasks);
-        stopwatch.Stop();
-        Console.WriteLine($" TouchSocket 耗时：{stopwatch.ElapsedMilliseconds}");
+        catch (Exception ex)
+        {
+            Console.WriteLine($" TouchSocket 发生错误：{ex.Message}");
+        }
     }
 
     private static async Task NModbus4()
     {
-        Console.WriteLine("输入任意键，开始 NModbus4 测试");
-        Console.ReadKey();
-        Console.WriteLine(" NModbus4 测试已开始");
-        Stopwatch stopwatch = new();
-        stopwatch.Start();
-        List<Task> tasks = new List<Task>();
-        for (int i = 0; i < 1000; i++)
+        try
         {
-            tasks.Add(Task.Run(async () =>
+            Console.WriteLine("输入任意键，开始 NModbus4 测试");
+            Console.ReadKey();
+            Console.WriteLine(" NModbus4 测试已开始");
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
+            List<Task> tasks = new List<Task>();
+            for (int i = 0; i < ClientCount; i++)
             {
-                ModbusCompare modbusBenchmarker = new();
-                await modbusBenchmarker.NModbus4();
-                modbusBenchmarker.Dispose();
-            }));
+                tasks.Add(Task.Run(async () =>
+                {
+                    ModbusCompare modbusBenchmarker = new();
+                    await modbusBenchmarker.NModbus4();
+                    modbusBenchmarker.Dispose();
+                }));
+            }
+            await Task.WhenAll(tasks);
+            stopwatch.Stop();
+            Console.WriteLine($" NModbus4 耗时：{stopwatch.ElapsedMilliseconds}");
         }
-        await Task.WhenAll(tasks);
-        stopwatch.Stop();
-        Console.WriteLine($" NModbus4 耗时：{stopwatch.ElapsedMilliseconds}");
+        catch (Exception ex)
+        {
+            Console.WriteLine($" NModbus4 发生错误：{ex.Message}");
+        }
     }
 
     private static async Task HslCommunication()
     {
-        Console.WriteLine("输入任意键，开始 HslCommunication 测试");
-        Console.ReadKey();
-        Console.WriteLine(" HslCommunication 测试已开始");
-        Stopwatch stopwatch = new();
-        stopwatch.Start();
-        List<Task> tasks = new List<Task>();
-        for (int i = 0; i < 1000; i++)
+        try
         {
-            tasks.Add(Task.Run(async () =>
+            Console.WriteLine("输入任意键，开始 HslCommunication 测试");
+            Console.ReadKey();
+            Console.WriteLine(" HslCommunication 测试已开始");
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
+            List<Task> tasks = new List<Task>();
+            for (int i = 0; i < ClientCount; i++)
             {
-                ModbusCompare modbusBenchmarker = new();
-                await modbusBenchmarker.HslCommunication();
-                modbusBenchmarker.Dispose();
-            }));
+                tasks.Add(Task.Run(async () =>
+                {
+                    ModbusCompare modbusBenchmarker = new();
+                    await modbusBenchmarker.HslCommunication();
+                    modbusBenchmarker.Dispose();
+                }));
+            }
+            await Task.WhenAll(tasks);
+            stopwatch.Stop();
+            Console.WriteLine($" HslCommunication 耗时：{stopwatch.ElapsedMilliseconds}");
         }
-        await Task.WhenAll(tasks);
-        stopwatch.Stop();
-        Console.WriteLine($" HslCommunication 耗时：{stopwatch.ElapsedMilliseconds}");
+        catch (Exception ex)
+        {
+            Console.WriteLine($" HslCommunication 发生错误：{ex.Message}");
+        }
     }
 }

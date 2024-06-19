@@ -23,8 +23,8 @@ namespace ThingsGateway.Foundation;
 
 public class ModbusCompare : IDisposable
 {
-    private int TaskNumberOfItems = 100;
-    private int NumberOfItems = 10;
+    public static int TaskNumberOfItems = 100;
+    public static int NumberOfItems = 100;
     private ModbusMaster thingsgatewaymodbus;
     private IModbusMaster nmodbus;
     private ModbusTcpMaster modbusTcpMaster;
@@ -41,7 +41,6 @@ public class ModbusCompare : IDisposable
                 ModbusType = Modbus.ModbusTypeEnum.ModbusTcp,
             };
             thingsgatewaymodbus.Channel.Connect();
-            thingsgatewaymodbus.Timeout = 60000;
         }
         {
             var clientConfig = new TouchSocket.Core.TouchSocketConfig().SetRemoteIPHost("127.0.0.1:502");
@@ -65,17 +64,11 @@ public class ModbusCompare : IDisposable
             {
                 for (int i = 0; i < NumberOfItems; i++)
                 {
-                    try
-                    {
-                        var result = await modbusTcpMaster.ReadHoldingRegistersAsync(0, 100);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
+                    var result = await modbusTcpMaster.ReadHoldingRegistersAsync(1, 0, 100, 3000, CancellationToken.None);
                 }
             }));
         }
+
         await Task.WhenAll(tasks);
     }
 
@@ -91,7 +84,7 @@ public class ModbusCompare : IDisposable
                     var result = await thingsgatewaymodbus.ReadAsync("40001", 100);
                     if (!result.IsSuccess)
                     {
-                        Console.WriteLine(result);
+                        throw new Exception(result.ErrorMessage);
                     }
                 }
             }));
@@ -108,14 +101,7 @@ public class ModbusCompare : IDisposable
             {
                 for (int i = 0; i < NumberOfItems; i++)
                 {
-                    try
-                    {
-                        var result = await nmodbus.ReadHoldingRegistersAsync(1, 0, 100);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
+                    var result = await nmodbus.ReadHoldingRegistersAsync(1, 0, 100);
                 }
             }));
         }
@@ -134,7 +120,7 @@ public class ModbusCompare : IDisposable
                     var result = await hslmodbus.ReadAsync("0", 100);
                     if (!result.IsSuccess)
                     {
-                        Console.WriteLine(result.Message);
+                        throw new Exception(result.Message);
                     }
                 }
             }));
