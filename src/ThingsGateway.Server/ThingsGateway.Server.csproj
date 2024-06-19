@@ -18,7 +18,14 @@
 
     <!--<PlatformTarget>x86</PlatformTarget>-->
   </PropertyGroup>
-
+  
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    　　<AllowedReferenceRelatedFileExtensions>
+      　　　　<!-- 阻止默认的 XML 和 PDB 文件复制到 RELEASE 的输出目录. 只有*.allowedextension 扩展名的文件可以被包含, 当然这个扩展的文件并不存在.-->
+      　　　　.allowedextension
+    </AllowedReferenceRelatedFileExtensions>
+  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
     <DefineConstants>Admin</DefineConstants>
   </PropertyGroup>

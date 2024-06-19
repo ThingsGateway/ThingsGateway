@@ -12,6 +12,13 @@
 		<TargetFrameworks>net6.0</TargetFrameworks>
 	</PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    　　<AllowedReferenceRelatedFileExtensions>
+      　　　　<!-- 阻止默认的 XML 和 PDB 文件复制到 RELEASE 的输出目录. 只有*.allowedextension 扩展名的文件可以被包含, 当然这个扩展的文件并不存在.-->
+      　　　　.allowedextension
+    </AllowedReferenceRelatedFileExtensions>
+  </PropertyGroup>
+  
 	<ItemGroup>
 		<Content Include="favicon.ico">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -28,7 +28,7 @@ namespace ThingsGateway.Admin.Application;
 public static class App
 {
     /// <summary>
-    /// 直接引用程序集，不支持单文件
+    /// 直接引用程序集
     /// </summary>
     public static readonly IEnumerable<Assembly> Assemblies;
 
@@ -38,7 +38,7 @@ public static class App
     public static readonly IEnumerable<Assembly> RazorAssemblies;
 
     /// <summary>
-    /// 直接引用程序集中的类型，不支持单文件
+    /// 直接引用程序集中的类型
     /// </summary>
     public static readonly IEnumerable<Type> EffectiveTypes;
 
@@ -149,15 +149,73 @@ public static class App
 
         IEnumerable<Assembly> scanAssemblies;
 
-        var dependencyContext = DependencyContext.Default!;
+        // 获取入口程序集
+        var entryAssembly = Assembly.GetEntryAssembly();
 
-        // 读取项目程序集
-        scanAssemblies = dependencyContext.RuntimeLibraries
-           .Where(u =>
-                  (u.Type == "project" && !excludeAssemblyNames.Any(j => u.Name.EndsWith(j))) ||
-                  (u.Type == "package" && (u.Name.StartsWith(nameof(ThingsGateway)))))
-           .Select(u => Reflect.GetAssembly(u.Name));
+        // 非独立发布/非单文件发布
+        if (!string.IsNullOrWhiteSpace(entryAssembly.Location))
+        {
+            var dependencyContext = DependencyContext.Default;
 
-        return scanAssemblies;
+            // 读取项目程序集
+            scanAssemblies = dependencyContext.RuntimeLibraries
+               .Where(u =>
+                      (u.Type == "project" && !excludeAssemblyNames.Any(j => u.Name.EndsWith(j))) ||
+                      (u.Type == "package" && (u.Name.StartsWith(nameof(ThingsGateway)))))
+               .Select(u => Reflect.GetAssembly(u.Name));
+
+            return scanAssemblies;
+        }
+        else
+        {
+            IEnumerable<Assembly> fixedSingleFileAssemblies = new[] { entryAssembly };
+
+            // 扫描实现 ISingleFilePublish 接口的类型
+            var singleFilePublishType = entryAssembly.GetTypes()
+                                                .FirstOrDefault(u => u.IsClass && !u.IsInterface && !u.IsAbstract && typeof(ISingleFilePublish).IsAssignableFrom(u));
+            if (singleFilePublishType != null)
+            {
+                var singleFilePublish = Activator.CreateInstance(singleFilePublishType) as ISingleFilePublish;
+
+                // 加载用户自定义配置单文件所需程序集
+                var nativeAssemblies = singleFilePublish.IncludeAssemblies();
+                var loadAssemblies = singleFilePublish.IncludeAssemblyNames()
+                                                .Select(u => Reflect.GetAssembly(u));
+
+                fixedSingleFileAssemblies = fixedSingleFileAssemblies.Concat(nativeAssemblies)
+                                                            .Concat(loadAssemblies);
+            }
+
+            // 通过 AppDomain.CurrentDomain 扫描，默认为延迟加载，正常只能扫描到 Furion 和 入口程序集（启动层）
+            scanAssemblies = AppDomain.CurrentDomain.GetAssemblies()
+                                    .Where(ass =>
+                                            // 排除 System，Microsoft，netstandard 开头的程序集
+                                            !ass.FullName.StartsWith(nameof(System))
+                                            && !ass.FullName.StartsWith(nameof(Microsoft))
+                                            && !ass.FullName.StartsWith("netstandard"))
+                                    .Concat(fixedSingleFileAssemblies)
+                                    .Distinct();
+            return scanAssemblies;
+        }
     }
+}
+
+/// <summary>
+/// 解决单文件发布程序集扫描问题
+/// </summary>
+public interface ISingleFilePublish
+{
+    /// <summary>
+    /// 包含程序集数组
+    /// </summary>
+    /// <remarks>配置单文件发布扫描程序集</remarks>
+    /// <returns></returns>
+    Assembly[] IncludeAssemblies();
+
+    /// <summary>
+    /// 包含程序集名称数组
+    /// </summary>
+    /// <remarks>配置单文件发布扫描程序集名称</remarks>
+    /// <returns></returns>
+    string[] IncludeAssemblyNames();
 }
