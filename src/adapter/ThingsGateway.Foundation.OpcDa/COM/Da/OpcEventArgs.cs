@@ -14,19 +14,19 @@ namespace ThingsGateway.Foundation.OpcDa.Da;
 /// 值变化
 /// </summary>
 /// <param name="opcItems"></param>
-public delegate void OnDataChangedHandler(List<ItemReadResult> opcItems);
+public delegate void DataChangedHandler(string name, int serverGroupHandle, List<ItemReadResult> opcItems);
 
 /// <summary>
 /// 读取
 /// </summary>
 /// <param name="opcItems"></param>
-public delegate void OnReadCompletedHandler(List<ItemReadResult> opcItems);
+public delegate void ReadCompletedHandler(string name, int serverGroupHandle, List<ItemReadResult> opcItems);
 
 /// <summary>
 /// 写入
 /// </summary>
 /// <param name="opcItems"></param>
-internal delegate void OnWriteCompletedHandler(List<ItemWriteResult> opcItems);
+public delegate void WriteCompletedHandler(string name, int serverGroupHandle, List<ItemWriteResult> opcItems);
 
 /// <summary>
 /// 返回结果
@@ -54,7 +54,7 @@ public class ItemReadResult
     public object Value { get; set; } = 0;
 }
 
-internal class ItemWriteResult
+public class ItemWriteResult
 {
     internal int Exception { get; set; } = 0;
     internal string Name { get; set; } = "";

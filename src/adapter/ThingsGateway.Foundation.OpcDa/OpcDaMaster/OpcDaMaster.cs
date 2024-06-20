@@ -22,12 +22,6 @@ using Timer = System.Timers.Timer;
 namespace ThingsGateway.Foundation.OpcDa;
 
 /// <summary>
-/// 订阅变化项
-/// </summary>
-/// <param name="values"></param>
-public delegate void DataChangedEventHandler(List<ItemReadResult> values);
-
-/// <summary>
 /// 日志输出
 /// </summary>
 public delegate void LogEventHandler(byte level, object sender, string message, Exception ex);
@@ -55,7 +49,7 @@ public class OpcDaMaster : IDisposable
     /// <summary>
     /// 数据变化事件
     /// </summary>
-    public event DataChangedEventHandler DataChangedHandler;
+    public event DataChangedHandler DataChangedHandler;
 
     /// <summary>
     /// 日志输出
@@ -473,8 +467,8 @@ public class OpcDaMaster : IDisposable
         }
     }
 
-    private void Subscription_OnDataChanged(List<ItemReadResult> values)
+    private void Subscription_OnDataChanged(string name, int serverGroupHandle, List<ItemReadResult> values)
     {
-        DataChangedHandler?.Invoke(values);
+        DataChangedHandler?.Invoke(name, serverGroupHandle, values);
     }
 }

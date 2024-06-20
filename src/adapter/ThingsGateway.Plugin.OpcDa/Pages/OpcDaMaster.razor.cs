@@ -61,7 +61,7 @@ public partial class OpcDaMaster : IDisposable
         LogMessage.AddLogger(logger);
 
         _plc.LogEvent = (a, b, c, d) => LogMessage.Log((LogLevel)a, b, c, d);
-        _plc.DataChangedHandler += (a) => LogMessage.Trace(a.ToJsonString());
+        _plc.DataChangedHandler += (a, b, c) => LogMessage.Trace(c.ToJsonString());
         base.OnInitialized();
     }
 

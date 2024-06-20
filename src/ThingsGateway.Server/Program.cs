@@ -130,7 +130,7 @@ public class Program
                 options.MaximumReceiveMessageSize = null;
                 //可为客户端上载流缓冲的最大项数。 如果达到此限制，则会阻止处理调用，直到服务器处理流项。
                 options.StreamBufferCapacity = 30;
-                options.ClientTimeoutInterval = TimeSpan.FromMinutes(1);
+                options.ClientTimeoutInterval = TimeSpan.FromMinutes(2);
                 options.KeepAliveInterval = TimeSpan.FromSeconds(15);
                 options.HandshakeTimeout = TimeSpan.FromSeconds(30);
             });

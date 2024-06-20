@@ -53,11 +53,11 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
 
     internal event CancelCompletedHandler OnCancelCompleted;
 
-    internal event OnDataChangedHandler OnDataChanged;
+    internal event DataChangedHandler OnDataChanged;
 
-    internal event OnReadCompletedHandler OnReadCompleted;
+    internal event ReadCompletedHandler OnReadCompleted;
 
-    internal event OnWriteCompletedHandler OnWriteCompleted;
+    internal event WriteCompletedHandler OnWriteCompleted;
 
     internal bool ActiveSubscribe
     {
@@ -143,7 +143,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
                 });
             }
         }
-        OnDataChanged?.Invoke(itemChanged);
+        OnDataChanged?.Invoke(this.Name, this.ServerGroupHandle, itemChanged);
     }
 
     public void OnReadComplete(int dwTransid,
@@ -175,7 +175,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
                 });
             }
         }
-        OnReadCompleted?.Invoke(itemChanged);
+        OnReadCompleted?.Invoke(this.Name, ServerGroupHandle, itemChanged);
     }
 
     public void OnWriteComplete(int dwTransid,
@@ -198,7 +198,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
                 });
             }
         }
-        OnWriteCompleted?.Invoke(itemwrite);
+        OnWriteCompleted?.Invoke(this.Name, ServerGroupHandle, itemwrite);
     }
 
     internal List<Tuple<OpcItem, int>> AddOpcItem(OpcItem[] items)

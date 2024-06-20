@@ -192,7 +192,7 @@ public class OpcDaMaster : CollectBase
         base.Dispose(disposing);
     }
 
-    private void DataChangedHandler(List<ItemReadResult> values)
+    private void DataChangedHandler(string name, int serverGroupHandle, List<ItemReadResult> values)
     {
         try
         {
