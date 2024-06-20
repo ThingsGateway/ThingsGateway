@@ -341,6 +341,8 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
 
     private async Task ReturnData(IClientChannel client, ReceivedDataEventArgs e, byte[] sendData)
     {
+        if (SendDelayTime > 0)
+            await Task.Delay(SendDelayTime).ConfigureAwait(false);
         if (client is IUdpClientSender udpClientSender)
             if (ModbusType == ModbusTypeEnum.ModbusRtu)
                 await udpClientSender.SendAsync(((UdpReceivedDataEventArgs)e).EndPoint, new SendMessage(sendData));

@@ -25,7 +25,8 @@ public class VariableClass : IVariable
     /// <summary>
     /// 偏移量，注意如果是布尔类型，Index应该为bit的偏移
     /// </summary>
-    public virtual int Index { get; set; }
+    public virtual int Index { get;
+        set; }
 
     /// <summary>
     /// 执行间隔

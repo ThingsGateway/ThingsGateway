@@ -45,6 +45,7 @@ public class PackHelper
             IThingsGatewayBitConverter transformParameter = byteConverter.GetTransByAddress(ref address);
             // 将转换器设置到变量中
             item.ThingsGatewayBitConverter = transformParameter;
+            item.Index = 0;
             // 获取变量的位偏移量
             if (item.DataType == DataTypeEnum.Boolean)
                 item.Index = device.GetBitOffset(address);

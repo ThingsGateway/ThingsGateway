@@ -34,6 +34,7 @@ internal static class PackHelper
             // 根据地址获取转换参数
             IThingsGatewayBitConverter transformParameter = byteConverter.GetTransByAddress(ref address);
             item.ThingsGatewayBitConverter = transformParameter;
+            item.Index = 0;
             if (item.DataType == DataTypeEnum.Boolean)
                 item.Index = device.GetBitOffset(address);
         }
