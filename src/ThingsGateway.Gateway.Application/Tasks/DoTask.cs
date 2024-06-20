@@ -70,7 +70,7 @@ public class DoTask
                         return;
                     await DoWork(_cancelTokenSource.Token).ConfigureAwait(false);
                 }
-                catch (TaskCanceledException)
+                catch (OperationCanceledException)
                 {
                 }
                 catch (ObjectDisposedException)

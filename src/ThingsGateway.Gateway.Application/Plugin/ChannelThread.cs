@@ -655,7 +655,7 @@ public class ChannelThread
                     await Task.Delay(1000, token).ConfigureAwait(false); // 默认延迟一段时间后再继续执行
             }
         }
-        catch (TaskCanceledException)
+        catch (OperationCanceledException)
         {
             if (stoppingToken.IsCancellationRequested)
                 driver.AfterStop(); // 执行驱动的释放操作

@@ -116,12 +116,11 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <returns></returns>
     protected Task ChannelStoped(IClientChannel channel)
     {
-        if (channel == this.Channel)
+        try
         {
-            //取消全部等待池
             channel.WaitHandlePool.CancelAll();
         }
-        else
+        catch
         {
         }
 
@@ -729,7 +728,16 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                         //只关闭，不释放
                         Channel.Close();
                         if (Channel is IClientChannel client)
+                        {
                             client.WaitHandlePool.SafeDispose();
+                        }
+                        else if (Channel is TcpServiceChannel tcpServiceChannel)
+                        {
+                            tcpServiceChannel.Clients.ForEach(a =>
+                            {
+                                a.WaitHandlePool.SafeDispose();
+                            });
+                        }
                     }
                     catch (Exception ex)
                     {

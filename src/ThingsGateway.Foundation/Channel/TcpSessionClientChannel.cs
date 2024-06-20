@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Foundation;
 
 /// <inheritdoc cref="TcpSessionClient"/>
@@ -24,7 +26,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     /// <summary>
     /// 等待池
     /// </summary>
-    public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
+    public WaitHandlePool<MessageBase> WaitHandlePool { get; private set; } = new();
 
     /// <inheritdoc/>
     public ConcurrentList<IProtocol> Collects { get; } = new();
@@ -49,7 +51,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     /// <inheritdoc/>
     public override string ToString()
     {
-        return $"{IP}:{Port}";
+        return $"{IP}:{Port}:{Id}";
     }
 
     /// <inheritdoc/>
@@ -72,6 +74,12 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
         this.CloseAsync(msg).ConfigureAwait(false);
     }
 
+    public override Task CloseAsync(string msg)
+    {
+        WaitHandlePool.SafeDispose();
+        return base.CloseAsync(msg);
+    }
+
     public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
     {
         throw new NotSupportedException();
@@ -81,6 +89,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     protected override void Dispose(bool disposing)
     {
         if (DisposedValue) return;
+        WaitHandlePool.SafeDispose();
         base.Dispose(disposing);
     }
 

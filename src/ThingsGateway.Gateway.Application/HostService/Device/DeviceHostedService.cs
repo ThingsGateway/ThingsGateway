@@ -620,7 +620,7 @@ public abstract class DeviceHostedService : BackgroundService
                     }
                 }
             }
-            catch (TaskCanceledException)
+            catch (OperationCanceledException)
             {
             }
             catch (ObjectDisposedException)

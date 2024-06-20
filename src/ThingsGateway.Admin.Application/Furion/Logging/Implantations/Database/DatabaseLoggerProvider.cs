@@ -116,7 +116,7 @@ public sealed class DatabaseLoggerProvider : ILoggerProvider, ISupportExternalSc
             _processQueueTask?.Wait(1500);
         }
         catch (OperationCanceledException) { }
-        catch (AggregateException ex) when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is TaskCanceledException) { }
+        catch (AggregateException ex) when (ex.InnerExceptions.Count == 1 && ex.InnerExceptions[0] is OperationCanceledException) { }
         catch { }
 
         // 清空数据库日志记录器

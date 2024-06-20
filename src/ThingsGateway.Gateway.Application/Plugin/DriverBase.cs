@@ -351,10 +351,6 @@ public abstract class DriverBase : DisposableObject
             // 正常返回None状态
             return ThreadRunReturnTypeEnum.None;
         }
-        catch (TaskCanceledException)
-        {
-            return ThreadRunReturnTypeEnum.Break;
-        }
         catch (OperationCanceledException)
         {
             return ThreadRunReturnTypeEnum.Break;

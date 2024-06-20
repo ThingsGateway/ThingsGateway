@@ -355,7 +355,7 @@ public class ManagementHostedService : BackgroundService
                     }
                     await Task.Delay(Options.Redundancy.SyncInterval, stoppingToken).ConfigureAwait(false);
                 }
-                catch (TaskCanceledException)
+                catch (OperationCanceledException)
                 {
                 }
                 catch (ObjectDisposedException)
