@@ -13,19 +13,16 @@ namespace ThingsGateway.Foundation.OpcDa.Da;
 /// <summary>
 /// 值变化
 /// </summary>
-/// <param name="opcItems"></param>
 public delegate void DataChangedHandler(string name, int serverGroupHandle, List<ItemReadResult> opcItems);
 
 /// <summary>
 /// 读取
 /// </summary>
-/// <param name="opcItems"></param>
 public delegate void ReadCompletedHandler(string name, int serverGroupHandle, List<ItemReadResult> opcItems);
 
 /// <summary>
 /// 写入
 /// </summary>
-/// <param name="opcItems"></param>
 public delegate void WriteCompletedHandler(string name, int serverGroupHandle, List<ItemWriteResult> opcItems);
 
 /// <summary>
