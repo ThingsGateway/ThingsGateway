@@ -70,7 +70,6 @@ public class CollectDeviceHostedService : DeviceHostedService
         {
             _logger.LogInformation(Localizer["DeviceRuntimeGeting"]);
             var collectDeviceRunTimes = (await DeviceService.GetCollectDeviceRuntimeAsync().ConfigureAwait(false));
-            _logger.LogInformation(Localizer["DeviceRuntimeGeted"]);
             var idSet = collectDeviceRunTimes.Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet().ToDictionary(a => a);
             var result = collectDeviceRunTimes.Where(a => !idSet.ContainsKey(a.Id));
 
@@ -104,6 +103,7 @@ public class CollectDeviceHostedService : DeviceHostedService
                     }
                 }
             });
+            _logger.LogInformation(Localizer["DeviceRuntimeGeted"]);
         }
         for (int i = 0; i < 3; i++)
         {
