@@ -28,7 +28,6 @@ public class Startup : AppStartup
         TypeAdapterConfig.GlobalSettings.Scan(App.Assemblies.ToArray());
         // 配置默认全局映射（支持覆盖）
         TypeAdapterConfig.GlobalSettings.Default
-              .NameMatchingStrategy(NameMatchingStrategy.Flexible)
               .PreserveReference(true);
 
         //运行日志写入数据库配置
