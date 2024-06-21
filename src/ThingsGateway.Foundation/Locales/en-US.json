@@ -14,7 +14,7 @@
     "Disconnected": "Disconnected",
     "Disconnecting": "Disconnecting",
     "DtuConnected": "Dtu identifier {0} connection successful",
-    "DtuNoConnectedWaining": "The client is not connected or the register is set incorrectly. The register must be set id＝｛Dtu registration packet｝",
+    "DtuNoConnectedWaining": "The Client(Dtu) is not connected",
     "ErrorMessage": "Error message",
     "EventError": "Error occurred in event {0}",
     "Exception": "Exception stack",
