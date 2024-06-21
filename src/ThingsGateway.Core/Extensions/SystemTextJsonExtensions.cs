@@ -24,7 +24,7 @@ public static class SystemTextJsonExtensions
         WriteIndented = true, // 使用缩进格式化输出
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         PropertyNameCaseInsensitive = true,
-        DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull, // 忽略空值属性
+        //DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull, // 忽略空值属性
         NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,//NaN支持
     };
 
