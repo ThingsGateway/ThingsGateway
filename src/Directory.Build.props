@@ -16,10 +16,5 @@
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>none</DebugType>
   </PropertyGroup>
-  <ItemGroup>
-    <None Include="$(SolutionDir)..\README.md" Pack="true" PackagePath="\" />
-    <None Include="$(SolutionDir)..\LICENSE" Pack="true" PackagePath="\" />
-    <None Include="$(SolutionDir)..\icon.png" Pack="true" PackagePath="\" />
-    <None Include="$(SolutionDir)Directory.Build.props" Pack="true" PackagePath="\" />
-  </ItemGroup>
+
 </Project>

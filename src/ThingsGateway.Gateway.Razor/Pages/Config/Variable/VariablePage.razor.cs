@@ -103,7 +103,7 @@ public partial class VariablePage : IDisposable
             variable.VariablePropertyModels ??= new();
             foreach (var item in variable.VariablePropertyModels)
             {
-                var result = item.Value.ValidateForm?.Validate() != false;
+                var result = (!PluginServiceUtil.HasDynamicProperty(item.Value.Value)) || (item.Value.ValidateForm?.Validate() != false);
                 if (result == false)
                 {
                     return false;

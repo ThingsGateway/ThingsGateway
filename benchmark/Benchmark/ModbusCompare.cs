@@ -8,7 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using HslCommunication.ModBus;
+using BenchmarkConsoleApp;
+
+using BenchmarkDotNet.Attributes;
 
 using ThingsGateway.Foundation.Modbus;
 
@@ -23,12 +25,9 @@ namespace ThingsGateway.Foundation;
 
 public class ModbusCompare : IDisposable
 {
-    public static int TaskNumberOfItems = 100;
-    public static int NumberOfItems = 100;
     private ModbusMaster thingsgatewaymodbus;
     private IModbusMaster nmodbus;
     private ModbusTcpMaster modbusTcpMaster;
-    private ModbusTcpNet hslmodbus;
 
     public ModbusCompare()
     {
@@ -51,18 +50,17 @@ public class ModbusCompare : IDisposable
         TcpClient client = new TcpClient("127.0.0.1", 502);
         var factory = new NModbus.ModbusFactory();
         nmodbus = factory.CreateMaster(client);
-        hslmodbus = new("127.0.0.1");
-        hslmodbus.ConnectServer();
     }
 
+    [Benchmark]
     public async Task TouchSocket()
     {
         List<Task> tasks = new List<Task>();
-        for (int i = 0; i < TaskNumberOfItems; i++)
+        for (int i = 0; i < Program.TaskNumberOfItems; i++)
         {
             tasks.Add(Task.Run(async () =>
             {
-                for (int i = 0; i < NumberOfItems; i++)
+                for (int i = 0; i < Program.NumberOfItems; i++)
                 {
                     var result = await modbusTcpMaster.ReadHoldingRegistersAsync(1, 0, 100, 3000, CancellationToken.None);
                 }
@@ -72,14 +70,15 @@ public class ModbusCompare : IDisposable
         await Task.WhenAll(tasks);
     }
 
+    [Benchmark]
     public async Task ThingsGateway()
     {
         List<Task> tasks = new List<Task>();
-        for (int i = 0; i < TaskNumberOfItems; i++)
+        for (int i = 0; i < Program.TaskNumberOfItems; i++)
         {
             tasks.Add(Task.Run(async () =>
             {
-                for (int i = 0; i < NumberOfItems; i++)
+                for (int i = 0; i < Program.NumberOfItems; i++)
                 {
                     var result = await thingsgatewaymodbus.ReadAsync("40001", 100);
                     if (!result.IsSuccess)
@@ -92,36 +91,17 @@ public class ModbusCompare : IDisposable
         await Task.WhenAll(tasks);
     }
 
+    [Benchmark]
     public async Task NModbus4()
     {
         List<Task> tasks = new List<Task>();
-        for (int i = 0; i < TaskNumberOfItems; i++)
+        for (int i = 0; i < Program.TaskNumberOfItems; i++)
         {
             tasks.Add(Task.Run(async () =>
             {
-                for (int i = 0; i < NumberOfItems; i++)
+                for (int i = 0; i < Program.NumberOfItems; i++)
                 {
                     var result = await nmodbus.ReadHoldingRegistersAsync(1, 0, 100);
-                }
-            }));
-        }
-        await Task.WhenAll(tasks);
-    }
-
-    public async Task HslCommunication()
-    {
-        List<Task> tasks = new List<Task>();
-        for (int i = 0; i < TaskNumberOfItems; i++)
-        {
-            tasks.Add(Task.Run(async () =>
-            {
-                for (int i = 0; i < NumberOfItems; i++)
-                {
-                    var result = await hslmodbus.ReadAsync("0", 100);
-                    if (!result.IsSuccess)
-                    {
-                        throw new Exception(result.Message);
-                    }
                 }
             }));
         }
@@ -134,6 +114,5 @@ public class ModbusCompare : IDisposable
         thingsgatewaymodbus.SafeDispose();
         modbusTcpMaster.SafeDispose();
         nmodbus.SafeDispose();
-        hslmodbus.SafeDispose();
     }
 }

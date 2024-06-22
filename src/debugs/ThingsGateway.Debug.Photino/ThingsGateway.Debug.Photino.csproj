@@ -49,5 +49,9 @@
 	</ItemGroup>
 
 
-
+  <ItemGroup>
+    <None Include="$(SolutionDir)..\README.md" Pack="true" PackagePath="\" />
+    <None Include="$(SolutionDir)..\LICENSE" Pack="true" PackagePath="\" />
+    <None Include="$(SolutionDir)..\icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
 </Project>

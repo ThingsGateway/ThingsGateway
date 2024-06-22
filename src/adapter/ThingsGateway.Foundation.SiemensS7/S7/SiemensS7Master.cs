@@ -262,7 +262,7 @@ public partial class SiemensS7Master : ProtocolBase
                     channel.Close();
                     return;
                 }
-                PduLength = ThingsGatewayBitConverter.ToUInt16(result2.Content, 0);
+                PduLength = ThingsGatewayBitConverter.ToUInt16(result2.Content, 0) - 28;
                 Logger?.LogInformation($"PduLength：{PduLength}");
                 PduLength = PduLength < 200 ? 200 : PduLength;
             }

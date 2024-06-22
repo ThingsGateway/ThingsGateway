@@ -8,11 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System;
-
 using ThingsGateway.Foundation.Extension.Generic;
-
-using TouchSocket.Core;
 
 namespace ThingsGateway.Foundation.SiemensS7;
 
@@ -40,11 +36,11 @@ public partial class SiemensS7Master : ProtocolBase
             num1 += num2;
             if (from.DataCode == (byte)S7WordLength.Timer || from.DataCode == (byte)S7WordLength.Counter)
             {
-                from.Address += num2 / 2;
+                from.AddressStart += num2 / 2;
             }
             else
             {
-                from.Address += num2 * 8;
+                from.AddressStart += num2 * 8;
             }
         }
         return listBytes;
@@ -88,7 +84,7 @@ public partial class SiemensS7Master : ProtocolBase
             var result1 = SiemensHelper.GetWriteByteCommand(address, data);
             bytes.Add(result1);
             index += length2;
-            address.Address += length2 * 8;
+            address.AddressStart += length2 * 8;
         }
         return bytes;
     }

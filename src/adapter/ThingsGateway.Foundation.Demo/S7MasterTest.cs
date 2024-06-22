@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Foundation.Json.Extension;
-using ThingsGateway.Foundation.Modbus;
 using ThingsGateway.Foundation.SiemensS7;
 
 using TouchSocket.Core;

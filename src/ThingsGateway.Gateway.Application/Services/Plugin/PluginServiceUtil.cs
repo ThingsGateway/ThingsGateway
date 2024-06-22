@@ -34,6 +34,17 @@ public static class PluginServiceUtil
     }
 
     /// <summary>
+    /// 插件是否支持平台
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static bool HasDynamicProperty(object model)
+    {
+        var type = model.GetType();
+        return type.GetRuntimeProperties().Any(a => a.GetCustomAttribute<DynamicPropertyAttribute>(false) != null);
+    }
+
+    /// <summary>
     /// 通过实体赋值到字典中
     /// </summary>
     /// <param name="model"></param>

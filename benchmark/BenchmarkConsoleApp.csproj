@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFrameworks>net8.0</TargetFrameworks>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>12.0</LangVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
+		<PackageReference Include="MemoryPack" Version="1.10.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+
+		<PackageReference Include="NModbus" Version="3.0.81" />
+		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.38" />
+		<PackageReference Include="TouchSocket.Modbus" Version="2.1.0-alpha.21" />
+	</ItemGroup>
+
+</Project>

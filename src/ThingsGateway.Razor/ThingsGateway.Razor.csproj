@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BootstrapBlazor" Version="8.6.2" />
+    <PackageReference Include="BootstrapBlazor" Version="8.6.3" />
     <PackageReference Include="BootstrapBlazor.FontAwesome" Version="8.0.4" />
   </ItemGroup>
 

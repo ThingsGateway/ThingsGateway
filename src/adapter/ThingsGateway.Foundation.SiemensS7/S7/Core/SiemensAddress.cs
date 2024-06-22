@@ -22,11 +22,6 @@ namespace ThingsGateway.Foundation.SiemensS7;
 public class SiemensAddress
 {
     /// <summary>
-    /// 地址
-    /// </summary>
-    public string Address { get; set; }
-
-    /// <summary>
     /// bit位偏移
     /// </summary>
     public byte BitCode { get; set; }
@@ -51,21 +46,18 @@ public class SiemensAddress
     /// </summary>
     public int Length { get; set; }
 
-    /// <summary>
-    /// <inheritdoc cref="Address"/>
-    /// </summary>
-    public int AddressStart => Address.ToInt();
+    public int AddressStart { get; set; }
 
     /// <inheritdoc />
     public override string ToString()
     {
         if (DataCode == (byte)S7Area.TM)
         {
-            return $"T{Address}{(IsString ? ";" : ";W=false;")}";
+            return $"T{AddressStart}{(IsString ? ";" : ";W=false;")}";
         }
         if (DataCode == (byte)S7Area.CT)
         {
-            return $"C{Address}{(IsString ? ";" : ";W=false;")}";
+            return $"C{AddressStart}{(IsString ? ";" : ";W=false;")}";
         }
 
         if (DataCode == (byte)S7Area.AI)
@@ -93,7 +85,7 @@ public class SiemensAddress
             return $"M{GetStringAddress(AddressStart)}{(IsString ? ";" : ";W=false;")}";
         }
 
-        return DataCode == (byte)S7Area.DB ? $"DB{DbBlock}.{GetStringAddress(AddressStart)}{(IsString ? ";" : ";W=false;")}" : Address.ToString() + (IsString ? ";" : ";W=false;");
+        return DataCode == (byte)S7Area.DB ? $"DB{DbBlock}.{GetStringAddress(AddressStart)}{(IsString ? ";" : ";W=false;")}" : AddressStart.ToString() + (IsString ? ";" : ";W=false;");
     }
 
     private static string GetStringAddress(int addressStart)
@@ -174,12 +166,12 @@ public class SiemensAddress
                     s7AddressData.DataCode = (byte)S7Area.AI;
                     if (strArr[index].StartsWith("AIX") || strArr[index].StartsWith("AIB") || strArr[index].StartsWith("AIW") || strArr[index].StartsWith("AID"))
                     {
-                        s7AddressData.Address = GetAddressStart(strArr[index].Substring(3)).ToString();
+                        s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(3));
                         s7AddressData.BitCode = GetBitCode(strArr[index].Substring(3));
                     }
                     else
                     {
-                        s7AddressData.Address = GetAddressStart(strArr[index].Substring(2)).ToString();
+                        s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(2));
                         s7AddressData.BitCode = GetBitCode(strArr[index].Substring(2));
                     }
                 }
@@ -188,12 +180,12 @@ public class SiemensAddress
                     s7AddressData.DataCode = (byte)S7Area.AQ;
                     if (strArr[index].StartsWith("AQX") || strArr[index].StartsWith("AQB") || strArr[index].StartsWith("AQW") || strArr[index].StartsWith("AQD"))
                     {
-                        s7AddressData.Address = GetAddressStart(strArr[index].Substring(3)).ToString();
+                        s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(3));
                         s7AddressData.BitCode = GetBitCode(strArr[index].Substring(3));
                     }
                     else
                     {
-                        s7AddressData.Address = GetAddressStart(strArr[index].Substring(2)).ToString();
+                        s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(2));
                         s7AddressData.BitCode = GetBitCode(strArr[index].Substring(2));
                     }
                 }
@@ -202,12 +194,12 @@ public class SiemensAddress
                     s7AddressData.DataCode = (byte)S7Area.PE;
                     if (strArr[index].StartsWith("IX") || strArr[index].StartsWith("IB") || strArr[index].StartsWith("IW") || strArr[index].StartsWith("ID"))
                     {
-                        s7AddressData.Address = GetAddressStart(strArr[index].Substring(2)).ToString();
+                        s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(2));
                         s7AddressData.BitCode = GetBitCode(strArr[index].Substring(2));
                     }
                     else
                     {
-                        s7AddressData.Address = GetAddressStart(strArr[index].Substring(1)).ToString();
+                        s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(1));
                         s7AddressData.BitCode = GetBitCode(strArr[index].Substring(1));
                     }
                 }
@@ -216,12 +208,12 @@ public class SiemensAddress
                     s7AddressData.DataCode = (byte)S7Area.PA;
                     if (strArr[index].StartsWith("QX") || strArr[index].StartsWith("QB") || strArr[index].StartsWith("QW") || strArr[index].StartsWith("QD"))
                     {
-                        s7AddressData.Address = GetAddressStart(strArr[index].Substring(2)).ToString();
+                        s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(2));
                         s7AddressData.BitCode = GetBitCode(strArr[index].Substring(2));
                     }
                     else
                     {
-                        s7AddressData.Address = GetAddressStart(strArr[index].Substring(1)).ToString();
+                        s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(1));
                         s7AddressData.BitCode = GetBitCode(strArr[index].Substring(1));
                     }
                 }
@@ -230,12 +222,12 @@ public class SiemensAddress
                     s7AddressData.DataCode = (byte)S7Area.MK;
                     if (strArr[index].StartsWith("MX") || strArr[index].StartsWith("MB") || strArr[index].StartsWith("MW") || strArr[index].StartsWith("MD"))
                     {
-                        s7AddressData.Address = GetAddressStart(strArr[index].Substring(2)).ToString();
+                        s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(2));
                         s7AddressData.BitCode = GetBitCode(strArr[index].Substring(2));
                     }
                     else
                     {
-                        s7AddressData.Address = GetAddressStart(strArr[index].Substring(1)).ToString();
+                        s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(1));
                         s7AddressData.BitCode = GetBitCode(strArr[index].Substring(1));
                     }
                 }
@@ -250,19 +242,19 @@ public class SiemensAddress
                         address1 = address1.Substring(3);
                     }
 
-                    s7AddressData.Address = GetAddressStart(address1).ToString();
+                    s7AddressData.AddressStart = GetAddressStart(address1);
                     s7AddressData.BitCode = GetBitCode(address1);
                 }
                 else if (strArr[index][0] == 'T')
                 {
                     s7AddressData.DataCode = (byte)S7Area.TM;
-                    s7AddressData.Address = GetAddressStart(strArr[index].Substring(1), true).ToString();
+                    s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(1), true);
                     s7AddressData.BitCode = GetBitCode(strArr[index].Substring(1));
                 }
                 else if (strArr[index][0] == 'C')
                 {
                     s7AddressData.DataCode = (byte)S7Area.CT;
-                    s7AddressData.Address = GetAddressStart(strArr[index].Substring(1), true).ToString();
+                    s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(1), true);
                     s7AddressData.BitCode = GetBitCode(strArr[index].Substring(1));
                 }
                 else if (strArr[index][0] == 'V')
@@ -271,12 +263,12 @@ public class SiemensAddress
                     s7AddressData.DbBlock = 1;
                     if (strArr[index].StartsWith("VB") || strArr[index].StartsWith("VW") || strArr[index].StartsWith("VD") || strArr[index].StartsWith("VX"))
                     {
-                        s7AddressData.Address = GetAddressStart(strArr[index].Substring(2)).ToString();
+                        s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(2));
                         s7AddressData.BitCode = GetBitCode(strArr[index].Substring(2));
                     }
                     else
                     {
-                        s7AddressData.Address = GetAddressStart(strArr[index].Substring(1)).ToString();
+                        s7AddressData.AddressStart = GetAddressStart(strArr[index].Substring(1));
                         s7AddressData.BitCode = GetBitCode(strArr[index].Substring(1));
                     }
                 }

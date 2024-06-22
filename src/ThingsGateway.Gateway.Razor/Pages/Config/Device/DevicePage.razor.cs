@@ -150,7 +150,8 @@ public abstract partial class DevicePage : IDisposable
     {
         try
         {
-            var result = device.PluginPropertyModel.ValidateForm?.Validate() != false;
+            var result = (!PluginServiceUtil.HasDynamicProperty(device.PluginPropertyModel.Value)) || (device.PluginPropertyModel.ValidateForm?.Validate() != false);
+
             if (result == false)
             {
                 return false;
