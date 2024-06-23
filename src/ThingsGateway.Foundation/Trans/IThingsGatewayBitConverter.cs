@@ -323,5 +323,7 @@ public interface IThingsGatewayBitConverter
     /// <returns>decimal对象</returns>
     decimal[] ToDecimal(byte[] buffer, int offset, int length);
 
+    IThingsGatewayBitConverter GetByDataFormat(DataFormatEnum dataFormat);
+
     #endregion ToValue
 }

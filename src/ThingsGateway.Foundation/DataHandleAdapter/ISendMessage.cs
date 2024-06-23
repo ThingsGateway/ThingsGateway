@@ -15,5 +15,5 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public interface ISendMessage : IRequestInfo, IWaitHandle
 {
-    byte[] SendBytes { get; }
+    ReadOnlyMemory<byte> SendBytes { get; }
 }

@@ -23,13 +23,15 @@ using TcpClient = System.Net.Sockets.TcpClient;
 
 namespace ThingsGateway.Foundation;
 
-public class ModbusCompare : IDisposable
+[MemoryDiagnoser]
+[ThreadingDiagnoser]
+public class ModbusBenchmark : IDisposable
 {
     private ModbusMaster thingsgatewaymodbus;
     private IModbusMaster nmodbus;
     private ModbusTcpMaster modbusTcpMaster;
 
-    public ModbusCompare()
+    public ModbusBenchmark()
     {
         {
             var clientConfig = new TouchSocket.Core.TouchSocketConfig();
@@ -37,7 +39,7 @@ public class ModbusCompare : IDisposable
             thingsgatewaymodbus = new(clientChannel)
             {
                 //modbus协议格式
-                ModbusType = Modbus.ModbusTypeEnum.ModbusTcp,
+                ModbusType = ModbusTypeEnum.ModbusTcp,
             };
             thingsgatewaymodbus.Channel.Connect();
         }
@@ -83,7 +85,7 @@ public class ModbusCompare : IDisposable
                     var result = await thingsgatewaymodbus.ReadAsync("40001", 100);
                     if (!result.IsSuccess)
                     {
-                        throw new Exception(result.ErrorMessage);
+                        throw new Exception(result.ToString());
                     }
                 }
             }));

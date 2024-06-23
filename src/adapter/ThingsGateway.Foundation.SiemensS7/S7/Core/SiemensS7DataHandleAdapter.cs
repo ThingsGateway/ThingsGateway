@@ -21,13 +21,13 @@ internal class SiemensS7DataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
     protected override AdapterResult UnpackResponse(SiemensMessage request, IByteBlock byteBlock)
     {
         var result = new OperResult<AdapterResult>(); // 创建一个操作结果对象
-        if (byteBlock[2] * 256 + byteBlock[3] == 7 || request.SendBytes == null) // 判断响应中的状态信息是否为7
+        if (byteBlock[2] * 256 + byteBlock[3] == 7 || request.SendBytes.Length == 0) // 判断响应中的状态信息是否为7
         {
             result = new() { Content = new AdapterResult() { Content = Array.Empty<byte>(), FilterResult = FilterResult.Success } }; // 如果是7，则表示成功，设置操作结果为成功
         }
         else
         {
-            var send = request.SendBytes;
+            var send = request.SendBytes.Span;
             // 以请求方为准，分开返回类型校验
             switch (send[17]) // 根据请求命令中的类型字节进行分析
             {

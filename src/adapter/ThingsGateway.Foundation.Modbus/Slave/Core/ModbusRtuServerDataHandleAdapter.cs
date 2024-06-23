@@ -13,16 +13,6 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <inheritdoc/>
 internal class ModbusRtuServerDataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<ModbusRtuServerMessage>
 {
-    public ModbusRtuServerDataHandleAdapter()
-    {
-        IsSendPackCommand = true;
-    }
-
-    public override byte[] PackCommand(ISendMessage item)
-    {
-        return ModbusHelper.AddCrc(item);
-    }
-
     /// <inheritdoc/>
     protected override AdapterResult UnpackResponse(ModbusRtuServerMessage request, IByteBlock byteBlock)
     {

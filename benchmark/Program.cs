@@ -21,9 +21,9 @@ namespace BenchmarkConsoleApp
 {
     internal class Program
     {
-        private static int ClientCount = 10;
-        public static int TaskNumberOfItems = 10;
-        public static int NumberOfItems = 1000;
+        private static int ClientCount = 1;
+        public static int TaskNumberOfItems = 1;
+        public static int NumberOfItems = 100;
 
         private static async Task Main(string[] args)
         {
@@ -41,9 +41,32 @@ namespace BenchmarkConsoleApp
             {
                 BenchmarkRunner.Run(typeof(Program).Assembly);
             });
-            consoleAction.Add("1", "单独测试 ThingsGateway", async () => { await ThingsGateway(); });
-            consoleAction.Add("2", "单独测试 NModbus4", async () => { await NModbus4(); });
-            consoleAction.Add("3", "单独测试 TouchSocket", async () => { await TouchSocket(); });
+            consoleAction.Add("1", "Modbus基准测试", () =>
+            {
+                BenchmarkRunner.Run(typeof(ModbusBenchmark));
+            });
+            consoleAction.Add("2", "TaskCompletionSource基准测试", () =>
+            {
+                BenchmarkRunner.Run(typeof(TaskCompletionSourceBenchmark));
+            });
+            consoleAction.Add("1001", "单独测试 ThingsGateway", async () => { await ThingsGateway(); });
+            consoleAction.Add("1002", "单独测试 NModbus4", async () => { await NModbus4(); });
+            consoleAction.Add("1003", "单独测试 TouchSocket", async () => { await TouchSocket(); });
+            consoleAction.Add("1004", "单独测试 TaskCompletionSource", async () =>
+            {
+                TaskCompletionSourceBenchmark taskCompletionSourceBenchmark = new();
+
+                Stopwatch stopwatch = new();
+                stopwatch.Start();
+                await taskCompletionSourceBenchmark.AsyncAutoResetEvent();
+                stopwatch.Stop();
+                Console.WriteLine(stopwatch.ElapsedMilliseconds);
+
+                stopwatch.Restart();
+                await taskCompletionSourceBenchmark.EasyLock();
+                stopwatch.Stop();
+                Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            });
 
             consoleAction.ShowAll();
 
@@ -65,7 +88,7 @@ namespace BenchmarkConsoleApp
                 {
                     tasks.Add(Task.Run(async () =>
                     {
-                        ModbusCompare modbusBenchmarker = new();
+                        ModbusBenchmark modbusBenchmarker = new();
                         await modbusBenchmarker.ThingsGateway();
                         modbusBenchmarker.Dispose();
                     }));
@@ -92,7 +115,7 @@ namespace BenchmarkConsoleApp
                 {
                     tasks.Add(Task.Run(async () =>
                     {
-                        ModbusCompare modbusBenchmarker = new();
+                        ModbusBenchmark modbusBenchmarker = new();
                         await modbusBenchmarker.TouchSocket();
                         modbusBenchmarker.Dispose();
                     }));
@@ -119,7 +142,7 @@ namespace BenchmarkConsoleApp
                 {
                     tasks.Add(Task.Run(async () =>
                     {
-                        ModbusCompare modbusBenchmarker = new();
+                        ModbusBenchmark modbusBenchmarker = new();
                         await modbusBenchmarker.NModbus4();
                         modbusBenchmarker.Dispose();
                     }));

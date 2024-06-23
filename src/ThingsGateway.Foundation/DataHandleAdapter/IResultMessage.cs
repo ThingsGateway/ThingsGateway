@@ -52,5 +52,5 @@ public interface IResultMessage : IOperResult, IRequestInfo
     /// </summary>
     /// <param name="sendBytes"></param>
     /// <returns></returns>
-    void SendInfo(byte[]? sendBytes);
+    void SendInfo(ReadOnlyMemory<byte> sendBytes);
 }

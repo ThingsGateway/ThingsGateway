@@ -112,15 +112,23 @@ public partial class SiemensS7Master : ProtocolBase
     {
         try
         {
-            var commandResult = GetReadByteCommand(address, length);
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
             List<byte> bytes = new();
-            foreach (var item in commandResult)
+            try
             {
-                var result = await SendThenReturnAsync(item, cancellationToken).ConfigureAwait(false);
-                if (result.IsSuccess)
-                    bytes.AddRange(result.Content);
-                else
-                    return result;
+                var commandResult = GetReadByteCommand(ref valueByteBlock, address, length);
+                foreach (var item in commandResult)
+                {
+                    var result = await SendThenReturnAsync(item, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    if (result.IsSuccess)
+                        bytes.AddRange(result.Content);
+                    else
+                        return result;
+                }
+            }
+            finally
+            {
+                valueByteBlock.SafeDispose();
             }
             return OperResult.CreateSuccessResult(bytes.ToArray());
         }
@@ -135,14 +143,23 @@ public partial class SiemensS7Master : ProtocolBase
     {
         try
         {
-            var commandResult = GetWriteByteCommand(address, value);
-            foreach (var item in commandResult)
+            var s_Address = SiemensAddress.ParseFrom(address);
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            try
             {
-                var result = await SendThenReturnAsync(item, cancellationToken).ConfigureAwait(false);
-                if (!result.IsSuccess)
-                    return result;
+                var commandResult = GetWriteByteCommand(ref valueByteBlock, s_Address, value);
+                foreach (var item in commandResult)
+                {
+                    var result = await SendThenReturnAsync(item, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    if (!result.IsSuccess)
+                        return result;
+                }
+                return OperResult.Success;
             }
-            return OperResult.Success;
+            finally
+            {
+                valueByteBlock.SafeDispose();
+            }
         }
         catch (Exception ex)
         {
@@ -159,8 +176,17 @@ public partial class SiemensS7Master : ProtocolBase
         }
         try
         {
-            var commandResult = GetWriteBitCommand(address, value[0]);
-            return await SendThenReturnAsync(commandResult, cancellationToken).ConfigureAwait(false);
+            var s_Address = SiemensAddress.ParseFrom(address);
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            try
+            {
+                var item = SiemensHelper.GetWriteBitCommand(ref valueByteBlock, s_Address, value[0]);
+                return await SendThenReturnAsync(item, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                valueByteBlock.SafeDispose();
+            }
         }
         catch (Exception ex)
         {
@@ -239,7 +265,7 @@ public partial class SiemensS7Master : ProtocolBase
             //channel.SetDataHandlingAdapter(dataHandleAdapter);
             try
             {
-                var result2 = await GetResponsedDataAsync(new SendMessage(ISO_CR), Timeout, (IClientChannel)Channel, CancellationToken.None).ConfigureAwait(false);
+                var result2 = await GetResponsedDataAsync(new SendMessage(ISO_CR), Timeout, (IClientChannel)Channel).ConfigureAwait(false);
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError1", channel.ToString(), result2.ErrorMessage]);
@@ -255,7 +281,7 @@ public partial class SiemensS7Master : ProtocolBase
             }
             try
             {
-                var result2 = await GetResponsedDataAsync(new SendMessage(S7_PN), Timeout, (IClientChannel)Channel, CancellationToken.None).ConfigureAwait(false);
+                var result2 = await GetResponsedDataAsync(new SendMessage(S7_PN), Timeout, (IClientChannel)Channel).ConfigureAwait(false);
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError2", channel.ToString(), result2.ErrorMessage]);

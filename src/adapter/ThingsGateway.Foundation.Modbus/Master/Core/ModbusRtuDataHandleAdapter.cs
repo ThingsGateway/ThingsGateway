@@ -15,20 +15,10 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 internal class ModbusRtuDataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<ModbusRtuMessage>
 {
-    public ModbusRtuDataHandleAdapter()
-    {
-        IsSendPackCommand = true;
-    }
-
-    public override byte[] PackCommand(ISendMessage item)
-    {
-        return ModbusHelper.AddCrc(item);
-    }
-
     /// <inheritdoc/>
     protected override AdapterResult UnpackResponse(ModbusRtuMessage request, IByteBlock byteBlock)
     {
-        var result = ModbusHelper.GetModbusRtuData(request.SendBytes, byteBlock);
+        var result = ModbusHelper.GetModbusRtuData(request.SendBytes.Span, byteBlock);
         request.OperCode = result.OperCode;
         request.ErrorMessage = result.ErrorMessage;
         return result.Content;

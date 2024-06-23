@@ -16,9 +16,9 @@ internal class SiemensMessage : MessageBase, IResultMessage
     /// <inheritdoc/>
     public override int HeadBytesLength => 4;
 
-    public byte[] SendBytes { get; set; }
+    public ReadOnlyMemory<byte> SendBytes { get; set; }
 
-    public override void SendInfo(byte[]? sendBytes)
+    public override void SendInfo(ReadOnlyMemory<byte> sendBytes)
     {
         SendBytes = sendBytes;
     }

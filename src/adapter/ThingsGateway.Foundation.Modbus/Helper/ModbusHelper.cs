@@ -101,14 +101,14 @@ internal class ModbusHelper
     /// <param name="send">发送数据</param>
     /// <param name="response">返回数据</param>
     /// <returns></returns>
-    internal static OperResult<AdapterResult> GetModbusData(byte[] send, IByteBlock response)
+    internal static OperResult<AdapterResult> GetModbusData(ReadOnlySpan<byte> send, IByteBlock response)
     {
         try
         {
             if (response[response.Position + 1] >= 0x80)//错误码
                 return new OperResult<AdapterResult>(GetDescriptionByErrorCode(response[response.Position + 2])) { Content = new AdapterResult() { FilterResult = FilterResult.Success } };
 
-            if (send == null || send.Length == 0)
+            if (send.Length == 0)
             {
                 return new OperResult<AdapterResult>()
                 {
@@ -167,7 +167,7 @@ internal class ModbusHelper
     {
         //crc校验
         var dataLen = response.Length;
-        var crc = CRC16Utils.Crc16Only(response.AsSegment().Array, 0, dataLen - 2);
+        var crc = CRC16Utils.Crc16Only(new ReadOnlyMemory<byte>(response.AsSegment().Array, 0, dataLen - 2));
         if ((response[dataLen - 2] != crc[0] || response[dataLen - 1] != crc[1]))
             return new OperResult($"{ModbusResource.Localizer["CrcError"]} {DataTransUtil.ByteToHexString(response.Span, ' ')}")
             {
@@ -182,7 +182,7 @@ internal class ModbusHelper
     /// <param name="send"></param>
     /// <param name="response"></param>
     /// <returns></returns>
-    internal static OperResult<AdapterResult> GetModbusRtuData(byte[] send, IByteBlock response)
+    internal static OperResult<AdapterResult> GetModbusRtuData(ReadOnlySpan<byte> send, IByteBlock response)
     {
         var result = CheckCrc(response);
         if (!result.IsSuccess)
@@ -200,125 +200,128 @@ internal class ModbusHelper
 
     #region 报文构建
 
-    public static byte[] AddCrc(ISendMessage item)
-    {
-        var crc = CRC16Utils.Crc16(item.SendBytes);
-        return crc;
-    }
-
-    /// <summary>
-    /// 添加ModbusTcp报文头
-    /// </summary>
-    internal static byte[] AddModbusTcpHead(byte[] modbus, int offset, int length, ushort id)
-    {
-        byte[] tcp = new byte[length + 6];
-        var ids = BitConverter.GetBytes(id);
-        var lens = BitConverter.GetBytes(length);
-        tcp[0] = ids[1];
-        tcp[1] = ids[0];
-        tcp[4] = lens[1];
-        tcp[5] = lens[0];
-        Array.Copy(modbus, offset, tcp, 6, length);
-        return tcp;
-    }
-
     /// <summary>
     /// 获取读取报文
     /// </summary>
-    internal static byte[] GetReadModbusCommand(ModbusAddress mAddress, ushort length)
+    internal static ReadOnlyMemory<byte> GetReadModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, ushort length, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
     {
-        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
-        var lens = BitConverter.GetBytes(length);
-        byte[] array = new byte[6]
+        if (modbusType == ModbusTypeEnum.ModbusTcp)
         {
-        (byte) mAddress.Station,
-        (byte) mAddress.ReadFunction,
-        addresss[1],
-        addresss[0],
-        lens[1],
-        lens[0]
-        };
-        return array;
+            valueByteBlock.WriteUInt16(sign, EndianType.Big);
+            valueByteBlock.WriteUInt16(protocolId, EndianType.Big);
+            valueByteBlock.WriteUInt16(6, EndianType.Big);
+        }
+        valueByteBlock.WriteByte(mAddress.Station);
+        valueByteBlock.WriteByte(mAddress.ReadFunction);
+        valueByteBlock.WriteUInt16(mAddress.AddressStart, EndianType.Big);
+        valueByteBlock.WriteUInt16(length, EndianType.Big);
+
+        if (modbusType == ModbusTypeEnum.ModbusRtu)
+        {
+            valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Memory));
+        }
+        return valueByteBlock.Memory;
     }
 
     /// <summary>
     /// 获取05写入布尔量报文
     /// </summary>
-    internal static byte[] GetWriteBoolModbusCommand(ModbusAddress mAddress, bool value)
+    internal static ReadOnlyMemory<byte> GetWriteBoolModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, bool value, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
     {
-        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
-        byte[] array = new byte[6]
+        if (modbusType == ModbusTypeEnum.ModbusTcp)
         {
-    (byte) mAddress.Station,
-    (byte)5,
-    addresss[1],
-    addresss[0],
-     0,
-     0
-        };
-        if (value)
-        {
-            array[4] = 0xFF;
-            array[5] = 0;
+            valueByteBlock.WriteUInt16(sign, EndianType.Big);
+            valueByteBlock.WriteUInt16(protocolId, EndianType.Big);
+            valueByteBlock.WriteUInt16(6, EndianType.Big);
         }
-        else
+        valueByteBlock.WriteByte(mAddress.Station);
+        valueByteBlock.WriteByte(5);
+        valueByteBlock.WriteUInt16(mAddress.AddressStart, EndianType.Big);
+        valueByteBlock.Write(value ? new byte[] { 0xFF, 0 } : new byte[] { 0, 0 });
+
+        if (modbusType == ModbusTypeEnum.ModbusRtu)
         {
-            array[4] = 0;
-            array[5] = 0;
+            valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Memory));
         }
-        return array;
+
+        return valueByteBlock.Memory;
     }
 
     /// <summary>
     /// 获取15写入布尔量报文
     /// </summary>
-    internal static byte[] GetWriteBoolModbusCommand(ModbusAddress mAddress, bool[] values, ushort length)
+    internal static ReadOnlyMemory<byte> GetWriteBoolModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, bool[] values, ushort length, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
     {
-        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
-        byte[] numArray1 = values.BoolArrayToByte();
-        byte[] numArray2 = new byte[7 + numArray1.Length];
-        numArray2[0] = (byte)mAddress.Station;
-        numArray2[1] = (byte)15;
-        numArray2[2] = addresss[1];
-        numArray2[3] = addresss[0];
-        numArray2[4] = (byte)(length / 256);
-        numArray2[5] = (byte)(length % 256);
-        numArray2[6] = (byte)numArray1.Length;
-        numArray1.CopyTo(numArray2, 7);
-        return numArray2;
+        if (modbusType == ModbusTypeEnum.ModbusTcp)
+        {
+            valueByteBlock.WriteUInt16(sign, EndianType.Big);
+            valueByteBlock.WriteUInt16(protocolId, EndianType.Big);
+            valueByteBlock.WriteUInt16(6, EndianType.Big);
+        }
+        valueByteBlock.WriteByte(mAddress.Station);
+        valueByteBlock.WriteByte(15);
+        valueByteBlock.WriteUInt16(mAddress.AddressStart, EndianType.Big);
+        valueByteBlock.WriteUInt16(length, EndianType.Big);
+        byte[] data = values.BoolArrayToByte();
+        valueByteBlock.WriteByte((byte)data.Length);
+        valueByteBlock.Write(values.BoolArrayToByte());
+
+        if (modbusType == ModbusTypeEnum.ModbusRtu)
+        {
+            valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Memory));
+        }
+
+        return valueByteBlock.Memory;
     }
 
     /// <summary>
     /// 获取16写入字报文
     /// </summary>
-    internal static byte[] GetWriteModbusCommand(ModbusAddress mAddress, byte[] values)
+    internal static ReadOnlyMemory<byte> GetWriteModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, byte[] values, ushort length, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
     {
-        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
-        byte[] numArray = new byte[7 + values.Length];
-        numArray[0] = (byte)mAddress.Station;
-        numArray[1] = (byte)16;
-        numArray[2] = addresss[1];
-        numArray[3] = addresss[0];
-        numArray[4] = (byte)(values.Length / 2 / 256);
-        numArray[5] = (byte)(values.Length / 2 % 256);
-        numArray[6] = (byte)values.Length;
-        values.CopyTo(numArray, 7);
-        return numArray;
+        if (modbusType == ModbusTypeEnum.ModbusTcp)
+        {
+            valueByteBlock.WriteUInt16(sign, EndianType.Big);
+            valueByteBlock.WriteUInt16(protocolId, EndianType.Big);
+            valueByteBlock.WriteUInt16(6, EndianType.Big);
+        }
+        valueByteBlock.WriteByte(mAddress.Station);
+        valueByteBlock.WriteByte(16);
+        valueByteBlock.WriteUInt16(mAddress.AddressStart, EndianType.Big);
+        valueByteBlock.WriteUInt16(length, EndianType.Big);
+        valueByteBlock.WriteByte((byte)values.Length);
+        valueByteBlock.Write(values);
+
+        if (modbusType == ModbusTypeEnum.ModbusRtu)
+        {
+            valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Memory));
+        }
+
+        return valueByteBlock.Memory;
     }
 
     /// <summary>
     /// 获取6写入字报文
     /// </summary>
-    internal static byte[] GetWriteOneModbusCommand(ModbusAddress mAddress, byte[] values)
+    internal static ReadOnlyMemory<byte> GetWriteOneModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, byte[] values, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
     {
-        var addresss = BitConverter.GetBytes(mAddress.AddressStart);
-        byte[] numArray = new byte[4 + values.Length];
-        numArray[0] = (byte)mAddress.Station;
-        numArray[1] = (byte)6;
-        numArray[2] = addresss[1];
-        numArray[3] = addresss[0];
-        values.CopyTo(numArray, 4);
-        return numArray;
+        if (modbusType == ModbusTypeEnum.ModbusTcp)
+        {
+            valueByteBlock.WriteUInt16(sign, EndianType.Big);
+            valueByteBlock.WriteUInt16(protocolId, EndianType.Big);
+            valueByteBlock.WriteUInt16(6, EndianType.Big);
+        }
+        valueByteBlock.WriteByte(mAddress.Station);
+        valueByteBlock.WriteByte(6);
+        valueByteBlock.WriteUInt16(mAddress.AddressStart, EndianType.Big);
+        valueByteBlock.Write(values);
+
+        if (modbusType == ModbusTypeEnum.ModbusRtu)
+        {
+            valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Memory));
+        }
+
+        return valueByteBlock.Memory;
     }
 
     #endregion 报文构建

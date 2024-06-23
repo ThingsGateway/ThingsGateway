@@ -155,8 +155,19 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         try
         {
             var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
-            var commandResult = ModbusHelper.GetReadModbusCommand(mAddress, (ushort)length);
-            return await SendThenReturnAsync(mAddress.SocketId, commandResult, cancellationToken).ConfigureAwait(false);
+            var channelResult = GetChannel(mAddress.SocketId);
+            if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            try
+            {
+                var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
+                var commandResult = ModbusHelper.GetReadModbusCommand(ref valueByteBlock, mAddress, (ushort)length, ModbusType, (ushort)sign, 0);
+                return await this.SendThenReturnAsync(new SendMessage(commandResult) { Sign = sign }, waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
+            }
+            finally
+            {
+                valueByteBlock.SafeDispose();
+            }
         }
         catch (Exception ex)
         {
@@ -171,13 +182,24 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         {
             var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
             value = value.ArrayExpandToLengthEven();
-            byte[]? commandResult = null;
-            //功能码或实际长度
-            if (value.Length > 2 || mAddress.WriteFunction == 16)
-                commandResult = ModbusHelper.GetWriteModbusCommand(mAddress, value);
-            else
-                commandResult = ModbusHelper.GetWriteOneModbusCommand(mAddress, value);
-            return await SendThenReturnAsync(mAddress.SocketId, commandResult, cancellationToken).ConfigureAwait(false);
+
+            var channelResult = GetChannel(mAddress.SocketId);
+            if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            try
+            {
+                var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
+                if (value.Length > 2 || mAddress.WriteFunction == 16)
+                    ModbusHelper.GetWriteModbusCommand(ref valueByteBlock, mAddress, value, (ushort)(value.Length / RegisterByteLength), ModbusType, (ushort)sign, 0);
+                else
+                    ModbusHelper.GetWriteOneModbusCommand(ref valueByteBlock, mAddress, value, ModbusType, (ushort)sign, 0);
+
+                return await this.SendThenReturnAsync(new SendMessage(valueByteBlock.Memory) { Sign = sign }, waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
+            }
+            finally
+            {
+                valueByteBlock.SafeDispose();
+            }
         }
         catch (Exception ex)
         {
@@ -191,36 +213,53 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         try
         {
             var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
-            //功能码或实际长度
-            if (value.Length > 1 || mAddress.WriteFunction == 15)
+            var channelResult = GetChannel(mAddress.SocketId);
+            if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            try
             {
-                var commandResult = ModbusHelper.GetWriteBoolModbusCommand(mAddress, value, (ushort)value.Length);
-                return await SendThenReturnAsync(mAddress.SocketId, commandResult, cancellationToken).ConfigureAwait(false);
-            }
-            else
-            {
-                if (mAddress.BitIndex == null)
+                var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
+                if (value.Length > 1 || mAddress.WriteFunction == 15)
                 {
-                    var commandResult = ModbusHelper.GetWriteBoolModbusCommand(mAddress, value[0]);
-                    return await SendThenReturnAsync(mAddress.SocketId, commandResult, cancellationToken).ConfigureAwait(false);
-                }
-                else if (mAddress.BitIndex < 16)
-                {
-                    //比如40001.1
-
-                    var read = ModbusHelper.GetReadModbusCommand(mAddress, 1);
-                    var readData = await SendThenReturnAsync(mAddress.SocketId, read, cancellationToken).ConfigureAwait(false);
-                    if (!readData.IsSuccess) return readData;
-                    var writeData = ThingsGatewayBitConverter.ToUInt16(readData.Content, 0);
-                    ushort mask = (ushort)(1 << mAddress.BitIndex);
-                    ushort result = (ushort)(value[0] ? (writeData | mask) : (writeData & ~mask));
-                    var write = ModbusHelper.GetWriteOneModbusCommand(mAddress, ThingsGatewayBitConverter.GetBytes(result));
-                    return await SendThenReturnAsync(mAddress.SocketId, write, cancellationToken).ConfigureAwait(false);
+                    ModbusHelper.GetWriteBoolModbusCommand(ref valueByteBlock, mAddress, value, (ushort)value.Length, ModbusType, (ushort)sign, 0);
                 }
                 else
                 {
-                    return new OperResult(ModbusResource.Localizer["ValueOverlimit", nameof(mAddress.BitIndex), 16]);
+                    if (mAddress.BitIndex == null)
+                    {
+                        ModbusHelper.GetWriteBoolModbusCommand(ref valueByteBlock, mAddress, value[0], ModbusType, (ushort)sign, 0);
+                    }
+                    else if (mAddress.BitIndex < 16)
+                    {
+                        ValueByteBlock readValueByteBlock = new ValueByteBlock(1024);
+                        try
+                        {
+                            var readWaitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var readSign);
+                            //比如40001.1
+                            ModbusHelper.GetReadModbusCommand(ref readValueByteBlock, mAddress, 1, ModbusType, (ushort)readSign, 0);
+                            var readData = await this.SendThenReturnAsync(new SendMessage(readValueByteBlock.Memory) { Sign = readSign }, readWaitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
+                            if (!readData.IsSuccess) return readData;
+                            var writeData = ThingsGatewayBitConverter.ToUInt16(readData.Content, 0);
+                            ushort mask = (ushort)(1 << mAddress.BitIndex);
+                            ushort result = (ushort)(value[0] ? (writeData | mask) : (writeData & ~mask));
+                            ModbusHelper.GetWriteOneModbusCommand(ref valueByteBlock, mAddress, ThingsGatewayBitConverter.GetBytes(result), ModbusType, (ushort)sign, 0);
+                        }
+                        finally
+                        {
+                            readValueByteBlock.SafeDispose();
+                        }
+                    }
+                    else
+                    {
+                        return new OperResult(ModbusResource.Localizer["ValueOverlimit", nameof(mAddress.BitIndex), 16]);
+                    }
                 }
+
+                return await this.SendThenReturnAsync(new SendMessage(valueByteBlock.Memory) { Sign = sign }, waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
+            }
+            finally
+            {
+                valueByteBlock.SafeDispose();
             }
         }
         catch (Exception ex)

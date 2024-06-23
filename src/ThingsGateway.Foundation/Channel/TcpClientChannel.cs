@@ -26,7 +26,7 @@ public class TcpClientChannel : TcpClient, IClientChannel
     public ConcurrentList<IProtocol> Collects { get; } = new();
 
     /// <inheritdoc/>
-    public EasyLock WaitLock { get; } = new EasyLock();
+    public AsyncAutoResetEvent WaitLock { get; } = new AsyncAutoResetEvent(true);
 
     /// <summary>
     /// 等待池

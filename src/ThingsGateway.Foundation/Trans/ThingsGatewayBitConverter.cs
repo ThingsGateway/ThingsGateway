@@ -10,7 +10,6 @@
 
 using Newtonsoft.Json;
 
-using System;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -36,6 +35,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     public Encoding Encoding { get; set; } = Encoding.UTF8;
 
 #endif
+    public DataFormatEnum DataFormat { get; set; }
 
     /// <inheritdoc/>
     public virtual BcdFormatEnum? BcdFormat { get; set; }
@@ -85,6 +85,19 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// 以小端
     /// </summary>
     public static readonly ThingsGatewayBitConverter LittleEndian;
+
+    public virtual IThingsGatewayBitConverter GetByDataFormat(DataFormatEnum dataFormat)
+    {
+        var data = new ThingsGatewayBitConverter(EndianType);
+        data.Encoding = Encoding;
+        data.DataFormat = dataFormat;
+        data.BcdFormat = BcdFormat;
+        data.StringLength = StringLength;
+        data.ArrayLength = ArrayLength;
+        data.IsStringReverseByteWord = IsStringReverseByteWord;
+
+        return data;
+    }
 
     #region GetBytes
 
@@ -670,8 +683,6 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     {
         return TouchSocketBitConverter.ToChar(buffer, offset);
     }
-
-    public DataFormatEnum DataFormat { get; set; }
 
     #region Tool
 

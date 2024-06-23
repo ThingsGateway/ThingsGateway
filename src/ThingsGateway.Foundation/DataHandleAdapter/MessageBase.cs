@@ -52,7 +52,7 @@ public class MessageBase : OperResultClass<byte[]>, IResultMessage, IWaitHandle
     }
 
     /// <inheritdoc/>
-    public virtual void SendInfo(byte[]? sendBytes)
+    public virtual void SendInfo(ReadOnlyMemory<byte> sendBytes)
     {
     }
 }

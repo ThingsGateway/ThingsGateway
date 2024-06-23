@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using TouchSocket.Core;
-
 namespace ThingsGateway.Foundation;
 
 /// <inheritdoc cref="TcpSessionClient"/>
@@ -21,7 +19,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     }
 
     /// <inheritdoc/>
-    public EasyLock WaitLock { get; } = new EasyLock();
+    public AsyncAutoResetEvent WaitLock { get; } = new AsyncAutoResetEvent(true);
 
     /// <summary>
     /// 等待池

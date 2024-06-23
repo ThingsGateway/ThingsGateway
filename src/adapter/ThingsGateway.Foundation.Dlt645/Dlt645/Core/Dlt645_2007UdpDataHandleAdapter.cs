@@ -17,25 +17,6 @@ namespace ThingsGateway.Foundation.Dlt645;
 /// </summary>
 internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<Dlt645_2007Message>
 {
-    /// <summary>
-    /// 增加FE FE FE FE的报文头部
-    /// </summary>
-    public string FEHead { get; set; }
-
-    public Dlt645_2007UdpDataHandleAdapter()
-    {
-        IsSendPackCommand = true;
-    }
-
-    public override byte[] PackCommand(ISendMessage item)
-    {
-        if (!FEHead.IsNullOrWhiteSpace())
-        {
-            return Dlt645Helper.AddFE(item, FEHead);
-        }
-        return item.SendBytes;
-    }
-
     protected override AdapterResult UnpackResponse(Dlt645_2007Message request, IByteBlock byteBlock)
     {
         return Dlt645Helper.GetResponse(request, byteBlock);

@@ -427,7 +427,7 @@ public interface IProtocol : IDisposable
     /// <param name="token">取消令箭</param>
     /// <param name="channel">通道</param>
     /// <returns>返回消息体</returns>
-    ValueTask SendAsync(ISendMessage sendMessage, IClientChannel channel = null, CancellationToken token = default);
+    ValueTask SendAsync(SendMessage sendMessage, IClientChannel channel = null, CancellationToken token = default);
 
     /// <summary>
     /// 发送，会经过适配器，可传入socketId，如果为空，则默认通道必须为<see cref="IClientChannel"/>类型
@@ -436,7 +436,7 @@ public interface IProtocol : IDisposable
     /// <param name="sendMessage">发送字节数组</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>返回消息体</returns>
-    ValueTask<OperResult> SendAsync(string socketId, ISendMessage sendMessage, CancellationToken cancellationToken);
+    ValueTask<OperResult> SendAsync(string socketId, SendMessage sendMessage, CancellationToken cancellationToken);
 
     /// <summary>
     /// 发送并等待返回，会经过适配器，可传入<see cref="IClientChannel"/>，如果为空，则默认通道必须为<see cref="IClientChannel"/>类型
@@ -445,7 +445,7 @@ public interface IProtocol : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <param name="channel">通道</param>
     /// <returns>返回消息体</returns>
-    ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = null);
+    ValueTask<OperResult<byte[]>> SendThenReturnAsync(SendMessage command, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default, IClientChannel channel = default);
 
     /// <summary>
     /// 发送并等待返回，会经过适配器，可传入socketId，如果为空，则默认通道必须为<see cref="IClientChannel"/>类型
@@ -454,11 +454,11 @@ public interface IProtocol : IDisposable
     /// <param name="sendMessage">发送字节数组</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>返回消息体</returns>
-    ValueTask<OperResult<byte[]>> SendThenReturnAsync(string socketId, ISendMessage sendMessage, CancellationToken cancellationToken);
+    ValueTask<OperResult<byte[]>> SendThenReturnAsync(string socketId, SendMessage sendMessage, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default);
 
-    ValueTask<OperResult<byte[]>> SendThenReturnAsync(string socketId, byte[] sendBytes, CancellationToken cancellationToken);
+    ValueTask<OperResult<byte[]>> SendThenReturnAsync(string socketId, ReadOnlyMemory<byte> sendBytes, CancellationToken cancellationToken = default);
 
-    ValueTask<OperResult<byte[]>> SendThenReturnAsync(byte[] sendBytes, CancellationToken cancellationToken);
+    ValueTask<OperResult<byte[]>> SendThenReturnAsync(ReadOnlyMemory<byte> sendBytes, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 布尔量解析时是否需要按字反转
@@ -480,4 +480,11 @@ public interface IProtocol : IDisposable
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
     Task ConnectAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取通道
+    /// </summary>
+    /// <param name="socketId"></param>
+    /// <returns></returns>
+    OperResult<IClientChannel> GetChannel(string socketId);
 }

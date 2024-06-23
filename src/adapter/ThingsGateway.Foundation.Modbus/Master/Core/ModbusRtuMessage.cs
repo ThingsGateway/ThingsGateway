@@ -18,9 +18,9 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
     /// <inheritdoc/>
     public override int HeadBytesLength => 3;
 
-    public byte[]? SendBytes { get; set; }
+    public ReadOnlyMemory<byte> SendBytes { get; set; }
 
-    public override void SendInfo(byte[]? sendBytes)
+    public override void SendInfo(ReadOnlyMemory<byte> sendBytes)
     {
         SendBytes = sendBytes;
     }
@@ -58,7 +58,7 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
             }
         }
 
-        if (SendBytes?.Length > 0)
+        if (SendBytes.Length > 0)
         {
             return true;
         }

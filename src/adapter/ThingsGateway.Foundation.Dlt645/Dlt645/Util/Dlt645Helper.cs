@@ -8,6 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.Buffers;
 using System.Text;
 
 using ThingsGateway.Foundation.Extension.String;
@@ -19,7 +20,7 @@ namespace ThingsGateway.Foundation.Dlt645;
 /// <summary>
 /// 解析参数
 /// </summary>
-internal class DataInfo
+internal struct DataInfo
 {
     /// <summary>
     /// 解析长度
@@ -55,15 +56,9 @@ internal static class Dlt645Helper
         return error;
     }
 
-    public static byte[] AddFE(ISendMessage item, string fehead)
-    {
-        var fe = fehead.HexStringToBytes();
-        return DataTransUtil.SpliceArray(item.SendBytes, fe);
-    }
-
     public static AdapterResult GetResponse(Dlt645_2007Message request, IByteBlock response)
     {
-        var send = request.SendBytes;
+        var send = request.SendBytes.Span;
 
         //因为设备可能带有FE前导符开头，这里找到0x68的位置
         int headCodeIndex = 0;
@@ -79,15 +74,12 @@ internal static class Dlt645Helper
             }
         }
         int sendHeadCodeIndex = 0;
-        if (send != null)
+        for (int index = 0; index < send.Length; index++)
         {
-            for (int index = 0; index < send.Length; index++)
+            if (send[index] == 0x68)
             {
-                if (send[index] == 0x68)
-                {
-                    sendHeadCodeIndex = index;
-                    break;
-                }
+                sendHeadCodeIndex = index;
+                break;
             }
         }
 
@@ -141,14 +133,6 @@ internal static class Dlt645Helper
                 }
             }
 
-            if ((response[headCodeIndex + 8] != send[sendHeadCodeIndex + 8] + 0x80))//控制码不符合时，返回错误
-            {
-                request.ErrorMessage =
-                     DltResource.Localizer["FunctionNotSame", $"0x{response[headCodeIndex + 8]:X2}", $"0x{send[sendHeadCodeIndex + 8]:X2}"];
-                request.OperCode = 999;
-                return new AdapterResult() { FilterResult = FilterResult.Success };
-            }
-
             if ((response[headCodeIndex + 8] & 0x40) == 0x40)//控制码bit6为1时，返回错误
             {
                 byte byte1 = (byte)(response[headCodeIndex + 10] - 0x33);
@@ -157,7 +141,13 @@ internal static class Dlt645Helper
                 request.OperCode = 999;
                 return new AdapterResult() { FilterResult = FilterResult.Success };
             }
-
+            if ((response[headCodeIndex + 8] != send[sendHeadCodeIndex + 8] + 0x80))//控制码不符合时，返回错误
+            {
+                request.ErrorMessage =
+                     DltResource.Localizer["FunctionNotSame", $"0x{response[headCodeIndex + 8]:X2}", $"0x{send[sendHeadCodeIndex + 8]:X2}"];
+                request.OperCode = 999;
+                return new AdapterResult() { FilterResult = FilterResult.Success };
+            }
             if (send[sendHeadCodeIndex + 8] == (byte)ControlCode.Read ||
     send[sendHeadCodeIndex + 8] == (byte)ControlCode.Write
     )
@@ -1309,30 +1299,51 @@ internal static class Dlt645Helper
     /// <summary>
     /// 获取Dlt645报文
     /// </summary>
-    internal static byte[] GetDlt645_2007Command(
-      Dlt645_2007Address address,
-      byte control,
-      string defaultStation,
-      byte[] codes = null,
-      string[] datas = null
-        )
+    internal static OperResult<ReadOnlyMemory<byte>> GetDlt645_2007Command(ref ValueByteBlock valueByteBlock, Dlt645_2007Address address, byte control, string defaultStation, string fehead, byte[] codes = default, string[] datas = default)
     {
         codes ??= Array.Empty<byte>();
         datas ??= Array.Empty<string>();
         var buffer = address.DataId;
         if (buffer.Length < 4)
         {
-            throw new(DltResource.Localizer["DataIdError"]);
+            return new(DltResource.Localizer["DataIdError"]);
         }
+        int headLen = 0;
+        if (fehead != null)
+        {
+            var fe = fehead.HexStringToBytes();
+            headLen = fe.Length;
+            valueByteBlock.Write(fe);//帧起始符
+        }
+
+        valueByteBlock.WriteByte(0x68);//帧起始符
+        byte[] stationBytes;
+        if (address.Station.Length == 0)
+        {
+            if (defaultStation.IsNullOrEmpty()) defaultStation = string.Empty;
+            if (defaultStation.Length < 12)
+                defaultStation = defaultStation.PadLeft(12, '0');
+            stationBytes = defaultStation.ByHexStringToBytes().Reverse().ToArray();
+        }
+        else
+        {
+            stationBytes = address.Station;
+        }
+        valueByteBlock.Write(stationBytes);//6个字节地址域
+        valueByteBlock.WriteByte(0x68);//帧起始符
+        valueByteBlock.WriteByte(control);//控制码
+        valueByteBlock.WriteByte((byte)(buffer.Length));//数据域长度
+        valueByteBlock.Write(buffer);//数据域标识DI3、DI2、DI1、DI0
+        valueByteBlock.Write(codes);//数据域标识DI3、DI2、DI1、DI0
+
         if (buffer.Length > 0)
         {
             var dataInfos = GetDataInfos(buffer);
-            List<byte> buffers = new();
             if (datas.Length > 0)
             {
                 if (datas.Length != dataInfos.Count)
                 {
-                    throw new(DltResource.Localizer["CountError"]);
+                    return new(DltResource.Localizer["CountError"]);
                 }
 
                 for (int i = 0; i < datas.Length; i++)
@@ -1350,7 +1361,7 @@ internal static class Dlt645Helper
                         {
                             doubleValue *= Math.Pow(10.0, dataInfo.Digtal);
                         }
-                        buffer1 = doubleValue.ToString().ByHexStringToBytes().Reverse().ToArray();
+                        buffer1 = doubleValue.ToString().HexStringToBytes().Reverse().ToArray();
                         if (doubleValue < 0)
                         {
                             buffer1[0] = (byte)(buffer1[0] & 0x80);
@@ -1364,58 +1375,53 @@ internal static class Dlt645Helper
                         }
                         else if (dataInfo.Digtal == 0)//无小数点
                         {
-                            buffer1 = data.ByHexStringToBytes().Reverse().ToArray();
+                            buffer1 = data.HexStringToBytes().Reverse().ToArray();
                         }
                         else
                         {
-                            buffer1 = (Convert.ToDouble(data) * Math.Pow(10.0, dataInfo.Digtal)).ToString().ByHexStringToBytes().Reverse().ToArray();
+                            buffer1 = (Convert.ToDouble(data) * Math.Pow(10.0, dataInfo.Digtal)).ToString().HexStringToBytes().Reverse().ToArray();
                         }
                     }
 
-                    buffers.AddRange(buffer1);
+                    valueByteBlock.Write(buffer1);
                 }
             }
-
-            buffer = DataTransUtil.SpliceArray(buffer, codes, buffers.ToArray());
         }
 
-        byte[] stationBytes;
-        if (address.Station.Length == 0)
-        {
-            if (defaultStation.IsNullOrEmpty()) defaultStation = string.Empty;
-            if (defaultStation.Length < 12)
-                defaultStation = defaultStation.PadLeft(12, '0');
-            stationBytes = defaultStation.ByHexStringToBytes().Reverse().ToArray();
-        }
-        else
-        {
-            stationBytes = address.Station;
-        }
+        valueByteBlock[headLen + 9] = (byte)(valueByteBlock.Length - 10 - headLen);//数据域长度
 
-        return GetDlt645_2007Command(control, buffer, stationBytes);
+        for (int index = headLen + 10; index < valueByteBlock.Length; ++index)
+            valueByteBlock[index] += 0x33;//传输时发送方按字节进行加33H处理，接收方按字节进行减33H处理
+
+        int num = 0;
+        for (int index = headLen; index < valueByteBlock.Length; ++index)
+            num += valueByteBlock[index];
+        valueByteBlock.WriteByte((byte)num);//校验码,总加和
+        valueByteBlock.WriteByte((byte)0x16);//结束符
+        return new() { Content = valueByteBlock.Memory };
     }
 
-    internal static byte[] GetDlt645_2007Command(byte control, byte[] buffer, byte[] stationBytes)
+    internal static ReadOnlyMemory<byte> GetDlt645_2007Command(ref ValueByteBlock valueByteBlock, byte control, byte[] buffer, byte[] stationBytes, string fehead)
     {
         buffer ??= Array.Empty<byte>();
-        byte[] array = new byte[12 + buffer.Length];
-        array[0] = 0x68;//帧起始符
-        stationBytes.CopyTo(array, 1);//6个字节地址域
-        array[7] = 0x68;//帧起始符
-        array[8] = control;//控制码
-        array[9] = (byte)buffer.Length;//数据域长度
-        if (buffer.Length != 0)//数据域标识DI3、DI2、DI1、DI0
+        if (fehead != null)
         {
-            buffer.CopyTo(array, 10);
-            for (int index = 0; index < buffer.Length; ++index)
-                array[index + 10] += 0x33;
-            //传输时发送方按字节进行加33H处理，接收方按字节进行减33H处理
+            var fe = fehead.HexStringToBytes();
+            valueByteBlock.Write(fe);//帧起始符
         }
+        valueByteBlock.Write(stationBytes);//6个字节地址域
+        valueByteBlock.WriteByte(0x68);//帧起始符
+        valueByteBlock.WriteByte(control);//控制码
+        valueByteBlock.WriteByte((byte)buffer.Length);//数据域长度
+        valueByteBlock.Write(buffer);//数据域标识DI3、DI2、DI1、DI0
+        for (int index = 10; index < valueByteBlock.Length; ++index)
+            valueByteBlock[index] += 0x33;//传输时发送方按字节进行加33H处理，接收方按字节进行减33H处理
+
         int num = 0;
-        for (int index = 0; index < array.Length - 2; ++index)
-            num += array[index];
-        array[array.Length - 2] = (byte)num;//校验码,总加和
-        array[array.Length - 1] = 0x16;//	结束符
-        return array;
+        for (int index = 0; index < valueByteBlock.Length; ++index)
+            num += valueByteBlock[index];
+        valueByteBlock.WriteByte((byte)num);//校验码,总加和
+        valueByteBlock.WriteByte((byte)0x16);//结束符
+        return valueByteBlock.Memory;
     }
 }

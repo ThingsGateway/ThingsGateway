@@ -3,9 +3,7 @@
   <PropertyGroup>
 		<DefineConstants>DriverDebug</DefineConstants>
 	</PropertyGroup>
-  <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
-    <DefineConstants>Pro</DefineConstants>
-  </PropertyGroup>
+
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<ApplicationIcon>favicon.ico</ApplicationIcon>
@@ -38,8 +36,12 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\ThingsGateway.Debug.Rcl\ThingsGateway.Debug.Rcl.csproj" />
 	</ItemGroup>
+
+  <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
+    <!--<DefineConstants>Pro</DefineConstants>-->
+  </PropertyGroup>
   <ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
-    <ProjectReference Include="$(SolutionDir)\pro\ThingsGateway.Debug.ProRcl\ThingsGateway.Debug.ProRcl.csproj" />
+    <!--<ProjectReference Include="$(SolutionDir)\pro\ThingsGateway.Debug.ProRcl\ThingsGateway.Debug.ProRcl.csproj" />-->
   </ItemGroup>
 
 	<ItemGroup>

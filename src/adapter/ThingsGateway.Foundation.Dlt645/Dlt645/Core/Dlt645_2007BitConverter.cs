@@ -25,6 +25,19 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
     {
     }
 
+    public override IThingsGatewayBitConverter GetByDataFormat(DataFormatEnum dataFormat)
+    {
+        var data = new Dlt645_2007BitConverter(EndianType);
+        data.Encoding = Encoding;
+        data.DataFormat = dataFormat;
+        data.BcdFormat = BcdFormat;
+        data.StringLength = StringLength;
+        data.ArrayLength = ArrayLength;
+        data.IsStringReverseByteWord = IsStringReverseByteWord;
+
+        return data;
+    }
+
     /// <inheritdoc/>
     public override short ToInt16(byte[] buffer, int offset)
     {

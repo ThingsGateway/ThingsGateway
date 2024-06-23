@@ -11,15 +11,15 @@
 namespace ThingsGateway.Foundation;
 
 /// <inheritdoc/>
-public class SendMessage : ISendMessage
+public struct SendMessage : ISendMessage
 {
-    public SendMessage(byte[] bytes)
+    public SendMessage(ReadOnlyMemory<byte> bytes)
     {
         SendBytes = bytes;
     }
 
-    public byte[] SendBytes { get; }
+    public ReadOnlyMemory<byte> SendBytes { get; }
 
     /// <inheritdoc/>
-    public virtual int Sign { get; set; }
+    public int Sign { get; set; }
 }

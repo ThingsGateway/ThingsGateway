@@ -235,9 +235,10 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async ValueTask SendAsync(ISendMessage sendMessage, IClientChannel channel = default, CancellationToken token = default)
+    public virtual async ValueTask SendAsync(SendMessage sendMessage, IClientChannel channel = default, CancellationToken token = default)
     {
-        await Channel.ConnectAsync(ConnectTimeout, token).ConfigureAwait(false);
+        if (!Channel.Online)
+            await Channel.ConnectAsync(ConnectTimeout, token).ConfigureAwait(false);
         if (SendDelayTime != 0)
             await Task.Delay(SendDelayTime, token).ConfigureAwait(false);
 
@@ -256,7 +257,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async ValueTask<OperResult> SendAsync(string socketId, ISendMessage sendMessage, CancellationToken cancellationToken)
+    public virtual async ValueTask<OperResult> SendAsync(string socketId, SendMessage sendMessage, CancellationToken cancellationToken)
     {
         if (Channel.ChannelType == ChannelTypeEnum.TcpService)
         {
@@ -276,9 +277,44 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage command, CancellationToken cancellationToken, IClientChannel channel = default)
+    public virtual ValueTask<OperResult<byte[]>> SendThenReturnAsync(ReadOnlyMemory<byte> sendBytes, CancellationToken cancellationToken = default)
     {
-        await Channel.ConnectAsync(ConnectTimeout, cancellationToken).ConfigureAwait(false);
+        return SendThenReturnAsync(new SendMessage(sendBytes), default, cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public virtual ValueTask<OperResult<byte[]>> SendThenReturnAsync(string socketId, ReadOnlyMemory<byte> sendBytes, CancellationToken cancellationToken = default)
+    {
+        return SendThenReturnAsync(socketId, new SendMessage(sendBytes), default, cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    public virtual OperResult<IClientChannel> GetChannel(string socketId)
+    {
+        if (Channel.ChannelType == ChannelTypeEnum.TcpService)
+        {
+            if (((TcpServiceChannel)Channel).Clients.TryGetClient($"ID={socketId}", out TcpSessionClientChannel? client))
+                return new OperResult<IClientChannel>() { Content = client };
+            else
+                return (new OperResult<IClientChannel>(DefaultResource.Localizer["DtuNoConnectedWaining"]));
+        }
+        else
+            return new OperResult<IClientChannel>() { Content = (IClientChannel)Channel };
+    }
+
+    /// <inheritdoc/>
+    public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(string socketId, SendMessage sendMessage, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default)
+    {
+        var channelResult = GetChannel(socketId);
+        if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
+        return await SendThenReturnAsync(sendMessage, waitData, cancellationToken, channelResult.Content);
+    }
+
+    /// <inheritdoc/>
+    public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(SendMessage command, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default, IClientChannel channel = default)
+    {
+        if (!Channel.Online)
+            await Channel.ConnectAsync(ConnectTimeout, cancellationToken).ConfigureAwait(false);
         if (SendDelayTime != 0)
             await Task.Delay(SendDelayTime, cancellationToken).ConfigureAwait(false);
         SetDataAdapter();
@@ -288,63 +324,45 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         if (channel == default)
         {
             if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-            result = await GetResponsedDataAsync(command, Timeout, clientChannel, cancellationToken).ConfigureAwait(false);
+            if (waitData == default)
+            {
+                waitData = clientChannel.WaitHandlePool.GetWaitDataAsync(out var sign);
+                command.Sign = sign;
+            }
+            result = await GetResponsedDataAsync(command, Timeout, clientChannel, waitData, cancellationToken).ConfigureAwait(false);
         }
         else
         {
-            result = await GetResponsedDataAsync(command, Timeout, channel, cancellationToken).ConfigureAwait(false);
+            if (waitData == default)
+            {
+                waitData = channel.WaitHandlePool.GetWaitDataAsync(out var sign);
+                command.Sign = sign;
+            }
+            result = await GetResponsedDataAsync(command, Timeout, channel, waitData, cancellationToken).ConfigureAwait(false);
         }
 
         return new OperResult<byte[]>(result) { Content = result.Content };
     }
 
     /// <inheritdoc/>
-    public virtual ValueTask<OperResult<byte[]>> SendThenReturnAsync(byte[] sendBytes, CancellationToken cancellationToken)
-    {
-        return SendThenReturnAsync(new SendMessage(sendBytes), cancellationToken);
-    }
-
-    /// <inheritdoc/>
-    public virtual ValueTask<OperResult<byte[]>> SendThenReturnAsync(string socketId, byte[] sendBytes, CancellationToken cancellationToken)
-    {
-        return SendThenReturnAsync(socketId, new SendMessage(sendBytes), cancellationToken);
-    }
-
-    /// <inheritdoc/>
-    public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(string socketId, ISendMessage sendMessage, CancellationToken cancellationToken)
-    {
-        if (Channel.ChannelType == ChannelTypeEnum.TcpService)
-        {
-            if (((TcpServiceChannel)Channel).Clients.TryGetClient($"ID={socketId}", out TcpSessionClientChannel? client))
-                return await SendThenReturnAsync(sendMessage, cancellationToken, client);
-            else
-                return (new OperResult<byte[]>(DefaultResource.Localizer["DtuNoConnectedWaining"]));
-        }
-        else
-            return await SendThenReturnAsync(sendMessage, cancellationToken);
-    }
-
-    /// <inheritdoc/>
     public virtual bool IsSingleThread { get; } = true;
 
     /// <summary>
-    /// 实现等待数据，需要加锁
+    /// 发送并等待数据
     /// </summary>
-    /// <param name="item"></param>
-    /// <param name="timeout"></param>
-    /// <param name="clientChannel"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    protected virtual async ValueTask<MessageBase> GetResponsedDataAsync(ISendMessage item, int timeout, IClientChannel clientChannel, CancellationToken cancellationToken)
+    protected virtual async ValueTask<MessageBase> GetResponsedDataAsync(SendMessage command, int timeout, IClientChannel clientChannel, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default)
     {
+        if (waitData == default)
+        {
+            waitData = clientChannel.WaitHandlePool.GetWaitDataAsync(out var sign);
+            command.Sign = sign;
+        }
         if (IsSingleThread)
-            await clientChannel.WaitLock.WaitAsync(cancellationToken).ConfigureAwait(false);
-        var waitData = clientChannel.WaitHandlePool.GetWaitDataAsync(out var sign);
+            await clientChannel.WaitLock.WaitOneAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            item.Sign = sign;
             waitData.SetCancellationToken(cancellationToken);
-            await clientChannel.SendAsync(item).ConfigureAwait(false);
+            await clientChannel.SendAsync(command).ConfigureAwait(false);
             var waitDataStatus = await waitData.WaitAsync(timeout).ConfigureAwait(false);
             var result = waitDataStatus.Check();
             if (result.IsSuccess)
@@ -361,7 +379,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         {
             clientChannel.WaitHandlePool.Destroy(waitData);
             if (IsSingleThread)
-                clientChannel.WaitLock.Release();
+                clientChannel.WaitLock.Set();
         }
     }
 

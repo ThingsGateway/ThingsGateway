@@ -81,20 +81,17 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
             case ChannelTypeEnum.SerialPort:
                 return new Dlt645_2007DataHandleAdapter
                 {
-                    FEHead = FEHead,
                     CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
                 };
 
             case ChannelTypeEnum.UdpSession:
                 return new Dlt645_2007UdpDataHandleAdapter()
                 {
-                    FEHead = FEHead,
                 };
         }
 
         return new Dlt645_2007DataHandleAdapter
         {
-            FEHead = FEHead,
             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
         };
     }
@@ -119,8 +116,20 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
         try
         {
             var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
-            var commandResult = Dlt645Helper.GetDlt645_2007Command(dAddress, (byte)ControlCode.Read, Station);
-            return await SendThenReturnAsync(dAddress.SocketId, commandResult, cancellationToken).ConfigureAwait(false);
+            var channelResult = GetChannel(dAddress.SocketId);
+            if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            try
+            {
+                var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
+                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, dAddress, (byte)ControlCode.Read, Station, FEHead);
+                if (!commandResult.IsSuccess) return new OperResult<byte[]>(commandResult);
+                return await this.SendThenReturnAsync(new SendMessage(commandResult.Content) { Sign = sign }, waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
+            }
+            finally
+            {
+                valueByteBlock.SafeDispose();
+            }
         }
         catch (Exception ex)
         {
@@ -143,8 +152,21 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
             var data = DataTransUtil.SpliceArray(Password.ByHexStringToBytes(), OperCode.ByHexStringToBytes());
             string[] strArray = value.SplitStringBySemicolon();
             var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
-            var commandResult = Dlt645Helper.GetDlt645_2007Command(dAddress, (byte)ControlCode.Write, Station, data, strArray);
-            return await SendThenReturnAsync(dAddress.SocketId, commandResult, cancellationToken).ConfigureAwait(false);
+
+            var channelResult = GetChannel(dAddress.SocketId);
+            if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            try
+            {
+                var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
+                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, dAddress, (byte)ControlCode.Write, Station, FEHead, data, strArray);
+                if (!commandResult.IsSuccess) return new OperResult<byte[]>(commandResult);
+                return await this.SendThenReturnAsync(new SendMessage(commandResult.Content) { Sign = sign }, waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
+            }
+            finally
+            {
+                valueByteBlock.SafeDispose();
+            }
         }
         catch (Exception ex)
         {
@@ -194,14 +216,22 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     /// <param name="dateTime">时间</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async ValueTask<OperResult> BroadcastTimeAsync(DateTime dateTime, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult> BroadcastTimeAsync(string socketId, DateTime dateTime, CancellationToken cancellationToken = default)
     {
         try
         {
-            string str = $"{dateTime.Second:D2}{dateTime.Minute:D2}{dateTime.Hour:D2}{dateTime.Day:D2}{dateTime.Month:D2}{dateTime.Year % 100:D2}";
-            var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.BroadcastTime, str.ByHexStringToBytes().ToArray(), "999999999999".ByHexStringToBytes());
-            await SendAsync(new SendMessage(commandResult), (IClientChannel)Channel, cancellationToken);
-            return OperResult.Success;
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            try
+            {
+                string str = $"{dateTime.Second:D2}{dateTime.Minute:D2}{dateTime.Hour:D2}{dateTime.Day:D2}{dateTime.Month:D2}{dateTime.Year % 100:D2}";
+                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.BroadcastTime, str.ByHexStringToBytes().ToArray(), "999999999999".ByHexStringToBytes(), FEHead);
+                await this.SendAsync(socketId, new SendMessage(commandResult), cancellationToken).ConfigureAwait(false);
+                return OperResult.Success;
+            }
+            finally
+            {
+                valueByteBlock.SafeDispose();
+            }
         }
         catch (Exception ex)
         {
@@ -223,8 +253,17 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
             string str = $"{dateTime.Minute:D2}{dateTime.Hour:D2}{dateTime.Day:D2}{dateTime.Month:D2}";
             if (Station.IsNullOrEmpty()) Station = string.Empty;
             if (Station.Length < 12) Station = Station.PadLeft(12, '0');
-            var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.Freeze, str.ByHexStringToBytes().ToArray(), Station.ByHexStringToBytes().Reverse().ToArray());
-            return await SendThenReturnAsync(socketId, commandResult, cancellationToken).ConfigureAwait(false);
+
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            try
+            {
+                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.Freeze, str.ByHexStringToBytes().ToArray(), Station.ByHexStringToBytes().Reverse().ToArray(), FEHead);
+                return await this.SendThenReturnAsync(socketId, commandResult, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                valueByteBlock.SafeDispose();
+            }
         }
         catch (Exception ex)
         {
@@ -242,16 +281,24 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     {
         try
         {
-            var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.ReadStation, null, "AAAAAAAAAAAA".ByHexStringToBytes());
-            var result = await SendThenReturnAsync(socketId, commandResult, cancellationToken).ConfigureAwait(false);
-            if (result.IsSuccess)
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            try
             {
-                var buffer = result.Content.SelectMiddle(0, 6).BytesAdd(-0x33);
-                return OperResult.CreateSuccessResult(buffer.Reverse().ToArray().ToHexString());
+                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.ReadStation, null, "AAAAAAAAAAAA".ByHexStringToBytes(), FEHead);
+                var result = await this.SendThenReturnAsync(socketId, commandResult, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (result.IsSuccess)
+                {
+                    var buffer = result.Content.SelectMiddle(0, 6).BytesAdd(-0x33);
+                    return OperResult.CreateSuccessResult(buffer.Reverse().ToArray().ToHexString());
+                }
+                else
+                {
+                    return new OperResult<string>(result);
+                }
             }
-            else
+            finally
             {
-                return new OperResult<string>(result);
+                valueByteBlock.SafeDispose();
             }
         }
         catch (Exception ex)
@@ -284,8 +331,17 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
             }
             if (Station.IsNullOrEmpty()) Station = string.Empty;
             if (Station.Length < 12) Station = Station.PadLeft(12, '0');
-            var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.WriteBaudRate, new byte[1] { baudRateByte }, Station.ByHexStringToBytes().Reverse().ToArray());
-            return await SendThenReturnAsync(socketId, commandResult, cancellationToken).ConfigureAwait(false);
+
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            try
+            {
+                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.WriteBaudRate, new byte[1] { baudRateByte }, Station.ByHexStringToBytes().Reverse().ToArray(), FEHead);
+                return await this.SendThenReturnAsync(socketId, commandResult, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                valueByteBlock.SafeDispose();
+            }
         }
         catch (Exception ex)
         {
@@ -304,8 +360,16 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     {
         try
         {
-            var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.WriteStation, station.ByHexStringToBytes().Reverse().ToArray(), "AAAAAAAAAAAA".ByHexStringToBytes());
-            return await SendThenReturnAsync(socketId, commandResult, cancellationToken).ConfigureAwait(false);
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            try
+            {
+                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.WriteStation, station.ByHexStringToBytes().Reverse().ToArray(), "AAAAAAAAAAAA".ByHexStringToBytes(), FEHead);
+                return await this.SendThenReturnAsync(socketId, commandResult, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                valueByteBlock.SafeDispose();
+            }
         }
         catch (Exception ex)
         {
@@ -334,10 +398,18 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
                 , (oldPassword.ByHexStringToBytes().Reverse().ToArray())
                 , (newPassword.ByHexStringToBytes().Reverse().ToArray()));
 
-            var commandResult = Dlt645Helper.GetDlt645_2007Command((byte)ControlCode.WritePassword,
+            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            try
+            {
+                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.WritePassword,
                 bytes
-                , Station.ByHexStringToBytes().Reverse().ToArray());
-            return await SendThenReturnAsync(socketId, commandResult, cancellationToken).ConfigureAwait(false);
+                , Station.ByHexStringToBytes().Reverse().ToArray(), FEHead);
+                return await this.SendThenReturnAsync(socketId, commandResult, cancellationToken: cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                valueByteBlock.SafeDispose();
+            }
         }
         catch (Exception ex)
         {

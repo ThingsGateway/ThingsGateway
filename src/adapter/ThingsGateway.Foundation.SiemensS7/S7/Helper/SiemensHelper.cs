@@ -35,7 +35,7 @@ internal partial class SiemensHelper
     //    return OperResult.CreateSuccessResult<byte[]>(numArray);
     //}
 
-    internal static OperResult<AdapterResult> AnalysisReadByte(byte[] sends, IByteBlock content)
+    internal static OperResult<AdapterResult> AnalysisReadByte(ReadOnlySpan<byte> sends, IByteBlock content)
     {
         int length = 0;
         int itemLen = (sends.Length - 19) / 12;
@@ -142,125 +142,123 @@ internal partial class SiemensHelper
         }
     }
 
-    internal static byte[] GetReadCommand(SiemensAddress[] siemensAddress)
+    internal static ReadOnlyMemory<byte> GetReadCommand(ref ValueByteBlock valueByteBlock, SiemensAddress[] siemensAddress)
     {
         int len = siemensAddress.Length;
         int telegramLen = len * 12 + 19;
         int parameterLen = len * 12 + 2;
 
-        byte[] numArray = new byte[telegramLen];
-
-        Array.Copy(S7_MULRW_HEADER, 0, numArray, 0, S7_MULRW_HEADER.Length);
-        numArray[2] = (byte)(telegramLen / 256);
-        numArray[3] = (byte)(telegramLen % 256);
-        numArray[13] = (byte)(parameterLen / 256);
-        numArray[14] = (byte)(parameterLen % 256);
-        numArray[18] = (byte)len;
+        valueByteBlock.Write(S7_MULRW_HEADER);//19字节
+        valueByteBlock[2] = (byte)(telegramLen / 256);
+        valueByteBlock[3] = (byte)(telegramLen % 256);
+        valueByteBlock[13] = (byte)(parameterLen / 256);
+        valueByteBlock[14] = (byte)(parameterLen % 256);
+        valueByteBlock[18] = (byte)len;
 
         for (int index = 0; index < len; index++)
         {
-            Array.Copy(S7_MULRD_ITEM, 0, numArray, 19 + (index * 12), S7_MULRD_ITEM.Length);
+            valueByteBlock.Write(S7_MULRD_ITEM);//12字节
             if (siemensAddress[index].DataCode == (byte)S7WordLength.Counter || siemensAddress[index].DataCode == (byte)S7WordLength.Timer)
             {
-                numArray[22 + (index * 12)] = siemensAddress[index].DataCode;
-                numArray[23 + (index * 12)] = (byte)(siemensAddress[index].Length / 256);
-                numArray[24 + (index * 12)] = (byte)(siemensAddress[index].Length % 256);
+                valueByteBlock[22 + (index * 12)] = siemensAddress[index].DataCode;
+                valueByteBlock[23 + (index * 12)] = (byte)(siemensAddress[index].Length / 256);
+                valueByteBlock[24 + (index * 12)] = (byte)(siemensAddress[index].Length % 256);
             }
             else
             {
-                numArray[22 + (index * 12)] = (byte)S7WordLength.Byte;
-                numArray[23 + (index * 12)] = (byte)(siemensAddress[index].Length / 256);
-                numArray[24 + (index * 12)] = (byte)(siemensAddress[index].Length % 256);
+                valueByteBlock[22 + (index * 12)] = (byte)S7WordLength.Byte;
+                valueByteBlock[23 + (index * 12)] = (byte)(siemensAddress[index].Length / 256);
+                valueByteBlock[24 + (index * 12)] = (byte)(siemensAddress[index].Length % 256);
             }
-            numArray[25 + (index * 12)] = (byte)(siemensAddress[index].DbBlock / 256U);
-            numArray[26 + (index * 12)] = (byte)(siemensAddress[index].DbBlock % 256U);
-            numArray[27 + (index * 12)] = siemensAddress[index].DataCode;
-            numArray[28 + (index * 12)] = (byte)(siemensAddress[index].AddressStart / 256 / 256 % 256);
-            numArray[29 + (index * 12)] = (byte)(siemensAddress[index].AddressStart / 256 % 256);
-            numArray[30 + (index * 12)] = (byte)(siemensAddress[index].AddressStart % 256);
+            valueByteBlock[25 + (index * 12)] = (byte)(siemensAddress[index].DbBlock / 256U);
+            valueByteBlock[26 + (index * 12)] = (byte)(siemensAddress[index].DbBlock % 256U);
+            valueByteBlock[27 + (index * 12)] = siemensAddress[index].DataCode;
+            valueByteBlock[28 + (index * 12)] = (byte)(siemensAddress[index].AddressStart / 256 / 256 % 256);
+            valueByteBlock[29 + (index * 12)] = (byte)(siemensAddress[index].AddressStart / 256 % 256);
+            valueByteBlock[30 + (index * 12)] = (byte)(siemensAddress[index].AddressStart % 256);
         }
-        return numArray;
+        return valueByteBlock.Memory;
     }
 
-    internal static byte[] GetWriteBitCommand(SiemensAddress address, bool data)
+    internal static ReadOnlyMemory<byte> GetWriteBitCommand(ref ValueByteBlock valueByteBlock, SiemensAddress address, bool data)
     {
         int len = 1;
         int telegramLen = 16 + 19 + len;//最后的1是写入值的byte数量
         int parameterLen = 12 + 2;
 
-        byte[] numArray = new byte[telegramLen];
-
-        Array.Copy(S7_MULRW_HEADER, 0, numArray, 0, S7_MULRW_HEADER.Length);
-        numArray[2] = (byte)(telegramLen / 256);
-        numArray[3] = (byte)(telegramLen % 256);
-        numArray[13] = (byte)(parameterLen / 256);
-        numArray[14] = (byte)(parameterLen % 256);
-        numArray[15] = (byte)((4 + len) / 256);
-        numArray[16] = (byte)((4 + len) % 256);
-        numArray[17] = 5;
-        numArray[18] = (byte)1;
+        valueByteBlock.Write(S7_MULRW_HEADER);//19字节
+        valueByteBlock[2] = (byte)(telegramLen / 256);
+        valueByteBlock[3] = (byte)(telegramLen % 256);
+        valueByteBlock[13] = (byte)(parameterLen / 256);
+        valueByteBlock[14] = (byte)(parameterLen % 256);
+        valueByteBlock[15] = (byte)((4 + len) / 256);
+        valueByteBlock[16] = (byte)((4 + len) % 256);
+        valueByteBlock[17] = 5;
+        valueByteBlock[18] = (byte)1;
         //写入Item与读取大致相同
-        numArray[19] = (byte)18;
-        numArray[20] = (byte)10;
-        numArray[21] = (byte)16;
-        numArray[22] = (byte)S7WordLength.Bit;
-        numArray[23] = (byte)(len / 256);
-        numArray[24] = (byte)(len % 256);
-        numArray[25] = (byte)(address.DbBlock / 256U);
-        numArray[26] = (byte)(address.DbBlock % 256U);
-        numArray[27] = (byte)address.DataCode;
-        numArray[28] = (byte)((address.AddressStart + address.BitCode) / 256 / 256);
-        numArray[29] = (byte)((address.AddressStart + address.BitCode) / 256);
-        numArray[30] = (byte)((address.AddressStart + address.BitCode) % 256);
+        valueByteBlock.Position = 19;
+        valueByteBlock.WriteByte((byte)18);
+        valueByteBlock.WriteByte((byte)10);
+        valueByteBlock.WriteByte((byte)16);
+        valueByteBlock.WriteByte((byte)S7WordLength.Bit);
+        valueByteBlock.WriteByte((byte)(len / 256));
+        valueByteBlock.WriteByte((byte)(len % 256));
+        valueByteBlock.WriteByte((byte)(address.DbBlock / 256));
+        valueByteBlock.WriteByte((byte)(address.DbBlock % 256));
+        valueByteBlock.WriteByte((byte)(address.DataCode));
+        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256 / 256));
+        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256));
+        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) % 256));
         //后面跟的是写入的数据信息
-        numArray[31] = 0;
-        numArray[32] = 3;//Bit:3;Byte:4;Counter或者Timer:9
-        numArray[33] = (byte)(len / 256);
-        numArray[34] = (byte)(len % 256);
-        numArray[35] = (byte)(data ? 1 : 0);
+        valueByteBlock.WriteByte((byte)(0));
+        valueByteBlock.WriteByte((byte)(3));//Bit:3;Byte:4;Counter或者Timer:9
+        valueByteBlock.WriteByte((byte)(len / 256));
+        valueByteBlock.WriteByte((byte)(len % 256));
+        valueByteBlock.WriteByte((byte)(data ? 1 : 0));
 
-        return numArray;
+        return valueByteBlock.Memory;
     }
 
-    internal static byte[] GetWriteByteCommand(SiemensAddress address, byte[] data)
+    internal static ReadOnlyMemory<byte> GetWriteByteCommand(ref ValueByteBlock valueByteBlock, SiemensAddress address, ReadOnlySpan<byte> data)
     {
         int len = data.Length;
         int telegramLen = 16 + 19 + len;//最后的1是写入值的byte数量
         int parameterLen = 12 + 2;
 
-        byte[] numArray = new byte[telegramLen];
+        valueByteBlock.Write(S7_MULRW_HEADER);//19字节
 
-        Array.Copy(S7_MULRW_HEADER, 0, numArray, 0, S7_MULRW_HEADER.Length);
-        numArray[2] = (byte)(telegramLen / 256);
-        numArray[3] = (byte)(telegramLen % 256);
-        numArray[13] = (byte)(parameterLen / 256);
-        numArray[14] = (byte)(parameterLen % 256);
-        numArray[15] = (byte)((4 + len) / 256);
-        numArray[16] = (byte)((4 + len) % 256);
-        numArray[17] = 5;
-        numArray[18] = (byte)1;
+        valueByteBlock[2] = (byte)(telegramLen / 256);
+        valueByteBlock[3] = (byte)(telegramLen % 256);
+        valueByteBlock[13] = (byte)(parameterLen / 256);
+        valueByteBlock[14] = (byte)(parameterLen % 256);
+        valueByteBlock[15] = (byte)((4 + len) / 256);
+        valueByteBlock[16] = (byte)((4 + len) % 256);
+        valueByteBlock[17] = 5;
+        valueByteBlock[18] = (byte)1;
         //写入Item与读取大致相同
-        numArray[19] = (byte)18;
-        numArray[20] = (byte)10;
-        numArray[21] = (byte)16;
-        numArray[22] = (byte)S7WordLength.Byte;
-        numArray[23] = (byte)(len / 256);
-        numArray[24] = (byte)(len % 256);
 
-        numArray[25] = (byte)(address.DbBlock / 256U);
-        numArray[26] = (byte)(address.DbBlock % 256U);
-        numArray[27] = (byte)address.DataCode;
-        numArray[28] = (byte)(address.AddressStart / 256 / 256);
-        numArray[29] = (byte)(address.AddressStart / 256);
-        numArray[30] = (byte)(address.AddressStart % 256);
+        //写入Item与读取大致相同
+        valueByteBlock.Position = 19;
+        valueByteBlock.WriteByte((byte)18);
+        valueByteBlock.WriteByte((byte)10);
+        valueByteBlock.WriteByte((byte)16);
+        valueByteBlock.WriteByte((byte)S7WordLength.Byte);
+        valueByteBlock.WriteByte((byte)(len / 256));
+        valueByteBlock.WriteByte((byte)(len % 256));
+        valueByteBlock.WriteByte((byte)(address.DbBlock / 256));
+        valueByteBlock.WriteByte((byte)(address.DbBlock % 256));
+        valueByteBlock.WriteByte((byte)(address.DataCode));
+        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256 / 256));
+        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256));
+        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) % 256));
         //后面跟的是写入的数据信息
-        numArray[31] = 0;
-        numArray[32] = 4;//Bit:3;Byte:4;Counter或者Timer:9
-        numArray[33] = (byte)(len * 8 / 256);
-        numArray[34] = (byte)(len * 8 % 256);
-        data.CopyTo(numArray, 35);
+        valueByteBlock.WriteByte((byte)(0));
+        valueByteBlock.WriteByte((byte)(4));//Bit:3;Byte:4;Counter或者Timer:9
+        valueByteBlock.WriteByte((byte)(len * 8 / 256));
+        valueByteBlock.WriteByte((byte)(len * 8 % 256));
+        valueByteBlock.Write(data);
 
-        return numArray;
+        return valueByteBlock.Memory;
     }
 
     internal static async ValueTask<OperResult<string>> ReadStringAsync(SiemensS7Master plc, string address, Encoding encoding, CancellationToken cancellationToken)
@@ -308,8 +306,6 @@ internal partial class SiemensHelper
     {
         value ??= string.Empty;
         byte[] inBytes = encoding.GetBytes(value);
-        //if (encoding == Encoding.Unicode)
-        //    inBytes = inBytes.BytesReverseByWord();
         if (plc.SiemensS7Type != SiemensTypeEnum.S200Smart)
         {
             var result = await plc.ReadAsync(address, 2).ConfigureAwait(false);

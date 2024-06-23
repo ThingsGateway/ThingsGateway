@@ -17,13 +17,7 @@ internal class ModbusTcpDataHandleAdapter : ReadWriteDevicesSingleStreamDataHand
 {
     public ModbusTcpDataHandleAdapter()
     {
-        IsSendPackCommand = true;
         this.MaxPackageSize = 1024 * 1024 * 1024;
-    }
-
-    public override byte[] PackCommand(ISendMessage item)
-    {
-        return ModbusHelper.AddModbusTcpHead(item.SendBytes, 0, item.SendBytes.Length, (ushort)item.Sign);
     }
 
     public override bool IsSingleThread { get; } = false;

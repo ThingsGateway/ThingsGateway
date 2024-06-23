@@ -23,25 +23,6 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
         CacheTimeoutEnable = true;
     }
 
-    /// <summary>
-    /// 在解析时发生错误。
-    /// </summary>
-    /// <param name="ex">异常</param>
-    /// <param name="error">错误异常</param>
-    /// <param name="reset">是否调用Reset/></param>
-    /// <param name="log">是否记录日志</param>
-    protected override void OnError(Exception ex, string error, bool reset, bool log)
-    {
-        if (reset)
-        {
-            this.Reset();
-        }
-        if (log)
-        {
-            this.Logger?.LogError(ex, error);
-        }
-    }
-
     /// <inheritdoc/>
     public override bool CanSendRequestInfo => true;
 
@@ -57,17 +38,6 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     /// 是否非并发协议
     /// </summary>
     public virtual bool IsSingleThread { get; } = true;
-
-    /// <inheritdoc/>
-    public virtual bool IsSendPackCommand { get; set; } = false;
-
-    /// <summary>
-    /// 发送前，对当前的命令进行打包处理
-    /// </summary>
-    public virtual byte[] PackCommand(ISendMessage item)
-    {
-        return item.SendBytes;
-    }
 
     /// <summary>
     /// 非并发协议中，每次交互的对象，会在发送时重新获取
@@ -190,26 +160,28 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     {
         if (!(requestInfo is ISendMessage sendMessage))
         {
-            throw new Exception($"Unable to convert {nameof(requestInfo)} to {nameof(ISendMessage)}");
+            throw new Exception($"Unable to convert {nameof(requestInfo)} to {nameof(SendMessage)}");
         }
         var sendData = sendMessage.SendBytes;
 
-        if (IsSendPackCommand)
-            sendData = PackCommand(sendMessage);
-
         if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? sendData.ToHexString(' ') : Encoding.UTF8.GetString(sendData))}");
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? sendData.Span.ToHexString() : (sendData.Span.ToString(Encoding.UTF8)))}");
         //非并发主从协议
         if (IsSingleThread)
         {
-            var request = GetInstance();
-            request.Sign = sendMessage.Sign;
-            request.SendInfo(sendData);
-            Request = request;
+            SetRequest(sendMessage.Sign, sendData);
         }
 
         //发送
         await this.GoSendAsync(sendData).ConfigureFalseAwait();
+    }
+
+    public void SetRequest(int sign, ReadOnlyMemory<byte> sendData)
+    {
+        var request = GetInstance();
+        request.Sign = sign;
+        request.SendInfo(sendData);
+        Request = request;
     }
 
     /// <summary>

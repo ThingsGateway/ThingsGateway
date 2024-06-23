@@ -18,9 +18,9 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
     /// <inheritdoc/>
     public override int HeadBytesLength => 0;
 
-    public byte[] SendBytes { get; set; }
+    public ReadOnlyMemory<byte> SendBytes { get; set; }
 
-    public override void SendInfo(byte[]? sendBytes)
+    public override void SendInfo(ReadOnlyMemory<byte> sendBytes)
     {
         SendBytes = sendBytes;
     }
@@ -28,7 +28,7 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
     /// <inheritdoc/>
     public override bool CheckHeadBytes(byte[]? headBytes)
     {
-        if (SendBytes?.Length > 0)
+        if (SendBytes.Length > 0)
         {
             BodyLength = 0;
             return true;
