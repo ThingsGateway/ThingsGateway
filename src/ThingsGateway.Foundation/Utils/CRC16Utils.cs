@@ -18,9 +18,7 @@ public class CRC16Utils
     /// <summary>
     /// 通过指定多项式码来获取对应的数据的CRC校验码
     /// </summary>
-    /// <param name="value">需要校验的数据，不包含CRC字节</param>
-    /// <param name="index">计算的起始字节索引</param>
-    /// <param name="length">计算的字节长度</param>
+    /// <param name="memory">需要校验的数据，不包含CRC字节</param>
     /// <returns>返回带CRC校验码的字节数组，可用于串口发送</returns>
     public static byte[] Crc16Only(ReadOnlyMemory<byte> memory)
     {
@@ -30,9 +28,7 @@ public class CRC16Utils
     /// <summary>
     /// 通过指定多项式码来获取对应的数据的CRC校验码
     /// </summary>
-    /// <param name="data">需要校验的数据，不包含CRC字节</param>
-    /// <param name="index">计算的起始字节索引</param>
-    /// <param name="length">计算的字节长度</param>
+    /// <param name="memory">需要校验的数据，不包含CRC字节</param>
     /// <param name="xdapoly">多项式</param>
     /// <param name="crc16">crc16</param>
     /// <returns>返回带CRC校验码的字节数组，可用于串口发送</returns>
