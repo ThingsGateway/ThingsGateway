@@ -131,6 +131,41 @@ public partial class LogConsole : IDisposable
         }
     }
 
+    private async Task Delete()
+    {
+        if (LogPath != null)
+        {
+            var files = TextFileReader.GetFiles(LogPath);
+            if (files == null || files.FirstOrDefault() == null || !files.FirstOrDefault().IsSuccess)
+            {
+            }
+            else
+            {
+                foreach (var item in files)
+                {
+                    if (File.Exists(item.FullName))
+                    {
+                        int error = 0;
+                        while (error < 3)
+                        {
+                            try
+                            {
+                                File.SetAttributes(item.FullName, FileAttributes.Normal);
+                                File.Delete(item.FullName);
+                                break;
+                            }
+                            catch
+                            {
+                                await Task.Delay(3000);
+                                error++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     protected async Task ExecuteAsync()
     {
         try
@@ -140,6 +175,8 @@ public partial class LogConsole : IDisposable
                 var files = TextFileReader.GetFiles(LogPath);
                 if (files == null || files.FirstOrDefault() == null || !files.FirstOrDefault().IsSuccess)
                 {
+                    Messages = new List<LogMessage>();
+                    await Task.Delay(1000);
                 }
                 else
                 {

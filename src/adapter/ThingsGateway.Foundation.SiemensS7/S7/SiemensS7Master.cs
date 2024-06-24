@@ -112,14 +112,13 @@ public partial class SiemensS7Master : ProtocolBase
     {
         try
         {
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
             List<byte> bytes = new();
+            var commandResult = GetReadByteCommand(address, length);
             try
             {
-                var commandResult = GetReadByteCommand(ref valueByteBlock, address, length);
                 foreach (var item in commandResult)
                 {
-                    var result = await SendThenReturnAsync(item, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    var result = await SendThenReturnAsync(item.Memory, cancellationToken: cancellationToken).ConfigureAwait(false);
                     if (result.IsSuccess)
                         bytes.AddRange(result.Content);
                     else
@@ -128,7 +127,7 @@ public partial class SiemensS7Master : ProtocolBase
             }
             finally
             {
-                valueByteBlock.SafeDispose();
+                commandResult.ForEach(a => a.SafeDispose());
             }
             return OperResult.CreateSuccessResult(bytes.ToArray());
         }
@@ -144,13 +143,12 @@ public partial class SiemensS7Master : ProtocolBase
         try
         {
             var s_Address = SiemensAddress.ParseFrom(address);
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
+            var commandResult = GetWriteByteCommand(s_Address, value);
             try
             {
-                var commandResult = GetWriteByteCommand(ref valueByteBlock, s_Address, value);
                 foreach (var item in commandResult)
                 {
-                    var result = await SendThenReturnAsync(item, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    var result = await SendThenReturnAsync(item.Memory, cancellationToken: cancellationToken).ConfigureAwait(false);
                     if (!result.IsSuccess)
                         return result;
                 }
@@ -158,7 +156,7 @@ public partial class SiemensS7Master : ProtocolBase
             }
             finally
             {
-                valueByteBlock.SafeDispose();
+                commandResult.ForEach(a => a.SafeDispose());
             }
         }
         catch (Exception ex)
@@ -180,8 +178,8 @@ public partial class SiemensS7Master : ProtocolBase
             ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
             try
             {
-                var item = SiemensHelper.GetWriteBitCommand(ref valueByteBlock, s_Address, value[0]);
-                return await SendThenReturnAsync(item, cancellationToken: cancellationToken).ConfigureAwait(false);
+                SiemensHelper.GetWriteBitCommand(ref valueByteBlock, s_Address, value[0]);
+                return await SendThenReturnAsync(valueByteBlock.Memory, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             finally
             {

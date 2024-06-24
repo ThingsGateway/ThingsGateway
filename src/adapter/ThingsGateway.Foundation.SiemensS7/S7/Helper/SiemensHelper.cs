@@ -142,7 +142,9 @@ internal partial class SiemensHelper
         }
     }
 
-    internal static ReadOnlyMemory<byte> GetReadCommand(ref ValueByteBlock valueByteBlock, SiemensAddress[] siemensAddress)
+    #endregion 验证
+
+    internal static void GetReadCommand(ref ValueByteBlock valueByteBlock, SiemensAddress[] siemensAddress)
     {
         int len = siemensAddress.Length;
         int telegramLen = len * 12 + 19;
@@ -177,10 +179,9 @@ internal partial class SiemensHelper
             valueByteBlock[29 + (index * 12)] = (byte)(siemensAddress[index].AddressStart / 256 % 256);
             valueByteBlock[30 + (index * 12)] = (byte)(siemensAddress[index].AddressStart % 256);
         }
-        return valueByteBlock.Memory;
     }
 
-    internal static ReadOnlyMemory<byte> GetWriteBitCommand(ref ValueByteBlock valueByteBlock, SiemensAddress address, bool data)
+    internal static void GetWriteBitCommand(ref ValueByteBlock valueByteBlock, SiemensAddress address, bool data)
     {
         int len = 1;
         int telegramLen = 16 + 19 + len;//最后的1是写入值的byte数量
@@ -215,11 +216,9 @@ internal partial class SiemensHelper
         valueByteBlock.WriteByte((byte)(len / 256));
         valueByteBlock.WriteByte((byte)(len % 256));
         valueByteBlock.WriteByte((byte)(data ? 1 : 0));
-
-        return valueByteBlock.Memory;
     }
 
-    internal static ReadOnlyMemory<byte> GetWriteByteCommand(ref ValueByteBlock valueByteBlock, SiemensAddress address, ReadOnlySpan<byte> data)
+    internal static void GetWriteByteCommand(ref ValueByteBlock valueByteBlock, SiemensAddress address, ReadOnlySpan<byte> data)
     {
         int len = data.Length;
         int telegramLen = 16 + 19 + len;//最后的1是写入值的byte数量
@@ -257,8 +256,6 @@ internal partial class SiemensHelper
         valueByteBlock.WriteByte((byte)(len * 8 / 256));
         valueByteBlock.WriteByte((byte)(len * 8 % 256));
         valueByteBlock.Write(data);
-
-        return valueByteBlock.Memory;
     }
 
     internal static async ValueTask<OperResult<string>> ReadStringAsync(SiemensS7Master plc, string address, Encoding encoding, CancellationToken cancellationToken)
@@ -343,6 +340,4 @@ internal partial class SiemensHelper
         };
         ;
     }
-
-    #endregion 验证
 }

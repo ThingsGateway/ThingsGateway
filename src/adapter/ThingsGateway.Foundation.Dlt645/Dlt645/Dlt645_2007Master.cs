@@ -213,6 +213,7 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     /// <summary>
     /// 广播校时
     /// </summary>
+    /// <param name="socketId">socketId</param>
     /// <param name="dateTime">时间</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>

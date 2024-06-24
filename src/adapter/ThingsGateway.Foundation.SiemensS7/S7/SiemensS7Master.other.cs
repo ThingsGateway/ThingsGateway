@@ -17,17 +17,35 @@ namespace ThingsGateway.Foundation.SiemensS7;
 /// <inheritdoc/>
 public partial class SiemensS7Master : ProtocolBase
 {
-    private List<ReadOnlyMemory<byte>> GetReadByteCommand(ref ValueByteBlock valueByteBlock, string address, int length)
+    private List<ValueByteBlock> GetReadByteCommand(SiemensAddress[] siemensAddress)
+    {
+        if (siemensAddress.Length <= 19)
+        {
+            ValueByteBlock valueByteBlock = new(1024);
+            SiemensHelper.GetReadCommand(ref valueByteBlock, siemensAddress);
+            return new List<ValueByteBlock>() { valueByteBlock };
+        }
+
+        List<ValueByteBlock> byteList = new();
+        List<SiemensAddress[]> s7AddressDataArrayList = siemensAddress.ArraySplitByLength(19);
+        for (int index = 0; index < s7AddressDataArrayList.Count; ++index)
+        {
+            byteList.AddRange(GetReadByteCommand(s7AddressDataArrayList[index]));
+        }
+        return byteList;
+    }
+
+    private List<ValueByteBlock> GetReadByteCommand(string address, int length)
     {
         var from = SiemensAddress.ParseFrom(address, length);
         ushort num1 = 0;
-        var listBytes = new List<ReadOnlyMemory<byte>>();
+        var listBytes = new List<ValueByteBlock>();
         while (num1 < length)
         {
             //pdu长度，重复生成报文，直至全部生成
             ushort num2 = (ushort)Math.Min(length - num1, PduLength);
             from.Length = num2;
-            var result = GetReadByteCommand(ref valueByteBlock, new SiemensAddress[1] { from });
+            var result = GetReadByteCommand(new SiemensAddress[1] { from });
             listBytes.AddRange(result);
             num1 += num2;
             if (from.DataCode == (byte)S7WordLength.Timer || from.DataCode == (byte)S7WordLength.Counter)
@@ -42,38 +60,22 @@ public partial class SiemensS7Master : ProtocolBase
         return listBytes;
     }
 
-    private List<ReadOnlyMemory<byte>> GetReadByteCommand(ref ValueByteBlock valueByteBlock, SiemensAddress[] siemensAddress)
-    {
-        if (siemensAddress.Length <= 19)
-        {
-            return new List<ReadOnlyMemory<byte>>() { SiemensHelper.GetReadCommand(ref valueByteBlock, siemensAddress) };
-        }
-
-        List<ReadOnlyMemory<byte>> byteList = new();
-        List<SiemensAddress[]> s7AddressDataArrayList = siemensAddress.ArraySplitByLength(19);
-        for (int index = 0; index < s7AddressDataArrayList.Count; ++index)
-        {
-            var result = GetReadByteCommand(ref valueByteBlock, s7AddressDataArrayList[index]);
-            byteList.AddRange(result);
-        }
-        return byteList;
-    }
-
-    private List<ReadOnlyMemory<byte>> GetWriteByteCommand(ref ValueByteBlock valueByteBlock, SiemensAddress address, byte[] value)
+    private List<ValueByteBlock> GetWriteByteCommand(SiemensAddress address, byte[] value)
     {
         int length1 = value.Length;
         ushort index = 0;
-        List<ReadOnlyMemory<byte>> bytes = new();
+        var listBytes = new List<ValueByteBlock>();
         while (index < length1)
         {
             //pdu长度，重复生成报文，直至全部生成
             ushort length2 = (ushort)Math.Min(length1 - index, PduLength);
             ReadOnlySpan<byte> data = new ReadOnlySpan<byte>(value, index, length2);
-            var result1 = SiemensHelper.GetWriteByteCommand(ref valueByteBlock, address, data);
-            bytes.Add(result1);
+            ValueByteBlock valueByteBlock = new(1024);
+            SiemensHelper.GetWriteByteCommand(ref valueByteBlock, address, data);
+            listBytes.Add(valueByteBlock);
             index += length2;
             address.AddressStart += length2 * 8;
         }
-        return bytes;
+        return listBytes;
     }
 }

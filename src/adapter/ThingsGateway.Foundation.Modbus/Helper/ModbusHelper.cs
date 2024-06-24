@@ -203,7 +203,7 @@ internal class ModbusHelper
     /// <summary>
     /// 获取读取报文
     /// </summary>
-    internal static ReadOnlyMemory<byte> GetReadModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, ushort length, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
+    internal static void GetReadModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, ushort length, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
     {
         if (modbusType == ModbusTypeEnum.ModbusTcp)
         {
@@ -220,13 +220,12 @@ internal class ModbusHelper
         {
             valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Memory));
         }
-        return valueByteBlock.Memory;
     }
 
     /// <summary>
     /// 获取05写入布尔量报文
     /// </summary>
-    internal static ReadOnlyMemory<byte> GetWriteBoolModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, bool value, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
+    internal static void GetWriteBoolModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, bool value, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
     {
         if (modbusType == ModbusTypeEnum.ModbusTcp)
         {
@@ -243,14 +242,12 @@ internal class ModbusHelper
         {
             valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Memory));
         }
-
-        return valueByteBlock.Memory;
     }
 
     /// <summary>
     /// 获取15写入布尔量报文
     /// </summary>
-    internal static ReadOnlyMemory<byte> GetWriteBoolModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, bool[] values, ushort length, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
+    internal static void GetWriteBoolModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, bool[] values, ushort length, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
     {
         if (modbusType == ModbusTypeEnum.ModbusTcp)
         {
@@ -270,14 +267,12 @@ internal class ModbusHelper
         {
             valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Memory));
         }
-
-        return valueByteBlock.Memory;
     }
 
     /// <summary>
     /// 获取16写入字报文
     /// </summary>
-    internal static ReadOnlyMemory<byte> GetWriteModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, byte[] values, ushort length, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
+    internal static void GetWriteModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, byte[] values, ushort length, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
     {
         if (modbusType == ModbusTypeEnum.ModbusTcp)
         {
@@ -296,14 +291,12 @@ internal class ModbusHelper
         {
             valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Memory));
         }
-
-        return valueByteBlock.Memory;
     }
 
     /// <summary>
     /// 获取6写入字报文
     /// </summary>
-    internal static ReadOnlyMemory<byte> GetWriteOneModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, byte[] values, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
+    internal static void GetWriteOneModbusCommand(ref ValueByteBlock valueByteBlock, ModbusAddress mAddress, byte[] values, ModbusTypeEnum modbusType, ushort sign, ushort protocolId)
     {
         if (modbusType == ModbusTypeEnum.ModbusTcp)
         {
@@ -320,8 +313,6 @@ internal class ModbusHelper
         {
             valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Memory));
         }
-
-        return valueByteBlock.Memory;
     }
 
     #endregion 报文构建

@@ -161,8 +161,8 @@ public partial class ModbusMaster : ProtocolBase, IDtu
             try
             {
                 var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
-                var commandResult = ModbusHelper.GetReadModbusCommand(ref valueByteBlock, mAddress, (ushort)length, ModbusType, (ushort)sign, 0);
-                return await this.SendThenReturnAsync(new SendMessage(commandResult) { Sign = sign }, waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
+                ModbusHelper.GetReadModbusCommand(ref valueByteBlock, mAddress, (ushort)length, ModbusType, (ushort)sign, 0);
+                return await this.SendThenReturnAsync(new SendMessage(valueByteBlock.Memory) { Sign = sign }, waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
             }
             finally
             {
