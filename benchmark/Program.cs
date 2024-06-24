@@ -61,8 +61,8 @@ namespace BenchmarkConsoleApp
             });
 
             consoleAction.Add("1001", "单独测试 ThingsGateway", async () => { await ThingsGateway(); });
-            consoleAction.Add("1002", "单独测试 NModbus4", async () => { await NModbus4(); });
-            consoleAction.Add("1003", "单独测试 TouchSocket", async () => { await TouchSocket(); });
+            //consoleAction.Add("1002", "单独测试 NModbus4", async () => { await NModbus4(); });
+            //consoleAction.Add("1003", "单独测试 TouchSocket", async () => { await TouchSocket(); });
             consoleAction.Add("1004", "单独测试 TaskCompletionSource", async () =>
             {
                 TaskCompletionSourceBenchmark taskCompletionSourceBenchmark = new();
@@ -114,58 +114,58 @@ namespace BenchmarkConsoleApp
             }
         }
 
-        private static async Task TouchSocket()
-        {
-            try
-            {
-                Console.WriteLine(" TouchSocket 测试已开始");
-                Stopwatch stopwatch = new();
-                stopwatch.Start();
-                List<Task> tasks = new List<Task>();
-                for (int i = 0; i < ClientCount; i++)
-                {
-                    tasks.Add(Task.Run(async () =>
-                    {
-                        ModbusBenchmark modbusBenchmarker = new();
-                        await modbusBenchmarker.TouchSocket();
-                        modbusBenchmarker.Dispose();
-                    }));
-                }
-                await Task.WhenAll(tasks);
-                stopwatch.Stop();
-                Console.WriteLine($" TouchSocket 耗时：{stopwatch.ElapsedMilliseconds}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($" TouchSocket 发生错误：{ex.Message}");
-            }
-        }
+        //private static async Task TouchSocket()
+        //{
+        //    try
+        //    {
+        //        Console.WriteLine(" TouchSocket 测试已开始");
+        //        Stopwatch stopwatch = new();
+        //        stopwatch.Start();
+        //        List<Task> tasks = new List<Task>();
+        //        for (int i = 0; i < ClientCount; i++)
+        //        {
+        //            tasks.Add(Task.Run(async () =>
+        //            {
+        //                ModbusBenchmark modbusBenchmarker = new();
+        //                await modbusBenchmarker.TouchSocket();
+        //                modbusBenchmarker.Dispose();
+        //            }));
+        //        }
+        //        await Task.WhenAll(tasks);
+        //        stopwatch.Stop();
+        //        Console.WriteLine($" TouchSocket 耗时：{stopwatch.ElapsedMilliseconds}");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($" TouchSocket 发生错误：{ex.Message}");
+        //    }
+        //}
 
-        private static async Task NModbus4()
-        {
-            try
-            {
-                Console.WriteLine(" NModbus4 测试已开始");
-                Stopwatch stopwatch = new();
-                stopwatch.Start();
-                List<Task> tasks = new List<Task>();
-                for (int i = 0; i < ClientCount; i++)
-                {
-                    tasks.Add(Task.Run(async () =>
-                    {
-                        ModbusBenchmark modbusBenchmarker = new();
-                        await modbusBenchmarker.NModbus4();
-                        modbusBenchmarker.Dispose();
-                    }));
-                }
-                await Task.WhenAll(tasks);
-                stopwatch.Stop();
-                Console.WriteLine($" NModbus4 耗时：{stopwatch.ElapsedMilliseconds}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($" NModbus4 发生错误：{ex.Message}");
-            }
-        }
+        //private static async Task NModbus4()
+        //{
+        //    try
+        //    {
+        //        Console.WriteLine(" NModbus4 测试已开始");
+        //        Stopwatch stopwatch = new();
+        //        stopwatch.Start();
+        //        List<Task> tasks = new List<Task>();
+        //        for (int i = 0; i < ClientCount; i++)
+        //        {
+        //            tasks.Add(Task.Run(async () =>
+        //            {
+        //                ModbusBenchmark modbusBenchmarker = new();
+        //                await modbusBenchmarker.NModbus4();
+        //                modbusBenchmarker.Dispose();
+        //            }));
+        //        }
+        //        await Task.WhenAll(tasks);
+        //        stopwatch.Stop();
+        //        Console.WriteLine($" NModbus4 耗时：{stopwatch.ElapsedMilliseconds}");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($" NModbus4 发生错误：{ex.Message}");
+        //    }
+        //}
     }
 }

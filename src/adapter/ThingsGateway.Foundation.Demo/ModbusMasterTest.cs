@@ -62,13 +62,18 @@ internal class ModbusMasterTest
         //读写方法都带取消令牌
 
         //读取并解析寄存器数据
-        var data = await modbusMaster.ReadInt16Async("40001", CancellationToken.None);
+        var data = await modbusMaster.ReadInt16Async("40001", 1, cancellationToken: CancellationToken.None);
         var data1 = await modbusMaster.ReadSingleAsync("40001");
         var data2 = await modbusMaster.ReadUInt32Async("40001");
+        var data12 = await modbusMaster.WriteAsync("40001", (ushort)1);
 
         //读取字节数组
         var data3 = await modbusMaster.ReadAsync("40001", 10);
-
+        if (data3.IsSuccess)
+        {
+            ValueByteBlock valueByteBlock = new(data3.Content);
+            valueByteBlock.ReadFloat(EndianType.LittleSwap);
+        }
         //自定义数据格式
         var data4 = await modbusMaster.ReadSingleAsync("40001;data=ABCD");
 

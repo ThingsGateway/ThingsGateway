@@ -8,21 +8,17 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation;
+using BenchmarkDotNet.Configs;
 
-[GeneratorVariable]
-public partial class ModbusVariable : VariableObject
+using Microsoft.Extensions.Options;
+
+namespace ThingsGateway.Foundation
 {
-    [VariableRuntime(RegisterAddress = "400001;arraylen=2", ReadExpressions = "raw*10")]
-    public ushort[] Data1 { get; set; }
-
-    [VariableRuntime(RegisterAddress = "400051")]
-    public ushort Data2 { get; set; }
-
-    [VariableRuntime(RegisterAddress = "400061;len=10")]
-    public string Data3 { get; set; }
-
-    public ModbusVariable(IProtocol protocol, int maxPack) : base(protocol, maxPack)
+    internal class Config : ManualConfig
     {
+        public Config()
+        {
+            Options |= ConfigOptions.DisableOptimizationsValidator;
+        }
     }
 }

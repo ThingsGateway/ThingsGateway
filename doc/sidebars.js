@@ -284,6 +284,12 @@ module.exports = {
           label: "基础知识",
           id: "30001",
 
+        },
+        {
+          type: "doc",
+          label: "Modbus类库",
+          id: "30002",
+
         }
       ]
     },

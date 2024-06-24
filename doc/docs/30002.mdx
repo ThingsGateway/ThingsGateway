@@ -1,0 +1,296 @@
+---
+id: 30002
+title: 简单实用的Modbus类库
+---
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Tag from "@site/src/components/Tag.js";
+import Highlight from '@site/src/components/Highlight.js';
+
+## 一、简介
+
+**ThingsGateway.Foundation.Modbus** 用于Modbus协议通讯，支持**主站/从站、ModbusTcp/ModbusRtu，通讯链路支持串口/Tcp/Udp、被动连接(Dtu)**
+
+优势：
+
+**1、通讯链路与协议解析类松耦合设计**
+
+**2、支持被动连接(Dtu)设备**
+
+**3、内置打包算法**
+
+**4、实体通讯结果映射，并支持打包连读**
+
+## 二、nuget安装
+
+```
+<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.47" />
+```
+
+## 三、使用指南
+
+### 3.1、创建通道
+
+```
+ var clientConfig = new TouchSocketConfig();
+ //tcp服务
+ //var clientChannel = clientConfig.GetTcpServiceWithBindIPHost("tcp://127.0.0.1:502");
+ //串口
+ //var clientChannel = clientConfig.GetSerialPortWithOption("COM1");
+ //udp
+ //var clientChannel = clientConfig.GetUdpSessionWithIPHost("127.0.0.1:502",null);
+
+ //tcp客户端
+ var clientChannel = clientConfig.GetTcpClientWithIPHost("127.0.0.1:502");
+
+```
+
+
+### 3.2、创建协议类
+
+#### modbus主站
+```
+ ModbusMaster modbusMaster = new(clientChannel)
+ {
+     //modbus协议格式
+     ModbusType = Modbus.ModbusTypeEnum.ModbusRtu,
+     //ModbusType = Modbus.ModbusTypeEnum.ModbusTcp,
+
+     //默认站号
+     Station = 1,
+     //默认数据格式
+     DataFormat = DataFormatEnum.ABCD,
+     //读写超时
+     Timeout = 3000,
+ };
+
+```
+
+#### modbus从站
+```
+ModbusSlave modbusSlave = new(clientChannel)
+{
+    //modbus协议格式
+    ModbusType = Modbus.ModbusTypeEnum.ModbusRtu,
+    //ModbusType = Modbus.ModbusTypeEnum.ModbusTcp,
+
+    //默认站号
+    Station = 1,
+    //默认数据格式
+    DataFormat = DataFormatEnum.ABCD,
+};
+
+```
+
+
+### 3.3、读写
+
+#### 读取
+```
+//单独读取Int16类型，其他类型操作类似
+var data = await modbusMaster.ReadInt16Async("40001");
+//批量读取Int16类型，其他类型操作类似
+var data = await modbusMaster.ReadInt16Async("40001", 10);
+
+//对于4字节的解析规则，可在协议类中设置 ``DataFormat`` 属性，也可以读取方式时传入字符串
+var data = await modbusMaster.ReadSingleAsync("40001;data=ABCD");
+
+//传入的寄存器地址规则，可以通过文档查看，或者调用GetAddressDescription方法
+//查看modbus驱动地址说明
+Console.WriteLine(modbusMaster.GetAddressDescription());
+
+
+//批量读取字节数组
+var data = await modbusMaster.ReadAsync("40001", 10);
+//也可以直接通过字节数组，获取需要的数据类型
+if(data.IsSuccess)
+{
+    ValueByteBlock valueByteBlock = new(data.Content);
+    //读取float
+    valueByteBlock.ReadFloat(EndianType.LittleSwap);
+}
+
+
+```
+
+#### 写入
+```
+//调用WriteAsync方法
+var result = await modbusMaster.WriteAsync("40001",(ushort)1);
+
+```
+
+
+### 3.4、打包读取
+
+#### IVariable接口实现
+
+
+1、实现IVariable接口
+
+2、实现IVariableSource接口
+
+3、调用LoadSourceRead，返回打包封装类
+
+4、调用ReadAsync读取数据，并调用PraseStructContent解析数据
+
+5、解析数据后，可以通过IVariable获取解析后的数据
+
+```
+
+ //通过数据库等方式获取寄存器/数据类型等配置
+ List<VariableClass> variableClasses = new()
+ {
+     new VariableClass()
+     {
+         DataType=DataTypeEnum.Int16,
+         RegisterAddress="40001",
+         IntervalTime=1000,
+     },
+         new VariableClass()
+     {
+         DataType=DataTypeEnum.Int32,
+         RegisterAddress="40011",
+         IntervalTime=1000,
+     },
+ };
+ //调用LoadSourceRead，返回打包封装类
+ var deviceVariableSourceReads = modbusMaster.LoadSourceRead<VariableSourceClass>(variableClasses, 100, 1000);
+
+ //IVariableSource列表，调用ReadAsync读取字节数据，并调用PraseStructContent解析数据
+ foreach (var item in deviceVariableSourceReads)
+ {
+     var result = await modbusMaster.ReadAsync(item.RegisterAddress, item.Length);
+     if (result.IsSuccess)
+     {
+         try
+         {
+             var result1 = item.VariableRunTimes.PraseStructContent(modbusMaster, result.Content, exWhenAny: true);
+             if (!result1.IsSuccess)
+             {
+                //失败日志
+                 item.LastErrorMessage = result1.ErrorMessage;
+                 item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+                 modbusMaster.Logger.Warning(result1.ToString());
+             }
+         }
+         catch (Exception ex)
+         {
+             modbusMaster.Logger.Exception(ex);
+         }
+     }
+     else
+     {
+        //通讯失败日志
+         item.LastErrorMessage = result.ErrorMessage;
+         item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+         modbusMaster.Logger.Warning(result.ToString());
+     }
+ }
+
+```
+
+
+#### VariableObject实体类实现
+
+1、实现VariableObject虚类，添加业务属性，业务属性需添加VariableRuntime特性，指定寄存器地址、特定数据类型(不填默认为C#属性类型)、读写表达式(原始值为raw，可填：raw*100+10，做一些数学转换))
+
+2、实例化业务实体类，需传入协议对象与连读打包的最大数量
+
+3、可以看到源代码生成器已经自动生成了写入方法，可直接调用WriteAlarmLimitAsync法写入数据
+
+4、调用MultiReadAsync方法执行连读，结果会自动解析到业务实体类的属性中
+
+
+
+##### 实体类配置属性VariableRuntime特性
+```
+
+[GeneratorVariable]
+public partial class ModbusVariable : VariableObject
+{
+    [VariableRuntime(RegisterAddress = "400051",ReadExpressions ="raw*10")]
+    public ushort AlarmLevel { get; set; }
+
+    [VariableRuntime(RegisterAddress = "400061;len=10")]
+    public string AlarmText { get; set; }
+
+    [VariableRuntime(RegisterAddress = "400071")]
+    public float AlarmLimit { get; set; }
+
+    public ModbusVariable(IProtocol protocol, int maxPack) : base(protocol, maxPack)
+    {
+    }
+}
+
+```
+
+```
+
+//构造实体类对象，传入协议对象与连读打包的最大数量
+ModbusVariable modbusVariable = new(modbusMaster, 100);
+
+//读取，成功结果会映射到实体属性中
+var result= await modbusVariable.MultiReadAsync();
+
+ //写入
+ //源生成器自动生成了``(Write{属性名称})Async``方法，直接调用即可
+ await modbusVariable.WriteAlarmLimitAsync(100);
+ 
+ //输出实体json查看
+Console.WriteLine(modbusVariable.ToJsonString());
+
+
+```
+
+## 四、性能测试
+
+
+下面可以看到与HslCommunication的基准测试对比
+
+采集100个连续寄存器，采用ModSim32作为测试模拟设备端
+
+```
+
+    [Benchmark]
+    public async Task ThingsGateway()
+    {
+        for (int i = 0; i < Program.NumberOfItems; i++)
+        {
+            var result = await thingsgatewaymodbus.ReadAsync("40001", 100);
+            if (!result.IsSuccess)
+            {
+                throw new Exception(result.ToString());
+            }
+        }
+    }
+
+    [Benchmark]
+    public async Task HslCommunication()
+    {
+        for (int i = 0; i < Program.NumberOfItems; i++)
+        {
+            var result = await modbusTcpNet.ReadAsync("0", 100);
+            if (!result.IsSuccess)
+            {
+                throw new Exception(result.Message);
+            }
+        }
+    }
+
+```
+
+<img src={require("@site/static/img/docs/ModbusBenchMark.png").default} />
+
+得益于字节池与Socket异步，虽然都采用字符串解析寄存器地址的方式，但ThingsGateway的内存耗用比较低，并且采集通讯速度更快
+
+
+
+## 五、总结
+
+**ThingsGateway.Foundation.Modbus**，非常好用的modbus协议库，尤其是实体通讯类以及自动打包的功能，非常适用于上位机业务使用。
+
+Gitee仓库地址 https://gitee.com/diego2098/ThingsGateway 
+
+Github仓库地址 https://github.com/kimdiego2098/ThingsGateway
+
