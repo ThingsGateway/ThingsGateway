@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net6.0;</TargetFrameworks>
@@ -11,7 +11,7 @@
     <PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="6.0.3.45" />
     <PackageReference Include="ThingsGateway.Foundation.Variable" Version="8.6.0" />
     <PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.45" />
-    <PackageReference Include="TouchSocket.Modbus" Version="2.1.0-alpha.20" />
+    <PackageReference Include="TouchSocket.Modbus" Version="2.1.0-alpha.21" />
   </ItemGroup>
 
 
