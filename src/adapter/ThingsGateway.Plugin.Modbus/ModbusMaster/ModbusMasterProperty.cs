@@ -85,4 +85,6 @@ public class ModbusMasterProperty : CollectPropertyBase
 
     [DynamicProperty]
     public bool IsStringReverseByteWord { get; set; }
+
+    public override int ConcurrentCount { get; set; } = 1;
 }
