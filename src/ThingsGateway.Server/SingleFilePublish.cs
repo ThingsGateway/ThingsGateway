@@ -8,7 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using SqlSugar.TDengine;
 using SqlSugar;
 
 using System.Reflection;
@@ -40,8 +39,10 @@ public class SingleFilePublish : ISingleFilePublish
     /// <returns></returns>
     public string[] IncludeAssemblyNames()
     {
+#if !Admin
         InstanceFactory.CustomAssemblies =
-    new System.Reflection.Assembly[] { typeof(TDengineProvider).Assembly };
+    new System.Reflection.Assembly[] { typeof(SqlSugar.TDengine.TDengineProvider).Assembly };
+#endif
         return new[]
         {
             "ThingsGateway.Foundation",
