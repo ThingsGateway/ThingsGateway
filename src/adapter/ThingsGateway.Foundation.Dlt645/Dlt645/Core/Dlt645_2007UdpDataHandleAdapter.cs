@@ -15,7 +15,7 @@ namespace ThingsGateway.Foundation.Dlt645;
 /// <summary>
 /// Dlt645_2007UdpDataHandleAdapter
 /// </summary>
-internal class Dlt645_2007UdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<Dlt645_2007Message>
+internal class Dlt645_2007UdpDataHandleAdapter : ProtocolUdpDataHandleAdapter<Dlt645_2007Message>
 {
     protected override AdapterResult UnpackResponse(Dlt645_2007Message request, IByteBlock byteBlock)
     {

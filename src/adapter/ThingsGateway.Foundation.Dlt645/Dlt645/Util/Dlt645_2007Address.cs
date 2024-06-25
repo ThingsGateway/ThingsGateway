@@ -21,7 +21,7 @@ namespace ThingsGateway.Foundation.Dlt645;
 /// <summary>
 /// Dlt645_2007Address
 /// </summary>
-public class Dlt645_2007Address
+public class Dlt645_2007Address : Dlt645_2007Request
 {
     /// <summary>
     /// <inheritdoc/>
@@ -30,20 +30,14 @@ public class Dlt645_2007Address
     {
     }
 
-    /// <summary>
-    /// 数据标识
-    /// </summary>
-    public byte[] DataId { get; set; } = Array.Empty<byte>();
-
-    /// <summary>
-    /// 反转解析
-    /// </summary>
-    public bool Reverse { get; set; } = true;
-
-    /// <summary>
-    /// 站号信息
-    /// </summary>
-    public byte[] Station { get; set; } = Array.Empty<byte>();
+    public Dlt645_2007Address(Dlt645_2007Address dlt645_2007Address)
+    {
+        this.SocketId = dlt645_2007Address.SocketId;
+        this.Data = dlt645_2007Address.Data;
+        this.DataId = dlt645_2007Address.DataId;
+        this.Reverse = dlt645_2007Address.Reverse;
+        this.Station = dlt645_2007Address.Station;
+    }
 
     /// <summary>
     /// 作为Slave时需提供的SocketId，用于分辨Socket客户端，通常对比的是初始链接时的注册包
@@ -81,7 +75,7 @@ public class Dlt645_2007Address
         var cacheKey = $"{nameof(ParseFrom)}_{typeof(Dlt645_2007Address).FullName}_{typeof(Dlt645_2007Address).TypeHandle.Value}_{address}";
         if (isCache)
             if (MemoryCache.Instance.TryGetValue(cacheKey, out Dlt645_2007Address dAddress))
-                return dAddress;
+                return new(dAddress);
 
         Dlt645_2007Address dlt645_2007Address = new();
         if (defaultStation != null)
@@ -132,6 +126,6 @@ public class Dlt645_2007Address
         if (isCache)
             MemoryCache.Instance.Set(cacheKey, dlt645_2007Address, 3600);
 
-        return dlt645_2007Address;
+        return new(dlt645_2007Address);
     }
 }

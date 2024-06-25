@@ -33,6 +33,8 @@ public class TcpClientChannel : TcpClient, IClientChannel
     /// </summary>
     public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
 
+    public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
+
     /// <summary>
     /// 接收到数据
     /// </summary>

@@ -21,6 +21,8 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     /// <inheritdoc/>
     public AsyncAutoResetEvent WaitLock { get; } = new AsyncAutoResetEvent(true);
 
+    public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
+
     /// <summary>
     /// 等待池
     /// </summary>

@@ -72,7 +72,7 @@ public class ModbusSlaveProperty : BusinessPropertyBase
     public bool IsWriteMemory { get; set; } = true;
 
     [DynamicProperty]
-    public string DtuId { get; set; } = "TEST";
+    public string DtuId { get; set; } = "DtuId";
 
     [DynamicProperty]
     public int HeartbeatTime { get; set; } = 5;

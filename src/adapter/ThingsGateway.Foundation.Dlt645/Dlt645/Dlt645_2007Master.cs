@@ -42,7 +42,7 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     /// <summary>
     /// 默认Dtu注册包,utf-8字符串
     /// </summary>
-    public string DtuId { get; set; } = "TEST";
+    public string DtuId { get; set; } = "DtuId";
 
     /// <summary>
     /// 客户端连接滑动过期时间(TCP服务通道时)

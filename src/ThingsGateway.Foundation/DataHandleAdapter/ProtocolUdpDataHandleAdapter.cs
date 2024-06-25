@@ -16,7 +16,7 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// UDP适配器基类
 /// </summary>
-public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter where TRequest : class, IResultMessage, new()
+public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter where TRequest : class, IResultMessage, new()
 {
     /// <inheritdoc/>
     public override bool CanSendRequestInfo => true;
@@ -77,52 +77,60 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
         {
             request = GetInstance();
         }
-        ArraySegment<byte>? header = null;
-        //传入新的ByteBlock对象，避免影响原有的游标
-        //当解析消息设定固定头长度大于0时，获取头部字节
-        if (request.HeadBytesLength > 0)
+
+        var pos = byteBlock.Position;
+
+        if (request.HeaderLength > byteBlock.CanReadLength)
         {
-            header = byteBlock.AsSegment(0, request.HeadBytesLength);
+            return;//当头部都无法解析时，直接缓存
         }
-        else
-        {
-        }
+
         //检查头部合法性
-        if (request.CheckHeadBytes(header?.Array))
+        if (request.CheckHead(ref byteBlock))
         {
+            byteBlock.Position = pos;
+
             if (request.BodyLength > this.MaxPackageSize)
             {
                 this.OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={this.MaxPackageSize}", true, true);
-                await GoReceived(remoteEndPoint, null, request);
-            }
-
-            if (request.BodyLength + request.HeadBytesLength > byteBlock.CanReadLength)
-            {
-                await GoReceived(remoteEndPoint, null, request);
                 return;
             }
-            if (request.BodyLength <= 0)
+            if (request.BodyLength + request.HeaderLength > byteBlock.CanReadLength)
             {
-                //如果body长度无法确定，直接读取全部
-                request.BodyLength = byteBlock.Length;
+                //body不满足解析，开始缓存，然后保存对象
+                return;
             }
-
-            var result = UnpackResponse(request, byteBlock);
-
-            byteBlock.Position = byteBlock.Length;
-            if (request.IsSuccess)
+            //if (request.BodyLength <= 0)
+            //{
+            //    //如果body长度无法确定，直接读取全部
+            //    request.BodyLength = byteBlock.Length;
+            //}
+            var headPos = pos + request.HeaderLength;
+            byteBlock.Position = headPos;
+            var result = request.CheckBody(ref byteBlock);
+            if (result == FilterResult.Cache)
             {
-                request.Content = result.Content;
-                request.ReceivedBytes = byteBlock;
+                if (Logger.LogLevel <= LogLevel.Trace)
+                    Logger.Trace($"{ToString()}-Received incomplete, cached message, current length:{byteBlock.Length}  {request?.ErrorMessage}");
+                request.OperCode = -1;
             }
-            await GoReceived(remoteEndPoint, null, request);
+            else if (result == FilterResult.GoOn)
+            {
+                if (byteBlock.Position == headPos)
+                    byteBlock.Position += 1;
+                request.OperCode = -1;
+            }
+            else if (result == FilterResult.Success)
+            {
+                byteBlock.Position = request.HeaderLength + request.BodyLength + pos;
+                await GoReceived(remoteEndPoint, null, request);
+            }
             return;
         }
         else
         {
             byteBlock.Position = byteBlock.Length;//移动游标
             request.OperCode = -1;
-            await GoReceived(remoteEndPoint, null, request);
             return;
         }
     }
@@ -132,32 +140,35 @@ public abstract class ReadWriteDevicesUdpDataHandleAdapter<TRequest> : UdpDataHa
     {
         if (!(requestInfo is ISendMessage sendMessage))
         {
-            throw new Exception($"Unable to convert {nameof(requestInfo)} to {nameof(SendMessage)}");
+            throw new Exception($"Unable to convert {nameof(requestInfo)} to {nameof(ISendMessage)}");
         }
-        var sendData = sendMessage.SendBytes;
 
-        if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? sendData.Span.ToHexString() : (sendData.Span.ToString(Encoding.UTF8)))}");
-        //非并发主从协议
-        if (IsSingleThread)
+        var requestInfoBuilder = (ISendMessage)requestInfo;
+
+        var byteBlock = new ValueByteBlock(requestInfoBuilder.MaxLength);
+        try
         {
-            SetRequest(sendMessage.Sign, sendData);
+            requestInfoBuilder.Build(ref byteBlock);
+            if (Logger.LogLevel <= LogLevel.Trace)
+                Logger?.Trace($"{ToString()}- Send:{(IsHexData ? byteBlock.Span.ToHexString() : (byteBlock.Span.ToString(Encoding.UTF8)))}");
+            //非并发主从协议
+            if (IsSingleThread)
+            {
+                SetRequest(sendMessage.Sign, requestInfoBuilder);
+            }
+            await this.GoSendAsync(endPoint, byteBlock.Memory).ConfigureFalseAwait();
         }
-
-        //发送
-        await this.GoSendAsync(endPoint, sendData).ConfigureFalseAwait();
+        finally
+        {
+            byteBlock.SafeDispose();
+        }
     }
 
-    public void SetRequest(int sign, ReadOnlyMemory<byte> sendData)
+    public void SetRequest(int sign, ISendMessage sendMessage)
     {
         var request = GetInstance();
         request.Sign = sign;
-        request.SendInfo(sendData);
+        request.SendInfo(sendMessage);
         Request = request;
     }
-
-    /// <summary>
-    /// 解包获取实际数据包
-    /// </summary>
-    protected abstract AdapterResult UnpackResponse(TRequest request, IByteBlock byteBlock);
 }

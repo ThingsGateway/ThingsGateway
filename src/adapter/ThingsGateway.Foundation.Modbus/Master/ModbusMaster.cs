@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Foundation.Extension.Generic;
-
 namespace ThingsGateway.Foundation.Modbus;
 
 /// <inheritdoc/>
@@ -24,6 +22,34 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         RegisterByteLength = 2;
         if (channel is IClientChannel client)
             client.WaitHandlePool.MaxSign = ushort.MaxValue;
+    }
+
+    /// <summary>
+    /// 客户端连接滑动过期时间(TCP服务通道时)
+    /// </summary>
+    public int CheckClearTime { get; set; } = 120;
+
+    /// <summary>
+    /// 默认Dtu注册包,utf-8字符串
+    /// </summary>
+    public string DtuId { get; set; } = "DtuId";
+
+    /// <summary>
+    /// 心跳检测(大写16进制字符串)
+    /// </summary>
+    public string HeartbeatHexString { get; set; } = "FFFF8080";
+
+    /// <inheritdoc/>
+    public override bool IsSingleThread
+    {
+        get
+        {
+            switch (ModbusType)
+            {
+                case ModbusTypeEnum.ModbusTcp: return false;
+                default: return true;
+            }
+        }
     }
 
     /// <summary>
@@ -46,44 +72,10 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         }
     }
 
-    /// <inheritdoc/>
-    public override bool IsSingleThread
-    {
-        get
-        {
-            switch (ModbusType)
-            {
-                case ModbusTypeEnum.ModbusTcp: return false;
-                default: return true;
-            }
-        }
-    }
-
     /// <summary>
     /// 站号
     /// </summary>
     public byte Station { get; set; } = 1;
-
-    /// <summary>
-    /// 默认Dtu注册包,utf-8字符串
-    /// </summary>
-    public string DtuId { get; set; } = "TEST";
-
-    /// <summary>
-    /// 客户端连接滑动过期时间(TCP服务通道时)
-    /// </summary>
-    public int CheckClearTime { get; set; } = 120;
-
-    /// <summary>
-    /// 心跳检测(大写16进制字符串)
-    /// </summary>
-    public string HeartbeatHexString { get; set; } = "FFFF8080";
-
-    /// <inheritdoc/>
-    public override string GetAddressDescription()
-    {
-        return $"{base.GetAddressDescription()}{Environment.NewLine}{ModbusHelper.GetAddressDescription()}";
-    }
 
     /// <inheritdoc/>
     public override Action<IPluginManager> ConfigurePlugins()
@@ -97,6 +89,12 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     }
 
     /// <inheritdoc/>
+    public override string GetAddressDescription()
+    {
+        return $"{base.GetAddressDescription()}{Environment.NewLine}{ModbusHelper.GetAddressDescription()}";
+    }
+
+    /// <inheritdoc/>
     public override DataHandlingAdapter GetDataAdapter()
     {
         switch (ModbusType)
@@ -107,13 +105,13 @@ public partial class ModbusMaster : ProtocolBase, IDtu
                     case ChannelTypeEnum.TcpClient:
                     case ChannelTypeEnum.TcpService:
                     case ChannelTypeEnum.SerialPort:
-                        return new ModbusTcpDataHandleAdapter()
+                        return new ProtocolSingleStreamDataHandleAdapter<ModbusTcpMessage>()
                         {
                             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
                         };
 
                     case ChannelTypeEnum.UdpSession:
-                        return new ModbusUdpDataHandleAdapter()
+                        return new ProtocolUdpDataHandleAdapter<ModbusTcpMessage>()
                         {
                         };
                 }
@@ -125,19 +123,19 @@ public partial class ModbusMaster : ProtocolBase, IDtu
                     case ChannelTypeEnum.TcpClient:
                     case ChannelTypeEnum.TcpService:
                     case ChannelTypeEnum.SerialPort:
-                        return new ModbusRtuDataHandleAdapter()
+                        return new ProtocolSingleStreamDataHandleAdapter<ModbusRtuMessage>()
                         {
                             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
                         };
 
                     case ChannelTypeEnum.UdpSession:
-                        return new ModbusRtuOverUdpDataHandleAdapter()
+                        return new ProtocolUdpDataHandleAdapter<ModbusRtuMessage>()
                         {
                         };
                 }
                 break;
         }
-        return new ModbusTcpDataHandleAdapter()
+        return new ProtocolSingleStreamDataHandleAdapter<ModbusTcpMessage>()
         {
             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
         };
@@ -149,29 +147,35 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         return PackHelper.LoadSourceRead<T>(this, deviceVariables, maxPack, defaultIntervalTime, Station, DtuId);
     }
 
-    /// <inheritdoc/>
-    public override async ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult<byte[]>> ModbusRequestAsync(ModbusAddress mAddress, bool read, CancellationToken cancellationToken = default)
     {
         try
         {
-            var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
             var channelResult = GetChannel(mAddress.SocketId);
             if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
-            try
-            {
-                var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
-                ModbusHelper.GetReadModbusCommand(ref valueByteBlock, mAddress, (ushort)length, ModbusType, (ushort)sign, 0);
-                return await this.SendThenReturnAsync(new SendMessage(valueByteBlock.Memory) { Sign = sign }, waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
-            }
-            finally
-            {
-                valueByteBlock.SafeDispose();
-            }
+            var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
+            return await this.SendThenReturnAsync(
+                GetSendMessage(mAddress, (ushort)sign, read),
+                waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             return new OperResult<byte[]>(ex);
+        }
+    }
+
+    /// <inheritdoc/>
+    public override ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
+            mAddress.Length = (ushort)length;
+            return ModbusRequestAsync(mAddress, true, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return EasyValueTask.FromResult(new OperResult<byte[]>(ex));
         }
     }
 
@@ -181,25 +185,8 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         try
         {
             var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
-            value = value.ArrayExpandToLengthEven();
-
-            var channelResult = GetChannel(mAddress.SocketId);
-            if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
-            try
-            {
-                var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
-                if (value.Length > 2 || mAddress.WriteFunction == 16)
-                    ModbusHelper.GetWriteModbusCommand(ref valueByteBlock, mAddress, value, (ushort)(value.Length / RegisterByteLength), ModbusType, (ushort)sign, 0);
-                else
-                    ModbusHelper.GetWriteOneModbusCommand(ref valueByteBlock, mAddress, value, ModbusType, (ushort)sign, 0);
-
-                return await this.SendThenReturnAsync(new SendMessage(valueByteBlock.Memory) { Sign = sign }, waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
-            }
-            finally
-            {
-                valueByteBlock.SafeDispose();
-            }
+            mAddress.Data = value;
+            return await ModbusRequestAsync(mAddress, false, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -213,58 +200,49 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         try
         {
             var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
-            var channelResult = GetChannel(mAddress.SocketId);
-            if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
-            try
+            if (value.Length > 1 || mAddress.WriteFunctionCode == 15)
             {
-                var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
-                if (value.Length > 1 || mAddress.WriteFunction == 15)
+                mAddress.Data = value.BoolArrayToByte();
+                return await ModbusRequestAsync(mAddress, false, cancellationToken);
+            }
+            else if (mAddress.BitIndex == null)
+            {
+                mAddress.Data = value[0] ? new byte[2] { 255, 0 } : new byte[2] { 0, 0 };
+                return await ModbusRequestAsync(mAddress, false, cancellationToken);
+            }
+            else
+            {
+                if (mAddress.BitIndex < 16)
                 {
-                    ModbusHelper.GetWriteBoolModbusCommand(ref valueByteBlock, mAddress, value, (ushort)value.Length, ModbusType, (ushort)sign, 0);
+                    var readData = await ModbusRequestAsync(mAddress, true, cancellationToken);
+                    if (!readData.IsSuccess) return readData;
+                    var writeData = ThingsGatewayBitConverter.ToUInt16(readData.Content, 0);
+                    ushort mask = (ushort)(1 << mAddress.BitIndex);
+                    ushort result = (ushort)(value[0] ? (writeData | mask) : (writeData & ~mask));
+                    mAddress.Data = ThingsGatewayBitConverter.GetBytes(result);
+                    return await ModbusRequestAsync(mAddress, false, cancellationToken);
                 }
                 else
                 {
-                    if (mAddress.BitIndex == null)
-                    {
-                        ModbusHelper.GetWriteBoolModbusCommand(ref valueByteBlock, mAddress, value[0], ModbusType, (ushort)sign, 0);
-                    }
-                    else if (mAddress.BitIndex < 16)
-                    {
-                        ValueByteBlock readValueByteBlock = new ValueByteBlock(1024);
-                        try
-                        {
-                            var readWaitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var readSign);
-                            //比如40001.1
-                            ModbusHelper.GetReadModbusCommand(ref readValueByteBlock, mAddress, 1, ModbusType, (ushort)readSign, 0);
-                            var readData = await this.SendThenReturnAsync(new SendMessage(readValueByteBlock.Memory) { Sign = readSign }, readWaitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
-                            if (!readData.IsSuccess) return readData;
-                            var writeData = ThingsGatewayBitConverter.ToUInt16(readData.Content, 0);
-                            ushort mask = (ushort)(1 << mAddress.BitIndex);
-                            ushort result = (ushort)(value[0] ? (writeData | mask) : (writeData & ~mask));
-                            ModbusHelper.GetWriteOneModbusCommand(ref valueByteBlock, mAddress, ThingsGatewayBitConverter.GetBytes(result), ModbusType, (ushort)sign, 0);
-                        }
-                        finally
-                        {
-                            readValueByteBlock.SafeDispose();
-                        }
-                    }
-                    else
-                    {
-                        return new OperResult(ModbusResource.Localizer["ValueOverlimit", nameof(mAddress.BitIndex), 16]);
-                    }
+                    return new OperResult(ModbusResource.Localizer["ValueOverlimit", nameof(mAddress.BitIndex), 16]);
                 }
-
-                return await this.SendThenReturnAsync(new SendMessage(valueByteBlock.Memory) { Sign = sign }, waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
-            }
-            finally
-            {
-                valueByteBlock.SafeDispose();
             }
         }
         catch (Exception ex)
         {
             return new OperResult(ex);
+        }
+    }
+
+    private ISendMessage GetSendMessage(ModbusAddress modbusAddress, ushort sign, bool read)
+    {
+        if (ModbusType == ModbusTypeEnum.ModbusRtu)
+        {
+            return new ModbusRtuSend(modbusAddress, sign, read);
+        }
+        else
+        {
+            return new ModbusTcpSend(modbusAddress, sign, read);
         }
     }
 }

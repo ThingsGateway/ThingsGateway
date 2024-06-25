@@ -15,7 +15,7 @@ namespace ThingsGateway.Foundation.SiemensS7;
 /// <summary>
 /// SiemensS7DataHandleAdapter，西门子S7数据处理适配器
 /// </summary>
-internal class SiemensS7DataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<SiemensMessage>
+internal class SiemensS7DataHandleAdapter : ProtocolSingleStreamDataHandleAdapter<SiemensMessage>
 {
     /// <inheritdoc/>
     protected override AdapterResult UnpackResponse(SiemensMessage request, IByteBlock byteBlock)

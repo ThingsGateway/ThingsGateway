@@ -14,7 +14,7 @@ namespace ThingsGateway.Foundation.SiemensS7;
 internal class SiemensMessage : MessageBase, IResultMessage
 {
     /// <inheritdoc/>
-    public override int HeadBytesLength => 4;
+    public override int HeaderLength => 4;
 
     public ReadOnlyMemory<byte> SendBytes { get; set; }
 
@@ -24,7 +24,7 @@ internal class SiemensMessage : MessageBase, IResultMessage
     }
 
     /// <inheritdoc/>
-    public override bool CheckHeadBytes(byte[]? headBytes)
+    public override bool CheckHead(byte[]? headBytes)
     {
         if (headBytes == null || headBytes.Length < 4)
             BodyLength = 0;

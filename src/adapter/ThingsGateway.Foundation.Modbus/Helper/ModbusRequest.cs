@@ -13,21 +13,34 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class ModbusUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<ModbusTcpMessage>
+public class ModbusRequest
 {
-    public override bool IsSingleThread { get; } = false;
+    #region Request
 
-    /// <inheritdoc/>
-    protected override AdapterResult UnpackResponse(ModbusTcpMessage request, IByteBlock byteBlock)
-    {
-        var pos = byteBlock.Position;
-        byteBlock.Position = byteBlock.Position + 6;
-        var result = ModbusHelper.GetModbusData(null, byteBlock);
-        request.OperCode = result.OperCode;
-        request.ErrorMessage = result.ErrorMessage;
+    /// <summary>
+    /// 功能码
+    /// </summary>
+    public byte FunctionCode { get; set; }
 
-        byteBlock.Position = pos;
-        request.Sign = byteBlock.ReadUInt16(EndianType.Big);
-        return result.Content;
-    }
+    /// <summary>
+    /// 站号
+    /// </summary>
+    public byte Station { get; set; }
+
+    /// <summary>
+    /// 起始位置
+    /// </summary>
+    public ushort StartAddress { get; set; }
+
+    /// <summary>
+    /// 读取字节数组长度
+    /// </summary>
+    public ushort Length { get; set; } = 1;
+
+    /// <summary>
+    /// 数据
+    /// </summary>
+    public ReadOnlyMemory<byte> Data { get; set; }
+
+    #endregion Request
 }

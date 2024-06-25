@@ -26,6 +26,8 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     /// </summary>
     public WaitHandlePool<MessageBase> WaitHandlePool { get; private set; } = new();
 
+    public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
+
     /// <inheritdoc/>
     public ConcurrentList<IProtocol> Collects { get; } = new();
 

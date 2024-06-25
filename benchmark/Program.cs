@@ -49,16 +49,16 @@ namespace BenchmarkConsoleApp
             {
                 BenchmarkRunner.Run(typeof(TaskCompletionSourceBenchmark));
             });
-            consoleAction.Add("3", "S7测试", async () =>
-            {
-                S7Benchmark s7Benchmark = new();
+            //consoleAction.Add("3", "S7测试", async () =>
+            //{
+            //    S7Benchmark s7Benchmark = new();
 
-                Stopwatch stopwatch = new();
-                stopwatch.Start();
-                await s7Benchmark.ThingsGateway();
-                stopwatch.Stop();
-                Console.WriteLine(stopwatch.ElapsedMilliseconds);
-            });
+            //    Stopwatch stopwatch = new();
+            //    stopwatch.Start();
+            //    await s7Benchmark.ThingsGateway();
+            //    stopwatch.Stop();
+            //    Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            //});
 
             consoleAction.Add("1001", "单独测试 ThingsGateway", async () => { await ThingsGateway(); });
             //consoleAction.Add("1002", "单独测试 NModbus4", async () => { await NModbus4(); });

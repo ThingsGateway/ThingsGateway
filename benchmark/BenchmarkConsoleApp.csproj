@@ -15,8 +15,8 @@
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
 
 		<PackageReference Include="NModbus" Version="3.0.81" />
-		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.47" />
-		<PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="6.0.3.47" />
+		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.48" />
+		<!--<PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="6.0.3.47" />-->
 		<PackageReference Include="TouchSocket.Modbus" Version="2.1.0-alpha.21" />
 	</ItemGroup>
 

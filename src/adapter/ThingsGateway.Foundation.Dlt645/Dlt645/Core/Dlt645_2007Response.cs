@@ -8,19 +8,15 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation.Modbus;
+namespace ThingsGateway.Foundation.Dlt645;
 
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class ModbusRtuOverUdpDataHandleAdapter : ReadWriteDevicesUdpDataHandleAdapter<ModbusRtuMessage>
+internal class Dlt645_2007Response : Dlt645_2007Request
 {
-    /// <inheritdoc/>
-    protected override AdapterResult UnpackResponse(ModbusRtuMessage request, IByteBlock byteBlock)
-    {
-        var result = ModbusHelper.GetModbusRtuData(request.SendBytes.Span, byteBlock);
-        request.OperCode = result.OperCode;
-        request.ErrorMessage = result.ErrorMessage;
-        return result.Content;
-    }
+    /// <summary>
+    /// 错误码
+    /// </summary>
+    public byte? ErrorCode { get; set; }
 }

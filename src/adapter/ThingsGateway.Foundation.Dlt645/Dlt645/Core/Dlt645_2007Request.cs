@@ -8,19 +8,34 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation.Modbus;
+namespace ThingsGateway.Foundation.Dlt645;
 
 /// <summary>
-/// Rtu适配器
+/// <inheritdoc/>
 /// </summary>
-internal class ModbusRtuDataHandleAdapter : ReadWriteDevicesSingleStreamDataHandleAdapter<ModbusRtuMessage>
+public class Dlt645_2007Request
 {
-    /// <inheritdoc/>
-    protected override AdapterResult UnpackResponse(ModbusRtuMessage request, IByteBlock byteBlock)
-    {
-        var result = ModbusHelper.GetModbusRtuData(request.SendBytes.Span, byteBlock);
-        request.OperCode = result.OperCode;
-        request.ErrorMessage = result.ErrorMessage;
-        return result.Content;
-    }
+    #region Request
+
+    /// <summary>
+    /// 数据标识
+    /// </summary>
+    public byte[] DataId { get; set; } = Array.Empty<byte>();
+
+    /// <summary>
+    /// 反转解析
+    /// </summary>
+    public bool Reverse { get; set; } = true;
+
+    /// <summary>
+    /// 站号信息
+    /// </summary>
+    public byte[] Station { get; set; } = Array.Empty<byte>();
+
+    /// <summary>
+    /// 数据
+    /// </summary>
+    public ReadOnlyMemory<byte> Data { get; set; }
+
+    #endregion Request
 }

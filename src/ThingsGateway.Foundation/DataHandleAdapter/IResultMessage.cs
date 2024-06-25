@@ -16,24 +16,9 @@ namespace ThingsGateway.Foundation;
 public interface IResultMessage : IOperResult, IRequestInfo
 {
     /// <summary>
-    /// 消息头的指令长度,不固定时返回0
-    /// </summary>
-    int HeadBytesLength { get; }
-
-    /// <summary>
-    /// 实体数据长度,不固定是返回0
-    /// </summary>
-    int BodyLength { get; set; }
-
-    /// <summary>
     /// 解析的字节信息
     /// </summary>
     byte[] Content { get; set; }
-
-    /// <summary>
-    /// 接收的字节信息
-    /// </summary>
-    IByteBlock ReceivedBytes { get; set; }
 
     /// <summary>
     /// 等待标识，对于并发协议，必须从协议中例如固定头部获取标识字段
@@ -41,16 +26,35 @@ public interface IResultMessage : IOperResult, IRequestInfo
     int Sign { get; set; }
 
     /// <summary>
-    /// 检查头子节的合法性,并赋值<see cref="BodyLength"/><br />
+    /// 数据体长度
     /// </summary>
-    /// <param name="headBytes">接收的头子节</param>
+    int BodyLength { get; set; }
+
+    /// <summary>
+    /// 消息头的指令长度,不固定时返回0
+    /// </summary>
+    int HeaderLength { get; }
+
+    /// <summary>
+    /// 当收到数据，由框架封送有效载荷数据。
+    /// 此时流位置为<see cref="HeaderLength"/>
+    /// <para>但是如果是因为数据错误，则需要修改<see cref="ByteBlock.Position"/>到正确位置，如果都不正确，则设置<see cref="ByteBlock.Position"/>等于<see cref="ByteBlock.Length"/></para>
+    /// <para>然后返回<see cref="FilterResult.GoOn"/></para>
+    /// </summary>
+    /// <returns>是否成功有效</returns>
+    FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock;
+
+    /// <summary>
+    /// 检查头子节的合法性,并赋值<see cref="BodyLength"/><br />
+    /// <para>如果返回false，意味着放弃本次解析的所有数据，包括已经解析完成的Header</para>
+    /// </summary>
     /// <returns>是否成功的结果</returns>
-    bool CheckHeadBytes(byte[]? headBytes);
+    bool CheckHead<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock;
 
     /// <summary>
     /// 发送前的信息处理，例如存储某些特征信息：站号/功能码等等用于验证后续的返回信息是否合法
     /// </summary>
-    /// <param name="sendBytes"></param>
+    /// <param name="sendMessage"></param>
     /// <returns></returns>
-    void SendInfo(ReadOnlyMemory<byte> sendBytes);
+    void SendInfo(ISendMessage sendMessage);
 }

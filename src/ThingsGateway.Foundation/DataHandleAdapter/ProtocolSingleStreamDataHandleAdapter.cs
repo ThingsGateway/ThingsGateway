@@ -15,10 +15,10 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// TCP/Serial适配器基类
 /// </summary>
-public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlingAdapter<TRequest> where TRequest : class, IResultMessage, new()
+public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlingAdapter<TRequest> where TRequest : class, IResultMessage, new()
 {
-    /// <inheritdoc cref="ReadWriteDevicesSingleStreamDataHandleAdapter{TRequest}"/>
-    public ReadWriteDevicesSingleStreamDataHandleAdapter()
+    /// <inheritdoc cref="ProtocolSingleStreamDataHandleAdapter{TRequest}"/>
+    public ProtocolSingleStreamDataHandleAdapter()
     {
         CacheTimeoutEnable = true;
     }
@@ -66,62 +66,52 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
 
             var pos = byteBlock.Position;
 
-            if (request.HeadBytesLength > byteBlock.CanReadLength)
+            if (request.HeaderLength > byteBlock.CanReadLength)
             {
                 return FilterResult.Cache;//当头部都无法解析时，直接缓存
             }
-            ArraySegment<byte>? header = null;
-            //传入新的ByteBlock对象，避免影响原有的游标
-            //当解析消息设定固定头长度大于0时，获取头部字节
-            if (request.HeadBytesLength > 0)
-            {
-                header = byteBlock.AsSegment(byteBlock.Position, request.HeadBytesLength);
-            }
-            else
-            {
-            }
+
             //检查头部合法性
-            if (request.CheckHeadBytes(header?.Array))
+            if (request.CheckHead(ref byteBlock))
             {
+                byteBlock.Position = pos;
                 if (request.BodyLength > this.MaxPackageSize)
                 {
                     this.OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={this.MaxPackageSize}", true, true);
                     return FilterResult.GoOn;
                 }
-                if (request.BodyLength + request.HeadBytesLength > byteBlock.CanReadLength)
+                if (request.BodyLength + request.HeaderLength > byteBlock.CanReadLength)
                 {
                     //body不满足解析，开始缓存，然后保存对象
-                    tempCapacity = request.BodyLength + request.HeadBytesLength;
+                    tempCapacity = request.BodyLength + request.HeaderLength;
                     return FilterResult.Cache;
                 }
-                if (request.BodyLength <= 0)
-                {
-                    //如果body长度无法确定，直接读取全部
-                    request.BodyLength = byteBlock.Length;
-                }
-                var result = UnpackResponse(request, byteBlock);
-                if (result.FilterResult == FilterResult.Cache)
+                //if (request.BodyLength <= 0)
+                //{
+                //    //如果body长度无法确定，直接读取全部
+                //    request.BodyLength = byteBlock.Length;
+                //}
+                var headPos = pos + request.HeaderLength;
+                byteBlock.Position = headPos;
+                var result = request.CheckBody(ref byteBlock);
+                if (result == FilterResult.Cache)
                 {
                     if (Logger.LogLevel <= LogLevel.Trace)
                         Logger.Trace($"{ToString()}-Received incomplete, cached message, current length:{byteBlock.Length}  {request?.ErrorMessage}");
-                    tempCapacity = request.BodyLength + request.HeadBytesLength;
+                    tempCapacity = request.BodyLength + request.HeaderLength;
                     request.OperCode = -1;
                 }
-                else if (result.FilterResult == FilterResult.GoOn)
+                else if (result == FilterResult.GoOn)
                 {
-                    byteBlock.Position += 1;
+                    if (byteBlock.Position == headPos)
+                        byteBlock.Position += 1;
                     request.OperCode = -1;
                 }
-                else if (result.FilterResult == FilterResult.Success)
+                else if (result == FilterResult.Success)
                 {
-                    byteBlock.Position = request.HeadBytesLength + request.BodyLength + pos;
-                    if (request.IsSuccess)
-                    {
-                        request.Content = result.Content;
-                        request.ReceivedBytes = byteBlock;
-                    }
+                    byteBlock.Position = request.HeaderLength + request.BodyLength + pos;
                 }
-                return result.FilterResult;
+                return result;
             }
             else
             {
@@ -160,32 +150,35 @@ public abstract class ReadWriteDevicesSingleStreamDataHandleAdapter<TRequest> : 
     {
         if (!(requestInfo is ISendMessage sendMessage))
         {
-            throw new Exception($"Unable to convert {nameof(requestInfo)} to {nameof(SendMessage)}");
+            throw new Exception($"Unable to convert {nameof(requestInfo)} to {nameof(ISendMessage)}");
         }
-        var sendData = sendMessage.SendBytes;
 
-        if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? sendData.Span.ToHexString() : (sendData.Span.ToString(Encoding.UTF8)))}");
-        //非并发主从协议
-        if (IsSingleThread)
+        var requestInfoBuilder = (ISendMessage)requestInfo;
+
+        var byteBlock = new ValueByteBlock(requestInfoBuilder.MaxLength);
+        try
         {
-            SetRequest(sendMessage.Sign, sendData);
+            requestInfoBuilder.Build(ref byteBlock);
+            if (Logger.LogLevel <= LogLevel.Trace)
+                Logger?.Trace($"{ToString()}- Send:{(IsHexData ? byteBlock.Span.ToHexString() : (byteBlock.Span.ToString(Encoding.UTF8)))}");
+            //非并发主从协议
+            if (IsSingleThread)
+            {
+                SetRequest(sendMessage.Sign, requestInfoBuilder);
+            }
+            await this.GoSendAsync(byteBlock.Memory).ConfigureFalseAwait();
         }
-
-        //发送
-        await this.GoSendAsync(sendData).ConfigureFalseAwait();
+        finally
+        {
+            byteBlock.SafeDispose();
+        }
     }
 
-    public void SetRequest(int sign, ReadOnlyMemory<byte> sendData)
+    public void SetRequest(int sign, ISendMessage sendMessage)
     {
         var request = GetInstance();
         request.Sign = sign;
-        request.SendInfo(sendData);
+        request.SendInfo(sendMessage);
         Request = request;
     }
-
-    /// <summary>
-    /// 解包获取实际数据
-    /// </summary>
-    protected abstract AdapterResult UnpackResponse(TRequest request, IByteBlock byteBlock);
 }
