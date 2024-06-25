@@ -63,6 +63,23 @@ public static class ByteExtensions
     }
 
     /// <summary>
+    /// 数组内容分别相加某个数字
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static ReadOnlySpan<byte> BytesAdd(this ReadOnlySpan<byte> bytes, int value)
+    {
+        byte[] result = new byte[bytes.Length];
+        for (int index = 0; index < bytes.Length; index++)
+        {
+            result[index] = (byte)(bytes[index] + value);
+        }
+
+        return result;
+    }
+
+    /// <summary>
     /// 获取byte数据类型的第offset位，是否为True<br />
     /// </summary>
     /// <param name="value">byte数值</param>

@@ -13,7 +13,7 @@ namespace ThingsGateway.Foundation.Dlt645;
 /// <summary>
 /// 控制码
 /// </summary>
-internal enum ControlCode : byte
+public enum ControlCode : byte
 {
     /// <summary>
     /// 读数据

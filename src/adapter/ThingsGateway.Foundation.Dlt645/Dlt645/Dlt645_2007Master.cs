@@ -79,18 +79,18 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
             case ChannelTypeEnum.TcpClient:
             case ChannelTypeEnum.TcpService:
             case ChannelTypeEnum.SerialPort:
-                return new Dlt645_2007DataHandleAdapter
+                return new ProtocolSingleStreamDataHandleAdapter<Dlt645_2007Message>
                 {
                     CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
                 };
 
             case ChannelTypeEnum.UdpSession:
-                return new Dlt645_2007UdpDataHandleAdapter()
+                return new ProtocolUdpDataHandleAdapter<Dlt645_2007Message>()
                 {
                 };
         }
 
-        return new Dlt645_2007DataHandleAdapter
+        return new ProtocolSingleStreamDataHandleAdapter<Dlt645_2007Message>
         {
             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
         };
@@ -103,37 +103,40 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     }
 
     /// <inheritdoc/>
-    public override async ValueTask<OperResult<string[]>> ReadStringAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
-    {
-        bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
-        var result = await ReadAsync(address, GetLength(address, length, 8), cancellationToken).ConfigureAwait(false);
-        return result.OperResultFrom(() => new[] { bitConverter.ToString(result.Content, 0, length) });
-    }
-
-    /// <inheritdoc/>
-    public override async ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult<byte[]>> ModbusRequestAsync(Dlt645_2007Address dAddress, ControlCode controlCode, string feHead, byte[] codes = default, string[] datas = default, CancellationToken cancellationToken = default)
     {
         try
         {
-            var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
             var channelResult = GetChannel(dAddress.SocketId);
             if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
-            try
-            {
-                var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
-                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, dAddress, (byte)ControlCode.Read, Station, FEHead);
-                if (!commandResult.IsSuccess) return new OperResult<byte[]>(commandResult);
-                return await this.SendThenReturnAsync(new SendMessage(commandResult.Content) { Sign = sign }, waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
-            }
-            finally
-            {
-                valueByteBlock.SafeDispose();
-            }
+
+            var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
+            return await this.SendThenReturnAsync(
+GetSendMessage(dAddress, (ushort)sign, controlCode, feHead, codes, datas),
+waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
             return new OperResult<byte[]>(ex);
+        }
+    }
+
+    private ISendMessage GetSendMessage(Dlt645_2007Address dAddress, ushort sign, ControlCode read, string feHead, byte[] codes = default, string[] datas = default)
+    {
+        return new Dlt645_2007Send(dAddress, sign, read, feHead.HexStringToBytes(), codes, datas);
+    }
+
+    /// <inheritdoc/>
+    public override ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
+            return ModbusRequestAsync(dAddress, ControlCode.Read, FEHead, cancellationToken: cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return EasyValueTask.FromResult(new OperResult<byte[]>(ex));
         }
     }
 
@@ -149,24 +152,10 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
             if (OperCode.Length < 8)
                 OperCode = OperCode.PadLeft(8, '0');
 
-            var data = DataTransUtil.SpliceArray(Password.ByHexStringToBytes(), OperCode.ByHexStringToBytes());
+            var codes = DataTransUtil.SpliceArray(Password.HexStringToBytes(), OperCode.HexStringToBytes());
             string[] strArray = value.SplitStringBySemicolon();
             var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
-
-            var channelResult = GetChannel(dAddress.SocketId);
-            if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
-            try
-            {
-                var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
-                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, dAddress, (byte)ControlCode.Write, Station, FEHead, data, strArray);
-                if (!commandResult.IsSuccess) return new OperResult<byte[]>(commandResult);
-                return await this.SendThenReturnAsync(new SendMessage(commandResult.Content) { Sign = sign }, waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
-            }
-            finally
-            {
-                valueByteBlock.SafeDispose();
-            }
+            return await ModbusRequestAsync(dAddress, ControlCode.Write, FEHead, codes, strArray, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
@@ -177,7 +166,26 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     #region
 
     /// <inheritdoc/>
-    public override ValueTask<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+    public override async ValueTask<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            Password ??= string.Empty;
+            OperCode ??= string.Empty;
+            if (Password.Length < 8)
+                Password = Password.PadLeft(8, '0');
+            if (OperCode.Length < 8)
+                OperCode = OperCode.PadLeft(8, '0');
+
+            var codes = DataTransUtil.SpliceArray(Password.HexStringToBytes(), OperCode.HexStringToBytes());
+            var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
+            return await ModbusRequestAsync(dAddress, ControlCode.Write, FEHead, codes, cancellationToken: cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return new OperResult<byte[]>(ex);
+        }
+    }
 
     /// <inheritdoc/>
     public override ValueTask<OperResult> WriteAsync(string address, uint value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default) => WriteAsync(address, value.ToString(), bitConverter, cancellationToken);
@@ -221,18 +229,13 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     {
         try
         {
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
-            try
-            {
-                string str = $"{dateTime.Second:D2}{dateTime.Minute:D2}{dateTime.Hour:D2}{dateTime.Day:D2}{dateTime.Month:D2}{dateTime.Year % 100:D2}";
-                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.BroadcastTime, str.ByHexStringToBytes().ToArray(), "999999999999".ByHexStringToBytes(), FEHead);
-                await this.SendAsync(socketId, new SendMessage(commandResult), cancellationToken).ConfigureAwait(false);
-                return OperResult.Success;
-            }
-            finally
-            {
-                valueByteBlock.SafeDispose();
-            }
+            string str = $"{dateTime.Second:D2}{dateTime.Minute:D2}{dateTime.Hour:D2}{dateTime.Day:D2}{dateTime.Month:D2}{dateTime.Year % 100:D2}";
+            Dlt645_2007Address dAddress = new();
+            dAddress.Station = str.HexStringToBytes();
+            dAddress.DataId = "999999999999".HexStringToBytes();
+            dAddress.SocketId = socketId;
+
+            return await ModbusRequestAsync(dAddress, ControlCode.BroadcastTime, FEHead, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
@@ -245,26 +248,20 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     /// </summary>
     /// <param name="socketId">socketId</param>
     /// <param name="dateTime">时间</param>
+    /// <param name="station">表号</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async ValueTask<OperResult> FreezeAsync(string socketId, DateTime dateTime, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult> FreezeAsync(string socketId, DateTime dateTime, string station = null, CancellationToken cancellationToken = default)
     {
         try
         {
             string str = $"{dateTime.Minute:D2}{dateTime.Hour:D2}{dateTime.Day:D2}{dateTime.Month:D2}";
-            if (Station.IsNullOrEmpty()) Station = string.Empty;
-            if (Station.Length < 12) Station = Station.PadLeft(12, '0');
+            Dlt645_2007Address dAddress = new();
+            dAddress.SetStation(station ?? Station);
+            dAddress.DataId = str.HexStringToBytes();
+            dAddress.SocketId = socketId;
 
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
-            try
-            {
-                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.Freeze, str.ByHexStringToBytes().ToArray(), Station.ByHexStringToBytes().Reverse().ToArray(), FEHead);
-                return await this.SendThenReturnAsync(socketId, commandResult, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                valueByteBlock.SafeDispose();
-            }
+            return await ModbusRequestAsync(dAddress, ControlCode.Freeze, FEHead, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
@@ -282,24 +279,19 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     {
         try
         {
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
-            try
+            Dlt645_2007Address dAddress = new();
+            dAddress.SetStation("AAAAAAAAAAAA");
+            dAddress.SocketId = socketId;
+
+            var result = await ModbusRequestAsync(dAddress, ControlCode.ReadStation, FEHead, cancellationToken: cancellationToken);
+            if (result.IsSuccess)
             {
-                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.ReadStation, null, "AAAAAAAAAAAA".ByHexStringToBytes(), FEHead);
-                var result = await this.SendThenReturnAsync(socketId, commandResult, cancellationToken: cancellationToken).ConfigureAwait(false);
-                if (result.IsSuccess)
-                {
-                    var buffer = result.Content.SelectMiddle(0, 6).BytesAdd(-0x33);
-                    return OperResult.CreateSuccessResult(buffer.Reverse().ToArray().ToHexString());
-                }
-                else
-                {
-                    return new OperResult<string>(result);
-                }
+                var buffer = result.Content.SelectMiddle(0, 6).BytesAdd(-0x33);
+                return OperResult.CreateSuccessResult(buffer.Reverse().ToArray().ToHexString());
             }
-            finally
+            else
             {
-                valueByteBlock.SafeDispose();
+                return new OperResult<string>(result);
             }
         }
         catch (Exception ex)
@@ -313,9 +305,10 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     /// </summary>
     /// <param name="socketId">socketId</param>
     /// <param name="baudRate">波特率</param>
+    /// <param name="station">表号</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async ValueTask<OperResult> WriteBaudRateAsync(string socketId, int baudRate, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult> WriteBaudRateAsync(string socketId, int baudRate, string station = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -330,19 +323,13 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
                 case 19200: baudRateByte = 0x40; break;
                 default: return new OperResult<string>(DltResource.Localizer["BaudRateError", baudRate]);
             }
-            if (Station.IsNullOrEmpty()) Station = string.Empty;
-            if (Station.Length < 12) Station = Station.PadLeft(12, '0');
 
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
-            try
-            {
-                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.WriteBaudRate, new byte[1] { baudRateByte }, Station.ByHexStringToBytes().Reverse().ToArray(), FEHead);
-                return await this.SendThenReturnAsync(socketId, commandResult, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                valueByteBlock.SafeDispose();
-            }
+            Dlt645_2007Address dAddress = new();
+            dAddress.SetStation(station ?? Station);
+            dAddress.SocketId = socketId;
+            dAddress.DataId = new byte[1] { baudRateByte };
+
+            return await ModbusRequestAsync(dAddress, ControlCode.ReadStation, FEHead, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
@@ -364,7 +351,7 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
             ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
             try
             {
-                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.WriteStation, station.ByHexStringToBytes().Reverse().ToArray(), "AAAAAAAAAAAA".ByHexStringToBytes(), FEHead);
+                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.WriteStation, station.HexStringToBytes().Reverse().ToArray(), "AAAAAAAAAAAA".HexStringToBytes(), FEHead);
                 return await this.SendThenReturnAsync(socketId, commandResult, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             finally
@@ -395,16 +382,16 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
             if (Station.Length < 12) Station = Station.PadLeft(12, '0');
             string str = $"04000C{level + 1:D2}";
 
-            var bytes = DataTransUtil.SpliceArray(str.ByHexStringToBytes().Reverse().ToArray()
-                , (oldPassword.ByHexStringToBytes().Reverse().ToArray())
-                , (newPassword.ByHexStringToBytes().Reverse().ToArray()));
+            var bytes = DataTransUtil.SpliceArray(str.HexStringToBytes().Reverse().ToArray()
+                , (oldPassword.HexStringToBytes().Reverse().ToArray())
+                , (newPassword.HexStringToBytes().Reverse().ToArray()));
 
             ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
             try
             {
                 var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.WritePassword,
                 bytes
-                , Station.ByHexStringToBytes().Reverse().ToArray(), FEHead);
+                , Station.HexStringToBytes().Reverse().ToArray(), FEHead);
                 return await this.SendThenReturnAsync(socketId, commandResult, cancellationToken: cancellationToken).ConfigureAwait(false);
             }
             finally

@@ -8,8 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.Text;
+
+using ThingsGateway.Foundation.Extension.String;
+
 using TouchSocket.Core;
-using TouchSocket.Sockets;
 
 namespace ThingsGateway.Foundation.Dlt645;
 
@@ -25,46 +28,106 @@ internal class Dlt645_2007Send : ISendMessage
     internal Dlt645_2007Address Dlt645_2007Address { get; }
     public int SendHeadCodeIndex { get; private set; }
 
-    private bool Read;
+    internal ControlCode ControlCode = default;
 
-    public Dlt645_2007Send(Dlt645_2007Address dlt645_2007Address, ushort sign, bool read)
+    private byte[] Fehead = default;
+
+    /// <summary>
+    /// 密码、操作码
+    /// </summary>
+    private byte[] Codes = default;
+
+    /// <summary>
+    /// 写入值
+    /// </summary>
+    private string[] Datas = default;
+
+    public Dlt645_2007Send(Dlt645_2007Address dlt645_2007Address, ushort sign, ControlCode controlCode, byte[] fehead = default, byte[] codes = default, string[] datas = default)
     {
         Sign = sign;
         Dlt645_2007Address = dlt645_2007Address;
-        Read = read;
+        ControlCode = controlCode;
+
+        Fehead = fehead ?? Array.Empty<byte>();
+        Codes = codes ?? Array.Empty<byte>();
+        Datas = datas ?? Array.Empty<string>();
     }
 
     public void Build<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock
     {
-        var f = Read ? ModbusAddress.FunctionCode : ModbusAddress.WriteFunctionCode;
+        if (Dlt645_2007Address?.DataId.Length < 4)
+        {
+            throw new(DltResource.Localizer["DataIdError"]);
+        }
+        if (Fehead.Length > 0)
+        {
+            byteBlock.Write(Fehead);//帧起始符
+            SendHeadCodeIndex = Fehead.Length;
+        }
 
-        if (f <= 4)
+        byteBlock.WriteByte(0x68);//帧起始符
+        byteBlock.Write(Dlt645_2007Address.Station);//6个字节地址域
+        byteBlock.WriteByte(0x68);//帧起始符
+        byteBlock.WriteByte((byte)ControlCode);//控制码
+
+        byteBlock.WriteByte((byte)(Dlt645_2007Address.DataId.Length));//数据域长度
+        byteBlock.Write(Dlt645_2007Address.DataId);//数据域标识DI3、DI2、DI1、DI0
+
+        byteBlock.Write(Codes);
+
+        if (Datas.Length > 0)
         {
-            byteBlock.WriteByte(ModbusAddress.Station);
-            byteBlock.WriteByte((byte)f);
-            byteBlock.WriteUInt16(ModbusAddress.StartAddress, EndianType.Big);
-            byteBlock.WriteUInt16(ModbusAddress.Length, EndianType.Big);
+            var dataInfos = Dlt645Helper.GetDataInfos(Dlt645_2007Address.DataId);
+            if (Datas.Length != dataInfos.Count)
+            {
+                throw new(DltResource.Localizer["CountError"]);
+            }
+            for (int i = 0; i < Datas.Length; i++)
+            {
+                var dataInfo = dataInfos[i];
+                byte[] data;
+                if (dataInfo.IsSigned)//可能为负数
+                {
+                    var doubleValue = Convert.ToDouble(Datas[i]);
+                    if (dataInfo.Digtal != 0)//无小数点
+                    {
+                        doubleValue *= Math.Pow(10.0, dataInfo.Digtal);
+                    }
+                    data = doubleValue.ToString().HexStringToBytes().Reverse().ToArray();
+                    if (doubleValue < 0)
+                    {
+                        data[0] = (byte)(data[0] & 0x80);
+                    }
+                }
+                else
+                {
+                    if (dataInfo.Digtal < 0)
+                    {
+                        data = Encoding.ASCII.GetBytes(Datas[i]).Reverse().ToArray();
+                    }
+                    else if (dataInfo.Digtal == 0)//无小数点
+                    {
+                        data = Datas[i].HexStringToBytes().Reverse().ToArray();
+                    }
+                    else
+                    {
+                        data = (Convert.ToDouble(Datas[i]) * Math.Pow(10.0, dataInfo.Digtal)).ToString().HexStringToBytes().Reverse().ToArray();
+                    }
+                }
+
+                byteBlock.Write(data);
+            }
         }
-        else if (f == 5 || f == 6)
-        {
-            byteBlock.WriteByte(ModbusAddress.Station);
-            byteBlock.WriteByte((byte)f);
-            byteBlock.WriteUInt16(ModbusAddress.StartAddress, EndianType.Big);
-            byteBlock.Write(ModbusAddress.Data.Span);
-        }
-        else if (f == 15 || f == 16)
-        {
-            byteBlock.WriteByte(ModbusAddress.Station);
-            byteBlock.WriteByte((byte)f);
-            byteBlock.WriteUInt16(ModbusAddress.StartAddress, EndianType.Big);
-            byteBlock.WriteUInt16((ushort)Math.Ceiling(ModbusAddress.Data.Length / 2.0), EndianType.Big);
-            byteBlock.WriteByte((byte)ModbusAddress.Data.Length);
-            byteBlock.Write(ModbusAddress.Data.Span);
-        }
-        else
-        {
-            throw new System.InvalidOperationException(ModbusResource.Localizer["ModbusError1"]);
-        }
-        byteBlock.Write(CRC16Utils.Crc16Only(byteBlock.Span));
+
+        byteBlock[Fehead.Length + 9] = (byte)(byteBlock.Length - 10 - Fehead.Length);//数据域长度
+
+        for (int index = Fehead.Length + 10; index < byteBlock.Length; ++index)
+            byteBlock[index] += 0x33;//传输时发送方按字节进行加33H处理，接收方按字节进行减33H处理
+
+        int num = 0;
+        for (int index = Fehead.Length; index < byteBlock.Length; ++index)
+            num += byteBlock[index];
+        byteBlock.WriteByte((byte)num);//校验码,总加和
+        byteBlock.WriteByte((byte)0x16);//结束符
     }
 }

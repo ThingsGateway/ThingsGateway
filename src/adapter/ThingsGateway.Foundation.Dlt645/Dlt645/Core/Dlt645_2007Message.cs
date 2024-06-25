@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System.Drawing;
-
 using TouchSocket.Core;
 
 namespace ThingsGateway.Foundation.Dlt645;
@@ -34,6 +32,7 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
     }
 
     private int HeadCodeIndex;
+    private readonly byte[] ReadStation = new byte[6] { 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA };
 
     /// <inheritdoc/>
     public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
@@ -56,7 +55,11 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
 
             //帧起始符 地址域  帧起始符 控制码 数据域长度共10个字节
             HeaderLength = HeadCodeIndex - byteBlock.Position + 10;
-            BodyLength = byteBlock[HeaderLength - 9] + 2;
+            if (byteBlock.CanReadLength < HeaderLength + HeadCodeIndex)
+            {
+                return true;
+            }
+            BodyLength = byteBlock[HeadCodeIndex + 9] + 2;
             return true;
         }
         else
@@ -70,95 +73,64 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
         int sendHeadCodeIndex = Dlt645_2007Send.SendHeadCodeIndex;
 
         var pos = byteBlock.Position - HeaderLength;
-        if (response[len + HeadCodeIndex - 1] == 0x16)
+        var endIndex = HeaderLength + BodyLength + HeadCodeIndex;
+        if (byteBlock[endIndex - 1] == 0x16)
         {
             //检查校验码
             int sumCheck = 0;
-            for (int i = headCodeIndex; i < len + headCodeIndex - 2; i++)
-                sumCheck += response[i];
-            if ((byte)sumCheck != response[len + headCodeIndex - 2])
+            for (int i = HeadCodeIndex; i < endIndex - 2; i++)
+                sumCheck += byteBlock[i];
+            if ((byte)sumCheck != byteBlock[endIndex - 2])
             {
                 //校验错误
-                request.ErrorMessage = DltResource.Localizer["SumError"];
-                request.OperCode = 999;
-                return new AdapterResult() { FilterResult = FilterResult.Success };
+                this.ErrorMessage = DltResource.Localizer["SumError"];
+                this.OperCode = 999;
+                return FilterResult.Success;
             }
-
-            if (
-                (response[headCodeIndex + 1] != send[sendHeadCodeIndex + 1]) ||
-                (response[headCodeIndex + 2] != send[sendHeadCodeIndex + 2]) ||
-                (response[headCodeIndex + 3] != send[sendHeadCodeIndex + 3]) ||
-                (response[headCodeIndex + 4] != send[sendHeadCodeIndex + 4]) ||
-                (response[headCodeIndex + 5] != send[sendHeadCodeIndex + 5]) ||
-                (response[headCodeIndex + 6] != send[sendHeadCodeIndex + 6])
-                )//设备地址不符合时，返回错误
+            Response.Station = byteBlock.Span.Slice(HeadCodeIndex + 1, 6).ToArray();
+            if (Response.Station.SequenceEqual(Request.Station))//设备地址不符合时，返回错误
             {
-                if (
-                (send[sendHeadCodeIndex + 1] == 0xAA) &&
-                (send[sendHeadCodeIndex + 2] == 0xAA) &&
-                (send[sendHeadCodeIndex + 3] == 0xAA) &&
-                (send[sendHeadCodeIndex + 4] == 0xAA) &&
-                (send[sendHeadCodeIndex + 5] == 0xAA) &&
-                (send[sendHeadCodeIndex + 6] == 0xAA)
-                )//读写通讯地址例外
+                if (!Request.Station.SequenceEqual(ReadStation))//读写通讯地址例外
                 {
-                }
-                else
-                {
-                    request.ErrorMessage = DltResource.Localizer["StationNotSame"];
-                    request.OperCode = 999;
-                    return new AdapterResult() { FilterResult = FilterResult.Success };
+                    this.ErrorMessage = DltResource.Localizer["StationNotSame"];
+                    this.OperCode = 999;
+                    return FilterResult.Success;
                 }
             }
 
-            if ((response[headCodeIndex + 8] & 0x40) == 0x40)//控制码bit6为1时，返回错误
+            var controlCode = byteBlock[HeadCodeIndex + 8];
+            if ((controlCode & 0x40) == 0x40)//控制码bit6为1时，返回错误
             {
-                byte byte1 = (byte)(response[headCodeIndex + 10] - 0x33);
-                var error = Dlt645Helper.Get2007ErrorMessage(byte1);
-                request.ErrorMessage = DltResource.Localizer["FunctionError", $"0x{response[headCodeIndex + 8]:X2}", error];
-                request.OperCode = 999;
-                return new AdapterResult() { FilterResult = FilterResult.Success };
+                Response.ErrorCode = (byte)(byteBlock[HeadCodeIndex + 10] - 0x33);
+                var error = Dlt645Helper.Get2007ErrorMessage(Response.ErrorCode.Value);
+                this.ErrorMessage = DltResource.Localizer["FunctionError", $"0x{controlCode:X2}", error];
+                this.OperCode = 999;
+                return FilterResult.Success;
             }
-            if ((response[headCodeIndex + 8] != send[sendHeadCodeIndex + 8] + 0x80))//控制码不符合时，返回错误
+            if (controlCode != ((byte)Dlt645_2007Send.ControlCode) + 0x80)//控制码不符合时，返回错误
             {
-                request.ErrorMessage =
-                     DltResource.Localizer["FunctionNotSame", $"0x{response[headCodeIndex + 8]:X2}", $"0x{send[sendHeadCodeIndex + 8]:X2}"];
-                request.OperCode = 999;
-                return new AdapterResult() { FilterResult = FilterResult.Success };
+                this.ErrorMessage =
+                     DltResource.Localizer["FunctionNotSame", $"0x{controlCode:X2}", $"0x{(byte)Dlt645_2007Send.ControlCode:X2}"];
+                this.OperCode = 999;
+                return FilterResult.Success;
             }
-            if (send[sendHeadCodeIndex + 8] == (byte)ControlCode.Read ||
-    send[sendHeadCodeIndex + 8] == (byte)ControlCode.Write
-    )
+            if (Dlt645_2007Send.ControlCode == ControlCode.Read || Dlt645_2007Send.ControlCode == ControlCode.Write)
             {
                 //数据标识不符合时，返回错误
-                if (
-                (response[headCodeIndex + 10] == send[sendHeadCodeIndex + 10]) &&
-                (response[headCodeIndex + 11] == send[sendHeadCodeIndex + 11]) &&
-                (response[headCodeIndex + 12] == send[sendHeadCodeIndex + 12]) &&
-                (response[headCodeIndex + 13] == send[sendHeadCodeIndex + 13])
-                )
+                Response.DataId = byteBlock.Span.Slice(HeadCodeIndex + 10, 4).ToArray();
+                if (!Response.DataId.SequenceEqual(Request.DataId))
                 {
-                }
-                else
-                {
-                    request.ErrorMessage = DltResource.Localizer["DataIdNotSame"];
-                    request.OperCode = 999;
-                    return new AdapterResult() { FilterResult = FilterResult.Success };
+                    this.ErrorMessage = DltResource.Localizer["DataIdNotSame"];
+                    this.OperCode = 999;
+                    return FilterResult.Success;
                 }
             }
 
-            request.OperCode = 0;
-            return new AdapterResult()
-            {
-                Content = response.ToArray(headCodeIndex + 10, len - 12),
-                FilterResult = FilterResult.Success
-            };
+            this.OperCode = 0;
+            this.Content = byteBlock.ToArray(HeadCodeIndex + 10, BodyLength - 2);
+            return FilterResult.Success;
         }
-        else
-        {
-            request.OperCode = 999;
-            return new AdapterResult() { FilterResult = FilterResult.Success };
-        }
+
         return FilterResult.GoOn;
     }
 }

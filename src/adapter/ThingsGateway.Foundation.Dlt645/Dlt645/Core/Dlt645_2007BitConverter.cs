@@ -10,8 +10,6 @@
 
 using System.Text;
 
-using ThingsGateway.Foundation.Extension.Generic;
-
 using TouchSocket.Core;
 
 namespace ThingsGateway.Foundation.Dlt645;
@@ -94,14 +92,13 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
     /// <inheritdoc/>
     public override string ToString(byte[] buffer, int offset, int length)
     {
-        buffer = buffer.RemoveBegin(offset);
-        buffer = buffer.BytesAdd(-0x33);
-        var dataInfos = Dlt645Helper.GetDataInfos(buffer);
+        var data = new ReadOnlySpan<byte>(buffer, offset, length).BytesAdd(-0x33);
+        var dataInfos = Dlt645Helper.GetDataInfos(data);
         StringBuilder stringBuilder = new();
         foreach (var dataInfo in dataInfos)
         {
             //实际数据
-            var content = buffer.SelectMiddle(4, dataInfo.ByteLength).Reverse().ToArray();
+            var content = data.Slice(4, dataInfo.ByteLength).ToArray().Reverse().ToArray();
             if (dataInfo.IsSigned)//可能为负数
             {
                 if (content[0] > 0x80)//最高位是表示正负
@@ -129,7 +126,7 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
 
         return stringBuilder.ToString();
 
-        static void ToString(StringBuilder stringBuilder, DataInfo dataInfo, byte[] content)
+        static void ToString(StringBuilder stringBuilder, Dlt645DataInfo dataInfo, byte[] content)
         {
             if (dataInfo.Digtal < 0)
             {
