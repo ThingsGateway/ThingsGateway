@@ -156,7 +156,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
             var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
             return await this.SendThenReturnAsync(
                 GetSendMessage(mAddress, (ushort)sign, read),
-                waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
+              channelResult.Content, waitData, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

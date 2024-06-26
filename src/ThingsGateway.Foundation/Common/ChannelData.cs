@@ -29,7 +29,7 @@ public class ChannelData
     /// <summary>
     /// 远程地址，可由<see cref="IPHost.IPHost(string)"/>与<see href="IPHost.ToString()"/>相互转化
     /// </summary>
-    public string? RemoteUrl { get; set; }
+    public string? RemoteUrl { get; set; } = "127.0.0.1:502";
 
     /// <summary>
     /// 本地地址，可由<see cref="IPHost.IPHost(string)"/>与<see href="IPHost.ToString()"/>相互转化
@@ -39,17 +39,17 @@ public class ChannelData
     /// <summary>
     /// COM
     /// </summary>
-    public string? PortName { get; set; }
+    public string? PortName { get; set; } = "COM1";
 
     /// <summary>
     /// 波特率
     /// </summary>
-    public int? BaudRate { get; set; }
+    public int? BaudRate { get; set; } = 9600;
 
     /// <summary>
     /// 数据位
     /// </summary>
-    public int? DataBits { get; set; }
+    public int? DataBits { get; set; } = 8;
 
     /// <summary>
     /// 校验位
@@ -64,12 +64,12 @@ public class ChannelData
     /// <summary>
     /// DtrEnable
     /// </summary>
-    public bool? DtrEnable { get; set; }
+    public bool? DtrEnable { get; set; } = true;
 
     /// <summary>
     /// RtsEnable
     /// </summary>
-    public bool? RtsEnable { get; set; }
+    public bool? RtsEnable { get; set; } = true;
 
     /// <summary>
     /// TouchSocketConfig

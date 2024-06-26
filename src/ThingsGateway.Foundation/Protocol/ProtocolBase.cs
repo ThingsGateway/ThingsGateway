@@ -235,44 +235,48 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async ValueTask SendAsync(ISendMessage sendMessage, IClientChannel channel = default, CancellationToken token = default)
+    public virtual async ValueTask<OperResult> SendAsync(ISendMessage sendMessage, IClientChannel channel = default, CancellationToken token = default)
     {
-        if (!Channel.Online)
-            await Channel.ConnectAsync(ConnectTimeout, token).ConfigureAwait(false);
-        if (SendDelayTime != 0)
-            await Task.Delay(SendDelayTime, token).ConfigureAwait(false);
-
-        if (token.IsCancellationRequested)
-            return;
-
-        if (channel == default)
+        try
         {
-            if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-            await clientChannel.SendAsync(sendMessage).ConfigureAwait(false);
+            if (!Channel.Online)
+                await Channel.ConnectAsync(ConnectTimeout, token).ConfigureAwait(false);
+            if (SendDelayTime != 0)
+                await Task.Delay(SendDelayTime, token).ConfigureAwait(false);
+
+            if (token.IsCancellationRequested)
+                return new(new OperationCanceledException());
+
+            if (channel == default)
+            {
+                if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
+                await clientChannel.SendAsync(sendMessage).ConfigureAwait(false);
+            }
+            else
+            {
+                await channel.SendAsync(sendMessage).ConfigureAwait(false);
+            }
+            return OperResult.Success;
         }
-        else
+        catch (Exception ex)
         {
-            await channel.SendAsync(sendMessage).ConfigureAwait(false);
+            return new(ex);
         }
     }
 
     /// <inheritdoc/>
-    public virtual async ValueTask<OperResult> SendAsync(string socketId, ISendMessage sendMessage, CancellationToken cancellationToken)
+    public virtual async ValueTask<OperResult> SendAsync(ISendMessage sendMessage, string socketId, CancellationToken cancellationToken)
     {
-        if (Channel.ChannelType == ChannelTypeEnum.TcpService)
+        try
         {
-            if (((TcpServiceChannel)Channel).Clients.TryGetClient($"ID={socketId}", out TcpSessionClientChannel? client))
-            {
-                await SendAsync(sendMessage, client);
-                return OperResult.Success;
-            }
-            else
-                return new OperResult(DefaultResource.Localizer["DtuNoConnectedWaining"]);
+            var channelResult = GetChannel(socketId);
+            if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
+
+            return await SendAsync(sendMessage, channelResult.Content, cancellationToken);
         }
-        else
+        catch (Exception ex)
         {
-            await SendAsync(sendMessage);
-            return OperResult.Success;
+            return new(ex);
         }
     }
 
@@ -291,15 +295,15 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(string socketId, ISendMessage sendMessage, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default)
+    public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage sendMessage, string socketId, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default)
     {
         var channelResult = GetChannel(socketId);
         if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
-        return await SendThenReturnAsync(sendMessage, waitData, cancellationToken, channelResult.Content);
+        return await SendThenReturnAsync(sendMessage, channelResult.Content, waitData, cancellationToken);
     }
 
     /// <inheritdoc/>
-    public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage command, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default, IClientChannel channel = default)
+    public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage command, IClientChannel channel = default, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default)
     {
         if (!Channel.Online)
             await Channel.ConnectAsync(ConnectTimeout, cancellationToken).ConfigureAwait(false);
@@ -317,7 +321,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                 waitData = clientChannel.WaitHandlePool.GetWaitDataAsync(out var sign);
                 command.Sign = sign;
             }
-            result = await GetResponsedDataAsync(command, Timeout, clientChannel, waitData, cancellationToken).ConfigureAwait(false);
+            result = await GetResponsedDataAsync(command, clientChannel, waitData, Timeout, cancellationToken).ConfigureAwait(false);
         }
         else
         {
@@ -326,7 +330,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                 waitData = channel.WaitHandlePool.GetWaitDataAsync(out var sign);
                 command.Sign = sign;
             }
-            result = await GetResponsedDataAsync(command, Timeout, channel, waitData, cancellationToken).ConfigureAwait(false);
+            result = await GetResponsedDataAsync(command, channel, waitData, Timeout, cancellationToken).ConfigureAwait(false);
         }
 
         return new OperResult<byte[]>(result) { Content = result.Content };
@@ -338,7 +342,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <summary>
     /// 发送并等待数据
     /// </summary>
-    protected virtual async ValueTask<MessageBase> GetResponsedDataAsync(ISendMessage command, int timeout, IClientChannel clientChannel, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default)
+    protected virtual async ValueTask<MessageBase> GetResponsedDataAsync(ISendMessage command, IClientChannel clientChannel, WaitDataAsync<MessageBase> waitData = default, int timeout = 3000, CancellationToken cancellationToken = default)
     {
         if (waitData == default)
         {
@@ -360,7 +364,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             }
             else
             {
-                return new MessageBase(result);
+                throw new Exception(result.ErrorMessage, result.Exception);
             }
         }
         finally

@@ -113,7 +113,7 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
             var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
             return await this.SendThenReturnAsync(
 GetSendMessage(dAddress, (ushort)sign, controlCode, feHead, codes, datas),
-waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
+channelResult.Content, waitData, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -122,17 +122,17 @@ waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public async ValueTask<OperResult<byte[]>> Dlt645SendAsync(Dlt645_2007Address dAddress, ControlCode controlCode, string feHead, byte[] codes = default, string[] datas = default, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult> Dlt645SendAsync(Dlt645_2007Address dAddress, ControlCode controlCode, string feHead, byte[] codes = default, string[] datas = default, CancellationToken cancellationToken = default)
     {
         try
         {
             var channelResult = GetChannel(dAddress.SocketId);
             if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
 
-            var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
-            return await this.SendAsync(
-GetSendMessage(dAddress, (ushort)sign, controlCode, feHead, codes, datas),
-waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
+            await this.SendAsync(
+GetSendMessage(dAddress, (ushort)0, controlCode, feHead, codes, datas),
+channelResult.Content, cancellationToken).ConfigureAwait(false);
+            return OperResult.Success;
         }
         catch (Exception ex)
         {
@@ -254,7 +254,7 @@ waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
             dAddress.DataId = "999999999999".HexStringToBytes();
             dAddress.SocketId = socketId;
 
-            return await Dlt645RequestAsync(dAddress, ControlCode.BroadcastTime, FEHead, cancellationToken: cancellationToken);
+            return await Dlt645SendAsync(dAddress, ControlCode.BroadcastTime, FEHead, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
@@ -367,16 +367,12 @@ waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
     {
         try
         {
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
-            try
-            {
-                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.WriteStation, station.HexStringToBytes().Reverse().ToArray(), "AAAAAAAAAAAA".HexStringToBytes(), FEHead);
-                return await this.SendThenReturnAsync(socketId, commandResult, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                valueByteBlock.SafeDispose();
-            }
+            Dlt645_2007Address dAddress = new();
+            dAddress.SocketId = socketId;
+            dAddress.Station = "AAAAAAAAAAAA".HexStringToBytes();
+            dAddress.DataId = station.HexStringToBytes().Reverse().ToArray();
+
+            return await Dlt645RequestAsync(dAddress, ControlCode.WriteStation, FEHead, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
@@ -391,9 +387,10 @@ waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
     /// <param name="level">密码等级，0-8</param>
     /// <param name="oldPassword">旧密码</param>
     /// <param name="newPassword">新密码</param>
+    /// <param name="station">station</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>
-    public async ValueTask<OperResult> WritePasswordAsync(string socketId, byte level, string oldPassword, string newPassword, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult> WritePasswordAsync(string socketId, byte level, string oldPassword, string newPassword, string station = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -405,18 +402,13 @@ waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
                 , (oldPassword.HexStringToBytes().Reverse().ToArray())
                 , (newPassword.HexStringToBytes().Reverse().ToArray()));
 
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
-            try
-            {
-                var commandResult = Dlt645Helper.GetDlt645_2007Command(ref valueByteBlock, (byte)ControlCode.WritePassword,
-                bytes
-                , Station.HexStringToBytes().Reverse().ToArray(), FEHead);
-                return await this.SendThenReturnAsync(socketId, commandResult, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                valueByteBlock.SafeDispose();
-            }
+            Dlt645_2007Address dAddress = new();
+            dAddress.SetStation(station ?? Station);
+            dAddress.SocketId = socketId;
+            dAddress.Station = "AAAAAAAAAAAA".HexStringToBytes();
+            dAddress.DataId = bytes;
+
+            return await Dlt645RequestAsync(dAddress, ControlCode.WritePassword, FEHead, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
