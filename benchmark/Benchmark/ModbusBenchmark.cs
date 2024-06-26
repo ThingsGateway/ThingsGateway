@@ -58,6 +58,11 @@ public class ModbusBenchmark : IDisposable
 
         modbusTcpNet = new("127.0.0.1", 502);
         modbusTcpNet.ConnectServer();
+
+        thingsgatewaymodbus.ReadAsync("40001", 100).GetFalseAwaitResult();
+        nmodbus.ReadHoldingRegistersAsync(1, 0, 100).GetFalseAwaitResult();
+        modbusTcpMaster.ReadHoldingRegistersAsync(1, 0, 100, 3000, CancellationToken.None).GetFalseAwaitResult();
+        modbusTcpNet.ReadAsync("0", 100).GetFalseAwaitResult();
     }
 
     //[Benchmark]
