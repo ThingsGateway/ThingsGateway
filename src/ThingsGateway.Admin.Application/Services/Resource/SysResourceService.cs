@@ -29,6 +29,8 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
         this._relationService = relationService;
     }
 
+    private string CacheKey = $"{CacheConst.Cache_SysResource}-{CultureInfo.CurrentUICulture.Name}";
+
     #region 增删改查
 
     /// <summary>
@@ -37,13 +39,12 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
     /// <returns>全部资源列表</returns>
     public async Task<List<SysResource>> GetAllAsync()
     {
-        var key = $"{CacheConst.Cache_SysResource}-{CultureInfo.CurrentUICulture.Name}";
-        var sysResources = App.CacheService.Get<List<SysResource>>(key);
+        var sysResources = App.CacheService.Get<List<SysResource>>(CacheKey);
         if (sysResources == null)
         {
             using var db = GetDB();
             sysResources = await db.Queryable<SysResource>().ToListAsync();
-            App.CacheService.Set(key, sysResources);
+            App.CacheService.Set(CacheKey, sysResources);
         }
         return sysResources;
     }
@@ -214,7 +215,7 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
     /// </summary>
     public void RefreshCache()
     {
-        App.CacheService.Remove($"{CacheConst.Cache_SysResource}");
+        App.CacheService.Remove(CacheKey);
         //删除超级管理员的缓存
         App.RootServices.GetRequiredService<ISysUserService>().DeleteUserFromCache(RoleConst.SuperAdminId);
     }
