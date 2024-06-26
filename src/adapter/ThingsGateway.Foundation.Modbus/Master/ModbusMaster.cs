@@ -207,7 +207,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
             }
             else if (mAddress.BitIndex == null)
             {
-                mAddress.Data = value[0] ? new byte[2] { 255, 0 } : new byte[2] { 0, 0 };
+                mAddress.Data = value[0] ? new byte[2] { 255, 0 } : [0, 0];
                 return await ModbusRequestAsync(mAddress, false, cancellationToken);
             }
             else

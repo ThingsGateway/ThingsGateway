@@ -32,7 +32,7 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
     }
 
     private int HeadCodeIndex;
-    private readonly byte[] ReadStation = new byte[6] { 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA };
+    private readonly byte[] ReadStation = [0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA];
 
     /// <inheritdoc/>
     public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)

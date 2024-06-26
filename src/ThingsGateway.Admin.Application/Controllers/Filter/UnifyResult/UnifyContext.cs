@@ -72,13 +72,13 @@ public static class UnifyContext
     /// <summary>
     /// 跳过规范化处理的 Response Content-Type
     /// </summary>
-    internal static string[] ResponseContentTypesOfNonUnify = new[]
-    {
+    internal static string[] ResponseContentTypesOfNonUnify =
+    [
         "text/event-stream",
         "application/pdf",
         "application/octet-stream",
         "image/"
-    };
+    ];
 
     /// <summary>
     /// 检查 HttpContext 是否进行规范化处理

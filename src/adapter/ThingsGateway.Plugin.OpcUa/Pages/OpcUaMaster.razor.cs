@@ -101,7 +101,7 @@ public partial class OpcUaMaster : IDisposable
         try
         {
             if (_plc.Connected)
-                await _plc.AddSubscriptionAsync(Guid.NewGuid().ToString(), new[] { RegisterAddress });
+                await _plc.AddSubscriptionAsync(Guid.NewGuid().ToString(), [RegisterAddress]);
         }
         catch (Exception ex)
         {
@@ -115,7 +115,7 @@ public partial class OpcUaMaster : IDisposable
         {
             try
             {
-                var data = await _plc.ReadJTokenValueAsync(new string[] { RegisterAddress });
+                var data = await _plc.ReadJTokenValueAsync([RegisterAddress]);
 
                 LogMessage?.LogInformation($" {data[0].Item1}：{data[0].Item3}");
             }

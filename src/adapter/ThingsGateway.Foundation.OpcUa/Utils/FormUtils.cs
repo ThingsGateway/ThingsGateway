@@ -512,7 +512,7 @@ public class FormUtils
         }
 
         // construct the event based on the known event type.
-        BaseEventState e = (BaseEventState)Activator.CreateInstance(knownType, new object[] { (NodeState)null });
+        BaseEventState e = (BaseEventState)Activator.CreateInstance(knownType, [(NodeState)null]);
 
         // get the filter which defines the contents of the notification.
         EventFilter filter = monitoredItem.Status.Filter as EventFilter;

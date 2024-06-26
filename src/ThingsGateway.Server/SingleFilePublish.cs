@@ -41,10 +41,10 @@ public class SingleFilePublish : ISingleFilePublish
     {
 #if !Admin
         InstanceFactory.CustomAssemblies =
-    new System.Reflection.Assembly[] { typeof(SqlSugar.TDengine.TDengineProvider).Assembly };
+    [typeof(SqlSugar.TDengine.TDengineProvider).Assembly];
 #endif
-        return new[]
-        {
+        return
+        [
             "ThingsGateway.Foundation",
             "ThingsGateway.Core",
             "ThingsGateway.NewLife.X",
@@ -54,6 +54,6 @@ public class SingleFilePublish : ISingleFilePublish
             "ThingsGateway.Admin.Razor"   ,
             "ThingsGateway.Admin.Application"   ,
             "SqlSugar.TDengineCore",
-        };
+        ];
     }
 }

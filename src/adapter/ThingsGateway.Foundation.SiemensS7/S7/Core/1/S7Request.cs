@@ -47,7 +47,7 @@ public class S7Request
     /// <summary>
     /// 写入数据
     /// </summary>
-    public ReadOnlyMemory<byte> Data { get; set; }
+    public byte[] Data { get; set; }
 
     #endregion Request
 }

@@ -42,7 +42,7 @@ public class FileService : IFileService
         if (file == null) throw Oops.Bah("FileNullError");
         if (file.Size > maxSize * 1024 * 1024) throw Oops.Bah("FileLengthError", maxSize);
         var fileSuffix = Path.GetExtension(file.Name).ToLower().Split(".")[1]; // 文件后缀
-        string[] allowTypeS = allowTypes == null ? new string[] { "xlsx" } : allowTypes;//允许上传的文件类型
+        string[] allowTypeS = allowTypes == null ? ["xlsx"] : allowTypes;//允许上传的文件类型
         if (!allowTypeS.Contains(fileSuffix)) throw Oops.Bah("FileTypeError", fileSuffix);
     }
 

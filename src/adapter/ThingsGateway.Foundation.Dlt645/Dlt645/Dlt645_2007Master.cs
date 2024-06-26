@@ -346,7 +346,7 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
             Dlt645_2007Address dAddress = new();
             dAddress.SetStation(station ?? Station);
             dAddress.SocketId = socketId;
-            dAddress.DataId = new byte[1] { baudRateByte };
+            dAddress.DataId = [baudRateByte];
 
             return await Dlt645RequestAsync(dAddress, ControlCode.ReadStation, FEHead, cancellationToken: cancellationToken);
         }

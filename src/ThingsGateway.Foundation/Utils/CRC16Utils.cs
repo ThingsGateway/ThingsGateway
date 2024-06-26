@@ -50,14 +50,14 @@ public class CRC16Utils
             }
         }
 
-        return (!crc16) ? new byte[2]
-        {
+        return (!crc16) ?
+        [
             (byte)(num >> 8),
             (byte)((uint)num & 0xFFu)
-        } : new byte[2]
-        {
+        ] :
+        [
             (byte)((uint)num & 0xFFu),
             (byte)(num >> 8)
-        };
+        ];
     }
 }

@@ -19,7 +19,7 @@ public class BrowseElement : ICloneable
     private string m_itemName;
     private string m_itemPath;
     private string m_name;
-    private ItemProperty[] m_properties = new ItemProperty[0];
+    private ItemProperty[] m_properties = [];
 
     public bool HasChildren
     {

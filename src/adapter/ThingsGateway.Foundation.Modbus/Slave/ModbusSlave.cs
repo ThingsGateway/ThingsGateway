@@ -487,7 +487,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                 if (mAddress.FunctionCode == 0x05)
                 {
                     var data = ModbusServer01ByteBlock.Memory.Slice(mAddress.StartAddress, 1);
-                    mAddress.Data = new ReadOnlyMemory<byte>(new byte[1] { data.Span[0].SetBit(mAddress.StartAddress % 8, mAddress.Data.Span[0] == 0xff) });
+                    mAddress.Data = new ReadOnlyMemory<byte>([data.Span[0].SetBit(mAddress.StartAddress % 8, mAddress.Data.Span[0] == 0xff)]);
                 }
                 using (new WriteLock(this._lockSlim))
                 {

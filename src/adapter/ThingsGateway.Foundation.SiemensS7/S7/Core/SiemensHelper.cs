@@ -144,118 +144,41 @@ internal partial class SiemensHelper
 
     #endregion 验证
 
-    internal static void GetReadCommand(ref ValueByteBlock valueByteBlock, SiemensAddress[] siemensAddress)
+    public static List<List<SiemensAddress>> GroupByLength(SiemensAddress[] a, int pduLength)
     {
-        int len = siemensAddress.Length;
-        int telegramLen = len * 12 + 19;
-        int parameterLen = len * 12 + 2;
+        List<List<SiemensAddress>> groups = new List<List<SiemensAddress>>();
+        List<SiemensAddress> sortedItems = a.OrderByDescending(item => item.Length).ToList(); // 按长度降序排序
 
-        valueByteBlock.Write(S7_MULRW_HEADER);//19字节
-        valueByteBlock[2] = (byte)(telegramLen / 256);
-        valueByteBlock[3] = (byte)(telegramLen % 256);
-        valueByteBlock[13] = (byte)(parameterLen / 256);
-        valueByteBlock[14] = (byte)(parameterLen % 256);
-        valueByteBlock[18] = (byte)len;
-
-        for (int index = 0; index < len; index++)
+        while (sortedItems.Any())
         {
-            valueByteBlock.Write(S7_MULRD_ITEM);//12字节
-            if (siemensAddress[index].DataCode == (byte)S7WordLength.Counter || siemensAddress[index].DataCode == (byte)S7WordLength.Timer)
+            List<SiemensAddress> currentGroup = new List<SiemensAddress>();
+            int currentGroupLength = 0;
+
+            for (int i = 0; i < sortedItems.Count; i++)
             {
-                valueByteBlock[22 + (index * 12)] = siemensAddress[index].DataCode;
-                valueByteBlock[23 + (index * 12)] = (byte)(siemensAddress[index].Length / 256);
-                valueByteBlock[24 + (index * 12)] = (byte)(siemensAddress[index].Length % 256);
+                SiemensAddress item = sortedItems[i];
+                if (currentGroupLength + item.Length <= pduLength) // 如果可以添加到当前组
+                {
+                    currentGroup.Add(item);
+                    currentGroupLength += item.Length;
+                    sortedItems.RemoveAt(i); // 从列表中移除已添加到组的项
+                    i--; // 因为我们移除了一个元素，所以索引需要回退
+                }
+                else if (i == sortedItems.Count - 1) // 如果这是最后一个元素且不能添加到当前组
+                {
+                    // 创建一个新组并添加这个元素
+                    groups.Add(new List<SiemensAddress> { item });
+                    sortedItems.RemoveAt(i);
+                }
             }
-            else
+
+            if (currentGroup.Any()) // 如果当前组不为空
             {
-                valueByteBlock[22 + (index * 12)] = (byte)S7WordLength.Byte;
-                valueByteBlock[23 + (index * 12)] = (byte)(siemensAddress[index].Length / 256);
-                valueByteBlock[24 + (index * 12)] = (byte)(siemensAddress[index].Length % 256);
+                groups.Add(currentGroup);
             }
-            valueByteBlock[25 + (index * 12)] = (byte)(siemensAddress[index].DbBlock / 256U);
-            valueByteBlock[26 + (index * 12)] = (byte)(siemensAddress[index].DbBlock % 256U);
-            valueByteBlock[27 + (index * 12)] = siemensAddress[index].DataCode;
-            valueByteBlock[28 + (index * 12)] = (byte)(siemensAddress[index].AddressStart / 256 / 256 % 256);
-            valueByteBlock[29 + (index * 12)] = (byte)(siemensAddress[index].AddressStart / 256 % 256);
-            valueByteBlock[30 + (index * 12)] = (byte)(siemensAddress[index].AddressStart % 256);
         }
-    }
 
-    internal static void GetWriteBitCommand(ref ValueByteBlock valueByteBlock, SiemensAddress address, bool data)
-    {
-        int len = 1;
-        int telegramLen = 16 + 19 + len;//最后的1是写入值的byte数量
-        int parameterLen = 12 + 2;
-
-        valueByteBlock.Write(S7_MULRW_HEADER);//19字节
-        valueByteBlock[2] = (byte)(telegramLen / 256);
-        valueByteBlock[3] = (byte)(telegramLen % 256);
-        valueByteBlock[13] = (byte)(parameterLen / 256);
-        valueByteBlock[14] = (byte)(parameterLen % 256);
-        valueByteBlock[15] = (byte)((4 + len) / 256);
-        valueByteBlock[16] = (byte)((4 + len) % 256);
-        valueByteBlock[17] = 5;
-        valueByteBlock[18] = (byte)1;
-        //写入Item与读取大致相同
-        valueByteBlock.Position = 19;
-        valueByteBlock.WriteByte((byte)18);
-        valueByteBlock.WriteByte((byte)10);
-        valueByteBlock.WriteByte((byte)16);
-        valueByteBlock.WriteByte((byte)S7WordLength.Bit);
-        valueByteBlock.WriteByte((byte)(len / 256));
-        valueByteBlock.WriteByte((byte)(len % 256));
-        valueByteBlock.WriteByte((byte)(address.DbBlock / 256));
-        valueByteBlock.WriteByte((byte)(address.DbBlock % 256));
-        valueByteBlock.WriteByte((byte)(address.DataCode));
-        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256 / 256));
-        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256));
-        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) % 256));
-        //后面跟的是写入的数据信息
-        valueByteBlock.WriteByte((byte)(0));
-        valueByteBlock.WriteByte((byte)(3));//Bit:3;Byte:4;Counter或者Timer:9
-        valueByteBlock.WriteByte((byte)(len / 256));
-        valueByteBlock.WriteByte((byte)(len % 256));
-        valueByteBlock.WriteByte((byte)(data ? 1 : 0));
-    }
-
-    internal static void GetWriteByteCommand(ref ValueByteBlock valueByteBlock, SiemensAddress address, ReadOnlySpan<byte> data)
-    {
-        int len = data.Length;
-        int telegramLen = 16 + 19 + len;//最后的1是写入值的byte数量
-        int parameterLen = 12 + 2;
-
-        valueByteBlock.Write(S7_MULRW_HEADER);//19字节
-
-        valueByteBlock[2] = (byte)(telegramLen / 256);
-        valueByteBlock[3] = (byte)(telegramLen % 256);
-        valueByteBlock[13] = (byte)(parameterLen / 256);
-        valueByteBlock[14] = (byte)(parameterLen % 256);
-        valueByteBlock[15] = (byte)((4 + len) / 256);
-        valueByteBlock[16] = (byte)((4 + len) % 256);
-        valueByteBlock[17] = 5;
-        valueByteBlock[18] = (byte)1;
-        //写入Item与读取大致相同
-
-        //写入Item与读取大致相同
-        valueByteBlock.Position = 19;
-        valueByteBlock.WriteByte((byte)18);
-        valueByteBlock.WriteByte((byte)10);
-        valueByteBlock.WriteByte((byte)16);
-        valueByteBlock.WriteByte((byte)S7WordLength.Byte);
-        valueByteBlock.WriteByte((byte)(len / 256));
-        valueByteBlock.WriteByte((byte)(len % 256));
-        valueByteBlock.WriteByte((byte)(address.DbBlock / 256));
-        valueByteBlock.WriteByte((byte)(address.DbBlock % 256));
-        valueByteBlock.WriteByte((byte)(address.DataCode));
-        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256 / 256));
-        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256));
-        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) % 256));
-        //后面跟的是写入的数据信息
-        valueByteBlock.WriteByte((byte)(0));
-        valueByteBlock.WriteByte((byte)(4));//Bit:3;Byte:4;Counter或者Timer:9
-        valueByteBlock.WriteByte((byte)(len * 8 / 256));
-        valueByteBlock.WriteByte((byte)(len * 8 % 256));
-        valueByteBlock.Write(data);
+        return groups;
     }
 
     internal static async ValueTask<OperResult<string>> ReadStringAsync(SiemensS7Master plc, string address, Encoding encoding, CancellationToken cancellationToken)
@@ -312,14 +235,14 @@ internal partial class SiemensHelper
             if (value.Length > result.Content[0]) return new OperResult<string>(SiemensS7Resource.Localizer["WriteDataLengthMore"]);
             return await plc.WriteAsync(
                 address,
-                DataTransUtil.SpliceArray(new byte[2] { result.Content[0], (byte)value.Length },
+                DataTransUtil.SpliceArray([result.Content[0], (byte)value.Length],
                 inBytes
                 )).ConfigureAwait(false);
         }
-        return await plc.WriteAsync(address, DataTransUtil.SpliceArray<byte>(new byte[1]
-        {
+        return await plc.WriteAsync(address, DataTransUtil.SpliceArray<byte>(
+        [
     (byte) value.Length
-        }, inBytes)).ConfigureAwait(false);
+        ], inBytes)).ConfigureAwait(false);
     }
 
     private static string GetCpuError(ushort Error)

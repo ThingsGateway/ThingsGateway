@@ -31,19 +31,19 @@ public static class StartupExtensions
     /// <summary>
     /// 排除的配置文件前缀
     /// </summary>
-    private static readonly string[] excludeJsonPrefixs = new[] { "appsettings", "bundleconfig", "compilerconfig" };
+    private static readonly string[] excludeJsonPrefixs = ["appsettings", "bundleconfig", "compilerconfig"];
 
     /// <summary>
     /// 排除运行时 Json 后缀
     /// </summary>
-    private static readonly string[] runtimeJsonSuffixs = new string[]
-    {
+    private static readonly string[] runtimeJsonSuffixs =
+    [
             "deps.json",
             "runtimeconfig.dev.json",
             "runtimeconfig.prod.json",
             "runtimeconfig.json",
             "staticwebassets.runtime.json"
-    };
+    ];
 
     /// <summary>
     /// 对配置文件名进行分组
