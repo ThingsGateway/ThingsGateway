@@ -103,7 +103,7 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     }
 
     /// <inheritdoc/>
-    public async ValueTask<OperResult<byte[]>> ModbusRequestAsync(Dlt645_2007Address dAddress, ControlCode controlCode, string feHead, byte[] codes = default, string[] datas = default, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult<byte[]>> Dlt645RequestAsync(Dlt645_2007Address dAddress, ControlCode controlCode, string feHead, byte[] codes = default, string[] datas = default, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -112,6 +112,25 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
 
             var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
             return await this.SendThenReturnAsync(
+GetSendMessage(dAddress, (ushort)sign, controlCode, feHead, codes, datas),
+waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            return new OperResult<byte[]>(ex);
+        }
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<OperResult<byte[]>> Dlt645SendAsync(Dlt645_2007Address dAddress, ControlCode controlCode, string feHead, byte[] codes = default, string[] datas = default, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var channelResult = GetChannel(dAddress.SocketId);
+            if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
+
+            var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
+            return await this.SendAsync(
 GetSendMessage(dAddress, (ushort)sign, controlCode, feHead, codes, datas),
 waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
         }
@@ -132,7 +151,7 @@ waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
         try
         {
             var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
-            return ModbusRequestAsync(dAddress, ControlCode.Read, FEHead, cancellationToken: cancellationToken);
+            return Dlt645RequestAsync(dAddress, ControlCode.Read, FEHead, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
@@ -155,7 +174,7 @@ waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
             var codes = DataTransUtil.SpliceArray(Password.HexStringToBytes(), OperCode.HexStringToBytes());
             string[] strArray = value.SplitStringBySemicolon();
             var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
-            return await ModbusRequestAsync(dAddress, ControlCode.Write, FEHead, codes, strArray, cancellationToken: cancellationToken);
+            return await Dlt645RequestAsync(dAddress, ControlCode.Write, FEHead, codes, strArray, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
@@ -179,7 +198,7 @@ waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
 
             var codes = DataTransUtil.SpliceArray(Password.HexStringToBytes(), OperCode.HexStringToBytes());
             var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
-            return await ModbusRequestAsync(dAddress, ControlCode.Write, FEHead, codes, cancellationToken: cancellationToken);
+            return await Dlt645RequestAsync(dAddress, ControlCode.Write, FEHead, codes, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
@@ -235,7 +254,7 @@ waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
             dAddress.DataId = "999999999999".HexStringToBytes();
             dAddress.SocketId = socketId;
 
-            return await ModbusRequestAsync(dAddress, ControlCode.BroadcastTime, FEHead, cancellationToken: cancellationToken);
+            return await Dlt645RequestAsync(dAddress, ControlCode.BroadcastTime, FEHead, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
@@ -261,7 +280,7 @@ waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
             dAddress.DataId = str.HexStringToBytes();
             dAddress.SocketId = socketId;
 
-            return await ModbusRequestAsync(dAddress, ControlCode.Freeze, FEHead, cancellationToken: cancellationToken);
+            return await Dlt645RequestAsync(dAddress, ControlCode.Freeze, FEHead, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
@@ -283,7 +302,7 @@ waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
             dAddress.SetStation("AAAAAAAAAAAA");
             dAddress.SocketId = socketId;
 
-            var result = await ModbusRequestAsync(dAddress, ControlCode.ReadStation, FEHead, cancellationToken: cancellationToken);
+            var result = await Dlt645RequestAsync(dAddress, ControlCode.ReadStation, FEHead, cancellationToken: cancellationToken);
             if (result.IsSuccess)
             {
                 var buffer = result.Content.SelectMiddle(0, 6).BytesAdd(-0x33);
@@ -329,7 +348,7 @@ waitData, cancellationToken, channelResult.Content).ConfigureAwait(false);
             dAddress.SocketId = socketId;
             dAddress.DataId = new byte[1] { baudRateByte };
 
-            return await ModbusRequestAsync(dAddress, ControlCode.ReadStation, FEHead, cancellationToken: cancellationToken);
+            return await Dlt645RequestAsync(dAddress, ControlCode.ReadStation, FEHead, cancellationToken: cancellationToken);
         }
         catch (Exception ex)
         {
