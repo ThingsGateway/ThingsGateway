@@ -19,6 +19,31 @@ namespace ThingsGateway.Foundation.Dlt645;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
+public class Dlt645_2007Request
+{
+    #region Request
+
+    /// <summary>
+    /// 数据标识
+    /// </summary>
+    public byte[] DataId { get; set; } = Array.Empty<byte>();
+
+    /// <summary>
+    /// 反转解析
+    /// </summary>
+    public bool Reverse { get; set; } = true;
+
+    /// <summary>
+    /// 站号信息
+    /// </summary>
+    public byte[] Station { get; set; } = Array.Empty<byte>();
+
+    #endregion Request
+}
+
+/// <summary>
+/// <inheritdoc/>
+/// </summary>
 internal class Dlt645_2007Send : ISendMessage
 {
     public int Sign { get; set; }

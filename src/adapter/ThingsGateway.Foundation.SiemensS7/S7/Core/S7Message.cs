@@ -15,6 +15,17 @@ namespace ThingsGateway.Foundation.SiemensS7;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
+internal class S7Response : S7Request
+{
+    /// <summary>
+    /// 错误码
+    /// </summary>
+    public byte? ErrorCode { get; set; }
+}
+
+/// <summary>
+/// <inheritdoc/>
+/// </summary>
 internal class S7Message : MessageBase, IResultMessage
 {
     /// <inheritdoc/>
@@ -171,6 +182,5 @@ internal class S7Message : MessageBase, IResultMessage
             }
             return FilterResult.Success;
         }
-
     }
 }

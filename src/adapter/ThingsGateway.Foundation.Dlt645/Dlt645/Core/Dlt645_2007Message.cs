@@ -15,6 +15,17 @@ namespace ThingsGateway.Foundation.Dlt645;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
+internal class Dlt645_2007Response : Dlt645_2007Request
+{
+    /// <summary>
+    /// 错误码
+    /// </summary>
+    public byte? ErrorCode { get; set; }
+}
+
+/// <summary>
+/// <inheritdoc/>
+/// </summary>
 internal class Dlt645_2007Message : MessageBase, IResultMessage
 {
     /// <inheritdoc/>
