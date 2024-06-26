@@ -105,6 +105,43 @@ public partial class SiemensS7Master : ProtocolBase
         return PackHelper.LoadSourceRead<T>(this, deviceVariables, maxPack, defaultIntervalTime);
     }
 
+    public async ValueTask<OperResult<byte[]>> ModbusRequestAsync(SiemensAddress sAddress, bool read, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            int num = 0;
+            var byteBlocks = new List<ValueByteBlock>();
+            while (num < sAddress.Length)
+            {
+                //pdu长度，重复生成报文，直至全部生成
+                int len = Math.Min(sAddress.Length - num, PduLength);
+                sAddress.Length = len;
+                var result = GetReadByteCommand(new SiemensAddress[1] { from });
+                byteBlocks.AddRange(result);
+                num += len;
+                if (sAddress.DataCode == (byte)S7WordLength.Timer || sAddress.DataCode == (byte)S7WordLength.Counter)
+                {
+                    sAddress.AddressStart += len / 2;
+                }
+                else
+                {
+                    sAddress.AddressStart += len * 8;
+                }
+            }
+
+            var channelResult = GetChannel(mAddress.SocketId);
+            if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
+            var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
+            return await this.SendThenReturnAsync(
+                GetSendMessage(mAddress, (ushort)sign, read),
+              channelResult.Content, waitData, cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            return new OperResult<byte[]>(ex);
+        }
+    }
+
     #region 读写
 
     /// <inheritdoc/>
@@ -112,7 +149,6 @@ public partial class SiemensS7Master : ProtocolBase
     {
         try
         {
-            List<byte> bytes = new();
             var commandResult = GetReadByteCommand(address, length);
             try
             {

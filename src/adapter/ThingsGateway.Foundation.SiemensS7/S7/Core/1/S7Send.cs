@@ -31,6 +31,43 @@ internal class S7Send : ISendMessage
         Read = read;
     }
 
+    internal static void GetReadCommand(ref ValueByteBlock valueByteBlock, SiemensAddress[] siemensAddress)
+    {
+        int len = siemensAddress.Length;
+        int telegramLen = len * 12 + 19;
+        int parameterLen = len * 12 + 2;
+
+        valueByteBlock.Write(S7_MULRW_HEADER);//19字节
+        valueByteBlock[2] = (byte)(telegramLen / 256);
+        valueByteBlock[3] = (byte)(telegramLen % 256);
+        valueByteBlock[13] = (byte)(parameterLen / 256);
+        valueByteBlock[14] = (byte)(parameterLen % 256);
+        valueByteBlock[18] = (byte)len;
+
+        for (int index = 0; index < len; index++)
+        {
+            valueByteBlock.Write(S7_MULRD_ITEM);//12字节
+            if (siemensAddress[index].DataCode == (byte)S7WordLength.Counter || siemensAddress[index].DataCode == (byte)S7WordLength.Timer)
+            {
+                valueByteBlock[22 + (index * 12)] = siemensAddress[index].DataCode;
+                valueByteBlock[23 + (index * 12)] = (byte)(siemensAddress[index].Length / 256);
+                valueByteBlock[24 + (index * 12)] = (byte)(siemensAddress[index].Length % 256);
+            }
+            else
+            {
+                valueByteBlock[22 + (index * 12)] = (byte)S7WordLength.Byte;
+                valueByteBlock[23 + (index * 12)] = (byte)(siemensAddress[index].Length / 256);
+                valueByteBlock[24 + (index * 12)] = (byte)(siemensAddress[index].Length % 256);
+            }
+            valueByteBlock[25 + (index * 12)] = (byte)(siemensAddress[index].DbBlock / 256U);
+            valueByteBlock[26 + (index * 12)] = (byte)(siemensAddress[index].DbBlock % 256U);
+            valueByteBlock[27 + (index * 12)] = siemensAddress[index].DataCode;
+            valueByteBlock[28 + (index * 12)] = (byte)(siemensAddress[index].AddressStart / 256 / 256 % 256);
+            valueByteBlock[29 + (index * 12)] = (byte)(siemensAddress[index].AddressStart / 256 % 256);
+            valueByteBlock[30 + (index * 12)] = (byte)(siemensAddress[index].AddressStart % 256);
+        }
+    }
+
     public void Build<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock
     {
         ushort num1 = 0;
