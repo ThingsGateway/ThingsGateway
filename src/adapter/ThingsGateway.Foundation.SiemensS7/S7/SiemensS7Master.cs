@@ -93,7 +93,7 @@ public partial class SiemensS7Master : ProtocolBase
     /// <inheritdoc/>
     public override DataHandlingAdapter GetDataAdapter()
     {
-        return new SiemensS7DataHandleAdapter()
+        return new ProtocolSingleStreamDataHandleAdapter<S7Message>()
         {
             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
         };
@@ -123,7 +123,7 @@ public partial class SiemensS7Master : ProtocolBase
                     sAddress.Length = len;
 
                     var result = await this.SendThenReturnAsync(
-    new S7Send(sAddress, read, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
+    new S7Send([sAddress], read, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
                     if (!result.IsSuccess) return result;
                     byteBlock.Write(result.Content);
                     num += len;

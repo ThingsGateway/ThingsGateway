@@ -13,7 +13,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.Dlt645\ThingsGateway.Foundation.Dlt645.csproj" />
-    <!--<ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.SiemensS7\ThingsGateway.Foundation.SiemensS7.csproj" />-->
+    <ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.SiemensS7\ThingsGateway.Foundation.SiemensS7.csproj" />
     <ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.OpcDa\ThingsGateway.Foundation.OpcDa.csproj" />
     <ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.OpcUa\ThingsGateway.Foundation.OpcUa.csproj" />
     <ProjectReference Include="..\..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <Compile Include="..\..\adapter\ThingsGateway.Plugin.Dlt645\Pages\Dlt645_2007Master.razor.cs" Link="Pages\Dlt645_2007Master.razor.cs" />
-    <!--<Compile Include="..\..\adapter\ThingsGateway.Plugin.SiemensS7\Pages\SiemensS7Master.razor.cs" Link="Pages\SiemensS7Master.razor.cs" />-->
+    <Compile Include="..\..\adapter\ThingsGateway.Plugin.SiemensS7\Pages\SiemensS7Master.razor.cs" Link="Pages\SiemensS7Master.razor.cs" />
     <Compile Include="..\..\adapter\ThingsGateway.Plugin.Modbus\Pages\ModbusMaster.razor.cs" Link="Pages\ModbusMaster.razor.cs" />
     <Compile Include="..\..\adapter\ThingsGateway.Plugin.Modbus\Pages\ModbusSlave.razor.cs" Link="Pages\ModbusSlave.razor.cs" />
     <Compile Include="..\..\adapter\ThingsGateway.Plugin.OpcDa\Pages\OpcDaImportVariable.razor.cs" Link="Pages\OpcDaImportVariable.razor.cs" />
@@ -48,7 +48,7 @@
 
   <ItemGroup>
     <Content Include="..\..\adapter\ThingsGateway.Plugin.Dlt645\Pages\Dlt645_2007Master.razor" Link="Pages\Dlt645_2007Master.razor" />
-    <!--<Content Include="..\..\adapter\ThingsGateway.Plugin.SiemensS7\Pages\SiemensS7Master.razor" Link="Pages\SiemensS7Master.razor" />-->
+    <Content Include="..\..\adapter\ThingsGateway.Plugin.SiemensS7\Pages\SiemensS7Master.razor" Link="Pages\SiemensS7Master.razor" />
     <Content Include="..\..\adapter\ThingsGateway.Plugin.Modbus\Pages\ModbusMaster.razor" Link="Pages\ModbusMaster.razor" />
     <Content Include="..\..\adapter\ThingsGateway.Plugin.Modbus\Pages\ModbusSlave.razor" Link="Pages\ModbusSlave.razor" />
     <Content Include="..\..\adapter\ThingsGateway.Plugin.OpcDa\Pages\OpcDaImportVariable.razor" Link="Pages\OpcDaImportVariable.razor" />

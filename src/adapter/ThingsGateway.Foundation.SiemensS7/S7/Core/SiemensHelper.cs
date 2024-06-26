@@ -16,134 +16,6 @@ namespace ThingsGateway.Foundation.SiemensS7;
 
 internal partial class SiemensHelper
 {
-    #region 验证
-
-    //internal static OperResult<byte[]> AnalysisReadBit(byte[] content)
-    //{
-    //    int length = 1;
-    //    if (content.Length < 21 || content[20] != 1)
-    //        return new OperResult<byte[]>("数据块长度校验失败");
-    //    byte[] numArray = new byte[length];
-    //    if (content[21] == byte.MaxValue && content[22] == 3)//Bit:3;Byte:4;Counter或者Timer:9
-    //    {
-    //        numArray[0] = content[25];//+4
-    //    }
-    //    else
-    //    {
-    //        return new OperResult<byte[]>((int)content[21] + GetCpuError(content[21]));
-    //    }
-    //    return OperResult.CreateSuccessResult<byte[]>(numArray);
-    //}
-
-    internal static OperResult<AdapterResult> AnalysisReadByte(ReadOnlySpan<byte> sends, IByteBlock content)
-    {
-        int length = 0;
-        int itemLen = (sends.Length - 19) / 12;
-
-        //添加错误代码校验
-        if (content[17] + content[18] > 0)
-        {
-            return new(SiemensS7Resource.Localizer["ReturnError", content[17].ToString("X2"), content[18].ToString("X2")]) { Content = new AdapterResult() { Content = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
-        }
-
-        if (content.Length >= 22)
-        {
-            //添加返回代码校验
-            if (content[21] != 0xff)
-            {
-                return new(SiemensS7Resource.Localizer["ReturnCode", content[21].ToString("X2")]) { Content = new AdapterResult() { Content = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
-            }
-        }
-
-        for (int index = 0; index < itemLen; index++)
-        {
-            if (sends[22 + (index * 12)] >= (byte)S7WordLength.Word)
-            {
-                length += ((sends[23 + (index * 12)] * 256) + sends[24 + (index * 12)]) * 2;
-            }
-            else
-            {
-                length += (sends[23 + (index * 12)] * 256) + sends[24 + (index * 12)];
-            }
-        }
-
-        if (content[20] != itemLen)
-        {
-            return new(SiemensS7Resource.Localizer["DataLengthError"]);
-        }
-
-        byte[] dataArray = new byte[length];
-        int index1 = 0;
-        int dataIndex = 0;
-        for (int index2 = 21; index2 < content.Length; index2++)
-        {
-            if (index2 + 1 < content.Length)
-            {
-                int s7len;
-                if (sends[22 + (index1 * 12)] >= (byte)S7WordLength.Word)
-                {
-                    s7len = ((sends[23 + (index1 * 12)] * 256) + sends[24 + (index1 * 12)]) * 2;
-                }
-                else
-                {
-                    s7len = (sends[23 + (index1 * 12)] * 256) + sends[24 + (index1 * 12)];
-                }
-                if (content[index2] == byte.MaxValue && content[index2 + 1] == 4)//Bit:3;Byte:4;Counter或者Timer:9
-                {
-                    Array.Copy(content.AsSegment().Array, index2 + 4, dataArray, dataIndex, s7len);
-                    index2 += s7len + 3;
-                    dataIndex += s7len;
-                    index1++;
-                }
-                else if (content[index2] == byte.MaxValue && content[index2 + 1] == 9)//Counter或者Timer:9
-                {
-                    int num = (content[index2 + 2] * 256) + content[index2 + 3];
-                    if (num % 3 == 0)
-                    {
-                        for (int index3 = 0; index3 < num / 3; index3++)
-                        {
-                            Array.Copy(content.AsSegment().Array, index2 + 5 + (3 * index3), dataArray, dataIndex, 2);
-                            dataIndex += 2;
-                        }
-                    }
-                    else
-                    {
-                        for (int index4 = 0; index4 < num / 5; index4++)
-                        {
-                            Array.Copy(content.AsSegment().Array, index2 + 7 + (5 * index4), dataArray, dataIndex, 2);
-                            dataIndex += 2;
-                        }
-                    }
-                    index2 += num + 4;
-                    index1++;
-                }
-                else
-                {
-                    return new(SiemensS7Resource.Localizer["ValidateDataError", content[index2], GetCpuError(content[index2])])
-                    { Content = new AdapterResult() { Content = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
-                }
-            }
-        }
-        return new() { Content = new AdapterResult() { Content = dataArray, FilterResult = FilterResult.Success } }; ;
-    }
-
-    internal static OperResult<AdapterResult> AnalysisWrite(IByteBlock content)
-    {
-        if (content.Length < 22 || content[21] != byte.MaxValue)
-        {
-            if (content.Length < 22)
-                return new("ValidateDataError") { Content = new AdapterResult() { Content = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
-            return new(SiemensS7Resource.Localizer["ValidateDataError", content[21], GetCpuError(content[21])])
-            { Content = new AdapterResult() { Content = Array.Empty<byte>(), FilterResult = FilterResult.Success } };
-        }
-        else
-        {
-            return new() { Content = new AdapterResult() { Content = Array.Empty<byte>(), FilterResult = FilterResult.Success } }; ;
-        }
-    }
-
-    #endregion 验证
-
     public static List<List<SiemensAddress>> GroupByLength(SiemensAddress[] a, int pduLength)
     {
         List<List<SiemensAddress>> groups = new List<List<SiemensAddress>>();
@@ -239,13 +111,10 @@ internal partial class SiemensHelper
                 inBytes
                 )).ConfigureAwait(false);
         }
-        return await plc.WriteAsync(address, DataTransUtil.SpliceArray<byte>(
-        [
-    (byte) value.Length
-        ], inBytes)).ConfigureAwait(false);
+        return await plc.WriteAsync(address, DataTransUtil.SpliceArray([(byte)value.Length], inBytes)).ConfigureAwait(false);
     }
 
-    private static string GetCpuError(ushort Error)
+    internal static string GetCpuError(ushort Error)
     {
         return Error switch
         {

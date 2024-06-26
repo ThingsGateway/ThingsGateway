@@ -21,18 +21,18 @@ internal class S7Send : ISendMessage
 
     public int MaxLength => 2048;
 
-    private SiemensAddress? SiemensAddress;
-    private bool? Read;
-    private bool? IsBit;
-    private bool? Handshake;
-    private byte[]? HandshakeBytes;
+    internal SiemensAddress[]? SiemensAddress;
+    internal bool Read;
+    internal bool IsBit;
+    internal bool Handshake;
+    internal byte[] HandshakeBytes;
 
-    public S7Send(SiemensAddress? siemensAddress = null, bool? read = null, bool? isBit = null, bool? handshake = null, byte[]? handshakeBytes = default)
+    public S7Send(SiemensAddress[]? siemensAddress = null, bool? read = null, bool? isBit = null, bool? handshake = null, byte[]? handshakeBytes = default)
     {
         SiemensAddress = siemensAddress;
-        Read = read;
-        IsBit = isBit;
-        Handshake = handshake;
+        Read = read ?? false;
+        IsBit = isBit ?? false;
+        Handshake = handshake ?? false;
         HandshakeBytes = handshakeBytes;
     }
 
@@ -135,11 +135,11 @@ internal class S7Send : ISendMessage
         }
         if (Read == true)
         {
-            GetReadCommand(ref byteBlock, [SiemensAddress]);
+            GetReadCommand(ref byteBlock, SiemensAddress);
         }
         else
         {
-            GetWriteByteCommand(ref byteBlock, SiemensAddress, IsBit ?? false);
+            GetWriteByteCommand(ref byteBlock, SiemensAddress[0], IsBit);
         }
     }
 }

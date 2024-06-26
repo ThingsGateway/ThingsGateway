@@ -49,7 +49,7 @@ internal static class PackHelper
             {
                 // 解析SiemensAddress对象
                 var s7Address = SiemensAddress.ParseFrom(it.RegisterAddress);
-                var lastLen = it.DataType.GetByteLength();
+                int lastLen = it.DataType.GetByteLength();
 
                 // 处理特殊情况下的长度
                 if (lastLen <= 0)
