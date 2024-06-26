@@ -17,7 +17,7 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <summary>
 /// ChannelEventHandler
 /// </summary>
-public delegate ValueTask<OperResult> ModbusServerWriteEventHandler(ModbusRequest modbusRequest, IThingsGatewayBitConverter bitConverter, IClientChannel channel);
+public delegate ValueTask<OperResult> ModbusServerWriteEventHandler(ModbusAddress modbusAddress, IThingsGatewayBitConverter bitConverter, IClientChannel channel);
 
 /// <inheritdoc/>
 public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
@@ -218,7 +218,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
         {
             var requestInfo = e.RequestInfo;
             bool modbusRtu = false;
-            ModbusRequest modbusAddress = default;
+            ModbusRequest modbusRequest = default;
             ReadOnlyMemory<byte> Bytes = default;
             //接收外部报文
             if (requestInfo is ModbusRtuSlaveMessage modbusRtuSlaveMessage)
@@ -227,7 +227,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                 {
                     return;
                 }
-                modbusAddress = modbusRtuSlaveMessage.Request;
+                modbusRequest = modbusRtuSlaveMessage.Request;
                 Bytes = modbusRtuSlaveMessage.Bytes;
                 modbusRtu = true;
             }
@@ -237,14 +237,14 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                 {
                     return;
                 }
-                modbusAddress = modbusTcpSlaveMessage.Request;
+                modbusRequest = modbusTcpSlaveMessage.Request;
                 Bytes = modbusTcpSlaveMessage.Bytes;
                 modbusRtu = false;
             }
 
-            if (modbusAddress.FunctionCode <= 4)
+            if (modbusRequest.FunctionCode <= 4)
             {
-                var data = this.ModbusRequest(modbusAddress, true);
+                var data = this.ModbusRequest(modbusRequest, true);
                 if (data.IsSuccess)
                 {
                     ValueByteBlock valueByteBlock = new(1024);
@@ -253,9 +253,9 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                         if (modbusRtu)
                         {
                             valueByteBlock.Write(Bytes.Slice(0, 2).Span);
-                            if (modbusAddress.FunctionCode == 1 || modbusAddress.FunctionCode == 2)
+                            if (modbusRequest.FunctionCode == 1 || modbusRequest.FunctionCode == 2)
                             {
-                                valueByteBlock.WriteByte((byte)modbusAddress.Length);
+                                valueByteBlock.WriteByte((byte)modbusRequest.Length);
                                 valueByteBlock.Write(data.Content.Span);
                             }
                             else
@@ -269,9 +269,9 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                         else
                         {
                             valueByteBlock.Write(Bytes.Slice(0, 8).Span);
-                            if (modbusAddress.FunctionCode == 1 || modbusAddress.FunctionCode == 2)
+                            if (modbusRequest.FunctionCode == 1 || modbusRequest.FunctionCode == 2)
                             {
-                                valueByteBlock.WriteByte((byte)modbusAddress.Length);
+                                valueByteBlock.WriteByte((byte)modbusRequest.Length);
                                 valueByteBlock.Write(data.Content.Span);
                             }
                             else
@@ -295,18 +295,19 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
             }
             else//写入
             {
-                if (modbusAddress.FunctionCode == 5)
+                if (modbusRequest.FunctionCode == 5)
                 {
                     //写入继电器
                     if (this.WriteData != null)
                     {
+                        var modbusAddress = new ModbusAddress(modbusRequest) { WriteFunctionCode = modbusRequest.FunctionCode, FunctionCode = 1 };
                         // 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
                         if ((await this.WriteData(modbusAddress, this.ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
                         {
                             await WriteSuccess(modbusRtu, client, Bytes, e);
                             if (this.IsWriteMemory)
                             {
-                                var result = this.ModbusRequest(modbusAddress, false);
+                                var result = this.ModbusRequest(modbusRequest, false);
                                 if (result.IsSuccess)
                                     await WriteSuccess(modbusRtu, client, Bytes, e);
                                 else
@@ -323,7 +324,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                     else
                     {
                         //写入内存区
-                        var result = this.ModbusRequest(modbusAddress, false);
+                        var result = this.ModbusRequest(modbusRequest, false);
                         if (result.IsSuccess)
                         {
                             await WriteSuccess(modbusRtu, client, Bytes, e);
@@ -339,11 +340,12 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                     //写入寄存器
                     if (this.WriteData != null)
                     {
+                        var modbusAddress = new ModbusAddress(modbusRequest) { WriteFunctionCode = modbusRequest.FunctionCode, FunctionCode = 3 };
                         if ((await this.WriteData(modbusAddress, this.ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
                         {
                             if (this.IsWriteMemory)
                             {
-                                var result = this.ModbusRequest(modbusAddress, false);
+                                var result = this.ModbusRequest(modbusRequest, false);
                                 if (result.IsSuccess)
                                     await WriteSuccess(modbusRtu, client, Bytes, e);
                                 else
@@ -359,7 +361,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                     }
                     else
                     {
-                        var result = this.ModbusRequest(modbusAddress, false);
+                        var result = this.ModbusRequest(modbusRequest, false);
                         if (result.IsSuccess)
                         {
                             await WriteSuccess(modbusRtu, client, Bytes, e);

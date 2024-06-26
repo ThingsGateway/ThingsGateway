@@ -25,6 +25,16 @@ public class ModbusAddress : ModbusRequest
     {
     }
 
+    public ModbusAddress(ModbusRequest modbusAddress)
+    {
+        this.StartAddress = modbusAddress.StartAddress;
+        this.Data = modbusAddress.Data;
+        this.FunctionCode = modbusAddress.FunctionCode;
+        this.Length = modbusAddress.Length;
+        this.Station = modbusAddress.Station;
+        this.StartAddress = modbusAddress.StartAddress;
+    }
+
     public ModbusAddress(ModbusAddress modbusAddress)
     {
         this.StartAddress = modbusAddress.StartAddress;

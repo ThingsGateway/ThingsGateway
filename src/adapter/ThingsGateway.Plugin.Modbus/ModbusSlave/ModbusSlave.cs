@@ -166,11 +166,11 @@ public class ModbusSlave : BusinessBase
     /// <param name="thingsGatewayBitConverter"></param>
     /// <param name="client"></param>
     /// <returns></returns>
-    private async ValueTask<OperResult> OnWriteData(ModbusAddress modbusAddress, byte[] writeValue, IThingsGatewayBitConverter bitConverter, IClientChannel channel)
+    private async ValueTask<OperResult> OnWriteData(ModbusRequest modbusRequest, IThingsGatewayBitConverter bitConverter, IClientChannel channel)
     {
         try
         {
-            var tag = _modbusTags.FirstOrDefault(a => a.Key?.AddressStart == modbusAddress.AddressStart && a.Key?.Station == modbusAddress.Station && a.Key?.ReadFunction == modbusAddress.ReadFunction);
+            var tag = _modbusTags.FirstOrDefault(a => a.Key?.StartAddress == modbusRequest.StartAddress && a.Key?.Station == modbusRequest.Station && a.Key?.FunctionCode == modbusRequest.FunctionCode);
             if (tag.Value == null) return OperResult.Success;
             var enable = tag.Value.GetPropertyValue(DeviceId, nameof(_variablePropertys.VariableRpcEnable)).ToBoolean(false) && _driverPropertys.DeviceRpcEnable;
             if (!enable) return new OperResult(Localizer["NotWriteEnable"]);
@@ -178,7 +178,8 @@ public class ModbusSlave : BusinessBase
             var addressStr = tag.Value.GetPropertyValue(DeviceId, nameof(ModbusSlaveVariableProperty.ServiceAddress));
 
             var thingsGatewayBitConverter = bitConverter.GetTransByAddress(ref addressStr);
-            var data = thingsGatewayBitConverter.GetDataFormBytes(_plc, addressStr, writeValue, 0, Enum.TryParse(type, out DataTypeEnum dataType) ? dataType : tag.Value.DataType);
+            var writeData = modbusRequest.Data.ToArray();
+            var data = thingsGatewayBitConverter.GetDataFormBytes(_plc, addressStr, writeData, 0, Enum.TryParse(type, out DataTypeEnum dataType) ? dataType : tag.Value.DataType);
             var result = await tag.Value.SetValueToDeviceAsync(data.ToSystemTextJsonString(),
                     $"{nameof(ModbusSlave)}-{CurrentDevice.Name}-{$"{channel}"}").ConfigureAwait(false);
             return result;
