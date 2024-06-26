@@ -37,7 +37,7 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     public string Password { get; set; }
 
     /// <inheritdoc/>
-    public string Station { get; set; }
+    public string Station { get; set; } = "111111111111";
 
     /// <summary>
     /// 默认Dtu注册包,utf-8字符串
@@ -394,8 +394,6 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
     {
         try
         {
-            if (Station.IsNullOrEmpty()) Station = string.Empty;
-            if (Station.Length < 12) Station = Station.PadLeft(12, '0');
             string str = $"04000C{level + 1:D2}";
 
             var bytes = DataTransUtil.SpliceArray(str.HexStringToBytes().Reverse().ToArray()

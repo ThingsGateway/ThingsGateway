@@ -73,7 +73,7 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
         int sendHeadCodeIndex = Dlt645_2007Send.SendHeadCodeIndex;
 
         var pos = byteBlock.Position - HeaderLength;
-        var endIndex = HeaderLength + BodyLength + HeadCodeIndex;
+        var endIndex = HeaderLength + BodyLength;
         if (byteBlock[endIndex - 1] == 0x16)
         {
             //检查校验码
@@ -88,7 +88,7 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
                 return FilterResult.Success;
             }
             Response.Station = byteBlock.Span.Slice(HeadCodeIndex + 1, 6).ToArray();
-            if (Response.Station.SequenceEqual(Request.Station))//设备地址不符合时，返回错误
+            if (!Response.Station.SequenceEqual(Request.Station))//设备地址不符合时，返回错误
             {
                 if (!Request.Station.SequenceEqual(ReadStation))//读写通讯地址例外
                 {
@@ -117,7 +117,7 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
             if (Dlt645_2007Send.ControlCode == ControlCode.Read || Dlt645_2007Send.ControlCode == ControlCode.Write)
             {
                 //数据标识不符合时，返回错误
-                Response.DataId = byteBlock.Span.Slice(HeadCodeIndex + 10, 4).ToArray();
+                Response.DataId = byteBlock.Span.Slice(HeadCodeIndex + 10, 4).ToArray().BytesAdd(-0x33);
                 if (!Response.DataId.SequenceEqual(Request.DataId))
                 {
                     this.ErrorMessage = DltResource.Localizer["DataIdNotSame"];

@@ -8,29 +8,46 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation.Dlt645;
+namespace ThingsGateway.Foundation.SiemensS7;
 
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class Dlt645_2007Request
+public class S7Request
 {
     #region Request
 
     /// <summary>
-    /// 数据标识
+    /// bit位偏移
     /// </summary>
-    public byte[] DataId { get; set; } = Array.Empty<byte>();
+    public byte BitCode { get; set; }
 
     /// <summary>
-    /// 反转解析
+    /// 数据块代码
     /// </summary>
-    public bool Reverse { get; set; } = true;
+    public byte DataCode { get; set; }
 
     /// <summary>
-    /// 站号信息
+    /// DB块数据信息
     /// </summary>
-    public byte[] Station { get; set; } = Array.Empty<byte>();
+    public ushort DbBlock { get; set; }
+
+    /// <summary>
+    /// IsString，默认是true，如果是char[],需要填写W=false;
+    /// </summary>
+    public bool IsString { get; set; } = true;
+
+    /// <summary>
+    /// Length
+    /// </summary>
+    public int Length { get; set; }
+
+    public int AddressStart { get; set; }
+
+    /// <summary>
+    /// 写入数据
+    /// </summary>
+    public ReadOnlyMemory<byte> Data { get; set; }
 
     #endregion Request
 }

@@ -8,29 +8,15 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation.Dlt645;
+namespace ThingsGateway.Foundation.SiemensS7;
 
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class Dlt645_2007Request
+internal class S7Response : S7Request
 {
-    #region Request
-
     /// <summary>
-    /// 数据标识
+    /// 错误码
     /// </summary>
-    public byte[] DataId { get; set; } = Array.Empty<byte>();
-
-    /// <summary>
-    /// 反转解析
-    /// </summary>
-    public bool Reverse { get; set; } = true;
-
-    /// <summary>
-    /// 站号信息
-    /// </summary>
-    public byte[] Station { get; set; } = Array.Empty<byte>();
-
-    #endregion Request
+    public byte? ErrorCode { get; set; }
 }
