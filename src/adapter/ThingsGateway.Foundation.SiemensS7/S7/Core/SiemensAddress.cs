@@ -19,34 +19,22 @@ namespace ThingsGateway.Foundation.SiemensS7;
 /// <summary>
 /// 西门子PLC地址数据信息
 /// </summary>
-public class SiemensAddress
+public class SiemensAddress : S7Request
 {
-    /// <summary>
-    /// bit位偏移
-    /// </summary>
-    public byte BitCode { get; set; }
+    public SiemensAddress()
+    {
+    }
 
-    /// <summary>
-    /// 数据块代码
-    /// </summary>
-    public byte DataCode { get; set; }
-
-    /// <summary>
-    /// DB块数据信息
-    /// </summary>
-    public ushort DbBlock { get; set; }
-
-    /// <summary>
-    /// IsString，默认是true，如果是char[],需要填写W=false;
-    /// </summary>
-    public bool IsString { get; set; } = true;
-
-    /// <summary>
-    /// Length
-    /// </summary>
-    public int Length { get; set; }
-
-    public int AddressStart { get; set; }
+    public SiemensAddress(SiemensAddress siemensAddress)
+    {
+        this.AddressStart = siemensAddress.AddressStart;
+        this.BitCode = siemensAddress.BitCode;
+        this.DataCode = siemensAddress.DataCode;
+        this.DbBlock = siemensAddress.DbBlock;
+        this.Data = siemensAddress.Data;
+        this.IsString = siemensAddress.IsString;
+        this.Length = siemensAddress.Length;
+    }
 
     /// <inheritdoc />
     public override string ToString()
@@ -88,7 +76,7 @@ public class SiemensAddress
         return DataCode == (byte)S7Area.DB ? $"DB{DbBlock}.{GetStringAddress(AddressStart)}{(IsString ? ";" : ";W=false;")}" : AddressStart.ToString() + (IsString ? ";" : ";W=false;");
     }
 
-    private static string GetStringAddress(int addressStart)
+    private string GetStringAddress(int addressStart)
     {
         return addressStart % 8 == 0 ? (addressStart / 8).ToString() : $"{addressStart / 8}.{addressStart % 8}";
     }

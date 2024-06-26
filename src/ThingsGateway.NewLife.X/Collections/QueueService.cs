@@ -71,7 +71,7 @@ public class QueueService<T> : IQueueService<T>
             foreach (var item in clients)
             {
                 var queue = item.Value;
-                rs += queue.Add(new[] { value });
+                rs += queue.Add([value]);
             }
         }
 

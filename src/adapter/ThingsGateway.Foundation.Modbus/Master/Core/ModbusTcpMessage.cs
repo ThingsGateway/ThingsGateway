@@ -16,17 +16,79 @@ namespace ThingsGateway.Foundation.Modbus;
 internal class ModbusTcpMessage : MessageBase, IResultMessage
 {
     /// <inheritdoc/>
-    public override int HeadBytesLength => 6;
+    public override int HeaderLength => 9;
 
-    /// <inheritdoc/>
-    public override bool CheckHeadBytes(byte[]? headBytes)
+    public ModbusResponse Response { get; set; } = new();
+
+    public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
     {
-        if (headBytes == null || headBytes.Length <= 0) return false;
+        this.Sign = byteBlock.ReadUInt16(EndianType.Big);
+        byteBlock.Position += 2;
+        this.BodyLength = byteBlock.ReadUInt16(EndianType.Big) - 3;
+        Response.Station = byteBlock.ReadByte();
+        bool error = false;
+        var code = byteBlock.ReadByte();
+        if ((code & 0x80) == 0)
+        {
+            Response.FunctionCode = code;
+        }
+        else
+        {
+            code = code.SetBit(7, false);
+            Response.FunctionCode = code;
+            error = true;
+        }
 
-        int num = (headBytes[4] * 256) + headBytes[5];
-        if (num > 0xff + 3) return false;
-        BodyLength = num;
+        if (error)
+        {
+            Response.ErrorCode = byteBlock.ReadByte();
+            this.OperCode = Response.ErrorCode;
+            this.ErrorMessage = ModbusHelper.GetDescriptionByErrorCode(Response.ErrorCode.Value);
+            return true;
+        }
+        else
+        {
+            if (Response.FunctionCode <= 4)
+            {
+                Response.Length = byteBlock.ReadByte();
+            }
+            else
+            {
+                Response.StartAddress = byteBlock.ReadUInt16();
+            }
+            return true;
+        }
+    }
 
-        return true;
+    public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
+    {
+        if (Response.ErrorCode.HasValue)
+        {
+            return FilterResult.Success;
+        }
+
+        if (Response.FunctionCode <= 4)
+        {
+            this.Content = byteBlock.ToArrayTake(BodyLength);
+            Response.Data = this.Content;
+            return FilterResult.Success;
+        }
+        else if (Response.FunctionCode == 5 || Response.FunctionCode == 6)
+        {
+            byteBlock.Position = HeaderLength - 1;
+            Response.StartAddress = byteBlock.ReadUInt16();
+            this.Content = byteBlock.ToArrayTake(BodyLength - 1);
+            Response.Data = this.Content;
+            return FilterResult.Success;
+        }
+        else if (Response.FunctionCode == 15 || Response.FunctionCode == 16)
+        {
+            byteBlock.Position = HeaderLength - 1;
+            Response.StartAddress = byteBlock.ReadUInt16(EndianType.Big);
+            Response.Length = byteBlock.ReadUInt16(EndianType.Big);
+            this.Content = Array.Empty<byte>();
+            return FilterResult.Success;
+        }
+        return FilterResult.GoOn;
     }
 }

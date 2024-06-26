@@ -89,8 +89,8 @@ internal static class S7DateTime
 
         int DayOfWeekToInt(DayOfWeek dayOfWeek) => (int)dayOfWeek + 1;
 
-        return new[]
-        {
+        return
+        [
             EncodeBcd(MapYear(dateTime.Year)),
             EncodeBcd(dateTime.Month),
             EncodeBcd(dateTime.Day),
@@ -99,7 +99,7 @@ internal static class S7DateTime
             EncodeBcd(dateTime.Second),
             EncodeBcd(dateTime.Millisecond / 10),
             (byte) (dateTime.Millisecond % 10 << 4 | DayOfWeekToInt(dateTime.DayOfWeek))
-        };
+        ];
     }
 
     /// <summary>

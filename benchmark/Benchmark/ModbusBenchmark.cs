@@ -46,18 +46,23 @@ public class ModbusBenchmark : IDisposable
             };
             thingsgatewaymodbus.Channel.Connect();
         }
-        //{
-        //    var clientConfig = new TouchSocket.Core.TouchSocketConfig().SetRemoteIPHost("127.0.0.1:502");
-        //    modbusTcpMaster = new();
-        //    modbusTcpMaster.Setup(clientConfig);
-        //    modbusTcpMaster.Connect();
-        //}
-        //TcpClient client = new TcpClient("127.0.0.1", 502);
-        //var factory = new NModbus.ModbusFactory();
-        //nmodbus = factory.CreateMaster(client);
+        {
+            var clientConfig = new TouchSocket.Core.TouchSocketConfig().SetRemoteIPHost("127.0.0.1:502");
+            modbusTcpMaster = new();
+            modbusTcpMaster.Setup(clientConfig);
+            modbusTcpMaster.Connect();
+        }
+        TcpClient client = new TcpClient("127.0.0.1", 502);
+        var factory = new NModbus.ModbusFactory();
+        nmodbus = factory.CreateMaster(client);
 
-        modbusTcpNet = new("127.0.0.1", 503);
+        modbusTcpNet = new("127.0.0.1", 502);
         modbusTcpNet.ConnectServer();
+
+        thingsgatewaymodbus.ReadAsync("40001", 100).GetFalseAwaitResult();
+        nmodbus.ReadHoldingRegistersAsync(1, 0, 100).GetFalseAwaitResult();
+        modbusTcpMaster.ReadHoldingRegistersAsync(1, 0, 100, 3000, CancellationToken.None).GetFalseAwaitResult();
+        modbusTcpNet.ReadAsync("0", 100).GetFalseAwaitResult();
     }
 
     //[Benchmark]
@@ -125,6 +130,29 @@ public class ModbusBenchmark : IDisposable
                 throw new Exception(result.ToString());
             }
         }
+    }
+
+    [Benchmark]
+    public async Task NModbus4()
+    {
+        List<Task> tasks = new List<Task>();
+        for (int i = 0; i < Program.NumberOfItems; i++)
+        {
+            var result = await nmodbus.ReadHoldingRegistersAsync(1, 0, 100);
+        }
+        await Task.WhenAll(tasks);
+    }
+
+    [Benchmark]
+    public async Task TouchSocket()
+    {
+        List<Task> tasks = new List<Task>();
+        for (int i = 0; i < Program.NumberOfItems; i++)
+        {
+            var result = await modbusTcpMaster.ReadHoldingRegistersAsync(1, 0, 100, 3000, CancellationToken.None);
+        }
+
+        await Task.WhenAll(tasks);
     }
 
     [Benchmark]

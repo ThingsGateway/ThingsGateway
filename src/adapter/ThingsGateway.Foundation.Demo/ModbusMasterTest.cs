@@ -145,7 +145,7 @@ internal class ModbusMasterTest
             //源生成WriteData1与WriteData2方法(Write{属性名称})
             await modbusVariable.WriteData3Async("123", default);
             await modbusVariable.WriteData2Async(1, default);
-            await modbusVariable.WriteData1Async(new ushort[] { 1, 2 }, default);
+            await modbusVariable.WriteData1Async([1, 2], default);
 
             //执行连读
             await modbusVariable.MultiReadAsync();

@@ -68,7 +68,7 @@ public static class DataTypeExtensions
     /// </summary>
     /// <param name="coreDataType"></param>
     /// <returns></returns>
-    public static int GetByteLength(this DataTypeEnum coreDataType)
+    public static byte GetByteLength(this DataTypeEnum coreDataType)
     {
         return coreDataType switch
         {
@@ -82,6 +82,7 @@ public static class DataTypeExtensions
             DataTypeEnum.UInt64 => 8,
             DataTypeEnum.Single => 4,
             DataTypeEnum.Double => 8,
+            DataTypeEnum.Decimal => 16,
             _ => 0,
         };
     }

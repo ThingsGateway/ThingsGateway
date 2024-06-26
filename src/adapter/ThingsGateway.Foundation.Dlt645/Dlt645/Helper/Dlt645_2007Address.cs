@@ -21,7 +21,7 @@ namespace ThingsGateway.Foundation.Dlt645;
 /// <summary>
 /// Dlt645_2007Address
 /// </summary>
-public class Dlt645_2007Address
+public class Dlt645_2007Address : Dlt645_2007Request
 {
     /// <summary>
     /// <inheritdoc/>
@@ -30,20 +30,25 @@ public class Dlt645_2007Address
     {
     }
 
-    /// <summary>
-    /// 数据标识
-    /// </summary>
-    public byte[] DataId { get; set; } = Array.Empty<byte>();
+    public Dlt645_2007Address(Dlt645_2007Address dlt645_2007Address)
+    {
+        this.SocketId = dlt645_2007Address.SocketId;
+        this.DataId = dlt645_2007Address.DataId;
+        this.Reverse = dlt645_2007Address.Reverse;
+        this.Station = dlt645_2007Address.Station;
+    }
 
-    /// <summary>
-    /// 反转解析
-    /// </summary>
-    public bool Reverse { get; set; } = true;
+    public void SetStation(string station)
+    {
+        if (station.Length < 12)
+            station = station.PadLeft(12, '0');
+        Station = station.HexStringToBytes().Reverse().ToArray();
+    }
 
-    /// <summary>
-    /// 站号信息
-    /// </summary>
-    public byte[] Station { get; set; } = Array.Empty<byte>();
+    public void SetDataId(string dataId)
+    {
+        DataId = dataId.HexStringToBytes().Reverse().ToArray();
+    }
 
     /// <summary>
     /// 作为Slave时需提供的SocketId，用于分辨Socket客户端，通常对比的是初始链接时的注册包
@@ -78,26 +83,21 @@ public class Dlt645_2007Address
     /// </summary>
     public static Dlt645_2007Address ParseFrom(string address, string defaultStation = null, string dtuid = null, bool isCache = true)
     {
-        var cacheKey = $"{nameof(ParseFrom)}_{typeof(Dlt645_2007Address).FullName}_{typeof(Dlt645_2007Address).TypeHandle.Value}_{address}";
+        var cacheKey = $"{nameof(ParseFrom)}_{typeof(Dlt645_2007Address).FullName}_{typeof(Dlt645_2007Address).TypeHandle.Value}_{address}_{defaultStation}_{dtuid}";
         if (isCache)
             if (MemoryCache.Instance.TryGetValue(cacheKey, out Dlt645_2007Address dAddress))
-                return dAddress;
+                return new(dAddress);
 
         Dlt645_2007Address dlt645_2007Address = new();
-        if (defaultStation != null)
+        if (!defaultStation.IsNullOrEmpty())
         {
-            if (defaultStation.IsNullOrEmpty()) defaultStation = string.Empty;
-            if (defaultStation.Length < 12)
-                defaultStation = defaultStation.PadLeft(12, '0');
-            dlt645_2007Address.Station = defaultStation.ByHexStringToBytes().Reverse().ToArray();
+            dlt645_2007Address.SetStation(defaultStation);
         }
         if (dtuid != null)
             dlt645_2007Address.SocketId = dtuid;
-        byte[] array;
-        array = Array.Empty<byte>();
         if (address.IndexOf(';') < 0)
         {
-            array = address.ByHexStringToBytes().Reverse().ToArray();
+            dlt645_2007Address.SetDataId(address);
         }
         else
         {
@@ -108,10 +108,9 @@ public class Dlt645_2007Address
                 if (strArray[index].ToUpper().StartsWith("S="))
                 {
                     var station = strArray[index].Substring(2);
-                    if (station.IsNullOrEmpty()) station = string.Empty;
                     if (station.Length < 12)
                         station = station.PadLeft(12, '0');
-                    dlt645_2007Address.Station = station.ByHexStringToBytes().Reverse().ToArray();
+                    dlt645_2007Address.Station = station.HexStringToBytes().Reverse().ToArray();
                 }
                 else if (strArray[index].Contains("R="))
                 {
@@ -123,15 +122,14 @@ public class Dlt645_2007Address
                 }
                 else if (!strArray[index].Contains("="))
                 {
-                    array = strArray[index].ByHexStringToBytes().Reverse().ToArray();
+                    dlt645_2007Address.SetDataId(strArray[index]);
                 }
             }
         }
-        dlt645_2007Address.DataId = array;
 
         if (isCache)
             MemoryCache.Instance.Set(cacheKey, dlt645_2007Address, 3600);
 
-        return dlt645_2007Address;
+        return new(dlt645_2007Address);
     }
 }

@@ -71,7 +71,7 @@ public class TimerScheduler
     private Thread? thread;
     private Int32 _tid;
 
-    private TimerX[] Timers = new TimerX[0];
+    private TimerX[] Timers = [];
 
     #endregion 属性
 

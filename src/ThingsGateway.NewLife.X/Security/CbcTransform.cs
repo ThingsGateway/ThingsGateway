@@ -129,7 +129,7 @@ public sealed class CbcTransform : ICryptoTransform
     /// <exception cref="ArgumentException"></exception>
     public Byte[] TransformFinalBlock(Byte[] inputBuffer, Int32 inputOffset, Int32 inputCount)
     {
-        if (inputCount == 0) return new Byte[0];
+        if (inputCount == 0) return [];
 
         var blocks = inputCount / InputBlockSize;
         var output = new Byte[blocks * OutputBlockSize];

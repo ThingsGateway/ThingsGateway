@@ -18,31 +18,27 @@ public class CRC16Utils
     /// <summary>
     /// 通过指定多项式码来获取对应的数据的CRC校验码
     /// </summary>
-    /// <param name="memory">需要校验的数据，不包含CRC字节</param>
+    /// <param name="bytes">需要校验的数据，不包含CRC字节</param>
     /// <returns>返回带CRC校验码的字节数组，可用于串口发送</returns>
-    public static byte[] Crc16Only(ReadOnlyMemory<byte> memory)
+    public static byte[] Crc16Only(ReadOnlySpan<byte> bytes)
     {
-        return Crc16Only(memory, 0xA001);
+        return Crc16Only(bytes, 0xA001);
     }
 
     /// <summary>
     /// 通过指定多项式码来获取对应的数据的CRC校验码
     /// </summary>
-    /// <param name="memory">需要校验的数据，不包含CRC字节</param>
+    /// <param name="bytes">需要校验的数据，不包含CRC字节</param>
     /// <param name="xdapoly">多项式</param>
     /// <param name="crc16">crc16</param>
     /// <returns>返回带CRC校验码的字节数组，可用于串口发送</returns>
-    public static byte[] Crc16Only(ReadOnlyMemory<byte> memory, int xdapoly, bool crc16 = true)
+    public static byte[] Crc16Only(ReadOnlySpan<byte> bytes, int xdapoly, bool crc16 = true)
     {
-        var memoryArray = memory.GetArray();
-
-        byte[] data = memoryArray.Array;
-        int offset = memoryArray.Offset;
-        int length = memoryArray.Count;
+        int length = bytes.Length;
         int num = 0xFFFF;
-        for (int i = offset; i < length; i++)
+        for (int i = 0; i < length; i++)
         {
-            num = (num >> ((!crc16) ? 8 : 0)) ^ data[i];
+            num = (num >> ((!crc16) ? 8 : 0)) ^ bytes[i];
             for (int j = 0; j < 8; j++)
             {
                 int num2 = num & 1;
@@ -54,14 +50,14 @@ public class CRC16Utils
             }
         }
 
-        return (!crc16) ? new byte[2]
-        {
+        return (!crc16) ?
+        [
             (byte)(num >> 8),
             (byte)((uint)num & 0xFFu)
-        } : new byte[2]
-        {
+        ] :
+        [
             (byte)((uint)num & 0xFFu),
             (byte)(num >> 8)
-        };
+        ];
     }
 }

@@ -16,55 +16,124 @@ namespace ThingsGateway.Foundation.Modbus;
 internal class ModbusRtuMessage : MessageBase, IResultMessage
 {
     /// <inheritdoc/>
-    public override int HeadBytesLength => 3;
+    public override int HeaderLength => 3;
 
-    public ReadOnlyMemory<byte> SendBytes { get; set; }
+    public ModbusAddress? Request { get; set; }
 
-    public override void SendInfo(ReadOnlyMemory<byte> sendBytes)
+    public ModbusResponse Response { get; set; } = new();
+
+    public override void SendInfo(ISendMessage sendMessage)
     {
-        SendBytes = sendBytes;
+        Request = (sendMessage as ModbusRtuSend).ModbusAddress;
     }
 
-    /// <inheritdoc/>
-    public override bool CheckHeadBytes(byte[]? headBytes)
+    public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
     {
-        if (headBytes == null || headBytes.Length <= 0) return false;
-        //01 03 02 00 01 xx xx
-        //01 04 02 00 01 xx xx
-        //01 01 02 00 01 xx xx
-        //01 02 02 00 01 xx xx
-        //01 05 00 00 00 00 xx xx
-        //01 06 00 00 00 00 xx xx
-        //01 0f 00 00 00 01 xx xx
-        //01 10 00 00 00 01 xx xx
-
-        //modbusRtu 读取
-        if (headBytes[1] <= 0x04)
+        Response.Station = byteBlock.ReadByte();
+        bool error = false;
+        var code = byteBlock.ReadByte();
+        if ((code & 0x80) == 0)
         {
-            int num = (headBytes[2]);
-            if (num > 0xff - 4) return false;
-            BodyLength = num + 2; //数据区+crc
+            Response.FunctionCode = code;
         }
         else
         {
-            if (headBytes[1] <= 0x10)
-            {
-                //modbusRtu 写入
-                BodyLength = 3 + 2; //数据区+crc
-            }
-            else
-            {
-                BodyLength = 0 + 2; //数据区+crc
-            }
+            code = code.SetBit(7, false);
+            Response.FunctionCode = code;
+            error = true;
         }
 
-        if (SendBytes.Length > 0)
+        if (error)
         {
+            Response.ErrorCode = byteBlock.ReadByte();
+            this.OperCode = Response.ErrorCode;
+            this.ErrorMessage = ModbusHelper.GetDescriptionByErrorCode(Response.ErrorCode.Value);
+            BodyLength = 2;
             return true;
         }
         else
         {
-            return false;//不是主动请求的，直接放弃
+            //验证发送/返回站号与功能码
+            //站号验证
+            if (Request.Station != Response.Station)
+            {
+                this.OperCode = -1;
+                Response.ErrorCode = 1;
+                this.ErrorMessage = ModbusResource.Localizer["StationNotSame", Request.Station, Response.Station];
+                return true;
+            }
+            if (Response.FunctionCode > 4 ? Request.WriteFunctionCode != Response.FunctionCode : Request.FunctionCode != Response.FunctionCode)
+            {
+                this.OperCode = -1;
+                Response.ErrorCode = 1;
+                this.ErrorMessage = ModbusResource.Localizer["FunctionNotSame", Request.FunctionCode, Response.FunctionCode];
+                return true;
+            }
+
+            if (Response.FunctionCode == 5 || Response.FunctionCode == 6)
+            {
+                BodyLength = 5;
+                return true;
+            }
+            else if (Response.FunctionCode == 15 || Response.FunctionCode == 16)
+            {
+                BodyLength = 5;
+                return true;
+            }
+            else if (Response.FunctionCode <= 4)
+            {
+                Response.Length = byteBlock.ReadByte();
+                BodyLength = Response.Length + 2; //数据区+crc
+                return true;
+            }
         }
+
+        return false;
+    }
+
+    public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
+    {
+        if (Response.ErrorCode.HasValue)
+        {
+            return FilterResult.Success;
+        }
+        var pos = byteBlock.Position - HeaderLength;
+        var crcLen = 0;
+
+        if (Response.FunctionCode <= 4)
+        {
+            this.Content = byteBlock.ToArrayTake(BodyLength - 2);
+            Response.Data = this.Content;
+            crcLen = 3 + Response.Length;
+        }
+        else if (Response.FunctionCode == 5 || Response.FunctionCode == 6)
+        {
+            byteBlock.Position = HeaderLength - 1;
+            Response.StartAddress = byteBlock.ReadUInt16(EndianType.Big);
+            this.Content = byteBlock.ToArrayTake(BodyLength - 4);
+            Response.Data = this.Content;
+            crcLen = 6;
+        }
+        else if (Response.FunctionCode == 15 || Response.FunctionCode == 16)
+        {
+            byteBlock.Position = HeaderLength - 1;
+            Response.StartAddress = byteBlock.ReadUInt16(EndianType.Big);
+            Response.Length = byteBlock.ReadUInt16(EndianType.Big);
+            this.Content = Array.Empty<byte>();
+            crcLen = 6;
+        }
+
+        if (crcLen > 0)
+        {
+            var crc = CRC16Utils.Crc16Only(byteBlock.Span.Slice(pos, crcLen));
+
+            //Crc
+            var checkCrc = byteBlock.Span.Slice(pos + crcLen, 2).ToArray();
+            if (crc.SequenceEqual(checkCrc))
+            {
+                return FilterResult.Success;
+            }
+        }
+        return FilterResult.GoOn;
     }
 }

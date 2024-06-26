@@ -8,55 +8,39 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation.Dlt645;
+namespace ThingsGateway.Foundation.Modbus;
 
 /// <summary>
-/// 控制码
+/// <inheritdoc/>
 /// </summary>
-internal enum ControlCode : byte
+public class ModbusRequest
 {
-    /// <summary>
-    /// 读数据
-    /// </summary>
-    Read = 0x11,
+    #region Request
 
     /// <summary>
-    /// 读后续数据
+    /// 功能码
     /// </summary>
-    ReadSub = 0x12,
+    public byte FunctionCode { get; set; }
 
     /// <summary>
-    /// 读站号
+    /// 站号
     /// </summary>
-    ReadStation = 0x13,
+    public byte Station { get; set; }
 
     /// <summary>
-    /// 写数据
+    /// 起始位置
     /// </summary>
-    Write = 0x14,
+    public ushort StartAddress { get; set; }
 
     /// <summary>
-    /// 写站号
+    /// 读取字节数组长度
     /// </summary>
-    WriteStation = 0x15,
+    public ushort Length { get; set; } = 1;
 
     /// <summary>
-    /// 广播校时
+    /// 数据
     /// </summary>
-    BroadcastTime = 0x08,
+    public ReadOnlyMemory<byte> Data { get; set; }
 
-    /// <summary>
-    /// 冻结
-    /// </summary>
-    Freeze = 0x16,
-
-    /// <summary>
-    /// 更新波特率
-    /// </summary>
-    WriteBaudRate = 0x17,
-
-    /// <summary>
-    /// 更新密码
-    /// </summary>
-    WritePassword = 0x18,
+    #endregion Request
 }

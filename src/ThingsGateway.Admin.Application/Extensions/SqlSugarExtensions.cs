@@ -33,8 +33,7 @@ public static class SqlSugarExtensions
     public static ISugarQueryable<TEntity> ExportIgnoreColumns<TEntity>(this ISugarQueryable<TEntity> queryable)
     {
         return queryable.IgnoreColumns(
-               new string[]
-                {
+               [
            nameof(BaseEntity.Id),
            nameof(BaseEntity.CreateTime),
            nameof(BaseEntity.CreateUser),
@@ -44,7 +43,7 @@ public static class SqlSugarExtensions
            nameof(BaseEntity.UpdateTime),
            nameof(BaseEntity.UpdateUser),
            nameof(BaseEntity.UpdateUserId),
-                }
+                ]
           );
     }
 

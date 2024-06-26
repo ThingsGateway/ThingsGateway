@@ -95,7 +95,7 @@ public static class StringHelper
     public static String[] Split(this String? value, params String[] separators)
     {
         //!! netcore3.0中新增Split(String? separator, StringSplitOptions options = StringSplitOptions.None)，优先于StringHelper扩展
-        if (value == null || String.IsNullOrEmpty(value)) return new String[0];
+        if (value == null || String.IsNullOrEmpty(value)) return [];
         if (separators == null || separators.Length <= 0 || separators.Length == 1 && separators[0].IsNullOrEmpty()) separators = [",", ";"];
 
         return value.Split(separators, StringSplitOptions.RemoveEmptyEntries);
@@ -108,7 +108,7 @@ public static class StringHelper
     /// <returns></returns>
     public static Int32[] SplitAsInt(this String? value, params String[] separators)
     {
-        if (value == null || String.IsNullOrEmpty(value)) return new Int32[0];
+        if (value == null || String.IsNullOrEmpty(value)) return [];
         if (separators == null || separators.Length <= 0) separators = [",", ";"];
 
         var ss = value.Split(separators, StringSplitOptions.RemoveEmptyEntries);
@@ -291,7 +291,7 @@ public static class StringHelper
     public static Byte[] GetBytes(this String? value, Encoding? encoding = null)
     {
         //if (value == null) return null;
-        if (String.IsNullOrEmpty(value)) return new Byte[0];
+        if (String.IsNullOrEmpty(value)) return [];
 
         encoding ??= Encoding.UTF8;
         return encoding.GetBytes(value);
@@ -604,7 +604,7 @@ public static class StringHelper
     /// <returns></returns>
     public static String[] LevenshteinSearch(String key, String[] words)
     {
-        if (IsNullOrWhiteSpace(key)) return new String[0];
+        if (IsNullOrWhiteSpace(key)) return [];
 
         var keys = key.Split(new Char[] { ' ', '　' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -677,7 +677,7 @@ public static class StringHelper
     /// <returns></returns>
     public static String[] LCSSearch(String key, String[] words)
     {
-        if (IsNullOrWhiteSpace(key) || words == null || words.Length == 0) return new String[0];
+        if (IsNullOrWhiteSpace(key) || words == null || words.Length == 0) return [];
 
         var keys = key
             .Split(new Char[] { ' ', '\u3000' }, StringSplitOptions.RemoveEmptyEntries)

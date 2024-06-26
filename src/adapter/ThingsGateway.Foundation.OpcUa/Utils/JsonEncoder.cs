@@ -48,9 +48,9 @@ public class OPCUAJsonEncoder : IJsonEncoder, IEncoder, IDisposable
 
     private bool m_leaveOpen;
 
-    private static readonly char[] m_specialChars = new char[7] { '"', '\\', '\n', '\r', '\t', '\b', '\f' };
+    private static readonly char[] m_specialChars = ['"', '\\', '\n', '\r', '\t', '\b', '\f'];
 
-    private static readonly char[] m_substitution = new char[7] { '"', '\\', 'n', 'r', 't', 'b', 'f' };
+    private static readonly char[] m_substitution = ['"', '\\', 'n', 'r', 't', 'b', 'f'];
 
     public EncodingType EncodingType => EncodingType.Json;
 

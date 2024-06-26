@@ -37,7 +37,7 @@ public class JWTEncryption
     /// <summary>
     /// 刷新 Token 身份标识
     /// </summary>
-    private static readonly string[] _refreshTokenClaims = new[] { "f", "e", "s", "l", "k" };
+    private static readonly string[] _refreshTokenClaims = ["f", "e", "s", "l", "k"];
 
     /// <summary>
     /// 生成 Token
@@ -244,7 +244,7 @@ public class JWTEncryption
 
         // 处理 axios 问题
         httpContext.Response.Headers.TryGetValue(accessControlExposeKey, out var acehs);
-        httpContext.Response.Headers[accessControlExposeKey] = string.Join(',', StringValues.Concat(acehs, new StringValues(new[] { accessTokenKey, xAccessTokenKey })).Distinct());
+        httpContext.Response.Headers[accessControlExposeKey] = string.Join(',', StringValues.Concat(acehs, new StringValues([accessTokenKey, xAccessTokenKey])).Distinct());
 
         return true;
     }
@@ -482,7 +482,7 @@ public class JWTEncryption
     /// <summary>
     /// 日期类型的 Claim 类型
     /// </summary>
-    private static readonly string[] DateTypeClaimTypes = new[] { JwtRegisteredClaimNames.Iat, JwtRegisteredClaimNames.Nbf, JwtRegisteredClaimNames.Exp };
+    private static readonly string[] DateTypeClaimTypes = [JwtRegisteredClaimNames.Iat, JwtRegisteredClaimNames.Nbf, JwtRegisteredClaimNames.Exp];
 
     /// <summary>
     /// 框架 App 静态类

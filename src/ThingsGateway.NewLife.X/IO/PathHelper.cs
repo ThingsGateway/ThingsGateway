@@ -461,7 +461,7 @@ public static class PathHelper
     /// <returns></returns>
     public static String[] CopyTo(this DirectoryInfo di, String destDirName, String? exts = null, Boolean allSub = false, Action<String>? callback = null)
     {
-        if (!di.Exists) return new String[0];
+        if (!di.Exists) return [];
 
         var list = new List<String>();
 
@@ -490,7 +490,7 @@ public static class PathHelper
     public static String[] CopyToIfNewer(this DirectoryInfo di, String destDirName, String? exts = null, Boolean allSub = false, Action<String>? callback = null)
     {
         var dest = destDirName.AsDirectory();
-        if (!dest.Exists) return new String[0];
+        if (!dest.Exists) return [];
 
         var list = new List<String>();
 

@@ -29,8 +29,8 @@ public class SM4 : SymmetricAlgorithm
         KeySizeValue = 128;
         BlockSizeValue = 128;
         FeedbackSizeValue = BlockSizeValue;
-        LegalBlockSizesValue = new[] { new KeySizes(128, 128, 0) };
-        LegalKeySizesValue = new[] { new KeySizes(128, 128, 0) };
+        LegalBlockSizesValue = [new KeySizes(128, 128, 0)];
+        LegalKeySizesValue = [new KeySizes(128, 128, 0)];
 
         Mode = CipherMode.ECB;
         Padding = PaddingMode.PKCS7;
@@ -337,7 +337,7 @@ public class SM4Transform : ICryptoTransform
     /// <exception cref="ArgumentException"></exception>
     public Byte[] TransformFinalBlock(Byte[] inputBuffer, Int32 inputOffset, Int32 inputCount)
     {
-        if (inputCount == 0) return new Byte[0];
+        if (inputCount == 0) return [];
 
         var blocks = inputCount / InputBlockSize;
         var output = new Byte[blocks * OutputBlockSize];

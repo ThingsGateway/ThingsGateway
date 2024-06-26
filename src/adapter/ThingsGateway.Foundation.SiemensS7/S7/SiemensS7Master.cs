@@ -93,7 +93,7 @@ public partial class SiemensS7Master : ProtocolBase
     /// <inheritdoc/>
     public override DataHandlingAdapter GetDataAdapter()
     {
-        return new SiemensS7DataHandleAdapter()
+        return new ProtocolSingleStreamDataHandleAdapter<S7Message>()
         {
             CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
         };
@@ -105,35 +105,68 @@ public partial class SiemensS7Master : ProtocolBase
         return PackHelper.LoadSourceRead<T>(this, deviceVariables, maxPack, defaultIntervalTime);
     }
 
-    #region 读写
-
-    /// <inheritdoc/>
-    public override async ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// 此方法并不会智能分组以最大化效率，减少传输次数，因为返回值是byte[]，所以一切都按地址数组的顺序执行，最后合并数组
+    /// </summary>
+    public async ValueTask<OperResult<byte[]>> S7RequestAsync(SiemensAddress[] sAddresss, bool read, bool isBit, CancellationToken cancellationToken = default)
     {
+        var byteBlock = new ValueByteBlock(2048);
         try
         {
-            List<byte> bytes = new();
-            var commandResult = GetReadByteCommand(address, length);
-            try
+            foreach (var sAddress in sAddresss)
             {
-                foreach (var item in commandResult)
+                int num = 0;
+                var addressLen = sAddress.Length==0?1: sAddress.Length;
+                while (num < addressLen)
                 {
-                    var result = await SendThenReturnAsync(item.Memory, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    if (result.IsSuccess)
-                        bytes.AddRange(result.Content);
+                    //pdu长度，重复生成报文，直至全部生成
+                    int len = Math.Min(addressLen - num, PduLength);
+                    sAddress.Length = len;
+
+                    var result = await this.SendThenReturnAsync(
+    new S7Send([sAddress], read, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
+                    if (!result.IsSuccess|| !read) return result;
+   
+                    if (read)
+                    byteBlock.Write(result.Content);
+                    num += len;
+
+                    if (sAddress.DataCode == (byte)S7WordLength.Timer || sAddress.DataCode == (byte)S7WordLength.Counter)
+                    {
+                        sAddress.AddressStart += len / 2;
+                    }
                     else
-                        return result;
+                    {
+                        sAddress.AddressStart += len * 8;
+                    }
                 }
             }
-            finally
-            {
-                commandResult.ForEach(a => a.SafeDispose());
-            }
-            return OperResult.CreateSuccessResult(bytes.ToArray());
+
+            return new OperResult<byte[]>() { Content = byteBlock.ToArray() };
         }
         catch (Exception ex)
         {
             return new OperResult<byte[]>(ex);
+        }
+        finally
+        {
+            byteBlock.SafeDispose();
+        }
+    }
+
+    #region 读写
+
+    /// <inheritdoc/>
+    public override ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var sAddress = SiemensAddress.ParseFrom(address, length);
+            return S7RequestAsync([sAddress], true, false, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return EasyValueTask.FromResult(new OperResult<byte[]>(ex));
         }
     }
 
@@ -142,22 +175,9 @@ public partial class SiemensS7Master : ProtocolBase
     {
         try
         {
-            var s_Address = SiemensAddress.ParseFrom(address);
-            var commandResult = GetWriteByteCommand(s_Address, value);
-            try
-            {
-                foreach (var item in commandResult)
-                {
-                    var result = await SendThenReturnAsync(item.Memory, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    if (!result.IsSuccess)
-                        return result;
-                }
-                return OperResult.Success;
-            }
-            finally
-            {
-                commandResult.ForEach(a => a.SafeDispose());
-            }
+            var sAddress = SiemensAddress.ParseFrom(address);
+            sAddress.Data = value;
+            return await S7RequestAsync([sAddress], false, false, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -168,23 +188,15 @@ public partial class SiemensS7Master : ProtocolBase
     /// <inheritdoc/>
     public override async ValueTask<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
     {
-        if (value.Length > 1)
-        {
-            return new OperResult(SiemensS7Resource.Localizer["MulWriteError"]);
-        }
+        //if (value.Length > 1)
+        //{
+        //    return new OperResult(SiemensS7Resource.Localizer["MulWriteError"]);
+        //}
         try
         {
-            var s_Address = SiemensAddress.ParseFrom(address);
-            ValueByteBlock valueByteBlock = new ValueByteBlock(1024);
-            try
-            {
-                SiemensHelper.GetWriteBitCommand(ref valueByteBlock, s_Address, value[0]);
-                return await SendThenReturnAsync(valueByteBlock.Memory, cancellationToken: cancellationToken).ConfigureAwait(false);
-            }
-            finally
-            {
-                valueByteBlock.SafeDispose();
-            }
+            var sAddress = SiemensAddress.ParseFrom(address);
+            sAddress.Data = value.BoolArrayToByte();
+            return await S7RequestAsync([sAddress], false, true, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -259,11 +271,9 @@ public partial class SiemensS7Master : ProtocolBase
                 }
             }
 
-            //NormalDataHandlingAdapter dataHandleAdapter = new();
-            //channel.SetDataHandlingAdapter(dataHandleAdapter);
             try
             {
-                var result2 = await GetResponsedDataAsync(new SendMessage(ISO_CR), Timeout, (IClientChannel)Channel).ConfigureAwait(false);
+                var result2 = await SendThenReturnAsync(new S7Send(null, null, null, true, ISO_CR)).ConfigureAwait(false);
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError1", channel.ToString(), result2.ErrorMessage]);
@@ -279,7 +289,7 @@ public partial class SiemensS7Master : ProtocolBase
             }
             try
             {
-                var result2 = await GetResponsedDataAsync(new SendMessage(S7_PN), Timeout, (IClientChannel)Channel).ConfigureAwait(false);
+                var result2 = await SendThenReturnAsync(new S7Send(null, null, null, true, S7_PN)).ConfigureAwait(false);
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError2", channel.ToString(), result2.ErrorMessage]);

@@ -13,7 +13,6 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// 发送消息
 /// </summary>
-public interface ISendMessage : IRequestInfo, IWaitHandle
+public interface ISendMessage : IRequestInfo, IWaitHandle, IRequestInfoBuilder
 {
-    ReadOnlyMemory<byte> SendBytes { get; }
 }

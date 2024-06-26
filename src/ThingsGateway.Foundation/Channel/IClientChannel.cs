@@ -23,6 +23,7 @@ public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IOn
     AsyncAutoResetEvent WaitLock { get; }
 
     WaitHandlePool<MessageBase> WaitHandlePool { get; }
+    DataHandlingAdapter ReadOnlyDataHandlingAdapter { get; }
 
     #endregion 属性
 }

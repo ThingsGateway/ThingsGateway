@@ -8,40 +8,55 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation.Modbus;
+namespace ThingsGateway.Foundation.Dlt645;
 
 /// <summary>
-/// <inheritdoc/>
+/// 控制码
 /// </summary>
-internal class ModbusTcpServerMessage : MessageBase, IResultMessage, IModbusServerMessage
+public enum ControlCode : byte
 {
     /// <summary>
-    /// 当前关联的地址
+    /// 读数据
     /// </summary>
-    public ModbusAddress ModbusAddress { get; set; }
+    Read = 0x11,
 
     /// <summary>
-    /// 当前关联的字节数组
+    /// 读后续数据
     /// </summary>
-    public ReadOnlyMemory<byte> Bytes { get; set; }
+    ReadSub = 0x12,
 
     /// <summary>
-    /// 当前读写的数据长度
+    /// 读站号
     /// </summary>
-    public int Length { get; set; }
+    ReadStation = 0x13,
 
-    /// <inheritdoc/>
-    public override int HeadBytesLength => 6;
+    /// <summary>
+    /// 写数据
+    /// </summary>
+    Write = 0x14,
 
-    /// <inheritdoc/>
-    public override bool CheckHeadBytes(byte[]? headBytes)
-    {
-        if (headBytes == null || headBytes.Length <= 0) return false;
+    /// <summary>
+    /// 写站号
+    /// </summary>
+    WriteStation = 0x15,
 
-        int num = (headBytes[4] * 256) + headBytes[5];
-        if (num > 0xff + 3) return false;
-        BodyLength = num;
+    /// <summary>
+    /// 广播校时
+    /// </summary>
+    BroadcastTime = 0x08,
 
-        return true;
-    }
+    /// <summary>
+    /// 冻结
+    /// </summary>
+    Freeze = 0x16,
+
+    /// <summary>
+    /// 更新波特率
+    /// </summary>
+    WriteBaudRate = 0x17,
+
+    /// <summary>
+    /// 更新密码
+    /// </summary>
+    WritePassword = 0x18,
 }

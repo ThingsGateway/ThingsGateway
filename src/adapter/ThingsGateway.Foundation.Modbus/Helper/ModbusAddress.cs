@@ -17,72 +17,56 @@ using ThingsGateway.Foundation.Extension.String;
 namespace ThingsGateway.Foundation.Modbus;
 
 /// <summary>
-/// Modbus协议地址
+/// Modbus协议地址，字符串不包含长度与写入值、读写类型
 /// </summary>
-public class ModbusAddress
+public class ModbusAddress : ModbusRequest
 {
     public ModbusAddress()
     {
     }
 
-    /// <summary>
-    /// 可能带小数点的地址表示
-    /// </summary>
-    public string Address { get; set; }
+    public ModbusAddress(ModbusRequest modbusAddress)
+    {
+        this.StartAddress = modbusAddress.StartAddress;
+        this.Data = modbusAddress.Data;
+        this.FunctionCode = modbusAddress.FunctionCode;
+        this.Length = modbusAddress.Length;
+        this.Station = modbusAddress.Station;
+        this.StartAddress = modbusAddress.StartAddress;
+    }
 
-    /// <summary>
-    /// 起始地址
-    /// </summary>
-    public ushort AddressStart => (ushort)Address.ToInt();
-
-    /// <summary>
-    /// 读取功能码
-    /// </summary>
-    public byte ReadFunction { get; set; }
-
-    /// <summary>
-    /// 站号信息
-    /// </summary>
-    public byte Station { get; set; }
-
-    /// <summary>
-    /// 写入功能码
-    /// </summary>
-    public byte? WriteFunction { get; set; }
+    public ModbusAddress(ModbusAddress modbusAddress)
+    {
+        this.StartAddress = modbusAddress.StartAddress;
+        this.Data = modbusAddress.Data;
+        this.FunctionCode = modbusAddress.FunctionCode;
+        this.Length = modbusAddress.Length;
+        this.BitIndex = modbusAddress.BitIndex;
+        this.SocketId = modbusAddress.SocketId;
+        this.WriteFunctionCode = modbusAddress.WriteFunctionCode;
+        this.Station = modbusAddress.Station;
+        this.StartAddress = modbusAddress.StartAddress;
+    }
 
     /// <summary>
     /// BitIndex
     /// </summary>
-    public int? BitIndex
-    {
-        get
-        {
-            var data = Address?.SplitStringByDelimiter();
-            if (data?.Length == 2)
-            {
-                return Convert.ToInt32(data[1]);
-            }
-            else
-            {
-                return null;
-            }
-        }
-    }
+    public int? BitIndex { get; set; }
 
     /// <summary>
-    /// 打包临时写入，需要读取的字节长度
+    /// 写入功能码，主站请求时生效，其余情况应选择<see cref="ModbusRequest.FunctionCode"/>
     /// </summary>
-    public int? ByteLength { get; set; }
-
-    /// <summary>
-    /// 读取终止
-    /// </summary>
-    public uint AddressEnd => (ushort)(AddressStart + (ByteLength != null ? (Math.Ceiling(ByteLength!.Value / 2.0) > 0 ? Math.Ceiling(ByteLength!.Value / 2.0) : 1) : 1));
+    public byte? WriteFunctionCode { get; set; }
 
     /// <summary>
     /// 作为Slave时需提供的SocketId，用于分辨Socket客户端，通常对比的是初始链接时的注册包
     /// </summary>
     public string? SocketId { get; set; }
+
+    /// <summary>
+    /// 读取终止
+    /// </summary>
+    public int AddressEnd => (ushort)(StartAddress + Math.Max(Math.Ceiling(Length / 2.0), 1));
 
     /// <inheritdoc/>
     public override string ToString()
@@ -90,21 +74,21 @@ public class ModbusAddress
         StringBuilder stringGeter = new();
         if (Station > 0)
         {
-            stringGeter.Append($"s={Station};");
+            stringGeter.Append($"S={Station};");
         }
-        if (WriteFunction > 0)
+        if (WriteFunctionCode > 0)
         {
-            stringGeter.Append($"w={WriteFunction};");
+            stringGeter.Append($"W={WriteFunctionCode};");
         }
         if (!string.IsNullOrEmpty(SocketId))
         {
-            stringGeter.Append($"id={SocketId};");
+            stringGeter.Append($"ID={SocketId};");
         }
-        stringGeter.Append($"{GetFunctionString(ReadFunction)}{AddressStart + 1}{(BitIndex != null ? $".{BitIndex}" : null)}");
+        stringGeter.Append($"{GetFunctionString(FunctionCode)}{StartAddress + 1}{(BitIndex != null ? $".{BitIndex}" : null)}");
         return stringGeter.ToString();
     }
 
-    private string GetFunctionString(int readF)
+    private string GetFunctionString(byte readF)
     {
         return readF switch
         {
@@ -125,7 +109,7 @@ public class ModbusAddress
         var cacheKey = $"{nameof(ParseFrom)}_{typeof(ModbusAddress).FullName}_{typeof(ModbusAddress).TypeHandle.Value}_{station}_{dtuid}_{address}";
         if (isCache)
             if (MemoryCache.Instance.TryGetValue(cacheKey, out ModbusAddress mAddress))
-                return mAddress;
+                return new(mAddress);
 
         var modbusAddress = new ModbusAddress();
         if (station != null)
@@ -143,13 +127,13 @@ public class ModbusAddress
             {
                 if (strArray[index].ToUpper().StartsWith("S="))
                 {
-                    if (Convert.ToInt16(strArray[index].Substring(2)) > 0)
+                    if (Convert.ToByte(strArray[index].Substring(2)) > 0)
                         modbusAddress.Station = byte.Parse(strArray[index].Substring(2));
                 }
                 else if (strArray[index].ToUpper().StartsWith("W="))
                 {
-                    if (Convert.ToInt16(strArray[index].Substring(2)) > 0)
-                        modbusAddress.WriteFunction = byte.Parse(strArray[index].Substring(2));
+                    if (Convert.ToByte(strArray[index].Substring(2)) > 0)
+                        modbusAddress.WriteFunctionCode = byte.Parse(strArray[index].Substring(2));
                 }
                 else if (strArray[index].ToUpper().StartsWith("ID="))
                 {
@@ -165,7 +149,7 @@ public class ModbusAddress
         if (isCache)
             MemoryCache.Instance.Set(cacheKey, modbusAddress, 3600);
 
-        return modbusAddress;
+        return new(modbusAddress);
 
         void Address(string address)
         {
@@ -175,29 +159,26 @@ public class ModbusAddress
             switch (readF)
             {
                 case 0:
-                    modbusAddress.ReadFunction = 1;
+                    modbusAddress.FunctionCode = 1;
                     break;
 
                 case 1:
-                    modbusAddress.ReadFunction = 2;
+                    modbusAddress.FunctionCode = 2;
                     break;
 
                 case 3:
-                    modbusAddress.ReadFunction = 4;
+                    modbusAddress.FunctionCode = 4;
                     break;
 
                 case 4:
-                    modbusAddress.ReadFunction = 3;
+                    modbusAddress.FunctionCode = 3;
                     break;
             }
             string[] strArray = address.SplitStringByDelimiter();
+            modbusAddress.StartAddress = (ushort)(ushort.Parse(strArray[0].Substring(1)) - 1);
             if (strArray.Length > 1)
             {
-                modbusAddress.Address = (ushort.Parse(strArray[0].Substring(1)) - 1).ToString() + '.' + strArray[1];
-            }
-            else
-            {
-                modbusAddress.Address = (ushort.Parse(strArray[0].Substring(1)) - 1).ToString();
+                modbusAddress.BitIndex = int.Parse(strArray[1]);
             }
         }
     }

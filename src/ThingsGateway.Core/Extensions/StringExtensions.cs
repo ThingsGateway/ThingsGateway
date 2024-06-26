@@ -91,8 +91,8 @@ public static class StringExtensions
     {
         if (str == null) return Array.Empty<string>();
 
-        if (string.IsNullOrWhiteSpace(str)) return new string[] { str };
-        if (str.Length == 1) return new string[] { str };
+        if (string.IsNullOrWhiteSpace(str)) return [str];
+        if (str.Length == 1) return [str];
 
         return Regex.Split(str, @"(?=\p{Lu}\p{Ll})|(?<=\p{Ll})(?=\p{Lu})")
             .Where(u => u.Length > 0)

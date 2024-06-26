@@ -22,16 +22,13 @@
     "NotString": "Data type in PLC is not String",
     "WriteDataLengthMore": "Write length exceeds limit",
 
-    "ERROR01": "Address out of range",
-    "ERROR02": "Invalid return length",
-    "ERROR03": "Data size does not match",
-    "ERROR04": "Data block does not exist",
-    "ERROR05": "Exceeds PDU size",
-    "ERROR06": "Invalid value",
-    "ERROR07": "Function not available",
-    "ERROR08": "Password required",
-    "ERROR09": "Invalid password",
-    "ERROR010": "No password set or cleared",
+    "ERROR5": "Invalid address",
+    "ERROR1": "Hardware error",
+    "ERROR3": "Accessing the object not allowed",
+    "ERROR6": "Data type not supported",
+    "ERROR7": "Data type inconsistent",
+    "ERROR10": "Object does not exist",
+
 
     "MulWriteError": "Multiple write not supported",
     "StringLengthReadError": "Consecutive reading of variable-length strings not supported",

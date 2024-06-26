@@ -134,7 +134,7 @@ public static class Pool
     {
         //if (ms == null) return null;
 
-        var buf = requireResult ? ms.ToArray() : new Byte[0];
+        var buf = requireResult ? ms.ToArray() : [];
 
         Pool.MemoryStream.Put(ms);
 
@@ -149,7 +149,7 @@ public static class Pool
     {
         //if (ms == null) return null;
 
-        var buf = returnResult ? ms.ToArray() : new Byte[0];
+        var buf = returnResult ? ms.ToArray() : [];
 
         Pool.MemoryStream.Put(ms);
 

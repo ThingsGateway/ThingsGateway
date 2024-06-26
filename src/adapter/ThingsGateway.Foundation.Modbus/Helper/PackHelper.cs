@@ -59,7 +59,7 @@ public class PackHelper
             Dictionary<ModbusAddress, IVariable> map = group.ToDictionary((Func<IVariable, ModbusAddress>)(it =>
             {
                 // 计算变量的字节长度
-                var lastLen = it.DataType.GetByteLength();
+                var lastLen = (int)it.DataType.GetByteLength();
                 if (lastLen <= 0)
                 {
                     // 如果长度小于等于0，则根据数据类型进行处理
@@ -67,7 +67,7 @@ public class PackHelper
                     {
                         case DataTypeEnum.String:
                             // 字符串类型需特殊处理
-                            lastLen = it.ThingsGatewayBitConverter.StringLength == null ? throw new(DefaultResource.Localizer["StringTypePackError"]) : it.ThingsGatewayBitConverter.StringLength.Value;
+                            lastLen = (it.ThingsGatewayBitConverter.StringLength == null ? throw new(DefaultResource.Localizer["StringTypePackError"]) : it.ThingsGatewayBitConverter.StringLength.Value);
                             break;
 
                         default:
@@ -84,7 +84,7 @@ public class PackHelper
                 // 解析地址，并设置字节长度
                 var address = it.RegisterAddress;
                 var result = ModbusAddress.ParseFrom(address, station, dtuid, isCache: false);
-                result.ByteLength = lastLen;
+                result.Length = (ushort)lastLen;
                 return result;
             }));
 
@@ -96,11 +96,11 @@ public class PackHelper
             {
                 var modbusAddressSameSocketIdList = modbusAddressList.Where(t => t.SocketId == socketId);
                 // 获取所有功能码
-                var functionCodes = modbusAddressSameSocketIdList.Select(t => t.ReadFunction).Distinct();
+                var functionCodes = modbusAddressSameSocketIdList.Select(t => t.FunctionCode).Distinct();
                 foreach (var functionCode in functionCodes)
                 {
                     // 获取相同功能码的地址
-                    var modbusAddressSameFunList = modbusAddressSameSocketIdList.Where(t => t.ReadFunction == functionCode);
+                    var modbusAddressSameFunList = modbusAddressSameSocketIdList.Where(t => t.FunctionCode == functionCode);
                     // 获取相同站号的地址
                     var stationNumbers = modbusAddressSameFunList.Select(t => t.Station).Distinct();
                     foreach (var stationNumber in stationNumbers)
@@ -129,11 +129,11 @@ public class PackHelper
         // 按地址结束位置排序
         var orderByAddressEnd = addressList.Keys.OrderBy(it => it.AddressEnd);
         // 按地址开始位置排序
-        var orderByAddressStart = addressList.Keys.OrderBy(it => it.AddressStart);
+        var orderByAddressStart = addressList.Keys.OrderBy(it => it.StartAddress);
         // 获取地址最小值
-        var minAddress = orderByAddressStart.First().AddressStart;
+        var minAddress = orderByAddressStart.First().StartAddress;
         // 获取地址最大值
-        var maxAddress = orderByAddressStart.Last().AddressStart;
+        var maxAddress = orderByAddressStart.Last().StartAddress;
 
         // 循环直到处理完所有地址
         while (maxAddress >= minAddress)
@@ -149,9 +149,9 @@ public class PackHelper
             // 获取当前一组打包地址信息，使得地址不超过读取长度
             var tempAddressEnd = orderByAddressEnd.Where(t => t.AddressEnd <= minAddress + readLength);
             // 获取起始地址（当前组打包地址中起始地址最小的）
-            var startAddress = tempAddressEnd.OrderBy(it => it.AddressStart).First();
+            var startAddress = tempAddressEnd.OrderBy(it => it.StartAddress).First();
             // 计算读取寄存器长度
-            var sourceLen = tempAddressEnd.Last().AddressEnd - startAddress.AddressStart;
+            var sourceLen = tempAddressEnd.Last().AddressEnd - startAddress.StartAddress;
 
             // 创建一个新的变量源读取对象
             T sourceRead = new()
@@ -169,15 +169,15 @@ public class PackHelper
                 // 如果功能码为 -1、3 或 4，并且数据类型为布尔型，则根据位偏移计算索引
                 if ((functionCode == -1 || functionCode == 3 || functionCode == 4) && readNode.DataType == DataTypeEnum.Boolean)
                 {
-                    readNode.Index = ((item.AddressStart - startAddress.AddressStart) * 16) + readNode.Index;
+                    readNode.Index = ((item.StartAddress - startAddress.StartAddress) * 16) + readNode.Index;
                 }
                 else
                 {
                     // 其他情况根据功能码和地址计算索引
                     if (functionCode == 1 || functionCode == 2)
-                        readNode.Index = item.AddressStart - startAddress.AddressStart + readNode.Index;
+                        readNode.Index = item.StartAddress - startAddress.StartAddress + readNode.Index;
                     else
-                        readNode.Index = ((item.AddressStart - startAddress.AddressStart) * 2) + readNode.Index;
+                        readNode.Index = ((item.StartAddress - startAddress.StartAddress) * 2) + readNode.Index;
                 }
 
                 // 将读取节点添加到变量源读取对象中，并从地址列表中移除
@@ -190,7 +190,7 @@ public class PackHelper
 
             // 更新最小地址值，如果还有地址未处理，则继续循环；否则跳出循环
             if (orderByAddressEnd.Count() > 0)
-                minAddress = orderByAddressStart.First().AddressStart;
+                minAddress = orderByAddressStart.First().StartAddress;
             else
                 break;
         }

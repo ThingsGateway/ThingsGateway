@@ -50,4 +50,7 @@ public enum DataTypeEnum
 
     /// <inheritdoc/>
     Double,
+
+    /// <inheritdoc/>
+    Decimal,
 }

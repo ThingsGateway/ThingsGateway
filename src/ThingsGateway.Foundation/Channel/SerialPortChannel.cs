@@ -25,6 +25,8 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     /// <inheritdoc/>
     public AsyncAutoResetEvent WaitLock { get; } = new AsyncAutoResetEvent(true);
 
+    public DataHandlingAdapter ReadOnlyDataHandlingAdapter => ProtectedDataHandlingAdapter;
+
     /// <summary>
     /// 等待池
     /// </summary>

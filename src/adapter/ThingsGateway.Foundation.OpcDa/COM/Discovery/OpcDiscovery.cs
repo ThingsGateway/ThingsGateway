@@ -89,7 +89,7 @@ internal class OpcDiscovery
         //2
         m_server.EnumClassesOfCategories(
             1,
-            new Guid[] { catid },
+            [catid],
             0,
             null,
             out enumerator);
@@ -117,7 +117,7 @@ internal class OpcDiscovery
         IOPCEnumGUID enumerator = null;
         m_server.EnumClassesOfCategories(
             1,
-            new Guid[] { catid },
+            [catid],
             0,
             null,
             out enumerator);

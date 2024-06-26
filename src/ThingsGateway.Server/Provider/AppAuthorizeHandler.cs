@@ -17,7 +17,7 @@ public abstract class AppAuthorizeHandler : IAuthorizationHandler
     /// <summary>
     /// 刷新 Token 身份标识
     /// </summary>
-    private readonly string[] _refreshTokenClaims = new[] { "f", "e", "s", "l", "k" };
+    private readonly string[] _refreshTokenClaims = ["f", "e", "s", "l", "k"];
 
     /// <summary>
     /// 授权验证核心方法

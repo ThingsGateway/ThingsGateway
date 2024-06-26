@@ -11,22 +11,12 @@
 namespace ThingsGateway.Foundation.Modbus;
 
 /// <summary>
-/// ModbusServerMessage
+/// <inheritdoc/>
 /// </summary>
-internal interface IModbusServerMessage : IResultMessage
+internal class ModbusResponse : ModbusRequest
 {
     /// <summary>
-    /// 读写长度
+    /// 错误码
     /// </summary>
-    int Length { get; set; }
-
-    /// <summary>
-    /// 当前关联的地址
-    /// </summary>
-    ModbusAddress ModbusAddress { get; set; }
-
-    /// <summary>
-    /// 当前关联的字节数组
-    /// </summary>
-    ReadOnlyMemory<byte> Bytes { get; set; }
+    public byte? ErrorCode { get; set; }
 }
