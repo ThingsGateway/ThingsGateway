@@ -22,16 +22,13 @@
     "NotString": "PLC中的数据类型不是String",
     "WriteDataLengthMore": "写入长度超限",
 
-    "ERROR1": "地址超限",
-    "ERROR2": "返回长度无效",
-    "ERROR3": "数据大小不匹配",
-    "ERROR4": "数据块不存在",
-    "ERROR5": "超出PDU大小",
-    "ERROR6": "无效的值",
-    "ERROR7": "功能不可用",
-    "ERROR8": "需要密码",
-    "ERROR9": "无效密码",
-    "ERROR10": "没有设置密码或已清除",
+    "ERROR5": "无效地址，所需的地址超出此PLC的极限",
+    "ERROR1": "硬件错误",
+    "ERROR3": "对象不允许访问",
+    "ERROR6": "数据类型不支持",
+    "ERROR7": "日期类型不一致",
+    "ERROR10": "对象不存在",
+
 
     "MulWriteError": "不支持多写",
     "StringLengthReadError": "不支持变长字符串的连读",

@@ -118,16 +118,12 @@ internal partial class SiemensHelper
     {
         return Error switch
         {
-            0x05 => SiemensS7Resource.Localizer["ERROR1"],
-            0x06 => SiemensS7Resource.Localizer["ERROR2"],
-            0x07 => SiemensS7Resource.Localizer["ERROR3"],
-            0x0a or 0xd209 => SiemensS7Resource.Localizer["ERROR4"],
-            0x8500 => SiemensS7Resource.Localizer["ERROR5"],
-            0xdc01 => SiemensS7Resource.Localizer["ERROR6"],
-            0x8104 => SiemensS7Resource.Localizer["ERROR7"],
-            0xd241 => SiemensS7Resource.Localizer["ERROR8"],
-            0xd602 => SiemensS7Resource.Localizer["ERROR9"],
-            0xd604 or 0xd605 => SiemensS7Resource.Localizer["ERROR10"],
+            0x01 => SiemensS7Resource.Localizer["ERROR1"],
+            0x03 => SiemensS7Resource.Localizer["ERROR3"],
+            0x05 => SiemensS7Resource.Localizer["ERROR5"],
+            0x06 => SiemensS7Resource.Localizer["ERROR6"],
+            0x07 => SiemensS7Resource.Localizer["ERROR7"],
+            0x0a => SiemensS7Resource.Localizer["ERROR10"],
             _ => "Unknown",
         };
         ;
