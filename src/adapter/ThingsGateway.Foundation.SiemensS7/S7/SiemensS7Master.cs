@@ -110,23 +110,27 @@ public partial class SiemensS7Master : ProtocolBase
     /// </summary>
     public async ValueTask<OperResult<byte[]>> S7RequestAsync(SiemensAddress[] sAddresss, bool read, bool isBit, CancellationToken cancellationToken = default)
     {
-        var byteBlock = new ValueByteBlock();
+        var byteBlock = new ValueByteBlock(2048);
         try
         {
             foreach (var sAddress in sAddresss)
             {
                 int num = 0;
-                while (num < sAddress.Length)
+                var addressLen = sAddress.Length==0?1: sAddress.Length;
+                while (num < addressLen)
                 {
                     //pdu长度，重复生成报文，直至全部生成
-                    int len = Math.Min(sAddress.Length - num, PduLength);
+                    int len = Math.Min(addressLen - num, PduLength);
                     sAddress.Length = len;
 
                     var result = await this.SendThenReturnAsync(
     new S7Send([sAddress], read, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
-                    if (!result.IsSuccess) return result;
+                    if (!result.IsSuccess|| !read) return result;
+   
+                    if (read)
                     byteBlock.Write(result.Content);
                     num += len;
+
                     if (sAddress.DataCode == (byte)S7WordLength.Timer || sAddress.DataCode == (byte)S7WordLength.Counter)
                     {
                         sAddress.AddressStart += len / 2;

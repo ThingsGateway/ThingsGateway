@@ -44,7 +44,7 @@ internal class S7Send : ISendMessage
         //TPKT
         valueByteBlock.WriteByte(3);//版本
         valueByteBlock.WriteByte(0);
-        valueByteBlock.WriteUInt16(telegramLen);//长度，item.len*12+19
+        valueByteBlock.WriteUInt16(telegramLen, EndianType.Big);//长度，item.len*12+19
         //COTP信息
         valueByteBlock.WriteByte(2);//长度
         valueByteBlock.WriteByte(0xf0);//pdu类型
@@ -52,10 +52,10 @@ internal class S7Send : ISendMessage
         //header
         valueByteBlock.WriteByte(0x32);//协议id
         valueByteBlock.WriteByte(0x01);//请求
-        valueByteBlock.WriteUInt16(0x00);//冗余识别
-        valueByteBlock.WriteUInt16(0x01);//数据引用
-        valueByteBlock.WriteUInt16(parameterLen);//参数长度，item.len*12+2
-        valueByteBlock.WriteUInt16(0x00);//数据长度，data.len+4 ,写入时填写，读取时为0
+        valueByteBlock.WriteUInt16(0x00, EndianType.Big);//冗余识别
+        valueByteBlock.WriteUInt16(0x01, EndianType.Big);//数据引用
+        valueByteBlock.WriteUInt16(parameterLen, EndianType.Big);//参数长度，item.len*12+2
+        valueByteBlock.WriteUInt16(0x00, EndianType.Big);//数据长度，data.len+4 ,写入时填写，读取时为0
         valueByteBlock.WriteByte(0x04);//功能码，4 Read Var, 5 Write Var
         valueByteBlock.WriteByte(len);//Item数量
 
@@ -74,8 +74,8 @@ internal class S7Send : ISendMessage
             {
                 valueByteBlock.WriteByte((byte)S7WordLength.Byte);//数据类型
             }
-            valueByteBlock.WriteUInt16((ushort)siemensAddress[index].Length);//读取长度
-            valueByteBlock.WriteUInt16(siemensAddress[index].DbBlock);//DB编号
+            valueByteBlock.WriteUInt16((ushort)siemensAddress[index].Length, EndianType.Big);//读取长度
+            valueByteBlock.WriteUInt16(siemensAddress[index].DbBlock, EndianType.Big);//DB编号
             valueByteBlock.WriteByte(siemensAddress[index].DataCode);//数据块类型
             valueByteBlock.WriteByte((byte)(siemensAddress[index].AddressStart / 256 / 256 % 256));//数据块偏移量
             valueByteBlock.WriteByte((byte)(siemensAddress[index].AddressStart / 256 % 256));//数据块偏移量
@@ -92,7 +92,7 @@ internal class S7Send : ISendMessage
         //TPKT
         valueByteBlock.WriteByte(3);//版本
         valueByteBlock.WriteByte(0);
-        valueByteBlock.WriteUInt16(telegramLen);//长度，item.len*12+19
+        valueByteBlock.WriteUInt16(telegramLen, EndianType.Big);//长度，item.len*12+19
         //COTP信息
         valueByteBlock.WriteByte(2);//长度
         valueByteBlock.WriteByte(0xf0);//pdu类型
@@ -100,10 +100,10 @@ internal class S7Send : ISendMessage
         //header
         valueByteBlock.WriteByte(0x32);//协议id
         valueByteBlock.WriteByte(0x01);//请求
-        valueByteBlock.WriteUInt16(0x00);//冗余识别
-        valueByteBlock.WriteUInt16(0x01);//数据引用
-        valueByteBlock.WriteUInt16(parameterLen);//参数长度，item.len*12+2
-        valueByteBlock.WriteUInt16((ushort)(4 + len));//数据长度，data.len+4 ,写入时填写，读取时为0
+        valueByteBlock.WriteUInt16(0x00, EndianType.Big);//冗余识别
+        valueByteBlock.WriteUInt16(0x01, EndianType.Big);//数据引用
+        valueByteBlock.WriteUInt16(parameterLen, EndianType.Big);//参数长度，item.len*12+2
+        valueByteBlock.WriteUInt16((ushort)(4 + len), EndianType.Big);//数据长度，data.len+4 ,写入时填写，读取时为0
         valueByteBlock.WriteByte(0x05);//功能码，4 Read Var, 5 Write Var
         valueByteBlock.WriteByte(1);//Item数量
 
@@ -112,8 +112,8 @@ internal class S7Send : ISendMessage
         valueByteBlock.WriteByte(0x0a);//剩余的字节长度
         valueByteBlock.WriteByte(0x10);//Syntax ID
         valueByteBlock.WriteByte(isBit ? (byte)S7WordLength.Bit : (byte)S7WordLength.Byte);//数据类型
-        valueByteBlock.WriteUInt16((ushort)len);//长度
-        valueByteBlock.WriteUInt16(address.DbBlock);//DB编号
+        valueByteBlock.WriteUInt16((ushort)len, EndianType.Big);//长度
+        valueByteBlock.WriteUInt16(address.DbBlock, EndianType.Big);//DB编号
         valueByteBlock.WriteByte(address.DataCode);//数据块类型
         valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256 / 256));//数据块偏移量
         valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256));//数据块偏移量
@@ -122,7 +122,7 @@ internal class S7Send : ISendMessage
         //后面跟的是写入的数据信息
         valueByteBlock.WriteByte(0);
         valueByteBlock.WriteByte((byte)(isBit ? 3 : 4));//Bit:3;Byte:4;Counter或者Timer:9
-        valueByteBlock.WriteUInt16((ushort)(isBit ? len : len * 8));
+        valueByteBlock.WriteUInt16((ushort)(isBit ? len : len * 8), EndianType.Big);
         valueByteBlock.Write(data);
     }
 
