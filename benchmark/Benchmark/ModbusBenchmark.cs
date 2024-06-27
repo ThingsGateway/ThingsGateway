@@ -17,8 +17,6 @@ using HslCommunication.ModBus;
 using ThingsGateway.Foundation.Modbus;
 
 using TouchSocket.Core;
-using TouchSocket.Modbus;
-using TouchSocket.Sockets;
 
 using IModbusMaster = NModbus.IModbusMaster;
 using TcpClient = System.Net.Sockets.TcpClient;
@@ -31,7 +29,6 @@ public class ModbusBenchmark : IDisposable
 {
     private ModbusMaster thingsgatewaymodbus;
     private IModbusMaster nmodbus;
-    private ModbusTcpMaster modbusTcpMaster;
     private ModbusTcpNet modbusTcpNet;
 
     public ModbusBenchmark()
@@ -46,12 +43,7 @@ public class ModbusBenchmark : IDisposable
             };
             thingsgatewaymodbus.Channel.Connect();
         }
-        {
-            var clientConfig = new TouchSocket.Core.TouchSocketConfig().SetRemoteIPHost("127.0.0.1:502");
-            modbusTcpMaster = new();
-            modbusTcpMaster.Setup(clientConfig);
-            modbusTcpMaster.Connect();
-        }
+
         TcpClient client = new TcpClient("127.0.0.1", 502);
         var factory = new NModbus.ModbusFactory();
         nmodbus = factory.CreateMaster(client);
@@ -61,118 +53,72 @@ public class ModbusBenchmark : IDisposable
 
         thingsgatewaymodbus.ReadAsync("40001", 100).GetFalseAwaitResult();
         nmodbus.ReadHoldingRegistersAsync(1, 0, 100).GetFalseAwaitResult();
-        modbusTcpMaster.ReadHoldingRegistersAsync(1, 0, 100, 3000, CancellationToken.None).GetFalseAwaitResult();
         modbusTcpNet.ReadAsync("0", 100).GetFalseAwaitResult();
     }
-
-    //[Benchmark]
-    //public async Task TouchSocket()
-    //{
-    //    List<Task> tasks = new List<Task>();
-    //    for (int i = 0; i < Program.TaskNumberOfItems; i++)
-    //    {
-    //        tasks.Add(Task.Run(async () =>
-    //        {
-    //            for (int i = 0; i < Program.NumberOfItems; i++)
-    //            {
-    //                var result = await modbusTcpMaster.ReadHoldingRegistersAsync(1, 0, 100, 3000, CancellationToken.None);
-    //            }
-    //        }));
-    //    }
-
-    //    await Task.WhenAll(tasks);
-    //}
-    //[Benchmark]
-    //public async Task ThingsGateway()
-    //{
-    //    List<Task> tasks = new List<Task>();
-    //    for (int i = 0; i < Program.TaskNumberOfItems; i++)
-    //    {
-    //        tasks.Add(Task.Run(async () =>
-    //        {
-    //            for (int i = 0; i < Program.NumberOfItems; i++)
-    //            {
-    //                var result = await thingsgatewaymodbus.ReadAsync("40001", 100);
-    //                if (!result.IsSuccess)
-    //                {
-    //                    throw new Exception(result.ToString());
-    //                }
-    //            }
-    //        }));
-    //    }
-    //    await Task.WhenAll(tasks);
-    //}
-    //[Benchmark]
-    //public async Task NModbus4()
-    //{
-    //    List<Task> tasks = new List<Task>();
-    //    for (int i = 0; i < Program.TaskNumberOfItems; i++)
-    //    {
-    //        tasks.Add(Task.Run(async () =>
-    //        {
-    //            for (int i = 0; i < Program.NumberOfItems; i++)
-    //            {
-    //                var result = await nmodbus.ReadHoldingRegistersAsync(1, 0, 100);
-    //            }
-    //        }));
-    //    }
-    //    await Task.WhenAll(tasks);
-    //}
 
     [Benchmark]
     public async Task ThingsGateway()
     {
-        for (int i = 0; i < Program.NumberOfItems; i++)
+        List<Task> tasks = new List<Task>();
+        for (int i = 0; i < Program.TaskNumberOfItems; i++)
         {
-            var result = await thingsgatewaymodbus.ReadAsync("40001", 100);
-            if (!result.IsSuccess)
+            tasks.Add(Task.Run(async () =>
             {
-                throw new Exception(result.ToString());
-            }
+                for (int i = 0; i < Program.NumberOfItems; i++)
+                {
+                    var result = await thingsgatewaymodbus.ReadAsync("40001", 100);
+                    if (!result.IsSuccess)
+                    {
+                        throw new Exception(result.ToString());
+                    }
+                }
+            }));
         }
+        await Task.WhenAll(tasks);
     }
 
     [Benchmark]
     public async Task NModbus4()
     {
         List<Task> tasks = new List<Task>();
-        for (int i = 0; i < Program.NumberOfItems; i++)
+        for (int i = 0; i < Program.TaskNumberOfItems; i++)
         {
-            var result = await nmodbus.ReadHoldingRegistersAsync(1, 0, 100);
+            tasks.Add(Task.Run(async () =>
+            {
+                for (int i = 0; i < Program.NumberOfItems; i++)
+                {
+                    var result = await nmodbus.ReadHoldingRegistersAsync(1, 0, 100);
+                }
+            }));
         }
-        await Task.WhenAll(tasks);
-    }
-
-    [Benchmark]
-    public async Task TouchSocket()
-    {
-        List<Task> tasks = new List<Task>();
-        for (int i = 0; i < Program.NumberOfItems; i++)
-        {
-            var result = await modbusTcpMaster.ReadHoldingRegistersAsync(1, 0, 100, 3000, CancellationToken.None);
-        }
-
         await Task.WhenAll(tasks);
     }
 
     [Benchmark]
     public async Task HslCommunication()
     {
-        for (int i = 0; i < Program.NumberOfItems; i++)
+        List<Task> tasks = new List<Task>();
+        for (int i = 0; i < Program.TaskNumberOfItems; i++)
         {
-            var result = await modbusTcpNet.ReadAsync("0", 100);
-            if (!result.IsSuccess)
+            tasks.Add(Task.Run(async () =>
             {
-                throw new Exception(result.Message);
-            }
+                for (int i = 0; i < Program.NumberOfItems; i++)
+                {
+                    var result = await modbusTcpNet.ReadAsync("0", 100);
+                    if (!result.IsSuccess)
+                    {
+                        throw new Exception(result.Message);
+                    }
+                }
+            }));
         }
+        await Task.WhenAll(tasks);
     }
 
     public void Dispose()
     {
         thingsgatewaymodbus?.Channel.SafeDispose();
         thingsgatewaymodbus?.SafeDispose();
-        modbusTcpMaster?.SafeDispose();
         nmodbus?.SafeDispose();
         modbusTcpNet?.SafeDispose();
     }

@@ -56,6 +56,7 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
     {
         if (this.ServerState != ServerState.Running)
         {
+            await base.StopAsync().ConfigureAwait(false);
             await base.StartAsync().ConfigureAwait(false);
             if (this.ServerState == ServerState.Running)
             {
