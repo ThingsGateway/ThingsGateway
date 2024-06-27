@@ -108,49 +108,113 @@ public partial class SiemensS7Master : ProtocolBase
     /// <summary>
     /// 此方法并不会智能分组以最大化效率，减少传输次数，因为返回值是byte[]，所以一切都按地址数组的顺序执行，最后合并数组
     /// </summary>
-    public async ValueTask<OperResult<byte[]>> S7RequestAsync(SiemensAddress[] sAddresss, bool read, bool isBit, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult<byte[]>> S7RequestAsync(SiemensAddress[] sAddresss, bool read, bool isBit,int bitLength=0, CancellationToken cancellationToken = default)
     {
-        var byteBlock = new ValueByteBlock(2048);
-        try
+        if (read)
         {
-            foreach (var sAddress in sAddresss)
+            var byteBlock = new ValueByteBlock(2048);
+            try
             {
-                int num = 0;
-                var addressLen = sAddress.Length==0?1: sAddress.Length;
-                while (num < addressLen)
+                foreach (var sAddress in sAddresss)
                 {
-                    //pdu长度，重复生成报文，直至全部生成
-                    int len = Math.Min(addressLen - num, PduLength);
-                    sAddress.Length = len;
+                    int num = 0;
+                    var addressLen = sAddress.Length == 0 ? 1 : sAddress.Length;
+                    while (num < addressLen)
+                    {
+                        //pdu长度，重复生成报文，直至全部生成
+                        int len = Math.Min(addressLen - num, PduLength);
+                        sAddress.Length = len;
+
+                        var result = await this.SendThenReturnAsync(
+        new S7Send([sAddress], read, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
+                        if (!result.IsSuccess) return result;
+
+                        byteBlock.Write(result.Content);
+                        num += len;
+
+                        if (sAddress.DataCode == (byte)S7WordLength.Timer || sAddress.DataCode == (byte)S7WordLength.Counter)
+                        {
+                            sAddress.AddressStart += len / 2;
+                        }
+                        else
+                        {
+                            sAddress.AddressStart += len * 8;
+                        }
+                    }
+                }
+
+                return new OperResult<byte[]>() { Content = byteBlock.ToArray() };
+            }
+            catch (Exception ex)
+            {
+                return new OperResult<byte[]>(ex);
+            }
+            finally
+            {
+                byteBlock.SafeDispose();
+            }
+        }
+        else
+        {
+            var sAddress = sAddresss[0];
+            if (sAddresss.Length > 1) return new OperResult<byte[]>("Only supports single write");
+            if (sAddress.Length > 1 && isBit)
+            {
+                //读取，再写入
+                var byteBlock = new ValueByteBlock(2048);
+                try
+                {
+                    var addressLen = sAddress.Length == 0 ? 1 : sAddress.Length;
+
+                    if (addressLen > PduLength)
+                        return new OperResult<byte[]>("Write length exceeds limit");
+
+                    var result = await this.SendThenReturnAsync(
+    new S7Send([sAddress], true, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                    if (!result.IsSuccess) return result;
+                    var vaue = sAddress.Data.ByteToBoolArray(bitLength);
+                    for (int i = sAddress.BitCode; i < vaue.Length+ sAddress.BitCode; i++)
+                    {
+                        result.Content[i/8] = result.Content[i/8].SetBit( (i%8), vaue[i- sAddress.BitCode]);
+                    }
+                    sAddress.Data = result.Content;
+                    return await this.SendThenReturnAsync(
+new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
+
+                }
+                catch (Exception ex)
+                {
+                    return new OperResult<byte[]>(ex);
+                }
+                finally
+                {
+                    byteBlock.SafeDispose();
+                }
+            }
+            else
+            {
+                var byteBlock = new ValueByteBlock(2048);
+                try
+                {
+                    var addressLen = sAddress.Length == 0 ? 1 : sAddress.Length;
+
+                    if (addressLen > PduLength)
+                        return new OperResult<byte[]>("Write length exceeds limit");
 
                     var result = await this.SendThenReturnAsync(
     new S7Send([sAddress], read, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
-                    if (!result.IsSuccess|| !read) return result;
-   
-                    if (read)
-                    byteBlock.Write(result.Content);
-                    num += len;
-
-                    if (sAddress.DataCode == (byte)S7WordLength.Timer || sAddress.DataCode == (byte)S7WordLength.Counter)
-                    {
-                        sAddress.AddressStart += len / 2;
-                    }
-                    else
-                    {
-                        sAddress.AddressStart += len * 8;
-                    }
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    return new OperResult<byte[]>(ex);
+                }
+                finally
+                {
+                    byteBlock.SafeDispose();
                 }
             }
-
-            return new OperResult<byte[]>() { Content = byteBlock.ToArray() };
-        }
-        catch (Exception ex)
-        {
-            return new OperResult<byte[]>(ex);
-        }
-        finally
-        {
-            byteBlock.SafeDispose();
         }
     }
 
@@ -162,7 +226,7 @@ public partial class SiemensS7Master : ProtocolBase
         try
         {
             var sAddress = SiemensAddress.ParseFrom(address, length);
-            return S7RequestAsync([sAddress], true, false, cancellationToken);
+            return S7RequestAsync([sAddress], true, false, 0,cancellationToken);
         }
         catch (Exception ex)
         {
@@ -177,7 +241,8 @@ public partial class SiemensS7Master : ProtocolBase
         {
             var sAddress = SiemensAddress.ParseFrom(address);
             sAddress.Data = value;
-            return await S7RequestAsync([sAddress], false, false, cancellationToken);
+            sAddress.Length = value.Length;
+            return await S7RequestAsync([sAddress], false, false, 0,cancellationToken);
         }
         catch (Exception ex)
         {
@@ -196,7 +261,8 @@ public partial class SiemensS7Master : ProtocolBase
         {
             var sAddress = SiemensAddress.ParseFrom(address);
             sAddress.Data = value.BoolArrayToByte();
-            return await S7RequestAsync([sAddress], false, true, cancellationToken);
+            sAddress.Length = sAddress.Data.Length;
+            return await S7RequestAsync([sAddress], false, true, value.Length,cancellationToken);
         }
         catch (Exception ex)
         {

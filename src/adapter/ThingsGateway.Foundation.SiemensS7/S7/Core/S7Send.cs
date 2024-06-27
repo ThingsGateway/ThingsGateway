@@ -125,10 +125,11 @@ internal class S7Send : ISendMessage
         }
     }
 
-    internal static void GetWriteByteCommand<TByteBlock>(ref TByteBlock valueByteBlock, SiemensAddress address, bool isBit) where TByteBlock : IByteBlock
+    internal void GetWriteByteCommand<TByteBlock>(ref TByteBlock valueByteBlock, SiemensAddress address) where TByteBlock : IByteBlock
     {
         var data = address.Data;
-        byte len = (byte)data.Length;
+        byte len = (byte)address.Length;
+        bool isBit = (IsBit && len == 1);
         ushort telegramLen = (ushort)(16 + 19 + len);
         ushort parameterLen = 12 + 2;
         //TPKT
@@ -181,7 +182,7 @@ internal class S7Send : ISendMessage
         }
         else
         {
-            GetWriteByteCommand(ref byteBlock, SiemensAddress[0], IsBit);
+            GetWriteByteCommand(ref byteBlock, SiemensAddress[0]);
         }
     }
 }

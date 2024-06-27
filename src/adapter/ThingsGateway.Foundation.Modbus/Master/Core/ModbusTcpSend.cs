@@ -80,7 +80,7 @@ internal class ModbusTcpSend : ISendMessage
             byteBlock.WriteByte(ModbusAddress.Station);
             byteBlock.WriteByte((byte)f);
             byteBlock.WriteUInt16(ModbusAddress.StartAddress, EndianType.Big);
-            byteBlock.WriteUInt16((ushort)Math.Ceiling(ModbusAddress.Data.Length / 2.0), EndianType.Big);
+            byteBlock.WriteUInt16((ushort)Math.Ceiling(f==15?ModbusAddress.Data.Length*8: ModbusAddress.Data.Length / 2.0), EndianType.Big);
             byteBlock.WriteByte((byte)ModbusAddress.Data.Length);
             byteBlock.Write(ModbusAddress.Data.Span);
         }

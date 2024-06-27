@@ -200,8 +200,9 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         try
         {
             var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
-            if (value.Length > 1 || mAddress.WriteFunctionCode == 15)
+            if (value.Length > 1 && mAddress.FunctionCode == 1)
             {
+                mAddress.WriteFunctionCode = 15;
                 mAddress.Data = value.BoolArrayToByte();
                 return await ModbusRequestAsync(mAddress, false, cancellationToken);
             }
@@ -214,12 +215,15 @@ public partial class ModbusMaster : ProtocolBase, IDtu
             {
                 if (mAddress.BitIndex < 16)
                 {
+                    mAddress.Length = 2;
                     var readData = await ModbusRequestAsync(mAddress, true, cancellationToken);
                     if (!readData.IsSuccess) return readData;
                     var writeData = ThingsGatewayBitConverter.ToUInt16(readData.Content, 0);
-                    ushort mask = (ushort)(1 << mAddress.BitIndex);
-                    ushort result = (ushort)(value[0] ? (writeData | mask) : (writeData & ~mask));
-                    mAddress.Data = ThingsGatewayBitConverter.GetBytes(result);
+                    for (int i = 0; i < value.Length; i++)
+                    {
+                        writeData=writeData.SetBit(mAddress.BitIndex.Value + i, value[i]);
+                    }
+                    mAddress.Data = ThingsGatewayBitConverter.GetBytes(writeData);
                     return await ModbusRequestAsync(mAddress, false, cancellationToken);
                 }
                 else

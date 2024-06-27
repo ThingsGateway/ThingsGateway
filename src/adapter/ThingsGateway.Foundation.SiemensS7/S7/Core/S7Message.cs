@@ -168,6 +168,14 @@ internal class S7Message : MessageBase, IResultMessage
         }
         else
         {
+            if (byteBlock[pos + 13] + byteBlock[pos + 14] > 0) // 如果错误代码不为0
+            {
+                Response.ErrorCode = byteBlock[pos + 14];
+                this.OperCode = 999;
+                this.ErrorMessage = SiemensS7Resource.Localizer["ReturnError", byteBlock[pos + 13].ToString("X2"), byteBlock[pos + 14].ToString("X2")];
+                return FilterResult.Success;
+            }
+
             if (byteBlock.Length < pos + 18)
             {
                 this.OperCode = 999;
