@@ -85,7 +85,7 @@ public class SysHub : Hub<ISysHub>
                 }
             }
         }
-
-        #endregion 方法
     }
+
+    #endregion 方法
 }

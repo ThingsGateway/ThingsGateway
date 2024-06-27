@@ -366,7 +366,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             }
             else
             {
-                throw new Exception(result.ErrorMessage, result.Exception);
+                throw new Exception(result.ErrorMessage);
             }
         }
         finally

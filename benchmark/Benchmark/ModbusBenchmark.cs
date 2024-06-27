@@ -14,11 +14,16 @@ using BenchmarkDotNet.Attributes;
 
 using HslCommunication.ModBus;
 
+using NModbus.Device;
+using NModbus.Serial;
+
 using ThingsGateway.Foundation.Modbus;
 
 using TouchSocket.Core;
+using TouchSocket.SerialPorts;
 
 using IModbusMaster = NModbus.IModbusMaster;
+using ModbusMaster = ThingsGateway.Foundation.Modbus.ModbusMaster;
 using TcpClient = System.Net.Sockets.TcpClient;
 
 namespace ThingsGateway.Foundation;
@@ -29,28 +34,28 @@ public class ModbusBenchmark : IDisposable
 {
     private ModbusMaster thingsgatewaymodbus;
     private IModbusMaster nmodbus;
-    private ModbusTcpNet modbusTcpNet;
+    private ModbusRtu modbusTcpNet;
 
     public ModbusBenchmark()
     {
         {
             var clientConfig = new TouchSocket.Core.TouchSocketConfig();
-            var clientChannel = clientConfig.GetTcpClientWithIPHost("127.0.0.1:502");
+            var clientChannel = clientConfig.GetSerialPortWithOption(new SerialPortOption() { PortName = "COM1" });
             thingsgatewaymodbus = new(clientChannel)
             {
                 //modbus协议格式
-                ModbusType = ModbusTypeEnum.ModbusTcp,
+                ModbusType = ModbusTypeEnum.ModbusRtu,
             };
             thingsgatewaymodbus.Channel.Connect();
         }
 
-        TcpClient client = new TcpClient("127.0.0.1", 502);
         var factory = new NModbus.ModbusFactory();
-        nmodbus = factory.CreateMaster(client);
-
-        modbusTcpNet = new("127.0.0.1", 502);
-        modbusTcpNet.ConnectServer();
-
+        var s = new System.IO.Ports.SerialPort("COM7");
+        s.Open();
+        nmodbus = factory.CreateRtuMaster(s);
+        modbusTcpNet = new();
+        modbusTcpNet.SerialPortInni("COM5");
+        modbusTcpNet.Open();
         thingsgatewaymodbus.ReadAsync("40001", 100).GetFalseAwaitResult();
         nmodbus.ReadHoldingRegistersAsync(1, 0, 100).GetFalseAwaitResult();
         modbusTcpNet.ReadAsync("0", 100).GetFalseAwaitResult();

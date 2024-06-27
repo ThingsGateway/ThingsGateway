@@ -36,7 +36,7 @@ public class MessageBase : OperResultClass<byte[]>, IResultMessage, IWaitHandle
     public virtual int HeaderLength { get; set; }
 
     /// <inheritdoc/>
-    public virtual int Sign { get; set; }
+    public virtual int Sign { get; set; } = -1;
 
     /// <inheritdoc/>
     public virtual bool CheckHead<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock
