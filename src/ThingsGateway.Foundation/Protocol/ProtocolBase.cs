@@ -147,7 +147,9 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         {
             if (Channel is IClientChannel clientChannel)
             {
-                clientChannel.SetDataHandlingAdapter(GetDataAdapter());
+                var dataHandlingAdapter = GetDataAdapter();
+                if (dataHandlingAdapter.GetType() != clientChannel.ReadOnlyDataHandlingAdapter?.GetType())
+                    clientChannel.SetDataHandlingAdapter(dataHandlingAdapter);
             }
         }
     }
@@ -309,7 +311,6 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             await Channel.ConnectAsync(ConnectTimeout, cancellationToken).ConfigureAwait(false);
         if (SendDelayTime != 0)
             await Task.Delay(SendDelayTime, cancellationToken).ConfigureAwait(false);
-        SetDataAdapter();
 
         MessageBase? result;
 
@@ -353,6 +354,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             await clientChannel.WaitLock.WaitOneAsync(cancellationToken).ConfigureAwait(false);
         try
         {
+            SetDataAdapter();
             waitData.SetCancellationToken(cancellationToken);
             await clientChannel.SendAsync(command).ConfigureAwait(false);
             var waitDataStatus = await waitData.WaitAsync(timeout).ConfigureAwait(false);
