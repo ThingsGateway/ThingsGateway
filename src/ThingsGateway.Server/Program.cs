@@ -85,7 +85,7 @@ public class Program
         builder.Services.AddCors();
 
         builder.WebHost.UseWebRoot("wwwroot");
-        builder.WebHost.UseStaticWebAssets();
+        //builder.WebHost.UseStaticWebAssets();
 
         builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>();//用户ID提供器
         builder.Services.AddSignalR();//注册SignalR

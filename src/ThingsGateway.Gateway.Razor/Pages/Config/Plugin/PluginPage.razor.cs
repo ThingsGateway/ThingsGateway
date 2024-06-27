@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.Razor;
 
@@ -59,6 +61,10 @@ public partial class PluginPage
             Title = PluginAddInputLoaclozer["SavePlugin"],
             ShowFooter = false,
             ShowCloseButton = false,
+            OnCloseAsync = async () =>
+            {
+                await InvokeAsync(table.QueryAsync);
+            },
             Size = Size.ExtraLarge
         };
         op.Component = BootstrapDynamicComponent.CreateComponent<SavePlugin>(new Dictionary<string, object?>

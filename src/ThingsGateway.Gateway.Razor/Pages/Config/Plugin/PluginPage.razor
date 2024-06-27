@@ -11,7 +11,7 @@
 
 
 <div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
-    <AdminTable TItem="PluginOutput" AutoGenerateColumns="true" ShowDefaultButtons=false 
+    <AdminTable @ref=table TItem="PluginOutput" AutoGenerateColumns="true" ShowDefaultButtons=false
                 AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
                 ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
                 ShowExportButton="true" ShowAdvancedSearch=false SearchModel=SearchModel
@@ -30,3 +30,6 @@
         </ExportButtonDropdownTemplate>
     </AdminTable>
 </div>
+@code {
+    AdminTable<PluginOutput> table;
+}

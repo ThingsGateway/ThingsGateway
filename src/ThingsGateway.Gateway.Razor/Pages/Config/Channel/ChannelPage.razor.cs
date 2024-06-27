@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Mapster;
 
 using Microsoft.AspNetCore.Components.Forms;
@@ -21,7 +23,7 @@ using ThingsGateway.Razor;
 
 namespace ThingsGateway.Gateway.Razor;
 
-public partial class ChannelPage
+public partial class ChannelPage : IDisposable
 {
     [Inject]
     [NotNull]
@@ -31,7 +33,24 @@ public partial class ChannelPage
 
     [Inject]
     [NotNull]
-    private IDispatchService<Channel>? DispatchService { get; set; }
+    private IDispatchService<bool>? DispatchService { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        DispatchService.Subscribe(Notify);
+        return base.OnInitializedAsync();
+    }
+
+    private async Task Notify(DispatchEntry<bool> entry)
+    {
+        await InvokeAsync(table.QueryAsync);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        DispatchService.UnSubscribe(Notify);
+    }
 
     #region 查询
 
@@ -50,7 +69,6 @@ public partial class ChannelPage
         try
         {
             await ChannelService.ClearChannelAsync();
-            await Change();
         }
         catch (Exception ex)
         {
@@ -58,18 +76,11 @@ public partial class ChannelPage
         }
     }
 
-    private async Task Change()
-    {
-        DispatchService.Dispatch(new());
-        await OnParametersSetAsync();
-    }
-
     private async Task<bool> Save(Channel channel, ItemChangedType itemChangedType)
     {
         try
         {
             var result = await ChannelService.SaveChannelAsync(channel, itemChangedType);
-            await Change();
             return result;
         }
         catch (Exception ex)
@@ -98,8 +109,7 @@ public partial class ChannelPage
 
                 await InvokeAsync(async ()=>
                 {
-        await table.QueryAsync();
-        await Change();
+        await InvokeAsync(table.QueryAsync);
                 });
             }},
             {nameof(ChannelEditComponent.Model),model },
@@ -114,7 +124,6 @@ public partial class ChannelPage
         try
         {
             var result = await ChannelService.DeleteChannelAsync(channels.Select(a => a.Id));
-            await Change();
             return result;
         }
         catch (Exception ex)
@@ -154,6 +163,10 @@ public partial class ChannelPage
             Title = Localizer["ImportExcel"],
             ShowFooter = false,
             ShowCloseButton = false,
+            OnCloseAsync = async () =>
+            {
+                await InvokeAsync(table.QueryAsync);
+            },
             Size = Size.ExtraLarge
         };
 
@@ -166,8 +179,7 @@ public partial class ChannelPage
         });
         await DialogService.Show(op);
 
-        await table.QueryAsync();
-        await Change();
+        await InvokeAsync(table.QueryAsync);
     }
 
     #endregion 导出

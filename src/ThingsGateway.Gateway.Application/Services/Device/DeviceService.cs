@@ -40,16 +40,19 @@ public class DeviceService : BaseService<Device>, IDeviceService
     protected readonly IImportExportService _importExportService;
     protected readonly IChannelService _channelService;
     protected readonly IPluginService _pluginService;
+    private readonly IDispatchService<Device> _dispatchService;
 
     public DeviceService(
     IFileService fileService,
-    IImportExportService importExportService
+    IImportExportService importExportService,
+    IDispatchService<Device> dispatchService
         )
     {
         _fileService = fileService;
         _channelService = App.RootServices.GetRequiredService<IChannelService>();
         _pluginService = App.RootServices.GetRequiredService<IPluginService>();
         _importExportService = importExportService;
+        _dispatchService = dispatchService;
     }
 
     /// <summary>
@@ -164,6 +167,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
     public void DeleteDeviceFromCache()
     {
         App.CacheService.Remove(ThingsGatewayCacheConst.Cache_Device);//删除设备缓存
+        _dispatchService.Dispatch(new());
     }
 
     public Device? GetDeviceById(long id)

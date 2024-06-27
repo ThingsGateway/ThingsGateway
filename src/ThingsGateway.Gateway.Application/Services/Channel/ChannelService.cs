@@ -39,15 +39,18 @@ public class ChannelService : BaseService<Channel>, IChannelService
 {
     protected readonly IFileService _fileService;
     protected readonly IImportExportService _importExportService;
+    private readonly IDispatchService<Channel> _dispatchService;
 
     /// <inheritdoc cref="IChannelService"/>
     public ChannelService(
     IFileService fileService,
-    IImportExportService importExportService
+    IImportExportService importExportService,
+    IDispatchService<Channel>? dispatchService
         )
     {
         _fileService = fileService;
         _importExportService = importExportService;
+        _dispatchService = dispatchService;
     }
 
     /// <summary>
@@ -87,7 +90,9 @@ public class ChannelService : BaseService<Channel>, IChannelService
 
             var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync()) > 0;
             if (result)
+            {
                 DeleteChannelFromCache();
+            }
             return result;
         }
         else
@@ -169,6 +174,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
     public void DeleteChannelFromCache()
     {
         App.CacheService.Remove(ThingsGatewayCacheConst.Cache_Channel);//删除通道缓存
+        _dispatchService.Dispatch(new());
     }
 
     public Channel? GetChannelById(long id)

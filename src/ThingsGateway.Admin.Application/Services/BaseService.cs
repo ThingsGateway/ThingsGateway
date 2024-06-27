@@ -14,13 +14,15 @@ using Microsoft.Extensions.Localization;
 
 using SqlSugar;
 
+using ThingsGateway.Core;
+
 namespace ThingsGateway.Admin.Application;
 
-public abstract class BaseService<T> : IDisposable where T : class, new()
+public abstract class BaseService<T> : IDataService<T>, IDisposable where T : class, new()
 {
     protected IStringLocalizer Localizer { get; }
 
-    protected BaseService()
+    public BaseService()
     {
         this.Localizer = App.CreateLocalizerByType(typeof(T))!;
     }
@@ -30,13 +32,26 @@ public abstract class BaseService<T> : IDisposable where T : class, new()
         return DbContext.Db.GetConnectionScopeWithAttr<T>().CopyNew();
     }
 
-    protected virtual async Task<bool> DeleteAsync(IEnumerable<long> models)
+    public Task<bool> AddAsync(T model)
+    {
+        return SaveAsync(model, ItemChangedType.Add);
+    }
+
+    public Task<bool> DeleteAsync(IEnumerable<T> models)
+    {
+        if (models.FirstOrDefault() is IPrimaryIdEntity)
+            return DeleteAsync(models.Select(a => ((IPrimaryIdEntity)a).Id));
+        else
+            return Task.FromResult(false);
+    }
+
+    public virtual async Task<bool> DeleteAsync(IEnumerable<long> models)
     {
         using var db = GetDB();
         return await db.Deleteable<T>().In(models.ToList()).ExecuteCommandHasChangeAsync();
     }
 
-    protected virtual async Task<bool> SaveAsync(T model, ItemChangedType changedType)
+    public virtual async Task<bool> SaveAsync(T model, ItemChangedType changedType)
     {
         using var db = GetDB();
         if (changedType == ItemChangedType.Add)
@@ -49,7 +64,12 @@ public abstract class BaseService<T> : IDisposable where T : class, new()
         }
     }
 
-    protected async Task<QueryData<T>> QueryAsync(QueryPageOptions option, Func<ISugarQueryable<T>, ISugarQueryable<T>>? queryFunc = null)
+    public Task<QueryData<T>> QueryAsync(QueryPageOptions option)
+    {
+        return QueryAsync(option, null);
+    }
+
+    public async Task<QueryData<T>> QueryAsync(QueryPageOptions option, Func<ISugarQueryable<T>, ISugarQueryable<T>>? queryFunc = null)
     {
         var ret = new QueryData<T>()
         {

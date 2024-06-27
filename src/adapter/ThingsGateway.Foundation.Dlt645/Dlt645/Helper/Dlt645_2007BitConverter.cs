@@ -92,7 +92,7 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
     /// <inheritdoc/>
     public override string ToString(byte[] buffer, int offset, int length)
     {
-        var data = new ReadOnlySpan<byte>(buffer, offset, length).BytesAdd(-0x33);
+        var data = new ReadOnlySpan<byte>(buffer, offset, buffer.Length- offset).BytesAdd(-0x33);
         var dataInfos = Dlt645Helper.GetDataInfos(data);
         StringBuilder stringBuilder = new();
         foreach (var dataInfo in dataInfos)

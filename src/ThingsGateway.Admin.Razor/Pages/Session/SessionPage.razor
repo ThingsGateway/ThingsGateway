@@ -16,7 +16,7 @@
 
         <RowButtonTemplate>
             
-            <TableCellPopConfirmButton  IsShow=@AuthorizeButton("强退会话") Text="@Localizer[nameof(SessionService.ExitSession)]" Size="Size.ExtraSmall" Color=Color.Warning Icon="fa fa-sign-out" OnConfirm="@(async()=>{await SessionService.ExitSession(context.Id);await table.QueryAsync();await ToastService.Default(); })" />
+            <TableCellPopConfirmButton  IsShow=@AuthorizeButton("强退会话") Text="@Localizer[nameof(SessionService.ExitSession)]" Size="Size.ExtraSmall" Color=Color.Warning Icon="fa fa-sign-out" OnConfirm="@(async()=>{await SessionService.ExitSession(context.Id);await InvokeAsync(table.QueryAsync);await ToastService.Default(); })" />
             <TableCellButton Size="Size.ExtraSmall" Icon="fa fa-list" Text="@Localizer[ nameof(VerificatInfo)]" OnClick="()=>ShowVerificatList(context)" />
         </RowButtonTemplate>
     </AdminTable>

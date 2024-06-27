@@ -42,7 +42,7 @@
                                           IsAsync OnConfirm=@(async()=>{await Task.Run(async()=> { await ChannelService.ClearChannelAsync();
                                           await InvokeAsync(async()=>
                                           {
-                                          await ToastService.Default(); await table.QueryAsync();
+                                          await ToastService.Default(); await InvokeAsync(table.QueryAsync);
                                           });
                                           });} ) />
         </TableToolbarTemplate>

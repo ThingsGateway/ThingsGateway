@@ -42,23 +42,37 @@ public partial class VariablePage : IDisposable
     [NotNull]
     private IDispatchService<Device>? DeviceDispatchService { get; set; }
 
+    [Inject]
+    [NotNull]
+    private IDispatchService<bool>? DispatchService { get; set; }
+
     private VariableSearchInput CustomerSearchModel { get; set; } = new VariableSearchInput();
 
     protected override Task OnInitializedAsync()
     {
         DeviceDispatchService.Subscribe(Notify);
+        DispatchService.Subscribe(Notify);
         return base.OnInitializedAsync();
     }
 
     private async Task Notify(DispatchEntry<Device> entry)
     {
         await Change();
+        await InvokeAsync(table.QueryAsync);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Notify(DispatchEntry<bool> entry)
+    {
+        await Change();
+        await InvokeAsync(table.QueryAsync);
         await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
         DeviceDispatchService.UnSubscribe(Notify);
+        DispatchService.UnSubscribe(Notify);
     }
 
     protected override Task OnParametersSetAsync()
@@ -139,7 +153,7 @@ public partial class VariablePage : IDisposable
 
                 await InvokeAsync(async ()=>
                 {
-        await table.QueryAsync();
+        await InvokeAsync(table.QueryAsync);
         await Change();
                 });
             }},
@@ -196,6 +210,11 @@ public partial class VariablePage : IDisposable
             Title = Localizer["ImportExcel"],
             ShowFooter = false,
             ShowCloseButton = false,
+            OnCloseAsync = async () =>
+            {
+                await InvokeAsync(table.QueryAsync);
+                await Change();
+            },
             Size = Size.ExtraLarge
         };
 
@@ -207,9 +226,6 @@ public partial class VariablePage : IDisposable
             {nameof(ImportExcel.Preview),preview },
         });
         await DialogService.Show(op);
-
-        await Change();
-        await table.QueryAsync();
     }
 
     #endregion 导出

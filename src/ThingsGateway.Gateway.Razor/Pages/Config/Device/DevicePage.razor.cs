@@ -47,7 +47,7 @@ public abstract partial class DevicePage : IDisposable
 
     [Inject]
     [NotNull]
-    private IDispatchService<Device>? DeviceDispatchService { get; set; }
+    private IDispatchService<bool>? DispatchService { get; set; }
 
     [Inject]
     [NotNull]
@@ -59,24 +59,35 @@ public abstract partial class DevicePage : IDisposable
     {
         ChannelDispatchService.Subscribe(Notify);
         PluginDispatchService.Subscribe(Notify);
+        DispatchService.Subscribe(Notify);
         return base.OnInitializedAsync();
     }
 
     private async Task Notify(DispatchEntry<PluginOutput> entry)
     {
         await OnParametersSetAsync();
+        await InvokeAsync(table.QueryAsync);
         await InvokeAsync(StateHasChanged);
     }
 
     private async Task Notify(DispatchEntry<Channel> entry)
     {
         await OnParametersSetAsync();
+        await InvokeAsync(table.QueryAsync);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Notify(DispatchEntry<bool> entry)
+    {
+        await OnParametersSetAsync();
+        await InvokeAsync(table.QueryAsync);
         await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
         ChannelDispatchService.UnSubscribe(Notify);
+        DispatchService.UnSubscribe(Notify);
         PluginDispatchService.UnSubscribe(Notify);
     }
 
@@ -142,7 +153,6 @@ public abstract partial class DevicePage : IDisposable
 
     private async Task Change()
     {
-        DeviceDispatchService.Dispatch(new());
         await OnParametersSetAsync();
     }
 
@@ -188,7 +198,7 @@ public abstract partial class DevicePage : IDisposable
 
                 await InvokeAsync(async ()=>
                 {
-        await table.QueryAsync();
+        await InvokeAsync(table.QueryAsync);
         await Change();
                 });
             }},
@@ -244,6 +254,11 @@ public abstract partial class DevicePage : IDisposable
             Title = Localizer["ImportExcel"],
             ShowFooter = false,
             ShowCloseButton = false,
+            OnCloseAsync = async () =>
+            {
+                await InvokeAsync(table.QueryAsync);
+                await Change();
+            },
             Size = Size.ExtraLarge
         };
 
@@ -255,9 +270,6 @@ public abstract partial class DevicePage : IDisposable
             {nameof(ImportExcel.Preview),preview },
         });
         await DialogService.Show(op);
-
-        await table.QueryAsync();
-        await Change();
     }
 
     #endregion 导出

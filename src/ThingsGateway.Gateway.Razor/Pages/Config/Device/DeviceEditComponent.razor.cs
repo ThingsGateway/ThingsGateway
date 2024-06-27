@@ -87,6 +87,7 @@ public partial class DeviceEditComponent
             [nameof(ChannelEditComponent.OnValidSubmit)] = async () =>
             {
                 await ChannelService.SaveChannelAsync(channel, ItemChangedType.Add);
+                Model.ChannelId = channel.Id;
             },
         });
         await DialogService.Show(op);

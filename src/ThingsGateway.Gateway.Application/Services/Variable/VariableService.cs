@@ -41,12 +41,15 @@ public class VariableService : BaseService<Variable>, IVariableService
     protected readonly IDeviceService _deviceService;
     protected readonly IChannelService _channelService;
     protected readonly IPluginService _pluginService;
+    private readonly IDispatchService<Variable> _dispatchService;
+    private readonly IDispatchService<bool> _allDispatchService;
 
     /// <inheritdoc cref="IVariableService"/>
     public VariableService(
     IFileService fileService,
-
-    IImportExportService importExportService
+    IImportExportService importExportService,
+   IDispatchService<Variable> dispatchService,
+   IDispatchService<bool> allDispatchService
         )
     {
         _fileService = fileService;
@@ -54,6 +57,8 @@ public class VariableService : BaseService<Variable>, IVariableService
         _pluginService = App.RootServices.GetRequiredService<IPluginService>();
         _deviceService = App.RootServices.GetRequiredService<IDeviceService>();
         _importExportService = importExportService;
+        _dispatchService = dispatchService;
+        _allDispatchService = allDispatchService;
     }
 
     #region 测试
@@ -148,6 +153,7 @@ public class VariableService : BaseService<Variable>, IVariableService
         {
             _channelService.DeleteChannelFromCache();//刷新缓存
             _deviceService.DeleteDeviceFromCache();
+            _allDispatchService.Dispatch(new());
         }
         else
         {
@@ -159,14 +165,15 @@ public class VariableService : BaseService<Variable>, IVariableService
 
     /// <inheritdoc/>
     [OperDesc("SaveVariable", isRecordPar: false, localizerType: typeof(Variable))]
-    public Task AddBatchAsync(List<Variable> input)
+    public async Task AddBatchAsync(List<Variable> input)
     {
         foreach (var item in input)
         {
             CheckInput(item);
         }
         using var db = GetDB();
-        return db.Insertable(input).ExecuteCommandAsync();
+        await db.Insertable(input).ExecuteCommandAsync();
+        _dispatchService.Dispatch(new());
     }
 
     /// <inheritdoc/>
@@ -180,6 +187,7 @@ public class VariableService : BaseService<Variable>, IVariableService
             using var db = GetDB();
 
             var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync()) > 0;
+            _dispatchService.Dispatch(new());
             return result;
         }
         else
@@ -199,6 +207,7 @@ public class VariableService : BaseService<Variable>, IVariableService
         CheckInput(input);
         if (await base.SaveAsync(input, type))
         {
+            _dispatchService.Dispatch(new());
             return true;
         }
         return false;
@@ -209,14 +218,17 @@ public class VariableService : BaseService<Variable>, IVariableService
     {
         using var db = GetDB();
         var ids = input.ToList();
-        return (await db.Deleteable<Variable>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync()) > 0;
+        var result = (await db.Deleteable<Variable>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync()) > 0;
+        _dispatchService.Dispatch(new());
+        return result;
     }
 
     [OperDesc("DeleteVariable", isRecordPar: false, localizerType: typeof(Variable))]
-    public Task DeleteByDeviceIdAsync(IEnumerable<long> input, SqlSugarClient db)
+    public async Task DeleteByDeviceIdAsync(IEnumerable<long> input, SqlSugarClient db)
     {
         var ids = input.ToList();
-        return db.Deleteable<Variable>().Where(a => ids.Contains(a.DeviceId.Value)).ExecuteCommandAsync();
+        await db.Deleteable<Variable>().Where(a => ids.Contains(a.DeviceId.Value)).ExecuteCommandAsync();
+        _dispatchService.Dispatch(new());
     }
 
     /// <summary>
@@ -234,6 +246,7 @@ public class VariableService : BaseService<Variable>, IVariableService
     {
         db ??= GetDB();
         await db.Deleteable<Variable>().ExecuteCommandAsync();
+        _dispatchService.Dispatch(new());
     }
 
     public async Task<List<VariableRunTime>> GetVariableRuntimeAsync(long? devId = null)
@@ -504,6 +517,7 @@ public class VariableService : BaseService<Variable>, IVariableService
         using var db = GetDB();
         await db.Fastest<Variable>().PageSize(100000).BulkCopyAsync(insertData);
         await db.Fastest<Variable>().PageSize(100000).BulkUpdateAsync(upData);
+        _dispatchService.Dispatch(new());
     }
 
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile)

@@ -72,7 +72,7 @@
                                           IsAsync OnConfirm=@(async()=>{await Task.Run(async()=> { await DeviceService.ClearDeviceAsync(PluginType);
                                           await InvokeAsync(async()=>
                                           {
-                                          await ToastService.Default(); await table.QueryAsync();
+                                          await ToastService.Default(); await InvokeAsync(table.QueryAsync);
                                           });
                                           });} ) />
         </TableToolbarTemplate>
