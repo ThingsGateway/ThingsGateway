@@ -39,7 +39,7 @@ internal class ModbusMasterTest
         ModbusMaster modbusMaster = new(clientChannel)
         {
             //modbus协议格式
-            ModbusType = Modbus.ModbusTypeEnum.ModbusRtu,
+            ModbusType = Modbus.ModbusTypeEnum.ModbusTcp,
             //ModbusType = Modbus.ModbusTypeEnum.ModbusTcp,
 
             //默认站号
@@ -60,7 +60,18 @@ internal class ModbusMasterTest
         Console.WriteLine(modbusMaster.GetAddressDescription());
 
         //读写方法都带取消令牌
+        for (int i = 0; i < 10; i++)
+        {
+            _ = Task.Run(async () =>
+            {
+                var result = await modbusMaster.ReadAsync("400001", 100);
+                if (!result.IsSuccess)
+                {
+                }
+            });
+        }
 
+        await Task.Delay(70000);
         //读取并解析寄存器数据
         var data = await modbusMaster.ReadInt16Async("40001", 1, cancellationToken: CancellationToken.None);
         var data1 = await modbusMaster.ReadSingleAsync("40001");

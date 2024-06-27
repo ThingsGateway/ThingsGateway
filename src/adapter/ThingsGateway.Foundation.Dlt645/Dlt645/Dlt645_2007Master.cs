@@ -160,7 +160,21 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public override async ValueTask<OperResult> WriteAsync(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    public override async ValueTask<OperResult<String[]>> ReadStringAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    {
+        bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
+
+        var result = await ReadAsync(address, GetLength(address, 0, 1), cancellationToken).ConfigureAwait(false);
+        return result.OperResultFrom<String[], byte[]>(() =>
+        {
+            var data = bitConverter.ToString(result.Content, 0, result.Content.Length);
+            return [data];
+        }
+        );
+    }
+
+    /// <inheritdoc/>
+    public override async ValueTask<OperResult> WriteAsync(string address, string[] value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -172,9 +186,23 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
                 OperCode = OperCode.PadLeft(8, '0');
 
             var codes = DataTransUtil.SpliceArray(Password.HexStringToBytes(), OperCode.HexStringToBytes());
-            string[] strArray = value.SplitStringBySemicolon();
+            string[] strArray = value;
             var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
             return await Dlt645RequestAsync(dAddress, ControlCode.Write, FEHead, codes, strArray, cancellationToken: cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return new OperResult<byte[]>(ex);
+        }
+    }
+
+    /// <inheritdoc/>
+    public override async ValueTask<OperResult> WriteAsync(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            string[] strArray = value.SplitStringBySemicolon();
+            return await WriteAsync(address, value, bitConverter, cancellationToken);
         }
         catch (Exception ex)
         {

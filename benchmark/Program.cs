@@ -23,7 +23,7 @@ namespace BenchmarkConsoleApp
     {
         private static int ClientCount = 1;
         public static int TaskNumberOfItems = 10;
-        public static int NumberOfItems = 100;
+        public static int NumberOfItems = 10;
 
         private static async Task Main(string[] args)
         {

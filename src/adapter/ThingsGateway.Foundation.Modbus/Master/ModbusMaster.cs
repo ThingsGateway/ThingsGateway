@@ -46,7 +46,6 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         {
             switch (ModbusType)
             {
-                case ModbusTypeEnum.ModbusTcp: return false;
                 default: return true;
             }
         }
@@ -221,7 +220,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
                     var writeData = ThingsGatewayBitConverter.ToUInt16(readData.Content, 0);
                     for (int i = 0; i < value.Length; i++)
                     {
-                        writeData=writeData.SetBit(mAddress.BitIndex.Value + i, value[i]);
+                        writeData = writeData.SetBit(mAddress.BitIndex.Value + i, value[i]);
                     }
                     mAddress.Data = ThingsGatewayBitConverter.GetBytes(writeData);
                     return await ModbusRequestAsync(mAddress, false, cancellationToken);

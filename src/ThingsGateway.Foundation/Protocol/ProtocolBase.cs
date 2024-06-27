@@ -345,13 +345,13 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// </summary>
     protected virtual async ValueTask<MessageBase> GetResponsedDataAsync(ISendMessage command, IClientChannel clientChannel, WaitDataAsync<MessageBase> waitData = default, int timeout = 3000, CancellationToken cancellationToken = default)
     {
+        if (IsSingleThread)
+            await clientChannel.WaitLock.WaitOneAsync(cancellationToken).ConfigureAwait(false);
         if (waitData == default)
         {
             waitData = clientChannel.WaitHandlePool.GetWaitDataAsync(out var sign);
             command.Sign = sign;
         }
-        if (IsSingleThread)
-            await clientChannel.WaitLock.WaitOneAsync(cancellationToken).ConfigureAwait(false);
         try
         {
             SetDataAdapter();

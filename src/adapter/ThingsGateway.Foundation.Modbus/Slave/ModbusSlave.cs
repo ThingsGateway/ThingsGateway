@@ -212,170 +212,165 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
     #region 核心
 
     /// <inheritdoc/>
-    protected override Task ChannelReceived(IClientChannel client, ReceivedDataEventArgs e)
+    protected override async Task ChannelReceived(IClientChannel client, ReceivedDataEventArgs e)
     {
-        _ = Task.Run(async () =>
+        var requestInfo = e.RequestInfo;
+        bool modbusRtu = false;
+        ModbusRequest modbusRequest = default;
+        ReadOnlyMemory<byte> Bytes = default;
+        //接收外部报文
+        if (requestInfo is ModbusRtuSlaveMessage modbusRtuSlaveMessage)
         {
-            var requestInfo = e.RequestInfo;
-            bool modbusRtu = false;
-            ModbusRequest modbusRequest = default;
-            ReadOnlyMemory<byte> Bytes = default;
-            //接收外部报文
-            if (requestInfo is ModbusRtuSlaveMessage modbusRtuSlaveMessage)
+            if (!modbusRtuSlaveMessage.IsSuccess)
             {
-                if (!modbusRtuSlaveMessage.IsSuccess)
-                {
-                    return;
-                }
-                modbusRequest = modbusRtuSlaveMessage.Request;
-                Bytes = modbusRtuSlaveMessage.Bytes;
-                modbusRtu = true;
+                return;
             }
-            else if (requestInfo is ModbusTcpSlaveMessage modbusTcpSlaveMessage)
+            modbusRequest = modbusRtuSlaveMessage.Request;
+            Bytes = modbusRtuSlaveMessage.Bytes;
+            modbusRtu = true;
+        }
+        else if (requestInfo is ModbusTcpSlaveMessage modbusTcpSlaveMessage)
+        {
+            if (!modbusTcpSlaveMessage.IsSuccess)
             {
-                if (!modbusTcpSlaveMessage.IsSuccess)
-                {
-                    return;
-                }
-                modbusRequest = modbusTcpSlaveMessage.Request;
-                Bytes = modbusTcpSlaveMessage.Bytes;
-                modbusRtu = false;
+                return;
             }
+            modbusRequest = modbusTcpSlaveMessage.Request;
+            Bytes = modbusTcpSlaveMessage.Bytes;
+            modbusRtu = false;
+        }
 
-            if (modbusRequest.FunctionCode <= 4)
+        if (modbusRequest.FunctionCode <= 4)
+        {
+            var data = this.ModbusRequest(modbusRequest, true);
+            if (data.IsSuccess)
             {
-                var data = this.ModbusRequest(modbusRequest, true);
-                if (data.IsSuccess)
+                ValueByteBlock valueByteBlock = new(1024);
+                try
                 {
-                    ValueByteBlock valueByteBlock = new(1024);
-                    try
+                    if (modbusRtu)
                     {
-                        if (modbusRtu)
+                        valueByteBlock.Write(Bytes.Slice(0, 2).Span);
+                        if (modbusRequest.FunctionCode == 1 || modbusRequest.FunctionCode == 2)
                         {
-                            valueByteBlock.Write(Bytes.Slice(0, 2).Span);
-                            if (modbusRequest.FunctionCode == 1 || modbusRequest.FunctionCode == 2)
-                            {
-                                valueByteBlock.WriteByte((byte)modbusRequest.Length);
-                                valueByteBlock.Write(data.Content.Span);
-                            }
-                            else
-                            {
-                                valueByteBlock.WriteByte((byte)data.Content.Length);
-                                valueByteBlock.Write(data.Content.Span);
-                            }
-                            valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Memory.Span));
-                            await ReturnData(client, valueByteBlock.Memory, e);
+                            valueByteBlock.WriteByte((byte)modbusRequest.Length);
+                            valueByteBlock.Write(data.Content.Span);
                         }
                         else
                         {
-                            valueByteBlock.Write(Bytes.Slice(0, 8).Span);
-                            if (modbusRequest.FunctionCode == 1 || modbusRequest.FunctionCode == 2)
-                            {
-                                valueByteBlock.WriteByte((byte)modbusRequest.Length);
-                                valueByteBlock.Write(data.Content.Span);
-                            }
-                            else
-                            {
-                                valueByteBlock.WriteByte((byte)data.Content.Length);
-                                valueByteBlock.Write(data.Content.Span);
-                            }
-                            valueByteBlock[5] = (byte)(valueByteBlock.Length - 6);
-                            await ReturnData(client, valueByteBlock.Memory, e);
+                            valueByteBlock.WriteByte((byte)data.Content.Length);
+                            valueByteBlock.Write(data.Content.Span);
                         }
+                        valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Memory.Span));
+                        await ReturnData(client, valueByteBlock.Memory, e);
                     }
-                    finally
+                    else
                     {
-                        valueByteBlock.SafeDispose();
+                        valueByteBlock.Write(Bytes.Slice(0, 8).Span);
+                        if (modbusRequest.FunctionCode == 1 || modbusRequest.FunctionCode == 2)
+                        {
+                            valueByteBlock.WriteByte((byte)modbusRequest.Length);
+                            valueByteBlock.Write(data.Content.Span);
+                        }
+                        else
+                        {
+                            valueByteBlock.WriteByte((byte)data.Content.Length);
+                            valueByteBlock.Write(data.Content.Span);
+                        }
+                        valueByteBlock[5] = (byte)(valueByteBlock.Length - 6);
+                        await ReturnData(client, valueByteBlock.Memory, e);
+                    }
+                }
+                finally
+                {
+                    valueByteBlock.SafeDispose();
+                }
+            }
+            else
+            {
+                await WriteError(modbusRtu, client, Bytes, e);//返回错误码
+            }
+        }
+        else//写入
+        {
+            if (modbusRequest.FunctionCode == 5)
+            {
+                //写入继电器
+                if (this.WriteData != null)
+                {
+                    var modbusAddress = new ModbusAddress(modbusRequest) { WriteFunctionCode = modbusRequest.FunctionCode, FunctionCode = 1 };
+                    // 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
+                    if ((await this.WriteData(modbusAddress, this.ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
+                    {
+                        await WriteSuccess(modbusRtu, client, Bytes, e);
+                        if (this.IsWriteMemory)
+                        {
+                            var result = this.ModbusRequest(modbusRequest, false);
+                            if (result.IsSuccess)
+                                await WriteSuccess(modbusRtu, client, Bytes, e);
+                            else
+                                await WriteError(modbusRtu, client, Bytes, e);
+                        }
+                        else
+                            await WriteSuccess(modbusRtu, client, Bytes, e);
+                    }
+                    else
+                    {
+                        await WriteError(modbusRtu, client, Bytes, e);
                     }
                 }
                 else
                 {
-                    await WriteError(modbusRtu, client, Bytes, e);//返回错误码
-                }
-            }
-            else//写入
-            {
-                if (modbusRequest.FunctionCode == 5)
-                {
-                    //写入继电器
-                    if (this.WriteData != null)
+                    //写入内存区
+                    var result = this.ModbusRequest(modbusRequest, false);
+                    if (result.IsSuccess)
                     {
-                        var modbusAddress = new ModbusAddress(modbusRequest) { WriteFunctionCode = modbusRequest.FunctionCode, FunctionCode = 1 };
-                        // 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
-                        if ((await this.WriteData(modbusAddress, this.ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
-                        {
-                            await WriteSuccess(modbusRtu, client, Bytes, e);
-                            if (this.IsWriteMemory)
-                            {
-                                var result = this.ModbusRequest(modbusRequest, false);
-                                if (result.IsSuccess)
-                                    await WriteSuccess(modbusRtu, client, Bytes, e);
-                                else
-                                    await WriteError(modbusRtu, client, Bytes, e);
-                            }
-                            else
-                                await WriteSuccess(modbusRtu, client, Bytes, e);
-                        }
-                        else
-                        {
-                            await WriteError(modbusRtu, client, Bytes, e);
-                        }
+                        await WriteSuccess(modbusRtu, client, Bytes, e);
                     }
                     else
                     {
-                        //写入内存区
-                        var result = this.ModbusRequest(modbusRequest, false);
-                        if (result.IsSuccess)
+                        await WriteError(modbusRtu, client, Bytes, e);
+                    }
+                }
+            }
+            else
+            {
+                //写入寄存器
+                if (this.WriteData != null)
+                {
+                    var modbusAddress = new ModbusAddress(modbusRequest) { WriteFunctionCode = modbusRequest.FunctionCode, FunctionCode = 3 };
+                    if ((await this.WriteData(modbusAddress, this.ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
+                    {
+                        if (this.IsWriteMemory)
                         {
-                            await WriteSuccess(modbusRtu, client, Bytes, e);
+                            var result = this.ModbusRequest(modbusRequest, false);
+                            if (result.IsSuccess)
+                                await WriteSuccess(modbusRtu, client, Bytes, e);
+                            else
+                                await WriteError(modbusRtu, client, Bytes, e);
                         }
                         else
-                        {
-                            await WriteError(modbusRtu, client, Bytes, e);
-                        }
+                            await WriteSuccess(modbusRtu, client, Bytes, e);
+                    }
+                    else
+                    {
+                        await WriteError(modbusRtu, client, Bytes, e);
                     }
                 }
                 else
                 {
-                    //写入寄存器
-                    if (this.WriteData != null)
+                    var result = this.ModbusRequest(modbusRequest, false);
+                    if (result.IsSuccess)
                     {
-                        var modbusAddress = new ModbusAddress(modbusRequest) { WriteFunctionCode = modbusRequest.FunctionCode, FunctionCode = 3 };
-                        if ((await this.WriteData(modbusAddress, this.ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
-                        {
-                            if (this.IsWriteMemory)
-                            {
-                                var result = this.ModbusRequest(modbusRequest, false);
-                                if (result.IsSuccess)
-                                    await WriteSuccess(modbusRtu, client, Bytes, e);
-                                else
-                                    await WriteError(modbusRtu, client, Bytes, e);
-                            }
-                            else
-                                await WriteSuccess(modbusRtu, client, Bytes, e);
-                        }
-                        else
-                        {
-                            await WriteError(modbusRtu, client, Bytes, e);
-                        }
+                        await WriteSuccess(modbusRtu, client, Bytes, e);
                     }
                     else
                     {
-                        var result = this.ModbusRequest(modbusRequest, false);
-                        if (result.IsSuccess)
-                        {
-                            await WriteSuccess(modbusRtu, client, Bytes, e);
-                        }
-                        else
-                        {
-                            await WriteError(modbusRtu, client, Bytes, e);
-                        }
+                        await WriteError(modbusRtu, client, Bytes, e);
                     }
                 }
             }
-        });
-
-        return Task.CompletedTask;
+        }
     }
 
     private async Task ReturnData(IClientChannel client, ReadOnlyMemory<byte> sendData, ReceivedDataEventArgs e)
