@@ -15,6 +15,11 @@ namespace ThingsGateway.Admin.Razor;
 [CascadingTypeParameter(nameof(TItem))]
 public partial class AdminTable<TItem> where TItem : class, new()
 {
+    public Task<TItem> OnAddAsync()
+    {
+        return Task.FromResult(new TItem());
+    }
+
     /// <inheritdoc cref="Table{TItem}.PageItemsSource"/>
     [Parameter]
     public IEnumerable<int>? PageItemsSource { get; set; } = new int[]

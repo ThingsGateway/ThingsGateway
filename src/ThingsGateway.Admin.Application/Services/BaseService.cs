@@ -18,7 +18,7 @@ using ThingsGateway.Core;
 
 namespace ThingsGateway.Admin.Application;
 
-public abstract class BaseService<T> : IDataService<T>, IDisposable where T : class, new()
+public class BaseService<T> : IDataService<T>, IDisposable where T : class, new()
 {
     protected IStringLocalizer Localizer { get; }
 
