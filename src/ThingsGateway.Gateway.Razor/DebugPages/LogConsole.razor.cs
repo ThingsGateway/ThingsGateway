@@ -186,7 +186,7 @@ public partial class LogConsole : IDisposable
                         var result = TextFileReader.LastLog(files.FirstOrDefault().FullName, 0);
                         if (result.IsSuccess)
                         {
-                            Messages = result.Content.Select(a => new LogMessage((int)a.LogLevel, $"{a.LogTime} - {a.Message}{(a.ExceptionString.IsNullOrWhiteSpace() ? null : $"-{a.ExceptionString}")}")).ToList();
+                            Messages = result.Content.Select(a => new LogMessage((int)a.LogLevel, $"{a.LogTime} - {a.Message}{(a.ExceptionString.IsNullOrWhiteSpace() ? null : $"{Environment.NewLine}{a.ExceptionString}")}")).ToList();
                         }
                         else
                         {

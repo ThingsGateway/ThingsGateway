@@ -22,7 +22,7 @@
             <BodyTemplate>
                 @foreach (var menu in AppContext.UserWorkbenchOutputs ?? new List<SysResource>())
                 {
-                    <LinkButton Url="@menu.Href" Target="@menu.Target.ToString()" Color="Color.Primary">
+                    <LinkButton class="mx-2" Url="@menu.Href" Target="@menu.Target.ToString()" Color="Color.Primary">
                         <i class="@menu.Icon"></i>
                         <span>@menu.Title</span>
                     </LinkButton>

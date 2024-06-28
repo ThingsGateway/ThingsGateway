@@ -55,6 +55,7 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
                 if (DtuService.HeartbeatHexString == e.ByteBlock.AsSegment(0, len).ToHexString(default))
                 {
                     await socket.WaitLock.WaitOneAsync();
+                    await Task.Delay(500);
 
                     //回应心跳包
                     await socket.SendAsync(e.ByteBlock.AsSegment());
@@ -62,7 +63,7 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
                     if (socket.Logger.LogLevel <= LogLevel.Trace)
                         socket.Logger?.Trace($"{socket}- Heartbeat");
 
-                    await Task.Delay(1000);
+                    await Task.Delay(500);
                     socket.WaitLock.Reset();
                 }
             }

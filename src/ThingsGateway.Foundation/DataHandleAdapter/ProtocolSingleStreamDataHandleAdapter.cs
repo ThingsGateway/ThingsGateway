@@ -54,71 +54,81 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
     {
         if (Logger.LogLevel <= LogLevel.Trace)
             Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.AsSegmentTake().ToHexString() : byteBlock.ToString(byteBlock.Position))}");
+
+        try
         {
-            //非并发协议,复用对象
-            if (IsSingleThread)
-                request = Request == null ? GetInstance() : Request;
-            else
             {
-                if (!beCached)
-                    request = GetInstance();
-            }
-
-            var pos = byteBlock.Position;
-
-            if (request.HeaderLength > byteBlock.CanReadLength)
-            {
-                return FilterResult.Cache;//当头部都无法解析时，直接缓存
-            }
-
-            //检查头部合法性
-            if (request.CheckHead(ref byteBlock))
-            {
-                byteBlock.Position = pos;
-                if (request.BodyLength > this.MaxPackageSize)
+                //非并发协议,复用对象
+                if (IsSingleThread)
+                    request = Request == null ? GetInstance() : Request;
+                else
                 {
-                    this.OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={this.MaxPackageSize}", true, true);
-                    return FilterResult.GoOn;
+                    if (!beCached)
+                        request = GetInstance();
                 }
-                if (request.BodyLength + request.HeaderLength > byteBlock.CanReadLength)
+
+                var pos = byteBlock.Position;
+
+                if (request.HeaderLength > byteBlock.CanReadLength)
                 {
-                    //body不满足解析，开始缓存，然后保存对象
-                    tempCapacity = request.BodyLength + request.HeaderLength;
-                    return FilterResult.Cache;
+                    return FilterResult.Cache;//当头部都无法解析时，直接缓存
                 }
-                //if (request.BodyLength <= 0)
-                //{
-                //    //如果body长度无法确定，直接读取全部
-                //    request.BodyLength = byteBlock.Length;
-                //}
-                var headPos = pos + request.HeaderLength;
-                byteBlock.Position = headPos;
-                var result = request.CheckBody(ref byteBlock);
-                if (result == FilterResult.Cache)
+
+                //检查头部合法性
+                if (request.CheckHead(ref byteBlock))
                 {
-                    if (Logger.LogLevel <= LogLevel.Trace)
-                        Logger.Trace($"{ToString()}-Received incomplete, cached message, current length:{byteBlock.Length}  {request?.ErrorMessage}");
-                    tempCapacity = request.BodyLength + request.HeaderLength;
+                    byteBlock.Position = pos;
+                    if (request.BodyLength > this.MaxPackageSize)
+                    {
+                        this.OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={this.MaxPackageSize}", true, true);
+                        return FilterResult.GoOn;
+                    }
+                    if (request.BodyLength + request.HeaderLength > byteBlock.CanReadLength)
+                    {
+                        //body不满足解析，开始缓存，然后保存对象
+                        tempCapacity = request.BodyLength + request.HeaderLength;
+                        return FilterResult.Cache;
+                    }
+                    //if (request.BodyLength <= 0)
+                    //{
+                    //    //如果body长度无法确定，直接读取全部
+                    //    request.BodyLength = byteBlock.Length;
+                    //}
+                    var headPos = pos + request.HeaderLength;
+                    byteBlock.Position = headPos;
+                    var result = request.CheckBody(ref byteBlock);
+                    if (result == FilterResult.Cache)
+                    {
+                        if (Logger.LogLevel <= LogLevel.Trace)
+                            Logger.Trace($"{ToString()}-Received incomplete, cached message, current length:{byteBlock.Length}  {request?.ErrorMessage}");
+                        tempCapacity = request.BodyLength + request.HeaderLength;
+                        request.OperCode = -1;
+                    }
+                    else if (result == FilterResult.GoOn)
+                    {
+                        if (byteBlock.Position == headPos)
+                            byteBlock.Position += 1;
+                        request.OperCode = -1;
+                    }
+                    else if (result == FilterResult.Success)
+                    {
+                        byteBlock.Position = request.HeaderLength + request.BodyLength + pos;
+                    }
+                    return result;
+                }
+                else
+                {
+                    byteBlock.Position = byteBlock.Length;//移动游标
                     request.OperCode = -1;
+                    return FilterResult.GoOn;//放弃解析
                 }
-                else if (result == FilterResult.GoOn)
-                {
-                    if (byteBlock.Position == headPos)
-                        byteBlock.Position += 1;
-                    request.OperCode = -1;
-                }
-                else if (result == FilterResult.Success)
-                {
-                    byteBlock.Position = request.HeaderLength + request.BodyLength + pos;
-                }
-                return result;
             }
-            else
-            {
-                byteBlock.Position = byteBlock.Length;//移动游标
-                request.OperCode = -1;
-                return FilterResult.GoOn;//放弃解析
-            }
+        }
+        catch (Exception ex)
+        {
+            Logger?.LogWarning(ex, $"{ToString()} Received parsing error");
+            byteBlock.Position = byteBlock.Length;//移动游标
+            return FilterResult.GoOn;//放弃解析
         }
     }
 

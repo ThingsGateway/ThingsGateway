@@ -67,70 +67,79 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
     /// <inheritdoc/>
     protected override async Task PreviewReceived(EndPoint remoteEndPoint, ByteBlock byteBlock)
     {
-        if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.AsSegmentTake().ToHexString() : byteBlock.ToString(byteBlock.Position))}");
-
-        TRequest request = null;
-        if (IsSingleThread)
-            request = Request == null ? GetInstance() : Request;
-        else
+        try
         {
-            request = GetInstance();
-        }
+            if (Logger.LogLevel <= LogLevel.Trace)
+                Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.AsSegmentTake().ToHexString() : byteBlock.ToString(byteBlock.Position))}");
 
-        var pos = byteBlock.Position;
-
-        if (request.HeaderLength > byteBlock.CanReadLength)
-        {
-            return;//当头部都无法解析时，直接缓存
-        }
-
-        //检查头部合法性
-        if (request.CheckHead(ref byteBlock))
-        {
-            byteBlock.Position = pos;
-
-            if (request.BodyLength > this.MaxPackageSize)
+            TRequest request = null;
+            if (IsSingleThread)
+                request = Request == null ? GetInstance() : Request;
+            else
             {
-                this.OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={this.MaxPackageSize}", true, true);
+                request = GetInstance();
+            }
+
+            var pos = byteBlock.Position;
+
+            if (request.HeaderLength > byteBlock.CanReadLength)
+            {
+                return;//当头部都无法解析时，直接缓存
+            }
+
+            //检查头部合法性
+            if (request.CheckHead(ref byteBlock))
+            {
+                byteBlock.Position = pos;
+
+                if (request.BodyLength > this.MaxPackageSize)
+                {
+                    this.OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={this.MaxPackageSize}", true, true);
+                    return;
+                }
+                if (request.BodyLength + request.HeaderLength > byteBlock.CanReadLength)
+                {
+                    //body不满足解析，开始缓存，然后保存对象
+                    return;
+                }
+                //if (request.BodyLength <= 0)
+                //{
+                //    //如果body长度无法确定，直接读取全部
+                //    request.BodyLength = byteBlock.Length;
+                //}
+                var headPos = pos + request.HeaderLength;
+                byteBlock.Position = headPos;
+                var result = request.CheckBody(ref byteBlock);
+                if (result == FilterResult.Cache)
+                {
+                    if (Logger.LogLevel <= LogLevel.Trace)
+                        Logger.Trace($"{ToString()}-Received incomplete, cached message, current length:{byteBlock.Length}  {request?.ErrorMessage}");
+                    request.OperCode = -1;
+                }
+                else if (result == FilterResult.GoOn)
+                {
+                    if (byteBlock.Position == headPos)
+                        byteBlock.Position += 1;
+                    request.OperCode = -1;
+                }
+                else if (result == FilterResult.Success)
+                {
+                    byteBlock.Position = request.HeaderLength + request.BodyLength + pos;
+                    await GoReceived(remoteEndPoint, null, request);
+                }
                 return;
             }
-            if (request.BodyLength + request.HeaderLength > byteBlock.CanReadLength)
+            else
             {
-                //body不满足解析，开始缓存，然后保存对象
+                byteBlock.Position = byteBlock.Length;//移动游标
+                request.OperCode = -1;
                 return;
             }
-            //if (request.BodyLength <= 0)
-            //{
-            //    //如果body长度无法确定，直接读取全部
-            //    request.BodyLength = byteBlock.Length;
-            //}
-            var headPos = pos + request.HeaderLength;
-            byteBlock.Position = headPos;
-            var result = request.CheckBody(ref byteBlock);
-            if (result == FilterResult.Cache)
-            {
-                if (Logger.LogLevel <= LogLevel.Trace)
-                    Logger.Trace($"{ToString()}-Received incomplete, cached message, current length:{byteBlock.Length}  {request?.ErrorMessage}");
-                request.OperCode = -1;
-            }
-            else if (result == FilterResult.GoOn)
-            {
-                if (byteBlock.Position == headPos)
-                    byteBlock.Position += 1;
-                request.OperCode = -1;
-            }
-            else if (result == FilterResult.Success)
-            {
-                byteBlock.Position = request.HeaderLength + request.BodyLength + pos;
-                await GoReceived(remoteEndPoint, null, request);
-            }
-            return;
         }
-        else
+        catch (Exception ex)
         {
+            Logger?.LogWarning(ex, $"{ToString()} Received parsing error");
             byteBlock.Position = byteBlock.Length;//移动游标
-            request.OperCode = -1;
             return;
         }
     }
