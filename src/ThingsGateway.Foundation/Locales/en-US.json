@@ -14,7 +14,7 @@
     "Disconnected": "Disconnected",
     "Disconnecting": "Disconnecting",
     "DtuConnected": "Dtu identifier {0} connection successful",
-    "DtuNoConnectedWaining": "The Client(Dtu) is not connected",
+    "DtuNoConnectedWaining": "The Client(Dtu) is not connected, id: {0}",
     "ErrorMessage": "Error message",
     "EventError": "Error occurred in event {0}",
     "Exception": "Exception stack",

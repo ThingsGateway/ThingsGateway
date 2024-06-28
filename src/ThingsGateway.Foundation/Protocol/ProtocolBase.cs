@@ -290,7 +290,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             if (((TcpServiceChannel)Channel).Clients.TryGetClient($"ID={socketId}", out TcpSessionClientChannel? client))
                 return new OperResult<IClientChannel>() { Content = client };
             else
-                return (new OperResult<IClientChannel>(DefaultResource.Localizer["DtuNoConnectedWaining"]));
+                return (new OperResult<IClientChannel>(DefaultResource.Localizer["DtuNoConnectedWaining", socketId]));
         }
         else
             return new OperResult<IClientChannel>() { Content = (IClientChannel)Channel };

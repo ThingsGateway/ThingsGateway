@@ -14,7 +14,7 @@
     "Disconnected": "断开连接",
     "Disconnecting": "正在断开连接",
     "DtuConnected": "Dtu标识 {0} 连接成功",
-    "DtuNoConnectedWaining": "客户端(Dtu)未连接",
+    "DtuNoConnectedWaining": "客户端(Dtu)未连接，id：{0}",
     "ErrorMessage": "错误信息",
     "EventError": "在事件 {0} 中发生错误",
     "Exception": "异常堆栈",
