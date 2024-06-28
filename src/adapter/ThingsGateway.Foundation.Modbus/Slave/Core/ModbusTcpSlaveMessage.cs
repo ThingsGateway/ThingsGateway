@@ -73,6 +73,7 @@ internal class ModbusTcpSlaveMessage : MessageBase, IResultMessage
             byteBlock.Position += 1;
             Request.Data = byteBlock.AsSegmentTake(Request.Length);
         }
+        this.OperCode = 0;
         return FilterResult.Success;
     }
 }

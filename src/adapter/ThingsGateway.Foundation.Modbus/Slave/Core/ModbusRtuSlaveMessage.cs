@@ -93,6 +93,7 @@ internal class ModbusRtuSlaveMessage : MessageBase, IResultMessage
         var checkCrc = byteBlock.Span.Slice(pos + crcLen, 2).ToArray();
         if (crc.SequenceEqual(checkCrc))
         {
+            this.OperCode = 0;
             return FilterResult.Success;
         }
 

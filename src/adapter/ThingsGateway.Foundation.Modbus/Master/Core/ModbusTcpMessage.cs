@@ -69,6 +69,7 @@ internal class ModbusTcpMessage : MessageBase, IResultMessage
 
         if (Response.FunctionCode <= 4)
         {
+            this.OperCode = 0;
             this.Content = byteBlock.ToArrayTake(BodyLength);
             Response.Data = this.Content;
             return FilterResult.Success;
@@ -77,6 +78,7 @@ internal class ModbusTcpMessage : MessageBase, IResultMessage
         {
             byteBlock.Position = HeaderLength - 1;
             Response.StartAddress = byteBlock.ReadUInt16();
+            this.OperCode = 0;
             this.Content = byteBlock.ToArrayTake(BodyLength - 1);
             Response.Data = this.Content;
             return FilterResult.Success;
@@ -86,6 +88,7 @@ internal class ModbusTcpMessage : MessageBase, IResultMessage
             byteBlock.Position = HeaderLength - 1;
             Response.StartAddress = byteBlock.ReadUInt16(EndianType.Big);
             Response.Length = byteBlock.ReadUInt16(EndianType.Big);
+            this.OperCode = 0;
             this.Content = Array.Empty<byte>();
             return FilterResult.Success;
         }

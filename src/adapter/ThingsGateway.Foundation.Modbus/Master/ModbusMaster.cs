@@ -164,17 +164,17 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     }
 
     /// <inheritdoc/>
-    public override ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    public override async ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
     {
         try
         {
             var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
             mAddress.Length = (ushort)length;
-            return ModbusRequestAsync(mAddress, true, cancellationToken);
+            return await ModbusRequestAsync(mAddress, true, cancellationToken);
         }
         catch (Exception ex)
         {
-            return EasyValueTask.FromResult(new OperResult<byte[]>(ex));
+            return new OperResult<byte[]>(ex);
         }
     }
 

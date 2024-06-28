@@ -101,6 +101,7 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
 
         if (Response.FunctionCode <= 4)
         {
+            this.OperCode = 0;
             this.Content = byteBlock.ToArrayTake(BodyLength - 2);
             Response.Data = this.Content;
             crcLen = 3 + Response.Length;
@@ -109,6 +110,7 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
         {
             byteBlock.Position = HeaderLength - 1;
             Response.StartAddress = byteBlock.ReadUInt16(EndianType.Big);
+            this.OperCode = 0;
             this.Content = byteBlock.ToArrayTake(BodyLength - 4);
             Response.Data = this.Content;
             crcLen = 6;
@@ -118,6 +120,7 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
             byteBlock.Position = HeaderLength - 1;
             Response.StartAddress = byteBlock.ReadUInt16(EndianType.Big);
             Response.Length = byteBlock.ReadUInt16(EndianType.Big);
+            this.OperCode = 0;
             this.Content = Array.Empty<byte>();
             crcLen = 6;
         }

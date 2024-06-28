@@ -59,6 +59,7 @@ internal class S7Message : MessageBase, IResultMessage
         {
             if (byteBlock[pos + 1] == 0xD0) // 首次握手0XD0连接确认
             {
+                this.OperCode = 0;
                 return FilterResult.Success;
             }
             else

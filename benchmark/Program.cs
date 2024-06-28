@@ -13,8 +13,6 @@
 
 using BenchmarkDotNet.Running;
 
-using System.Diagnostics;
-
 using ThingsGateway.Foundation;
 
 namespace BenchmarkConsoleApp
@@ -49,11 +47,15 @@ namespace BenchmarkConsoleApp
             {
                 BenchmarkRunner.Run(typeof(TaskCompletionSourceBenchmark));
             });
-            consoleAction.Add("3", "S7测试", () =>
+            consoleAction.Add("3", "S7基准测试", () =>
             {
                 BenchmarkRunner.Run(typeof(S7Benchmark));
             });
-
+            consoleAction.Add("11", "Modbus测试", async () =>
+            {
+                ModbusBenchmark modbusBenchmark = new();
+                await modbusBenchmark.ThingsGateway();
+            });
             consoleAction.ShowAll();
 
             while (true)

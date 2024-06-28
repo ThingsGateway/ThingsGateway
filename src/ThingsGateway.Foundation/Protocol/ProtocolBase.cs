@@ -287,7 +287,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     {
         if (Channel.ChannelType == ChannelTypeEnum.TcpService)
         {
-            if (((TcpServiceChannel)Channel).Clients.TryGetClient($"ID={socketId}", out TcpSessionClientChannel? client))
+            if (((TcpServiceChannel)Channel).TryGetClient($"ID={socketId}", out TcpSessionClientChannel? client))
                 return new OperResult<IClientChannel>() { Content = client };
             else
                 return (new OperResult<IClientChannel>(DefaultResource.Localizer["DtuNoConnectedWaining", socketId]));

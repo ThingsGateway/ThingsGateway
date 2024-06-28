@@ -14,9 +14,9 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 
-    <DebugSymbols>false</DebugSymbols>
-    <DebugType>none</DebugType>
-    <EmbedAllSources>false</EmbedAllSources>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Embedded</DebugType>
+    <EmbedAllSources>True</EmbedAllSources>
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(SolutionDir)PackNuget.props" Pack="true" PackagePath="\" />
