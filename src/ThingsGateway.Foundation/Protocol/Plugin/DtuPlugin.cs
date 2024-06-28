@@ -8,13 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Extension;
-
-using System.ComponentModel.DataAnnotations;
-
 using ThingsGateway.Foundation.Extension.String;
-
-using TouchSocket.Core;
 
 namespace ThingsGateway.Foundation;
 
@@ -40,15 +34,26 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
                 client.Logger.Info(DefaultResource.Localizer["DtuConnected", id]);
                 e.Handled = true;
             }
+
+            if (!socket.Service.ClientExists(socket.Id))
+            {
+                await socket.CloseAsync();
+            }
+
             if (len > 0)
             {
                 if (DtuService.HeartbeatHexString == e.ByteBlock.AsSegment(0, len).ToHexString(default))
                 {
+                    await socket.WaitLock.WaitOneAsync();
+
                     //回应心跳包
-                    socket.Send(e.ByteBlock.AsSegment());
+                    await socket.SendAsync(e.ByteBlock.AsSegment());
                     e.Handled = true;
                     if (socket.Logger.LogLevel <= LogLevel.Trace)
                         socket.Logger?.Trace($"{socket}- Heartbeat");
+
+                    await Task.Delay(1000);
+                    socket.WaitLock.Reset();
                 }
             }
         }

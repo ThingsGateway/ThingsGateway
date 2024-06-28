@@ -11,7 +11,7 @@
     <PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="6.0.3.57" />
     <PackageReference Include="ThingsGateway.Foundation.Variable" Version="8.6.0" />
     <PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.57" />
-    <PackageReference Include="TouchSocket.Modbus" Version="2.1.0-alpha.22" />
+    <PackageReference Include="TouchSocket.Modbus" Version="2.1.0-alpha.23" />
   </ItemGroup>
 
 
