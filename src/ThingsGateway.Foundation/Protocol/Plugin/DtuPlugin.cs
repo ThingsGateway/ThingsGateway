@@ -37,7 +37,17 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
 
             if (!socket.Service.ClientExists(socket.Id))
             {
-                await socket.CloseAsync();
+                try
+                {
+                    socket.TryShutdown();
+                    await socket.CloseAsync();
+                }
+                catch
+                {
+                }
+
+                await e.InvokeNext().ConfigureAwait(false);//如果本插件无法处理当前数据，请将数据转至下一个插件。
+                return;
             }
 
             if (len > 0)
