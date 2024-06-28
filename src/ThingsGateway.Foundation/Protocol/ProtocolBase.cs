@@ -346,7 +346,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     protected virtual async ValueTask<MessageBase> GetResponsedDataAsync(ISendMessage command, IClientChannel clientChannel, WaitDataAsync<MessageBase> waitData = default, int timeout = 3000, CancellationToken cancellationToken = default)
     {
         if (IsSingleThread)
-            await clientChannel.WaitLock.WaitOneAsync(cancellationToken).ConfigureAwait(false);
+            await clientChannel.WaitLock.WaitAsync(cancellationToken).ConfigureAwait(false);
         if (waitData == default)
         {
             waitData = clientChannel.WaitHandlePool.GetWaitDataAsync(out var sign);
@@ -373,7 +373,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         {
             clientChannel.WaitHandlePool.Destroy(waitData);
             if (IsSingleThread)
-                clientChannel.WaitLock.Set();
+                clientChannel.WaitLock.Release();
         }
     }
 

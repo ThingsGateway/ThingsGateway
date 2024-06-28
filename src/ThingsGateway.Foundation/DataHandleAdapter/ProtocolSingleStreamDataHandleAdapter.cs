@@ -15,7 +15,7 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// TCP/Serial适配器基类
 /// </summary>
-public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlingAdapter<TRequest> where TRequest : class, IResultMessage, new()
+public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlingAdapter<TRequest> where TRequest : MessageBase, new()
 {
     /// <inheritdoc cref="ProtocolSingleStreamDataHandleAdapter{TRequest}"/>
     public ProtocolSingleStreamDataHandleAdapter()
@@ -138,7 +138,7 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
     /// <returns></returns>
     protected virtual TRequest GetInstance()
     {
-        return new TRequest();
+        return new TRequest() { OperCode = -1 };
     }
 
     /// <inheritdoc/>

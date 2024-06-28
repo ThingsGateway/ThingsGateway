@@ -25,11 +25,22 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
     public async Task OnTcpReceiving(ITcpSession client, ByteBlockEventArgs e)
     {
         var len = DtuService.HeartbeatHexString.HexStringToBytes().Length;
-        if (client is TcpSessionClientChannel socket)
+        if (client is TcpSessionClientChannel socket && socket.Service is TcpServiceChannel tcpServiceChannel)
         {
             if (!socket.Id.StartsWith("ID="))
             {
                 var id = $"ID={e.ByteBlock}";
+                if (tcpServiceChannel.TryGetClient(id, out var oldClient))
+                {
+                    try
+                    {
+                        oldClient.TryShutdown();
+                        await oldClient.CloseAsync();
+                    }
+                    catch
+                    {
+                    }
+                }
                 await socket.ResetIdAsync(id);
                 client.Logger.Info(DefaultResource.Localizer["DtuConnected", id]);
                 e.Handled = true;
@@ -54,17 +65,11 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
             {
                 if (DtuService.HeartbeatHexString == e.ByteBlock.AsSegment(0, len).ToHexString(default))
                 {
-                    await socket.WaitLock.WaitOneAsync();
-                    await Task.Delay(500);
-
                     //回应心跳包
                     await socket.SendAsync(e.ByteBlock.AsSegment());
                     e.Handled = true;
                     if (socket.Logger.LogLevel <= LogLevel.Trace)
                         socket.Logger?.Trace($"{socket}- Heartbeat");
-
-                    await Task.Delay(500);
-                    socket.WaitLock.Reset();
                 }
             }
         }

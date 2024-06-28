@@ -19,7 +19,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     }
 
     /// <inheritdoc/>
-    public AsyncAutoResetEvent WaitLock { get; } = new AsyncAutoResetEvent(true);
+    public EasyLock WaitLock { get; } = new EasyLock();
 
     public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
 

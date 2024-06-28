@@ -20,7 +20,7 @@ public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IOn
     /// <summary>
     /// 收发等待锁，对于大部分工业主从协议是必须的，一个通道一个实现
     /// </summary>
-    AsyncAutoResetEvent WaitLock { get; }
+    EasyLock WaitLock { get; }
 
     WaitHandlePool<MessageBase> WaitHandlePool { get; }
     DataHandlingAdapter ReadOnlyDataHandlingAdapter { get; }

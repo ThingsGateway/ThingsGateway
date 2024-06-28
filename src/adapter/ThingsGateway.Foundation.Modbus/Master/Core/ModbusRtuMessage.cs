@@ -57,14 +57,14 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
             //站号验证
             if (Request.Station != Response.Station)
             {
-                this.OperCode = -1;
+                this.OperCode = 999;
                 Response.ErrorCode = 1;
                 this.ErrorMessage = ModbusResource.Localizer["StationNotSame", Request.Station, Response.Station];
                 return true;
             }
             if (Response.FunctionCode > 4 ? Request.WriteFunctionCode != Response.FunctionCode : Request.FunctionCode != Response.FunctionCode)
             {
-                this.OperCode = -1;
+                this.OperCode = 999;
                 Response.ErrorCode = 1;
                 this.ErrorMessage = ModbusResource.Localizer["FunctionNotSame", Request.FunctionCode, Response.FunctionCode];
                 return true;
@@ -87,7 +87,6 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
                 return true;
             }
         }
-
         return false;
     }
 

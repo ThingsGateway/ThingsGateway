@@ -16,7 +16,7 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// UDP适配器基类
 /// </summary>
-public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter where TRequest : class, IResultMessage, new()
+public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter where TRequest : MessageBase, new()
 {
     /// <inheritdoc/>
     public override bool CanSendRequestInfo => true;
@@ -51,7 +51,7 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
     /// <returns></returns>
     protected virtual TRequest GetInstance()
     {
-        return new TRequest();
+        return new TRequest() { OperCode = -1 };
     }
 
     /// <inheritdoc/>
