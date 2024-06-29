@@ -15,16 +15,11 @@ namespace ThingsGateway.Foundation;
 [PluginOption(Singleton = true)]
 public class DtuPlugin : PluginBase, ITcpReceivingPlugin
 {
-    private IDtu DtuService;
-
-    public DtuPlugin(IDtu dtuService)
-    {
-        this.DtuService = dtuService;
-    }
+    public string HeartbeatHexString { get; set; }
 
     public async Task OnTcpReceiving(ITcpSession client, ByteBlockEventArgs e)
     {
-        var len = DtuService.HeartbeatHexString.HexStringToBytes().Length;
+        var len = HeartbeatHexString.HexStringToBytes().Length;
         if (client is TcpSessionClientChannel socket && socket.Service is TcpServiceChannel tcpServiceChannel)
         {
             if (!socket.Id.StartsWith("ID="))
@@ -63,7 +58,7 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
 
             if (len > 0)
             {
-                if (DtuService.HeartbeatHexString == e.ByteBlock.AsSegment(0, len).ToHexString(default))
+                if (HeartbeatHexString == e.ByteBlock.AsSegment(0, len).ToHexString(default))
                 {
                     //回应心跳包
                     await socket.SendAsync(e.ByteBlock.AsSegment());

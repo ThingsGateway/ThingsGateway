@@ -8,21 +8,16 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System.ComponentModel.DataAnnotations;
-using System.Drawing;
-
 using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Foundation;
 
+[PluginOption(Singleton = true)]
 internal class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcpReceivingPlugin
 {
-    private IDtuClient DtuClient;
-
-    public HeartbeatAndReceivePlugin(IDtuClient dtuClient)
-    {
-        this.DtuClient = dtuClient;
-    }
+    public string HeartbeatHexString { get; set; } = "HeartbeatHexString";
+    public string DtuId { get; set; } = "DtuId";
+    public int HeartbeatTime { get; set; } = 3;
 
     public async Task OnTcpConnected(ITcpSession client, ConnectedEventArgs e)
     {
@@ -31,18 +26,18 @@ internal class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcp
             return;//此处可判断，如果为服务器，则不用使用心跳。
         }
 
-        if (DtuClient.DtuId.IsNullOrWhiteSpace()) return;
+        if (DtuId.IsNullOrWhiteSpace()) return;
 
         if (client is ITcpClient tcpClient)
         {
-            await tcpClient.SendAsync(DtuClient.DtuId.ToUTF8Bytes()).ConfigureAwait(false);
+            await tcpClient.SendAsync(DtuId.ToUTF8Bytes()).ConfigureAwait(false);
 
             _ = Task.Run(async () =>
              {
                  var failedCount = 0;
                  while (true)
                  {
-                     await Task.Delay(this.DtuClient.HeartbeatTime * 1000).ConfigureAwait(false);
+                     await Task.Delay(this.HeartbeatTime * 1000).ConfigureAwait(false);
                      if (!client.Online)
                      {
                          return;
@@ -50,7 +45,7 @@ internal class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcp
 
                      try
                      {
-                         await tcpClient.SendAsync(this.DtuClient.HeartbeatHexString.HexStringToBytes()).ConfigureAwait(false);
+                         await tcpClient.SendAsync(this.HeartbeatHexString.HexStringToBytes()).ConfigureAwait(false);
                          failedCount = 0;
                      }
                      catch
@@ -75,14 +70,14 @@ internal class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcp
             return;//此处可判断，如果为服务器，则不用使用心跳。
         }
 
-        if (DtuClient.DtuId.IsNullOrWhiteSpace()) return;
+        if (DtuId.IsNullOrWhiteSpace()) return;
 
         if (client is ITcpClient tcpClient)
         {
-            var len = DtuClient.HeartbeatHexString.HexStringToBytes().Length;
+            var len = HeartbeatHexString.HexStringToBytes().Length;
             if (len > 0)
             {
-                if (DtuClient.HeartbeatHexString == e.ByteBlock.AsSegment(0, len).ToHexString(default))
+                if (HeartbeatHexString == e.ByteBlock.AsSegment(0, len).ToHexString(default))
                 {
                     e.Handled = true;
                 }

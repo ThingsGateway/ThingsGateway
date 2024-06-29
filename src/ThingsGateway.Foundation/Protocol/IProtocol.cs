@@ -484,5 +484,5 @@ public interface IProtocol : IDisposable
     /// </summary>
     /// <param name="socketId"></param>
     /// <returns></returns>
-    OperResult<IClientChannel> GetChannel(string socketId);
+    ValueTask<OperResult<IClientChannel>> GetChannelAsync(string socketId);
 }

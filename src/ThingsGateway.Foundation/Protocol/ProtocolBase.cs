@@ -271,7 +271,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     {
         try
         {
-            var channelResult = GetChannel(socketId);
+            var channelResult = await GetChannelAsync(socketId);
             if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
 
             return await SendAsync(sendMessage, channelResult.Content, cancellationToken);
@@ -283,14 +283,19 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual OperResult<IClientChannel> GetChannel(string socketId)
+    public virtual async ValueTask<OperResult<IClientChannel>> GetChannelAsync(string socketId)
     {
         if (Channel.ChannelType == ChannelTypeEnum.TcpService)
         {
             if (((TcpServiceChannel)Channel).TryGetClient($"ID={socketId}", out TcpSessionClientChannel? client))
+            {
                 return new OperResult<IClientChannel>() { Content = client };
+            }
             else
+            {
+                await Task.Delay(1000);
                 return (new OperResult<IClientChannel>(DefaultResource.Localizer["DtuNoConnectedWaining", socketId]));
+            }
         }
         else
             return new OperResult<IClientChannel>() { Content = (IClientChannel)Channel };
@@ -299,7 +304,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <inheritdoc/>
     public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage sendMessage, string socketId, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default)
     {
-        var channelResult = GetChannel(socketId);
+        var channelResult = await GetChannelAsync(socketId);
         if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
         return await SendThenReturnAsync(sendMessage, channelResult.Content, waitData, cancellationToken);
     }

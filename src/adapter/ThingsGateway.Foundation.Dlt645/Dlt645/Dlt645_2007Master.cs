@@ -107,7 +107,7 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     {
         try
         {
-            var channelResult = GetChannel(dAddress.SocketId);
+            var channelResult = await GetChannelAsync(dAddress.SocketId);
             if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
 
             var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
@@ -126,7 +126,7 @@ channelResult.Content, waitData, cancellationToken).ConfigureAwait(false);
     {
         try
         {
-            var channelResult = GetChannel(dAddress.SocketId);
+            var channelResult = await GetChannelAsync(dAddress.SocketId);
             if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
 
             await this.SendAsync(

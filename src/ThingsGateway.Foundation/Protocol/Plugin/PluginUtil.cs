@@ -30,7 +30,8 @@ public static class PluginUtil
 
         action += a =>
         {
-            a.Add(new DtuPlugin(dtu));
+            var plugin = a.Add<DtuPlugin>();
+            plugin.HeartbeatHexString = dtu.HeartbeatHexString;
         };
         return action;
     }
@@ -60,7 +61,10 @@ public static class PluginUtil
 
         action += a =>
         {
-            a.Add(new HeartbeatAndReceivePlugin(dtuClient));
+            var plugin = a.Add<HeartbeatAndReceivePlugin>();
+            plugin.HeartbeatHexString = dtuClient.HeartbeatHexString;
+            plugin.DtuId = dtuClient.DtuId;
+            plugin.HeartbeatTime = dtuClient.HeartbeatTime;
         };
         return action;
     }

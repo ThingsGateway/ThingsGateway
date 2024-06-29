@@ -11,7 +11,6 @@
 using ThingsGateway.Foundation.Extension.String;
 
 using TouchSocket.SerialPorts;
-using TouchSocket.Sockets;
 
 namespace ThingsGateway.Foundation;
 
@@ -83,7 +82,7 @@ public static class ChannelConfigExtensions
     public static TcpServiceChannel GetTcpServiceWithBindIPHost(this TouchSocketConfig config, string bindUrl)
     {
         if (bindUrl == null) throw new ArgumentNullException(nameof(IPHost));
-       var urls= bindUrl.SplitStringBySemicolon();
+        var urls = bindUrl.SplitStringBySemicolon();
         config.SetListenIPHosts(IPHost.ParseIPHosts(urls));
         //载入配置
         TcpServiceChannel tcpServiceChannel = new TcpServiceChannel();
