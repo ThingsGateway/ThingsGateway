@@ -258,8 +258,6 @@ public abstract class DriverBase : DisposableObject
             }
             catch (OperationCanceledException)
             {
-                // 如果初始化操作超时，则记录警告信息
-                Logger?.LogWarning(Localizer["DeviceTaskStartTimeout", DeviceName, timeout]);
             }
             catch (TimeoutException)
             {

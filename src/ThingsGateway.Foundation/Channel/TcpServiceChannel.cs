@@ -8,10 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System.Net.Sockets;
-
-using TouchSocket.Sockets;
-
 namespace ThingsGateway.Foundation;
 
 /// <inheritdoc/>
@@ -19,6 +15,8 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
 {
     /// <inheritdoc/>
     public ConcurrentList<IProtocol> Collects { get; } = new();
+
+    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
 
     /// <summary>
     /// 停止时是否发送ShutDown
@@ -54,18 +52,27 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
     /// <inheritdoc/>
     public override async Task StartAsync()
     {
-        if (this.ServerState != ServerState.Running)
+        try
         {
-            await base.StopAsync().ConfigureAwait(false);
-            await base.StartAsync().ConfigureAwait(false);
-            if (this.ServerState == ServerState.Running)
+            await this.m_semaphoreForConnect.WaitAsync().ConfigureAwait(false);
+
+            if (this.ServerState != ServerState.Running)
             {
-                Logger.Info($"{Monitors.FirstOrDefault()?.Option.IpHost}{DefaultResource.Localizer["ServiceStarted"]}");
+                await base.StopAsync().ConfigureAwait(false);
+                await base.StartAsync().ConfigureAwait(false);
+                if (this.ServerState == ServerState.Running)
+                {
+                    Logger.Info($"{Monitors.FirstOrDefault()?.Option.IpHost}{DefaultResource.Localizer["ServiceStarted"]}");
+                }
+            }
+            else
+            {
+                await base.StartAsync().ConfigureAwait(false);
             }
         }
-        else
+        finally
         {
-            await base.StartAsync().ConfigureAwait(false);
+            this.m_semaphoreForConnect.Release();
         }
     }
 

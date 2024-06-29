@@ -51,6 +51,8 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     /// <inheritdoc/>
     public ConcurrentList<IProtocol> Collects { get; } = new();
 
+    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
+
     /// <inheritdoc/>
     public override string? ToString()
     {
@@ -60,18 +62,27 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     /// <inheritdoc/>
     public override async Task StartAsync()
     {
-        if (this.ServerState != ServerState.Running)
+        try
         {
-            await base.StopAsync().ConfigureAwait(false);
-            await base.StartAsync().ConfigureAwait(false);
-            if (this.ServerState == ServerState.Running)
+            await this.m_semaphoreForConnect.WaitAsync().ConfigureAwait(false);
+
+            if (this.ServerState != ServerState.Running)
             {
-                Logger.Info($"{Monitor.IPHost}{DefaultResource.Localizer["ServiceStarted"]}");
+                await base.StopAsync().ConfigureAwait(false);
+                await base.StartAsync().ConfigureAwait(false);
+                if (this.ServerState == ServerState.Running)
+                {
+                    Logger.Info($"{Monitor.IPHost}{DefaultResource.Localizer["ServiceStarted"]}");
+                }
+            }
+            else
+            {
+                await base.StartAsync().ConfigureAwait(false);
             }
         }
-        else
+        finally
         {
-            await base.StartAsync().ConfigureAwait(false);
+            this.m_semaphoreForConnect.Release();
         }
     }
 
