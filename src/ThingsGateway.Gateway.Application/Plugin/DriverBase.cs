@@ -256,6 +256,11 @@ public abstract class DriverBase : DisposableObject
                 // 异步执行初始化操作，并设置超时时间
                 await ProtectedBeforStartAsync(cancellationToken).WaitAsync(TimeSpan.FromSeconds(timeout), cancellationToken).ConfigureAwait(false);
             }
+            catch (OperationCanceledException)
+            {
+                // 如果初始化操作超时，则记录警告信息
+                Logger?.LogWarning(Localizer["DeviceTaskStartTimeout", DeviceName, timeout]);
+            }
             catch (TimeoutException)
             {
                 // 如果初始化操作超时，则记录警告信息

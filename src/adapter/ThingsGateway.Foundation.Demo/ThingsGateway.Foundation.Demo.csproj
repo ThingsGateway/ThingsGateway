@@ -7,8 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="ThingsGateway.Foundation.Variable" Version="8.6.0" />
-    <PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="6.0.3.61" />
-    <PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.61" />
+    <PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="6.0.3.60" />
+    <PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.60" />
   </ItemGroup>
 
 

@@ -32,7 +32,6 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         Channel.Started += ChannelStarted;
         Channel.ChannelReceived += ChannelReceived;
         Channel.Config.ConfigurePlugins(ConfigurePlugins());
-        channel.Setup(channel.Config.Clone());
     }
 
     /// <inheritdoc/>
@@ -743,23 +742,27 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                     try
                     {
                         //只关闭，不释放
-                        Channel.Close();
+                        Channel.SafeClose();
                         if (Channel is IClientChannel client)
                         {
                             client.WaitHandlePool.SafeDispose();
                         }
-                        else if (Channel is TcpServiceChannel tcpServiceChannel)
-                        {
-                            tcpServiceChannel.Clients.ForEach(a =>
-                            {
-                                a.WaitHandlePool.SafeDispose();
-                            });
-                        }
+
                     }
                     catch (Exception ex)
                     {
                         Logger.LogWarning(ex);
                     }
+                }
+                if (Channel is TcpServiceChannel tcpServiceChannel)
+                {
+                    tcpServiceChannel.Clients.ForEach(a =>
+                    {
+
+                        a.WaitHandlePool.SafeDispose();
+                    });
+                    tcpServiceChannel.SafeClose();
+
                 }
             }
         }

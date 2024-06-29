@@ -97,6 +97,7 @@ public abstract class DeviceHostedService : BackgroundService
             {
                 // 如果找到了匹配的通道线程，则将驱动程序添加到该线程中
                 channelThread.AddDriver(driverBase);
+                channelThread.Channel?.Setup(channelThread.FoundataionConfig.Clone());
                 return channelThread;
             }
 

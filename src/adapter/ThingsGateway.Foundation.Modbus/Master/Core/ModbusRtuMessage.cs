@@ -53,6 +53,11 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
         }
         else
         {
+            if (Request == null)
+            {
+                return false;
+            }
+
             //验证发送/返回站号与功能码
             //站号验证
             if (Request.Station != Response.Station)

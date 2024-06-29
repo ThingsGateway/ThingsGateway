@@ -127,13 +127,13 @@ public class ChannelThread
         LogMessage.AddLogger(new EasyLogger(Log_Out) { LogLevel = TouchSocket.Core.LogLevel.Trace });
 
         // 初始化基础配置容器
-        FoundataionConfig = new();
+        var foundataionConfig = new TouchSocketConfig();
 
         // 配置容器中注册日志记录器实例
-        FoundataionConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
+        foundataionConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
 
         // 根据配置获取通道实例
-        Channel = getChannel(FoundataionConfig);
+        Channel = getChannel(foundataionConfig);
 
         // 设置日志路径为通道ID对应的日志路径
         LogPath = channel.Id.GetLogPath();
@@ -167,7 +167,7 @@ public class ChannelThread
     /// <summary>
     /// <inheritdoc cref="TouchSocket.Core.TouchSocketConfig"/>
     /// </summary>
-    protected internal TouchSocketConfig FoundataionConfig { get; set; }
+    protected internal TouchSocketConfig FoundataionConfig => Channel.Config;
 
     /// <summary>
     /// 是否采集通道
@@ -425,9 +425,6 @@ public class ChannelThread
             // 如果DriverTask不为null，则执行以下操作
             if (DriverTask != null)
             {
-                if (FoundataionConfig.DisposedValue)
-                    FoundataionConfig = Channel.Config;
-
                 // 从FoundataionConfig中移除TouchSocketCoreConfigExtension.ConfigurePluginsProperty
                 FoundataionConfig.RemoveValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty);
 
@@ -437,8 +434,7 @@ public class ChannelThread
                     driver?.ConfigurePlugins();
                 }
                 // 设置通道的底层配置
-                FoundataionConfig = FoundataionConfig.Clone();
-                Channel?.Setup(FoundataionConfig);
+                Channel?.Setup(FoundataionConfig.Clone());
             }
             else
             {
