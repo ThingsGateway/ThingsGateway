@@ -14,8 +14,8 @@
 		<PackageReference Include="NModbus" Version="3.0.81" />
 		<PackageReference Include="NModbus.Serial" Version="3.0.81" />
 		<PackageReference Include="S7netplus" Version="0.20.0" />
-		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.64" />
-		<PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="6.0.3.64" />
+		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.65" />
+		<PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="6.0.3.65" />
 	</ItemGroup>
 
 </Project>
