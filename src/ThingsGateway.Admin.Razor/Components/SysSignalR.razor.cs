@@ -43,7 +43,7 @@ public partial class SysSignalR : IAsyncDisposable
             try
             {
                 //SignalR
-                _hubConnection = new HubConnectionBuilder().WithUrl(NavigationManager.ToAbsoluteUri(HubConst.SysHubUrl), (opts) =>
+                _hubConnection = new HubConnectionBuilder().WithUrl($"http://localhost:{App.HttpContext.Connection.LocalPort}{HubConst.SysHubUrl}", (opts) =>
             {
                 opts.HttpMessageHandlerFactory = (message) =>
                 {
