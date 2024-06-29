@@ -10,7 +10,12 @@
 
 using Mapster;
 
+using NewLife.Reflection;
+
+using Newtonsoft.Json.Linq;
+
 using ThingsGateway.Admin.Application;
+using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Foundation;
 using ThingsGateway.Gateway.Application;
 
@@ -52,7 +57,35 @@ public partial class TcpServicePage : IDriverUIBase
     {
         if (TcpServiceChannel != null)
         {
-            var query = TcpServiceChannel.Clients.ToList().Adapt<List<TcpSessionClientDto>>().GetQueryData(options);
+            var clients = TcpServiceChannel.Clients.ToList();
+            var data = clients.Adapt<List<TcpSessionClientDto>>();
+            for (int i = 0; i < clients.Count; i++)
+            {
+                var client = clients[i];
+                var pluginInfos = client.PluginManager.Plugins.Select(a =>
+                {
+                    var data = new
+                    {
+                        Name = a.GetType().Name,
+                        Dict = new Dictionary<string, string>()
+                    };
+
+                    var propertyInfos = a.GetType().GetProperties();
+                    foreach (var item in propertyInfos)
+                    {
+                        var type = item.PropertyType;
+                        if (type.IsPrimitive || type.IsEnum || type == TouchSocketCoreUtility.stringType)
+                        {
+                            data.Dict.Add(item.Name, item.GetValue(a)?.ToString());
+                        }
+                    }
+                    return data;
+                }).ToList();
+                data[i].PluginInfos = pluginInfos.ToSystemTextJsonString();
+            }
+
+            var query = data.GetQueryData(options);
+
             return Task.FromResult(query);
         }
         else
@@ -74,6 +107,9 @@ public class TcpSessionClientDto
 
     [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
     public int Port { get; set; }
+
+    [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true, ShowTips = true)]
+    public string PluginInfos { get; set; }
 
     [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
     public DateTime LastReceivedTime { get; set; }

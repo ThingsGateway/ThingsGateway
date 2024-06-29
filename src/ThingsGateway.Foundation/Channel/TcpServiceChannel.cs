@@ -30,10 +30,16 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
         {
             if (this.TryGetClient(id, out var client))
             {
-                if (ShutDownEnable)
-                    client.TryShutdown();
-                await client.CloseAsync().ConfigureAwait(false);
-                client.SafeDispose();
+                try
+                {
+                    if (ShutDownEnable)
+                        client.TryShutdown();
+                    await client.CloseAsync().ConfigureAwait(false);
+                    client.SafeDispose();
+                }
+                catch
+                {
+                }
             }
         }
     }
@@ -86,6 +92,7 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
     {
         if (Monitors.Any())
         {
+            await ClearAsync();
             var iPHost = Monitors.FirstOrDefault()?.Option.IpHost;
             await base.StopAsync().ConfigureAwait(false);
             if (!Monitors.Any())

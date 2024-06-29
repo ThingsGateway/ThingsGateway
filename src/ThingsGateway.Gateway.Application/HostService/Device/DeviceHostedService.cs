@@ -138,6 +138,7 @@ public abstract class DeviceHostedService : BackgroundService
                 return ChannelService.GetChannel(channel, a);
             }));
             channelThread.AddDriver(driverBase);
+            channelThread.Channel?.Setup(channelThread.FoundataionConfig.Clone());
             ChannelThreads.Add(channelThread);
             return channelThread;
         }

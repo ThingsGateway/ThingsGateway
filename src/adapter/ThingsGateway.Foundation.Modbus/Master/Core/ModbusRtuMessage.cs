@@ -46,7 +46,7 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
         if (error)
         {
             Response.ErrorCode = byteBlock.ReadByte();
-            this.OperCode = Response.ErrorCode;
+            this.OperCode = 999;
             this.ErrorMessage = ModbusHelper.GetDescriptionByErrorCode(Response.ErrorCode.Value);
             BodyLength = 2;
             return true;
@@ -129,7 +129,11 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
             this.Content = Array.Empty<byte>();
             crcLen = 6;
         }
-
+        else
+        {
+            this.OperCode = 999;
+            this.ErrorMessage = ModbusResource.Localizer["ModbusError1"];
+        }
         if (crcLen > 0)
         {
             var crc = CRC16Utils.Crc16Only(byteBlock.Span.Slice(pos, crcLen));

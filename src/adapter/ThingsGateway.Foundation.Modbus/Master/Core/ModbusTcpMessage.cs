@@ -92,6 +92,11 @@ internal class ModbusTcpMessage : MessageBase, IResultMessage
             this.Content = Array.Empty<byte>();
             return FilterResult.Success;
         }
+        else
+        {
+            this.OperCode = 999;
+            this.ErrorMessage = ModbusResource.Localizer["ModbusError1"];
+        }
         return FilterResult.GoOn;
     }
 }
