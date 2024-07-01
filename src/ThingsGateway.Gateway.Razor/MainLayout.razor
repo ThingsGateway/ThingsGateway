@@ -25,21 +25,9 @@
                     @* 语言选择 *@
                     <CultureChooser />
 
-                    @* 主题切换 *@
-                    <ThemeToggle />
 
-                    @* 全屏按钮 *@
-                    <FullScreenButton class="layout-header-bar d-none d-lg-flex px-2" Icon="fa fa-arrows-alt"
-                                      TooltipPlacement=Placement.Bottom TooltipText="@Localizer[nameof(FullScreenButton)]" />
-                    @if (WebsiteOption.Value.IsShowAbout)
-                    {
-                        <Button @onclick="ShowAbout" class="layout-header-bar d-none d-lg-flex px-2" Icon="fa fa-info" Color="Color.None" TooltipText="@Localizer[nameof(About)]" />
-                    }
 
-                    @* 版本号 *@
-                    <div class="px-2 navbar-header-text d-none d-lg-block">@_versionString</div>
-
-                    <Logout ImageUrl="@(AppContext.CurrentUser.Avatar??$"{WebsiteConst.DefaultResourceUrl}images/defaultUser.svg")" DisplayName="@UserManager.UserAccount" UserName="@UserManager.UserAccount">
+                    <Logout ImageUrl="@(AppContext.CurrentUser.Avatar??$"{WebsiteConst.DefaultResourceUrl}images/defaultUser.svg")" ShowUserName=false DisplayName="@UserManager.UserAccount" UserName="@UserManager.UserAccount">
                         <LinkTemplate>
                             @* 切换模块 *@
                             <a @onclick="ChoiceModule"><i class="fas fa-arrow-right-arrow-left me-2" />@Localizer["ChoiceModule"]</a>
@@ -48,6 +36,21 @@
 
                         </LinkTemplate>
                     </Logout>
+
+                    @* 全屏按钮 *@
+                    <FullScreenButton class="layout-header-bar d-none d-lg-flex px-2" Icon="fa fa-arrows-alt"
+                                      TooltipPlacement=Placement.Bottom TooltipText="@Localizer[nameof(FullScreenButton)]" />
+                    @if (WebsiteOption.Value.IsShowAbout)
+                    {
+                        <Button @onclick="ShowAbout" class="layout-header-bar d-none d-lg-flex px-2" Icon="fa fa-info" Color="Color.None" TooltipText="@Localizer[nameof(About)]" />
+                    }
+                    @* 版本号 *@
+                    <div class="px-1 navbar-header-text d-none d-lg-block">@_versionString</div>
+
+                    @* 主题切换 *@
+                    @* <ThemeToggle /> *@
+                    <ThemeProvider class="layout-header-bar d-none d-lg-flex px-0"></ThemeProvider>
+
                 </Header>
                 <Side>
                     <div class="layout-banner">

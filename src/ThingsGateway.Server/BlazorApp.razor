@@ -23,7 +23,8 @@
     <link rel="stylesheet" href="_content/BootstrapBlazor/css/motronic.min.css" />
     <link rel="stylesheet" href="ThingsGateway.Server.styles.css" />
     <link rel="stylesheet" href=@($"{WebsiteConst.DefaultResourceUrl}css/site.css") />
-    <script src=@($"{WebsiteConst.DefaultResourceUrl}js/theme.js") type="module"></script><!-- 初始主题 -->
+    <ThemeLoader></ThemeLoader>
+    @* <script src=@($"{WebsiteConst.DefaultResourceUrl}js/theme.js") type="module"></script><!-- 初始主题 --> *@
     <!-- PWA Manifest -->
     <link rel="manifest" href="./manifest.json" />
     <HeadOutlet @rendermode="new InteractiveServerRenderMode(false)" />

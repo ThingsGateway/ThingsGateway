@@ -10,6 +10,8 @@
 
 using BootstrapBlazor.Components;
 
+using CSScripting;
+
 using NewLife.Extension;
 
 using System.Collections.Concurrent;
@@ -207,13 +209,16 @@ public static class PluginServiceUtil
             tc = new InternalEditorItem(prop.Name, prop.PropertyType, displayName);
             if (autoGenerateColumnAttribute != null)
                 CopyValue(tc, autoGenerateColumnAttribute);
+            tc.ComponentParameters ??= new Dictionary<string, object>();
             if (classAttribute.Remark != null)
             {
                 var dict = new Dictionary<string, object>
                 {
                     { "title", classAttribute.Remark }
                 };
-                tc.ComponentParameters = dict;
+                tc.ComponentParameters.AddItem(
+                   new("title", classAttribute.Remark)
+               );
             }
 
             cols.Add(tc);
