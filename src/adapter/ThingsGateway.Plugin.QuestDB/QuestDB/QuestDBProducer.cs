@@ -60,10 +60,10 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
+        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
         var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         db.DbMaintenance.CreateDatabase();
         db.CodeFirst.InitTables(typeof(QuestDBHistoryValue));
-        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
     }
 
     protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)

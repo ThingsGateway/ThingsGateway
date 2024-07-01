@@ -58,6 +58,7 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
     protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        db.DbMaintenance.CreateDatabase();
         db.CodeFirst.InitTables(typeof(HistoryAlarm));
         return base.ProtectedBeforStartAsync(cancellationToken);
     }

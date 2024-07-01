@@ -167,7 +167,7 @@ public class ChannelThread
     /// <summary>
     /// <inheritdoc cref="TouchSocket.Core.TouchSocketConfig"/>
     /// </summary>
-    protected internal TouchSocketConfig FoundataionConfig => Channel.Config;
+    protected internal TouchSocketConfig FoundataionConfig => Channel?.Config;
 
     /// <summary>
     /// 是否采集通道
@@ -426,7 +426,7 @@ public class ChannelThread
             if (DriverTask != null)
             {
                 // 从FoundataionConfig中移除TouchSocketCoreConfigExtension.ConfigurePluginsProperty
-                FoundataionConfig.RemoveValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty);
+                FoundataionConfig?.RemoveValue(TouchSocketCoreConfigExtension.ConfigurePluginsProperty);
 
                 // 配置每个驱动程序的底层插件
                 foreach (var driver in DriverBases)
@@ -434,7 +434,7 @@ public class ChannelThread
                     driver?.ConfigurePlugins();
                 }
                 // 设置通道的底层配置
-                Channel?.Setup(FoundataionConfig.Clone());
+                Channel?.Setup(FoundataionConfig?.Clone());
             }
             else
             {

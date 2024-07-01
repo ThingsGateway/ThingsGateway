@@ -13,7 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "others", "others", "{2C6B6E
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		..\.gitignore = ..\.gitignore
-		Delete .vs .bat = Delete .vs .bat
 		Delete bin Or obj.bat = Delete bin Or obj.bat
 		Delete nupkgs.bat = Delete nupkgs.bat
 		Directory.Build.props = Directory.Build.props
@@ -243,8 +242,8 @@ Global
 		{1C2E95A7-980C-48C3-866F-25789D93AF1B} = {2A74392A-F697-4B1B-A599-864DBAABE38B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_NeutralResourcesLanguage = zh-Hans
-		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
 		RESX_Rules = {"EnabledRules":[]}
+		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
+		RESX_NeutralResourcesLanguage = zh-Hans
 	EndGlobalSection
 EndGlobal

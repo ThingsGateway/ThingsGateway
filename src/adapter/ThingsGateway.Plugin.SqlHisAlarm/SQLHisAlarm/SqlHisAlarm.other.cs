@@ -54,8 +54,15 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>
         try
         {
             using var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+
+            int result = 0;
             //.SplitTable()
-            var result = await db.Fastest<HistoryAlarm>().PageSize(50000).BulkCopyAsync(dbInserts);
+
+            if (db.CurrentConnectionConfig.DbType == SqlSugar.DbType.QuestDB)
+                result = await db.Insertable(dbInserts).UseParameter().ExecuteCommandAsync();//不要加分表
+            else
+                result = await db.Fastest<HistoryAlarm>().PageSize(50000).BulkCopyAsync(dbInserts);
+
             //var result = await db.Insertable(dbInserts).SplitTable().ExecuteCommandAsync();
             if (result > 0)
             {

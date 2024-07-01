@@ -22,7 +22,7 @@ namespace ThingsGateway.Gateway.Application;
 public class AlarmVariable : PrimaryIdEntity, IDBHistoryAlarm
 {
     /// <inheritdoc  cref="Variable.Name"/>
-    [SugarColumn(ColumnDescription = "变量名称", IsNullable = false)]
+    [SugarColumn(ColumnDescription = "变量名称", IsNullable = false, ColumnDataType = "symbol")]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string Name { get; set; }
 
@@ -73,6 +73,7 @@ public class AlarmVariable : PrimaryIdEntity, IDBHistoryAlarm
     /// <inheritdoc  cref="VariableRunTime.EventTime"/>
     [SugarColumn(ColumnDescription = "事件时间", IsNullable = false)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    [TimeDbSplitField(DateType.Month)]
     public DateTime EventTime { get; set; }
 
     /// <summary>
