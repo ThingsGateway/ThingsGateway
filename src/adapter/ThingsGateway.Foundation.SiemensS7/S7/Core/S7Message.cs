@@ -15,23 +15,16 @@ namespace ThingsGateway.Foundation.SiemensS7;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class S7Response : S7Request
-{
-    /// <summary>
-    /// 错误码
-    /// </summary>
-    public byte? ErrorCode { get; set; }
-}
-
-/// <summary>
-/// <inheritdoc/>
-/// </summary>
 internal class S7Message : MessageBase, IResultMessage
 {
     /// <inheritdoc/>
     public override int HeaderLength => 4;
 
-    public S7Response Response { get; set; } = new();
+    /// <summary>
+    /// 错误码
+    /// </summary>
+    public byte? Error { get; set; }
+
     public SiemensAddress[] Request { get; set; }
     public S7Send? S7Send { get; set; }
 
@@ -50,10 +43,6 @@ internal class S7Message : MessageBase, IResultMessage
 
     public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
     {
-        if (Response.ErrorCode.HasValue)
-        {
-            return FilterResult.Success;
-        }
         var pos = byteBlock.Position;
         if (S7Send.Handshake)
         {
@@ -67,7 +56,6 @@ internal class S7Message : MessageBase, IResultMessage
                 // 其余情况判断错误代码
                 if (byteBlock[pos + 13] + byteBlock[pos + 14] > 0) // 如果错误代码不为0
                 {
-                    Response.ErrorCode = byteBlock[pos + 14];
                     this.OperCode = 999;
                     this.ErrorMessage = SiemensS7Resource.Localizer["ReturnError", byteBlock[pos + 13].ToString("X2"), byteBlock[pos + 14].ToString("X2")];
                     return FilterResult.Success;
@@ -91,7 +79,6 @@ internal class S7Message : MessageBase, IResultMessage
             // 其余情况判断错误代码
             if (byteBlock[pos + 13] + byteBlock[pos + 14] > 0) // 如果错误代码不为0
             {
-                Response.ErrorCode = byteBlock[pos + 14];
                 this.OperCode = 999;
                 this.ErrorMessage = SiemensS7Resource.Localizer["ReturnError", byteBlock[pos + 13].ToString("X2"), byteBlock[pos + 14].ToString("X2")];
                 return FilterResult.Success;
@@ -171,7 +158,6 @@ internal class S7Message : MessageBase, IResultMessage
         {
             if (byteBlock[pos + 13] + byteBlock[pos + 14] > 0) // 如果错误代码不为0
             {
-                Response.ErrorCode = byteBlock[pos + 14];
                 this.OperCode = 999;
                 this.ErrorMessage = SiemensS7Resource.Localizer["ReturnError", byteBlock[pos + 13].ToString("X2"), byteBlock[pos + 14].ToString("X2")];
                 return FilterResult.Success;

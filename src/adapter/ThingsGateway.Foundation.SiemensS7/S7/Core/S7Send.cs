@@ -63,19 +63,23 @@ internal class S7Send : ISendMessage
 
     public int MaxLength => 2048;
 
-    internal SiemensAddress[]? SiemensAddress;
+    internal SiemensAddress[] SiemensAddress;
     internal bool Read;
     internal bool IsBit;
     internal bool Handshake;
     internal byte[] HandshakeBytes;
 
-    public S7Send(SiemensAddress[]? siemensAddress = null, bool? read = null, bool? isBit = null, bool? handshake = null, byte[]? handshakeBytes = default)
+    public S7Send(byte[] handshakeBytes)
+    {
+        HandshakeBytes = handshakeBytes;
+        Handshake = true;
+    }
+
+    public S7Send(SiemensAddress[] siemensAddress, bool read, bool isBit)
     {
         SiemensAddress = siemensAddress;
-        Read = read ?? false;
-        IsBit = isBit ?? false;
-        Handshake = handshake ?? false;
-        HandshakeBytes = handshakeBytes;
+        Read = read;
+        IsBit = isBit;
     }
 
     internal void GetReadCommand<TByteBlock>(ref TByteBlock valueByteBlock, SiemensAddress[] siemensAddress) where TByteBlock : IByteBlock

@@ -108,7 +108,7 @@ public partial class SiemensS7Master : ProtocolBase
     /// <summary>
     /// 此方法并不会智能分组以最大化效率，减少传输次数，因为返回值是byte[]，所以一切都按地址数组的顺序执行，最后合并数组
     /// </summary>
-    public async ValueTask<OperResult<byte[]>> S7RequestAsync(SiemensAddress[] sAddresss, bool read, bool isBit,int bitLength=0, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult<byte[]>> S7RequestAsync(SiemensAddress[] sAddresss, bool read, bool isBit, int bitLength = 0, CancellationToken cancellationToken = default)
     {
         if (read)
         {
@@ -157,7 +157,6 @@ public partial class SiemensS7Master : ProtocolBase
         else
         {
             var sAddress = sAddresss[0];
-            if (sAddresss.Length > 1) return new OperResult<byte[]>("Only supports single write");
             if (sAddress.Length > 1 && isBit)
             {
                 //读取，再写入
@@ -174,14 +173,13 @@ public partial class SiemensS7Master : ProtocolBase
 
                     if (!result.IsSuccess) return result;
                     var vaue = sAddress.Data.ByteToBoolArray(bitLength);
-                    for (int i = sAddress.BitCode; i < vaue.Length+ sAddress.BitCode; i++)
+                    for (int i = sAddress.BitCode; i < vaue.Length + sAddress.BitCode; i++)
                     {
-                        result.Content[i/8] = result.Content[i/8].SetBit( (i%8), vaue[i- sAddress.BitCode]);
+                        result.Content[i / 8] = result.Content[i / 8].SetBit((i % 8), vaue[i - sAddress.BitCode]);
                     }
                     sAddress.Data = result.Content;
                     return await this.SendThenReturnAsync(
 new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
-
                 }
                 catch (Exception ex)
                 {
@@ -192,6 +190,7 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
                     byteBlock.SafeDispose();
                 }
             }
+            else if (sAddresss.Length > 1) return new OperResult<byte[]>("Only supports single write");
             else
             {
                 var byteBlock = new ValueByteBlock(2048);
@@ -226,7 +225,7 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
         try
         {
             var sAddress = SiemensAddress.ParseFrom(address, length);
-            return S7RequestAsync([sAddress], true, false, 0,cancellationToken);
+            return S7RequestAsync([sAddress], true, false, 0, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -242,7 +241,7 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
             var sAddress = SiemensAddress.ParseFrom(address);
             sAddress.Data = value;
             sAddress.Length = value.Length;
-            return await S7RequestAsync([sAddress], false, false, 0,cancellationToken);
+            return await S7RequestAsync([sAddress], false, false, 0, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -262,7 +261,7 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
             var sAddress = SiemensAddress.ParseFrom(address);
             sAddress.Data = value.BoolArrayToByte();
             sAddress.Length = sAddress.Data.Length;
-            return await S7RequestAsync([sAddress], false, true, value.Length,cancellationToken);
+            return await S7RequestAsync([sAddress], false, true, value.Length, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -339,7 +338,7 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
 
             try
             {
-                var result2 = await SendThenReturnAsync(new S7Send(null, null, null, true, ISO_CR)).ConfigureAwait(false);
+                var result2 = await SendThenReturnAsync(new S7Send(ISO_CR)).ConfigureAwait(false);
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError1", channel.ToString(), result2.ErrorMessage]);
@@ -355,7 +354,7 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
             }
             try
             {
-                var result2 = await SendThenReturnAsync(new S7Send(null, null, null, true, S7_PN)).ConfigureAwait(false);
+                var result2 = await SendThenReturnAsync(new S7Send(S7_PN)).ConfigureAwait(false);
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError2", channel.ToString(), result2.ErrorMessage]);
