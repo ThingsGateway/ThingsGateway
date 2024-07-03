@@ -144,7 +144,13 @@ public partial class VariablePage : IDisposable
             Size = Size.ExtraLarge
         };
         var oldmodel = variables.FirstOrDefault();//默认值显示第一个
-        var model = variables.FirstOrDefault().Adapt<Variable>();//默认值显示第一个
+        if (oldmodel == null)
+        {
+            await ToastService.Warning(null, DefaultLocalizer["PleaseSelect"]);
+            return;
+        }
+
+        var model = oldmodel.Adapt<Variable>();//默认值显示第一个
         op.Component = BootstrapDynamicComponent.CreateComponent<VariableEditComponent>(new Dictionary<string, object?>
         {
              {nameof(VariableEditComponent.OnValidSubmit), async () =>

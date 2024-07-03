@@ -189,7 +189,12 @@ public abstract partial class DevicePage : IDisposable
             Size = Size.ExtraLarge
         };
         var oldmodel = devices.FirstOrDefault();//默认值显示第一个
-        var model = devices.FirstOrDefault().Adapt<Device>();//默认值显示第一个
+        if (oldmodel == null)
+        {
+            await ToastService.Warning(null, DefaultLocalizer["PleaseSelect"]);
+            return;
+        }
+        var model = oldmodel.Adapt<Device>();//默认值显示第一个
         op.Component = BootstrapDynamicComponent.CreateComponent<DeviceEditComponent>(new Dictionary<string, object?>
         {
              {nameof(DeviceEditComponent.OnValidSubmit), async () =>

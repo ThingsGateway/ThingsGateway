@@ -14,7 +14,9 @@
     "TablesExportButtonExcelText": "导出Excel",
     "TablesImportButtonExcelText": "导入Excel",
     "ExportButtonText": "导出/导入",
-    "EmptyText": "空"
+    "EmptyText": "空",
+
+    "PleaseSelect": "请选择需要操作的数据"
   },
   "ThingsGateway.Razor.GlobalSearch": {
     "SearchText": "搜索页面"

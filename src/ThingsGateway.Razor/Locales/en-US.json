@@ -14,7 +14,8 @@
     "TablesExportButtonExcelText": "Export Excel",
     "TablesImportButtonExcelText": "Import Excel",
     "ExportButtonText": "Export/Import",
-    "EmptyText": "Empty"
+    "EmptyText": "Empty",
+    "PleaseSelect": "Please select the data"
   },
 
   "ThingsGateway.Razor.GlobalSearch": {
