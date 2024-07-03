@@ -51,7 +51,7 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
     /// <returns></returns>
     protected virtual TRequest GetInstance()
     {
-        return new TRequest() { OperCode = -1 };
+        return new TRequest() { OperCode = -1, Sign = -1 };
     }
 
     /// <inheritdoc/>
@@ -118,8 +118,7 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
                 }
                 else if (result == FilterResult.GoOn)
                 {
-                    if (byteBlock.Position == headPos)
-                        byteBlock.Position += 1;
+                    byteBlock.Position = pos + 1;
                     request.OperCode = -1;
                 }
                 else if (result == FilterResult.Success)
@@ -131,7 +130,7 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
             }
             else
             {
-                byteBlock.Position = byteBlock.Length;//移动游标
+                byteBlock.Position = pos + 1;
                 request.OperCode = -1;
                 return;
             }

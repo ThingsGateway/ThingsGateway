@@ -58,23 +58,6 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
                 return false;
             }
 
-            //验证发送/返回站号与功能码
-            //站号验证
-            if (Request.Station != Response.Station)
-            {
-                this.OperCode = 999;
-                Response.ErrorCode = 1;
-                this.ErrorMessage = ModbusResource.Localizer["StationNotSame", Request.Station, Response.Station];
-                return true;
-            }
-            if (Response.FunctionCode > 4 ? Request.WriteFunctionCode != Response.FunctionCode : Request.FunctionCode != Response.FunctionCode)
-            {
-                this.OperCode = 999;
-                Response.ErrorCode = 1;
-                this.ErrorMessage = ModbusResource.Localizer["FunctionNotSame", Request.FunctionCode, Response.FunctionCode];
-                return true;
-            }
-
             if (Response.FunctionCode == 5 || Response.FunctionCode == 6)
             {
                 BodyLength = 5;
@@ -101,6 +84,7 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
         {
             return FilterResult.Success;
         }
+
         var pos = byteBlock.Position - HeaderLength;
         var crcLen = 0;
 
@@ -133,6 +117,7 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
         {
             this.OperCode = 999;
             this.ErrorMessage = ModbusResource.Localizer["ModbusError1"];
+            return FilterResult.GoOn;
         }
         if (crcLen > 0)
         {
@@ -142,6 +127,22 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
             var checkCrc = byteBlock.Span.Slice(pos + crcLen, 2).ToArray();
             if (crc.SequenceEqual(checkCrc))
             {
+                //验证发送/返回站号与功能码
+                //站号验证
+                if (Request.Station != Response.Station)
+                {
+                    this.OperCode = 999;
+                    Response.ErrorCode = 1;
+                    this.ErrorMessage = ModbusResource.Localizer["StationNotSame", Request.Station, Response.Station];
+                    return FilterResult.GoOn;
+                }
+                if (Response.FunctionCode > 4 ? Request.WriteFunctionCode != Response.FunctionCode : Request.FunctionCode != Response.FunctionCode)
+                {
+                    this.OperCode = 999;
+                    Response.ErrorCode = 1;
+                    this.ErrorMessage = ModbusResource.Localizer["FunctionNotSame", Request.FunctionCode, Response.FunctionCode];
+                    return FilterResult.GoOn;
+                }
                 return FilterResult.Success;
             }
         }

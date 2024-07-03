@@ -69,6 +69,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
             if (this.ServerState != ServerState.Running)
             {
                 await base.StopAsync().ConfigureAwait(false);
+                await this.SetupAsync(Config.Clone());
                 await base.StartAsync().ConfigureAwait(false);
                 if (this.ServerState == ServerState.Running)
                 {
