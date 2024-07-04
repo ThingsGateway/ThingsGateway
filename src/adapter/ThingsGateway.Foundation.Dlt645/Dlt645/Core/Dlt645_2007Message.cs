@@ -38,7 +38,7 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
 
     public override void SendInfo(ISendMessage sendMessage)
     {
-        Dlt645_2007Send = (sendMessage as Dlt645_2007Send);
+        Dlt645_2007Send = ((Dlt645_2007Send)sendMessage);
         Request = Dlt645_2007Send.Dlt645_2007Address;
     }
 

@@ -30,7 +30,7 @@ internal class S7Message : MessageBase, IResultMessage
 
     public override void SendInfo(ISendMessage sendMessage)
     {
-        S7Send = (sendMessage as S7Send);
+        S7Send = ((S7Send)sendMessage);
         Request = S7Send.SiemensAddress;
     }
 

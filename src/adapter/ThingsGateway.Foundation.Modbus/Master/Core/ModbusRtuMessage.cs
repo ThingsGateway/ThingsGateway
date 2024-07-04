@@ -24,7 +24,7 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
 
     public override void SendInfo(ISendMessage sendMessage)
     {
-        Request = (sendMessage as ModbusRtuSend).ModbusAddress;
+        Request = ((ModbusRtuSend)sendMessage).ModbusAddress;
     }
 
     public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
@@ -53,6 +53,7 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
         }
         else
         {
+            Response.ErrorCode = null;
             if (Request == null)
             {
                 return false;
@@ -80,9 +81,16 @@ internal class ModbusRtuMessage : MessageBase, IResultMessage
 
     public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
     {
-        if (Response.ErrorCode.HasValue)
+        if (Response.ErrorCode != null)
         {
-            return FilterResult.Success;
+            if (Request.Station == Response.Station)
+            {
+                return FilterResult.Success;
+            }
+            else
+            {
+                return FilterResult.GoOn;
+            }
         }
 
         var pos = byteBlock.Position - HeaderLength;

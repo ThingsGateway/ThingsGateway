@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.Net.Sockets;
+
 using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Foundation;
@@ -45,6 +47,11 @@ internal class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcp
 
                      try
                      {
+                         if (DateTime.UtcNow - tcpClient.LastSentTime.ToUniversalTime() < TimeSpan.FromMilliseconds(200))
+                         {
+                             await Task.Delay(200);
+                         }
+
                          await tcpClient.SendAsync(this.HeartbeatHexString.HexStringToBytes()).ConfigureAwait(false);
                          failedCount = 0;
                      }

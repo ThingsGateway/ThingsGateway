@@ -48,6 +48,7 @@ internal class ModbusTcpMessage : MessageBase, IResultMessage
         }
         else
         {
+            Response.ErrorCode = null;
             if (Response.FunctionCode <= 4)
             {
                 Response.Length = byteBlock.ReadByte();
@@ -62,7 +63,7 @@ internal class ModbusTcpMessage : MessageBase, IResultMessage
 
     public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
     {
-        if (Response.ErrorCode.HasValue)
+        if (Response.ErrorCode == null)
         {
             return FilterResult.Success;
         }

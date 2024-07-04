@@ -60,6 +60,10 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
             {
                 if (HeartbeatHexString == e.ByteBlock.AsSegment(0, len).ToHexString(default))
                 {
+                    if (DateTime.UtcNow - socket.LastSentTime.ToUniversalTime() < TimeSpan.FromMilliseconds(200))
+                    {
+                        await Task.Delay(200);
+                    }
                     //回应心跳包
                     await socket.SendAsync(e.ByteBlock.AsSegment());
                     e.Handled = true;
