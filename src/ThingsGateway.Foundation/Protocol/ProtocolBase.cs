@@ -240,8 +240,17 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     {
         try
         {
-            if (!Channel.Online)
-                await Channel.ConnectAsync(ConnectTimeout, token).ConfigureAwait(false);
+            try
+            {
+                if (!Channel.Online)
+                    await Channel.ConnectAsync(ConnectTimeout, token).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                await Task.Delay(200, token).ConfigureAwait(false);
+                return new(ex);
+            }
+
             if (SendDelayTime != 0)
                 await Task.Delay(SendDelayTime, token).ConfigureAwait(false);
 
@@ -311,34 +320,49 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <inheritdoc/>
     public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage command, IClientChannel channel = default, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default)
     {
-        if (!Channel.Online)
-            await Channel.ConnectAsync(ConnectTimeout, cancellationToken).ConfigureAwait(false);
-        if (SendDelayTime != 0)
-            await Task.Delay(SendDelayTime, cancellationToken).ConfigureAwait(false);
-
-        MessageBase? result;
-
-        if (channel == default)
+        try
         {
-            if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-            if (waitData == default)
+            try
             {
-                waitData = clientChannel.WaitHandlePool.GetWaitDataAsync(out var sign);
-                command.Sign = sign;
+                if (!Channel.Online)
+                    await Channel.ConnectAsync(ConnectTimeout, cancellationToken).ConfigureAwait(false);
             }
-            result = await GetResponsedDataAsync(command, clientChannel, waitData, Timeout, cancellationToken).ConfigureAwait(false);
-        }
-        else
-        {
-            if (waitData == default)
+            catch (Exception ex)
             {
-                waitData = channel.WaitHandlePool.GetWaitDataAsync(out var sign);
-                command.Sign = sign;
+                await Task.Delay(200, cancellationToken).ConfigureAwait(false);
+                return new(ex);
             }
-            result = await GetResponsedDataAsync(command, channel, waitData, Timeout, cancellationToken).ConfigureAwait(false);
-        }
+            if (SendDelayTime != 0)
+                await Task.Delay(SendDelayTime, cancellationToken).ConfigureAwait(false);
 
-        return new OperResult<byte[]>(result) { Content = result.Content };
+            MessageBase? result;
+
+            if (channel == default)
+            {
+                if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
+                if (waitData == default)
+                {
+                    waitData = clientChannel.WaitHandlePool.GetWaitDataAsync(out var sign);
+                    command.Sign = sign;
+                }
+                result = await GetResponsedDataAsync(command, clientChannel, waitData, Timeout, cancellationToken).ConfigureAwait(false);
+            }
+            else
+            {
+                if (waitData == default)
+                {
+                    waitData = channel.WaitHandlePool.GetWaitDataAsync(out var sign);
+                    command.Sign = sign;
+                }
+                result = await GetResponsedDataAsync(command, channel, waitData, Timeout, cancellationToken).ConfigureAwait(false);
+            }
+
+            return new OperResult<byte[]>(result) { Content = result.Content };
+        }
+        catch (Exception ex)
+        {
+            return new(ex);
+        }
     }
 
     /// <inheritdoc/>
@@ -747,7 +771,6 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                         {
                             client.WaitHandlePool.SafeDispose();
                         }
-
                     }
                     catch (Exception ex)
                     {
@@ -758,11 +781,9 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                 {
                     tcpServiceChannel.Clients.ForEach(a =>
                     {
-
                         a.WaitHandlePool.SafeDispose();
                     });
                     tcpServiceChannel.SafeClose();
-
                 }
             }
         }
