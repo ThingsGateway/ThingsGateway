@@ -43,6 +43,11 @@ internal class S7Message : MessageBase, IResultMessage
 
     public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
     {
+        if (S7Send == null)
+        {
+            return FilterResult.Success;
+        }
+
         var pos = byteBlock.Position;
         if (S7Send.Handshake)
         {
