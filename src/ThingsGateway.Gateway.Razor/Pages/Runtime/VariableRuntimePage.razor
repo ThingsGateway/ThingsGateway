@@ -15,7 +15,7 @@
     <AdminTable @ref=table TItem="VariableRunTime" AutoGenerateColumns="false" ShowAdvancedSearch=true
                 AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false SearchModel=SearchModel SearchMode=SearchMode.Top
                 ShowExtendButtons=true ShowExportButton=false ShowExtendDeleteButton=false ShowExtendEditButton=false
-                ShowDefaultButtons=false ExtendButtonColumnWidth=150 AutoRefreshInterval="10000" IsAutoRefresh 
+                ShowDefaultButtons=false ExtendButtonColumnWidth=150 AutoRefreshInterval="10000" IsAutoRefresh
                 OnQueryAsync="OnQueryAsync" IsPagination=true>
         <SearchTemplate>
             <div class="row form-inline g-2">
@@ -39,10 +39,10 @@
             <TableColumn Field="@context.IsOnline" FieldExpression=@(()=>context.IsOnline) Filterable Sortable Visible />
             <TableColumn Field="@context.LastErrorMessage" ShowTips FieldExpression=@(()=>context.LastErrorMessage) Filterable Sortable Visible />
 
-            <TableColumn Field="@context.LastSetValue" FieldExpression=@(()=>context.LastSetValue) Filterable Sortable Visible ShowTips Formatter=@(JsonFormatter)  />
+            <TableColumn Field="@context.LastSetValue" FieldExpression=@(()=>context.LastSetValue) Filterable Visible ShowTips Formatter=@(JsonFormatter) />
 
-            <TableColumn Field="@context.RawValue" FieldExpression=@(()=>context.RawValue) Filterable Sortable Visible ShowTips Formatter=@(JsonFormatter) />
-            <TableColumn Field="@context.Value" FieldExpression=@(()=>context.Value) Filterable Sortable Visible ShowTips Formatter=@(JsonFormatter) />
+            <TableColumn Field="@context.RawValue" FieldExpression=@(()=>context.RawValue) Filterable Visible ShowTips Formatter=@(JsonFormatter) />
+            <TableColumn Field="@context.Value" FieldExpression=@(()=>context.Value) Filterable Visible ShowTips Formatter=@(JsonFormatter) />
 
 
             <TableColumn @bind-Field="@context.DataType" Filterable Sortable Visible />
@@ -57,7 +57,7 @@
             <TableColumn @bind-Field="@context.Unit" Visible="false" />
 
             <TableColumn @bind-Field="@context.Index" Visible="false" />
-            <TableColumn @bind-Field="@context.Id" Visible="false" DefaultSort=true DefaultSortOrder="SortOrder.Asc"/>
+            <TableColumn @bind-Field="@context.Id" Visible="false" DefaultSort=true DefaultSortOrder="SortOrder.Asc" />
             @* <TableColumn Field="@context.AlarmEnable" FieldExpression=@(()=>context.AlarmEnable) Filterable Sortable="false" Visible="false" />
 
             <TableColumn @bind-Field="@context.BoolOpenAlarmEnable" Filterable Sortable="false" Visible="false" />
