@@ -175,7 +175,11 @@ internal class S7Message : MessageBase, IResultMessage
                 this.ErrorMessage = SiemensS7Resource.Localizer["ValidateDataError", byteBlock[pos + 17], SiemensHelper.GetCpuError(byteBlock[pos + 17])];
                 return FilterResult.Success;
             }
-            return FilterResult.Success;
+            else
+            {
+                this.OperCode = 0;
+                return FilterResult.Success;
+            }
         }
     }
 }
