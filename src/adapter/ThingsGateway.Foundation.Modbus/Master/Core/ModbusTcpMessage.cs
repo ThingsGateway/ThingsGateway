@@ -63,7 +63,7 @@ internal class ModbusTcpMessage : MessageBase, IResultMessage
 
     public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
     {
-        if (Response.ErrorCode == null)
+        if (Response.ErrorCode != null)
         {
             return FilterResult.Success;
         }
