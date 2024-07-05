@@ -102,6 +102,13 @@ public partial class SiemensS7Master : ProtocolBase
     /// <inheritdoc/>
     public override List<T> LoadSourceRead<T>(IEnumerable<IVariable> deviceVariables, int maxPack, int defaultIntervalTime)
     {
+        try
+        {
+            this.Channel.Connect();
+        }
+        catch
+        {
+        }
         return PackHelper.LoadSourceRead<T>(this, deviceVariables, maxPack, defaultIntervalTime);
     }
 

@@ -177,7 +177,7 @@ internal static class PackHelper
 
         while (maxAddress >= minAddress) // 循环，直到最大地址小于最小地址
         {
-            int readLength = siemensS7Net.PduLength == 0 ? 200 : siemensS7Net.PduLength - 28; // 读取长度为PDU长度减去28，避免超出限制
+            int readLength = siemensS7Net.PduLength == 0 ? 200 : siemensS7Net.PduLength; // 读取长度为PDU长度减去28，避免超出限制
 
             List<SiemensAddress> tempAddresses = new(); // 临时地址列表用于存储分配给单个数据包的地址
 
