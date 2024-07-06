@@ -140,19 +140,19 @@ public class VariableRunTime : Variable, IVariable
     /// <summary>
     /// 上次值
     /// </summary>
-    [AutoGenerateColumn(Visible = false, Filterable = true, Order = 6)]
+    [AutoGenerateColumn(Visible = false, Order = 6)]
     public object? LastSetValue { get; internal set; }
 
     /// <summary>
     /// 原始值
     /// </summary>
-    [AutoGenerateColumn(Visible = false, Filterable = true, Order = 6)]
+    [AutoGenerateColumn(Visible = false, Order = 6)]
     public object? RawValue { get; internal set; }
 
     /// <summary>
     /// 实时值
     /// </summary>
-    [AutoGenerateColumn(Visible = true, Filterable = true, Order = 6)]
+    [AutoGenerateColumn(Visible = true, Order = 6)]
     public object? Value { get => _value; internal set => _value = value; }
 
     /// <summary>
