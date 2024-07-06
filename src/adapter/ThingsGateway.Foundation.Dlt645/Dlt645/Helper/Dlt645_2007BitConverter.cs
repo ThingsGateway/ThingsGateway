@@ -92,13 +92,14 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
     /// <inheritdoc/>
     public override string ToString(byte[] buffer, int offset, int length)
     {
-        var data = new ReadOnlySpan<byte>(buffer, offset, buffer.Length- offset).BytesAdd(-0x33);
+        var data = new ReadOnlySpan<byte>(buffer, offset, buffer.Length - offset).BytesAdd(-0x33);
         var dataInfos = Dlt645Helper.GetDataInfos(data);
         StringBuilder stringBuilder = new();
+        int index = 0;
         foreach (var dataInfo in dataInfos)
         {
             //实际数据
-            var content = data.Slice(4, dataInfo.ByteLength).ToArray().Reverse().ToArray();
+            var content = data.Slice(4 + index, dataInfo.ByteLength).ToArray().Reverse().ToArray();
             if (dataInfo.IsSigned)//可能为负数
             {
                 if (content[0] > 0x80)//最高位是表示正负
@@ -106,11 +107,11 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
                     content[0] = (byte)(content[0] - 0x80);
                     if (dataInfo.Digtal == 0)//无小数点
                     {
-                        stringBuilder.Append($"-{content.ToHexString()}");
+                        stringBuilder.Append($"{(index != 0 ? "," : "")}-{content.ToHexString()}");
                     }
                     else
                     {
-                        stringBuilder.Append((-(Convert.ToDouble(content.ToHexString()) / Math.Pow(10.0, dataInfo.Digtal))).ToString());
+                        stringBuilder.Append($"{(index != 0 ? "," : "")}{(-(Convert.ToDouble(content.ToHexString()) / Math.Pow(10.0, dataInfo.Digtal))).ToString()}");
                     }
                 }
                 else
@@ -122,23 +123,24 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
             {
                 ToString(stringBuilder, dataInfo, content);
             }
+            index += dataInfo.ByteLength;
         }
 
         return stringBuilder.ToString();
 
-        static void ToString(StringBuilder stringBuilder, Dlt645DataInfo dataInfo, byte[] content)
+        void ToString(StringBuilder stringBuilder, Dlt645DataInfo dataInfo, byte[] content)
         {
             if (dataInfo.Digtal < 0)
             {
-                stringBuilder.Append($"{Encoding.ASCII.GetString(content)}");
+                stringBuilder.Append($"{(index != 0 ? "," : "")}{Encoding.ASCII.GetString(content)}");
             }
             else if (dataInfo.Digtal == 0)//无小数点
             {
-                stringBuilder.Append($"{content.ToHexString()}");
+                stringBuilder.Append($"{(index != 0 ? "," : "")}{content.ToHexString()}");
             }
             else
             {
-                stringBuilder.Append(((Convert.ToDouble(content.ToHexString()) / Math.Pow(10.0, dataInfo.Digtal))).ToString());
+                stringBuilder.Append($"{(index != 0 ? "," : "")}{((Convert.ToDouble(content.ToHexString()) / Math.Pow(10.0, dataInfo.Digtal))).ToString()}");
             }
         }
     }

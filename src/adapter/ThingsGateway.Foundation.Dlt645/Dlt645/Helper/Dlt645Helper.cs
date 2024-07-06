@@ -86,25 +86,11 @@ internal static class Dlt645Helper
                 break;
 
             case 1://最大需量及发生时间数据标识
-                switch (buffer[2])
+                dataInfos.AddRange(new Dlt645DataInfo[]
                 {
-                    case 3:     //组合无功1
-                    case 4:     //组合无功2
-                        dataInfos.AddRange(new Dlt645DataInfo[]
-                        {
-                            new(){ ByteLength=3,Digtal=5,IsSigned=true},
+                            new(){ ByteLength=3,Digtal=4,IsSigned=true},
                             new(){ ByteLength=5,Digtal=0,IsSigned=false},
-                        });
-                        break;
-
-                    default:
-                        dataInfos.AddRange(new Dlt645DataInfo[]
-                        {
-                           new(){ ByteLength=3,Digtal=5,IsSigned=false},
-                           new(){ ByteLength=5,Digtal=0,IsSigned=false},
-                        });
-                        break;
-                }
+                });
 
                 break;
 
