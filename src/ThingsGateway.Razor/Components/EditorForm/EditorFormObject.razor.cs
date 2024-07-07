@@ -1,14 +1,4 @@
-﻿//------------------------------------------------------------------------------
-//  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
-//  此代码版权（除特别声明外的代码）归作者本人Diego所有
-//  源代码使用协议遵循本仓库的开源协议及附加协议
-//  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
-//  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
-//  使用文档：https://kimdiego2098.github.io/
-//  QQ群：605534569
-//------------------------------------------------------------------------------
-
-// Copyright (c) Argo Zhang (argo@163.com). All rights reserved.
+﻿// Copyright (c) Argo Zhang (argo@163.com). All rights reserved.
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 // Website: https://www.blazor.zone or https://argozhang.github.io/
 
@@ -215,7 +205,7 @@ public partial class EditorFormObject<TModel> : IShowLabel
 
         if (CascadedEditContext != null && IsSearch is not true)
         {
-            var message = Localizer["ModelInvalidOperationExceptionMessage", nameof(EditorFormObject<TModel>)];
+            var message = Localizer["ModelInvalidOperationExceptionMessage", nameof(EditorForm<TModel>)];
             if (!CascadedEditContext.Model.GetType().IsAssignableTo(typeof(TModel)))
             {
                 throw new InvalidCastException(message);
@@ -261,7 +251,7 @@ public partial class EditorFormObject<TModel> : IShowLabel
             _formItems = [];
             if (Items != null)
             {
-                _formItems.AddRange(Items.Where(i => !i.Ignore));
+                _formItems.AddRange(Items.Where(i => !i.GetIgnore()));
             }
             else
             {
@@ -278,7 +268,7 @@ public partial class EditorFormObject<TModel> : IShowLabel
                         if (item != null)
                         {
                             // 过滤掉不编辑与不可见的列
-                            if (el.Ignore || !el.IsVisible(ItemChangedType, IsSearch.Value))
+                            if (el.GetIgnore() || !el.IsVisible(ItemChangedType, IsSearch.Value))
                             {
                                 items.Remove(item);
                             }
@@ -293,7 +283,7 @@ public partial class EditorFormObject<TModel> : IShowLabel
                 }
                 else
                 {
-                    _formItems.AddRange(_editorItems.Where(i => !i.Ignore && i.IsVisible(ItemChangedType, IsSearch.Value)));
+                    _formItems.AddRange(_editorItems.Where(i => !i.GetIgnore() && i.IsVisible(ItemChangedType, IsSearch.Value)));
                 }
             }
         }
@@ -303,7 +293,7 @@ public partial class EditorFormObject<TModel> : IShowLabel
     {
         if (IsDisplay || !item.CanWrite(Model.GetType(), ItemChangedType, IsSearch.Value))
         {
-            DisplayExtensions.CreateDisplayByFieldType(builder, item, Model);
+            builder.CreateDisplayByFieldType(item, Model);
         }
         else
         {

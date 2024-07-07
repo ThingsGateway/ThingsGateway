@@ -21,11 +21,11 @@
             }
         </CustomerSearchTemplate>
     <TableColumns>
-        <TableColumn @bind-Field="@context.DeviceName" ShowTips Filterable Sortable Visible />
-        <TableColumn @bind-Field="@context.Name" ShowTips Filterable Sortable Visible />
-        <TableColumn @bind-Field="@context.Value" ShowTips Filterable Sortable Visible />
-        <TableColumn Field="@context.CollectTime" ShowTips FieldExpression=@(()=>context.CollectTime) Filterable Sortable Visible />
-        <TableColumn Field="@context.IsOnline" FieldExpression=@(()=>context.IsOnline) Filterable Sortable Visible />
+        <TableColumn @bind-Field="@context.DeviceName" ShowTips=true Filterable=true Sortable=true Visible=true />
+        <TableColumn @bind-Field="@context.Name" ShowTips=true Filterable=true Sortable=true Visible=true />
+        <TableColumn @bind-Field="@context.Value" ShowTips=true Filterable=true Sortable=true Visible=true />
+        <TableColumn Field="@context.CollectTime" ShowTips=true FieldExpression=@(()=>context.CollectTime) Filterable=true Sortable=true Visible=true />
+        <TableColumn Field="@context.IsOnline" FieldExpression=@(()=>context.IsOnline) Filterable=true Sortable=true Visible=true />
         <TableColumn @bind-Field="@context.Id" Visible="false" DefaultSort=true DefaultSortOrder="SortOrder.Asc" />
 
     </TableColumns>

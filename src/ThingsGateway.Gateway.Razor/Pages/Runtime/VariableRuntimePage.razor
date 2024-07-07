@@ -31,21 +31,21 @@
             </div>
         </SearchTemplate>
         <TableColumns>
-            <TableColumn @bind-Field="@context.DeviceName" ShowTips Filterable Sortable Visible />
-            <TableColumn @bind-Field="@context.Name" ShowTips Filterable Sortable Visible />
-            <TableColumn @bind-Field="@context.Description" ShowTips Filterable Sortable Visible />
-            <TableColumn Field="@context.ChangeTime" ShowTips FieldExpression=@(()=>context.ChangeTime) Filterable Sortable Visible />
-            <TableColumn Field="@context.CollectTime" ShowTips FieldExpression=@(()=>context.CollectTime) Filterable Sortable Visible />
-            <TableColumn Field="@context.IsOnline" FieldExpression=@(()=>context.IsOnline) Filterable Sortable Visible />
-            <TableColumn Field="@context.LastErrorMessage" ShowTips FieldExpression=@(()=>context.LastErrorMessage) Filterable Sortable Visible />
+            <TableColumn @bind-Field="@context.DeviceName" ShowTips=true Filterable=true Sortable=true Visible=true />
+            <TableColumn @bind-Field="@context.Name" ShowTips=true Filterable=true Sortable=true Visible=true />
+            <TableColumn @bind-Field="@context.Description" ShowTips=true Filterable=true Sortable=true Visible=true />
+            <TableColumn Field="@context.ChangeTime" ShowTips=true FieldExpression=@(()=>context.ChangeTime) Filterable=true Sortable=true Visible=true />
+            <TableColumn Field="@context.CollectTime" ShowTips=true FieldExpression=@(()=>context.CollectTime) Filterable=true Sortable=true Visible=true />
+            <TableColumn Field="@context.IsOnline" FieldExpression=@(()=>context.IsOnline) Filterable=true Sortable=true Visible=true />
+            <TableColumn Field="@context.LastErrorMessage" ShowTips=true FieldExpression=@(()=>context.LastErrorMessage) Filterable=true Sortable=true Visible=true />
 
-            <TableColumn Field="@context.LastSetValue" FieldExpression=@(()=>context.LastSetValue)  Visible ShowTips Formatter=@(JsonFormatter) />
+            <TableColumn Field="@context.LastSetValue" FieldExpression=@(()=>context.LastSetValue)  Visible=true ShowTips=true Formatter=@(JsonFormatter) />
 
-            <TableColumn Field="@context.RawValue" FieldExpression=@(()=>context.RawValue)  Visible ShowTips Formatter=@(JsonFormatter) />
-            <TableColumn Field="@context.Value" FieldExpression=@(()=>context.Value)  Visible ShowTips Formatter=@(JsonFormatter) />
+            <TableColumn Field="@context.RawValue" FieldExpression=@(()=>context.RawValue)  Visible=true ShowTips=true Formatter=@(JsonFormatter) />
+            <TableColumn Field="@context.Value" FieldExpression=@(()=>context.Value)  Visible=true ShowTips=true Formatter=@(JsonFormatter) />
 
 
-            <TableColumn @bind-Field="@context.DataType" Filterable Sortable Visible />
+            <TableColumn @bind-Field="@context.DataType" Filterable=true Sortable=true Visible=true />
 
             <TableColumn @bind-Field="@context.ProtectType" Visible="false" />
             <TableColumn @bind-Field="@context.IntervalTime" Visible="false" />

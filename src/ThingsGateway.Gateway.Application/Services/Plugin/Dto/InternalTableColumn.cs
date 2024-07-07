@@ -27,17 +27,22 @@ internal class InternalEditorItem(string fieldName, Type fieldType, string? fiel
     [ExcludeFromCodeCoverage]
     public bool Editable { get; set; } = true;
 
-    public bool Readonly { get; set; }
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public bool? Ignore { get; set; }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public bool? Readonly { get; set; }
+
     public bool? IsReadonlyWhenAdd { get; set; }
     public bool? IsReadonlyWhenEdit { get; set; }
-
-    public bool Visible { get; set; } = true;
 
     public bool? IsVisibleWhenAdd { get; set; } = true;
 
     public bool? IsVisibleWhenEdit { get; set; } = true;
-
-    public bool Ignore { get; set; }
 
     public bool SkipValidate { get; set; }
     public string? Text { get; set; } = fieldText;
