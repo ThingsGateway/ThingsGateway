@@ -134,7 +134,7 @@ public class SiemensAddress : S7Request
         var cacheKey = $"{nameof(ParseFrom)}_{typeof(SiemensAddress).FullName}_{typeof(SiemensAddress).TypeHandle.Value}_{address}";
         if (isCache)
             if (MemoryCache.Instance.TryGetValue(cacheKey, out SiemensAddress sAddress))
-                return sAddress.Map();
+                return new(sAddress);
 
         SiemensAddress s7AddressData = new();
         address = address.ToUpper();
@@ -268,7 +268,7 @@ public class SiemensAddress : S7Request
         }
 
         if (isCache)
-            MemoryCache.Instance.Set(cacheKey, s7AddressData.Map<SiemensAddress>(), 3600);
+            MemoryCache.Instance.Set(cacheKey, new SiemensAddress(s7AddressData), 3600);
 
         return s7AddressData;
     }

@@ -35,15 +35,20 @@ internal static class PackHelper
             item.Index = 0;
             if (item.DataType == DataTypeEnum.Boolean)
                 item.Index = device.GetBitOffset(item.RegisterAddress);
+        }
+        var group = deviceVariables.GroupBy(a => a.RegisterAddress);
+        foreach (var item in group)
+        {
             var r = new T()
             {
-                RegisterAddress = address!,
+                RegisterAddress = item.Key!,
                 Length = 1,
-                TimeTick = new(item.IntervalTime ?? defaultIntervalTime)
+                TimeTick = new(item.FirstOrDefault().IntervalTime ?? defaultIntervalTime),
             };
-            r.AddVariable(item);
+            r.AddVariableRange(item);
             result.Add(r);
         }
+
         return result;
     }
 }
