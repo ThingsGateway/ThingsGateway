@@ -49,7 +49,8 @@ public class PackHelper
             // 获取变量的位偏移量
             //if (item.DataType == DataTypeEnum.Boolean)
             item.Index = device.GetBitOffset(address);
-            item.Index += (item.Index % 2 == 0) ? 1 : -1;
+            if (item.DataType == DataTypeEnum.Byte)
+                item.Index += (item.Index % 2 == 0) ? 1 : -1;
         }
 
         // 按照时间间隔将变量分组
