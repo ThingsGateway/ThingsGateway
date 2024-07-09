@@ -19,6 +19,7 @@ using Opc.Ua;
 using Opc.Ua.Configuration;
 
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
@@ -134,7 +135,8 @@ public partial class OpcUaServer : BusinessBase
             }
 
             ////变化推送
-            var varList = CollectVariableRunTimes.ToListWithDequeue();
+            var varList = CollectVariableRunTimes.ToListWithDequeue().DistinctBy(a => a.Name).ToList();
+
             if (varList?.Count != 0)
             {
                 foreach (var item in varList)
@@ -333,6 +335,7 @@ public partial class OpcUaServer : BusinessBase
         if (!CurrentDevice.KeepRun)
             return;
         if (DisposedValue) return;
-        CollectVariableRunTimes.Enqueue(variableData);
+        if (CurrentDevice.VariableRunTimes.ContainsKey(variableData.Name))
+            CollectVariableRunTimes.Enqueue(variableData);
     }
 }

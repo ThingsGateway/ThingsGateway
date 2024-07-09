@@ -32,7 +32,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     /// <summary>
     /// OPC和网关对应表
     /// </summary>
-    private readonly Dictionary<NodeId, OpcUaTag> NodeIdTags = new();
+    private readonly Dictionary<string, OpcUaTag> NodeIdTags = new();
 
     /// <inheritdoc cref="ThingsGatewayNodeManager"/>
     public ThingsGatewayNodeManager(BusinessBase businessBase, IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration, ReferenceServer)
@@ -185,8 +185,8 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
     /// <param name="variable"></param>
     public void UpVariable(VariableData variable)
     {
-        var uaTag = NodeIdTags.Values.FirstOrDefault(it => it.SymbolicName == variable.Name);
-        if (uaTag == null) return;
+        if (!NodeIdTags.TryGetValue(variable.Name, out var uaTag))
+            return;
         object initialItemValue = null;
         initialItemValue = variable.Value;
         if (initialItemValue != null)
@@ -201,6 +201,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
             {
                 uaTag.StatusCode = code;
             }
+            uaTag.UpdateChangeMasks(NodeStateChangeMasks.Value);
             uaTag.ClearChangeMasks(SystemContext, false);
         }
     }
@@ -312,7 +313,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                 tag.ValueRank = ValueRanks.Scalar;
             }
             tag.DataType = DataNodeType(tp);
-
             tag.ClearChangeMasks(SystemContext, false);
         }
 
@@ -389,7 +389,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         variable.Timestamp = variableRunTime.CollectTime ?? DateTime.MinValue;
         variable.OnWriteValue = OnWriteDataValue;
         parent?.AddChild(variable);
-        NodeIdTags.AddOrUpdate(variable.NodeId, variable);
+        NodeIdTags.AddOrUpdate(variable.SymbolicName, variable);
         return variable;
     }
 
@@ -424,7 +424,7 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
                 return StatusCodes.BadUserAccessDenied;
             }
             OpcUaTag variable = node as OpcUaTag;
-            if (NodeIdTags.TryGetValue(variable.NodeId, out OpcUaTag tag))
+            if (NodeIdTags.TryGetValue(variable.SymbolicName, out OpcUaTag tag))
             {
                 if (StatusCode.IsGood(variable.StatusCode))
                 {

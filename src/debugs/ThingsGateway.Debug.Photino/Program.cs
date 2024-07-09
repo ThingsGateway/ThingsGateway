@@ -10,6 +10,7 @@
 
 using BootstrapBlazor.Components;
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Photino.Blazor;
@@ -42,7 +43,15 @@ internal class Program
 
         var builder = PhotinoBlazorAppBuilder.CreateDefault(args);
 
-        builder.Services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
+        // 创建配置生成器并读取appsettings.json
+        var configBuilder = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
+
+        // 构建配置
+        var configuration = configBuilder.Build();
+
+        // 添加配置服务
+        builder.Services.AddSingleton<IConfiguration>(configuration);
 
         // 增加中文编码支持网页源码显示汉字
         builder.Services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
@@ -50,34 +59,6 @@ internal class Program
         builder.Services.AddBlazorRcl().AddDebugRcl();
 
         builder.RootComponents.Add<BlazorApp>("#app");
-
-        builder.Services.Configure<BootstrapBlazorOptions>(op =>
-        {
-            op.ToastDelay = 4000;
-            op.SupportedCultures = new List<string> { "zh-CN", "en-US" };
-            op.MessageDelay = 4000;
-            op.SwalDelay = 4000;
-            op.EnableErrorLogger = true;
-            op.FallbackCulture = "zh-CN";
-            op.DefaultCultureInfo = "zh-CN"; //修改默认语言
-            op.TableSettings = new TableSettings
-            {
-                CheckboxColumnWidth = 36
-            };
-            op.IgnoreLocalizerMissing = true;
-            op.StepSettings = new StepSettings
-            {
-                Short = 1,
-                Int = 1,
-                Long = 1,
-                Float = 0.1f,
-                Double = 0.01,
-                Decimal = 0.01m
-            };
-            var culture = new CultureInfo("zh-CN");
-            CultureInfo.DefaultThreadCurrentCulture = culture;
-            CultureInfo.DefaultThreadCurrentUICulture = culture;
-        });
 
         var app = builder.Build();
 

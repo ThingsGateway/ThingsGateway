@@ -49,7 +49,7 @@ public class VariableRunTime : Variable, IVariable
 
     private bool _isOnline;
     private bool? _isOnlineChanged;
-    private object? _value;
+    protected object? _value;
 
     /// <summary>
     /// 变化时间
