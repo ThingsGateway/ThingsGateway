@@ -17,22 +17,20 @@ public static class StringExtensions
     /// <summary>
     /// 获取字符串中的两个字符作为名称简述
     /// </summary>
-    /// <param name="name"></param>
-    /// <returns></returns>
-    public static string GetNameLen2(this string name)
+    public static string GetNameLen2(this string name, int len = 2)
     {
         if (string.IsNullOrEmpty(name))
             return string.Empty;
         var nameLength = name.Length;//获取姓名长度
         string nameWritten = name;//需要绘制的文字
-        if (nameLength > 2)//如果名字长度超过2个
+        if (nameLength > len)//如果名字长度超过2个
         {
             // 如果用户输入的姓名大于等于3个字符，截取后面两位
             string firstName = name.Substring(0, 1);
             if (IsChinese(firstName))
             {
                 // 截取倒数两位汉字
-                nameWritten = name.Substring(name.Length - 2);
+                nameWritten = name.Substring(name.Length - len);
             }
             else
             {
