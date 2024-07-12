@@ -200,7 +200,6 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
             else if (sAddresss.Length > 1) return new OperResult<byte[]>("Only supports single write");
             else
             {
-                var byteBlock = new ValueByteBlock(2048);
                 try
                 {
                     var addressLen = sAddress.Length == 0 ? 1 : sAddress.Length;
@@ -215,10 +214,6 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
                 catch (Exception ex)
                 {
                     return new OperResult<byte[]>(ex);
-                }
-                finally
-                {
-                    byteBlock.SafeDispose();
                 }
             }
         }

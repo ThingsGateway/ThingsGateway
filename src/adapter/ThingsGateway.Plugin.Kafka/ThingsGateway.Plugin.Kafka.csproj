@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Confluent.Kafka" Version="2.4.0">
+    <PackageReference Include="Confluent.Kafka" Version="2.5.0">
       <Private>true</Private>
       <IncludeAssets>all</IncludeAssets>
       <PrivateAssets>runtime</PrivateAssets>

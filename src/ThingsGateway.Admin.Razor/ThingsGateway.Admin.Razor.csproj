@@ -10,7 +10,7 @@
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Razor\ThingsGateway.Razor.csproj" />
     <PackageReference Include="BootstrapBlazor.Chart" Version="8.1.5" />
     <PackageReference Include="BootstrapBlazor.TableExport" Version="8.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.6" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.7" />
   </ItemGroup>
 
   <ItemGroup>
