@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using MQTTnet.AspNetCore;
+using MQTTnet.Server;
 
 using ThingsGateway.Foundation;
 
@@ -81,6 +82,8 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         });
         if (_mqttServer != null)
         {
+            _mqttServer.ClientDisconnectedAsync -= MqttServer_ClientDisconnectedAsync;
+            _mqttServer.ClientDisconnectedAsync += MqttServer_ClientDisconnectedAsync;
             _mqttServer.ValidatingConnectionAsync -= MqttServer_ValidatingConnectionAsync;
             _mqttServer.InterceptingPublishAsync -= MqttServer_InterceptingPublishAsync;
             _mqttServer.LoadingRetainedMessageAsync -= MqttServer_LoadingRetainedMessageAsync;
@@ -104,6 +107,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
     {
         if (_mqttServer != null)
         {
+            _mqttServer.ClientDisconnectedAsync -= MqttServer_ClientDisconnectedAsync;
             _mqttServer.ValidatingConnectionAsync -= MqttServer_ValidatingConnectionAsync;
             _mqttServer.InterceptingPublishAsync -= MqttServer_InterceptingPublishAsync;
             _mqttServer.LoadingRetainedMessageAsync -= MqttServer_LoadingRetainedMessageAsync;

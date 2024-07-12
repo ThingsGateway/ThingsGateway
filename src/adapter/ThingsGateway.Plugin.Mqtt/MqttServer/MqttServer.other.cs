@@ -183,6 +183,12 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         await CompletedTask.Instance;
     }
 
+    private Task MqttServer_ClientDisconnectedAsync(MQTTnet.Server.ClientDisconnectedEventArgs arg)
+    {
+        LogMessage?.LogInformation($"{ToString()}-{arg.ClientId}-Client DisConnected-{arg.DisconnectType}");
+        return Task.CompletedTask;
+    }
+
     private async Task MqttServer_ValidatingConnectionAsync(ValidatingConnectionEventArgs arg)
     {
         if (!arg.ClientId.StartsWith(_driverPropertys.StartWithId))

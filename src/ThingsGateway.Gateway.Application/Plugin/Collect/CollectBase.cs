@@ -50,6 +50,8 @@ public abstract class CollectBase : DriverBase
 
     private IStringLocalizer Localizer { get; set; }
 
+    public virtual bool IsSingleThread => true;
+
     internal override void Init(DeviceRunTime device)
     {
         Localizer = App.CreateLocalizerByType(typeof(CollectBase))!;
@@ -89,8 +91,13 @@ public abstract class CollectBase : DriverBase
     {
         try
         {
-            //if (IsSingleThread)
-            //    await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            if (IsSingleThread)
+            {
+                while (WriteLock.IsWaitting)
+                {
+                    await Task.Delay(100).ConfigureAwait(false);
+                }
+            }
 
             if (cancellationToken.IsCancellationRequested)
                 return new(new OperationCanceledException());
@@ -112,8 +119,6 @@ public abstract class CollectBase : DriverBase
         }
         finally
         {
-            //if (IsSingleThread)
-            //    WriteLock.Release();
         }
     }
 
@@ -126,8 +131,8 @@ public abstract class CollectBase : DriverBase
         try
         {
             // 如果是单线程模式，则等待写入锁
-            //if (IsSingleThread)
-            //    await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            if (IsSingleThread)
+                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             // 检查协议是否为空，如果为空则抛出异常
             if (Protocol == null)
@@ -139,11 +144,18 @@ public abstract class CollectBase : DriverBase
             // 使用并发方式遍历写入信息列表，并进行异步写入操作
             await writeInfoLists.ParallelForEachAsync(async (writeInfo, cancellationToken) =>
             {
-                // 调用协议的写入方法，将写入信息中的数据写入到对应的寄存器地址，并获取操作结果
-                var result = await Protocol.WriteAsync(writeInfo.Key.RegisterAddress, writeInfo.Value, writeInfo.Key.DataType, cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    // 调用协议的写入方法，将写入信息中的数据写入到对应的寄存器地址，并获取操作结果
+                    var result = await Protocol.WriteAsync(writeInfo.Key.RegisterAddress, writeInfo.Value, writeInfo.Key.DataType, cancellationToken).ConfigureAwait(false);
 
-                // 将操作结果添加到结果字典中，使用变量名称作为键
-                operResults.TryAdd(writeInfo.Key.Name, result);
+                    // 将操作结果添加到结果字典中，使用变量名称作为键
+                    operResults.TryAdd(writeInfo.Key.Name, result);
+                }
+                catch (Exception ex)
+                {
+                    operResults.TryAdd(writeInfo.Key.Name, new(ex));
+                }
             }, CollectProperties.ConcurrentCount, cancellationToken).ConfigureAwait(false);
 
             // 返回包含操作结果的字典
@@ -152,8 +164,8 @@ public abstract class CollectBase : DriverBase
         finally
         {
             // 如果是单线程模式，则释放写入锁
-            //if (IsSingleThread)
-            //    WriteLock.Release();
+            if (IsSingleThread)
+                WriteLock.Release();
         }
     }
 
@@ -535,14 +547,10 @@ public abstract class CollectBase : DriverBase
     /// <param name="isRead">指示是否为读取操作</param>
     /// <param name="cancellationToken">取消操作的通知</param>
     /// <returns>操作结果，包含执行方法的结果</returns>
-    internal async ValueTask<OperResult<object>> InvokeMethodAsync(VariableMethod variableMethod, string? value = null, bool isRead = true, CancellationToken cancellationToken = default)
+    protected virtual async ValueTask<OperResult<object>> InvokeMethodAsync(VariableMethod variableMethod, string? value = null, bool isRead = true, CancellationToken cancellationToken = default)
     {
         try
         {
-            // 如果配置为单线程模式，则获取写入锁定
-            //if (IsSingleThread)
-            //    await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
-
             // 初始化操作结果
             OperResult<object> result = new OperResult<object>();
 
@@ -590,9 +598,6 @@ public abstract class CollectBase : DriverBase
         }
         finally
         {
-            // 如果配置为单线程模式，则释放写入锁定
-            //if (IsSingleThread)
-            //    WriteLock.Release();
         }
     }
 
@@ -638,6 +643,78 @@ public abstract class CollectBase : DriverBase
 
         // 将转换失败的变量和写入成功的变量的操作结果合并到结果字典中
         return results.Concat(results1).ToDictionary(a => a.Key, a => a.Value);
+    }
+
+    /// <summary>
+    /// 异步写入方法
+    /// </summary>
+    /// <param name="writeInfoLists">要写入的变量及其对应的数据</param>
+    /// <param name="cancellationToken">取消操作的通知</param>
+    /// <returns>写入操作的结果字典</returns>
+    internal async ValueTask<Dictionary<string, OperResult<object>>> InvokeMethodAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
+    {
+        // 初始化结果字典
+        Dictionary<string, OperResult<object>> results = new Dictionary<string, OperResult<object>>();
+
+        // 遍历写入信息列表
+        foreach (var (deviceVariable, jToken) in writeInfoLists)
+        {
+            // 检查是否有写入表达式
+            if (!string.IsNullOrEmpty(deviceVariable.WriteExpressions))
+            {
+                // 提取原始数据
+                object rawdata = jToken is JValue jValue ? jValue.Value : jToken is JArray jArray ? jArray : jToken.ToString();
+                try
+                {
+                    // 根据写入表达式转换数据
+                    object data = deviceVariable.WriteExpressions.GetExpressionsResult(rawdata);
+                    // 将转换后的数据重新赋值给写入信息列表
+                    writeInfoLists[deviceVariable] = JToken.FromObject(data);
+                }
+                catch (Exception ex)
+                {
+                    // 如果转换失败，则记录错误信息
+                    results.Add(deviceVariable.Name, new OperResult<object>(Localizer["WriteExpressionsError", deviceVariable.Name, deviceVariable.WriteExpressions, ex.Message], ex));
+                }
+            }
+        }
+
+        ConcurrentDictionary<string, OperResult<object>> operResults = new();
+
+        try
+        {
+            // 如果是单线程模式，则等待写入锁
+            if (IsSingleThread)
+                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            // 使用并发方式遍历写入信息列表，并进行异步写入操作
+            await writeInfoLists
+            .Where(a => !results.Any(b => b.Key == a.Key.Name))
+            .ToDictionary(item => item.Key, item => item.Value).ParallelForEachAsync(async (writeInfo, cancellationToken) =>
+        {
+            try
+            {
+                // 调用协议的写入方法，将写入信息中的数据写入到对应的寄存器地址，并获取操作结果
+                var result = await InvokeMethodAsync(writeInfo.Key.VariableMethod, writeInfo.Value?.ToString(), false, cancellationToken).ConfigureAwait(false);
+
+                // 将操作结果添加到结果字典中，使用变量名称作为键
+                operResults.TryAdd(writeInfo.Key.Name, result);
+            }
+            catch (Exception ex)
+            {
+                operResults.TryAdd(writeInfo.Key.Name, new(ex));
+            }
+        }, CollectProperties.ConcurrentCount, cancellationToken).ConfigureAwait(false);
+        }
+        finally
+        {
+            // 如果是单线程模式，则释放写入锁
+            if (IsSingleThread)
+                WriteLock.Release();
+        }
+
+        // 将转换失败的变量和写入成功的变量的操作结果合并到结果字典中
+        return results.Concat(operResults).ToDictionary(a => a.Key, a => a.Value);
     }
 
     #endregion 写入方法

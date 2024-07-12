@@ -45,7 +45,7 @@ public class RpcService : IRpcService
     {
         // 初始化用于存储将要写入的变量和方法的字典
         Dictionary<CollectBase, Dictionary<VariableRunTime, JToken>> WriteVariables = new();
-        Dictionary<CollectBase, Dictionary<VariableRunTime, string>> WriteMethods = new();
+        Dictionary<CollectBase, Dictionary<VariableRunTime, JToken>> WriteMethods = new();
         // 用于存储结果的并发字典
         ConcurrentDictionary<string, OperResult> results = new();
 
@@ -107,15 +107,16 @@ public class RpcService : IRpcService
                 }
                 else
                 {
+                    JToken tagValue = JTokenUtil.GetJTokenFromString(item.Value);
                     // 执行方法
                     if (WriteMethods.ContainsKey(dev))
                     {
-                        WriteMethods[dev].Add(tag, item.Value);
+                        WriteMethods[dev].Add(tag, tagValue);
                     }
                     else
                     {
                         WriteMethods.Add(dev, new());
-                        WriteMethods[dev].Add(tag, item.Value);
+                        WriteMethods[dev].Add(tag, tagValue);
                     }
                 }
             }
@@ -183,41 +184,49 @@ public class RpcService : IRpcService
         // 使用并行方式执行方法
         await WriteMethods.ParallelForEachAsync(async (item, cancellationToken) =>
         {
-            await item.Value.ParallelForEachAsync(async (writeMethod, cancellationToken) =>
+            try
             {
-                // 执行变量附带的方法
-                var method = item.Key.CurrentDevice.VariableMethods.FirstOrDefault(it => it.Variable == writeMethod.Key);
-                OperResult<object> result;
-                try
-                {
-                    result = await item.Key.InvokeMethodAsync(method, writeMethod.Value, false, cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    result = new OperResult<object>(ex);
-                }
+                // 调用设备的写入方法
+                var result = await item.Key.InvokeMethodAsync(item.Value, cancellationToken);
+
+                Dictionary<string, string> operateMethods = item.Value.Select(a => a.Key).ToDictionary(a => a.Name, a => a.OtherMethod!);
 
                 // 写入日志
-                _logQueues.Enqueue(
-                    new RpcLog()
+                foreach (var resultItem in result)
+                {
+                    // 写入日志
+                    _logQueues.Enqueue(
+                        new RpcLog()
+                        {
+                            LogTime = DateTime.Now,
+                            OperateMessage = resultItem.Value.IsSuccess ? null : resultItem.Value.ToString(),
+                            IsSuccess = resultItem.Value.IsSuccess,
+                            OperateMethod = operateMethods[resultItem.Key],
+                            OperateObject = resultItem.Key,
+                            OperateSource = sourceDes,
+                            ParamJson = items[resultItem.Key]?.ToString(),
+                            ResultJson = resultItem.Value.Content?.ToString()
+                        }
+                    );
+
+                    // 不返回详细错误
+                    if (!resultItem.Value.IsSuccess)
                     {
-                        LogTime = DateTime.Now,
-                        OperateMessage = result.IsSuccess ? null : result.ToString(),
-                        IsSuccess = result.IsSuccess,
-                        OperateMethod = writeMethod.Key.OtherMethod!,
-                        OperateObject = writeMethod.Key.Name,
-                        OperateSource = sourceDes,
-                        ParamJson = writeMethod.Value?.ToString(),
-                        ResultJson = result.Content?.ToString()
+                        OperResult<object> result1 = resultItem.Value;
+                        result1.Exception = null;
+                        result[resultItem.Key] = result1;
                     }
-                );
-
-                // 不返回详细错误
-                result.Exception = null;
-                results.TryAdd(writeMethod.Key.Name, result);
-            }, item.Key.CollectProperties.ConcurrentCount, cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                // 将异常信息添加到结果字典中
+                results.AddRange(item.Value.Select((KeyValuePair<VariableRunTime, JToken> a) =>
+                {
+                    return new KeyValuePair<string, OperResult>(a.Key.Name, new OperResult(ex));
+                }));
+            }
         }, Environment.ProcessorCount / 2, cancellationToken);
-
         // 返回结果字典
         return new(results);
     }
