@@ -13,7 +13,7 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class ModbusTcpSend : ISendMessage
+public class ModbusTcpSend : ISendMessage
 {
     /// <summary>
     /// 事务处理标识符。即序号

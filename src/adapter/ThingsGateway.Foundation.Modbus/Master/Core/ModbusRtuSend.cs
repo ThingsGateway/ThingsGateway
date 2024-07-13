@@ -13,13 +13,13 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class ModbusRtuSend : ISendMessage
+public class ModbusRtuSend : ISendMessage
 {
     public int Sign { get; set; }
 
     public int MaxLength => 300;
 
-    internal ModbusAddress ModbusAddress { get; }
+    public ModbusAddress ModbusAddress { get; }
     private bool Read;
 
     public ModbusRtuSend(ModbusAddress modbusAddress, ushort sign, bool read)

@@ -13,7 +13,7 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class ModbusRtuSlaveMessage : MessageBase, IResultMessage
+public class ModbusRtuSlaveMessage : MessageBase, IResultMessage
 {
     public ModbusRequest Request { get; set; } = new();
 

@@ -10,7 +10,7 @@
 
 namespace ThingsGateway.Foundation.Modbus;
 
-internal class ModbusHelper
+public class ModbusHelper
 {
     #region 解析
 
@@ -18,7 +18,7 @@ internal class ModbusHelper
     /// modbus地址格式说明
     /// </summary>
     /// <returns></returns>
-    internal static string GetAddressDescription()
+    public static string GetAddressDescription()
     {
         return ModbusResource.Localizer["AddressDes"];
     }
@@ -26,7 +26,7 @@ internal class ModbusHelper
     /// <summary>
     /// 通过错误码来获取到对应的文本消息
     /// </summary>
-    internal static string GetDescriptionByErrorCode(byte code)
+    public static string GetDescriptionByErrorCode(byte code)
     {
         return code switch
         {

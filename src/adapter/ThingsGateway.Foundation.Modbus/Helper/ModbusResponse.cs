@@ -13,7 +13,7 @@ namespace ThingsGateway.Foundation.Modbus;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class ModbusResponse : ModbusRequest
+public class ModbusResponse : ModbusRequest
 {
     /// <summary>
     /// 错误码
