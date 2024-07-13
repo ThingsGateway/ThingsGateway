@@ -8,11 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Admin.Application;
-using ThingsGateway.Gateway.Razor;
+using Microsoft.Extensions.DependencyInjection;
+
 using ThingsGateway.Razor;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace ThingsGateway.Gateway.Razor;
 
 [AppStartup(-1000)]
 public class Startup : AppStartup

@@ -1,0 +1,95 @@
+﻿{
+  "ThingsGateway.Plugin.QuestDB.QuestDBProducerProperty": {
+    "BigTextConnectStr": "ConnectString",
+
+    "IsInterval": "IsInterval",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "CacheFileMaxLength": "CacheFileMaxLength(mb)",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  },
+  "ThingsGateway.Plugin.QuestDB.QuestDBHistoryValue": {
+    "Id": "Id",
+
+    "CollectTime": "CollectTime",
+    "CreateTime": "CreateTime",
+    "DeviceName": "DeviceName",
+    "Name": "Name",
+    "IsOnline": "IsOnline",
+    "Value": "Value"
+  },
+
+  "ThingsGateway.Plugin.SqlDB.SqlDBProducerProperty": {
+    "IsReadDB": "IsReadDB",
+    "IsHisDB": "IsHisDB",
+    "ReadDBTableName": "ReadDBTableName",
+    "HisDBTableName": "HisDBTableName",
+    "DbType": "DbType",
+    "BigTextConnectStr": "ConnectString",
+
+    "IsInterval": "IsInterval",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "CacheFileMaxLength": "CacheFileMaxLength(mb)",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  },
+  "ThingsGateway.Plugin.SqlDB.SQLHistoryValue": {
+    "Id": "Id",
+
+    "CollectTime": "CollectTime",
+    "CreateTime": "CreateTime",
+    "DeviceName": "DeviceName",
+    "Name": "Name",
+    "IsOnline": "IsOnline",
+    "Value": "Value"
+  },
+  "ThingsGateway.Plugin.SqlDB.SQLRealValue": {
+    "Id": "Id",
+
+    "CollectTime": "CollectTime",
+    "CreateTime": "CreateTime",
+    "DeviceName": "DeviceName",
+    "Name": "Name",
+    "IsOnline": "IsOnline",
+    "Value": "Value"
+  },
+
+  "ThingsGateway.Plugin.TDengineDB.TDengineDBProducerProperty": {
+    "BigTextConnectStr": "ConnectString",
+
+    "IsInterval": "IsInterval",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "CacheFileMaxLength": "CacheFileMaxLength(mb)",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  },
+  "ThingsGateway.Plugin.TDengineDB.TDengineDBHistoryValue": {
+    "Id": "Id",
+
+    "CollectTime": "CollectTime",
+    "CreateTime": "CreateTime",
+    "DeviceName": "DeviceName",
+    "Name": "Name",
+    "IsOnline": "IsOnline",
+    "Value": "Value"
+  },
+
+  "ThingsGateway.Plugin.SqlHisAlarm.SQLHisAlarmProperty": {
+    "DbType": "DbType",
+    "BigTextConnectStr": "ConnectString",
+
+    "IsInterval": "IsInterval",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "CacheFileMaxLength": "CacheFileMaxLength(mb)",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  }
+}

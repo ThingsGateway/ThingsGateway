@@ -11,6 +11,7 @@
 using BootstrapBlazor.Components;
 
 using SqlSugar;
+using ThingsGateway.Sql;
 
 using System.ComponentModel.DataAnnotations;
 

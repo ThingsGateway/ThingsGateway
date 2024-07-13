@@ -10,7 +10,7 @@
 
 using ThingsGateway.Razor;
 
-namespace ThingsGateway.Gateway.Razor;
+namespace ThingsGateway.Debug;
 
 public class PhotinoPlatformService : IPlatformService
 {

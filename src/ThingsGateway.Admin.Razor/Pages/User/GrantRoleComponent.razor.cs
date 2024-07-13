@@ -14,6 +14,7 @@ using NewLife.Extension;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
+using ThingsGateway.Sql;
 
 namespace ThingsGateway.Admin.Razor;
 

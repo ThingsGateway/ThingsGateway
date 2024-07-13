@@ -12,6 +12,8 @@ using BootstrapBlazor.Components;
 
 using SqlSugar;
 
+using ThingsGateway.Sql;
+
 namespace ThingsGateway.Admin.Application;
 
 /// <summary>

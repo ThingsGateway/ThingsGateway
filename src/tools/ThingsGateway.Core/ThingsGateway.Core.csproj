@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="$(SolutionDir)Version.props" />
+  <Import Project="$(SolutionDir)PackNuget.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\ThingsGateway.NewLife.X\ThingsGateway.NewLife.X.csproj" />
+  </ItemGroup>
+</Project>

@@ -8,18 +8,15 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Admin.Application;
-using ThingsGateway.Admin.Razor;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace ThingsGateway.Admin.Razor;
 
 [AppStartup(100)]
 public class Startup : AppStartup
 {
     public void ConfigureAdminApp(IServiceCollection services)
     {
-        services.AddBlazorRcl();
-
         services.AddSingleton<IAppVersionService, VersionService>();
         services.AddScoped<IMenuService, MenuService>();
         services.AddBootstrapBlazorTableExportService();

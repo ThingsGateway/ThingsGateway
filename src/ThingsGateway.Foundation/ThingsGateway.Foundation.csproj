@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.7" />
     <PackageReference Include="TouchSocket" Version="2.1.0-alpha.31" />
     <PackageReference Include="TouchSocket.SerialPorts" Version="2.1.0-alpha.31" />
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.NewLife.X\ThingsGateway.NewLife.X.csproj" />
+    <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.NewLife.X\ThingsGateway.NewLife.X.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'!='net6.0'">

@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Logging;
+using ThingsGateway;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

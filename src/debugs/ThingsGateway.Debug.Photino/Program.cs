@@ -43,24 +43,19 @@ internal class Program
 
         var builder = PhotinoBlazorAppBuilder.CreateDefault(args);
 
-        // 创建配置生成器并读取appsettings.json
-        var configBuilder = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
-
-        // 构建配置
-        var configuration = configBuilder.Build();
+        builder.Services.ConfigureServicesWithoutWeb();
 
         // 添加配置服务
-        builder.Services.AddSingleton<IConfiguration>(configuration);
+        builder.Services.AddSingleton<IConfiguration>(App.Configuration);
 
         // 增加中文编码支持网页源码显示汉字
         builder.Services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
 
-        builder.Services.AddBlazorRcl().AddDebugRcl();
-
         builder.RootComponents.Add<BlazorApp>("#app");
 
         var app = builder.Build();
+
+        app.Services.UseServicesWithoutWeb();
 
         app.MainWindow.SetUseOsDefaultLocation(false);
         app.MainWindow.SetUseOsDefaultSize(false);

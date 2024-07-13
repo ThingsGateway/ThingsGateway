@@ -2,19 +2,9 @@
   <Import Project="$(SolutionDir)Version.props" />
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.1" />
     <PackageReference Include="MiniExcel" Version="1.33.0" />
     <PackageReference Include="Rougamo.Fody" Version="3.0.2" />
     <PackageReference Include="UAParser" Version="3.1.47" />
-    <PackageReference Include="SqlSugarCore" Version="5.1.4.162" />
-    <PackageReference Include="Mapster" Version="7.4.0" />
-    <PackageReference Include="BootstrapBlazor" Version="8.7.1" />
-    <PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Core\ThingsGateway.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,5 +32,8 @@
     <EmbeddedResource Include="Locales\*.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.Sql\ThingsGateway.Sql.csproj" />
   </ItemGroup>
 </Project>

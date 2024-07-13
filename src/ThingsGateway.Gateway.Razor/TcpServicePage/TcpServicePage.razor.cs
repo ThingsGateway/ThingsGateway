@@ -18,6 +18,7 @@ using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Foundation;
 using ThingsGateway.Gateway.Application;
+using ThingsGateway.Sql;
 
 using TouchSocket.Core;
 

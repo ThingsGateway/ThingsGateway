@@ -220,7 +220,7 @@ public class VerificatInfo : PrimaryIdEntity
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     [AutoGenerateColumn(Filterable = true, Sortable = true)]
-    [SqlSugar.SugarColumn(IsIgnore = true)]
+    [SugarColumn(IsIgnore = true)]
     public bool Online => ClientIds.Any();
 
     /// <summary>
@@ -233,7 +233,7 @@ public class VerificatInfo : PrimaryIdEntity
     /// verificat剩余有效期
     /// </summary>
     [AutoGenerateColumn(Filterable = true, Sortable = true)]
-    [SqlSugar.SugarColumn(IsIgnore = true)]
+    [SugarColumn(IsIgnore = true)]
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public string VerificatRemain { get; set; }

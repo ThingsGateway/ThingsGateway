@@ -8,11 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using SqlSugar;
+
 using Yitter.IdGenerator;
 
 namespace ThingsGateway.Gateway.Application;
 
-[SqlSugar.SugarTable("CacheDBItem")]
+[SugarTable("CacheDBItem")]
 public class CacheDBItem<T> : IPrimaryIdEntity
 {
     public CacheDBItem()
@@ -26,9 +28,9 @@ public class CacheDBItem<T> : IPrimaryIdEntity
         Value = value;
     }
 
-    [SqlSugar.SugarColumn(IsPrimaryKey = true)]
+    [SugarColumn(IsPrimaryKey = true)]
     public long Id { get; set; }
 
-    [SqlSugar.SugarColumn(IsJson = true)]
+    [SugarColumn(IsJson = true)]
     public T Value { get; set; }
 }

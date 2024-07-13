@@ -13,9 +13,8 @@ using Microsoft.Extensions.Localization;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
-using ThingsGateway.Server;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace ThingsGateway.Server;
 
 [AppStartup(-99999)]
 public class Startup : AppStartup

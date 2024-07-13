@@ -12,12 +12,12 @@ using BootstrapBlazor.Components;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using System.Reflection;
 using System.Text;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Core;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Logging;
@@ -26,7 +26,7 @@ using UAParser;
 
 using Yitter.IdGenerator;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace ThingsGateway.Admin.Application;
 
 [AppStartup(1000)]
 public class Startup : AppStartup

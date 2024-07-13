@@ -15,6 +15,7 @@ using ThingsGateway.Core.Extension;
 using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.Razor;
+using ThingsGateway.Sql;
 
 namespace ThingsGateway.Gateway.Razor;
 

@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using ThingsGateway.Sql;
+
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>

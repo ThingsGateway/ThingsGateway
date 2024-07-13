@@ -36,6 +36,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 
+using ThingsGateway;
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Logging;
