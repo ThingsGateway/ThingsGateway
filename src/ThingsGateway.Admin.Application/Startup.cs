@@ -49,12 +49,6 @@ public class Startup : AppStartup
             connection.DbMaintenance.CreateDatabase();//创建数据库,如果存在则不创建
         });
 
-        // 配置雪花Id算法机器码
-        YitIdHelper.SetIdGenerator(new IdGeneratorOptions
-        {
-            WorkerId = 1// 取值范围0~63
-        });
-
         var fullName = Assembly.GetExecutingAssembly().FullName;//获取程序集全名
         CodeFirstUtils.CodeFirst(fullName!);//CodeFirst
 
