@@ -83,6 +83,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.Rabbit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.SiemensS7", "plugin\ThingsGateway.Plugin.SiemensS7\ThingsGateway.Plugin.SiemensS7.csproj", "{999FFA9B-966D-4B4C-A4F1-4677B39C7A21}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.CSScript", "tools\ThingsGateway.CSScript\ThingsGateway.CSScript.csproj", "{893C1317-A7BA-4FE7-9F80-D53F2B92D935}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -205,6 +207,10 @@ Global
 		{999FFA9B-966D-4B4C-A4F1-4677B39C7A21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{999FFA9B-966D-4B4C-A4F1-4677B39C7A21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{999FFA9B-966D-4B4C-A4F1-4677B39C7A21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{893C1317-A7BA-4FE7-9F80-D53F2B92D935}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{893C1317-A7BA-4FE7-9F80-D53F2B92D935}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{893C1317-A7BA-4FE7-9F80-D53F2B92D935}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{893C1317-A7BA-4FE7-9F80-D53F2B92D935}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -233,10 +239,11 @@ Global
 		{E63BB8AC-0DFD-4AA7-9EC9-5CF0F3EE7F93} = {69E6D9A3-4EA0-488A-AD4A-C179197A8189}
 		{C80B4F4D-BB9F-4838-9BF0-9E836E712263} = {69E6D9A3-4EA0-488A-AD4A-C179197A8189}
 		{999FFA9B-966D-4B4C-A4F1-4677B39C7A21} = {69E6D9A3-4EA0-488A-AD4A-C179197A8189}
+		{893C1317-A7BA-4FE7-9F80-D53F2B92D935} = {B1DC0D3F-AAAE-4B01-A35A-E81409D411FB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_Rules = {"EnabledRules":[]}
-		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
 		RESX_NeutralResourcesLanguage = zh-Hans
+		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
+		RESX_Rules = {"EnabledRules":[]}
 	EndGlobalSection
 EndGlobal
