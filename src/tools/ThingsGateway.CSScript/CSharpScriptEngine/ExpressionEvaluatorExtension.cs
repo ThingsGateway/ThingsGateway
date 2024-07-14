@@ -31,7 +31,7 @@ public static class ExpressionEvaluatorExtension
 {
     private static string CacheKey = $"{nameof(ExpressionEvaluatorExtension)}-{nameof(GetReadWriteExpressions)}";
 
-    private static EasyLock m_waiterLock = new EasyLock();
+    private static SemaphoreSlim m_waiterLock = new SemaphoreSlim(1, 1);
 
     static ExpressionEvaluatorExtension()
     {
@@ -71,6 +71,41 @@ public static class ExpressionEvaluatorExtension
 
     private static MemoryCache Instance { get; set; } = new MemoryCache();
 
+    public static ReadWriteExpressions AddScript(string source)
+    {
+        var field = $"{CacheKey}-{source}";
+        var runScript = Instance.Get<ReadWriteExpressions>(field);
+        if (runScript == null)
+        {
+            if (!source.Contains("return"))
+            {
+                source = $"return {source}";//只判断简单脚本中可省略return字符串
+            }
+            // 动态加载并执行代码
+            runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<ReadWriteExpressions>(
+                $@"
+        using System;
+        using System.Linq;
+        using System.Collections.Generic;
+        using Newtonsoft.Json;
+        using Newtonsoft.Json.Linq;
+        using ThingsGateway.Gateway.Application;
+        using ThingsGateway.Foundation;
+        using ThingsGateway.Gateway.Application.Extensions;
+        public class Script:ReadWriteExpressions
+        {{
+            public object GetNewValue(object raw)
+            {{
+                {source};
+            }}
+        }}
+    ");
+            GC.Collect();
+            Instance.Set(field, runScript);
+        }
+        return runScript;
+    }
+
     /// <summary>
     /// 计算表达式：例如：(int)raw*100，raw为原始值
     /// </summary>
@@ -108,41 +143,6 @@ public static class ExpressionEvaluatorExtension
         }
         Instance.SetExpire(field, TimeSpan.FromHours(1));
 
-        return runScript;
-    }
-
-    internal static ReadWriteExpressions AddScript(string source)
-    {
-        var field = $"{CacheKey}-{source}";
-        var runScript = Instance.Get<ReadWriteExpressions>(field);
-        if (runScript == null)
-        {
-            if (!source.Contains("return"))
-            {
-                source = $"return {source}";//只判断简单脚本中可省略return字符串
-            }
-            // 动态加载并执行代码
-            runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<ReadWriteExpressions>(
-                $@"
-        using System;
-        using System.Linq;
-        using System.Collections.Generic;
-        using Newtonsoft.Json;
-        using Newtonsoft.Json.Linq;
-        using ThingsGateway.Gateway.Application;
-        using ThingsGateway.Foundation;
-        using ThingsGateway.Gateway.Application.Extensions;
-        public class Script:ReadWriteExpressions
-        {{
-            public object GetNewValue(object raw)
-            {{
-                {source};
-            }}
-        }}
-    ");
-            GC.Collect();
-            Instance.Set(field, runScript);
-        }
         return runScript;
     }
 }

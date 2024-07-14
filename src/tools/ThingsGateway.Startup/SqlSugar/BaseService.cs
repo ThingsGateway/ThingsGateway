@@ -14,7 +14,9 @@ using Microsoft.Extensions.Localization;
 
 using SqlSugar;
 
-namespace ThingsGateway.Admin.Application;
+using ThingsGateway.Core;
+
+namespace ThingsGateway;
 
 public class BaseService<T> : IDataService<T>, IDisposable where T : class, new()
 {

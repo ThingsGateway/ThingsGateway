@@ -9,11 +9,11 @@
 //------------------------------------------------------------------------------
 
 using System.Dynamic; // 引入 System.Dynamic 命名空间
-using System.Reflection; // 引入 System.Reflection 命名空间
+using System.Reflection;
 
-using TouchSocket.Core; // 引入 ThingsGateway.Foundation.Extension.Generic 命名空间
+using ThingsGateway.Foundation;
 
-namespace ThingsGateway.Gateway.Application.Extensions;
+namespace ThingsGateway.Foundation.Extension.Dynamic;
 
 /// <summary>
 /// 提供对动态类型的扩展方法
@@ -25,7 +25,7 @@ public static class ExpandoObjectExtensions
     /// </summary>
     /// <param name="expandoObject">动态对象</param>
     /// <param name="type">要转换的目标实体类型</param>
-    /// <param name="filter">是否过滤属性上的 IgnoreExcelAttribute 特性</param>
+    /// <param name="properties"></param>
     /// <returns>转换后的实体对象</returns>
     public static object ConvertToEntity(this ExpandoObject expandoObject, Type type, Dictionary<string, PropertyInfo> properties)
     {
@@ -50,7 +50,7 @@ public static class ExpandoObjectExtensions
     /// </summary>
     /// <typeparam name="T">要转换的目标实体类型</typeparam>
     /// <param name="expandoObject">动态对象</param>
-    /// <param name="filter">是否过滤属性上的 IgnoreExcelAttribute 特性</param>
+    /// <param name="properties"></param>
     /// <returns>转换后的实体对象</returns>
     public static T ConvertToEntity<T>(this ExpandoObject expandoObject, Dictionary<string, PropertyInfo> properties) where T : new()
     {
@@ -70,18 +70,18 @@ public static class ExpandoObjectExtensions
         return entity; // 返回转换后的实体对象
     }
 
-    /// <summary>
-    /// 获取动态对象中指定属性的值
-    /// </summary>
-    /// <typeparam name="T">动态对象的类型</typeparam>
-    /// <param name="expandoObject">动态对象</param>
-    /// <param name="propertyName">要获取值的属性名称</param>
-    /// <returns>属性的值</returns>
-    public static object GetProperty<T>(this ExpandoObject expandoObject, string propertyName)
-    {
-        var type = typeof(T); // 获取动态对象的类型
-        var properties = type.GetRuntimeProperties(); // 获取动态对象的所有属性
-        var propertyDes = type.GetPropertyDisplayName(propertyName); // 获取指定属性的描述名称
-        return expandoObject.FirstOrDefault(a => a.Key == propertyDes).Value; // 返回指定属性的值
-    }
+    ///// <summary>
+    ///// 获取动态对象中指定属性的值
+    ///// </summary>
+    ///// <typeparam name="T">动态对象的类型</typeparam>
+    ///// <param name="expandoObject">动态对象</param>
+    ///// <param name="propertyName">要获取值的属性名称</param>
+    ///// <returns>属性的值</returns>
+    //public static object GetProperty<T>(this ExpandoObject expandoObject, string propertyName)
+    //{
+    //    var type = typeof(T); // 获取动态对象的类型
+    //    var properties = type.GetRuntimeProperties(); // 获取动态对象的所有属性
+    //    var propertyDes = type.GetPropertyDisplayName(propertyName); // 获取指定属性的描述名称
+    //    return expandoObject.FirstOrDefault(a => a.Key == propertyDes).Value; // 返回指定属性的值
+    //}
 }

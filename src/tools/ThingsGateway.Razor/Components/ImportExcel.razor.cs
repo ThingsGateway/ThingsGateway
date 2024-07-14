@@ -12,10 +12,7 @@ using Microsoft.AspNetCore.Components.Forms;
 
 using System.ComponentModel.DataAnnotations;
 
-using ThingsGateway.Gateway.Application;
-using ThingsGateway.Razor;
-
-namespace ThingsGateway.Gateway.Razor;
+namespace ThingsGateway.Razor;
 
 public partial class ImportExcel
 {
@@ -28,12 +25,20 @@ public partial class ImportExcel
     [EditorRequired]
     public Func<Dictionary<string, ImportPreviewOutputBase>, Task> Import { get; set; }
 
+    [Inject]
+    [NotNull]
+    public IStringLocalizer<ImportExcel>? Localizer { get; set; }
+
     /// <summary>
     /// 预览
     /// </summary>
     [Parameter]
     [EditorRequired]
     public Func<IBrowserFile, Task<Dictionary<string, ImportPreviewOutputBase>>> Preview { get; set; }
+
+    [Inject]
+    [NotNull]
+    public ToastService? ToastService { get; set; }
 
     [Required]
     private IBrowserFile _importFile { get; set; }

@@ -1,8 +1,5 @@
-﻿@inherits ComponentDefault
-@using ThingsGateway.Admin.Application
-@using ThingsGateway.Admin.Razor
-@using ThingsGateway.Core.Extension
-@namespace ThingsGateway.Gateway.Razor
+﻿@using ThingsGateway.Core.Extension
+@namespace ThingsGateway.Razor
 <Button OnClick="() => step.Reset()">@Localizer["Reset"]</Button>
 <h6 class="my-3 green--text">@Localizer["Tip"] </h6>
 <Step @ref="@step" IsVertical="true">

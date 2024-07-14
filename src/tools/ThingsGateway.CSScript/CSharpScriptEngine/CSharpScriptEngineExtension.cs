@@ -16,67 +16,7 @@ using NewLife.Caching;
 
 using System.Reflection;
 
-using ThingsGateway.Core.Json.Extension;
-
 namespace ThingsGateway.Gateway.Application;
-
-#if false
-//变量脚本动态设置传输实体的Demo
-
-    public class DemoScript:IDynamicModel
-    {
-        public IEnumerable<dynamic> GetList(IEnumerable<dynamic> datas)
-        {
-            List<DemoData> demoDatas = new List<DemoData>();
-            foreach (var data in datas)
-            {
-                DemoData demoData = new DemoData();
-                demoData.Value = data.Value;
-                demoData.Name = data.Name;
-                demoData.IsOnline = data.IsOnline;
-                demoData.ChangeTime = data.ChangeTime;
-                demoDatas.Add(demoData);
-            }
-            return demoDatas;
-        }
-    }
-    public class DemoData
-    {
-        public string Name { get; set; }
-        public bool IsOnline { get; set; }
-        public object Value { get; set; }
-        public DateTime ChangeTime { get; set; }
-    }
-#endif
-
-#if false
-
-//采集设备脚本动态设置传输实体的Demo
-public class DemoScript:IDynamicModel
-{
-    public IEnumerable<dynamic> GetList(IEnumerable<dynamic> datas)
-    {
-        List<DemoData> demoDatas = new List<DemoData>();
-        foreach (var data in datas)
-        {
-            DemoData demoData = new DemoData();
-            demoData.Name = data.Name;
-            demoData.ActiveTime = data.ActiveTime;
-            demoData.DeviceStatus = data.DeviceStatus;
-            demoDatas.Add(demoData);
-        }
-        return demoDatas;
-    }
-}
-public class DemoData
-{
-    public string Name { get; set; }
-
-    public DateTime ActiveTime { get; set; }
-
-    public DeviceStatusEnum DeviceStatus { get; set; }
-}
-#endif
 
 public interface IDynamicModel
 {
@@ -93,6 +33,10 @@ public interface IDynamicModelData
 /// </summary>
 public static class CSharpScriptEngineExtension
 {
+    private static string CacheKey = $"{nameof(CSharpScriptEngineExtension)}-{nameof(Do)}";
+
+    private static SemaphoreSlim m_waiterLock = new SemaphoreSlim(1, 1);
+
     static CSharpScriptEngineExtension()
     {
         Task.Factory.StartNew(async () =>
@@ -130,8 +74,6 @@ public static class CSharpScriptEngineExtension
     }
 
     private static MemoryCache Instance { get; set; } = new MemoryCache();
-    private static EasyLock m_waiterLock = new EasyLock();
-    private static string CacheKey = $"{nameof(CSharpScriptEngineExtension)}-{nameof(Do)}";
 
     /// <summary>
     /// 执行脚本获取返回值ReadWriteExpressions
@@ -183,23 +125,6 @@ public static class CSharpScriptEngineExtension
     /// <summary>
     /// GetDynamicModel
     /// </summary>
-    public static dynamic GetDynamicModelData<T>(this T data, string script) where T : class
-    {
-        if (!string.IsNullOrEmpty(script))
-        {
-            //执行脚本，获取新实体
-            var getDeviceModel = Do<IDynamicModelData>(script);
-            return getDeviceModel.GeData(data);
-        }
-        else
-        {
-            return data;
-        }
-    }
-
-    /// <summary>
-    /// GetDynamicModel
-    /// </summary>
     public static IEnumerable<dynamic> GetDynamicModel<T>(this IEnumerable<T> datas, string script) where T : class
     {
         if (!string.IsNullOrEmpty(script))
@@ -214,17 +139,34 @@ public static class CSharpScriptEngineExtension
         }
     }
 
+    /// <summary>
+    /// GetDynamicModel
+    /// </summary>
+    public static dynamic GetDynamicModelData<T>(this T data, string script) where T : class
+    {
+        if (!string.IsNullOrEmpty(script))
+        {
+            //执行脚本，获取新实体
+            var getDeviceModel = Do<IDynamicModelData>(script);
+            return getDeviceModel.GeData(data);
+        }
+        else
+        {
+            return data;
+        }
+    }
+
     public static IEnumerable<PropertyInfo> GetProperties(this IEnumerable<dynamic> value, params string[] names)
     {
         // 获取动态对象集合的类型
         var type = value.GetType().GetGenericArguments().LastOrDefault() ?? throw new ArgumentNullException(nameof(value));
 
-        var namesStr = names.ToSystemTextJsonString();
+        var namesStr = Newtonsoft.Json.JsonConvert.SerializeObject(names);
         // 构建缓存键，包括属性名和类型信息
         var cacheKey = $"{namesStr}-{type.FullName}-{type.TypeHandle.Value}";
 
         // 从缓存中获取属性信息，如果缓存不存在，则创建并缓存
-        var result = App.CacheService.GetOrCreate(cacheKey, a =>
+        var result = Instance.GetOrAdd(cacheKey, a =>
         {
             // 获取动态对象类型中指定名称的属性信息
             var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.GetProperty)

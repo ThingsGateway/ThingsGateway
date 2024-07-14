@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace ThingsGateway.Admin.Razor;
 
-[AppStartup(100)]
+[AppStartup(100000)]
 public class Startup : AppStartup
 {
     public void ConfigureAdminApp(IServiceCollection services)

@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 using System.Text;
 
-using ThingsGateway.Gateway.Application;
+using ThingsGateway.Foundation.Extension.String;
 
 using TouchSocket.Core;
 
@@ -120,13 +120,7 @@ public class StringToEncodingConverter : ISerializerFormatter<string, object>
     /// </summary>
     public int Order { get; set; }
 
-    /// <summary>
     /// <inheritdoc/>
-    /// </summary>
-    /// <param name="source"></param>
-    /// <param name="targetType"></param>
-    /// <param name="target"></param>
-    /// <returns></returns>
     public bool TryDeserialize(object state, in string source, Type targetType, out object target)
     {
         try
@@ -146,12 +140,7 @@ public class StringToEncodingConverter : ISerializerFormatter<string, object>
         return false;
     }
 
-    /// <summary>
     /// <inheritdoc/>
-    /// </summary>
-    /// <param name="target"></param>
-    /// <param name="source"></param>
-    /// <returns></returns>
     public bool TrySerialize(object state, in object target, out string source)
     {
         try

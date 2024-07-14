@@ -25,7 +25,7 @@ using Yitter.IdGenerator;
 
 namespace ThingsGateway.Razor;
 
-[AppStartup(10000)]
+[AppStartup(10000000)]
 public class Startup : AppStartup
 {
     public void ConfigureApp(IServiceCollection services)
@@ -35,6 +35,10 @@ public class Startup : AppStartup
         {
             WorkerId = 1// 取值范围0~63
         });
+
+        services.AddSingleton(typeof(IDataService<>), typeof(BaseService<>));
+        services.AddSingleton<IFileService, FileService>();
+        services.AddSingleton<IImportExportService, ImportExportService>();
     }
 
     public void UseService(IServiceProvider serviceProvider)

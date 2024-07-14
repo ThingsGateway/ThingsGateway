@@ -9,14 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CS-Script" Version="4.8.17" />
+    <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.CSScript\ThingsGateway.CSScript.csproj" />
     <ProjectReference Include="$(SolutionDir)\adapter\ThingsGateway.Foundation.SourceGenerator\ThingsGateway.Foundation.SourceGenerator.csproj" ReferenceOutputAssembly="false" />
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="$(SolutionDir)\adapter\ThingsGateway.Foundation.SourceGenerator\tools\*.ps1" PackagePath="tools" Pack="true" Visible="false" />
-    <Compile Include="..\..\ThingsGateway.Gateway.Application\CSharpScriptEngine\ExpressionEvaluatorExtension.cs" Link="ExpressionEvaluatorExtension.cs" />
     <None Include="$(SolutionDir)\adapter\ThingsGateway.Foundation.SourceGenerator\bin\$(Configuration)\netstandard2.0\ThingsGateway.Foundation.SourceGenerator.dll" PackagePath="analyzers\dotnet\cs" Pack="true" Visible="false" />
   </ItemGroup>
 

@@ -1,4 +1,17 @@
 ﻿{
+  "ThingsGateway.Razor.ImportExcel": {
+    "First": "第一步",
+    "Upload": "上传文件",
+    "Validate": "验证",
+    "Second": "第二步",
+    "ValidateText": "验证内容",
+    "UploadCount": " 表 {0}，预计导入 {1} 条数据",
+    "Third": "第三",
+    "Import": "导入",
+    "Next": "下一步",
+    "Reset": "重置",
+    "Tip": "数据量较大时(大于20万)，所需导入时间可能超过1分钟，请耐心等待"
+  },
   "ThingsGateway.Razor._Imports": {
     "Add": "添加",
     "Remove": "移除",

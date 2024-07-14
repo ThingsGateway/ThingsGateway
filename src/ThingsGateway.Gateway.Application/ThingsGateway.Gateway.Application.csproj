@@ -7,6 +7,7 @@
     <PackageReference Include="Rougamo.Fody" Version="3.0.2" />
     <PackageReference Include="CS-Script" Version="4.8.17" />
     <PackageReference Include="TouchSocket.Dmtp" Version="2.1.0-rc.1" />
+    
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Application\ThingsGateway.Admin.Application.csproj" />
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+    <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.CSScript\ThingsGateway.CSScript.csproj" />
   </ItemGroup>
 
   <ItemGroup>

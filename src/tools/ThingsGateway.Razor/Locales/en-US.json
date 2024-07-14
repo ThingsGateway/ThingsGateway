@@ -1,4 +1,17 @@
 ﻿{
+  "ThingsGateway.Razor.ImportExcel": {
+    "First": "Step 1",
+    "Upload": "Upload File",
+    "Validate": "Validate",
+    "Second": "Step 2",
+    "ValidateText": "Validation Content",
+    "UploadCount": " Table {0}, expecting to import {1} records",
+    "Third": "Step 3",
+    "Import": "Import",
+    "Next": "Next",
+    "Reset": "Reset",
+    "Tip": "When the data volume is large (more than 200,000), the import may take more than 1 minute, please be patient"
+  },
   "ThingsGateway.Razor._Imports": {
     "Add": "Add",
     "Remove": "Remove",

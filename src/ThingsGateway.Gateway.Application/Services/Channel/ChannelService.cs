@@ -25,8 +25,9 @@ using System.Dynamic;
 using System.Reflection;
 using System.Text;
 
+using ThingsGateway.Extension.Generic;
+using ThingsGateway.Foundation.Extension.Dynamic;
 using ThingsGateway.Gateway.Application.Extensions;
-using ThingsGateway.Gateway.Application.Generic;
 
 using TouchSocket.Core;
 using TouchSocket.SerialPorts;

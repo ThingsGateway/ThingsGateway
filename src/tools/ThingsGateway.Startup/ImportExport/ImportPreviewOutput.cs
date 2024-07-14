@@ -8,9 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using TouchSocket.Core;
+using ThingsGateway.Core.List;
 
-namespace ThingsGateway.Gateway.Application;
+namespace ThingsGateway;
 
 /// <summary>
 /// 文件导入通用输出

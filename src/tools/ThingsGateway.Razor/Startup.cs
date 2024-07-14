@@ -23,7 +23,7 @@ using ThingsGateway.Razor;
 
 namespace ThingsGateway.Razor;
 
-[AppStartup(1000)]
+[AppStartup(1000000)]
 public class Startup : AppStartup
 {
     public void ConfigureApp(IServiceCollection services)

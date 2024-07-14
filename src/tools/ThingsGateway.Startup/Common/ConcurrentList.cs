@@ -10,7 +10,7 @@
 
 using System.Collections;
 
-namespace ThingsGateway.Admin.Application.ConcurrentList;
+namespace ThingsGateway.Core.List;
 
 /// <summary>
 /// 线程安全的List，其基本操作和List一致。

@@ -28,21 +28,28 @@ public static class DbContext
     /// <summary>
     /// SqlSugar 数据库实例
     /// </summary>
-    public static readonly SqlSugarScope Db = new(DbConfigs.Adapt<List<ConnectionConfig>>(), db =>
-    {
-        DbConfigs.ForEach(it =>
-        {
-            var sqlsugarScope = db.GetConnectionScope(it.ConfigId);//获取当前库
-            MoreSetting(sqlsugarScope);//更多设置
-            AopSetting(sqlsugarScope, it.IsShowSql);//aop配置
-        }
-        );
-    });
+    public static readonly SqlSugarScope Db;
 
     /// <summary>
     /// 读取配置文件中的 ConnectionStrings:Sqlsugar 配置节点
     /// </summary>
-    public static readonly SqlSugarOptions DbConfigs = App.Configuration?.GetSection(nameof(SqlSugarOptions)).Get<SqlSugarOptions>()!;
+    public static readonly SqlSugarOptions DbConfigs;
+
+    static DbContext()
+    {
+        // 配置映射
+        DbConfigs = App.Configuration?.GetSection(nameof(SqlSugarOptions)).Get<SqlSugarOptions>()!;
+        Db = new(DbConfigs.Adapt<List<ConnectionConfig>>(), db =>
+        {
+            DbConfigs.ForEach(it =>
+            {
+                var sqlsugarScope = db.GetConnectionScope(it.ConfigId);//获取当前库
+                MoreSetting(sqlsugarScope);//更多设置
+                AopSetting(sqlsugarScope, it.IsShowSql);//aop配置
+            }
+            );
+        });
+    }
 
     /// <summary>
     /// Aop设置

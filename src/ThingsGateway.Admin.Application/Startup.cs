@@ -157,9 +157,6 @@ public class Startup : AppStartup
 
         #endregion api日志
 
-        services.AddSingleton(typeof(IDataService<>), typeof(BaseService<>));
-        services.AddSingleton<IFileService, FileService>();
-        services.AddSingleton<IImportExportService, ImportExportService>();
         services.AddSingleton<IVerificatInfoService, VerificatInfoService>();
         services.AddSingleton<IAuthService, AuthService>();
         services.AddSingleton<ISysDictService, SysDictService>();

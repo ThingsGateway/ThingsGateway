@@ -8,10 +8,10 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Gateway.Application;
+namespace ThingsGateway;
 
 /// <summary>
-/// 提供对 IEnumerable<T> 的并行操作扩展方法
+/// 提供对 IEnumerable 的并行操作扩展方法
 /// </summary>
 public static class ParallelExtensions
 {

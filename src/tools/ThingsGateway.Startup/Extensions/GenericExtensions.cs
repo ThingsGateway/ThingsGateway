@@ -10,7 +10,7 @@
 
 using System.Reflection;
 
-namespace ThingsGateway.Gateway.Application.Generic;
+namespace ThingsGateway.Extension.Generic;
 
 /// <inheritdoc/>
 public static class GenericExtensions
