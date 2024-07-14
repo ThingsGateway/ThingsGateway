@@ -31,8 +31,7 @@ public partial class LogConsole : IDisposable
     public bool Disposed { get; set; }
 
     [Parameter]
-    [EditorRequired]
-    public string HeaderText { get; set; }
+    public string HeaderText { get; set; } = "Log";
 
     [Parameter]
     public string HeightText { get; set; } = "400px";

@@ -46,6 +46,8 @@ public class SingleFilePublish : ISingleFilePublish
             "ThingsGateway.Foundation",
             "ThingsGateway.Core",
             "ThingsGateway.NewLife.X",
+            "ThingsGateway.Startup",
+            "ThingsGateway.CSScript",
             "ThingsGateway.Razor",
             "ThingsGateway.Gateway.Application",
             "ThingsGateway.Gateway.Razor"   ,
