@@ -26,37 +26,17 @@ namespace ThingsGateway.Gateway.Application;
 public class Channel : PrimaryIdEntity
 {
     /// <summary>
-    /// 波特率
+    /// 通道名称
     /// </summary>
-    [SugarColumn(ColumnDescription = "波特率", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public int? BaudRate { get; set; }
-
-    /// <summary>
-    /// 本地地址，可由<see cref="IPHost.IPHost(string)"/>与<see href="IPHost.ToString()"/>相互转化
-    /// </summary>
-    [SugarColumn(ColumnDescription = "本地地址", Length = 200, IsNullable = true)]
+    [SugarColumn(ColumnDescription = "名称", Length = 200)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public string? BindUrl { get; set; }
+    [Required]
+    public virtual string Name { get; set; }
 
     /// <inheritdoc/>
     [SugarColumn(ColumnDescription = "通道类型", IsNullable = false)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public virtual ChannelTypeEnum ChannelType { get; set; }
-
-    /// <summary>
-    /// 数据位
-    /// </summary>
-    [SugarColumn(ColumnDescription = "数据位", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public int? DataBits { get; set; }
-
-    /// <summary>
-    /// DtrEnable
-    /// </summary>
-    [SugarColumn(ColumnDescription = "DtrEnable", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public bool? DtrEnable { get; set; }
 
     /// <summary>
     /// 使能
@@ -73,19 +53,18 @@ public class Channel : PrimaryIdEntity
     public bool LogEnable { get; set; }
 
     /// <summary>
-    /// 通道名称
+    /// 远程地址，可由<see cref="IPHost.IPHost(string)"/>与<see href="IPHost.ToString()"/>相互转化
     /// </summary>
-    [SugarColumn(ColumnDescription = "名称", Length = 200)]
+    [SugarColumn(ColumnDescription = "远程地址", Length = 200, IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    [Required]
-    public virtual string Name { get; set; }
+    public string? RemoteUrl { get; set; }
 
     /// <summary>
-    /// 校验位
+    /// 本地地址，可由<see cref="IPHost.IPHost(string)"/>与<see href="IPHost.ToString()"/>相互转化
     /// </summary>
-    [SugarColumn(ColumnDescription = "校验位", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public Parity? Parity { get; set; }
+    [SugarColumn(ColumnDescription = "本地地址", Length = 200, IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public string? BindUrl { get; set; }
 
     /// <summary>
     /// COM
@@ -95,18 +74,25 @@ public class Channel : PrimaryIdEntity
     public string? PortName { get; set; }
 
     /// <summary>
-    /// 远程地址，可由<see cref="IPHost.IPHost(string)"/>与<see href="IPHost.ToString()"/>相互转化
+    /// 波特率
     /// </summary>
-    [SugarColumn(ColumnDescription = "远程地址", Length = 200, IsNullable = true)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public string? RemoteUrl { get; set; }
+    [SugarColumn(ColumnDescription = "波特率", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public int? BaudRate { get; set; }
 
     /// <summary>
-    /// RtsEnable
+    /// 数据位
     /// </summary>
-    [SugarColumn(ColumnDescription = "RtsEnable", IsNullable = true)]
+    [SugarColumn(ColumnDescription = "数据位", IsNullable = true)]
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public bool? RtsEnable { get; set; }
+    public int? DataBits { get; set; }
+
+    /// <summary>
+    /// 校验位
+    /// </summary>
+    [SugarColumn(ColumnDescription = "校验位", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public Parity? Parity { get; set; }
 
     /// <summary>
     /// 停止位
@@ -114,6 +100,20 @@ public class Channel : PrimaryIdEntity
     [SugarColumn(ColumnDescription = "停止位", IsNullable = true)]
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
     public StopBits? StopBits { get; set; }
+
+    /// <summary>
+    /// DtrEnable
+    /// </summary>
+    [SugarColumn(ColumnDescription = "DtrEnable", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public bool? DtrEnable { get; set; }
+
+    /// <summary>
+    /// RtsEnable
+    /// </summary>
+    [SugarColumn(ColumnDescription = "RtsEnable", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public bool? RtsEnable { get; set; }
 
     /// <summary>
     /// 导入验证专用

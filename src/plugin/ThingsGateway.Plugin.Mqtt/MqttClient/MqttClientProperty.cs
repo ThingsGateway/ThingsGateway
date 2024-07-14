@@ -17,7 +17,41 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// </summary>
 public class MqttClientProperty : BusinessPropertyWithCacheIntervalScript
 {
-    private string rpcwriteTopic = "RpcWrite";
+    /// <summary>
+    /// IP
+    /// </summary>
+    [DynamicProperty]
+    public string IP { get; set; } = "127.0.0.1";
+
+    /// <summary>
+    /// 端口
+    /// </summary>
+    [DynamicProperty]
+    public int Port { get; set; } = 1883;
+
+    /// <summary>
+    /// 是否websocket连接
+    /// </summary>
+    [DynamicProperty]
+    public bool IsWebSocket { get; set; } = false;
+
+    /// <summary>
+    /// WebSocketUrl
+    /// </summary>
+    [DynamicProperty]
+    public string? WebSocketUrl { get; set; } = "ws://127.0.0.1:8083/mqtt";
+
+    /// <summary>
+    /// 账号
+    /// </summary>
+    [DynamicProperty]
+    public string? UserName { get; set; } = "admin";
+
+    /// <summary>
+    /// 密码
+    /// </summary>
+    [DynamicProperty]
+    public string? Password { get; set; } = "111111";
 
     /// <summary>
     /// 连接Id
@@ -37,35 +71,7 @@ public class MqttClientProperty : BusinessPropertyWithCacheIntervalScript
     [DynamicProperty]
     public bool DeviceRpcEnable { get; set; }
 
-    /// <summary>
-    /// IP
-    /// </summary>
-    [DynamicProperty]
-    public string IP { get; set; } = "127.0.0.1";
-
-    /// <summary>
-    /// 是否websocket连接
-    /// </summary>
-    [DynamicProperty]
-    public bool IsWebSocket { get; set; } = false;
-
-    /// <summary>
-    /// 密码
-    /// </summary>
-    [DynamicProperty]
-    public string? Password { get; set; } = "111111";
-
-    /// <summary>
-    /// 端口
-    /// </summary>
-    [DynamicProperty]
-    public int Port { get; set; } = 1883;
-
-    /// <summary>
-    /// 数据请求Topic
-    /// </summary>
-    [DynamicProperty(Remark = "这个主题接收到任何数据都会把全部的信息发送到变量/设备/报警主题中")]
-    public string RpcQuestTopic { get; set; } = "ThingsGateway/Quest";
+    private string rpcwriteTopic = "RpcWrite";
 
     /// <summary>
     /// Rpc写入Topic
@@ -87,14 +93,8 @@ public class MqttClientProperty : BusinessPropertyWithCacheIntervalScript
     }
 
     /// <summary>
-    /// 账号
+    /// 数据请求Topic
     /// </summary>
-    [DynamicProperty]
-    public string? UserName { get; set; } = "admin";
-
-    /// <summary>
-    /// WebSocketUrl
-    /// </summary>
-    [DynamicProperty]
-    public string? WebSocketUrl { get; set; } = "ws://127.0.0.1:8083/mqtt";
+    [DynamicProperty(Remark = "这个主题接收到任何数据都会把全部的信息发送到变量/设备/报警主题中")]
+    public string RpcQuestTopic { get; set; } = "ThingsGateway/Quest";
 }

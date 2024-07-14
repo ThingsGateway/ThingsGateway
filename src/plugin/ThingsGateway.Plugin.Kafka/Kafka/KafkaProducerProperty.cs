@@ -23,14 +23,11 @@ public class KafkaProducerProperty : BusinessPropertyWithCacheIntervalScript
     [DynamicProperty]
     public string BootStrapServers { get; set; } = "127.0.0.1:9092";
 
-    [DynamicProperty]
-    public SaslMechanism SaslMechanism { get; set; } = SaslMechanism.Plain;
-
     /// <summary>
-    /// 密码
+    /// 发布超时时间
     /// </summary>
     [DynamicProperty]
-    public string? SaslPassword { get; set; }
+    public int Timeout { get; set; } = 5000;
 
     /// <summary>
     /// 用户名
@@ -38,12 +35,15 @@ public class KafkaProducerProperty : BusinessPropertyWithCacheIntervalScript
     [DynamicProperty]
     public string? SaslUsername { get; set; }
 
+    /// <summary>
+    /// 密码
+    /// </summary>
+    [DynamicProperty]
+    public string? SaslPassword { get; set; }
+
     [DynamicProperty]
     public SecurityProtocol SecurityProtocol { get; set; } = SecurityProtocol.Plaintext;
 
-    /// <summary>
-    /// 发布超时时间
-    /// </summary>
     [DynamicProperty]
-    public int Timeout { get; set; } = 5000;
+    public SaslMechanism SaslMechanism { get; set; } = SaslMechanism.Plain;
 }

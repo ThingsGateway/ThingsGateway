@@ -22,22 +22,22 @@ namespace ThingsGateway.Plugin.SqlDB;
 public class SqlDBProducerProperty : BusinessPropertyWithCacheInterval
 {
     [DynamicProperty]
-    [Required]
-    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
-    public string BigTextConnectStr { get; set; } = "server=.;uid=sa;pwd=111111;database=test;";
-
-    [DynamicProperty]
-    public DbType DbType { get; set; } = DbType.SqlServer;
-
-    [DynamicProperty]
-    public string HisDBTableName { get; set; } = "HisDBTableName";
+    public bool IsReadDB { get; set; } = false;
 
     [DynamicProperty]
     public bool IsHisDB { get; set; } = true;
 
     [DynamicProperty]
-    public bool IsReadDB { get; set; } = false;
+    public string ReadDBTableName { get; set; } = "ReadDBTableName";
 
     [DynamicProperty]
-    public string ReadDBTableName { get; set; } = "ReadDBTableName";
+    public string HisDBTableName { get; set; } = "HisDBTableName";
+
+    [DynamicProperty]
+    public DbType DbType { get; set; } = DbType.SqlServer;
+
+    [DynamicProperty]
+    [Required]
+    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
+    public string BigTextConnectStr { get; set; } = "server=.;uid=sa;pwd=111111;database=test;";
 }

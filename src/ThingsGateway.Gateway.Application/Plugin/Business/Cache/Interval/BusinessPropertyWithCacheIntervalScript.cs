@@ -18,17 +18,40 @@ namespace ThingsGateway.Gateway.Application;
 public class BusinessPropertyWithCacheIntervalScript : BusinessPropertyWithCacheInterval
 {
     /// <summary>
+    /// 设备Topic
+    /// </summary>
+    [DynamicProperty]
+    public bool IsDeviceList { get; set; } = true;
+
+    /// <summary>
+    /// 变量Topic
+    /// </summary>
+    [DynamicProperty]
+    public bool IsVariableList { get; set; } = true;
+
+    /// <summary>
+    /// 报警Topic
+    /// </summary>
+    [DynamicProperty]
+    public bool IsAlarmList { get; set; } = true;
+
+    /// <summary>
+    /// 设备Topic
+    /// </summary>
+    [DynamicProperty(Remark = "可使用${key}作为匹配项，key必须是上传实体中的属性，比如ThingsGateway/Device/${Name}")]
+    public string DeviceTopic { get; set; } = "ThingsGateway/Device";
+
+    /// <summary>
+    /// 变量Topic
+    /// </summary>
+    [DynamicProperty(Remark = "可使用${key}作为匹配项，key必须是上传实体中的属性，比如ThingsGateway/Variable/${DeviceName}")]
+    public string VariableTopic { get; set; } = "ThingsGateway/Variable";
+
+    /// <summary>
     /// 报警Topic
     /// </summary>
     [DynamicProperty(Remark = "可使用${key}作为匹配项，key必须是上传实体中的属性，比如ThingsGateway/Alarm/${DeviceName}")]
     public string AlarmTopic { get; set; } = "ThingsGateway/Alarm";
-
-    /// <summary>
-    /// 报警实体脚本
-    /// </summary>
-    [DynamicProperty]
-    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
-    public string? BigTextScriptAlarmModel { get; set; }
 
     /// <summary>
     /// 设备实体脚本
@@ -45,32 +68,9 @@ public class BusinessPropertyWithCacheIntervalScript : BusinessPropertyWithCache
     public string? BigTextScriptVariableModel { get; set; }
 
     /// <summary>
-    /// 设备Topic
-    /// </summary>
-    [DynamicProperty(Remark = "可使用${key}作为匹配项，key必须是上传实体中的属性，比如ThingsGateway/Device/${Name}")]
-    public string DeviceTopic { get; set; } = "ThingsGateway/Device";
-
-    /// <summary>
-    /// 报警Topic
+    /// 报警实体脚本
     /// </summary>
     [DynamicProperty]
-    public bool IsAlarmList { get; set; } = true;
-
-    /// <summary>
-    /// 设备Topic
-    /// </summary>
-    [DynamicProperty]
-    public bool IsDeviceList { get; set; } = true;
-
-    /// <summary>
-    /// 变量Topic
-    /// </summary>
-    [DynamicProperty]
-    public bool IsVariableList { get; set; } = true;
-
-    /// <summary>
-    /// 变量Topic
-    /// </summary>
-    [DynamicProperty(Remark = "可使用${key}作为匹配项，key必须是上传实体中的属性，比如ThingsGateway/Variable/${DeviceName}")]
-    public string VariableTopic { get; set; } = "ThingsGateway/Variable";
+    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
+    public string? BigTextScriptAlarmModel { get; set; }
 }

@@ -17,14 +17,6 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// </summary>
 public class MqttServerProperty : BusinessPropertyWithCacheIntervalScript
 {
-    private string rpcwriteTopic = "RpcWrite";
-
-    /// <summary>
-    /// 允许Rpc写入
-    /// </summary>
-    [DynamicProperty]
-    public bool DeviceRpcEnable { get; set; }
-
     /// <summary>
     /// IP
     /// </summary>
@@ -36,6 +28,26 @@ public class MqttServerProperty : BusinessPropertyWithCacheIntervalScript
     /// </summary>
     [DynamicProperty]
     public int Port { get; set; } = 1883;
+
+    /// <summary>
+    /// WebSocket端口
+    /// </summary>
+    [DynamicProperty]
+    public int WebSocketPort { get; set; } = 8083;
+
+    /// <summary>
+    /// 允许连接的ID(前缀)
+    /// </summary>
+    [DynamicProperty]
+    public string StartWithId { get; set; } = "ThingsGatewayId";
+
+    /// <summary>
+    /// 允许Rpc写入
+    /// </summary>
+    [DynamicProperty]
+    public bool DeviceRpcEnable { get; set; }
+
+    private string rpcwriteTopic = "RpcWrite";
 
     /// <summary>
     /// Rpc写入Topic
@@ -55,16 +67,4 @@ public class MqttServerProperty : BusinessPropertyWithCacheIntervalScript
             rpcwriteTopic = value;
         }
     }
-
-    /// <summary>
-    /// 允许连接的ID(前缀)
-    /// </summary>
-    [DynamicProperty]
-    public string StartWithId { get; set; } = "ThingsGatewayId";
-
-    /// <summary>
-    /// WebSocket端口
-    /// </summary>
-    [DynamicProperty]
-    public int WebSocketPort { get; set; } = 8083;
 }

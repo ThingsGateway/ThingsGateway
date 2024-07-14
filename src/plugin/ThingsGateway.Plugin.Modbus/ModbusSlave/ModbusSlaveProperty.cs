@@ -11,6 +11,8 @@
 using ThingsGateway.Foundation.Modbus;
 using ThingsGateway.Gateway.Application;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Plugin.Modbus;
 
 /// <summary>
@@ -18,14 +20,14 @@ namespace ThingsGateway.Plugin.Modbus;
 /// </summary>
 public class ModbusSlaveProperty : BusinessPropertyBase
 {
+    [DynamicProperty]
+    public ModbusTypeEnum ModbusType { get; set; }
+
     /// <summary>
-    /// 组包缓存超时ms
+    /// 默认站号
     /// </summary>
     [DynamicProperty]
-    public int CacheTimeout { get; set; } = 1000;
-
-    [DynamicProperty]
-    public int CheckClearTime { get; set; } = 120;
+    public byte Station { get; set; } = 1;
 
     /// <summary>
     /// 默认解析顺序
@@ -33,29 +35,11 @@ public class ModbusSlaveProperty : BusinessPropertyBase
     [DynamicProperty]
     public DataFormatEnum DataFormat { get; set; }
 
-    /// <summary>
-    /// 允许写入
-    /// </summary>
-    [DynamicProperty]
-    public bool DeviceRpcEnable { get; set; } = true;
-
-    [DynamicProperty]
-    public string DtuId { get; set; } = "DtuId";
-
-    [DynamicProperty]
-    public string HeartbeatHexString { get; set; } = "FFFF8080";
-
-    [DynamicProperty]
-    public int HeartbeatTime { get; set; } = 5;
-
     [DynamicProperty]
     public bool IsStringReverseByteWord { get; set; }
 
-    /// <summary>
-    /// 立即写入内存
-    /// </summary>
     [DynamicProperty]
-    public bool IsWriteMemory { get; set; } = true;
+    public int CheckClearTime { get; set; } = 120;
 
     /// <summary>
     /// 最大连接数
@@ -63,8 +47,11 @@ public class ModbusSlaveProperty : BusinessPropertyBase
     [DynamicProperty]
     public int MaxClientCount { get; set; } = 60000;
 
+    /// <summary>
+    /// 组包缓存超时ms
+    /// </summary>
     [DynamicProperty]
-    public ModbusTypeEnum ModbusType { get; set; }
+    public int CacheTimeout { get; set; } = 1000;
 
     /// <summary>
     /// 多站点
@@ -73,8 +60,23 @@ public class ModbusSlaveProperty : BusinessPropertyBase
     public bool MulStation { get; set; } = true;
 
     /// <summary>
-    /// 默认站号
+    /// 允许写入
     /// </summary>
     [DynamicProperty]
-    public byte Station { get; set; } = 1;
+    public bool DeviceRpcEnable { get; set; } = true;
+
+    /// <summary>
+    /// 立即写入内存
+    /// </summary>
+    [DynamicProperty]
+    public bool IsWriteMemory { get; set; } = true;
+
+    [DynamicProperty]
+    public string DtuId { get; set; } = "DtuId";
+
+    [DynamicProperty]
+    public int HeartbeatTime { get; set; } = 5;
+
+    [DynamicProperty]
+    public string HeartbeatHexString { get; set; } = "FFFF8080";
 }

@@ -26,12 +26,10 @@ public partial class TcpServicePage : IDriverUIBase
     [Parameter, EditorRequired]
     public object Driver { get; set; }
 
-    public TcpSessionClientDto SearchModel { get; set; } = new TcpSessionClientDto();
-
-    public TcpServiceChannel? TcpServiceChannel => ((TcpServiceChannel)((DriverBase)Driver)?.Protocol?.Channel);
-
     [Inject]
     private ToastService ToastService { get; set; }
+
+    public TcpSessionClientDto SearchModel { get; set; } = new TcpSessionClientDto();
 
     private async Task<bool> OnDeleteAsync(IEnumerable<TcpSessionClientDto> tcpSessionClientDtos)
     {
@@ -90,6 +88,8 @@ public partial class TcpServicePage : IDriverUIBase
             return Task.FromResult(new QueryData<TcpSessionClientDto>());
         }
     }
+
+    public TcpServiceChannel? TcpServiceChannel => ((TcpServiceChannel)((DriverBase)Driver)?.Protocol?.Channel);
 }
 
 public class TcpSessionClientDto
@@ -101,14 +101,14 @@ public class TcpSessionClientDto
     public string IP { get; set; }
 
     [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
-    public DateTime LastReceivedTime { get; set; }
-
-    [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
-    public DateTime LastSentTime { get; set; }
+    public int Port { get; set; }
 
     [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true, ShowTips = true)]
     public string PluginInfos { get; set; }
 
     [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
-    public int Port { get; set; }
+    public DateTime LastReceivedTime { get; set; }
+
+    [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
+    public DateTime LastSentTime { get; set; }
 }

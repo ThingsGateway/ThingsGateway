@@ -21,6 +21,13 @@ namespace ThingsGateway.Admin.Application;
 public class SysDict : BaseEntity
 {
     /// <summary>
+    /// 类型
+    ///</summary>
+    [SugarColumn(ColumnDescription = "类型", Length = 200)]
+    [AutoGenerateColumn(Ignore = true, Filterable = true, Sortable = true)]
+    public virtual DictTypeEnum DictType { get; set; }
+
+    /// <summary>
     /// 分类
     ///</summary>
     [SugarColumn(ColumnDescription = "分类", Length = 200)]
@@ -29,27 +36,20 @@ public class SysDict : BaseEntity
     public string Category { get; set; }
 
     /// <summary>
-    /// 代码
-    ///</summary>
-    [SugarColumn(ColumnDescription = "代码", ColumnDataType = StaticConfig.CodeFirst_BigString)]
-    [Required]
-    [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
-    public virtual string Code { get; set; }
-
-    /// <summary>
-    /// 类型
-    ///</summary>
-    [SugarColumn(ColumnDescription = "类型", Length = 200)]
-    [AutoGenerateColumn(Ignore = true, Filterable = true, Sortable = true)]
-    public virtual DictTypeEnum DictType { get; set; }
-
-    /// <summary>
     /// 名称
     ///</summary>
     [SugarColumn(ColumnDescription = "名称", Length = 200)]
     [Required]
     [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
     public virtual string Name { get; set; }
+
+    /// <summary>
+    /// 代码
+    ///</summary>
+    [SugarColumn(ColumnDescription = "代码", ColumnDataType = StaticConfig.CodeFirst_BigString)]
+    [Required]
+    [AutoGenerateColumn(Searchable = true, Filterable = true, Sortable = true)]
+    public virtual string Code { get; set; }
 
     /// <summary>
     /// 描述

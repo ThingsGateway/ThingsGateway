@@ -18,42 +18,10 @@ namespace ThingsGateway.Plugin.Dlt645;
 public class Dlt645_2007MasterProperty : CollectPropertyBase
 {
     /// <summary>
-    /// 组包缓存超时ms
-    /// </summary>
-    [DynamicProperty]
-    public int CacheTimeout { get; set; } = 1000;
-
-    /// <summary>
     /// 客户端连接滑动过期时间
     /// </summary>
     [DynamicProperty]
     public int CheckClearTime { get; set; } = 120;
-
-    public override int ConcurrentCount { get; set; } = 1;
-
-    /// <summary>
-    /// 连接超时时间
-    /// </summary>
-    [DynamicProperty]
-    public ushort ConnectTimeout { get; set; } = 3000;
-
-    /// <summary>
-    /// 默认解析顺序
-    /// </summary>
-    [DynamicProperty]
-    public DataFormatEnum DataFormat { get; set; }
-
-    /// <summary>
-    /// 默认DtuId
-    /// </summary>
-    [DynamicProperty]
-    public string? DtuId { get; set; }
-
-    /// <summary>
-    /// 前导符报文头
-    /// </summary>
-    [DynamicProperty]
-    public string FEHead { get; set; } = "FEFEFEFE";
 
     /// <summary>
     /// 心跳检测
@@ -62,16 +30,16 @@ public class Dlt645_2007MasterProperty : CollectPropertyBase
     public string HeartbeatHexString { get; set; } = "FFFF8080";
 
     /// <summary>
-    /// 操作员代码
+    /// 读写超时时间
     /// </summary>
     [DynamicProperty]
-    public string OperCode { get; set; }
+    public ushort Timeout { get; set; } = 3000;
 
     /// <summary>
-    /// 密码
+    /// 连接超时时间
     /// </summary>
     [DynamicProperty]
-    public string Password { get; set; }
+    public ushort ConnectTimeout { get; set; } = 3000;
 
     /// <summary>
     /// 帧前时间ms
@@ -80,14 +48,46 @@ public class Dlt645_2007MasterProperty : CollectPropertyBase
     public int SendDelayTime { get; set; } = 0;
 
     /// <summary>
+    /// 组包缓存超时ms
+    /// </summary>
+    [DynamicProperty]
+    public int CacheTimeout { get; set; } = 1000;
+
+    /// <summary>
+    /// 默认解析顺序
+    /// </summary>
+    [DynamicProperty]
+    public DataFormatEnum DataFormat { get; set; }
+
+    /// <summary>
     /// 默认地址
     /// </summary>
     [DynamicProperty]
     public string Station { get; set; }
 
     /// <summary>
-    /// 读写超时时间
+    /// 默认DtuId
     /// </summary>
     [DynamicProperty]
-    public ushort Timeout { get; set; } = 3000;
+    public string? DtuId { get; set; }
+
+    /// <summary>
+    /// 密码
+    /// </summary>
+    [DynamicProperty]
+    public string Password { get; set; }
+
+    /// <summary>
+    /// 操作员代码
+    /// </summary>
+    [DynamicProperty]
+    public string OperCode { get; set; }
+
+    /// <summary>
+    /// 前导符报文头
+    /// </summary>
+    [DynamicProperty]
+    public string FEHead { get; set; } = "FEFEFEFE";
+
+    public override int ConcurrentCount { get; set; } = 1;
 }

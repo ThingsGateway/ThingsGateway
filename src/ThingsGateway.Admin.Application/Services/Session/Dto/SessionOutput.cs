@@ -18,15 +18,20 @@ namespace ThingsGateway.Admin.Application;
 public class SessionOutput : PrimaryIdEntity
 {
     /// <summary>
+    /// 主键Id
+    /// </summary>
+    public override long Id { get; set; }
+
+    /// <summary>
     /// 账号
     ///</summary>
     [AutoGenerateColumn(Filterable = true, Sortable = true)]
     public virtual string Account { get; set; }
 
     /// <summary>
-    /// 主键Id
+    /// 在线状态
     /// </summary>
-    public override long Id { get; set; }
+    public bool Online { get; set; }
 
     /// <summary>
     /// 最新登录ip
@@ -39,11 +44,6 @@ public class SessionOutput : PrimaryIdEntity
     ///</summary>
     [AutoGenerateColumn(Filterable = true, Sortable = true)]
     public DateTime? LatestLoginTime { get; set; }
-
-    /// <summary>
-    /// 在线状态
-    /// </summary>
-    public bool Online { get; set; }
 
     /// <summary>
     /// 令牌数量

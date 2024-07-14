@@ -11,6 +11,7 @@
 using ThingsGateway.Foundation.Modbus;
 using ThingsGateway.Gateway.Application;
 
+
 namespace ThingsGateway.Plugin.Modbus;
 
 /// <summary>
@@ -18,61 +19,14 @@ namespace ThingsGateway.Plugin.Modbus;
 /// </summary>
 public class ModbusMasterProperty : CollectPropertyBase
 {
-    /// <summary>
-    /// 组包缓存超时ms
-    /// </summary>
     [DynamicProperty]
-    public int CacheTimeout { get; set; } = 1000;
-
-    /// <summary>
-    /// 客户端连接滑动过期时间
-    /// </summary>
-    [DynamicProperty]
-    public int CheckClearTime { get; set; } = 120;
-
-    public override int ConcurrentCount { get; set; } = 1;
-
-    /// <summary>
-    /// 连接超时时间
-    /// </summary>
-    [DynamicProperty]
-    public ushort ConnectTimeout { get; set; } = 3000;
-
-    /// <summary>
-    /// 默认解析顺序
-    /// </summary>
-    [DynamicProperty]
-    public DataFormatEnum DataFormat { get; set; }
-
-    /// <summary>
-    /// 默认DtuId
-    /// </summary>
-    [DynamicProperty]
-    public string? DtuId { get; set; } = "TEST";
+    public ModbusTypeEnum ModbusType { get; set; }
 
     /// <summary>
     /// 心跳检测
     /// </summary>
     [DynamicProperty]
     public string HeartbeatHexString { get; set; } = "FFFF8080";
-
-    [DynamicProperty]
-    public bool IsStringReverseByteWord { get; set; }
-
-    /// <summary>
-    /// 最大打包长度
-    /// </summary>
-    [DynamicProperty]
-    public ushort MaxPack { get; set; } = 100;
-
-    [DynamicProperty]
-    public ModbusTypeEnum ModbusType { get; set; }
-
-    /// <summary>
-    /// 发送延时ms
-    /// </summary>
-    [DynamicProperty]
-    public int SendDelayTime { get; set; } = 0;
 
     /// <summary>
     /// 默认站号
@@ -81,8 +35,55 @@ public class ModbusMasterProperty : CollectPropertyBase
     public byte Station { get; set; } = 1;
 
     /// <summary>
+    /// 默认DtuId
+    /// </summary>
+    [DynamicProperty]
+    public string? DtuId { get; set; } = "TEST";
+
+    /// <summary>
+    /// 默认解析顺序
+    /// </summary>
+    [DynamicProperty]
+    public DataFormatEnum DataFormat { get; set; }
+
+    /// <summary>
     /// 读写超时时间
     /// </summary>
     [DynamicProperty]
     public ushort Timeout { get; set; } = 3000;
+
+    /// <summary>
+    /// 连接超时时间
+    /// </summary>
+    [DynamicProperty]
+    public ushort ConnectTimeout { get; set; } = 3000;
+
+    /// <summary>
+    /// 发送延时ms
+    /// </summary>
+    [DynamicProperty]
+    public int SendDelayTime { get; set; } = 0;
+
+    /// <summary>
+    /// 组包缓存超时ms
+    /// </summary>
+    [DynamicProperty]
+    public int CacheTimeout { get; set; } = 1000;
+
+    /// <summary>
+    /// 最大打包长度
+    /// </summary>
+    [DynamicProperty]
+    public ushort MaxPack { get; set; } = 100;
+
+    /// <summary>
+    /// 客户端连接滑动过期时间
+    /// </summary>
+    [DynamicProperty]
+    public int CheckClearTime { get; set; } = 120;
+
+    [DynamicProperty]
+    public bool IsStringReverseByteWord { get; set; }
+
+    public override int ConcurrentCount { get; set; } = 1;
 }

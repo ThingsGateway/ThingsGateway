@@ -22,12 +22,25 @@ namespace ThingsGateway.Gateway.Application;
 public class DriverMethodInfo
 {
     /// <summary>
+    /// 属性名称
+    /// </summary>
+    public string Name { get; set; }
+
+    /// <summary>
     /// 属性描述
     /// </summary>
     [SugarColumn(IsIgnore = true)]
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
     public string? Description { get; set; }
+
+    /// <summary>
+    /// 备注
+    /// </summary>
+    [SugarColumn(IsIgnore = true)]
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    public string? Remark { get; set; }
 
     /// <summary>
     /// 方法
@@ -37,17 +50,4 @@ public class DriverMethodInfo
     [Newtonsoft.Json.JsonIgnore]
     [AdaptIgnore]
     public MethodInfo? MethodInfo { get; set; }
-
-    /// <summary>
-    /// 属性名称
-    /// </summary>
-    public string Name { get; set; }
-
-    /// <summary>
-    /// 备注
-    /// </summary>
-    [SugarColumn(IsIgnore = true)]
-    [System.Text.Json.Serialization.JsonIgnore]
-    [Newtonsoft.Json.JsonIgnore]
-    public string? Remark { get; set; }
 }

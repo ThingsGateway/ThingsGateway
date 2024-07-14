@@ -19,26 +19,6 @@ namespace ThingsGateway.Plugin.OpcUa;
 /// <inheritdoc/>
 public class OpcUaServerProperty : BusinessPropertyBase
 {
-    /// <summary>
-    /// 接受不受信任的证书
-    /// </summary>
-    [DynamicProperty()]
-    public bool AutoAcceptUntrustedCertificates { get; set; } = true;
-
-    /// <summary>
-    /// ApplicationUri
-    /// </summary>
-    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
-    [DynamicProperty()]
-    public string BigTextApplicationUri { get; set; } = Utils.Format(@"urn:{0}:thingsgatewayopcuaserver", System.Net.Dns.GetHostName());
-
-    /// <summary>
-    /// SubjectName
-    /// </summary>
-    [DynamicProperty()]
-    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
-    public string BigTextSubjectName { get; set; } = "CN=ThingsGateway OPCUAServer, C=CN, S=GUANGZHOU, O=ThingsGateway, DC=" + System.Net.Dns.GetHostName();
-
     [DynamicProperty]
     public bool IsAllVariable { get; set; } = false;
 
@@ -49,8 +29,28 @@ public class OpcUaServerProperty : BusinessPropertyBase
     public string OpcUaStringUrl { get; set; } = "opc.tcp://127.0.0.1:49321";
 
     /// <summary>
+    /// SubjectName
+    /// </summary>
+    [DynamicProperty()]
+    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
+    public string BigTextSubjectName { get; set; } = "CN=ThingsGateway OPCUAServer, C=CN, S=GUANGZHOU, O=ThingsGateway, DC=" + System.Net.Dns.GetHostName();
+
+    /// <summary>
+    /// ApplicationUri
+    /// </summary>
+    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
+    [DynamicProperty()]
+    public string BigTextApplicationUri { get; set; } = Utils.Format(@"urn:{0}:thingsgatewayopcuaserver", System.Net.Dns.GetHostName());
+
+    /// <summary>
     /// 安全策略
     /// </summary>
     [DynamicProperty()]
     public bool SecurityPolicy { get; set; }
+
+    /// <summary>
+    /// 接受不受信任的证书
+    /// </summary>
+    [DynamicProperty()]
+    public bool AutoAcceptUntrustedCertificates { get; set; } = true;
 }

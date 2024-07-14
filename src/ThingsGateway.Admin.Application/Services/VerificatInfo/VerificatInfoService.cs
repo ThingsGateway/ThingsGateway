@@ -23,69 +23,6 @@ public class VerificatInfoService : BaseService<VerificatInfo>, IVerificatInfoSe
 {
     #region 查询
 
-    public List<long>? GetClientIdListByUserId(long userId)
-    {
-        using var db = GetDB();
-        var verificatInfo = db.Queryable<VerificatInfo>().Where(u => u.UserId == userId).Select(a => a.ClientIds).ToList().SelectMany(a => a).ToList();
-
-        return verificatInfo;
-    }
-
-    public List<long>? GetIdListByUserId(long userId)
-    {
-        using var db = GetDB();
-        var verificatInfo = db.Queryable<VerificatInfo>().Where(u => u.UserId == userId).Select(a => a.Id).ToList();
-
-        return verificatInfo;
-    }
-
-    public List<VerificatInfo>? GetListByIds(List<long> ids)
-    {
-        using var db = GetDB();
-        var verificatInfos = db.Queryable<VerificatInfo>().Where(u => ids.Contains(u.Id)).ToList();
-        var ids1 = new List<long>();
-        foreach (var verificatInfo in verificatInfos)
-        {
-            if (verificatInfo.VerificatTimeout.AddSeconds(30) < DateTime.Now)
-            {
-                ids1.Add(verificatInfo.Id);
-            }
-        }
-
-        if (ids1.Count > 0)
-        {
-            Delete(ids1);
-        }
-        return verificatInfos;
-    }
-
-    public List<VerificatInfo>? GetListByUserId(long userId)
-    {
-        using var db = GetDB();
-        var verificatInfo = db.Queryable<VerificatInfo>().Where(u => u.UserId == userId).ToList();
-        return verificatInfo;
-    }
-
-    public List<VerificatInfo>? GetListByUserIds(List<long> userIds)
-    {
-        using var db = GetDB();
-        var verificatInfos = db.Queryable<VerificatInfo>().Where(u => userIds.Contains(u.UserId)).ToList();
-
-        List<long> ids = new List<long>();
-        foreach (var verificatInfo in verificatInfos)
-        {
-            if (verificatInfo.VerificatTimeout.AddSeconds(30) < DateTime.Now)
-            {
-                ids.Add(verificatInfo.Id);
-            }
-        }
-        if (ids.Count > 0)
-        {
-            Delete(ids);
-        }
-        return verificatInfos;
-    }
-
     public VerificatInfo GetOne(long id)
     {
         //先从Cache拿
@@ -112,6 +49,69 @@ public class VerificatInfoService : BaseService<VerificatInfo>, IVerificatInfoSe
     private void SetCahce(VerificatInfo verificatInfo)
     {
         App.CacheService.HashAdd<VerificatInfo>(CacheConst.Cache_Token, verificatInfo.Id.ToString(), verificatInfo);
+    }
+
+    public List<VerificatInfo>? GetListByUserId(long userId)
+    {
+        using var db = GetDB();
+        var verificatInfo = db.Queryable<VerificatInfo>().Where(u => u.UserId == userId).ToList();
+        return verificatInfo;
+    }
+
+    public List<VerificatInfo>? GetListByIds(List<long> ids)
+    {
+        using var db = GetDB();
+        var verificatInfos = db.Queryable<VerificatInfo>().Where(u => ids.Contains(u.Id)).ToList();
+        var ids1 = new List<long>();
+        foreach (var verificatInfo in verificatInfos)
+        {
+            if (verificatInfo.VerificatTimeout.AddSeconds(30) < DateTime.Now)
+            {
+                ids1.Add(verificatInfo.Id);
+            }
+        }
+
+        if (ids1.Count > 0)
+        {
+            Delete(ids1);
+        }
+        return verificatInfos;
+    }
+
+    public List<VerificatInfo>? GetListByUserIds(List<long> userIds)
+    {
+        using var db = GetDB();
+        var verificatInfos = db.Queryable<VerificatInfo>().Where(u => userIds.Contains(u.UserId)).ToList();
+
+        List<long> ids = new List<long>();
+        foreach (var verificatInfo in verificatInfos)
+        {
+            if (verificatInfo.VerificatTimeout.AddSeconds(30) < DateTime.Now)
+            {
+                ids.Add(verificatInfo.Id);
+            }
+        }
+        if (ids.Count > 0)
+        {
+            Delete(ids);
+        }
+        return verificatInfos;
+    }
+
+    public List<long>? GetIdListByUserId(long userId)
+    {
+        using var db = GetDB();
+        var verificatInfo = db.Queryable<VerificatInfo>().Where(u => u.UserId == userId).Select(a => a.Id).ToList();
+
+        return verificatInfo;
+    }
+
+    public List<long>? GetClientIdListByUserId(long userId)
+    {
+        using var db = GetDB();
+        var verificatInfo = db.Queryable<VerificatInfo>().Where(u => u.UserId == userId).Select(a => a.ClientIds).ToList().SelectMany(a => a).ToList();
+
+        return verificatInfo;
     }
 
     #endregion 查询
@@ -201,16 +201,10 @@ public class VerificatInfo : PrimaryIdEntity
     public ConcurrentList<long> ClientIds { get; set; } = new();
 
     /// <summary>
-    /// 登录设备
+    /// 验证Id
     /// </summary>
-    [AutoGenerateColumn(Filterable = true, Sortable = true, Width = 100)]
-    public AuthDeviceTypeEnum Device { get; set; }
-
-    /// <summary>
-    /// 过期时间
-    /// </summary>
-    [AutoGenerateColumn(Filterable = true, Sortable = true)]
-    public int Expire { get; set; }
+    [AutoGenerateColumn(Ignore = true)]
+    public long UserId { get; set; }
 
     /// <summary>
     /// 验证Id
@@ -230,10 +224,10 @@ public class VerificatInfo : PrimaryIdEntity
     public bool Online => ClientIds.Any();
 
     /// <summary>
-    /// 验证Id
+    /// 过期时间
     /// </summary>
-    [AutoGenerateColumn(Ignore = true)]
-    public long UserId { get; set; }
+    [AutoGenerateColumn(Filterable = true, Sortable = true)]
+    public int Expire { get; set; }
 
     /// <summary>
     /// verificat剩余有效期
@@ -249,4 +243,10 @@ public class VerificatInfo : PrimaryIdEntity
     /// </summary>
     [AutoGenerateColumn(Filterable = true, Sortable = true)]
     public DateTime VerificatTimeout { get; set; }
+
+    /// <summary>
+    /// 登录设备
+    /// </summary>
+    [AutoGenerateColumn(Filterable = true, Sortable = true, Width = 100)]
+    public AuthDeviceTypeEnum Device { get; set; }
 }

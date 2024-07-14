@@ -25,11 +25,19 @@ namespace ThingsGateway.Gateway.Application;
 public class Device : PrimaryIdEntity
 {
     /// <summary>
-    /// 插件属性
+    /// 名称
     /// </summary>
-    [System.Text.Json.Serialization.JsonIgnore]
-    [Newtonsoft.Json.JsonIgnore]
-    public ModelValueValidateForm PluginPropertyModel;
+    [SugarColumn(ColumnDescription = "名称", Length = 200)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    [Required]
+    public virtual string Name { get; set; }
+
+    /// <summary>
+    /// 描述
+    /// </summary>
+    [SugarColumn(ColumnDescription = "描述", Length = 200, IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public string? Description { get; set; }
 
     /// <summary>
     /// 通道
@@ -42,26 +50,11 @@ public class Device : PrimaryIdEntity
     public virtual long ChannelId { get; set; }
 
     /// <summary>
-    /// 描述
+    /// 插件类型
     /// </summary>
-    [SugarColumn(ColumnDescription = "描述", Length = 200, IsNullable = true)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public string? Description { get; set; }
-
-    /// <summary>
-    /// 设备属性Json
-    /// </summary>
-    [SugarColumn(IsJson = true, ColumnDataType = StaticConfig.CodeFirst_BigString, ColumnDescription = "设备属性Json")]
-    [IgnoreExcel]
+    [SugarColumn(ColumnDescription = "插件类型")]
     [AutoGenerateColumn(Ignore = true)]
-    public Dictionary<string, string>? DevicePropertys { get; set; } = new();
-
-    /// <summary>
-    /// 设备使能
-    /// </summary>
-    [SugarColumn(ColumnDescription = "设备使能")]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public virtual bool Enable { get; set; } = true;
+    public virtual PluginTypeEnum PluginType { get; set; }
 
     /// <summary>
     /// 默认执行间隔
@@ -72,14 +65,6 @@ public class Device : PrimaryIdEntity
     public virtual int IntervalTime { get; set; } = 1000;
 
     /// <summary>
-    /// 名称
-    /// </summary>
-    [SugarColumn(ColumnDescription = "名称", Length = 200)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    [Required]
-    public virtual string Name { get; set; }
-
-    /// <summary>
     /// 插件名称
     /// </summary>
     [SugarColumn(ColumnDescription = "插件名称")]
@@ -88,13 +73,28 @@ public class Device : PrimaryIdEntity
     public virtual string PluginName { get; set; }
 
     /// <summary>
-    /// 插件类型
+    /// 设备使能
     /// </summary>
-    [SugarColumn(ColumnDescription = "插件类型")]
+    [SugarColumn(ColumnDescription = "设备使能")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public virtual bool Enable { get; set; } = true;
+
+    /// <summary>
+    /// 设备属性Json
+    /// </summary>
+    [SugarColumn(IsJson = true, ColumnDataType = StaticConfig.CodeFirst_BigString, ColumnDescription = "设备属性Json")]
+    [IgnoreExcel]
     [AutoGenerateColumn(Ignore = true)]
-    public virtual PluginTypeEnum PluginType { get; set; }
+    public Dictionary<string, string>? DevicePropertys { get; set; } = new();
 
     #region 冗余配置
+
+    /// <summary>
+    /// 启用冗余
+    /// </summary>
+    [SugarColumn(ColumnDescription = "启用冗余")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public bool RedundantEnable { get; set; }
 
     /// <summary>
     /// 冗余设备Id,只能选择相同驱动
@@ -103,13 +103,6 @@ public class Device : PrimaryIdEntity
     [AutoGenerateColumn(Visible = true, Filterable = false, Sortable = false)]
     [IgnoreExcel]
     public long? RedundantDeviceId { get; set; }
-
-    /// <summary>
-    /// 启用冗余
-    /// </summary>
-    [SugarColumn(ColumnDescription = "启用冗余")]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public bool RedundantEnable { get; set; }
 
     #endregion 冗余配置
 
@@ -161,4 +154,11 @@ public class Device : PrimaryIdEntity
     [Newtonsoft.Json.JsonIgnore]
     [AutoGenerateColumn(Ignore = true)]
     internal bool IsUp { get; set; }
+
+    /// <summary>
+    /// 插件属性
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    public ModelValueValidateForm PluginPropertyModel;
 }

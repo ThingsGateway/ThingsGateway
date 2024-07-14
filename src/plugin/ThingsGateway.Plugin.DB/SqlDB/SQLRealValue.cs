@@ -23,27 +23,9 @@ namespace ThingsGateway.Plugin.SqlDB;
 [SugarIndex("{table}_index_CollectTime", nameof(SQLRealValue.CollectTime), OrderByType.Desc)]
 public class SQLRealValue : IPrimaryIdEntity
 {
-    [AutoGenerateColumn(Order = 22, Visible = true, Sortable = true, Filterable = false)]
-    [SugarColumn(ColumnDescription = "采集时间")]
-    public DateTime CollectTime { get; set; }
-
-    /// <summary>
-    /// 设备名称
-    /// </summary>
-    [SugarColumn(ColumnDescription = "设备名称")]
-    [AutoGenerateColumn(Order = 15, Visible = true, Sortable = true, Filterable = false)]
-    public string DeviceName { get; set; }
-
     [SugarColumn(ColumnDescription = "变量Id", IsPrimaryKey = true)]
     [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public long Id { get; set; }
-
-    ///<summary>
-    ///是否在线
-    ///</summary>
-    [SugarColumn(ColumnDescription = "是否在线")]
-    [AutoGenerateColumn(Order = 23, Visible = true, Sortable = true, Filterable = false)]
-    public bool IsOnline { get; set; }
 
     /// <summary>
     /// 变量名称
@@ -52,10 +34,28 @@ public class SQLRealValue : IPrimaryIdEntity
     [AutoGenerateColumn(Order = 14, Visible = true, Sortable = true, Filterable = false)]
     public string Name { get; set; }
 
+    /// <summary>
+    /// 设备名称
+    /// </summary>
+    [SugarColumn(ColumnDescription = "设备名称")]
+    [AutoGenerateColumn(Order = 15, Visible = true, Sortable = true, Filterable = false)]
+    public string DeviceName { get; set; }
+
     ///<summary>
     ///实时值
     ///</summary>
     [SugarColumn(ColumnDescription = "实时值")]
     [AutoGenerateColumn(Order = 21, Visible = true, Sortable = true, Filterable = false)]
     public string Value { get; set; }
+
+    ///<summary>
+    ///是否在线
+    ///</summary>
+    [SugarColumn(ColumnDescription = "是否在线")]
+    [AutoGenerateColumn(Order = 23, Visible = true, Sortable = true, Filterable = false)]
+    public bool IsOnline { get; set; }
+
+    [AutoGenerateColumn(Order = 22, Visible = true, Sortable = true, Filterable = false)]
+    [SugarColumn(ColumnDescription = "采集时间")]
+    public DateTime CollectTime { get; set; }
 }

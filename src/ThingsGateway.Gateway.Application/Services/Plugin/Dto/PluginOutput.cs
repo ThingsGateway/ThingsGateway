@@ -24,28 +24,16 @@ public class PluginOutput
     public List<PluginOutput> Children { get; set; } = new();
 
     /// <summary>
-    /// 插件文件名称
-    /// </summary>
-    [AutoGenerateColumn(Filterable = true, Sortable = true)]
-    public string FileName { get; set; }
-
-    /// <summary>
     /// 插件文件名称.插件类型名称
     /// </summary>
     [AutoGenerateColumn(Ignore = true)]
     public string FullName => PluginServiceUtil.GetFullName(FileName, Name);
 
     /// <summary>
-    /// 插件编译时间
+    /// 插件文件名称
     /// </summary>
     [AutoGenerateColumn(Filterable = true, Sortable = true)]
-    public DateTime LastWriteTime { get; set; }
-
-    /// <summary>
-    /// 插件名称
-    /// </summary>
-    [AutoGenerateColumn(Filterable = true, Sortable = true)]
-    public string Name { get; set; }
+    public string FileName { get; set; }
 
     /// <summary>
     /// 插件类型
@@ -54,8 +42,20 @@ public class PluginOutput
     public PluginTypeEnum PluginType { get; set; }
 
     /// <summary>
+    /// 插件名称
+    /// </summary>
+    [AutoGenerateColumn(Filterable = true, Sortable = true)]
+    public string Name { get; set; }
+
+    /// <summary>
     /// 插件版本
     /// </summary>
     [AutoGenerateColumn(Filterable = true, Sortable = true)]
     public string Version { get; set; }
+
+    /// <summary>
+    /// 插件编译时间
+    /// </summary>
+    [AutoGenerateColumn(Filterable = true, Sortable = true)]
+    public DateTime LastWriteTime { get; set; }
 }

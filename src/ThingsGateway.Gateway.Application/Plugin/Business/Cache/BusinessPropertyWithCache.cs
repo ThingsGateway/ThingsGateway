@@ -28,14 +28,14 @@ public class BusinessPropertyWithCache : BusinessPropertyBase
     public virtual double CacheFileMaxLength { get; set; } = 1024;
 
     /// <summary>
-    /// 内存队列的最大数量，超出时转入文件缓存，根据数据量设定适当值
-    /// </summary>
-    [DynamicProperty]
-    public virtual int QueueMaxCount { get; set; } = 100000;
-
-    /// <summary>
     /// 上传列表最大数量
     /// </summary>
     [DynamicProperty]
     public virtual int SplitSize { get; set; } = 2000;
+
+    /// <summary>
+    /// 内存队列的最大数量，超出时转入文件缓存，根据数据量设定适当值
+    /// </summary>
+    [DynamicProperty]
+    public virtual int QueueMaxCount { get; set; } = 100000;
 }

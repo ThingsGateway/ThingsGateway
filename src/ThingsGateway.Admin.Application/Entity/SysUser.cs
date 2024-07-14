@@ -26,14 +26,6 @@ namespace ThingsGateway.Admin.Application;
 public class SysUser : BaseEntity
 {
     /// <summary>
-    /// 账号
-    ///</summary>
-    [SugarColumn(ColumnDescription = "账号", Length = 200)]
-    [Required]
-    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true)]
-    public virtual string Account { get; set; }
-
-    /// <summary>
     /// 头像
     ///</summary>
     [SugarColumn(ColumnDescription = "头像", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
@@ -42,11 +34,34 @@ public class SysUser : BaseEntity
     public virtual string? Avatar { get; set; }
 
     /// <summary>
-    /// 默认模块
+    /// 账号
     ///</summary>
-    [SugarColumn(ColumnDescription = "默认模块")]
+    [SugarColumn(ColumnDescription = "账号", Length = 200)]
+    [Required]
+    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true)]
+    public virtual string Account { get; set; }
+
+    /// <summary>
+    /// 密码
+    ///</summary>
+    [SugarColumn(ColumnDescription = "密码", ColumnDataType = StaticConfig.CodeFirst_BigString)]
     [AutoGenerateColumn(Ignore = true)]
-    public long DefaultModule { get; set; }
+    public string Password { get; set; }
+
+    /// <summary>
+    /// 是否启用
+    ///</summary>
+    [SugarColumn(ColumnDescription = "是否启用")]
+    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true)]
+    public bool Status { get; set; }
+
+    /// <summary>
+    /// 手机
+    /// 这里使用了SM4自动加密解密
+    ///</summary>
+    [SugarColumn(ColumnDescription = "手机", Length = 200, IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true)]
+    public string? Phone { get; set; }
 
     /// <summary>
     /// 邮箱
@@ -56,11 +71,11 @@ public class SysUser : BaseEntity
     public string? Email { get; set; }
 
     /// <summary>
-    /// 上次登录地点
+    /// 上次登录ip
     ///</summary>
-    [SugarColumn(ColumnDescription = "上次登录地点", Length = 200, IsNullable = true)]
+    [SugarColumn(ColumnDescription = "上次登录ip", Length = 200, IsNullable = true)]
     [AutoGenerateColumn(Visible = false, Sortable = true, Filterable = true, IsVisibleWhenAdd = false, IsVisibleWhenEdit = false)]
-    public string LastLoginAddress { get; set; }
+    public string? LastLoginIp { get; set; }
 
     /// <summary>
     /// 上次登录设备
@@ -70,13 +85,6 @@ public class SysUser : BaseEntity
     public string? LastLoginDevice { get; set; }
 
     /// <summary>
-    /// 上次登录ip
-    ///</summary>
-    [SugarColumn(ColumnDescription = "上次登录ip", Length = 200, IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Sortable = true, Filterable = true, IsVisibleWhenAdd = false, IsVisibleWhenEdit = false)]
-    public string? LastLoginIp { get; set; }
-
-    /// <summary>
     /// 上次登录时间
     ///</summary>
     [SugarColumn(ColumnDescription = "上次登录时间", IsNullable = true)]
@@ -84,18 +92,11 @@ public class SysUser : BaseEntity
     public DateTime? LastLoginTime { get; set; }
 
     /// <summary>
-    /// 最新登录地点
+    /// 上次登录地点
     ///</summary>
-    [SugarColumn(ColumnDescription = "最新登录地点", Length = 200, IsNullable = true)]
+    [SugarColumn(ColumnDescription = "上次登录地点", Length = 200, IsNullable = true)]
     [AutoGenerateColumn(Visible = false, Sortable = true, Filterable = true, IsVisibleWhenAdd = false, IsVisibleWhenEdit = false)]
-    public string LatestLoginAddress { get; set; }
-
-    /// <summary>
-    /// 最新登录设备
-    ///</summary>
-    [SugarColumn(ColumnDescription = "最新登录设备", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Sortable = true, Filterable = true, IsVisibleWhenAdd = false, IsVisibleWhenEdit = false)]
-    public string? LatestLoginDevice { get; set; }
+    public string LastLoginAddress { get; set; }
 
     /// <summary>
     /// 最新登录ip
@@ -112,26 +113,25 @@ public class SysUser : BaseEntity
     public DateTime? LatestLoginTime { get; set; }
 
     /// <summary>
-    /// 密码
+    /// 最新登录设备
     ///</summary>
-    [SugarColumn(ColumnDescription = "密码", ColumnDataType = StaticConfig.CodeFirst_BigString)]
+    [SugarColumn(ColumnDescription = "最新登录设备", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Sortable = true, Filterable = true, IsVisibleWhenAdd = false, IsVisibleWhenEdit = false)]
+    public string? LatestLoginDevice { get; set; }
+
+    /// <summary>
+    /// 最新登录地点
+    ///</summary>
+    [SugarColumn(ColumnDescription = "最新登录地点", Length = 200, IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Sortable = true, Filterable = true, IsVisibleWhenAdd = false, IsVisibleWhenEdit = false)]
+    public string LatestLoginAddress { get; set; }
+
+    /// <summary>
+    /// 默认模块
+    ///</summary>
+    [SugarColumn(ColumnDescription = "默认模块")]
     [AutoGenerateColumn(Ignore = true)]
-    public string Password { get; set; }
-
-    /// <summary>
-    /// 手机
-    /// 这里使用了SM4自动加密解密
-    ///</summary>
-    [SugarColumn(ColumnDescription = "手机", Length = 200, IsNullable = true)]
-    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true)]
-    public string? Phone { get; set; }
-
-    /// <summary>
-    /// 是否启用
-    ///</summary>
-    [SugarColumn(ColumnDescription = "是否启用")]
-    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true)]
-    public bool Status { get; set; }
+    public long DefaultModule { get; set; }
 
     #region other
 
@@ -141,20 +141,6 @@ public class SysUser : BaseEntity
     [SugarColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
     public Dictionary<string, List<string>> ButtonCodeList { get; set; } = new();
-
-    /// <summary>
-    /// 数据范围集合
-    /// </summary>
-    [SugarColumn(IsIgnore = true)]
-    [AutoGenerateColumn(Ignore = true)]
-    public IEnumerable<DataScope> DataScopeList { get; set; } = Enumerable.Empty<DataScope>();
-
-    /// <summary>
-    /// 模块集合
-    /// </summary>
-    [SugarColumn(IsIgnore = true)]
-    [AutoGenerateColumn(Ignore = true)]
-    public IEnumerable<SysResource> ModuleList { get; set; } = Enumerable.Empty<SysResource>();
 
     /// <summary>
     /// 权限码集合
@@ -176,6 +162,20 @@ public class SysUser : BaseEntity
     [SugarColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
     public IEnumerable<long> RoleIdList { get; set; } = Enumerable.Empty<long>();
+
+    /// <summary>
+    /// 数据范围集合
+    /// </summary>
+    [SugarColumn(IsIgnore = true)]
+    [AutoGenerateColumn(Ignore = true)]
+    public IEnumerable<DataScope> DataScopeList { get; set; } = Enumerable.Empty<DataScope>();
+
+    /// <summary>
+    /// 模块集合
+    /// </summary>
+    [SugarColumn(IsIgnore = true)]
+    [AutoGenerateColumn(Ignore = true)]
+    public IEnumerable<SysResource> ModuleList { get; set; } = Enumerable.Empty<SysResource>();
 
     #endregion other
 }
