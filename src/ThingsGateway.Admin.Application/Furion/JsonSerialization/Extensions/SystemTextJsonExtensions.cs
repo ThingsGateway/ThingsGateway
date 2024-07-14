@@ -22,6 +22,18 @@ namespace System.Text.Json;
 public static class SystemTextJsonExtensions
 {
     /// <summary>
+    /// 添加 DateOnly/DateOnly? 类型序列化处理
+    /// </summary>
+    /// <param name="converters"></param>
+    /// <returns></returns>
+    public static IList<JsonConverter> AddDateOnlyConverters(this IList<JsonConverter> converters)
+    {
+        converters.Add(new SystemTextJsonDateOnlyJsonConverter());
+        converters.Add(new SystemTextJsonNullableDateOnlyJsonConverter());
+        return converters;
+    }
+
+    /// <summary>
     /// 添加 DateTime/DateTime?/DateTimeOffset/DateTimeOffset? 类型序列化处理
     /// </summary>
     /// <param name="converters"></param>
@@ -54,30 +66,14 @@ public static class SystemTextJsonExtensions
     }
 
     /// <summary>
-    /// 添加 DateOnly/DateOnly? 类型序列化处理
-    /// </summary>
-    /// <param name="converters"></param>
-    /// <returns></returns>
-    public static IList<JsonConverter> AddDateOnlyConverters(this IList<JsonConverter> converters)
-    {
-#if !NET5_0
-        converters.Add(new SystemTextJsonDateOnlyJsonConverter());
-        converters.Add(new SystemTextJsonNullableDateOnlyJsonConverter());
-#endif
-        return converters;
-    }
-
-    /// <summary>
     /// 添加 TimeOnly/TimeOnly? 类型序列化处理
     /// </summary>
     /// <param name="converters"></param>
     /// <returns></returns>
     public static IList<JsonConverter> AddTimeOnlyConverters(this IList<JsonConverter> converters)
     {
-#if !NET5_0
         converters.Add(new SystemTextJsonTimeOnlyJsonConverter());
         converters.Add(new SystemTextJsonNullableTimeOnlyJsonConverter());
-#endif
         return converters;
     }
 }

@@ -22,13 +22,6 @@ namespace ThingsGateway.Gateway.Application;
 public delegate void DelegateOnDeviceChanged(DeviceRunTime deviceRunTime, DeviceData deviceData);
 
 /// <summary>
-/// 变量采集事件委托，用于通知变量进行采集时的事件
-/// </summary>
-/// <param name="variableRunTime">变量运行时对象</param>
-/// <param name="variableData">变量数据对象</param>
-public delegate void VariableCollectEventHandler(VariableRunTime variableRunTime);
-
-/// <summary>
 /// 变量改变事件委托，用于通知变量值发生变化时的事件
 /// </summary>
 /// <param name="variableRunTime">变量运行时对象</param>
@@ -36,10 +29,19 @@ public delegate void VariableCollectEventHandler(VariableRunTime variableRunTime
 public delegate void VariableChangeEventHandler(VariableRunTime variableRunTime, VariableData variableData);
 
 /// <summary>
+/// 变量采集事件委托，用于通知变量进行采集时的事件
+/// </summary>
+/// <param name="variableRunTime">变量运行时对象</param>
+/// <param name="variableData">变量数据对象</param>
+public delegate void VariableCollectEventHandler(VariableRunTime variableRunTime);
+
+/// <summary>
 /// 采集设备值与状态全局提供类，用于提供全局的设备状态和变量数据的管理
 /// </summary>
 public static class GlobalData
 {
+    private static IRpcService rpcService;
+
     /// <summary>
     /// 设备状态变化事件，当设备状态发生变化时触发该事件
     /// </summary>
@@ -56,9 +58,9 @@ public static class GlobalData
     internal static event VariableCollectEventHandler? VariableCollectChangeEvent;
 
     /// <summary>
-    /// 实时报警列表
+    /// 只读的业务设备字典，提供对业务设备的只读访问
     /// </summary>
-    public static IEnumerable<VariableRunTime> ReadOnlyRealAlarmVariables => HostedServiceUtil.AlarmHostedService.RealAlarmVariables;
+    public static IReadOnlyDictionary<string, DeviceRunTime> ReadOnlyBusinessDevices => BusinessDevices;
 
     /// <summary>
     /// 只读的采集设备字典，提供对采集设备的只读访问
@@ -66,31 +68,14 @@ public static class GlobalData
     public static IReadOnlyDictionary<string, CollectDeviceRunTime> ReadOnlyCollectDevices => CollectDevices;
 
     /// <summary>
-    /// 只读的业务设备字典，提供对业务设备的只读访问
+    /// 实时报警列表
     /// </summary>
-    public static IReadOnlyDictionary<string, DeviceRunTime> ReadOnlyBusinessDevices => BusinessDevices;
+    public static IEnumerable<VariableRunTime> ReadOnlyRealAlarmVariables => HostedServiceUtil.AlarmHostedService.RealAlarmVariables;
 
     /// <summary>
     /// 只读的变量字典，提供对变量的只读访问
     /// </summary>
     public static IReadOnlyDictionary<string, VariableRunTime> ReadOnlyVariables => Variables;
-
-    /// <summary>
-    /// 内部使用的业务设备字典，用于存储业务设备对象
-    /// </summary>
-    internal static ConcurrentDictionary<string, DeviceRunTime> BusinessDevices { get; } = new();
-
-    /// <summary>
-    /// 内部使用的变量字典，用于存储变量对象
-    /// </summary>
-    internal static ConcurrentDictionary<string, VariableRunTime> Variables { get; } = new();
-
-    /// <summary>
-    /// 内部使用的采集设备字典，用于存储采集设备对象
-    /// </summary>
-    internal static ConcurrentDictionary<string, CollectDeviceRunTime> CollectDevices { get; } = new();
-
-    private static IRpcService rpcService;
 
     public static IRpcService RpcService
     {
@@ -103,6 +88,21 @@ public static class GlobalData
             return rpcService;
         }
     }
+
+    /// <summary>
+    /// 内部使用的业务设备字典，用于存储业务设备对象
+    /// </summary>
+    internal static ConcurrentDictionary<string, DeviceRunTime> BusinessDevices { get; } = new();
+
+    /// <summary>
+    /// 内部使用的采集设备字典，用于存储采集设备对象
+    /// </summary>
+    internal static ConcurrentDictionary<string, CollectDeviceRunTime> CollectDevices { get; } = new();
+
+    /// <summary>
+    /// 内部使用的变量字典，用于存储变量对象
+    /// </summary>
+    internal static ConcurrentDictionary<string, VariableRunTime> Variables { get; } = new();
 
     /// <summary>
     /// 设备状态变化处理方法，用于处理设备状态变化时的逻辑
@@ -118,19 +118,6 @@ public static class GlobalData
     }
 
     /// <summary>
-    /// 变量值变化处理方法，用于处理变量值发生变化时的逻辑
-    /// </summary>
-    /// <param name="variableRunTime">变量运行时对象</param>
-    internal static void VariableValueChange(VariableRunTime variableRunTime)
-    {
-        if (VariableValueChangeEvent != null)
-        {
-            // 触发变量值变化事件，并将变量运行时对象转换为变量数据对象进行传递
-            VariableValueChangeEvent.Invoke(variableRunTime, variableRunTime.Adapt<VariableData>());
-        }
-    }
-
-    /// <summary>
     /// 变量采集处理方法，用于处理变量进行采集时的逻辑
     /// </summary>
     /// <param name="variableRunTime">变量运行时对象</param>
@@ -140,6 +127,19 @@ public static class GlobalData
         {
             // 触发变量采集事件，并将变量运行时对象转换为变量数据对象进行传递
             VariableCollectChangeEvent.Invoke(variableRunTime);
+        }
+    }
+
+    /// <summary>
+    /// 变量值变化处理方法，用于处理变量值发生变化时的逻辑
+    /// </summary>
+    /// <param name="variableRunTime">变量运行时对象</param>
+    internal static void VariableValueChange(VariableRunTime variableRunTime)
+    {
+        if (VariableValueChangeEvent != null)
+        {
+            // 触发变量值变化事件，并将变量运行时对象转换为变量数据对象进行传递
+            VariableValueChangeEvent.Invoke(variableRunTime, variableRunTime.Adapt<VariableData>());
         }
     }
 }

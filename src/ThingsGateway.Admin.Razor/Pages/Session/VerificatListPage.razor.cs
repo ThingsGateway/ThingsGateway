@@ -9,23 +9,22 @@
 //------------------------------------------------------------------------------
 
 using ThingsGateway.Admin.Application;
-using ThingsGateway.Sql;
 
 namespace ThingsGateway.Admin.Razor;
 
 public partial class VerificatListPage
 {
-    [Inject]
-    [NotNull]
-    private ISessionService? SessionService { get; set; }
-
-    private VerificatInfo? SearchModel { get; set; } = new();
+    [Parameter]
+    public long UserId { get; set; }
 
     [Parameter]
     public List<VerificatInfo> VerificatInfos { get; set; }
 
-    [Parameter]
-    public long UserId { get; set; }
+    private VerificatInfo? SearchModel { get; set; } = new();
+
+    [Inject]
+    [NotNull]
+    private ISessionService? SessionService { get; set; }
 
     #region 查询
 

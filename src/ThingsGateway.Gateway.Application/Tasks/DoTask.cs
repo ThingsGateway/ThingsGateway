@@ -15,19 +15,10 @@ namespace ThingsGateway.Gateway.Application;
 
 public class DoTask
 {
-    public DoTask(Func<CancellationToken, ValueTask> doWork, ILogger logger, string taskName = null)
-    {
-        DoWork = doWork; Logger = logger; TaskName = taskName;
-    }
-
-    private IStringLocalizer Localizer { get; } = App.CreateLocalizerByType(typeof(DoTask))!;
-    private string TaskName { get; }
-    private ILogger Logger { get; }
-
     /// <summary>
-    /// 取消令牌
+    /// 取消令牌与调度取消令牌合集
     /// </summary>
-    private CancellationTokenSource? _triggerCancelTokenSource;
+    private CancellationTokenSource? _cancelTokenSource;
 
     /// <summary>
     /// 调度取消令牌
@@ -35,18 +26,25 @@ public class DoTask
     private CancellationToken _schedulerCancelToken;
 
     /// <summary>
-    /// 取消令牌与调度取消令牌合集
+    /// 取消令牌
     /// </summary>
-    private CancellationTokenSource? _cancelTokenSource;
+    private CancellationTokenSource? _triggerCancelTokenSource;
+
+    public DoTask(Func<CancellationToken, ValueTask> doWork, ILogger logger, string taskName = null)
+    {
+        DoWork = doWork; Logger = logger; TaskName = taskName;
+    }
 
     /// <summary>
     /// 执行任务方法
     /// </summary>
     public Func<CancellationToken, ValueTask> DoWork { get; }
 
-    private Task PrivateTask { get; set; }
-
     public bool IsStoped => PrivateTask == null;
+    private IStringLocalizer Localizer { get; } = App.CreateLocalizerByType(typeof(DoTask))!;
+    private ILogger Logger { get; }
+    private Task PrivateTask { get; set; }
+    private string TaskName { get; }
 
     /// <summary>
     /// 开始

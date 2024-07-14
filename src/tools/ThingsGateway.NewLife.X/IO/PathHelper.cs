@@ -27,17 +27,17 @@ public static class PathHelper
 {
     #region 属性
 
-    /// <summary>基础目录。GetBasePath依赖于此，默认为当前应用程序域基础目录。用于X组件内部各目录，专门为函数计算而定制</summary>
-    /// <remarks>
-    /// 为了适应函数计算，该路径将支持从命令行参数和环境变量读取
-    /// </remarks>
-    public static String? BasePath { get; set; }
-
     /// <summary>基准目录。GetFullPath依赖于此，默认为当前应用程序域基础目录。支持BasePath参数修改</summary>
     /// <remarks>
     /// 为了适应函数计算，该路径将支持从命令行参数和环境变量读取
     /// </remarks>
     public static String? BaseDirectory { get; set; }
+
+    /// <summary>基础目录。GetBasePath依赖于此，默认为当前应用程序域基础目录。用于X组件内部各目录，专门为函数计算而定制</summary>
+    /// <remarks>
+    /// 为了适应函数计算，该路径将支持从命令行参数和环境变量读取
+    /// </remarks>
+    public static String? BasePath { get; set; }
 
     #endregion 属性
 
@@ -83,6 +83,94 @@ public static class PathHelper
 
     #region 路径操作辅助
 
+    /// <summary>合并多段路径</summary>
+    /// <param name="path"></param>
+    /// <param name="ps"></param>
+    /// <returns></returns>
+    public static String CombinePath(this String? path, params String[] ps)
+    {
+        path ??= String.Empty;
+        if (ps == null || ps.Length <= 0) return path;
+
+        //return Path.Combine(path, path2);
+        foreach (var item in ps)
+        {
+            if (!item.IsNullOrEmpty()) path = Path.Combine(path, item);
+        }
+        return path;
+    }
+
+    /// <summary>确保目录存在，若不存在则创建</summary>
+    /// <remarks>
+    /// 斜杠结尾的路径一定是目录，无视第二参数；
+    /// 默认是文件，这样子只需要确保上一层目录存在即可，否则如果把文件当成了目录，目录的创建会导致文件无法创建。
+    /// </remarks>
+    /// <param name="path">文件路径或目录路径，斜杠结尾的路径一定是目录，无视第二参数</param>
+    /// <param name="isfile">该路径是否是否文件路径。文件路径需要取目录部分</param>
+    /// <returns></returns>
+    public static String EnsureDirectory(this String path, Boolean isfile = true)
+    {
+        if (String.IsNullOrEmpty(path)) return path;
+
+        path = path.GetFullPath();
+        if (File.Exists(path) || Directory.Exists(path)) return path;
+
+        var dir = path;
+        // 斜杠结尾的路径一定是目录，无视第二参数
+        if (dir[^1] == Path.DirectorySeparatorChar)
+            dir = Path.GetDirectoryName(path);
+        else if (isfile)
+            dir = Path.GetDirectoryName(path);
+
+        /*!!! 基础类库的用法应该有明确的用途，而不是通过某些小伎俩去让人猜测 !!!*/
+
+        //// 如果有圆点说明可能是文件
+        //var p1 = dir.LastIndexOf('.');
+        //if (p1 >= 0)
+        //{
+        //    // 要么没有斜杠，要么圆点必须在最后一个斜杠后面
+        //    var p2 = dir.LastIndexOf('\\');
+        //    if (p2 < 0 || p2 < p1) dir = Path.GetDirectoryName(path);
+        //}
+
+        if (!String.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+        return path;
+    }
+
+    /// <summary>获取文件或目录的全路径，过滤相对目录。用于X组件内部各目录，专门为函数计算而定制</summary>
+    /// <remarks>不确保目录后面一定有分隔符，是否有分隔符由原始路径末尾决定</remarks>
+    /// <param name="path">文件或目录</param>
+    /// <returns></returns>
+    public static String GetBasePath(this String path)
+    {
+        if (String.IsNullOrEmpty(path)) return path;
+
+        return GetPath(path, 2);
+    }
+
+    /// <summary>获取文件或目录基于当前目录的全路径，过滤相对目录</summary>
+    /// <remarks>不确保目录后面一定有分隔符，是否有分隔符由原始路径末尾决定</remarks>
+    /// <param name="path">文件或目录</param>
+    /// <returns></returns>
+    public static String GetCurrentPath(this String path)
+    {
+        if (String.IsNullOrEmpty(path)) return path;
+
+        return GetPath(path, 3);
+    }
+
+    /// <summary>获取文件或目录基于应用程序域基目录的全路径，过滤相对目录</summary>
+    /// <remarks>不确保目录后面一定有分隔符，是否有分隔符由原始路径末尾决定</remarks>
+    /// <param name="path">文件或目录</param>
+    /// <returns></returns>
+    public static String GetFullPath(this String path)
+    {
+        if (String.IsNullOrEmpty(path)) return path;
+
+        return GetPath(path, 1);
+    }
+
     private static String GetPath(String path, Int32 mode)
     {
         // 处理路径分隔符，兼容Windows和Linux
@@ -127,94 +215,6 @@ public static class PathHelper
         return Path.GetFullPath(path);
     }
 
-    /// <summary>获取文件或目录基于应用程序域基目录的全路径，过滤相对目录</summary>
-    /// <remarks>不确保目录后面一定有分隔符，是否有分隔符由原始路径末尾决定</remarks>
-    /// <param name="path">文件或目录</param>
-    /// <returns></returns>
-    public static String GetFullPath(this String path)
-    {
-        if (String.IsNullOrEmpty(path)) return path;
-
-        return GetPath(path, 1);
-    }
-
-    /// <summary>获取文件或目录的全路径，过滤相对目录。用于X组件内部各目录，专门为函数计算而定制</summary>
-    /// <remarks>不确保目录后面一定有分隔符，是否有分隔符由原始路径末尾决定</remarks>
-    /// <param name="path">文件或目录</param>
-    /// <returns></returns>
-    public static String GetBasePath(this String path)
-    {
-        if (String.IsNullOrEmpty(path)) return path;
-
-        return GetPath(path, 2);
-    }
-
-    /// <summary>获取文件或目录基于当前目录的全路径，过滤相对目录</summary>
-    /// <remarks>不确保目录后面一定有分隔符，是否有分隔符由原始路径末尾决定</remarks>
-    /// <param name="path">文件或目录</param>
-    /// <returns></returns>
-    public static String GetCurrentPath(this String path)
-    {
-        if (String.IsNullOrEmpty(path)) return path;
-
-        return GetPath(path, 3);
-    }
-
-    /// <summary>确保目录存在，若不存在则创建</summary>
-    /// <remarks>
-    /// 斜杠结尾的路径一定是目录，无视第二参数；
-    /// 默认是文件，这样子只需要确保上一层目录存在即可，否则如果把文件当成了目录，目录的创建会导致文件无法创建。
-    /// </remarks>
-    /// <param name="path">文件路径或目录路径，斜杠结尾的路径一定是目录，无视第二参数</param>
-    /// <param name="isfile">该路径是否是否文件路径。文件路径需要取目录部分</param>
-    /// <returns></returns>
-    public static String EnsureDirectory(this String path, Boolean isfile = true)
-    {
-        if (String.IsNullOrEmpty(path)) return path;
-
-        path = path.GetFullPath();
-        if (File.Exists(path) || Directory.Exists(path)) return path;
-
-        var dir = path;
-        // 斜杠结尾的路径一定是目录，无视第二参数
-        if (dir[^1] == Path.DirectorySeparatorChar)
-            dir = Path.GetDirectoryName(path);
-        else if (isfile)
-            dir = Path.GetDirectoryName(path);
-
-        /*!!! 基础类库的用法应该有明确的用途，而不是通过某些小伎俩去让人猜测 !!!*/
-
-        //// 如果有圆点说明可能是文件
-        //var p1 = dir.LastIndexOf('.');
-        //if (p1 >= 0)
-        //{
-        //    // 要么没有斜杠，要么圆点必须在最后一个斜杠后面
-        //    var p2 = dir.LastIndexOf('\\');
-        //    if (p2 < 0 || p2 < p1) dir = Path.GetDirectoryName(path);
-        //}
-
-        if (!String.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
-
-        return path;
-    }
-
-    /// <summary>合并多段路径</summary>
-    /// <param name="path"></param>
-    /// <param name="ps"></param>
-    /// <returns></returns>
-    public static String CombinePath(this String? path, params String[] ps)
-    {
-        path ??= String.Empty;
-        if (ps == null || ps.Length <= 0) return path;
-
-        //return Path.Combine(path, path2);
-        foreach (var item in ps)
-        {
-            if (!item.IsNullOrEmpty()) path = Path.Combine(path, item);
-        }
-        return path;
-    }
-
     #endregion 路径操作辅助
 
     #region 文件扩展
@@ -224,67 +224,27 @@ public static class PathHelper
     /// <returns></returns>
     public static FileInfo AsFile(this String file) => new(file.GetFullPath());
 
-    /// <summary>从文件中读取数据</summary>
-    /// <param name="file"></param>
-    /// <param name="offset"></param>
-    /// <param name="count"></param>
-    /// <returns></returns>
-    public static Byte[] ReadBytes(this FileInfo file, Int32 offset = 0, Int32 count = -1)
+    /// <summary>压缩文件</summary>
+    /// <param name="fi"></param>
+    /// <param name="destFile"></param>
+    public static void Compress(this FileInfo fi, String destFile)
     {
-        using var fs = file.OpenRead();
-        fs.Position = offset;
+        if (destFile.IsNullOrEmpty()) destFile = fi.Name + ".zip";
 
-        if (count <= 0) count = (Int32)(fs.Length - offset);
+        destFile = destFile.GetFullPath();
+        if (File.Exists(destFile)) File.Delete(destFile);
 
-        var buf = new Byte[count];
-        fs.Read(buf, 0, buf.Length);
-        return buf;
-    }
-
-    /// <summary>把数据写入文件指定位置</summary>
-    /// <param name="file"></param>
-    /// <param name="data"></param>
-    /// <param name="offset"></param>
-    /// <returns></returns>
-    public static FileInfo WriteBytes(this FileInfo file, Byte[] data, Int32 offset = 0)
-    {
-        using (var fs = file.OpenWrite())
+        if (destFile.EndsWithIgnoreCase(".zip"))
         {
-            fs.Position = offset;
-
-            fs.Write(data, offset, data.Length);
+            using var zip = ZipFile.Open(destFile, ZipArchiveMode.Create);
+            zip.CreateEntryFromFile(fi.FullName, fi.Name, CompressionLevel.Optimal);
         }
-
-        return file;
+        else
+        {
+            throw new NotSupportedException();
+            //new SevenZip().Compress(fi.FullName, destFile);
+        }
     }
-
-    ///// <summary>读取所有文本，自动检测编码</summary>
-    ///// <remarks>性能较File.ReadAllText略慢，可通过提前检测BOM编码来优化</remarks>
-    ///// <param name="file"></param>
-    ///// <param name="encoding"></param>
-    ///// <returns></returns>
-    //public static String ReadText(this FileInfo file, Encoding encoding = null)
-    //{
-    //    using var fs = file.OpenRead();
-    //    if (encoding == null) encoding = fs.Detect() ?? Encoding.UTF8;
-    //    using var reader = new StreamReader(fs, encoding);
-    //    return reader.ReadToEnd();
-    //}
-
-    ///// <summary>把文本写入文件，自动检测编码</summary>
-    ///// <param name="file"></param>
-    ///// <param name="text"></param>
-    ///// <param name="encoding"></param>
-    ///// <returns></returns>
-    //public static FileInfo WriteText(this FileInfo file, String text, Encoding encoding = null)
-    //{
-    //    using var fs = file.OpenWrite();
-    //    if (encoding == null) encoding = fs.Detect() ?? Encoding.UTF8;
-    //    using var writer = new StreamWriter(fs, encoding);
-    //    writer.Write(text);
-
-    //    return file;
-    //}
 
     /// <summary>复制到目标文件，目标文件必须已存在，且源文件较新</summary>
     /// <param name="fi">源文件</param>
@@ -304,54 +264,6 @@ public static class PathHelper
         }
 
         return false;
-    }
-
-    /// <summary>打开并读取</summary>
-    /// <param name="file">文件信息</param>
-    /// <param name="compressed">是否压缩</param>
-    /// <param name="func">要对文件流操作的委托</param>
-    /// <returns></returns>
-    public static Int64 OpenRead(this FileInfo file, Boolean compressed, Action<Stream> func)
-    {
-        if (compressed)
-        {
-            using var fs = file.OpenRead();
-            using var gs = new GZipStream(fs, CompressionMode.Decompress, true);
-            using var bs = new BufferedStream(gs);
-            func(bs);
-            return fs.Position;
-        }
-        else
-        {
-            using var fs = file.OpenRead();
-            func(fs);
-            return fs.Position;
-        }
-    }
-
-    /// <summary>打开并写入</summary>
-    /// <param name="file">文件信息</param>
-    /// <param name="compressed">是否压缩</param>
-    /// <param name="func">要对文件流操作的委托</param>
-    /// <returns></returns>
-    public static Int64 OpenWrite(this FileInfo file, Boolean compressed, Action<Stream> func)
-    {
-        file.FullName.EnsureDirectory(true);
-
-        using var fs = file.OpenWrite();
-        if (compressed)
-        {
-            using var gs = new GZipStream(fs, CompressionLevel.Optimal, true);
-            func(gs);
-        }
-        else
-        {
-            func(fs);
-        }
-
-        fs.SetLength(fs.Position);
-
-        return fs.Position;
     }
 
     /// <summary>解压缩</summary>
@@ -400,27 +312,113 @@ public static class PathHelper
         }
     }
 
-    /// <summary>压缩文件</summary>
-    /// <param name="fi"></param>
-    /// <param name="destFile"></param>
-    public static void Compress(this FileInfo fi, String destFile)
+    //    return file;
+    //}
+    /// <summary>打开并读取</summary>
+    /// <param name="file">文件信息</param>
+    /// <param name="compressed">是否压缩</param>
+    /// <param name="func">要对文件流操作的委托</param>
+    /// <returns></returns>
+    public static Int64 OpenRead(this FileInfo file, Boolean compressed, Action<Stream> func)
     {
-        if (destFile.IsNullOrEmpty()) destFile = fi.Name + ".zip";
-
-        destFile = destFile.GetFullPath();
-        if (File.Exists(destFile)) File.Delete(destFile);
-
-        if (destFile.EndsWithIgnoreCase(".zip"))
+        if (compressed)
         {
-            using var zip = ZipFile.Open(destFile, ZipArchiveMode.Create);
-            zip.CreateEntryFromFile(fi.FullName, fi.Name, CompressionLevel.Optimal);
+            using var fs = file.OpenRead();
+            using var gs = new GZipStream(fs, CompressionMode.Decompress, true);
+            using var bs = new BufferedStream(gs);
+            func(bs);
+            return fs.Position;
         }
         else
         {
-            throw new NotSupportedException();
-            //new SevenZip().Compress(fi.FullName, destFile);
+            using var fs = file.OpenRead();
+            func(fs);
+            return fs.Position;
         }
     }
+
+    ///// <summary>把文本写入文件，自动检测编码</summary>
+    ///// <param name="file"></param>
+    ///// <param name="text"></param>
+    ///// <param name="encoding"></param>
+    ///// <returns></returns>
+    //public static FileInfo WriteText(this FileInfo file, String text, Encoding encoding = null)
+    //{
+    //    using var fs = file.OpenWrite();
+    //    if (encoding == null) encoding = fs.Detect() ?? Encoding.UTF8;
+    //    using var writer = new StreamWriter(fs, encoding);
+    //    writer.Write(text);
+    /// <summary>打开并写入</summary>
+    /// <param name="file">文件信息</param>
+    /// <param name="compressed">是否压缩</param>
+    /// <param name="func">要对文件流操作的委托</param>
+    /// <returns></returns>
+    public static Int64 OpenWrite(this FileInfo file, Boolean compressed, Action<Stream> func)
+    {
+        file.FullName.EnsureDirectory(true);
+
+        using var fs = file.OpenWrite();
+        if (compressed)
+        {
+            using var gs = new GZipStream(fs, CompressionLevel.Optimal, true);
+            func(gs);
+        }
+        else
+        {
+            func(fs);
+        }
+
+        fs.SetLength(fs.Position);
+
+        return fs.Position;
+    }
+
+    /// <summary>从文件中读取数据</summary>
+    /// <param name="file"></param>
+    /// <param name="offset"></param>
+    /// <param name="count"></param>
+    /// <returns></returns>
+    public static Byte[] ReadBytes(this FileInfo file, Int32 offset = 0, Int32 count = -1)
+    {
+        using var fs = file.OpenRead();
+        fs.Position = offset;
+
+        if (count <= 0) count = (Int32)(fs.Length - offset);
+
+        var buf = new Byte[count];
+        fs.Read(buf, 0, buf.Length);
+        return buf;
+    }
+
+    /// <summary>把数据写入文件指定位置</summary>
+    /// <param name="file"></param>
+    /// <param name="data"></param>
+    /// <param name="offset"></param>
+    /// <returns></returns>
+    public static FileInfo WriteBytes(this FileInfo file, Byte[] data, Int32 offset = 0)
+    {
+        using (var fs = file.OpenWrite())
+        {
+            fs.Position = offset;
+
+            fs.Write(data, offset, data.Length);
+        }
+
+        return file;
+    }
+
+    ///// <summary>读取所有文本，自动检测编码</summary>
+    ///// <remarks>性能较File.ReadAllText略慢，可通过提前检测BOM编码来优化</remarks>
+    ///// <param name="file"></param>
+    ///// <param name="encoding"></param>
+    ///// <returns></returns>
+    //public static String ReadText(this FileInfo file, Encoding encoding = null)
+    //{
+    //    using var fs = file.OpenRead();
+    //    if (encoding == null) encoding = fs.Detect() ?? Encoding.UTF8;
+    //    using var reader = new StreamReader(fs, encoding);
+    //    return reader.ReadToEnd();
+    //}
 
     #endregion 文件扩展
 
@@ -431,25 +429,53 @@ public static class PathHelper
     /// <returns></returns>
     public static DirectoryInfo AsDirectory(this String dir) => new(dir.GetFullPath());
 
-    /// <summary>获取目录内所有符合条件的文件，支持多文件扩展匹配</summary>
-    /// <param name="di">目录</param>
+    /// <summary>压缩</summary>
+    /// <param name="di"></param>
+    /// <param name="destFile"></param>
+    public static void Compress(this DirectoryInfo di, String? destFile = null)
+    {
+        if (destFile.IsNullOrEmpty()) destFile = di.Name + ".zip";
+
+        if (File.Exists(destFile)) File.Delete(destFile);
+
+        if (destFile.EndsWithIgnoreCase(".zip"))
+            ZipFile.CreateFromDirectory(di.FullName, destFile, CompressionLevel.Optimal, true);
+        else
+            //new SevenZip().Compress(di.FullName, destFile);
+            throw new NotSupportedException();
+    }
+
+    /// <summary>从多个目标目录复制较新文件到当前目录</summary>
+    /// <param name="di">当前目录</param>
+    /// <param name="source">多个目标目录</param>
     /// <param name="exts">文件扩展列表。比如*.exe;*.dll;*.config</param>
     /// <param name="allSub">是否包含所有子孙目录文件</param>
     /// <returns></returns>
-    public static IEnumerable<FileInfo> GetAllFiles(this DirectoryInfo di, String? exts = null, Boolean allSub = false)
+    public static String[] CopyIfNewer(this DirectoryInfo di, String[] source, String? exts = null, Boolean allSub = false)
     {
-        if (di == null || !di.Exists) yield break;
-
-        if (String.IsNullOrEmpty(exts)) exts = "*";
-        var opt = allSub ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-
-        foreach (var pattern in exts.Split(";", "|", ","))
+        var list = new List<String>();
+        var cur = di.FullName;
+        foreach (var item in source)
         {
-            foreach (var item in di.GetFiles(pattern, opt))
+            // 跳过当前目录
+            if (item.GetFullPath().EqualIgnoreCase(cur)) continue;
+
+            Console.WriteLine("复制 {0} => {1}", item, cur);
+
+            try
             {
-                yield return item;
+                var rs = item.AsDirectory().CopyToIfNewer(cur, exts, allSub, name =>
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("\t{1}\t{0}", name, item.CombinePath(name).AsFile().LastWriteTime.ToFullString());
+                    Console.ResetColor();
+                });
+                if (rs != null && rs.Length > 0) list.AddRange(rs);
             }
+            catch (Exception ex) { Console.WriteLine(" " + ex.Message); }
         }
+
+        return list.ToArray();
     }
 
     /// <summary>复制目录中的文件</summary>
@@ -513,53 +539,25 @@ public static class PathHelper
         return list.ToArray();
     }
 
-    /// <summary>从多个目标目录复制较新文件到当前目录</summary>
-    /// <param name="di">当前目录</param>
-    /// <param name="source">多个目标目录</param>
+    /// <summary>获取目录内所有符合条件的文件，支持多文件扩展匹配</summary>
+    /// <param name="di">目录</param>
     /// <param name="exts">文件扩展列表。比如*.exe;*.dll;*.config</param>
     /// <param name="allSub">是否包含所有子孙目录文件</param>
     /// <returns></returns>
-    public static String[] CopyIfNewer(this DirectoryInfo di, String[] source, String? exts = null, Boolean allSub = false)
+    public static IEnumerable<FileInfo> GetAllFiles(this DirectoryInfo di, String? exts = null, Boolean allSub = false)
     {
-        var list = new List<String>();
-        var cur = di.FullName;
-        foreach (var item in source)
+        if (di == null || !di.Exists) yield break;
+
+        if (String.IsNullOrEmpty(exts)) exts = "*";
+        var opt = allSub ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+
+        foreach (var pattern in exts.Split(";", "|", ","))
         {
-            // 跳过当前目录
-            if (item.GetFullPath().EqualIgnoreCase(cur)) continue;
-
-            Console.WriteLine("复制 {0} => {1}", item, cur);
-
-            try
+            foreach (var item in di.GetFiles(pattern, opt))
             {
-                var rs = item.AsDirectory().CopyToIfNewer(cur, exts, allSub, name =>
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("\t{1}\t{0}", name, item.CombinePath(name).AsFile().LastWriteTime.ToFullString());
-                    Console.ResetColor();
-                });
-                if (rs != null && rs.Length > 0) list.AddRange(rs);
+                yield return item;
             }
-            catch (Exception ex) { Console.WriteLine(" " + ex.Message); }
         }
-
-        return list.ToArray();
-    }
-
-    /// <summary>压缩</summary>
-    /// <param name="di"></param>
-    /// <param name="destFile"></param>
-    public static void Compress(this DirectoryInfo di, String? destFile = null)
-    {
-        if (destFile.IsNullOrEmpty()) destFile = di.Name + ".zip";
-
-        if (File.Exists(destFile)) File.Delete(destFile);
-
-        if (destFile.EndsWithIgnoreCase(".zip"))
-            ZipFile.CreateFromDirectory(di.FullName, destFile, CompressionLevel.Optimal, true);
-        else
-            //new SevenZip().Compress(di.FullName, destFile);
-            throw new NotSupportedException();
     }
 
     #endregion 目录扩展

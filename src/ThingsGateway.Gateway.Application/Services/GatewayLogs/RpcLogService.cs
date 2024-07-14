@@ -21,15 +21,6 @@ public class RpcLogService : BaseService<RpcLog>, IRpcLogService
     #region 查询
 
     /// <summary>
-    /// 表格查询
-    /// </summary>
-    /// <param name="option">查询条件</param>
-    public Task<QueryData<RpcLog>> PageAsync(QueryPageOptions option)
-    {
-        return QueryAsync(option);
-    }
-
-    /// <summary>
     /// 最新十条
     /// </summary>
     /// <param name="account">操作人</param>
@@ -38,6 +29,15 @@ public class RpcLogService : BaseService<RpcLog>, IRpcLogService
         using var db = GetDB();
         var data = await db.Queryable<RpcLog>().OrderByDescending(a => a.LogTime).Take(10).ToListAsync();
         return data;
+    }
+
+    /// <summary>
+    /// 表格查询
+    /// </summary>
+    /// <param name="option">查询条件</param>
+    public Task<QueryData<RpcLog>> PageAsync(QueryPageOptions option)
+    {
+        return QueryAsync(option);
     }
 
     #endregion 查询

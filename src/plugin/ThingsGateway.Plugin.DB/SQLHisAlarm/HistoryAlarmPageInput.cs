@@ -11,22 +11,11 @@
 using BootstrapBlazor.Components;
 
 using ThingsGateway.Core.Extension;
-using ThingsGateway.Gateway.Application;
 
 namespace ThingsGateway.Plugin.SqlHisAlarm;
 
 public class HistoryAlarmPageInput : ITableSearchModel
 {
-    /// <summary>
-    /// 时间区间
-    /// </summary>
-    public DateTimeRangeValue? SearchDate { get; set; }
-
-    /// <summary>
-    /// 变量名称
-    /// </summary>
-    public virtual string? VariableName { get; set; }
-
     /// <summary>
     /// 报警类型
     /// </summary>
@@ -36,6 +25,16 @@ public class HistoryAlarmPageInput : ITableSearchModel
     /// 事件类型
     /// </summary>
     public EventTypeEnum? EventType { get; set; }
+
+    /// <summary>
+    /// 时间区间
+    /// </summary>
+    public DateTimeRangeValue? SearchDate { get; set; }
+
+    /// <summary>
+    /// 变量名称
+    /// </summary>
+    public virtual string? VariableName { get; set; }
 
     /// <inheritdoc/>
     public IEnumerable<IFilterAction> GetSearches()

@@ -10,8 +10,6 @@
 
 using System.Text;
 
-using TouchSocket.Core;
-
 namespace ThingsGateway.Foundation.SiemensS7;
 
 internal partial class SiemensHelper
@@ -51,6 +49,21 @@ internal partial class SiemensHelper
         }
 
         return groups;
+    }
+
+    internal static string GetCpuError(ushort Error)
+    {
+        return Error switch
+        {
+            0x01 => SiemensS7Resource.Localizer["ERROR1"],
+            0x03 => SiemensS7Resource.Localizer["ERROR3"],
+            0x05 => SiemensS7Resource.Localizer["ERROR5"],
+            0x06 => SiemensS7Resource.Localizer["ERROR6"],
+            0x07 => SiemensS7Resource.Localizer["ERROR7"],
+            0x0a => SiemensS7Resource.Localizer["ERROR10"],
+            _ => "Unknown",
+        };
+        ;
     }
 
     internal static async ValueTask<OperResult<string>> ReadStringAsync(SiemensS7Master plc, string address, Encoding encoding, CancellationToken cancellationToken)
@@ -112,20 +125,5 @@ internal partial class SiemensHelper
                 )).ConfigureAwait(false);
         }
         return await plc.WriteAsync(address, DataTransUtil.SpliceArray([(byte)value.Length], inBytes)).ConfigureAwait(false);
-    }
-
-    internal static string GetCpuError(ushort Error)
-    {
-        return Error switch
-        {
-            0x01 => SiemensS7Resource.Localizer["ERROR1"],
-            0x03 => SiemensS7Resource.Localizer["ERROR3"],
-            0x05 => SiemensS7Resource.Localizer["ERROR5"],
-            0x06 => SiemensS7Resource.Localizer["ERROR6"],
-            0x07 => SiemensS7Resource.Localizer["ERROR7"],
-            0x0a => SiemensS7Resource.Localizer["ERROR10"],
-            _ => "Unknown",
-        };
-        ;
     }
 }

@@ -24,30 +24,8 @@ public class ObjectPool<T> : DisposeBase, IPool<T> where T : notnull
 {
     #region 属性
 
-    /// <summary>名称</summary>
-    public String Name { get; set; }
-
-    private Int32 _FreeCount;
-
-    /// <summary>空闲个数</summary>
-    public Int32 FreeCount => _FreeCount;
-
-    private Int32 _BusyCount;
-
-    /// <summary>繁忙个数</summary>
-    public Int32 BusyCount => _BusyCount;
-
-    /// <summary>最大个数。默认100，0表示无上限</summary>
-    public Int32 Max { get; set; } = 100;
-
-    /// <summary>最小个数。默认1</summary>
-    public Int32 Min { get; set; } = 1;
-
-    /// <summary>空闲清理时间。最小个数之上的资源超过空闲时间时被清理，默认10s</summary>
-    public Int32 IdleTime { get; set; } = 10;
-
-    /// <summary>完全空闲清理时间。最小个数之下的资源超过空闲时间时被清理，默认0s永不清理</summary>
-    public Int32 AllIdleTime { get; set; } = 0;
+    /// <summary>借出去的放在这</summary>
+    private readonly ConcurrentDictionary<T, Item> _busy = new();
 
     /// <summary>基础空闲集合。只保存最小个数，最热部分</summary>
     private readonly ConcurrentStack<Item> _free = new();
@@ -55,14 +33,38 @@ public class ObjectPool<T> : DisposeBase, IPool<T> where T : notnull
     /// <summary>扩展空闲集合。保存最小个数以外部分</summary>
     private readonly ConcurrentQueue<Item> _free2 = new();
 
-    /// <summary>借出去的放在这</summary>
-    private readonly ConcurrentDictionary<T, Item> _busy = new();
-
     private readonly Object SyncRoot = new();
+
+    private Int32 _BusyCount;
+
+    private Int32 _FreeCount;
+
+    /// <summary>完全空闲清理时间。最小个数之下的资源超过空闲时间时被清理，默认0s永不清理</summary>
+    public Int32 AllIdleTime { get; set; } = 0;
+
+    /// <summary>繁忙个数</summary>
+    public Int32 BusyCount => _BusyCount;
+
+    /// <summary>空闲个数</summary>
+    public Int32 FreeCount => _FreeCount;
+
+    /// <summary>空闲清理时间。最小个数之上的资源超过空闲时间时被清理，默认10s</summary>
+    public Int32 IdleTime { get; set; } = 10;
+
+    /// <summary>最大个数。默认100，0表示无上限</summary>
+    public Int32 Max { get; set; } = 100;
+
+    /// <summary>最小个数。默认1</summary>
+    public Int32 Min { get; set; } = 1;
+
+    /// <summary>名称</summary>
+    public String Name { get; set; }
 
     #endregion 属性
 
     #region 构造
+
+    private volatile Boolean _inited;
 
     /// <summary>实例化一个资源池</summary>
     public ObjectPool()
@@ -86,8 +88,6 @@ public class ObjectPool<T> : DisposeBase, IPool<T> where T : notnull
         Clear();
     }
 
-    private volatile Boolean _inited;
-
     private void Init()
     {
         if (_inited) return;
@@ -105,16 +105,42 @@ public class ObjectPool<T> : DisposeBase, IPool<T> where T : notnull
 
     private class Item
     {
-        /// <summary>数值</summary>
-        public T? Value { get; set; }
-
         /// <summary>过期时间</summary>
         public DateTime LastTime { get; set; }
+
+        /// <summary>数值</summary>
+        public T? Value { get; set; }
     }
 
     #endregion 内嵌
 
     #region 主方法
+
+    /// <summary>清空已有对象</summary>
+    public virtual Int32 Clear()
+    {
+        var count = _FreeCount + _BusyCount;
+
+        //_busy.Clear();
+        //_BusyCount = 0;
+
+        //_free.Clear();
+        //while (_free2.TryDequeue(out var rs)) ;
+        //_FreeCount = 0;
+
+        while (_free.TryPop(out var pi)) OnDispose(pi.Value);
+        while (_free2.TryDequeue(out var pi)) OnDispose(pi.Value);
+        _FreeCount = 0;
+
+        foreach (var item in _busy)
+        {
+            OnDispose(item.Key);
+        }
+        _busy.Clear();
+        _BusyCount = 0;
+
+        return count;
+    }
 
     /// <summary>借出</summary>
     /// <returns></returns>
@@ -170,11 +196,6 @@ public class ObjectPool<T> : DisposeBase, IPool<T> where T : notnull
         return pi.Value;
     }
 
-    /// <summary>借出时是否可用</summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    protected virtual Boolean OnGet(T value) => true;
-
     /// <summary>申请资源包装项，Dispose时自动归还到池中</summary>
     /// <returns></returns>
     public PoolItem<T> GetItem() => new(this, Get());
@@ -227,11 +248,6 @@ public class ObjectPool<T> : DisposeBase, IPool<T> where T : notnull
         return true;
     }
 
-    /// <summary>归还时是否可用</summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    protected virtual Boolean OnPut(T value) => true;
-
     /// <summary>归还</summary>
     /// <param name="value"></param>
     public virtual Boolean Return(T value)
@@ -280,40 +296,24 @@ public class ObjectPool<T> : DisposeBase, IPool<T> where T : notnull
         return true;
     }
 
+    /// <summary>销毁</summary>
+    /// <param name="value"></param>
+    protected virtual void OnDispose(T? value) => value.TryDispose();
+
+    /// <summary>借出时是否可用</summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    protected virtual Boolean OnGet(T value) => true;
+
+    /// <summary>归还时是否可用</summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    protected virtual Boolean OnPut(T value) => true;
+
     /// <summary>归还时是否可用</summary>
     /// <param name="value"></param>
     /// <returns></returns>
     protected virtual Boolean OnReturn(T value) => true;
-
-    /// <summary>清空已有对象</summary>
-    public virtual Int32 Clear()
-    {
-        var count = _FreeCount + _BusyCount;
-
-        //_busy.Clear();
-        //_BusyCount = 0;
-
-        //_free.Clear();
-        //while (_free2.TryDequeue(out var rs)) ;
-        //_FreeCount = 0;
-
-        while (_free.TryPop(out var pi)) OnDispose(pi.Value);
-        while (_free2.TryDequeue(out var pi)) OnDispose(pi.Value);
-        _FreeCount = 0;
-
-        foreach (var item in _busy)
-        {
-            OnDispose(item.Key);
-        }
-        _busy.Clear();
-        _BusyCount = 0;
-
-        return count;
-    }
-
-    /// <summary>销毁</summary>
-    /// <param name="value"></param>
-    protected virtual void OnDispose(T? value) => value.TryDispose();
 
     #endregion 主方法
 
@@ -417,21 +417,20 @@ public class ObjectPool<T> : DisposeBase, IPool<T> where T : notnull
 
     #region 统计
 
-    private Int32 _Total;
-
-    /// <summary>总请求数</summary>
-    public Int32 Total => _Total;
-
-    private Int32 _Success;
-
-    /// <summary>成功数</summary>
-    public Int32 Success => _Success;
-
     /// <summary>新创建数</summary>
     private Int32 _NewCount;
 
     /// <summary>释放数</summary>
     private Int32 _ReleaseCount;
+
+    private Int32 _Success;
+    private Int32 _Total;
+
+    /// <summary>成功数</summary>
+    public Int32 Success => _Success;
+
+    /// <summary>总请求数</summary>
+    public Int32 Total => _Total;
 
     #endregion 统计
 }
@@ -442,11 +441,11 @@ public class PoolItem<T> : DisposeBase
 {
     #region 属性
 
-    /// <summary>数值</summary>
-    public T Value { get; }
-
     /// <summary>池</summary>
     public IPool<T> Pool { get; }
+
+    /// <summary>数值</summary>
+    public T Value { get; }
 
     #endregion 属性
 

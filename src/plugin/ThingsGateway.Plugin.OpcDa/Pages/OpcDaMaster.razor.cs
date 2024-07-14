@@ -41,6 +41,9 @@ public partial class OpcDaMaster : IDisposable
     private AdapterDebugComponent AdapterDebugComponent { get; set; }
 
     [Inject]
+    private DialogService DialogService { get; set; }
+
+    [Inject]
     private IStringLocalizer<OpcDaProperty> OpcDaPropertyLocalizer { get; set; }
 
     /// <inheritdoc/>
@@ -131,9 +134,6 @@ public partial class OpcDaMaster : IDisposable
     {
         _plc.RemoveItems(new List<string>() { RegisterAddress });
     }
-
-    [Inject]
-    private DialogService DialogService { get; set; }
 
     private async Task ShowImport()
     {

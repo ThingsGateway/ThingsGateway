@@ -27,8 +27,23 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
             client.WaitHandlePool.MaxSign = ushort.MaxValue;
     }
 
+    /// <summary>
+    /// 客户端连接滑动过期时间(TCP服务通道时)
+    /// </summary>
+    public int CheckClearTime { get; set; } = 120;
+
+    /// <summary>
+    /// 默认Dtu注册包,utf-8字符串
+    /// </summary>
+    public string DtuId { get; set; } = "DtuId";
+
     /// <inheritdoc/>
     public string FEHead { get; set; } = "FEFEFEFE";
+
+    /// <summary>
+    /// 心跳检测(大写16进制字符串)
+    /// </summary>
+    public string HeartbeatHexString { get; set; } = "FFFF8080";
 
     /// <inheritdoc/>
     public string OperCode { get; set; }
@@ -40,24 +55,28 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     public string Station { get; set; } = "111111111111";
 
     /// <summary>
-    /// 默认Dtu注册包,utf-8字符串
+    /// 广播校时
     /// </summary>
-    public string DtuId { get; set; } = "DtuId";
-
-    /// <summary>
-    /// 客户端连接滑动过期时间(TCP服务通道时)
-    /// </summary>
-    public int CheckClearTime { get; set; } = 120;
-
-    /// <summary>
-    /// 心跳检测(大写16进制字符串)
-    /// </summary>
-    public string HeartbeatHexString { get; set; } = "FFFF8080";
-
-    /// <inheritdoc/>
-    public override string GetAddressDescription()
+    /// <param name="socketId">socketId</param>
+    /// <param name="dateTime">时间</param>
+    /// <param name="cancellationToken">取消令箭</param>
+    /// <returns></returns>
+    public async ValueTask<OperResult> BroadcastTimeAsync(string socketId, DateTime dateTime, CancellationToken cancellationToken = default)
     {
-        return $"{base.GetAddressDescription()}{Environment.NewLine}{DltResource.Localizer["AddressDes"]}";
+        try
+        {
+            string str = $"{dateTime.Second:D2}{dateTime.Minute:D2}{dateTime.Hour:D2}{dateTime.Day:D2}{dateTime.Month:D2}{dateTime.Year % 100:D2}";
+            Dlt645_2007Address dAddress = new();
+            dAddress.Station = str.HexStringToBytes();
+            dAddress.DataId = "999999999999".HexStringToBytes();
+            dAddress.SocketId = socketId;
+
+            return await Dlt645SendAsync(dAddress, ControlCode.BroadcastTime, FEHead, cancellationToken: cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return new OperResult(ex);
+        }
     }
 
     /// <inheritdoc/>
@@ -69,37 +88,6 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
                 return PluginUtil.GetDtuPlugin(this);
         }
         return base.ConfigurePlugins();
-    }
-
-    /// <inheritdoc/>
-    public override DataHandlingAdapter GetDataAdapter()
-    {
-        switch (Channel.ChannelType)
-        {
-            case ChannelTypeEnum.TcpClient:
-            case ChannelTypeEnum.TcpService:
-            case ChannelTypeEnum.SerialPort:
-                return new ProtocolSingleStreamDataHandleAdapter<Dlt645_2007Message>
-                {
-                    CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
-                };
-
-            case ChannelTypeEnum.UdpSession:
-                return new ProtocolUdpDataHandleAdapter<Dlt645_2007Message>()
-                {
-                };
-        }
-
-        return new ProtocolSingleStreamDataHandleAdapter<Dlt645_2007Message>
-        {
-            CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
-        };
-    }
-
-    /// <inheritdoc/>
-    public override List<T> LoadSourceRead<T>(IEnumerable<IVariable> deviceVariables, int maxPack, int defaultIntervalTime)
-    {
-        return PackHelper.LoadSourceRead<T>(this, deviceVariables, maxPack, defaultIntervalTime);
     }
 
     /// <inheritdoc/>
@@ -140,9 +128,67 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
         }
     }
 
-    private ISendMessage GetSendMessage(Dlt645_2007Address dAddress, ushort sign, ControlCode read, string feHead, byte[] codes = default, string[] datas = default)
+    /// <summary>
+    /// 冻结
+    /// </summary>
+    /// <param name="socketId">socketId</param>
+    /// <param name="dateTime">时间</param>
+    /// <param name="station">表号</param>
+    /// <param name="cancellationToken">取消令箭</param>
+    /// <returns></returns>
+    public async ValueTask<OperResult> FreezeAsync(string socketId, DateTime dateTime, string station = null, CancellationToken cancellationToken = default)
     {
-        return new Dlt645_2007Send(dAddress, sign, read, feHead.HexStringToBytes(), codes, datas);
+        try
+        {
+            string str = $"{dateTime.Minute:D2}{dateTime.Hour:D2}{dateTime.Day:D2}{dateTime.Month:D2}";
+            Dlt645_2007Address dAddress = new();
+            dAddress.SetStation(station ?? Station);
+            dAddress.DataId = str.HexStringToBytes();
+            dAddress.SocketId = socketId;
+
+            return await Dlt645RequestAsync(dAddress, ControlCode.Freeze, FEHead, cancellationToken: cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return new OperResult<string>(ex);
+        }
+    }
+
+    /// <inheritdoc/>
+    public override string GetAddressDescription()
+    {
+        return $"{base.GetAddressDescription()}{Environment.NewLine}{DltResource.Localizer["AddressDes"]}";
+    }
+
+    /// <inheritdoc/>
+    public override DataHandlingAdapter GetDataAdapter()
+    {
+        switch (Channel.ChannelType)
+        {
+            case ChannelTypeEnum.TcpClient:
+            case ChannelTypeEnum.TcpService:
+            case ChannelTypeEnum.SerialPort:
+                return new ProtocolSingleStreamDataHandleAdapter<Dlt645_2007Message>
+                {
+                    CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
+                };
+
+            case ChannelTypeEnum.UdpSession:
+                return new ProtocolUdpDataHandleAdapter<Dlt645_2007Message>()
+                {
+                };
+        }
+
+        return new ProtocolSingleStreamDataHandleAdapter<Dlt645_2007Message>
+        {
+            CacheTimeout = TimeSpan.FromMilliseconds(CacheTimeout)
+        };
+    }
+
+    /// <inheritdoc/>
+    public override List<T> LoadSourceRead<T>(IEnumerable<IVariable> deviceVariables, int maxPack, int defaultIntervalTime)
+    {
+        return PackHelper.LoadSourceRead<T>(this, deviceVariables, maxPack, defaultIntervalTime);
     }
 
     /// <inheritdoc/>
@@ -156,6 +202,37 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
         catch (Exception ex)
         {
             return EasyValueTask.FromResult(new OperResult<byte[]>(ex));
+        }
+    }
+
+    /// <summary>
+    /// 读取通信地址
+    /// </summary>
+    /// <param name="socketId">socketId</param>
+    /// <param name="cancellationToken">取消令箭</param>
+    /// <returns></returns>
+    public async ValueTask<OperResult<string>> ReadDeviceStationAsync(string socketId, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            Dlt645_2007Address dAddress = new();
+            dAddress.SetStation("AAAAAAAAAAAA");
+            dAddress.SocketId = socketId;
+
+            var result = await Dlt645RequestAsync(dAddress, ControlCode.ReadStation, FEHead, cancellationToken: cancellationToken);
+            if (result.IsSuccess)
+            {
+                var buffer = result.Content.SelectMiddle(0, 6).BytesAdd(-0x33);
+                return OperResult.CreateSuccessResult(buffer.Reverse().ToArray().ToHexString());
+            }
+            else
+            {
+                return new OperResult<string>(result);
+            }
+        }
+        catch (Exception ex)
+        {
+            return new OperResult<string>(ex);
         }
     }
 
@@ -210,8 +287,6 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
         }
     }
 
-    #region
-
     /// <inheritdoc/>
     public override async ValueTask<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
     {
@@ -260,92 +335,6 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
 
     /// <inheritdoc/>
     public override ValueTask<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default) => throw new NotSupportedException();
-
-    #endregion
-
-    #region 其他方法
-
-    /// <summary>
-    /// 广播校时
-    /// </summary>
-    /// <param name="socketId">socketId</param>
-    /// <param name="dateTime">时间</param>
-    /// <param name="cancellationToken">取消令箭</param>
-    /// <returns></returns>
-    public async ValueTask<OperResult> BroadcastTimeAsync(string socketId, DateTime dateTime, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            string str = $"{dateTime.Second:D2}{dateTime.Minute:D2}{dateTime.Hour:D2}{dateTime.Day:D2}{dateTime.Month:D2}{dateTime.Year % 100:D2}";
-            Dlt645_2007Address dAddress = new();
-            dAddress.Station = str.HexStringToBytes();
-            dAddress.DataId = "999999999999".HexStringToBytes();
-            dAddress.SocketId = socketId;
-
-            return await Dlt645SendAsync(dAddress, ControlCode.BroadcastTime, FEHead, cancellationToken: cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult(ex);
-        }
-    }
-
-    /// <summary>
-    /// 冻结
-    /// </summary>
-    /// <param name="socketId">socketId</param>
-    /// <param name="dateTime">时间</param>
-    /// <param name="station">表号</param>
-    /// <param name="cancellationToken">取消令箭</param>
-    /// <returns></returns>
-    public async ValueTask<OperResult> FreezeAsync(string socketId, DateTime dateTime, string station = null, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            string str = $"{dateTime.Minute:D2}{dateTime.Hour:D2}{dateTime.Day:D2}{dateTime.Month:D2}";
-            Dlt645_2007Address dAddress = new();
-            dAddress.SetStation(station ?? Station);
-            dAddress.DataId = str.HexStringToBytes();
-            dAddress.SocketId = socketId;
-
-            return await Dlt645RequestAsync(dAddress, ControlCode.Freeze, FEHead, cancellationToken: cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult<string>(ex);
-        }
-    }
-
-    /// <summary>
-    /// 读取通信地址
-    /// </summary>
-    /// <param name="socketId">socketId</param>
-    /// <param name="cancellationToken">取消令箭</param>
-    /// <returns></returns>
-    public async ValueTask<OperResult<string>> ReadDeviceStationAsync(string socketId, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            Dlt645_2007Address dAddress = new();
-            dAddress.SetStation("AAAAAAAAAAAA");
-            dAddress.SocketId = socketId;
-
-            var result = await Dlt645RequestAsync(dAddress, ControlCode.ReadStation, FEHead, cancellationToken: cancellationToken);
-            if (result.IsSuccess)
-            {
-                var buffer = result.Content.SelectMiddle(0, 6).BytesAdd(-0x33);
-                return OperResult.CreateSuccessResult(buffer.Reverse().ToArray().ToHexString());
-            }
-            else
-            {
-                return new OperResult<string>(result);
-            }
-        }
-        catch (Exception ex)
-        {
-            return new OperResult<string>(ex);
-        }
-    }
 
     /// <summary>
     /// 修改波特率
@@ -442,5 +431,14 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
         }
     }
 
+    private ISendMessage GetSendMessage(Dlt645_2007Address dAddress, ushort sign, ControlCode read, string feHead, byte[] codes = default, string[] datas = default)
+    {
+        return new Dlt645_2007Send(dAddress, sign, read, feHead.HexStringToBytes(), codes, datas);
+    }
+
+    #region
+    #endregion
+
+    #region 其他方法
     #endregion 其他方法
 }

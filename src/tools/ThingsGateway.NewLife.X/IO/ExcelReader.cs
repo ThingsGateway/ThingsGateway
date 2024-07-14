@@ -24,16 +24,19 @@ public class ExcelReader : DisposeBase
 {
     #region 属性
 
+    private IDictionary<String, ZipArchiveEntry>? _entries;
+
+    private String[]? _sharedStrings;
+
+    private String?[]? _styles;
+
+    private ZipArchive _zip;
+
     /// <summary>文件名</summary>
     public String? FileName { get; }
 
     /// <summary>工作表</summary>
     public ICollection<String>? Sheets => _entries?.Keys;
-
-    private ZipArchive _zip;
-    private String[]? _sharedStrings;
-    private String?[]? _styles;
-    private IDictionary<String, ZipArchiveEntry>? _entries;
 
     #endregion 属性
 
@@ -82,26 +85,6 @@ public class ExcelReader : DisposeBase
     #endregion 构造
 
     #region 方法
-
-    private void Parse()
-    {
-        // 读取共享字符串
-        {
-            var entry = _zip.GetEntry("xl/sharedStrings.xml");
-            if (entry != null) _sharedStrings = ReadStrings(entry.Open());
-        }
-
-        // 读取样式
-        {
-            var entry = _zip.GetEntry("xl/styles.xml");
-            if (entry != null) _styles = ReadStyles(entry.Open());
-        }
-
-        // 读取sheet
-        {
-            _entries = ReadSheets(_zip);
-        }
-    }
 
     private static DateTime _1900 = new(1900, 1, 1);
 
@@ -209,6 +192,71 @@ public class ExcelReader : DisposeBase
         }
     }
 
+    private void Parse()
+    {
+        // 读取共享字符串
+        {
+            var entry = _zip.GetEntry("xl/sharedStrings.xml");
+            if (entry != null) _sharedStrings = ReadStrings(entry.Open());
+        }
+
+        // 读取样式
+        {
+            var entry = _zip.GetEntry("xl/styles.xml");
+            if (entry != null) _styles = ReadStyles(entry.Open());
+        }
+
+        // 读取sheet
+        {
+            _entries = ReadSheets(_zip);
+        }
+    }
+
+    private IDictionary<String, ZipArchiveEntry> ReadSheets(ZipArchive zip)
+    {
+        var dic = new Dictionary<String, String?>();
+
+        var entry = _zip.GetEntry("xl/workbook.xml");
+        if (entry != null)
+        {
+            var doc = XDocument.Load(entry.Open());
+            if (doc?.Root != null)
+            {
+                //var list = new List<String>();
+                var sheets = doc.Root.Elements().FirstOrDefault(e => e.Name.LocalName == "sheets");
+                if (sheets != null)
+                {
+                    foreach (var item in sheets.Elements())
+                    {
+                        var id = item.Attribute("sheetId");
+                        var name = item.Attribute("name");
+                        if (id != null) dic[id.Value] = name?.Value;
+                    }
+                }
+            }
+        }
+
+        //_entries = _zip.Entries.Where(e =>
+        //    e.FullName.StartsWithIgnoreCase("xl/worksheets/") &&
+        //    e.Name.EndsWithIgnoreCase(".xml"))
+        //    .ToDictionary(e => e.Name.TrimEnd(".xml"), e => e);
+
+        var dic2 = new Dictionary<String, ZipArchiveEntry>();
+        foreach (var item in zip.Entries)
+        {
+            if (item.FullName.StartsWithIgnoreCase("xl/worksheets/") && item.Name.EndsWithIgnoreCase(".xml"))
+            {
+                var name = item.Name.TrimEnd(".xml");
+                if (dic.TryGetValue(name.TrimStart("sheet"), out var str)) name = str;
+                name ??= String.Empty;
+
+                dic2[name] = item;
+            }
+        }
+
+        return dic2;
+    }
+
     private String[]? ReadStrings(Stream ms)
     {
         var doc = XDocument.Load(ms);
@@ -255,51 +303,6 @@ public class ExcelReader : DisposeBase
         }
 
         return list.ToArray();
-    }
-
-    private IDictionary<String, ZipArchiveEntry> ReadSheets(ZipArchive zip)
-    {
-        var dic = new Dictionary<String, String?>();
-
-        var entry = _zip.GetEntry("xl/workbook.xml");
-        if (entry != null)
-        {
-            var doc = XDocument.Load(entry.Open());
-            if (doc?.Root != null)
-            {
-                //var list = new List<String>();
-                var sheets = doc.Root.Elements().FirstOrDefault(e => e.Name.LocalName == "sheets");
-                if (sheets != null)
-                {
-                    foreach (var item in sheets.Elements())
-                    {
-                        var id = item.Attribute("sheetId");
-                        var name = item.Attribute("name");
-                        if (id != null) dic[id.Value] = name?.Value;
-                    }
-                }
-            }
-        }
-
-        //_entries = _zip.Entries.Where(e =>
-        //    e.FullName.StartsWithIgnoreCase("xl/worksheets/") &&
-        //    e.Name.EndsWithIgnoreCase(".xml"))
-        //    .ToDictionary(e => e.Name.TrimEnd(".xml"), e => e);
-
-        var dic2 = new Dictionary<String, ZipArchiveEntry>();
-        foreach (var item in zip.Entries)
-        {
-            if (item.FullName.StartsWithIgnoreCase("xl/worksheets/") && item.Name.EndsWithIgnoreCase(".xml"))
-            {
-                var name = item.Name.TrimEnd(".xml");
-                if (dic.TryGetValue(name.TrimStart("sheet"), out var str)) name = str;
-                name ??= String.Empty;
-
-                dic2[name] = item;
-            }
-        }
-
-        return dic2;
     }
 
     #endregion 方法

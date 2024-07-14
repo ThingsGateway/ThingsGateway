@@ -19,6 +19,8 @@ internal class SpeakProvider
     private static readonly String typeName = "System.Speech.Synthesis.SpeechSynthesizer";
     private Type? _type;
 
+    private Object? synth;
+
     public SpeakProvider()
     {
         try
@@ -52,24 +54,6 @@ internal class SpeakProvider
         if (_type == null) throw new("找不到语音库System.Speech，需要从nuget引用");
     }
 
-    private Object? synth;
-
-    private void EnsureSynth()
-    {
-        if (synth == null && _type != null)
-        {
-            try
-            {
-                synth = _type.CreateInstance([]);
-                synth?.Invoke("SetOutputToDefaultAudioDevice", []);
-            }
-            catch
-            {
-                _type = null;
-            }
-        }
-    }
-
     public void Speak(String value)
     {
         if (_type == null) return;
@@ -95,5 +79,21 @@ internal class SpeakProvider
 
         EnsureSynth();
         synth?.Invoke("SpeakAsyncCancelAll");
+    }
+
+    private void EnsureSynth()
+    {
+        if (synth == null && _type != null)
+        {
+            try
+            {
+                synth = _type.CreateInstance([]);
+                synth?.Invoke("SetOutputToDefaultAudioDevice", []);
+            }
+            catch
+            {
+                _type = null;
+            }
+        }
     }
 }

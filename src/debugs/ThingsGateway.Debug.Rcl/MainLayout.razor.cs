@@ -26,19 +26,19 @@ public partial class MainLayout
 {
     private List<Assembly> _assemblyList = new();
 
-    protected override void OnInitialized()
-    {
-        _assemblyList = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
- a.GetTypes()).Where(u => !u.IsInterface && !u.IsAbstract && u.IsClass
-&& u.IsDefined(typeof(Microsoft.AspNetCore.Components.RouteAttribute), true)).Select(a => a.Assembly)
-//.Where(a => a != typeof(BlazorApp).Assembly)
-.Distinct().ToList();
-        base.OnInitialized();
-    }
+    private string _versionString = string.Empty;
 
     [Inject]
     [NotNull]
     private DialogService? DialogService { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IStringLocalizer<MainLayout>? Localizer { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IMenuService? MenuService { get; set; }
 
     [Inject]
     [NotNull]
@@ -48,15 +48,15 @@ public partial class MainLayout
     [NotNull]
     private IOptions<WebsiteOptions>? WebsiteOption { get; set; }
 
-    [Inject]
-    [NotNull]
-    private IMenuService? MenuService { get; set; }
-
-    [Inject]
-    [NotNull]
-    private IStringLocalizer<MainLayout>? Localizer { get; set; }
-
-    private string _versionString = string.Empty;
+    protected override void OnInitialized()
+    {
+        _assemblyList = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
+ a.GetTypes()).Where(u => !u.IsInterface && !u.IsAbstract && u.IsClass
+&& u.IsDefined(typeof(Microsoft.AspNetCore.Components.RouteAttribute), true)).Select(a => a.Assembly)
+//.Where(a => a != typeof(BlazorApp).Assembly)
+.Distinct().ToList();
+        base.OnInitialized();
+    }
 
     protected override async Task OnInitializedAsync()
     {

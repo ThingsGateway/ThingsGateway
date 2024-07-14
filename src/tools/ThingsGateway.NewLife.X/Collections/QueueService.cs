@@ -18,6 +18,13 @@ namespace NewLife.Collections;
 /// <typeparam name="T">数据类型</typeparam>
 public interface IQueueService<T>
 {
+    /// <summary>消费消息</summary>
+    /// <param name="clientId">客户标识</param>
+    /// <param name="topic">主题</param>
+    /// <param name="count">要拉取的消息数</param>
+    /// <returns></returns>
+    T[] Consume(String clientId, String topic, Int32 count);
+
     /// <summary>发布消息</summary>
     /// <param name="topic">主题</param>
     /// <param name="value">消息</param>
@@ -33,13 +40,6 @@ public interface IQueueService<T>
     /// <param name="clientId">客户标识</param>
     /// <param name="topic">主题</param>
     Boolean UnSubscribe(String clientId, String topic);
-
-    /// <summary>消费消息</summary>
-    /// <param name="clientId">客户标识</param>
-    /// <param name="topic">主题</param>
-    /// <param name="count">要拉取的消息数</param>
-    /// <returns></returns>
-    T[] Consume(String clientId, String topic, Int32 count);
 }
 
 /// <summary>轻量级主动式消息服务</summary>
@@ -48,15 +48,33 @@ public class QueueService<T> : IQueueService<T>
 {
     #region 属性
 
-    /// <summary>数据存储</summary>
-    public ICache Cache { get; set; } = MemoryCache.Instance;
-
     /// <summary>每个主题的所有订阅者</summary>
     private readonly ConcurrentDictionary<String, ConcurrentDictionary<String, IProducerConsumer<T>>> _topics = new();
+
+    /// <summary>数据存储</summary>
+    public ICache Cache { get; set; } = MemoryCache.Instance;
 
     #endregion 属性
 
     #region 方法
+
+    /// <summary>消费消息</summary>
+    /// <param name="clientId">客户标识</param>
+    /// <param name="topic">主题</param>
+    /// <param name="count"></param>
+    /// <returns></returns>
+    public T[] Consume(String clientId, String topic, Int32 count)
+    {
+        if (_topics.TryGetValue(topic, out var clients))
+        {
+            if (clients.TryGetValue(clientId, out var queue))
+            {
+                return queue.Take(count).ToArray();
+            }
+        }
+
+        return Array.Empty<T>();
+    }
 
     /// <summary>发布消息</summary>
     /// <param name="topic">主题</param>
@@ -102,24 +120,6 @@ public class QueueService<T> : IQueueService<T>
         }
 
         return false;
-    }
-
-    /// <summary>消费消息</summary>
-    /// <param name="clientId">客户标识</param>
-    /// <param name="topic">主题</param>
-    /// <param name="count"></param>
-    /// <returns></returns>
-    public T[] Consume(String clientId, String topic, Int32 count)
-    {
-        if (_topics.TryGetValue(topic, out var clients))
-        {
-            if (clients.TryGetValue(clientId, out var queue))
-            {
-                return queue.Take(count).ToArray();
-            }
-        }
-
-        return Array.Empty<T>();
     }
 
     #endregion 方法

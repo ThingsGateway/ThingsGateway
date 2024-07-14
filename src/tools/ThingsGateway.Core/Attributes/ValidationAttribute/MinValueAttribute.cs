@@ -8,17 +8,39 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Sql;
+using System.ComponentModel.DataAnnotations;
+
+namespace ThingsGateway.Core;
 
 /// <summary>
-/// 实体种子数据接口
+/// 最小值校验
 /// </summary>
-/// <typeparam name="TEntity"></typeparam>
-public interface ISqlSugarEntitySeedData<TEntity> where TEntity : class, new()
+public class MinValueAttribute : ValidationAttribute
 {
     /// <summary>
-    /// 种子数据
+    /// 最小值
     /// </summary>
+    /// <param name="value"></param>
+    public MinValueAttribute(UInt64 value)
+    {
+        MinValue = value;
+    }
+
+    private UInt64 MinValue { get; set; }
+
+    /// <summary>
+    /// 最小值校验
+    /// </summary>
+    /// <param name="value"></param>
     /// <returns></returns>
-    IEnumerable<TEntity> SeedData();
+    public override bool IsValid(object? value)
+    {
+        if (value is null)
+        {
+            return false;
+        }
+
+        var input = Convert.ToUInt64(value);
+        return input >= MinValue;
+    }
 }

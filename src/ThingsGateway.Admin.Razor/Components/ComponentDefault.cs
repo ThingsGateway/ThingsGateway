@@ -14,15 +14,16 @@ namespace ThingsGateway.Admin.Razor;
 
 public class ComponentDefault : ComponentBase
 {
-    protected override void OnInitialized()
-    {
-        Localizer = App.CreateLocalizerByType(this.GetType());
-        base.OnInitialized();
-    }
-
     [Inject]
     [NotNull]
     public IStringLocalizer<ThingsGateway.Razor._Imports>? DefaultLocalizer { get; set; }
+
+    [Inject]
+    [NotNull]
+    public DialogService? DialogService { get; set; }
+
+    [NotNull]
+    public IStringLocalizer? Localizer { get; set; }
 
     [Inject]
     [NotNull]
@@ -30,26 +31,25 @@ public class ComponentDefault : ComponentBase
 
     [Inject]
     [NotNull]
-    public DialogService? DialogService { get; set; }
-
-    [Inject]
-    [NotNull]
     public ToastService? ToastService { get; set; }
-
-    [NotNull]
-    public IStringLocalizer? Localizer { get; set; }
-
-    [Inject]
-    [NotNull]
-    private NavigationManager? NavigationManager { get; set; }
 
     [Inject]
     [NotNull]
     protected BlazorAppContext? AppContext { get; set; }
 
+    [Inject]
+    [NotNull]
+    private NavigationManager? NavigationManager { get; set; }
+
     protected bool AuthorizeButton(string operate)
     {
         var url = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         return AppContext.IsHasButtonWithRole(url, operate);
+    }
+
+    protected override void OnInitialized()
+    {
+        Localizer = App.CreateLocalizerByType(this.GetType());
+        base.OnInitialized();
     }
 }

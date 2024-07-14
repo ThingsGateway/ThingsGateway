@@ -16,9 +16,9 @@ namespace ThingsGateway.Gateway.Application;
 public class ThingsGatewayCacheConst
 {
     /// <summary>
-    /// 前缀
+    /// 通道
     /// </summary>
-    public const string Cache_Prefix = "ThingsGateway:";
+    public const string Cache_Channel = Cache_Prefix + "Cache_Channel:";
 
     /// <summary>
     /// device
@@ -26,7 +26,7 @@ public class ThingsGatewayCacheConst
     public const string Cache_Device = Cache_Prefix + "Cache_Device:";
 
     /// <summary>
-    /// 通道
+    /// 前缀
     /// </summary>
-    public const string Cache_Channel = Cache_Prefix + "Cache_Channel:";
+    public const string Cache_Prefix = "ThingsGateway:";
 }

@@ -16,20 +16,6 @@ namespace ThingsGateway.Foundation;
 
 internal class S7MasterTest
 {
-    private static SiemensS7Master GetMaster()
-    {
-        ConsoleLogger.Default.LogLevel = LogLevel.Trace;
-        var clientConfig = new TouchSocketConfig();
-        clientConfig.ConfigureContainer(a => a.AddConsoleLogger());
-        var clientChannel = clientConfig.GetTcpClientWithIPHost("127.0.0.1:102");
-        //clientChannel.Logger.LogLevel = LogLevel.Trace;
-        SiemensS7Master siemensS7Master = new(clientChannel)
-        {
-            SiemensS7Type = SiemensTypeEnum.S1500,
-        };
-        return siemensS7Master;
-    }
-
     public static async Task Test()
     {
         using SiemensS7Master siemensS7Master = GetMaster();
@@ -48,5 +34,19 @@ internal class S7MasterTest
         Console.WriteLine(s7Variable.ToJsonString());
         //执行连读
         Console.ReadLine();
+    }
+
+    private static SiemensS7Master GetMaster()
+    {
+        ConsoleLogger.Default.LogLevel = LogLevel.Trace;
+        var clientConfig = new TouchSocketConfig();
+        clientConfig.ConfigureContainer(a => a.AddConsoleLogger());
+        var clientChannel = clientConfig.GetTcpClientWithIPHost("127.0.0.1:102");
+        //clientChannel.Logger.LogLevel = LogLevel.Trace;
+        SiemensS7Master siemensS7Master = new(clientChannel)
+        {
+            SiemensS7Type = SiemensTypeEnum.S1500,
+        };
+        return siemensS7Master;
     }
 }

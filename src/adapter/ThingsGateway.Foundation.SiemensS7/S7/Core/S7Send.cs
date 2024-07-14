@@ -19,10 +19,17 @@ public class S7Request
 {
     #region Request
 
+    public int AddressStart { get; set; }
+
     /// <summary>
     /// bit位偏移
     /// </summary>
     public byte BitCode { get; set; }
+
+    /// <summary>
+    /// 写入数据
+    /// </summary>
+    public byte[] Data { get; set; }
 
     /// <summary>
     /// 数据块代码
@@ -44,13 +51,6 @@ public class S7Request
     /// </summary>
     public int Length { get; set; }
 
-    public int AddressStart { get; set; }
-
-    /// <summary>
-    /// 写入数据
-    /// </summary>
-    public byte[] Data { get; set; }
-
     #endregion Request
 }
 
@@ -59,15 +59,11 @@ public class S7Request
 /// </summary>
 internal class S7Send : ISendMessage
 {
-    public int Sign { get; set; }
-
-    public int MaxLength => 2048;
-
-    internal SiemensAddress[] SiemensAddress;
-    internal bool Read;
-    internal bool IsBit;
     internal bool Handshake;
     internal byte[] HandshakeBytes;
+    internal bool IsBit;
+    internal bool Read;
+    internal SiemensAddress[] SiemensAddress;
 
     public S7Send(byte[] handshakeBytes)
     {
@@ -80,6 +76,26 @@ internal class S7Send : ISendMessage
         SiemensAddress = siemensAddress;
         Read = read;
         IsBit = isBit;
+    }
+
+    public int MaxLength => 2048;
+    public int Sign { get; set; }
+
+    public void Build<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock
+    {
+        if (Handshake == true)
+        {
+            byteBlock.Write(HandshakeBytes);
+            return;
+        }
+        if (Read == true)
+        {
+            GetReadCommand(ref byteBlock, SiemensAddress);
+        }
+        else
+        {
+            GetWriteByteCommand(ref byteBlock, SiemensAddress[0]);
+        }
     }
 
     internal void GetReadCommand<TByteBlock>(ref TByteBlock valueByteBlock, SiemensAddress[] siemensAddress) where TByteBlock : IByteBlock
@@ -171,22 +187,5 @@ internal class S7Send : ISendMessage
         valueByteBlock.WriteByte((byte)(isBit ? 3 : 4));//Bit:3;Byte:4;Counter或者Timer:9
         valueByteBlock.WriteUInt16((ushort)(isBit ? len : len * 8), EndianType.Big);
         valueByteBlock.Write(data);
-    }
-
-    public void Build<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock
-    {
-        if (Handshake == true)
-        {
-            byteBlock.Write(HandshakeBytes);
-            return;
-        }
-        if (Read == true)
-        {
-            GetReadCommand(ref byteBlock, SiemensAddress);
-        }
-        else
-        {
-            GetWriteByteCommand(ref byteBlock, SiemensAddress[0]);
-        }
     }
 }

@@ -26,15 +26,17 @@ public class Murmur128 : HashAlgorithm
 
     private readonly UInt32 _Seed;
 
-    /// <summary>种子</summary>
-    public UInt32 Seed => _Seed;
+    private UInt64 _H1;
+
+    private UInt64 _H2;
+
+    private Int32 _Length;
 
     /// <summary>哈希大小</summary>
     public override Int32 HashSize => 128;
 
-    private Int32 _Length;
-    private UInt64 _H1;
-    private UInt64 _H2;
+    /// <summary>种子</summary>
+    public UInt32 Seed => _Seed;
 
     #endregion 属性
 
@@ -52,15 +54,6 @@ public class Murmur128 : HashAlgorithm
 
     #region 方法
 
-    private void Reset()
-    {
-        // 初始化哈希值到种子
-        _H1 = _H2 = Seed;
-
-        // 重置长度为0
-        _Length = 0;
-    }
-
     /// <summary>初始化</summary>
     public override void Initialize() => Reset();
 
@@ -73,6 +66,29 @@ public class Murmur128 : HashAlgorithm
         // 增加长度
         _Length += cbSize;
         Body(array, ibStart, cbSize);
+    }
+
+    /// <summary>哈希结束</summary>
+    /// <returns></returns>
+    protected override Byte[] HashFinal()
+    {
+        var len = (UInt64)_Length;
+        _H1 ^= len; _H2 ^= len;
+
+        _H1 += _H2;
+        _H2 += _H1;
+
+        _H1 = FMix(_H1);
+        _H2 = FMix(_H2);
+
+        _H1 += _H2;
+        _H2 += _H1;
+
+        var result = new Byte[16];
+        Array.Copy(BitConverter.GetBytes(_H1), 0, result, 0, 8);
+        Array.Copy(BitConverter.GetBytes(_H2), 0, result, 8, 8);
+
+        return result;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -91,6 +107,15 @@ public class Murmur128 : HashAlgorithm
 
         if (remainder > 0)
             Tail(data, alignedLength, remainder);
+    }
+
+    private void Reset()
+    {
+        // 初始化哈希值到种子
+        _H1 = _H2 = Seed;
+
+        // 重置长度为0
+        _Length = 0;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -123,35 +148,21 @@ public class Murmur128 : HashAlgorithm
         _H1 ^= RotateLeft(k1 * C1, 31) * C2;
     }
 
-    /// <summary>哈希结束</summary>
-    /// <returns></returns>
-    protected override Byte[] HashFinal()
-    {
-        var len = (UInt64)_Length;
-        _H1 ^= len; _H2 ^= len;
-
-        _H1 += _H2;
-        _H2 += _H1;
-
-        _H1 = FMix(_H1);
-        _H2 = FMix(_H2);
-
-        _H1 += _H2;
-        _H2 += _H1;
-
-        var result = new Byte[16];
-        Array.Copy(BitConverter.GetBytes(_H1), 0, result, 0, 8);
-        Array.Copy(BitConverter.GetBytes(_H2), 0, result, 8, 8);
-
-        return result;
-    }
-
     #endregion 方法
 
     #region 辅助
 
     //[MethodImpl(MethodImplOptions.AggressiveInlining)]
     //private static UInt32 RotateLeft(UInt32 x, Byte r) => (x << r) | (x >> (32 - r));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static UInt64 FMix(UInt64 h)
+    {
+        h = (h ^ (h >> 33)) * 0xff51afd7ed558ccd;
+        h = (h ^ (h >> 33)) * 0xc4ceb9fe1a85ec53;
+
+        return (h ^ (h >> 33));
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static UInt64 RotateLeft(UInt64 x, Byte r) => (x << r) | (x >> (64 - r));
@@ -163,15 +174,6 @@ public class Murmur128 : HashAlgorithm
     //    h = (h ^ (h >> 13)) * 0xc2b2ae35;
     //    return h ^ (h >> 16);
     //}
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static UInt64 FMix(UInt64 h)
-    {
-        h = (h ^ (h >> 33)) * 0xff51afd7ed558ccd;
-        h = (h ^ (h >> 33)) * 0xc4ceb9fe1a85ec53;
-
-        return (h ^ (h >> 33));
-    }
 
     #endregion 辅助
 }

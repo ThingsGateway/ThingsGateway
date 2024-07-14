@@ -36,10 +36,10 @@ public class WorkbenchInfo
 public class UpdatePasswordInput
 {
     /// <summary>
-    /// 旧密码
+    /// 确认密码
     /// </summary>
     [Required]
-    public string Password { get; set; }
+    public string ConfirmPassword { get; set; }
 
     /// <summary>
     /// 新密码
@@ -48,8 +48,8 @@ public class UpdatePasswordInput
     public string NewPassword { get; set; }
 
     /// <summary>
-    /// 确认密码
+    /// 旧密码
     /// </summary>
     [Required]
-    public string ConfirmPassword { get; set; }
+    public string Password { get; set; }
 }

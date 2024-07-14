@@ -14,7 +14,6 @@ using Mapster;
 
 using NewLife.Extension;
 
-using ThingsGateway.Core;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Core.Json.Extension;
 

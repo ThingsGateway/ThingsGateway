@@ -10,7 +10,7 @@
 
 using System.Text.RegularExpressions;
 
-namespace ThingsGateway.Sql;
+namespace ThingsGateway;
 
 using Newtonsoft.Json;
 

@@ -15,11 +15,12 @@ namespace ThingsGateway.Gateway.Application;
 public interface IRpcLogService
 {
     /// <summary>
-    /// 分页查询 RpcLog 数据
+    /// 删除 RpcLog 表中的所有记录
     /// </summary>
-    /// <param name="option">查询选项</param>
-    /// <returns>查询到的数据</returns>
-    Task<QueryData<RpcLog>> PageAsync(QueryPageOptions option);
+    /// <remarks>
+    /// 调用此方法会删除 RpcLog 表中的所有记录。
+    /// </remarks>
+    Task DeleteRpcLogAsync();
 
     /// <summary>
     /// 获取最新的十条 RpcLog 记录
@@ -28,12 +29,11 @@ public interface IRpcLogService
     Task<List<RpcLog>> GetNewLog();
 
     /// <summary>
-    /// 删除 RpcLog 表中的所有记录
+    /// 分页查询 RpcLog 数据
     /// </summary>
-    /// <remarks>
-    /// 调用此方法会删除 RpcLog 表中的所有记录。
-    /// </remarks>
-    Task DeleteRpcLogAsync();
+    /// <param name="option">查询选项</param>
+    /// <returns>查询到的数据</returns>
+    Task<QueryData<RpcLog>> PageAsync(QueryPageOptions option);
 
     /// <summary>
     /// 按天统计 RpcLog 数据

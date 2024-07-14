@@ -13,6 +13,10 @@ namespace ThingsGateway.Foundation;
 [GeneratorVariable]
 public partial class ModbusVariable : VariableObject
 {
+    public ModbusVariable(IProtocol protocol, int maxPack) : base(protocol, maxPack)
+    {
+    }
+
     [VariableRuntime(RegisterAddress = "400001;arraylen=2", ReadExpressions = "raw*10")]
     public ushort[] Data1 { get; set; }
 
@@ -21,8 +25,4 @@ public partial class ModbusVariable : VariableObject
 
     [VariableRuntime(RegisterAddress = "400061;len=10")]
     public string Data3 { get; set; }
-
-    public ModbusVariable(IProtocol protocol, int maxPack) : base(protocol, maxPack)
-    {
-    }
 }

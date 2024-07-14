@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -9,12 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-
-
-
 // 版权归百小僧及百签科技（广东）有限公司所有。
-
-#if !NET5_0
 
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -123,5 +117,3 @@ public class SystemTextJsonNullableTimeOnlyJsonConverter : JsonConverter<TimeOnl
         else writer.WriteStringValue(value.Value.ToString(Format));
     }
 }
-
-#endif

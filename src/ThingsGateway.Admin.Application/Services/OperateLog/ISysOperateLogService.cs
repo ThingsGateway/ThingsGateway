@@ -20,25 +20,6 @@ namespace ThingsGateway.Admin.Application;
 public interface ISysOperateLogService
 {
     /// <summary>
-    /// 表格查询
-    /// </summary>
-    /// <param name="option">查询条件</param>
-    Task<QueryData<SysOperateLog>> PageAsync(QueryPageOptions option);
-
-    /// <summary>
-    /// 获取最新的十条日志
-    /// </summary>
-    /// <param name="account">操作人账号</param>
-    Task<List<OperateLogIndexOutput>> GetNewLog(string account);
-
-    /// <summary>
-    /// 根据天数统计操作日志信息
-    /// </summary>
-    /// <param name="day">天数</param>
-    /// <returns>操作日志统计信息列表</returns>
-    Task<List<OperateLogDayStatisticsOutput>> StatisticsByDayAsync(int day);
-
-    /// <summary>
     /// 删除指定分类的操作日志
     /// </summary>
     /// <param name="category">日志分类</param>
@@ -50,4 +31,23 @@ public interface ISysOperateLogService
     /// <param name="input">查询条件</param>
     /// <returns>文件流</returns>
     Task<FileStreamResult> ExportFileAsync(QueryPageOptions input);
+
+    /// <summary>
+    /// 获取最新的十条日志
+    /// </summary>
+    /// <param name="account">操作人账号</param>
+    Task<List<OperateLogIndexOutput>> GetNewLog(string account);
+
+    /// <summary>
+    /// 表格查询
+    /// </summary>
+    /// <param name="option">查询条件</param>
+    Task<QueryData<SysOperateLog>> PageAsync(QueryPageOptions option);
+
+    /// <summary>
+    /// 根据天数统计操作日志信息
+    /// </summary>
+    /// <param name="day">天数</param>
+    /// <returns>操作日志统计信息列表</returns>
+    Task<List<OperateLogDayStatisticsOutput>> StatisticsByDayAsync(int day);
 }

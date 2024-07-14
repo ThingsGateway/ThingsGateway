@@ -26,6 +26,11 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class BackendLogDatabaseLoggingWriter : IDatabaseLoggingWriter
 {
+    /// <summary>
+    /// 日志消息队列（线程安全）
+    /// </summary>
+    private readonly ConcurrentQueue<BackendLog> _logQueues = new();
+
     // 自定义日志级别，默认为警告级别
     private LogLevel CustomLevel = App.Configuration.GetSection("Logging:BackendLog:LogLevel:Default").Get<LogLevel?>() ?? LogLevel.Warning;
 
@@ -71,9 +76,4 @@ public class BackendLogDatabaseLoggingWriter : IDatabaseLoggingWriter
             }
         }
     }
-
-    /// <summary>
-    /// 日志消息队列（线程安全）
-    /// </summary>
-    private readonly ConcurrentQueue<BackendLog> _logQueues = new();
 }

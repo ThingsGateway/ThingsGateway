@@ -15,11 +15,11 @@ namespace ThingsGateway.Admin.Razor;
 public partial class EditComponent<T>
 {
     [Parameter]
-    [EditorRequired]
-    public T Model { get; set; }
+    public int? ItemsPerRow { get; set; }
 
     [Parameter]
-    public int? ItemsPerRow { get; set; }
+    [EditorRequired]
+    public T Model { get; set; }
 
     [Parameter]
     [EditorRequired]

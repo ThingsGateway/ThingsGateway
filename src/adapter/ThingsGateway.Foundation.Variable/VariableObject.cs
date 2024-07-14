@@ -23,9 +23,16 @@ namespace ThingsGateway.Foundation;
 public abstract class VariableObject
 {
     /// <summary>
-    /// MaxPack
+    /// 协议对象
     /// </summary>
-    protected int MaxPack;
+    [JsonIgnore]
+    public IProtocol Protocol;
+
+    /// <summary>
+    /// VariableRuntimePropertyDict
+    /// </summary>
+    [JsonIgnore]
+    public Dictionary<string, VariableRuntimeProperty>? VariableRuntimePropertyDict;
 
     /// <summary>
     /// DeviceVariableSourceReads
@@ -34,10 +41,9 @@ public abstract class VariableObject
     protected List<VariableSourceClass>? DeviceVariableSourceReads;
 
     /// <summary>
-    /// VariableRuntimePropertyDict
+    /// MaxPack
     /// </summary>
-    [JsonIgnore]
-    public Dictionary<string, VariableRuntimeProperty>? VariableRuntimePropertyDict;
+    protected int MaxPack;
 
     /// <summary>
     /// VariableObject
@@ -49,10 +55,53 @@ public abstract class VariableObject
     }
 
     /// <summary>
-    /// 协议对象
+    /// ReadTime
     /// </summary>
-    [JsonIgnore]
-    public IProtocol Protocol;
+    public DateTime ReadTime { get; set; }
+
+    /// <summary>
+    /// GetExpressionsValue
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="variableRuntimeProperty"></param>
+    /// <returns></returns>
+    public virtual JToken GetExpressionsValue(object value, VariableRuntimeProperty variableRuntimeProperty)
+    {
+        var jToken = JToken.FromObject(value);
+        if (!string.IsNullOrEmpty(variableRuntimeProperty.Attribute.WriteExpressions))
+        {
+            object rawdata = jToken is JValue jValue ? jValue.Value : jToken is JArray jArray ? jArray : jToken.ToString();
+
+            object data = variableRuntimeProperty.Attribute.WriteExpressions.GetExpressionsResult(rawdata);
+            jToken = JToken.FromObject(data);
+        }
+
+        return jToken;
+    }
+
+    /// <summary>
+    /// GetVariableClass
+    /// </summary>
+    /// <returns></returns>
+    public virtual List<VariableClass> GetVariableClass()
+    {
+        VariableRuntimePropertyDict ??= VariableObjectHelper.GetVariableRuntimePropertyDict(GetType());
+        List<VariableClass> variableClasss = new();
+        foreach (var pair in VariableRuntimePropertyDict)
+        {
+            var dataType = pair.Value.Attribute.DataType == DataTypeEnum.Object ? Type.GetTypeCode(pair.Value.Property.PropertyType.IsArray ? pair.Value.Property.PropertyType.GetElementType() : pair.Value.Property.PropertyType).GetDataType() : pair.Value.Attribute.DataType;
+            VariableClass variableClass = new VariableClass()
+            {
+                DataType = dataType,
+                RegisterAddress = pair.Value.Attribute.RegisterAddress,
+                IntervalTime = 1000,
+            };
+            pair.Value.VariableClass = variableClass;
+            variableClasss.Add(variableClass);
+        }
+
+        return variableClasss;
+    }
 
     /// <summary>
     /// <see cref="VariableRuntimeAttribute"/>特性连读，反射赋值到继承类中的属性
@@ -94,11 +143,6 @@ public abstract class VariableObject
     }
 
     /// <summary>
-    /// ReadTime
-    /// </summary>
-    public DateTime ReadTime { get; set; }
-
-    /// <summary>
     /// 结果反射赋值
     /// </summary>
     public virtual void SetValue()
@@ -118,26 +162,6 @@ public abstract class VariableObject
         }
 
         ReadTime = DateTime.Now;
-    }
-
-    /// <summary>
-    /// GetExpressionsValue
-    /// </summary>
-    /// <param name="value"></param>
-    /// <param name="variableRuntimeProperty"></param>
-    /// <returns></returns>
-    public virtual JToken GetExpressionsValue(object value, VariableRuntimeProperty variableRuntimeProperty)
-    {
-        var jToken = JToken.FromObject(value);
-        if (!string.IsNullOrEmpty(variableRuntimeProperty.Attribute.WriteExpressions))
-        {
-            object rawdata = jToken is JValue jValue ? jValue.Value : jToken is JArray jArray ? jArray : jToken.ToString();
-
-            object data = variableRuntimeProperty.Attribute.WriteExpressions.GetExpressionsResult(rawdata);
-            jToken = JToken.FromObject(data);
-        }
-
-        return jToken;
     }
 
     /// <summary>
@@ -182,29 +206,5 @@ public abstract class VariableObject
             List<VariableClass> variableClasss = GetVariableClass();
             DeviceVariableSourceReads = Protocol.LoadSourceRead<VariableSourceClass>(variableClasss, MaxPack, 1000);
         }
-    }
-
-    /// <summary>
-    /// GetVariableClass
-    /// </summary>
-    /// <returns></returns>
-    public virtual List<VariableClass> GetVariableClass()
-    {
-        VariableRuntimePropertyDict ??= VariableObjectHelper.GetVariableRuntimePropertyDict(GetType());
-        List<VariableClass> variableClasss = new();
-        foreach (var pair in VariableRuntimePropertyDict)
-        {
-            var dataType = pair.Value.Attribute.DataType == DataTypeEnum.Object ? Type.GetTypeCode(pair.Value.Property.PropertyType.IsArray ? pair.Value.Property.PropertyType.GetElementType() : pair.Value.Property.PropertyType).GetDataType() : pair.Value.Attribute.DataType;
-            VariableClass variableClass = new VariableClass()
-            {
-                DataType = dataType,
-                RegisterAddress = pair.Value.Attribute.RegisterAddress,
-                IntervalTime = 1000,
-            };
-            pair.Value.VariableClass = variableClass;
-            variableClasss.Add(variableClass);
-        }
-
-        return variableClasss;
     }
 }

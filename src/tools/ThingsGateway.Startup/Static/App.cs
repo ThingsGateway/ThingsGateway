@@ -33,14 +33,14 @@ public static class App
     public static readonly IEnumerable<Assembly> Assemblies;
 
     /// <summary>
-    /// 直接引用程序集中的Route Razor类，不支持单文件
-    /// </summary>
-    public static readonly IEnumerable<Assembly> RazorAssemblies;
-
-    /// <summary>
     /// 直接引用程序集中的类型
     /// </summary>
     public static readonly IEnumerable<Type> EffectiveTypes;
+
+    /// <summary>
+    /// 直接引用程序集中的Route Razor类，不支持单文件
+    /// </summary>
+    public static readonly IEnumerable<Assembly> RazorAssemblies;
 
     private static IStringLocalizerFactory? stringLocalizerFactory;
 
@@ -54,14 +54,24 @@ public static class App
     }
 
     /// <summary>
-    /// 系统 wwwroot 文件夹路径 Server Side 模式下 Upload 使用
+    /// 当前缓存服务
     /// </summary>
-    public static string? WebRootPath { get; internal set; }
+    public static ICacheService CacheService { get; internal set; }
+
+    /// <summary>
+    /// 系统配置
+    /// </summary>
+    public static IConfiguration? Configuration { get; internal set; }
 
     /// <summary>
     /// 当前程序文件夹
     /// </summary>
     public static string? ContentRootPath { get; internal set; }
+
+    /// <summary>
+    /// 获取请求上下文
+    /// </summary>
+    public static HttpContext? HttpContext => RootServices?.GetService<IHttpContextAccessor>()?.HttpContext;
 
     /// <summary>
     /// 是否开发环境
@@ -72,26 +82,6 @@ public static class App
     /// 系统根服务
     /// </summary>
     public static IServiceProvider? RootServices { get; internal set; }
-
-    /// <summary>
-    /// 获取请求上下文
-    /// </summary>
-    public static HttpContext? HttpContext => RootServices?.GetService<IHttpContextAccessor>()?.HttpContext;
-
-    /// <summary>
-    /// 获取请求上下文用户
-    /// </summary>
-    public static ClaimsPrincipal? User => HttpContext?.User;
-
-    /// <summary>
-    /// 系统配置
-    /// </summary>
-    public static IConfiguration? Configuration { get; internal set; }
-
-    /// <summary>
-    /// 当前缓存服务
-    /// </summary>
-    public static ICacheService CacheService { get; internal set; }
 
     /// <summary>
     /// 本地化服务工厂
@@ -108,6 +98,16 @@ public static class App
             return stringLocalizerFactory;
         }
     }
+
+    /// <summary>
+    /// 获取请求上下文用户
+    /// </summary>
+    public static ClaimsPrincipal? User => HttpContext?.User;
+
+    /// <summary>
+    /// 系统 wwwroot 文件夹路径 Server Side 模式下 Upload 使用
+    /// </summary>
+    public static string? WebRootPath { get; internal set; }
 
     /// <summary>
     /// 根据类型创建本地化服务

@@ -13,13 +13,13 @@ namespace ThingsGateway.Foundation;
 [GeneratorVariable]
 public partial class S7Variable : VariableObject
 {
+    public S7Variable(IProtocol protocol, int maxPack) : base(protocol, maxPack)
+    {
+    }
+
     [VariableRuntime(RegisterAddress = "DB1.48")]
     public ushort Data1 { get; set; }
 
     [VariableRuntime(RegisterAddress = "DB1.0")]
     public uint Data2 { get; set; }
-
-    public S7Variable(IProtocol protocol, int maxPack) : base(protocol, maxPack)
-    {
-    }
 }

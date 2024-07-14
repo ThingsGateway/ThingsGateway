@@ -16,9 +16,9 @@ public partial class About
 {
     [Inject]
     [NotNull]
-    private IOptions<WebsiteOptions>? WebsiteOption { get; set; }
+    private IStringLocalizer<About>? Localizer { get; set; }
 
     [Inject]
     [NotNull]
-    private IStringLocalizer<About>? Localizer { get; set; }
+    private IOptions<WebsiteOptions>? WebsiteOption { get; set; }
 }

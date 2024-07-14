@@ -30,26 +30,27 @@ public class VariableRunTime : Variable, IVariable
     [NotNull]
     public override long? DeviceId { get; set; }
 
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true, Order = 3)]
-    public override string? Unit { get; set; }
-
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public override string? ReadExpressions { get; set; }
-
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public override string? WriteExpressions { get; set; }
-
     [AutoGenerateColumn(Visible = false)]
     public override bool Enable { get; set; }
 
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
     public override int? IntervalTime { get; set; }
 
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public override string? ReadExpressions { get; set; }
+
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true, Order = 3)]
+    public override string? Unit { get; set; }
+
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public override string? WriteExpressions { get; set; }
+
     #endregion 重写
 
+    protected object? _value;
     private bool _isOnline;
     private bool? _isOnlineChanged;
-    protected object? _value;
+    private string lastErrorMessage;
 
     /// <summary>
     /// 变化时间
@@ -65,24 +66,6 @@ public class VariableRunTime : Variable, IVariable
     [AdaptIgnore]
     [AutoGenerateColumn(Visible = false)]
     public CollectDeviceRunTime? CollectDeviceRunTime { get; set; }
-
-    /// <summary>
-    /// VariableSource
-    /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
-    [AdaptIgnore]
-    [AutoGenerateColumn(Visible = false)]
-    public IVariableSource VariableSource { get; set; }
-
-    /// <summary>
-    /// VariableMethod
-    /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
-    [AdaptIgnore]
-    [AutoGenerateColumn(Visible = false)]
-    public VariableMethod VariableMethod { get; set; }
 
     /// <summary>
     /// 采集时间
@@ -120,8 +103,6 @@ public class VariableRunTime : Variable, IVariable
         }
     }
 
-    private string lastErrorMessage;
-
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
@@ -154,6 +135,24 @@ public class VariableRunTime : Variable, IVariable
     /// </summary>
     [AutoGenerateColumn(Visible = true, Order = 6)]
     public object? Value { get => _value; internal set => _value = value; }
+
+    /// <summary>
+    /// VariableMethod
+    /// </summary>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    [AdaptIgnore]
+    [AutoGenerateColumn(Visible = false)]
+    public VariableMethod VariableMethod { get; set; }
+
+    /// <summary>
+    /// VariableSource
+    /// </summary>
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    [AdaptIgnore]
+    [AutoGenerateColumn(Visible = false)]
+    public IVariableSource VariableSource { get; set; }
 
     /// <summary>
     /// 设置变量值与时间/质量戳
@@ -190,6 +189,19 @@ public class VariableRunTime : Variable, IVariable
             Set(value, dateTime);
         }
         return new();
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<OperResult> SetValueToDeviceAsync(string value, string? executive = "BLAZOR", CancellationToken cancellationToken = default)
+    {
+        var data = await GlobalData.RpcService.InvokeDeviceMethodAsync(executive, new Dictionary<string, string>() { { Name, value } }, cancellationToken).ConfigureAwait(false);
+        return data.Values.FirstOrDefault();
+    }
+
+    internal void SetErrorMessage(string value)
+    {
+        if (VariableSource != null)
+            VariableSource.LastErrorMessage = value;
     }
 
     private void Set(object data, DateTime dateTime)
@@ -238,19 +250,6 @@ public class VariableRunTime : Variable, IVariable
         }
 
         GlobalData.VariableCollectChange(this);
-    }
-
-    /// <inheritdoc/>
-    public async ValueTask<OperResult> SetValueToDeviceAsync(string value, string? executive = "BLAZOR", CancellationToken cancellationToken = default)
-    {
-        var data = await GlobalData.RpcService.InvokeDeviceMethodAsync(executive, new Dictionary<string, string>() { { Name, value } }, cancellationToken).ConfigureAwait(false);
-        return data.Values.FirstOrDefault();
-    }
-
-    internal void SetErrorMessage(string value)
-    {
-        if (VariableSource != null)
-            VariableSource.LastErrorMessage = value;
     }
 
     #region LoadSourceRead

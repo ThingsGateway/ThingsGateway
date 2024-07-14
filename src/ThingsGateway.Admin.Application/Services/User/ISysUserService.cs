@@ -18,110 +18,11 @@ namespace ThingsGateway.Admin.Application;
 public interface ISysUserService
 {
     /// <summary>
-    /// 根据账号获取用户信息。
-    /// </summary>
-    /// <param name="account">账号。</param>
-    /// <returns>用户信息，如果用户不存在则返回null。</returns>
-    Task<SysUser?> GetUserByAccountAsync(string account);
-
-    /// <summary>
-    /// 根据用户ID获取用户信息。
-    /// </summary>
-    /// <param name="userId">用户ID。</param>
-    /// <returns>用户信息，如果用户不存在则返回null。</returns>
-    Task<SysUser?> GetUserByIdAsync(long userId);
-
-    /// <summary>
-    /// 根据账号获取用户ID。
-    /// </summary>
-    /// <param name="account">账号。</param>
-    /// <returns>用户ID，如果用户不存在则返回0。</returns>
-    Task<long> GetIdByAccountAsync(string account);
-
-    /// <summary>
-    /// 获取用户拥有的按钮编码。
-    /// </summary>
-    /// <param name="userId">用户ID。</param>
-    /// <returns>以菜单链接为键，按钮编码列表为值的字典。</returns>
-    Task<Dictionary<string, List<string>>> GetButtonCodeListAsync(long userId);
-
-    /// <summary>
-    /// 获取用户拥有的权限。
-    /// </summary>
-    /// <param name="userId">用户ID。</param>
-    /// <returns>权限列表。</returns>
-    Task<IEnumerable<DataScope>> GetPermissionListByUserIdAsync(long userId);
-
-    /// <summary>
-    /// 表格查询用户信息。
-    /// </summary>
-    /// <param name="option">查询选项。</param>
-    /// <returns>用户信息列表。</returns>
-    Task<QueryData<SysUser>> PageAsync(QueryPageOptions option);
-
-    /// <summary>
-    /// 获取用户拥有的角色ID列表。
-    /// </summary>
-    /// <param name="id">用户ID。</param>
-    /// <returns>角色ID列表。</returns>
-    Task<IEnumerable<long>> OwnRoleAsync(long id);
-
-    /// <summary>
-    /// 获取用户拥有的资源。
-    /// </summary>
-    /// <param name="id">用户ID。</param>
-    /// <returns>用户拥有的资源数据。</returns>
-    Task<GrantResourceData> OwnResourceAsync(long id);
-
-    /// <summary>
-    /// 根据用户ID列表获取用户列表。
-    /// </summary>
-    /// <param name="input">用户ID列表。</param>
-    /// <returns>用户列表。</returns>
-    Task<List<UserSelectorOutput>> GetUserListByIdListAsync(IEnumerable<long> input);
-
-    /// <summary>
     /// 获取用户拥有的OpenAPI权限。
     /// </summary>
     /// <param name="id">用户ID。</param>
     /// <returns>用户拥有的OpenAPI权限。</returns>
     Task<GrantPermissionData> ApiOwnPermissionAsync(long id);
-
-    /// <summary>
-    /// 授予用户OpenAPI权限。
-    /// </summary>
-    /// <param name="input">授权信息。</param>
-    /// <returns>异步任务。</returns>
-    Task GrantApiPermissionAsync(GrantPermissionData input);
-
-    /// <summary>
-    /// 保存用户信息。
-    /// </summary>
-    /// <param name="input">用户信息。</param>
-    /// <param name="changedType">变更类型。</param>
-    /// <returns>是否保存成功。</returns>
-    Task<bool> SaveUserAsync(SysUser input, ItemChangedType changedType);
-
-    /// <summary>
-    /// 重置用户密码。
-    /// </summary>
-    /// <param name="id">用户ID。</param>
-    /// <returns>异步任务。</returns>
-    Task ResetPasswordAsync(long id);
-
-    /// <summary>
-    /// 授予用户角色。
-    /// </summary>
-    /// <param name="input">授权信息。</param>
-    /// <returns>异步任务。</returns>
-    Task GrantRoleAsync(GrantUserOrRoleInput input);
-
-    /// <summary>
-    /// 授予用户资源。
-    /// </summary>
-    /// <param name="input">授权信息。</param>
-    /// <returns>异步任务。</returns>
-    Task GrantResourceAsync(GrantResourceData input);
 
     /// <summary>
     /// 删除用户。
@@ -141,4 +42,103 @@ public interface ISysUserService
     /// </summary>
     /// <param name="ids">用户ID列表。</param>
     void DeleteUserFromCache(IEnumerable<long> ids);
+
+    /// <summary>
+    /// 获取用户拥有的按钮编码。
+    /// </summary>
+    /// <param name="userId">用户ID。</param>
+    /// <returns>以菜单链接为键，按钮编码列表为值的字典。</returns>
+    Task<Dictionary<string, List<string>>> GetButtonCodeListAsync(long userId);
+
+    /// <summary>
+    /// 根据账号获取用户ID。
+    /// </summary>
+    /// <param name="account">账号。</param>
+    /// <returns>用户ID，如果用户不存在则返回0。</returns>
+    Task<long> GetIdByAccountAsync(string account);
+
+    /// <summary>
+    /// 获取用户拥有的权限。
+    /// </summary>
+    /// <param name="userId">用户ID。</param>
+    /// <returns>权限列表。</returns>
+    Task<IEnumerable<DataScope>> GetPermissionListByUserIdAsync(long userId);
+
+    /// <summary>
+    /// 根据账号获取用户信息。
+    /// </summary>
+    /// <param name="account">账号。</param>
+    /// <returns>用户信息，如果用户不存在则返回null。</returns>
+    Task<SysUser?> GetUserByAccountAsync(string account);
+
+    /// <summary>
+    /// 根据用户ID获取用户信息。
+    /// </summary>
+    /// <param name="userId">用户ID。</param>
+    /// <returns>用户信息，如果用户不存在则返回null。</returns>
+    Task<SysUser?> GetUserByIdAsync(long userId);
+
+    /// <summary>
+    /// 根据用户ID列表获取用户列表。
+    /// </summary>
+    /// <param name="input">用户ID列表。</param>
+    /// <returns>用户列表。</returns>
+    Task<List<UserSelectorOutput>> GetUserListByIdListAsync(IEnumerable<long> input);
+
+    /// <summary>
+    /// 授予用户OpenAPI权限。
+    /// </summary>
+    /// <param name="input">授权信息。</param>
+    /// <returns>异步任务。</returns>
+    Task GrantApiPermissionAsync(GrantPermissionData input);
+
+    /// <summary>
+    /// 授予用户资源。
+    /// </summary>
+    /// <param name="input">授权信息。</param>
+    /// <returns>异步任务。</returns>
+    Task GrantResourceAsync(GrantResourceData input);
+
+    /// <summary>
+    /// 授予用户角色。
+    /// </summary>
+    /// <param name="input">授权信息。</param>
+    /// <returns>异步任务。</returns>
+    Task GrantRoleAsync(GrantUserOrRoleInput input);
+
+    /// <summary>
+    /// 获取用户拥有的资源。
+    /// </summary>
+    /// <param name="id">用户ID。</param>
+    /// <returns>用户拥有的资源数据。</returns>
+    Task<GrantResourceData> OwnResourceAsync(long id);
+
+    /// <summary>
+    /// 获取用户拥有的角色ID列表。
+    /// </summary>
+    /// <param name="id">用户ID。</param>
+    /// <returns>角色ID列表。</returns>
+    Task<IEnumerable<long>> OwnRoleAsync(long id);
+
+    /// <summary>
+    /// 表格查询用户信息。
+    /// </summary>
+    /// <param name="option">查询选项。</param>
+    /// <returns>用户信息列表。</returns>
+    Task<QueryData<SysUser>> PageAsync(QueryPageOptions option);
+
+    /// <summary>
+    /// 重置用户密码。
+    /// </summary>
+    /// <param name="id">用户ID。</param>
+    /// <returns>异步任务。</returns>
+    Task ResetPasswordAsync(long id);
+
+    /// <summary>
+    /// 保存用户信息。
+    /// </summary>
+    /// <param name="input">用户信息。</param>
+    /// <param name="changedType">变更类型。</param>
+    /// <returns>是否保存成功。</returns>
+    Task<bool> SaveUserAsync(SysUser input, ItemChangedType changedType);
 }

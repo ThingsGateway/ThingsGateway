@@ -23,6 +23,14 @@ public static class LinqExtensions
         return thisValue;
     }
 
+    public static void RemoveWhere<T>(this ICollection<T> @this, Func<T, bool> @where)
+    {
+        foreach (var obj in @this.Where(where).ToList())
+        {
+            @this.Remove(obj);
+        }
+    }
+
     public static IEnumerable<T> WhereIF<T>(this IEnumerable<T> thisValue, bool isOk, Func<T, bool> predicate)
     {
         if (isOk)
@@ -30,13 +38,5 @@ public static class LinqExtensions
             thisValue = thisValue.Where(predicate);
         }
         return thisValue;
-    }
-
-    public static void RemoveWhere<T>(this ICollection<T> @this, Func<T, bool> @where)
-    {
-        foreach (var obj in @this.Where(where).ToList())
-        {
-            @this.Remove(obj);
-        }
     }
 }

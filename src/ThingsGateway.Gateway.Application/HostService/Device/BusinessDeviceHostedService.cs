@@ -26,6 +26,12 @@ public class BusinessDeviceHostedService : DeviceHostedService
 
     private IStringLocalizer Localizer { get; }
 
+    private async Task CollectDeviceHostedService_Started()
+    {
+        await Task.Delay(1000).ConfigureAwait(false);
+        await StartAsync().ConfigureAwait(false);
+    }
+
     private async Task CollectDeviceHostedService_Starting()
     {
         if (started)
@@ -33,12 +39,6 @@ public class BusinessDeviceHostedService : DeviceHostedService
             await StopAsync(true).ConfigureAwait(false);
         }
         await CreatThreadsAsync().ConfigureAwait(false);
-    }
-
-    private async Task CollectDeviceHostedService_Started()
-    {
-        await Task.Delay(1000).ConfigureAwait(false);
-        await StartAsync().ConfigureAwait(false);
     }
 
     private async Task CollectDeviceHostedService_Stoping()
@@ -74,11 +74,6 @@ public class BusinessDeviceHostedService : DeviceHostedService
 
     #region 重写
 
-    protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId)
-    {
-        return await DeviceService.GetBusinessDeviceRuntimeAsync(deviceId).ConfigureAwait(false);
-    }
-
     /// <summary>
     /// 读取数据库，创建全部设备
     /// </summary>
@@ -113,6 +108,11 @@ public class BusinessDeviceHostedService : DeviceHostedService
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }
+    }
+
+    protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId)
+    {
+        return await DeviceService.GetBusinessDeviceRuntimeAsync(deviceId).ConfigureAwait(false);
     }
 
     #endregion 重写

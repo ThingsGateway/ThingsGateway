@@ -16,42 +16,6 @@ namespace ThingsGateway.Foundation;
 
 internal class ModbusMasterTest
 {
-    private static ModbusMaster GetMaster()
-    {
-        ConsoleLogger.Default.LogLevel = LogLevel.Trace;
-
-        var clientConfig = new TouchSocketConfig();
-        clientConfig.ConfigureContainer(a => a.AddConsoleLogger()); //日志
-
-        //创建通道，也可以通过TouchSocketConfig.GetChannel扩展获取
-
-        //tcp服务
-        //var clientChannel = clientConfig.GetTcpServiceWithBindIPHost("tcp://127.0.0.1:502");
-        //串口
-        //var clientChannel = clientConfig.GetSerialPortWithOption("COM1");
-        //udp
-        //var clientChannel = clientConfig.GetUdpSessionWithIPHost("127.0.0.1:502",null);
-
-        //tcp客户端
-        var clientChannel = clientConfig.GetTcpClientWithIPHost("127.0.0.1:502");
-
-        //modbus主站，构造函数传入通道
-        ModbusMaster modbusMaster = new(clientChannel)
-        {
-            //modbus协议格式
-            ModbusType = Modbus.ModbusTypeEnum.ModbusTcp,
-            //ModbusType = Modbus.ModbusTypeEnum.ModbusTcp,
-
-            //默认站号
-            Station = 1,
-            //默认数据格式
-            DataFormat = DataFormatEnum.ABCD,
-            //读写超时
-            Timeout = 3000,
-        };
-        return modbusMaster;
-    }
-
     public static async Task Test()
     {
         ModbusMaster modbusMaster = GetMaster();
@@ -165,5 +129,41 @@ internal class ModbusMasterTest
             await modbusVariable.MultiReadAsync();
             Console.WriteLine(modbusVariable.ToJsonString());
         }
+    }
+
+    private static ModbusMaster GetMaster()
+    {
+        ConsoleLogger.Default.LogLevel = LogLevel.Trace;
+
+        var clientConfig = new TouchSocketConfig();
+        clientConfig.ConfigureContainer(a => a.AddConsoleLogger()); //日志
+
+        //创建通道，也可以通过TouchSocketConfig.GetChannel扩展获取
+
+        //tcp服务
+        //var clientChannel = clientConfig.GetTcpServiceWithBindIPHost("tcp://127.0.0.1:502");
+        //串口
+        //var clientChannel = clientConfig.GetSerialPortWithOption("COM1");
+        //udp
+        //var clientChannel = clientConfig.GetUdpSessionWithIPHost("127.0.0.1:502",null);
+
+        //tcp客户端
+        var clientChannel = clientConfig.GetTcpClientWithIPHost("127.0.0.1:502");
+
+        //modbus主站，构造函数传入通道
+        ModbusMaster modbusMaster = new(clientChannel)
+        {
+            //modbus协议格式
+            ModbusType = Modbus.ModbusTypeEnum.ModbusTcp,
+            //ModbusType = Modbus.ModbusTypeEnum.ModbusTcp,
+
+            //默认站号
+            Station = 1,
+            //默认数据格式
+            DataFormat = DataFormatEnum.ABCD,
+            //读写超时
+            Timeout = 3000,
+        };
+        return modbusMaster;
     }
 }

@@ -22,19 +22,6 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class JsonSerializationServiceCollectionExtensions
 {
     /// <summary>
-    /// 配置 Json 序列化提供器
-    /// </summary>
-    /// <typeparam name="TJsonSerializerProvider"></typeparam>
-    /// <param name="services"></param>
-    /// <returns></returns>
-    public static IServiceCollection AddJsonSerialization<TJsonSerializerProvider>(this IServiceCollection services)
-        where TJsonSerializerProvider : class, IJsonSerializerProvider
-    {
-        services.AddSingleton<IJsonSerializerProvider, TJsonSerializerProvider>();
-        return services;
-    }
-
-    /// <summary>
     /// 配置 JsonOptions 序列化选项
     /// <para>主要给非 Web 环境使用</para>
     /// </summary>
@@ -49,6 +36,19 @@ public static class JsonSerializationServiceCollectionExtensions
             configure?.Invoke(options);
         });
 
+        return services;
+    }
+
+    /// <summary>
+    /// 配置 Json 序列化提供器
+    /// </summary>
+    /// <typeparam name="TJsonSerializerProvider"></typeparam>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddJsonSerialization<TJsonSerializerProvider>(this IServiceCollection services)
+        where TJsonSerializerProvider : class, IJsonSerializerProvider
+    {
+        services.AddSingleton<IJsonSerializerProvider, TJsonSerializerProvider>();
         return services;
     }
 }

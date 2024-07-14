@@ -21,17 +21,61 @@ using SqlSugar;
 
 using System.Runtime.InteropServices;
 
-using ThingsGateway.Core;
 using ThingsGateway.Core.Extension;
 
 namespace ThingsGateway.Admin.Application;
 
+/// <inheritdoc/>
+public class APPInfo
+{
+    /// <summary>
+    /// 当前磁盘信息
+    /// </summary>
+    public DriveInfo DriveInfo { get; set; }
+
+    /// <summary>
+    /// 主机环境
+    /// </summary>
+    public string Environment { get; set; }
+
+    /// <summary>
+    /// NET框架
+    /// </summary>
+    public string FrameworkDescription { get; set; }
+
+    /// <summary>
+    /// 硬件信息获取
+    /// </summary>
+    public MachineInfo? MachineInfo { get; set; }
+
+    /// <summary>
+    /// 系统架构
+    /// </summary>
+    public string OsArchitecture { get; set; }
+
+    /// <summary>
+    /// 更新时间
+    /// </summary>
+    public string UpdateTime { get; set; }
+
+    /// <summary>
+    /// 唯一编码
+    /// </summary>
+    public string UUID { get; set; }
+
+    /// <summary>
+    /// 进程占用内存
+    /// </summary>
+    [AutoGenerateColumn(Ignore = true)]
+    public string WorkingSet { get; set; }
+}
+
 public class HardwareInfoConfig
 {
-    public bool Enable { get; set; } = true;
-    public int RealInterval { get; set; } = 30;
-    public int HisInterval { get; set; } = 180;
     public int DaysAgo { get; set; } = 7;
+    public bool Enable { get; set; } = true;
+    public int HisInterval { get; set; } = 180;
+    public int RealInterval { get; set; } = 30;
 }
 
 /// <summary>
@@ -144,70 +188,25 @@ public class HardwareInfoService : BackgroundService
     }
 }
 
-/// <inheritdoc/>
-public class APPInfo
-{
-    /// <summary>
-    /// 当前磁盘信息
-    /// </summary>
-    public DriveInfo DriveInfo { get; set; }
-
-    /// <summary>
-    /// 硬件信息获取
-    /// </summary>
-    public MachineInfo? MachineInfo { get; set; }
-
-    /// <summary>
-    /// 主机环境
-    /// </summary>
-    public string Environment { get; set; }
-
-    /// <summary>
-    /// NET框架
-    /// </summary>
-    public string FrameworkDescription { get; set; }
-
-    /// <summary>
-    /// 系统架构
-    /// </summary>
-    public string OsArchitecture { get; set; }
-
-    /// <summary>
-    /// 唯一编码
-    /// </summary>
-    public string UUID { get; set; }
-
-    /// <summary>
-    /// 进程占用内存
-    /// </summary>
-    [AutoGenerateColumn(Ignore = true)]
-    public string WorkingSet { get; set; }
-
-    /// <summary>
-    /// 更新时间
-    /// </summary>
-    public string UpdateTime { get; set; }
-}
-
 [SugarTable("his_hardwareinfo", TableDescription = "硬件信息历史表")]
 [Tenant(SqlSugarConst.DB_HardwareInfo)]
 public class HisHardwareInfo
 {
+    [SugarColumn(ColumnDescription = "电池")]
+    public string Battery { get; set; }
+
+    [SugarColumn(ColumnDescription = "CPU使用率")]
+    public string CpuUsage { get; set; }
+
+    [SugarColumn(ColumnDescription = "时间")]
+    public DateTime Date { get; set; }
+
     [SugarColumn(ColumnDescription = "磁盘使用率")]
     public string DriveUsage { get; set; }
 
     [SugarColumn(ColumnDescription = "内存使用率")]
     public string MemoryUsage { get; set; }
 
-    [SugarColumn(ColumnDescription = "CPU使用率")]
-    public string CpuUsage { get; set; }
-
     [SugarColumn(ColumnDescription = "温度")]
     public string Temperature { get; set; }
-
-    [SugarColumn(ColumnDescription = "电池")]
-    public string Battery { get; set; }
-
-    [SugarColumn(ColumnDescription = "时间")]
-    public DateTime Date { get; set; }
 }

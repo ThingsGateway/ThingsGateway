@@ -30,9 +30,9 @@ public class ResourceUtil
     /// </summary>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static IEnumerable<SelectedItem> BuildModuleSelectList(IEnumerable<SysResource> items)
+    public static IEnumerable<SelectedItem> BuildMenuSelectList(IEnumerable<SysResource> items)
     {
-        var data = items.Where(a => a.Category == ResourceCategoryEnum.Module)
+        var data = items.Where(a => a.Category == ResourceCategoryEnum.Menu)
         .Select((item, index) =>
             new SelectedItem(item.Id.ToString(), item.Title)
             {
@@ -43,13 +43,36 @@ public class ResourceUtil
     }
 
     /// <summary>
+    /// 构造树形菜单
+    /// </summary>
+    /// <param name="items">资源列表</param>
+    /// <param name="parentId">父ID</param>
+    /// <returns></returns>
+    public static IEnumerable<MenuItem> BuildMenuTrees(IEnumerable<SysResource> items, long parentId = 0)
+    {
+        return items
+        .Where(it => it.ParentId == parentId)
+        .Select((item, index) =>
+            new MenuItem()
+            {
+                Match = item.NavLinkMatch ?? Microsoft.AspNetCore.Components.Routing.NavLinkMatch.All,
+                Text = item.Title,
+                Icon = item.Icon,
+                Url = item.Href,
+                Target = item.Target.ToString(),
+                Items = BuildMenuTrees(items, item.Id).ToList()
+            }
+        );
+    }
+
+    /// <summary>
     /// 构造选择项，ID/TITLE
     /// </summary>
     /// <param name="items"></param>
     /// <returns></returns>
-    public static IEnumerable<SelectedItem> BuildMenuSelectList(IEnumerable<SysResource> items)
+    public static IEnumerable<SelectedItem> BuildModuleSelectList(IEnumerable<SysResource> items)
     {
-        var data = items.Where(a => a.Category == ResourceCategoryEnum.Menu)
+        var data = items.Where(a => a.Category == ResourceCategoryEnum.Module)
         .Select((item, index) =>
             new SelectedItem(item.Id.ToString(), item.Title)
             {
@@ -130,29 +153,6 @@ public class ResourceUtil
     }
 
     /// <summary>
-    /// 构造树形菜单
-    /// </summary>
-    /// <param name="items">资源列表</param>
-    /// <param name="parentId">父ID</param>
-    /// <returns></returns>
-    public static IEnumerable<MenuItem> BuildMenuTrees(IEnumerable<SysResource> items, long parentId = 0)
-    {
-        return items
-        .Where(it => it.ParentId == parentId)
-        .Select((item, index) =>
-            new MenuItem()
-            {
-                Match = item.NavLinkMatch ?? Microsoft.AspNetCore.Components.Routing.NavLinkMatch.All,
-                Text = item.Title,
-                Icon = item.Icon,
-                Url = item.Href,
-                Target = item.Target.ToString(),
-                Items = BuildMenuTrees(items, item.Id).ToList()
-            }
-        );
-    }
-
-    /// <summary>
     /// 构造树形
     /// </summary>
     /// <param name="resourceList">资源列表</param>
@@ -171,6 +171,23 @@ public class ResourceUtil
             }
         }
         return resources;
+    }
+
+    /// <summary>
+    /// 获取父菜单集合
+    /// </summary>
+    /// <param name="allMenuList">所有菜单列表</param>
+    /// <param name="myMenus">我的菜单列表</param>
+    /// <returns></returns>
+    public static IEnumerable<SysResource> GetMyParentResources(IEnumerable<SysResource> allMenuList, IEnumerable<SysResource> myMenus)
+    {
+        var parentList = myMenus
+            .SelectMany(it => ResourceUtil.GetResourceParent(allMenuList, it.ParentId))
+                                .Where(parent => parent != null
+                                && !myMenus.Contains(parent)
+                                && !myMenus.Any(m => m.Id == parent.Id))
+                                .Distinct();
+        return parentList;
     }
 
     /// <summary>
@@ -199,87 +216,9 @@ public class ResourceUtil
                            .SelectMany(item => new List<SysResource> { item }.Concat(GetResourceParent(resourceList, item.ParentId)));
     }
 
-    /// <summary>
-    /// 获取父菜单集合
-    /// </summary>
-    /// <param name="allMenuList">所有菜单列表</param>
-    /// <param name="myMenus">我的菜单列表</param>
-    /// <returns></returns>
-    public static IEnumerable<SysResource> GetMyParentResources(IEnumerable<SysResource> allMenuList, IEnumerable<SysResource> myMenus)
-    {
-        var parentList = myMenus
-            .SelectMany(it => ResourceUtil.GetResourceParent(allMenuList, it.ParentId))
-                                .Where(parent => parent != null
-                                && !myMenus.Contains(parent)
-                                && !myMenus.Any(m => m.Id == parent.Id))
-                                .Distinct();
-        return parentList;
-    }
-
     #endregion 菜单
 
     #region 权限相关
-
-    /// <summary>
-    /// 获取路由地址名称
-    /// </summary>
-    /// <param name="controllerName">控制器地址</param>
-    /// <param name="template">路由名称</param>
-    /// <returns></returns>
-    public static string GetRouteName(string controllerName, string template)
-    {
-        if (!template.StartsWith("/"))
-            template = "/" + template;//如果路由名称不是/开头则加上/防止控制器没写
-        if (template.Contains("[controller]"))
-        {
-            controllerName = controllerName.Replace("Controller", "");//去掉Controller
-            controllerName = controllerName.ToLowerCamelCase();//转首字母小写写
-            template = template.Replace("[controller]", controllerName);//替换[controller]
-        }
-
-        return template;
-    }
-
-    /// <inheritdoc />
-    public static IEnumerable<PermissionTreeSelector> PermissionTreeSelector(IEnumerable<string> routes)
-    {
-        List<PermissionTreeSelector> permissions = PermissionTreeSelector();
-        return permissions.Where(a => routes.Contains(a.ApiRoute));
-    }
-
-    /// <inheritdoc />
-    public static List<PermissionTreeSelector> PermissionTreeSelector()
-    {
-        var cacheKey = $"{nameof(PermissionTreeSelector)}-{CultureInfo.CurrentUICulture.Name}";
-        var permissions = App.CacheService.GetOrCreate(cacheKey, entry =>
-        {
-            List<PermissionTreeSelector> permissions = new();//权限列表
-
-            // 获取所有需要数据权限的控制器
-            var controllerTypes = App.EffectiveTypes.Where(u => !u.IsInterface && !u.IsAbstract && u.IsClass
-        && u.IsDefined(typeof(AuthorizeAttribute), false)
-        && u.IsDefined(typeof(Microsoft.AspNetCore.Components.RouteAttribute), false));
-
-            foreach (var controller in controllerTypes)
-            {
-                //获取数据权限特性
-                var route = controller.GetCustomAttributes<Microsoft.AspNetCore.Components.RouteAttribute>().FirstOrDefault();
-                if (route == null) continue;
-                var apiRoute = GetRouteName(controller.Name, route.Template);//赋值路由名称
-
-                var desc = controller.GetTypeDisplayName();
-                //添加到权限列表
-                permissions.Add(new PermissionTreeSelector
-                {
-                    ApiName = desc,
-                    ApiRoute = apiRoute,
-                });
-            }
-            return permissions;
-        });
-
-        return permissions;
-    }
 
     /// <inheritdoc />
     public static List<OpenApiPermissionTreeSelector> ApiPermissionTreeSelector()
@@ -348,6 +287,67 @@ public class ResourceUtil
             }
             return permissions;
         });
+        return permissions;
+    }
+
+    /// <summary>
+    /// 获取路由地址名称
+    /// </summary>
+    /// <param name="controllerName">控制器地址</param>
+    /// <param name="template">路由名称</param>
+    /// <returns></returns>
+    public static string GetRouteName(string controllerName, string template)
+    {
+        if (!template.StartsWith("/"))
+            template = "/" + template;//如果路由名称不是/开头则加上/防止控制器没写
+        if (template.Contains("[controller]"))
+        {
+            controllerName = controllerName.Replace("Controller", "");//去掉Controller
+            controllerName = controllerName.ToLowerCamelCase();//转首字母小写写
+            template = template.Replace("[controller]", controllerName);//替换[controller]
+        }
+
+        return template;
+    }
+
+    /// <inheritdoc />
+    public static IEnumerable<PermissionTreeSelector> PermissionTreeSelector(IEnumerable<string> routes)
+    {
+        List<PermissionTreeSelector> permissions = PermissionTreeSelector();
+        return permissions.Where(a => routes.Contains(a.ApiRoute));
+    }
+
+    /// <inheritdoc />
+    public static List<PermissionTreeSelector> PermissionTreeSelector()
+    {
+        var cacheKey = $"{nameof(PermissionTreeSelector)}-{CultureInfo.CurrentUICulture.Name}";
+        var permissions = App.CacheService.GetOrCreate(cacheKey, entry =>
+        {
+            List<PermissionTreeSelector> permissions = new();//权限列表
+
+            // 获取所有需要数据权限的控制器
+            var controllerTypes = App.EffectiveTypes.Where(u => !u.IsInterface && !u.IsAbstract && u.IsClass
+        && u.IsDefined(typeof(AuthorizeAttribute), false)
+        && u.IsDefined(typeof(Microsoft.AspNetCore.Components.RouteAttribute), false));
+
+            foreach (var controller in controllerTypes)
+            {
+                //获取数据权限特性
+                var route = controller.GetCustomAttributes<Microsoft.AspNetCore.Components.RouteAttribute>().FirstOrDefault();
+                if (route == null) continue;
+                var apiRoute = GetRouteName(controller.Name, route.Template);//赋值路由名称
+
+                var desc = controller.GetTypeDisplayName();
+                //添加到权限列表
+                permissions.Add(new PermissionTreeSelector
+                {
+                    ApiName = desc,
+                    ApiRoute = apiRoute,
+                });
+            }
+            return permissions;
+        });
+
         return permissions;
     }
 

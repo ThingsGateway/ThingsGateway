@@ -75,10 +75,10 @@ public partial class MainLayout : IDisposable
     #region 切换模块
 
     [Inject]
-    private IUserCenterService UserCenterService { get; set; }
+    private ISysResourceService SysResourceService { get; set; }
 
     [Inject]
-    private ISysResourceService SysResourceService { get; set; }
+    private IUserCenterService UserCenterService { get; set; }
 
     private async Task ChoiceModule()
     {
@@ -124,8 +124,10 @@ public partial class MainLayout : IDisposable
     #endregion 个人信息修改
 
     #region 注销
+
     [Inject]
-    AjaxService AjaxService { get; set; }
+    private AjaxService AjaxService { get; set; }
+
     private async Task LogoutAsync()
     {
         var ajaxOption = new AjaxOption
@@ -158,23 +160,13 @@ public partial class MainLayout : IDisposable
         }
     }
 
+    #endregion 注销
 
-    #endregion
+    private string _versionString = string.Empty;
 
-    private async Task ShowAbout()
-    {
-        DialogOption? op = null;
-
-        op = new DialogOption()
-        {
-            IsScrolling = true,
-            Size = Size.Medium,
-            ShowFooter = false,
-            Title = Localizer["About"],
-            BodyTemplate = BootstrapDynamicComponent.CreateComponent<About>().Render(),
-        };
-        await DialogService.Show(op);
-    }
+    [Inject]
+    [NotNull]
+    private BlazorAppContext? AppContext { get; set; }
 
     [Inject]
     private DialogService DialogService { get; set; }
@@ -182,6 +174,14 @@ public partial class MainLayout : IDisposable
     [Inject]
     [NotNull]
     private FullScreenService FullScreenService { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IStringLocalizer<MainLayout>? Localizer { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IMenuService? MenuService { get; set; }
 
     [Inject]
     [NotNull]
@@ -195,19 +195,11 @@ public partial class MainLayout : IDisposable
     [NotNull]
     private IOptions<WebsiteOptions>? WebsiteOption { get; set; }
 
-    [Inject]
-    [NotNull]
-    private BlazorAppContext? AppContext { get; set; }
-
-    [Inject]
-    [NotNull]
-    private IMenuService? MenuService { get; set; }
-
-    [Inject]
-    [NotNull]
-    private IStringLocalizer<MainLayout>? Localizer { get; set; }
-
-    private string _versionString = string.Empty;
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -218,6 +210,15 @@ public partial class MainLayout : IDisposable
         await AppContext.InitUserAsync();
         await AppContext.InitMenus(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
         await base.OnInitializedAsync();
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            DispatchService.UnSubscribe(Dispatch);
+            CommitDispatchService.UnSubscribe(NotifyCommit);
+        }
     }
 
     private async Task ReloadMenu()
@@ -232,18 +233,18 @@ public partial class MainLayout : IDisposable
         await InvokeAsync(StateHasChanged);
     }
 
-    private void Dispose(bool disposing)
+    private async Task ShowAbout()
     {
-        if (disposing)
-        {
-            DispatchService.UnSubscribe(Dispatch);
-            CommitDispatchService.UnSubscribe(NotifyCommit);
-        }
-    }
+        DialogOption? op = null;
 
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        op = new DialogOption()
+        {
+            IsScrolling = true,
+            Size = Size.Medium,
+            ShowFooter = false,
+            Title = Localizer["About"],
+            BodyTemplate = BootstrapDynamicComponent.CreateComponent<About>().Render(),
+        };
+        await DialogService.Show(op);
     }
 }

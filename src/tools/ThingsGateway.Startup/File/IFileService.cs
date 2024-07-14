@@ -11,26 +11,10 @@
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway;
 
 public interface IFileService
 {
-    /// <summary>
-    /// 上传文件，保存在磁盘中
-    /// </summary>
-    /// <param name="pPath">保存路径</param>
-    /// <param name="file">文件流</param>
-    /// <returns>最终全路径</returns>
-    Task<string> UploadFileAsync(string pPath, IBrowserFile file);
-
-    /// <summary>
-    /// 验证文件信息
-    /// </summary>
-    /// <param name="file">文件流</param>
-    /// <param name="maxSize">最大文件大小（单位：MB）</param>
-    /// <param name="allowTypes">允许上传的文件类型</param>
-    void Verification(IBrowserFile file, int maxSize = 200, string[]? allowTypes = null);
-
     /// <summary>
     /// 获取本地存储文件流
     /// </summary>
@@ -47,4 +31,20 @@ public interface IFileService
     /// <param name="fileName">文件名称</param>
     /// <returns>文件流</returns>
     FileStreamResult GetFileStreamResult(byte[] byteArray, string fileName);
+
+    /// <summary>
+    /// 上传文件，保存在磁盘中
+    /// </summary>
+    /// <param name="pPath">保存路径</param>
+    /// <param name="file">文件流</param>
+    /// <returns>最终全路径</returns>
+    Task<string> UploadFileAsync(string pPath, IBrowserFile file);
+
+    /// <summary>
+    /// 验证文件信息
+    /// </summary>
+    /// <param name="file">文件流</param>
+    /// <param name="maxSize">最大文件大小（单位：MB）</param>
+    /// <param name="allowTypes">允许上传的文件类型</param>
+    void Verification(IBrowserFile file, int maxSize = 200, string[]? allowTypes = null);
 }

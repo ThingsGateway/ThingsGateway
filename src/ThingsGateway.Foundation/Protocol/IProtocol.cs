@@ -20,47 +20,14 @@ public interface IProtocol : IDisposable
     #region 属性
 
     /// <summary>
-    /// 日志
-    /// </summary>
-    ILog? Logger { get; }
-
-    /// <summary>
-    /// 通道
-    /// </summary>
-    IChannel Channel { get; }
-
-    /// <summary>
-    /// 数据解析规则
-    /// </summary>
-    IThingsGatewayBitConverter ThingsGatewayBitConverter { get; }
-
-    /// <summary>
-    /// 读写超时时间
-    /// </summary>
-    int Timeout { get; set; }
-
-    /// <summary>
-    /// 一个寄存器所占的字节长度
-    /// </summary>
-    int RegisterByteLength { get; }
-
-    /// <summary>
     /// 组包缓存时间
     /// </summary>
     int CacheTimeout { get; set; }
 
     /// <summary>
-    /// 发送前延时
+    /// 通道
     /// </summary>
-    int SendDelayTime { get; set; }
-
-    /// <inheritdoc/>
-    bool OnLine { get; }
-
-    /// <summary>
-    /// 是否需要并发锁，默认为true，对于工业主从协议，通常是必须的
-    /// </summary>
-    bool IsSingleThread { get; }
+    IChannel Channel { get; }
 
     /// <summary>
     /// 连接超时时间
@@ -71,6 +38,39 @@ public interface IProtocol : IDisposable
     /// 数据解析规则
     /// </summary>
     DataFormatEnum DataFormat { get; set; }
+
+    /// <summary>
+    /// 是否需要并发锁，默认为true，对于工业主从协议，通常是必须的
+    /// </summary>
+    bool IsSingleThread { get; }
+
+    /// <summary>
+    /// 日志
+    /// </summary>
+    ILog? Logger { get; }
+
+    /// <inheritdoc/>
+    bool OnLine { get; }
+
+    /// <summary>
+    /// 一个寄存器所占的字节长度
+    /// </summary>
+    int RegisterByteLength { get; }
+
+    /// <summary>
+    /// 发送前延时
+    /// </summary>
+    int SendDelayTime { get; set; }
+
+    /// <summary>
+    /// 数据解析规则
+    /// </summary>
+    IThingsGatewayBitConverter ThingsGatewayBitConverter { get; }
+
+    /// <summary>
+    /// 读写超时时间
+    /// </summary>
+    int Timeout { get; set; }
 
     #endregion 属性
 
@@ -86,17 +86,17 @@ public interface IProtocol : IDisposable
     #region 变量地址解析
 
     /// <summary>
+    /// 寄存器地址的详细说明
+    /// </summary>
+    /// <returns></returns>
+    string GetAddressDescription();
+
+    /// <summary>
     /// 获取变量地址对应的bit偏移
     /// </summary>
     /// <param name="address">变量地址</param>
     /// <returns></returns>
     int GetBitOffset(string address);
-
-    /// <summary>
-    /// 寄存器地址的详细说明
-    /// </summary>
-    /// <returns></returns>
-    string GetAddressDescription();
 
     /// <summary>
     /// 获取数据类型对应的寄存器长度
@@ -416,9 +416,37 @@ public interface IProtocol : IDisposable
     #endregion 写入数组
 
     /// <summary>
+    /// 布尔量解析时是否需要按字反转
+    /// </summary>
+    /// <param name="address">变量地址</param>
+    /// <returns></returns>
+    bool BitReverse(string address);
+
+    /// <summary>
+    /// 断开连接
+    /// </summary>
+    /// <param name="msg"></param>
+    /// <returns></returns>
+    Task Close(string msg = null);
+
+    /// <summary>
     /// 配置IPluginManager
     /// </summary>
     Action<IPluginManager> ConfigurePlugins();
+
+    /// <summary>
+    /// 连接
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task ConnectAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取通道
+    /// </summary>
+    /// <param name="socketId"></param>
+    /// <returns></returns>
+    ValueTask<OperResult<IClientChannel>> GetChannelAsync(string socketId);
 
     /// <summary>
     /// 发送，会经过适配器，可传入<see cref="IClientChannel"/>，如果为空，则默认通道必须为<see cref="IClientChannel"/>类型
@@ -457,32 +485,4 @@ public interface IProtocol : IDisposable
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns>返回消息体</returns>
     ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage sendMessage, string socketId, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 布尔量解析时是否需要按字反转
-    /// </summary>
-    /// <param name="address">变量地址</param>
-    /// <returns></returns>
-    bool BitReverse(string address);
-
-    /// <summary>
-    /// 断开连接
-    /// </summary>
-    /// <param name="msg"></param>
-    /// <returns></returns>
-    Task Close(string msg = null);
-
-    /// <summary>
-    /// 连接
-    /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    Task ConnectAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 获取通道
-    /// </summary>
-    /// <param name="socketId"></param>
-    /// <returns></returns>
-    ValueTask<OperResult<IClientChannel>> GetChannelAsync(string socketId);
 }

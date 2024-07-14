@@ -12,20 +12,30 @@ using System.Text.Json.Serialization;
 
 namespace ThingsGateway.Core;
 
-public class WebhookPostBody
+/// <summary>
+/// 提交信息实体类
+/// </summary>
+public class GiteeCommit
 {
     /// <summary>
-    /// 提交分支信息
+    /// 提交作者
     /// </summary>
-    public string? Ref { get; set; }
+    public GiteeAuthor Author { get; set; } = new GiteeAuthor();
 
-    public string? Password { get; set; }
+    /// <summary>
+    /// 提交消息
+    /// </summary>
+    public string? Message { get; set; }
 
-    public string? Id { get; set; }
+    /// <summary>
+    /// 提交时间戳
+    /// </summary>
+    public DateTimeOffset Timestamp { get; set; }
 
-    public string? Sign { get; set; }
-
-    public string GetBranchName() => Ref?.Replace("refs/heads/", "") ?? "";
+    /// <summary>
+    /// 提交地址
+    /// </summary>
+    public string? Url { get; set; }
 }
 
 /// <summary>
@@ -42,30 +52,20 @@ public class GiteePostBody : WebhookPostBody
     public GiteeCommit? HeadCommit { get; set; }
 }
 
-/// <summary>
-/// 提交信息实体类
-/// </summary>
-public class GiteeCommit
+public class WebhookPostBody
 {
-    /// <summary>
-    /// 提交消息
-    /// </summary>
-    public string? Message { get; set; }
+    public string? Id { get; set; }
+
+    public string? Password { get; set; }
 
     /// <summary>
-    /// 提交时间戳
+    /// 提交分支信息
     /// </summary>
-    public DateTimeOffset Timestamp { get; set; }
+    public string? Ref { get; set; }
 
-    /// <summary>
-    /// 提交地址
-    /// </summary>
-    public string? Url { get; set; }
+    public string? Sign { get; set; }
 
-    /// <summary>
-    /// 提交作者
-    /// </summary>
-    public GiteeAuthor Author { get; set; } = new GiteeAuthor();
+    public string GetBranchName() => Ref?.Replace("refs/heads/", "") ?? "";
 }
 
 /// <summary>
@@ -74,9 +74,9 @@ public class GiteeCommit
 public class GiteeAuthor
 {
     /// <summary>
-    /// 提交时间
+    /// 提交人邮件地址
     /// </summary>
-    public DateTimeOffset Time { get; set; }
+    public string Email { get; set; } = "";
 
     /// <summary>
     /// 提交人 ID
@@ -89,17 +89,17 @@ public class GiteeAuthor
     public string Name { get; set; } = "";
 
     /// <summary>
-    /// 提交人邮件地址
+    /// 提交时间
     /// </summary>
-    public string Email { get; set; } = "";
-
-    /// <summary>
-    /// 提交人名称
-    /// </summary>
-    public string UserName { get; set; } = "";
+    public DateTimeOffset Time { get; set; }
 
     /// <summary>
     /// 提交人 Gitee 地址
     /// </summary>
     public string Url { get; set; } = "";
+
+    /// <summary>
+    /// 提交人名称
+    /// </summary>
+    public string UserName { get; set; } = "";
 }

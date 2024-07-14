@@ -15,7 +15,7 @@ namespace ThingsGateway.Gateway.Razor;
 public partial class DeviceStatus
 {
     [Parameter, EditorRequired]
-    public IEnumerable<DriverBase> DriverBases { get; set; }
+    public IEnumerable<SelectedItem> Channels { get; set; }
 
     [Parameter, EditorRequired]
     public DeviceHostedService DeviceHostedService { get; set; }
@@ -24,11 +24,11 @@ public partial class DeviceStatus
     public EventCallback DeviceQuery { get; set; }
 
     [Parameter, EditorRequired]
-    public IEnumerable<SelectedItem> Plugins { get; set; }
-
-    [Parameter, EditorRequired]
     public IEnumerable<SelectedItem> Devices { get; set; }
 
     [Parameter, EditorRequired]
-    public IEnumerable<SelectedItem> Channels { get; set; }
+    public IEnumerable<DriverBase> DriverBases { get; set; }
+
+    [Parameter, EditorRequired]
+    public IEnumerable<SelectedItem> Plugins { get; set; }
 }

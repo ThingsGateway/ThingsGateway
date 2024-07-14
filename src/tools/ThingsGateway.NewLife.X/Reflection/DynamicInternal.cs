@@ -19,6 +19,21 @@ public class DynamicInternal : DynamicObject
 {
     private Object? Real { get; set; }
 
+    /// <summary>包装</summary>
+    /// <param name="obj"></param>
+    /// <returns></returns>
+    public static Object Wrap(Object obj)
+    {
+        //if (obj == null) return null;
+        if (obj.GetType().IsPublic) return obj;
+
+        return new DynamicInternal { Real = obj };
+    }
+
+    /// <summary>已重载。</summary>
+    /// <returns></returns>
+    public override String ToString() => Real?.ToString() ?? nameof(DynamicInternal);
+
     /// <summary>类型转换</summary>
     /// <param name="binder"></param>
     /// <param name="result"></param>
@@ -64,19 +79,4 @@ public class DynamicInternal : DynamicObject
 
         return true;
     }
-
-    /// <summary>包装</summary>
-    /// <param name="obj"></param>
-    /// <returns></returns>
-    public static Object Wrap(Object obj)
-    {
-        //if (obj == null) return null;
-        if (obj.GetType().IsPublic) return obj;
-
-        return new DynamicInternal { Real = obj };
-    }
-
-    /// <summary>已重载。</summary>
-    /// <returns></returns>
-    public override String ToString() => Real?.ToString() ?? nameof(DynamicInternal);
 }

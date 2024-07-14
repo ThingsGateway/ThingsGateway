@@ -40,28 +40,28 @@ public class Cron
 {
     #region 属性
 
-    /// <summary>秒数集合</summary>
-    public Int32[]? Seconds { get; set; }
-
-    /// <summary>分钟集合</summary>
-    public Int32[]? Minutes { get; set; }
-
-    /// <summary>小时集合</summary>
-    public Int32[]? Hours { get; set; }
+    private String? _expression;
 
     /// <summary>日期集合</summary>
     public Int32[]? DaysOfMonth { get; set; }
 
-    /// <summary>月份集合</summary>
-    public Int32[]? Months { get; set; }
-
     /// <summary>星期集合。key是星期数，value是第几个，负数表示倒数</summary>
     public IDictionary<Int32, Int32>? DaysOfWeek { get; set; }
 
+    /// <summary>小时集合</summary>
+    public Int32[]? Hours { get; set; }
+
+    /// <summary>分钟集合</summary>
+    public Int32[]? Minutes { get; set; }
+
+    /// <summary>月份集合</summary>
+    public Int32[]? Months { get; set; }
+
+    /// <summary>秒数集合</summary>
+    public Int32[]? Seconds { get; set; }
+
     /// <summary>星期天偏移量。周日对应的数字，默认0。1表示周日时，2表示周一</summary>
     public Int32 Sunday { get; set; }
-
-    private String? _expression;
 
     #endregion 属性
 
@@ -82,6 +82,65 @@ public class Cron
     #endregion 构造
 
     #region 方法
+
+    /// <summary>获得指定时间之后的下一次执行时间，不含指定时间</summary>
+    /// <remarks>
+    /// 如果指定时间带有毫秒，则向前对齐。如09:14.123的"15 * * *"下一次是10:15而不是09：15
+    /// </remarks>
+    /// <param name="time">从该时间秒的下一秒算起的下一个执行时间</param>
+    /// <returns>下一次执行时间（秒级），如果没有匹配则返回最小时间</returns>
+    public DateTime GetNext(DateTime time)
+    {
+        // 如果指定时间带有毫秒，则向前对齐。如09:14.123格式化为09:15，计算下一次就从09:16开始
+        var start = time.Trim();
+        if (start != time)
+            start = start.AddSeconds(2);
+        else
+            start = start.AddSeconds(1);
+
+        // 设置末尾，避免死循环越界
+        var end = time.AddYears(1);
+        for (var dt = start; dt < end; dt = dt.AddSeconds(1))
+        {
+            if (IsTime(dt)) return dt;
+        }
+
+        return DateTime.MinValue;
+    }
+
+    /// <summary>获得与指定时间时间符合表达式的最远时间（秒级）</summary>
+    /// <param name="time"></param>
+    public DateTime GetPrevious(DateTime time)
+    {
+        // 如果指定时间带有毫秒，则向前对齐。如09:14.123格式化为09:15，计算下一次就从09:16开始
+        var start = time.Trim();
+        if (start != time)
+            start = start.AddSeconds(-1);
+        else
+            start = start.AddSeconds(-2);
+
+        // 设置末尾，避免死循环越界
+        var end = time.AddYears(-1);
+        var last = false;
+        for (var dt = start; dt > end; dt = dt.AddSeconds(-1))//过去一年内
+        {
+            if (last == false)
+            {
+                last = IsTime(dt);//找真值
+            }
+            else
+            {
+                if (IsTime(dt) == false)//真值找到了找假值
+                {
+                    return dt.AddSeconds(1);//减多了，返回真值
+                }
+            }
+            //if (last == true && IsTime(dt) == false) return dt.AddSeconds(1);
+            //last = IsTime(dt);
+        }
+
+        return DateTime.MinValue;
+    }
 
     /// <summary>指定时间是否位于表达式之内</summary>
     /// <param name="time"></param>
@@ -272,65 +331,6 @@ public class Cron
         }
 
         return true;
-    }
-
-    /// <summary>获得指定时间之后的下一次执行时间，不含指定时间</summary>
-    /// <remarks>
-    /// 如果指定时间带有毫秒，则向前对齐。如09:14.123的"15 * * *"下一次是10:15而不是09：15
-    /// </remarks>
-    /// <param name="time">从该时间秒的下一秒算起的下一个执行时间</param>
-    /// <returns>下一次执行时间（秒级），如果没有匹配则返回最小时间</returns>
-    public DateTime GetNext(DateTime time)
-    {
-        // 如果指定时间带有毫秒，则向前对齐。如09:14.123格式化为09:15，计算下一次就从09:16开始
-        var start = time.Trim();
-        if (start != time)
-            start = start.AddSeconds(2);
-        else
-            start = start.AddSeconds(1);
-
-        // 设置末尾，避免死循环越界
-        var end = time.AddYears(1);
-        for (var dt = start; dt < end; dt = dt.AddSeconds(1))
-        {
-            if (IsTime(dt)) return dt;
-        }
-
-        return DateTime.MinValue;
-    }
-
-    /// <summary>获得与指定时间时间符合表达式的最远时间（秒级）</summary>
-    /// <param name="time"></param>
-    public DateTime GetPrevious(DateTime time)
-    {
-        // 如果指定时间带有毫秒，则向前对齐。如09:14.123格式化为09:15，计算下一次就从09:16开始
-        var start = time.Trim();
-        if (start != time)
-            start = start.AddSeconds(-1);
-        else
-            start = start.AddSeconds(-2);
-
-        // 设置末尾，避免死循环越界
-        var end = time.AddYears(-1);
-        var last = false;
-        for (var dt = start; dt > end; dt = dt.AddSeconds(-1))//过去一年内
-        {
-            if (last == false)
-            {
-                last = IsTime(dt);//找真值
-            }
-            else
-            {
-                if (IsTime(dt) == false)//真值找到了找假值
-                {
-                    return dt.AddSeconds(1);//减多了，返回真值
-                }
-            }
-            //if (last == true && IsTime(dt) == false) return dt.AddSeconds(1);
-            //last = IsTime(dt);
-        }
-
-        return DateTime.MinValue;
     }
 
     #endregion 方法

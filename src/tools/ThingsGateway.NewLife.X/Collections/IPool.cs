@@ -22,6 +22,9 @@ public interface IPool<T>
     /// <summary>对象池大小</summary>
     Int32 Max { get; set; }
 
+    /// <summary>清空</summary>
+    Int32 Clear();
+
     /// <summary>获取</summary>
     /// <returns></returns>
     T Get();
@@ -33,9 +36,6 @@ public interface IPool<T>
     /// <summary>归还</summary>
     /// <param name="value"></param>
     Boolean Return(T value);
-
-    /// <summary>清空</summary>
-    Int32 Clear();
 }
 
 /// <summary>对象池扩展</summary>
@@ -89,10 +89,6 @@ public static class Pool
         /// <summary>最大容量。超过该大小时不进入池内，默认4k</summary>
         public Int32 MaximumCapacity { get; set; } = 4 * 1024;
 
-        /// <summary>创建</summary>
-        /// <returns></returns>
-        protected override StringBuilder OnCreate() => new(InitialCapacity);
-
         /// <summary>归还</summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -116,6 +112,10 @@ public static class Pool
 
             return base.Return(value);
         }
+
+        /// <summary>创建</summary>
+        /// <returns></returns>
+        protected override StringBuilder OnCreate() => new(InitialCapacity);
     }
 
     #endregion StringBuilder
@@ -165,10 +165,6 @@ public static class Pool
         /// <summary>最大容量。超过该大小时不进入池内，默认64k</summary>
         public Int32 MaximumCapacity { get; set; } = 64 * 1024;
 
-        /// <summary>创建</summary>
-        /// <returns></returns>
-        protected override MemoryStream OnCreate() => new(InitialCapacity);
-
         /// <summary>归还</summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -194,6 +190,10 @@ public static class Pool
 
             return base.Return(value);
         }
+
+        /// <summary>创建</summary>
+        /// <returns></returns>
+        protected override MemoryStream OnCreate() => new(InitialCapacity);
     }
 
     #endregion MemoryStream

@@ -14,8 +14,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using System.Diagnostics;
-
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Gateway.Application.Extensions;
 
@@ -35,16 +33,6 @@ public class AlarmHostedService : BackgroundService
 {
     private readonly ILogger _logger;
 
-    /// <summary>
-    /// 重启锁
-    /// </summary>
-    private EasyLock RestartLock { get; } = new();
-
-    private IEnumerable<VariableRunTime> _deviceVariables => GlobalData.Variables.Select(a => a.Value).Where(a => a.IsOnline && a.AlarmEnable);
-
-    private DoTask RealAlarmTask { get; set; }
-    private IStringLocalizer Localizer { get; }
-
     /// <inheritdoc cref="AlarmHostedService"/>
     public AlarmHostedService(ILogger<AlarmHostedService> logger, IStringLocalizer<AlarmHostedService> localizer)
     {
@@ -61,6 +49,17 @@ public class AlarmHostedService : BackgroundService
     /// 实时报警列表
     /// </summary>
     internal ConcurrentList<VariableRunTime> RealAlarmVariables { get; } = new();
+
+    private IEnumerable<VariableRunTime> _deviceVariables => GlobalData.Variables.Select(a => a.Value).Where(a => a.IsOnline && a.AlarmEnable);
+
+    private IStringLocalizer Localizer { get; }
+
+    private DoTask RealAlarmTask { get; set; }
+
+    /// <summary>
+    /// 重启锁
+    /// </summary>
+    private EasyLock RestartLock { get; } = new();
 
     #region 核心实现
 
@@ -100,6 +99,45 @@ public class AlarmHostedService : BackgroundService
         }
 
         return null; // 如果不符合任何报警条件，则返回null
+    }
+
+    /// <summary>
+    /// 获取自定义报警类型
+    /// </summary>
+    /// <param name="tag">要检查的变量</param>
+    /// <param name="limit">报警限制值</param>
+    /// <param name="expressions">报警约束表达式</param>
+    /// <param name="text">报警文本</param>
+    /// <returns>报警类型枚举</returns>
+    private static AlarmTypeEnum? GetCustomAlarmDegree(VariableRunTime tag, out string limit, out string expressions, out string text)
+    {
+        limit = string.Empty; // 初始化报警限制值为空字符串
+        expressions = string.Empty; // 初始化报警约束表达式为空字符串
+        text = string.Empty; // 初始化报警文本为空字符串
+
+        if (tag?.Value == null) // 检查变量是否为null或其值为null
+        {
+            return null; // 如果是，则返回null
+        }
+
+        if (tag.CustomAlarmEnable) // 检查是否启用了自定义报警功能
+        {
+            // 调用变量的CustomAlarmCode属性的GetExpressionsResult方法，传入变量的值，获取报警表达式的计算结果
+            var result = tag.CustomAlarmCode.GetExpressionsResult(tag.Value);
+
+            if (result is bool boolResult) // 检查计算结果是否为布尔类型
+            {
+                if (boolResult) // 如果计算结果为true
+                {
+                    limit = tag.CustomAlarmCode; // 将报警限制值设置为自定义报警代码
+                    expressions = tag.CustomRestrainExpressions!; // 获取自定义报警时的报警约束表达式
+                    text = tag.CustomAlarmText!; // 获取自定义报警时的报警文本
+                    return AlarmTypeEnum.Custom; // 返回自定义报警类型枚举
+                }
+            }
+        }
+
+        return null; // 如果不符合自定义报警条件，则返回null
     }
 
     /// <summary>
@@ -158,45 +196,6 @@ public class AlarmHostedService : BackgroundService
         }
 
         return null; // 如果不符合任何报警条件，则返回null
-    }
-
-    /// <summary>
-    /// 获取自定义报警类型
-    /// </summary>
-    /// <param name="tag">要检查的变量</param>
-    /// <param name="limit">报警限制值</param>
-    /// <param name="expressions">报警约束表达式</param>
-    /// <param name="text">报警文本</param>
-    /// <returns>报警类型枚举</returns>
-    private static AlarmTypeEnum? GetCustomAlarmDegree(VariableRunTime tag, out string limit, out string expressions, out string text)
-    {
-        limit = string.Empty; // 初始化报警限制值为空字符串
-        expressions = string.Empty; // 初始化报警约束表达式为空字符串
-        text = string.Empty; // 初始化报警文本为空字符串
-
-        if (tag?.Value == null) // 检查变量是否为null或其值为null
-        {
-            return null; // 如果是，则返回null
-        }
-
-        if (tag.CustomAlarmEnable) // 检查是否启用了自定义报警功能
-        {
-            // 调用变量的CustomAlarmCode属性的GetExpressionsResult方法，传入变量的值，获取报警表达式的计算结果
-            var result = tag.CustomAlarmCode.GetExpressionsResult(tag.Value);
-
-            if (result is bool boolResult) // 检查计算结果是否为布尔类型
-            {
-                if (boolResult) // 如果计算结果为true
-                {
-                    limit = tag.CustomAlarmCode; // 将报警限制值设置为自定义报警代码
-                    expressions = tag.CustomRestrainExpressions!; // 获取自定义报警时的报警约束表达式
-                    text = tag.CustomAlarmText!; // 获取自定义报警时的报警文本
-                    return AlarmTypeEnum.Custom; // 返回自定义报警类型枚举
-                }
-            }
-        }
-
-        return null; // 如果不符合自定义报警条件，则返回null
     }
 
     /// <summary>
@@ -391,34 +390,6 @@ public class AlarmHostedService : BackgroundService
         return base.StartAsync(cancellationToken);
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        await Task.CompletedTask;
-        //try
-        //{
-        //    while (!stoppingToken.IsCancellationRequested)
-        //    {
-        //        _logger.LogInformation("BytePool.Default.Capacity：" + BytePool.Default.Capacity);
-        //        _logger.LogInformation("BytePool.Default.GetPoolSize：" + BytePool.Default.GetPoolSize());
-        //        _logger.LogInformation("ChannelThread.CycleInterval：" + ChannelThread.CycleInterval);
-        //        await Task.Delay(10000, stoppingToken);
-        //    }
-        //}
-        //catch (OperationCanceledException)
-        //{
-        //}
-    }
-
-    private Task CollectDeviceHostedService_Started()
-    {
-        return StartAsync();
-    }
-
-    private Task CollectDeviceHostedService_Stoping()
-    {
-        return StopAsync();
-    }
-
     internal async Task StartAsync()
     {
         try
@@ -465,6 +436,34 @@ public class AlarmHostedService : BackgroundService
         {
             RestartLock.Release(); // 释放锁
         }
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        await Task.CompletedTask;
+        //try
+        //{
+        //    while (!stoppingToken.IsCancellationRequested)
+        //    {
+        //        _logger.LogInformation("BytePool.Default.Capacity：" + BytePool.Default.Capacity);
+        //        _logger.LogInformation("BytePool.Default.GetPoolSize：" + BytePool.Default.GetPoolSize());
+        //        _logger.LogInformation("ChannelThread.CycleInterval：" + ChannelThread.CycleInterval);
+        //        await Task.Delay(10000, stoppingToken);
+        //    }
+        //}
+        //catch (OperationCanceledException)
+        //{
+        //}
+    }
+
+    private Task CollectDeviceHostedService_Started()
+    {
+        return StartAsync();
+    }
+
+    private Task CollectDeviceHostedService_Stoping()
+    {
+        return StopAsync();
     }
 
     #endregion worker服务

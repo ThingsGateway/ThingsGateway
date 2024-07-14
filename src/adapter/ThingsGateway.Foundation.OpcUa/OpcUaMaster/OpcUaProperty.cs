@@ -16,19 +16,9 @@ namespace ThingsGateway.Foundation.OpcUa;
 public class OpcUaProperty
 {
     /// <summary>
-    /// OpcUrl
+    /// 是否订阅
     /// </summary>
-    public string OpcUrl { get; set; } = "opc.tcp://127.0.0.1:49320";
-
-    /// <summary>
-    /// 登录账号
-    /// </summary>
-    public string UserName { get; set; }
-
-    /// <summary>
-    /// 登录密码
-    /// </summary>
-    public string Password { get; set; }
+    public bool ActiveSubscribe { get; set; } = true;
 
     /// <summary>
     /// 检查域
@@ -36,36 +26,46 @@ public class OpcUaProperty
     public bool CheckDomain { get; set; }
 
     /// <summary>
-    /// 更新间隔
+    /// 死区
     /// </summary>
-    public int UpdateRate { get; set; } = 1000;
-
-    /// <summary>
-    /// 是否订阅
-    /// </summary>
-    public bool ActiveSubscribe { get; set; } = true;
+    public double DeadBand { get; set; } = 0;
 
     /// <summary>
     /// 分组大小
     /// </summary>
     public int GroupSize { get; set; } = 500;
 
-    /// <summary>
-    /// 死区
-    /// </summary>
-    public double DeadBand { get; set; } = 0;
-
     public int KeepAliveInterval { get; set; } = 3000;
-
-    /// <summary>
-    /// 安全策略
-    /// </summary>
-    public bool UseSecurity { get; set; } = false;
 
     /// <summary>
     /// 加载服务端数据类型
     /// </summary>
     public bool LoadType { get; set; } = true;
+
+    /// <summary>
+    /// OpcUrl
+    /// </summary>
+    public string OpcUrl { get; set; } = "opc.tcp://127.0.0.1:49320";
+
+    /// <summary>
+    /// 登录密码
+    /// </summary>
+    public string Password { get; set; }
+
+    /// <summary>
+    /// 更新间隔
+    /// </summary>
+    public int UpdateRate { get; set; } = 1000;
+
+    /// <summary>
+    /// 登录账号
+    /// </summary>
+    public string UserName { get; set; }
+
+    /// <summary>
+    /// 安全策略
+    /// </summary>
+    public bool UseSecurity { get; set; } = false;
 
     /// <inheritdoc/>
     public override string ToString()

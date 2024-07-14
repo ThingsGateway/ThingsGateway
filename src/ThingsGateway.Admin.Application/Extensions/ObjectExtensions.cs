@@ -72,42 +72,6 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    /// 将时间戳转换为 DateTime
-    /// </summary>
-    /// <param name="timestamp"></param>
-    /// <returns></returns>
-    internal static DateTime ConvertToDateTime(this long timestamp)
-    {
-        var timeStampDateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var digitCount = (int)Math.Floor(Math.Log10(timestamp) + 1);
-
-        if (digitCount != 13 && digitCount != 10)
-        {
-            throw new ArgumentException("Data is not a valid timestamp format.");
-        }
-
-        return (digitCount == 13
-            ? timeStampDateTime.AddMilliseconds(timestamp)  // 13 位时间戳
-            : timeStampDateTime.AddSeconds(timestamp)).ToLocalTime();   // 10 位时间戳
-    }
-
-    /// <summary>
-    /// 将 IFormFile 转换成 byte[]
-    /// </summary>
-    /// <param name="formFile"></param>
-    /// <returns></returns>
-    public static byte[] ToByteArray(this IFormFile formFile)
-    {
-        var fileLength = formFile.Length;
-        using var stream = formFile.OpenReadStream();
-        var bytes = new byte[fileLength];
-
-        stream.Read(bytes, 0, (int)fileLength);
-
-        return bytes;
-    }
-
-    /// <summary>
     /// 将流保存到本地磁盘
     /// </summary>
     /// <param name="stream"></param>
@@ -171,24 +135,19 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    /// 判断是否是富基元类型
+    /// 将 IFormFile 转换成 byte[]
     /// </summary>
-    /// <param name="type">类型</param>
+    /// <param name="formFile"></param>
     /// <returns></returns>
-    internal static bool IsRichPrimitive(this Type type)
+    public static byte[] ToByteArray(this IFormFile formFile)
     {
-        // 处理元组类型
-        if (type.IsValueTuple()) return false;
+        var fileLength = formFile.Length;
+        using var stream = formFile.OpenReadStream();
+        var bytes = new byte[fileLength];
 
-        // 处理数组类型，基元数组类型也可以是基元类型
-        if (type.IsArray) return type.GetElementType().IsRichPrimitive();
+        stream.Read(bytes, 0, (int)fileLength);
 
-        // 基元类型或值类型或字符串类型
-        if (type.IsPrimitive || type.IsValueType || type == typeof(string)) return true;
-
-        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>)) return type.GenericTypeArguments[0].IsRichPrimitive();
-
-        return false;
+        return bytes;
     }
 
     /// <summary>
@@ -227,81 +186,6 @@ public static class ObjectExtensions
         {
             dic.AddOrUpdate(key, value, (key, old) => value);
         }
-    }
-
-    /// <summary>
-    /// 判断是否是元组类型
-    /// </summary>
-    /// <param name="type">类型</param>
-    /// <returns></returns>
-    internal static bool IsValueTuple(this Type type)
-    {
-        return type.Namespace == "System" && type.Name.Contains("ValueTuple`");
-    }
-
-    /// <summary>
-    /// 判断方法是否是异步
-    /// </summary>
-    /// <param name="method">方法</param>
-    /// <returns></returns>
-    internal static bool IsAsync(this MethodInfo method)
-    {
-        return method.GetCustomAttribute<AsyncMethodBuilderAttribute>() != null
-            || method.ReturnType.ToString().StartsWith(typeof(Task).FullName);
-    }
-
-    /// <summary>
-    /// 判断是否是匿名类型
-    /// </summary>
-    /// <param name="obj">对象</param>
-    /// <returns></returns>
-    internal static bool IsAnonymous(this object obj)
-    {
-        var type = obj is Type t ? t : obj.GetType();
-
-        return Attribute.IsDefined(type, typeof(CompilerGeneratedAttribute), false)
-               && type.IsGenericType && type.Name.Contains("AnonymousType")
-               && (type.Name.StartsWith("<>") || type.Name.StartsWith("VB$"))
-               && type.Attributes.HasFlag(TypeAttributes.NotPublic);
-    }
-
-    /// <summary>
-    /// 获取所有祖先类型
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    internal static IEnumerable<Type> GetAncestorTypes(this Type type)
-    {
-        var ancestorTypes = new List<Type>();
-        while (type != null && type != typeof(object))
-        {
-            if (IsNoObjectBaseType(type))
-            {
-                var baseType = type.BaseType;
-                ancestorTypes.Add(baseType);
-                type = baseType;
-            }
-            else break;
-        }
-
-        return ancestorTypes;
-
-        static bool IsNoObjectBaseType(Type type) => type.BaseType != typeof(object);
-    }
-
-    /// <summary>
-    /// 获取方法真实返回类型
-    /// </summary>
-    /// <param name="method"></param>
-    /// <returns></returns>
-    internal static Type GetRealReturnType(this MethodInfo method)
-    {
-        // 判断是否是异步方法
-        var isAsyncMethod = method.IsAsync();
-
-        // 获取类型返回值并处理 Task 和 Task<T> 类型返回值
-        var returnType = method.ReturnType;
-        return isAsyncMethod ? (returnType.GenericTypeArguments.FirstOrDefault() ?? typeof(void)) : returnType;
     }
 
     /// <summary>
@@ -389,6 +273,107 @@ public static class ObjectExtensions
     }
 
     /// <summary>
+    /// 清除字符串前后缀
+    /// </summary>
+    /// <param name="str">字符串</param>
+    /// <param name="pos">0：前后缀，1：后缀，-1：前缀</param>
+    /// <param name="affixes">前后缀集合</param>
+    /// <returns></returns>
+    internal static string ClearStringAffixes(this string str, int pos = 0, params string[] affixes)
+    {
+        // 空字符串直接返回
+        if (string.IsNullOrWhiteSpace(str)) return str;
+
+        // 空前后缀集合直接返回
+        if (affixes == null || affixes.Length == 0) return str;
+
+        var startCleared = false;
+        var endCleared = false;
+
+        string tempStr = null;
+        foreach (var affix in affixes)
+        {
+            if (string.IsNullOrWhiteSpace(affix)) continue;
+
+            if (pos != 1 && !startCleared && str.StartsWith(affix, StringComparison.OrdinalIgnoreCase))
+            {
+                tempStr = str[affix.Length..];
+                startCleared = true;
+            }
+            if (pos != -1 && !endCleared && str.EndsWith(affix, StringComparison.OrdinalIgnoreCase))
+            {
+                var _tempStr = !string.IsNullOrWhiteSpace(tempStr) ? tempStr : str;
+                tempStr = _tempStr[..^affix.Length];
+                endCleared = true;
+
+                if (string.IsNullOrWhiteSpace(tempStr))
+                {
+                    tempStr = null;
+                    endCleared = false;
+                }
+            }
+            if (startCleared && endCleared) break;
+        }
+
+        return !string.IsNullOrWhiteSpace(tempStr) ? tempStr : str;
+    }
+
+    /// <summary>
+    /// 将时间戳转换为 DateTime
+    /// </summary>
+    /// <param name="timestamp"></param>
+    /// <returns></returns>
+    internal static DateTime ConvertToDateTime(this long timestamp)
+    {
+        var timeStampDateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var digitCount = (int)Math.Floor(Math.Log10(timestamp) + 1);
+
+        if (digitCount != 13 && digitCount != 10)
+        {
+            throw new ArgumentException("Data is not a valid timestamp format.");
+        }
+
+        return (digitCount == 13
+            ? timeStampDateTime.AddMilliseconds(timestamp)  // 13 位时间戳
+            : timeStampDateTime.AddSeconds(timestamp)).ToLocalTime();   // 10 位时间戳
+    }
+
+    /// <summary>
+    /// 格式化字符串
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    internal static string Format(this string str, params object[] args)
+    {
+        return args == null || args.Length == 0 ? str : string.Format(str, args);
+    }
+
+    /// <summary>
+    /// 获取所有祖先类型
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    internal static IEnumerable<Type> GetAncestorTypes(this Type type)
+    {
+        var ancestorTypes = new List<Type>();
+        while (type != null && type != typeof(object))
+        {
+            if (IsNoObjectBaseType(type))
+            {
+                var baseType = type.BaseType;
+                ancestorTypes.Add(baseType);
+                type = baseType;
+            }
+            else break;
+        }
+
+        return ancestorTypes;
+
+        static bool IsNoObjectBaseType(Type type) => type.BaseType != typeof(object);
+    }
+
+    /// <summary>
     /// 查找方法指定特性，如果没找到则继续查找声明类
     /// </summary>
     /// <typeparam name="TAttribute"></typeparam>
@@ -416,14 +401,108 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    /// 格式化字符串
+    /// 获取方法真实返回类型
     /// </summary>
-    /// <param name="str"></param>
-    /// <param name="args"></param>
+    /// <param name="method"></param>
     /// <returns></returns>
-    internal static string Format(this string str, params object[] args)
+    internal static Type GetRealReturnType(this MethodInfo method)
     {
-        return args == null || args.Length == 0 ? str : string.Format(str, args);
+        // 判断是否是异步方法
+        var isAsyncMethod = method.IsAsync();
+
+        // 获取类型返回值并处理 Task 和 Task<T> 类型返回值
+        var returnType = method.ReturnType;
+        return isAsyncMethod ? (returnType.GenericTypeArguments.FirstOrDefault() ?? typeof(void)) : returnType;
+    }
+
+    /// <summary>
+    /// 获取类型自定义特性
+    /// </summary>
+    /// <typeparam name="TAttribute">特性类型</typeparam>
+    /// <param name="type">类类型</param>
+    /// <param name="inherit">是否继承查找</param>
+    /// <returns>特性对象</returns>
+    internal static TAttribute GetTypeAttribute<TAttribute>(this Type type, bool inherit = false)
+        where TAttribute : Attribute
+    {
+        // 空检查
+        if (type == null)
+        {
+            throw new ArgumentNullException(nameof(type));
+        }
+
+        // 检查特性并获取特性对象
+        return type.IsDefined(typeof(TAttribute), inherit)
+            ? type.GetCustomAttribute<TAttribute>(inherit)
+            : default;
+    }
+
+    /// <summary>
+    /// 判断是否是匿名类型
+    /// </summary>
+    /// <param name="obj">对象</param>
+    /// <returns></returns>
+    internal static bool IsAnonymous(this object obj)
+    {
+        var type = obj is Type t ? t : obj.GetType();
+
+        return Attribute.IsDefined(type, typeof(CompilerGeneratedAttribute), false)
+               && type.IsGenericType && type.Name.Contains("AnonymousType")
+               && (type.Name.StartsWith("<>") || type.Name.StartsWith("VB$"))
+               && type.Attributes.HasFlag(TypeAttributes.NotPublic);
+    }
+
+    /// <summary>
+    /// 判断方法是否是异步
+    /// </summary>
+    /// <param name="method">方法</param>
+    /// <returns></returns>
+    internal static bool IsAsync(this MethodInfo method)
+    {
+        return method.GetCustomAttribute<AsyncMethodBuilderAttribute>() != null
+            || method.ReturnType.ToString().StartsWith(typeof(Task).FullName);
+    }
+
+    /// <summary>
+    /// 判断集合是否为空
+    /// </summary>
+    /// <typeparam name="T">元素类型</typeparam>
+    /// <param name="collection">集合对象</param>
+    /// <returns><see cref="bool"/> 实例，true 表示空集合，false 表示非空集合</returns>
+    internal static bool IsEmpty<T>(this IEnumerable<T> collection)
+    {
+        return collection == null || !collection.Any();
+    }
+
+    /// <summary>
+    /// 判断是否是富基元类型
+    /// </summary>
+    /// <param name="type">类型</param>
+    /// <returns></returns>
+    internal static bool IsRichPrimitive(this Type type)
+    {
+        // 处理元组类型
+        if (type.IsValueTuple()) return false;
+
+        // 处理数组类型，基元数组类型也可以是基元类型
+        if (type.IsArray) return type.GetElementType().IsRichPrimitive();
+
+        // 基元类型或值类型或字符串类型
+        if (type.IsPrimitive || type.IsValueType || type == typeof(string)) return true;
+
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>)) return type.GenericTypeArguments[0].IsRichPrimitive();
+
+        return false;
+    }
+
+    /// <summary>
+    /// 判断是否是元组类型
+    /// </summary>
+    /// <param name="type">类型</param>
+    /// <returns></returns>
+    internal static bool IsValueTuple(this Type type)
+    {
+        return type.Namespace == "System" && type.Name.Contains("ValueTuple`");
     }
 
     /// <summary>
@@ -441,6 +520,18 @@ public static class ObjectExtensions
         return Regex.Split(str, @"(?=\p{Lu}\p{Ll})|(?<=\p{Ll})(?=\p{Lu})")
             .Where(u => u.Length > 0)
             .ToArray();
+    }
+
+    /// <summary>
+    /// 首字母小写
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    internal static string ToLowerCamelCase(this string str)
+    {
+        if (string.IsNullOrWhiteSpace(str)) return str;
+
+        return string.Concat(str.First().ToString().ToLower(), str.AsSpan(1));
     }
 
     /// <summary>
@@ -490,64 +581,6 @@ public static class ObjectExtensions
     }
 
     /// <summary>
-    /// 清除字符串前后缀
-    /// </summary>
-    /// <param name="str">字符串</param>
-    /// <param name="pos">0：前后缀，1：后缀，-1：前缀</param>
-    /// <param name="affixes">前后缀集合</param>
-    /// <returns></returns>
-    internal static string ClearStringAffixes(this string str, int pos = 0, params string[] affixes)
-    {
-        // 空字符串直接返回
-        if (string.IsNullOrWhiteSpace(str)) return str;
-
-        // 空前后缀集合直接返回
-        if (affixes == null || affixes.Length == 0) return str;
-
-        var startCleared = false;
-        var endCleared = false;
-
-        string tempStr = null;
-        foreach (var affix in affixes)
-        {
-            if (string.IsNullOrWhiteSpace(affix)) continue;
-
-            if (pos != 1 && !startCleared && str.StartsWith(affix, StringComparison.OrdinalIgnoreCase))
-            {
-                tempStr = str[affix.Length..];
-                startCleared = true;
-            }
-            if (pos != -1 && !endCleared && str.EndsWith(affix, StringComparison.OrdinalIgnoreCase))
-            {
-                var _tempStr = !string.IsNullOrWhiteSpace(tempStr) ? tempStr : str;
-                tempStr = _tempStr[..^affix.Length];
-                endCleared = true;
-
-                if (string.IsNullOrWhiteSpace(tempStr))
-                {
-                    tempStr = null;
-                    endCleared = false;
-                }
-            }
-            if (startCleared && endCleared) break;
-        }
-
-        return !string.IsNullOrWhiteSpace(tempStr) ? tempStr : str;
-    }
-
-    /// <summary>
-    /// 首字母小写
-    /// </summary>
-    /// <param name="str"></param>
-    /// <returns></returns>
-    internal static string ToLowerCamelCase(this string str)
-    {
-        if (string.IsNullOrWhiteSpace(str)) return str;
-
-        return string.Concat(str.First().ToString().ToLower(), str.AsSpan(1));
-    }
-
-    /// <summary>
     /// 首字母大写
     /// </summary>
     /// <param name="str"></param>
@@ -557,38 +590,5 @@ public static class ObjectExtensions
         if (string.IsNullOrWhiteSpace(str)) return str;
 
         return string.Concat(str.First().ToString().ToUpper(), str.AsSpan(1));
-    }
-
-    /// <summary>
-    /// 判断集合是否为空
-    /// </summary>
-    /// <typeparam name="T">元素类型</typeparam>
-    /// <param name="collection">集合对象</param>
-    /// <returns><see cref="bool"/> 实例，true 表示空集合，false 表示非空集合</returns>
-    internal static bool IsEmpty<T>(this IEnumerable<T> collection)
-    {
-        return collection == null || !collection.Any();
-    }
-
-    /// <summary>
-    /// 获取类型自定义特性
-    /// </summary>
-    /// <typeparam name="TAttribute">特性类型</typeparam>
-    /// <param name="type">类类型</param>
-    /// <param name="inherit">是否继承查找</param>
-    /// <returns>特性对象</returns>
-    internal static TAttribute GetTypeAttribute<TAttribute>(this Type type, bool inherit = false)
-        where TAttribute : Attribute
-    {
-        // 空检查
-        if (type == null)
-        {
-            throw new ArgumentNullException(nameof(type));
-        }
-
-        // 检查特性并获取特性对象
-        return type.IsDefined(typeof(TAttribute), inherit)
-            ? type.GetCustomAttribute<TAttribute>(inherit)
-            : default;
     }
 }

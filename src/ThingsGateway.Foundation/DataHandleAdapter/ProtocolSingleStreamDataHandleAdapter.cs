@@ -44,6 +44,14 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
     /// </summary>
     public TRequest Request { get; set; }
 
+    public void SetRequest(int sign, ISendMessage sendMessage)
+    {
+        var request = GetInstance();
+        request.Sign = sign;
+        request.SendInfo(sendMessage);
+        Request = request;
+    }
+
     /// <inheritdoc/>
     public override string? ToString()
     {
@@ -182,13 +190,5 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
         {
             byteBlock.SafeDispose();
         }
-    }
-
-    public void SetRequest(int sign, ISendMessage sendMessage)
-    {
-        var request = GetInstance();
-        request.Sign = sign;
-        request.SendInfo(sendMessage);
-        Request = request;
     }
 }

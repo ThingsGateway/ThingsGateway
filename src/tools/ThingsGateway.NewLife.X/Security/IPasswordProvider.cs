@@ -45,6 +45,8 @@ public class MD5PasswordProvider : IPasswordProvider
 /// <summary>盐值密码提供者</summary>
 public class SaltPasswordProvider : IPasswordProvider
 {
+    private static readonly String _cs = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
+
     /// <summary>算法。支持md5/sha1/sha512</summary>
     public String Algorithm { get; set; } = "sha512";
 
@@ -67,25 +69,6 @@ public class SaltPasswordProvider : IPasswordProvider
         };
 
         return $"${Algorithm}${salt}${hash}";
-    }
-
-    private static readonly String _cs = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
-
-    /// <summary>创建盐值</summary>
-    /// <returns></returns>
-    protected virtual String CreateSalt()
-    {
-        if (SaltTime > 0) return DateTime.UtcNow.ToInt().ToString();
-
-        var length = 16;
-        var sb = Pool.StringBuilder.Get();
-        for (var i = 0; i < length; i++)
-        {
-            var ch = _cs[Rand.Next(0, _cs.Length)];
-            sb.Append(ch);
-        }
-
-        return sb.Put(true);
     }
 
     /// <summary>验证密码散列，包括加盐判断</summary>
@@ -125,5 +108,22 @@ public class SaltPasswordProvider : IPasswordProvider
             default:
                 throw new NotSupportedException($"Unsupported password hash mode [{ss[1]}]");
         }
+    }
+
+    /// <summary>创建盐值</summary>
+    /// <returns></returns>
+    protected virtual String CreateSalt()
+    {
+        if (SaltTime > 0) return DateTime.UtcNow.ToInt().ToString();
+
+        var length = 16;
+        var sb = Pool.StringBuilder.Get();
+        for (var i = 0; i < length; i++)
+        {
+            var ch = _cs[Rand.Next(0, _cs.Length)];
+            sb.Append(ch);
+        }
+
+        return sb.Put(true);
     }
 }

@@ -11,35 +11,35 @@
 namespace ThingsGateway.Admin.Application;
 
 /// <summary>
-/// 角色授权资源参数
-/// </summary>
-public class GrantResourceData
-{
-    /// <summary>
-    /// 角色Id
-    /// </summary>
-    public long Id { get; set; }
-
-    /// <summary>
-    /// 授权资源信息
-    /// </summary>
-    public IEnumerable<long> GrantInfoList { get; set; } = Enumerable.Empty<long>();
-}
-
-/// <summary>
 /// 角色拥有权限输出
 /// </summary>
 public class GrantPermissionData
 {
     /// <summary>
-    /// 角色Id/用户Id
-    /// </summary>
-    public virtual long Id { get; set; }
-
-    /// <summary>
     /// 已授权权限信息
     /// </summary>
     public virtual IEnumerable<RelationRolePermission> GrantInfoList { get; set; } = Enumerable.Empty<RelationRolePermission>();
+
+    /// <summary>
+    /// 角色Id/用户Id
+    /// </summary>
+    public virtual long Id { get; set; }
+}
+
+/// <summary>
+/// 角色授权资源参数
+/// </summary>
+public class GrantResourceData
+{
+    /// <summary>
+    /// 授权资源信息
+    /// </summary>
+    public IEnumerable<long> GrantInfoList { get; set; } = Enumerable.Empty<long>();
+
+    /// <summary>
+    /// 角色Id
+    /// </summary>
+    public long Id { get; set; }
 }
 
 /// <summary>
@@ -48,12 +48,12 @@ public class GrantPermissionData
 public class GrantUserOrRoleInput
 {
     /// <summary>
-    /// Id
-    /// </summary>
-    public long Id { get; set; }
-
-    /// <summary>
     /// 授权权限信息
     /// </summary>
     public IEnumerable<long> GrantInfoList { get; set; } = Enumerable.Empty<long>();
+
+    /// <summary>
+    /// Id
+    /// </summary>
+    public long Id { get; set; }
 }

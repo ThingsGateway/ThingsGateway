@@ -38,45 +38,10 @@ public class Dlt645_2007Address : Dlt645_2007Request
         this.Station = dlt645_2007Address.Station;
     }
 
-    public void SetStation(string station)
-    {
-        if (station.Length < 12)
-            station = station.PadLeft(12, '0');
-        Station = station.HexStringToBytes().Reverse().ToArray();
-    }
-
-    public void SetDataId(string dataId)
-    {
-        DataId = dataId.HexStringToBytes().Reverse().ToArray();
-    }
-
     /// <summary>
     /// 作为Slave时需提供的SocketId，用于分辨Socket客户端，通常对比的是初始链接时的注册包
     /// </summary>
     public string? SocketId { get; set; }
-
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        StringBuilder stringGeter = new();
-        if (Station.Length > 0)
-        {
-            stringGeter.Append($"s={Station.Reverse().ToArray().ToHexString()};");
-        }
-        if (DataId.Length > 0)
-        {
-            stringGeter.Append($"{DataId.Reverse().ToArray().ToHexString()};");
-        }
-        if (!Reverse)
-        {
-            stringGeter.Append($"r={Reverse};");
-        }
-        if (!string.IsNullOrEmpty(SocketId))
-        {
-            stringGeter.Append($"id={SocketId};");
-        }
-        return stringGeter.ToString();
-    }
 
     /// <summary>
     /// 解析地址
@@ -131,5 +96,40 @@ public class Dlt645_2007Address : Dlt645_2007Request
             MemoryCache.Instance.Set(cacheKey, dlt645_2007Address, 3600);
 
         return new(dlt645_2007Address);
+    }
+
+    public void SetDataId(string dataId)
+    {
+        DataId = dataId.HexStringToBytes().Reverse().ToArray();
+    }
+
+    public void SetStation(string station)
+    {
+        if (station.Length < 12)
+            station = station.PadLeft(12, '0');
+        Station = station.HexStringToBytes().Reverse().ToArray();
+    }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        StringBuilder stringGeter = new();
+        if (Station.Length > 0)
+        {
+            stringGeter.Append($"s={Station.Reverse().ToArray().ToHexString()};");
+        }
+        if (DataId.Length > 0)
+        {
+            stringGeter.Append($"{DataId.Reverse().ToArray().ToHexString()};");
+        }
+        if (!Reverse)
+        {
+            stringGeter.Append($"r={Reverse};");
+        }
+        if (!string.IsNullOrEmpty(SocketId))
+        {
+            stringGeter.Append($"id={SocketId};");
+        }
+        return stringGeter.ToString();
     }
 }

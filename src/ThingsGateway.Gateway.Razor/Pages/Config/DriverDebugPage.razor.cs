@@ -63,12 +63,6 @@ public partial class DriverDebugPage
         base.OnParametersSet();
     }
 
-    private async Task NewPluginRender(ContextMenuItem item, object value)
-    {
-        if (((PluginOutput)value).Children.Count == 0)
-            await GetDebugUIAsync(((PluginOutput)value));
-    }
-
     /// <inheritdoc/>
     private async Task GetDebugUIAsync(PluginOutput plugin)
     {
@@ -97,5 +91,11 @@ public partial class DriverDebugPage
         {
             await ToastService.Warning(null, ex.Message);
         }
+    }
+
+    private async Task NewPluginRender(ContextMenuItem item, object value)
+    {
+        if (((PluginOutput)value).Children.Count == 0)
+            await GetDebugUIAsync(((PluginOutput)value));
     }
 }

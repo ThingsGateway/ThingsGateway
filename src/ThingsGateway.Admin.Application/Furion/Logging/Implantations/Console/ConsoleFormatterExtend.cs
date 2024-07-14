@@ -15,8 +15,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
 
-using ThingsGateway.Admin.Application;
-
 namespace ThingsGateway.Logging;
 
 /// <summary>
@@ -30,14 +28,14 @@ public sealed class ConsoleFormatterExtend : ConsoleFormatter, IDisposable
     private readonly IDisposable _formatOptionsReloadToken;
 
     /// <summary>
-    /// 日志格式化配置选项
-    /// </summary>
-    private ConsoleFormatterExtendOptions _formatterOptions;
-
-    /// <summary>
     /// 是否启用控制台颜色
     /// </summary>
     private bool _disableColors;
+
+    /// <summary>
+    /// 日志格式化配置选项
+    /// </summary>
+    private ConsoleFormatterExtendOptions _formatterOptions;
 
     /// <summary>
     /// 构造函数
@@ -48,6 +46,14 @@ public sealed class ConsoleFormatterExtend : ConsoleFormatter, IDisposable
     {
         (_formatOptionsReloadToken, _formatterOptions) = (formatterOptions.OnChange(ReloadFormatterOptions)!, formatterOptions.CurrentValue);
         _disableColors = _formatterOptions.ColorBehavior == LoggerColorBehavior.Disabled || (_formatterOptions.ColorBehavior == LoggerColorBehavior.Default && Console.IsOutputRedirected);
+    }
+
+    /// <summary>
+    /// 释放非托管资源
+    /// </summary>
+    public void Dispose()
+    {
+        _formatOptionsReloadToken?.Dispose();
     }
 
     /// <summary>
@@ -101,14 +107,6 @@ public sealed class ConsoleFormatterExtend : ConsoleFormatter, IDisposable
             // 写入控制台
             textWriter.WriteLine(standardMessage);
         }
-    }
-
-    /// <summary>
-    /// 释放非托管资源
-    /// </summary>
-    public void Dispose()
-    {
-        _formatOptionsReloadToken?.Dispose();
     }
 
     /// <summary>

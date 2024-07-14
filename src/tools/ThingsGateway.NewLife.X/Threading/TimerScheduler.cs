@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using NewLife.Reflection;
 
@@ -25,9 +21,18 @@ public class TimerScheduler
 {
     #region 静态
 
+    private static readonly Dictionary<String, TimerScheduler> _cache = new();
+
+    [ThreadStatic]
+    private static TimerScheduler? _Current;
+
     private TimerScheduler(String name) => Name = name;
 
-    private static readonly Dictionary<String, TimerScheduler> _cache = new();
+    /// <summary>当前调度器</summary>
+    public static TimerScheduler? Current { get => _Current; private set => _Current = value; }
+
+    /// <summary>默认调度器</summary>
+    public static TimerScheduler Default { get; } = Create("Default");
 
     /// <summary>创建指定名称的调度器</summary>
     /// <param name="name"></param>
@@ -46,21 +51,15 @@ public class TimerScheduler
         }
     }
 
-    /// <summary>默认调度器</summary>
-    public static TimerScheduler Default { get; } = Create("Default");
-
-    [ThreadStatic]
-    private static TimerScheduler? _Current;
-
-    /// <summary>当前调度器</summary>
-    public static TimerScheduler? Current { get => _Current; private set => _Current = value; }
-
     #endregion 静态
 
     #region 属性
 
-    /// <summary>名称</summary>
-    public String Name { get; private set; }
+    private Int32 _tid;
+
+    private Thread? thread;
+
+    private TimerX[] Timers = [];
 
     /// <summary>定时器个数</summary>
     public Int32 Count { get; private set; }
@@ -68,12 +67,14 @@ public class TimerScheduler
     /// <summary>最大耗时。超过时报警告日志，默认500ms</summary>
     public Int32 MaxCost { get; set; } = 500;
 
-    private Thread? thread;
-    private Int32 _tid;
-
-    private TimerX[] Timers = [];
+    /// <summary>名称</summary>
+    public String Name { get; private set; }
 
     #endregion 属性
+
+    private Int32 _period = 10;
+
+    private AutoResetEvent? _waitForTimer;
 
     /// <summary>把定时器加入队列</summary>
     /// <param name="timer"></param>
@@ -129,8 +130,9 @@ public class TimerScheduler
         }
     }
 
-    private AutoResetEvent? _waitForTimer;
-    private Int32 _period = 10;
+    /// <summary>已重载。</summary>
+    /// <returns></returns>
+    public override String ToString() => Name;
 
     /// <summary>唤醒处理</summary>
     public void Wake()
@@ -140,79 +142,6 @@ public class TimerScheduler
         {
             var swh = e.SafeWaitHandle;
             if (swh != null && !swh.IsClosed) e.Set();
-        }
-    }
-
-    /// <summary>调度主程序</summary>
-    /// <param name="state"></param>
-    private void Process(Object? state)
-    {
-        Current = this;
-        while (true)
-        {
-            // 准备好定时器列表
-            var arr = Timers;
-
-            // 如果没有任务，则销毁线程
-            if (arr.Length == 0 && _period == 60_000)
-            {
-                var th = thread;
-                thread = null;
-                //th?.Abort();
-
-                break;
-            }
-
-            try
-            {
-                var now = Runtime.TickCount64;
-
-                // 设置一个较大的间隔，内部会根据处理情况调整该值为最合理值
-                _period = 60_000;
-                foreach (var timer in arr)
-                {
-                    if (!timer.Calling && CheckTime(timer, now))
-                    {
-                        //// 是否能够执行
-                        //if (timer.CanExecute == null || timer.CanExecute())
-                        //{
-                        // 必须在主线程设置状态，否则可能异步线程还没来得及设置开始状态，主线程又开始了新的一轮调度
-                        timer.Calling = true;
-                        if (timer.IsAsyncTask)
-                            Task.Factory.StartNew(ExecuteAsync, timer);
-                        else if (!timer.Async)
-                            Execute(timer);
-                        else
-                            //Task.Factory.StartNew(() => ProcessItem(timer));
-                            // 不需要上下文流动，捕获所有异常
-                            ThreadPool.UnsafeQueueUserWorkItem(s =>
-                            {
-                                try
-                                {
-                                    Execute(s);
-                                }
-                                catch
-                                {
-                                }
-                            }, timer);
-                        // 内部线程池，让异步任务有公平竞争CPU的机会
-                        //ThreadPoolX.QueueUserWorkItem(Execute, timer);
-                        //}
-                        //// 即使不能执行，也要设置下一次的时间
-                        //else
-                        //{
-                        //    OnFinish(timer);
-                        //}
-                    }
-                }
-            }
-            catch (ThreadAbortException) { break; }
-            catch (ThreadInterruptedException) { break; }
-            catch { }
-
-            _waitForTimer ??= new AutoResetEvent(false);
-            if (_period > 0)
-                _waitForTimer.WaitOne(_period, true);
         }
     }
 
@@ -350,9 +279,78 @@ public class TimerScheduler
             _period = p;
     }
 
-    /// <summary>已重载。</summary>
-    /// <returns></returns>
-    public override String ToString() => Name;
+    /// <summary>调度主程序</summary>
+    /// <param name="state"></param>
+    private void Process(Object? state)
+    {
+        Current = this;
+        while (true)
+        {
+            // 准备好定时器列表
+            var arr = Timers;
+
+            // 如果没有任务，则销毁线程
+            if (arr.Length == 0 && _period == 60_000)
+            {
+                var th = thread;
+                thread = null;
+                //th?.Abort();
+
+                break;
+            }
+
+            try
+            {
+                var now = Runtime.TickCount64;
+
+                // 设置一个较大的间隔，内部会根据处理情况调整该值为最合理值
+                _period = 60_000;
+                foreach (var timer in arr)
+                {
+                    if (!timer.Calling && CheckTime(timer, now))
+                    {
+                        //// 是否能够执行
+                        //if (timer.CanExecute == null || timer.CanExecute())
+                        //{
+                        // 必须在主线程设置状态，否则可能异步线程还没来得及设置开始状态，主线程又开始了新的一轮调度
+                        timer.Calling = true;
+                        if (timer.IsAsyncTask)
+                            Task.Factory.StartNew(ExecuteAsync, timer);
+                        else if (!timer.Async)
+                            Execute(timer);
+                        else
+                            //Task.Factory.StartNew(() => ProcessItem(timer));
+                            // 不需要上下文流动，捕获所有异常
+                            ThreadPool.UnsafeQueueUserWorkItem(s =>
+                            {
+                                try
+                                {
+                                    Execute(s);
+                                }
+                                catch
+                                {
+                                }
+                            }, timer);
+                        // 内部线程池，让异步任务有公平竞争CPU的机会
+                        //ThreadPoolX.QueueUserWorkItem(Execute, timer);
+                        //}
+                        //// 即使不能执行，也要设置下一次的时间
+                        //else
+                        //{
+                        //    OnFinish(timer);
+                        //}
+                    }
+                }
+            }
+            catch (ThreadAbortException) { break; }
+            catch (ThreadInterruptedException) { break; }
+            catch { }
+
+            _waitForTimer ??= new AutoResetEvent(false);
+            if (_period > 0)
+                _waitForTimer.WaitOne(_period, true);
+        }
+    }
 }
 
 #nullable restore

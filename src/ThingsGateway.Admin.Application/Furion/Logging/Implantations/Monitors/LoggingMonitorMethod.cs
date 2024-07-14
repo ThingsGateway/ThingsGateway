@@ -18,22 +18,15 @@ namespace ThingsGateway.Logging;
 public sealed class LoggingMonitorMethod
 {
     /// <summary>
+    /// 序列化属性命名规则（返回值）
+    /// </summary>
+    public ContractResolverTypes ContractResolver { get; set; } = ContractResolverTypes.CamelCase;
+
+    /// <summary>
     /// 方法名称
     /// </summary>
     /// <remarks>完全限定名</remarks>
     public string FullName { get; set; }
-
-    /// <summary>
-    /// 是否记录返回值
-    /// </summary>
-    /// <remarks>bool 类型，默认输出</remarks>
-    public bool WithReturnValue { get; set; } = true;
-
-    /// <summary>
-    /// 设置返回值阈值
-    /// </summary>
-    /// <remarks>配置返回值字符串阈值，超过这个阈值将截断，默认全量输出</remarks>
-    public int ReturnValueThreshold { get; set; } = 0;
 
     /// <summary>
     /// 配置序列化忽略的属性名称
@@ -56,7 +49,14 @@ public sealed class LoggingMonitorMethod
     public bool LongTypeConverter { get; set; } = false;
 
     /// <summary>
-    /// 序列化属性命名规则（返回值）
+    /// 设置返回值阈值
     /// </summary>
-    public ContractResolverTypes ContractResolver { get; set; } = ContractResolverTypes.CamelCase;
+    /// <remarks>配置返回值字符串阈值，超过这个阈值将截断，默认全量输出</remarks>
+    public int ReturnValueThreshold { get; set; } = 0;
+
+    /// <summary>
+    /// 是否记录返回值
+    /// </summary>
+    /// <remarks>bool 类型，默认输出</remarks>
+    public bool WithReturnValue { get; set; } = true;
 }

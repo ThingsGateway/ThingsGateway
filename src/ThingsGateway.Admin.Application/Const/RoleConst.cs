@@ -16,14 +16,9 @@ namespace ThingsGateway.Admin.Application;
 public class RoleConst
 {
     /// <summary>
-    /// 超级管理员Id
+    /// api角色
     /// </summary>
-    public const long SuperAdminId = 212725263002001;
-
-    /// <summary>
-    /// 超级管理员
-    /// </summary>
-    public const string SuperAdmin = "SuperAdmin";
+    public const string ApiRole = "ApiRole";
 
     /// <summary>
     /// 业务管理员
@@ -31,7 +26,12 @@ public class RoleConst
     public const string BizAdmin = "BizAdmin";
 
     /// <summary>
-    /// api角色
+    /// 超级管理员
     /// </summary>
-    public const string ApiRole = "ApiRole";
+    public const string SuperAdmin = "SuperAdmin";
+
+    /// <summary>
+    /// 超级管理员Id
+    /// </summary>
+    public const long SuperAdminId = 212725263002001;
 }

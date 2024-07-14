@@ -25,6 +25,19 @@ namespace ThingsGateway.Plugin.Mqtt;
 public class MqttServerStartup
 {
     /// <inheritdoc/>
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapConnectionHandler<MqttConnectionHandler>(
+                "/mqtt",
+                httpConnectionDispatcherOptions => httpConnectionDispatcherOptions.WebSockets.SubProtocolSelector =
+                    protocolList => protocolList.FirstOrDefault() ?? string.Empty);
+        });
+    }
+
+    /// <inheritdoc/>
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddSingleton(s =>
@@ -45,18 +58,5 @@ public class MqttServerStartup
         services.AddSingleton<MQTTnet.Server.MqttServer>(s => s.GetService<MqttHostedServer>());
         services.AddMqttConnectionHandler();
         services.AddConnections();
-    }
-
-    /// <inheritdoc/>
-    public void Configure(IApplicationBuilder app)
-    {
-        app.UseRouting();
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapConnectionHandler<MqttConnectionHandler>(
-                "/mqtt",
-                httpConnectionDispatcherOptions => httpConnectionDispatcherOptions.WebSockets.SubProtocolSelector =
-                    protocolList => protocolList.FirstOrDefault() ?? string.Empty);
-        });
     }
 }

@@ -26,13 +26,15 @@ namespace ThingsGateway.Plugin.OpcUa;
 public class ThingsGatewayNodeManager : CustomNodeManager2
 {
     private const string ReferenceServer = "https://kimdiego2098.github.io/";
-    private BusinessBase _businessBase;
 
     //private readonly TypeAdapterConfig _config;
     /// <summary>
     /// OPC和网关对应表
     /// </summary>
     private readonly Dictionary<string, OpcUaTag> NodeIdTags = new();
+
+    private BusinessBase _businessBase;
+    private volatile bool success = true;
 
     /// <inheritdoc cref="ThingsGatewayNodeManager"/>
     public ThingsGatewayNodeManager(BusinessBase businessBase, IServerInternal server, ApplicationConfiguration configuration) : base(server, configuration, ReferenceServer)
@@ -246,8 +248,6 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
             return DataTypeIds.DateTime;
         return DataTypeIds.String;
     }
-
-    private volatile bool success = true;
 
     /// <summary>
     /// 在服务器端直接更改对应数据节点的值

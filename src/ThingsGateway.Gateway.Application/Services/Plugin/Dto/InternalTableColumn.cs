@@ -22,48 +22,47 @@ namespace BootstrapBlazor.Components;
 /// <param name="fieldText">显示文字</param>
 internal class InternalEditorItem(string fieldName, Type fieldType, string? fieldText = null) : IEditorItem
 {
-    public Type PropertyType => fieldType;
+    public IEnumerable<KeyValuePair<string, object>>? ComponentParameters { get; set; }
+    public Type? ComponentType { get; set; }
 
     [ExcludeFromCodeCoverage]
     public bool Editable { get; set; } = true;
+
+    public RenderFragment<object>? EditTemplate { get; set; }
+    public string? GroupName { get; set; }
+    public int GroupOrder { get; set; }
 
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
     public bool? Ignore { get; set; }
 
+    public bool IsPopover { get; set; }
+    public bool? IsReadonlyWhenAdd { get; set; }
+    public bool? IsReadonlyWhenEdit { get; set; }
+    public bool? IsVisibleWhenAdd { get; set; } = true;
+    public bool? IsVisibleWhenEdit { get; set; } = true;
+    public IEnumerable<SelectedItem>? Items { get; set; }
+    public IEnumerable<SelectedItem>? Lookup { get; set; }
+    public object? LookupServiceData { get; set; }
+    public string? LookupServiceKey { get; set; }
+    public StringComparison LookupStringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
+    public int Order { get; set; }
+    public string? PlaceHolder { get; set; }
+    public Type PropertyType => fieldType;
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
     public bool? Readonly { get; set; }
 
-    public bool? IsReadonlyWhenAdd { get; set; }
-    public bool? IsReadonlyWhenEdit { get; set; }
-
-    public bool? IsVisibleWhenAdd { get; set; } = true;
-
-    public bool? IsVisibleWhenEdit { get; set; } = true;
-
-    public bool SkipValidate { get; set; }
-    public string? Text { get; set; } = fieldText;
-    public bool? ShowLabelTooltip { get; set; }
-    public string? PlaceHolder { get; set; }
-    public IEnumerable<SelectedItem>? Items { get; set; }
-    public string? Step { get; set; }
     public int Rows { get; set; }
-    public RenderFragment<object>? EditTemplate { get; set; }
-    public Type? ComponentType { get; set; }
-    public IEnumerable<KeyValuePair<string, object>>? ComponentParameters { get; set; }
-    public IEnumerable<SelectedItem>? Lookup { get; set; }
+    public bool? ShowLabelTooltip { get; set; }
     public bool ShowSearchWhenSelect { get; set; }
-    public bool IsPopover { get; set; }
-    public StringComparison LookupStringComparison { get; set; } = StringComparison.OrdinalIgnoreCase;
-    public string? LookupServiceKey { get; set; }
-    public object? LookupServiceData { get; set; }
+    public bool SkipValidate { get; set; }
+    public string? Step { get; set; }
+    public string? Text { get; set; } = fieldText;
     public List<IValidator>? ValidateRules { get; set; }
-    public int Order { get; set; }
-    public string? GroupName { get; set; }
-    public int GroupOrder { get; set; }
 
     public string GetDisplayName() => Text;
 

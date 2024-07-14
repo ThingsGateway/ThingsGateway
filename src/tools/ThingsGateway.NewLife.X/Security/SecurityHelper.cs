@@ -26,6 +26,16 @@ public static class SecurityHelper
     [ThreadStatic]
     private static MD5? _md5;
 
+    /// <summary>Crc散列</summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static UInt32 Crc(this Byte[] data) => new Crc32().Update(data).Value;
+
+    /// <summary>Crc16散列</summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static UInt16 Crc16(this Byte[] data) => new Crc16().Update(data).Value;
+
     /// <summary>MD5散列</summary>
     /// <param name="data"></param>
     /// <returns></returns>
@@ -48,6 +58,17 @@ public static class SecurityHelper
         return buf.ToHex();
     }
 
+    /// <summary>计算文件的MD5散列</summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    public static Byte[] MD5(this FileInfo file)
+    {
+        _md5 ??= System.Security.Cryptography.MD5.Create();
+
+        using var fs = file.OpenRead();
+        return _md5.ComputeHash(fs);
+    }
+
     /// <summary>MD5散列</summary>
     /// <param name="data"></param>
     /// <param name="encoding">字符串编码，默认Default</param>
@@ -60,26 +81,11 @@ public static class SecurityHelper
         return buf.ToHex(0, 8);
     }
 
-    /// <summary>计算文件的MD5散列</summary>
-    /// <param name="file"></param>
-    /// <returns></returns>
-    public static Byte[] MD5(this FileInfo file)
-    {
-        _md5 ??= System.Security.Cryptography.MD5.Create();
-
-        using var fs = file.OpenRead();
-        return _md5.ComputeHash(fs);
-    }
-
-    /// <summary>Crc散列</summary>
+    /// <summary>Murmur128哈希</summary>
     /// <param name="data"></param>
+    /// <param name="seed"></param>
     /// <returns></returns>
-    public static UInt32 Crc(this Byte[] data) => new Crc32().Update(data).Value;
-
-    /// <summary>Crc16散列</summary>
-    /// <param name="data"></param>
-    /// <returns></returns>
-    public static UInt16 Crc16(this Byte[] data) => new Crc16().Update(data).Value;
+    public static Byte[] Murmur128(this Byte[] data, UInt32 seed = 0) => new Murmur128(seed).ComputeHash(data);
 
     /// <summary>SHA128</summary>
     /// <param name="data"></param>
@@ -105,15 +111,58 @@ public static class SecurityHelper
     /// <returns></returns>
     public static Byte[] SHA512(this Byte[] data, Byte[] key) => new HMACSHA512(key).ComputeHash(data);
 
-    /// <summary>Murmur128哈希</summary>
-    /// <param name="data"></param>
-    /// <param name="seed"></param>
-    /// <returns></returns>
-    public static Byte[] Murmur128(this Byte[] data, UInt32 seed = 0) => new Murmur128(seed).ComputeHash(data);
-
     #endregion 哈希
 
     #region 同步加密扩展
+
+    /// <summary>对称解密算法扩展
+    /// <para>注意：CryptoStream会把 instream 数据流关闭</para>
+    /// </summary>
+    /// <param name="sa"></param>
+    /// <param name="instream"></param>
+    /// <param name="outstream"></param>
+    /// <returns></returns>
+    public static SymmetricAlgorithm Decrypt(this SymmetricAlgorithm sa, Stream instream, Stream outstream)
+    {
+        using (var stream = new CryptoStream(instream, sa.CreateDecryptor(), CryptoStreamMode.Read))
+        {
+            stream.CopyTo(outstream);
+        }
+
+        return sa;
+    }
+
+    /// <summary>对称解密算法扩展</summary>
+    /// <remarks>CBC填充依赖IV，要求加解密的IV一致，而ECB填充则不需要</remarks>
+    /// <param name="sa">算法</param>
+    /// <param name="data">数据</param>
+    /// <param name="pass">密码</param>
+    /// <param name="mode">模式。.Net默认CBC，Java默认ECB</param>
+    /// <param name="padding">填充算法。默认PKCS7，等同Java的PKCS5</param>
+    /// <returns></returns>
+    public static Byte[] Decrypt(this SymmetricAlgorithm sa, Byte[] data, Byte[]? pass = null, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
+    {
+        if (data == null || data.Length <= 0) throw new ArgumentNullException(nameof(data));
+
+        if (pass != null && pass.Length > 0)
+        {
+            if (sa.LegalKeySizes != null && sa.LegalKeySizes.Length > 0)
+                sa.Key = Pad(pass, sa.LegalKeySizes[0]);
+            else
+                sa.Key = pass;
+
+            // CBC填充依赖IV，要求加解密的IV一致，而ECB填充则不需要
+            var iv = new Byte[sa.IV.Length];
+            iv.Write(0, pass);
+            sa.IV = iv;
+
+            sa.Mode = mode;
+            sa.Padding = padding;
+        }
+
+        using var stream = new CryptoStream(new MemoryStream(data), sa.CreateDecryptor(), CryptoStreamMode.Read);
+        return stream.ReadBytes(-1);
+    }
 
     /// <summary>对称加密算法扩展</summary>
     /// <remarks>注意：CryptoStream会把 outstream 数据流关闭</remarks>
@@ -180,82 +229,6 @@ public static class SecurityHelper
         return outstream.ToArray();
     }
 
-    /// <summary>对称解密算法扩展
-    /// <para>注意：CryptoStream会把 instream 数据流关闭</para>
-    /// </summary>
-    /// <param name="sa"></param>
-    /// <param name="instream"></param>
-    /// <param name="outstream"></param>
-    /// <returns></returns>
-    public static SymmetricAlgorithm Decrypt(this SymmetricAlgorithm sa, Stream instream, Stream outstream)
-    {
-        using (var stream = new CryptoStream(instream, sa.CreateDecryptor(), CryptoStreamMode.Read))
-        {
-            stream.CopyTo(outstream);
-        }
-
-        return sa;
-    }
-
-    /// <summary>对称解密算法扩展</summary>
-    /// <remarks>CBC填充依赖IV，要求加解密的IV一致，而ECB填充则不需要</remarks>
-    /// <param name="sa">算法</param>
-    /// <param name="data">数据</param>
-    /// <param name="pass">密码</param>
-    /// <param name="mode">模式。.Net默认CBC，Java默认ECB</param>
-    /// <param name="padding">填充算法。默认PKCS7，等同Java的PKCS5</param>
-    /// <returns></returns>
-    public static Byte[] Decrypt(this SymmetricAlgorithm sa, Byte[] data, Byte[]? pass = null, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
-    {
-        if (data == null || data.Length <= 0) throw new ArgumentNullException(nameof(data));
-
-        if (pass != null && pass.Length > 0)
-        {
-            if (sa.LegalKeySizes != null && sa.LegalKeySizes.Length > 0)
-                sa.Key = Pad(pass, sa.LegalKeySizes[0]);
-            else
-                sa.Key = pass;
-
-            // CBC填充依赖IV，要求加解密的IV一致，而ECB填充则不需要
-            var iv = new Byte[sa.IV.Length];
-            iv.Write(0, pass);
-            sa.IV = iv;
-
-            sa.Mode = mode;
-            sa.Padding = padding;
-        }
-
-        using var stream = new CryptoStream(new MemoryStream(data), sa.CreateDecryptor(), CryptoStreamMode.Read);
-        return stream.ReadBytes(-1);
-    }
-
-    private static Byte[] Pad(Byte[] buf, KeySizes keySize)
-    {
-        var psize = buf.Length * 8;
-        var size = 0;
-        for (var i = keySize.MinSize; i <= keySize.MaxSize; i += keySize.SkipSize)
-        {
-            if (i >= psize)
-            {
-                size = i / 8;
-                break;
-            }
-
-            // DES的SkipSize为0
-            if (keySize.SkipSize == 0) break;
-        }
-
-        // 所有key大小都不合适，取最大值，此时密码过长，需要截断
-        if (size == 0) size = keySize.MaxSize / 8;
-
-        if (buf.Length == size) return buf;
-
-        var buf2 = new Byte[size];
-        buf2.Write(0, buf);
-
-        return buf2;
-    }
-
     /// <summary>转换数据（内部加解密）</summary>
     /// <param name="transform"></param>
     /// <param name="data"></param>
@@ -299,6 +272,33 @@ public static class SecurityHelper
         //outstream.Write(rs);
 
         //return outstream.ToArray();
+    }
+
+    private static Byte[] Pad(Byte[] buf, KeySizes keySize)
+    {
+        var psize = buf.Length * 8;
+        var size = 0;
+        for (var i = keySize.MinSize; i <= keySize.MaxSize; i += keySize.SkipSize)
+        {
+            if (i >= psize)
+            {
+                size = i / 8;
+                break;
+            }
+
+            // DES的SkipSize为0
+            if (keySize.SkipSize == 0) break;
+        }
+
+        // 所有key大小都不合适，取最大值，此时密码过长，需要截断
+        if (size == 0) size = keySize.MaxSize / 8;
+
+        if (buf.Length == size) return buf;
+
+        var buf2 = new Byte[size];
+        buf2.Write(0, buf);
+
+        return buf2;
     }
 
     #endregion 同步加密扩展

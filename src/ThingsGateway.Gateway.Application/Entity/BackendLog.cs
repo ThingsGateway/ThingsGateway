@@ -24,11 +24,11 @@ namespace ThingsGateway.Gateway.Application;
 public class BackendLog : PrimaryIdEntity
 {
     /// <summary>
-    /// 日志时间
+    /// 异常对象
     /// </summary>
-    [SugarColumn(ColumnDescription = "日志时间", IsNullable = false)]
-    [AutoGenerateColumn(Visible = true, DefaultSort = true, Sortable = true, DefaultSortOrder = SortOrder.Desc)]
-    public DateTime LogTime { get; set; }
+    [SugarColumn(ColumnDescription = "异常对象", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
+    [AutoGenerateColumn(ShowTips = true, Filterable = true, Sortable = true)]
+    public string? Exception { get; set; }
 
     /// <summary>
     /// 日志级别
@@ -38,13 +38,6 @@ public class BackendLog : PrimaryIdEntity
     public LogLevel LogLevel { get; set; }
 
     /// <summary>
-    /// 日志来源
-    ///</summary>
-    [SugarColumn(ColumnDescription = "日志来源", IsNullable = false)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public string LogSource { get; set; }
-
-    /// <summary>
     /// 具体消息
     ///</summary>
     [SugarColumn(ColumnDescription = "具体消息", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
@@ -52,9 +45,16 @@ public class BackendLog : PrimaryIdEntity
     public string? LogMessage { get; set; }
 
     /// <summary>
-    /// 异常对象
+    /// 日志来源
+    ///</summary>
+    [SugarColumn(ColumnDescription = "日志来源", IsNullable = false)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public string LogSource { get; set; }
+
+    /// <summary>
+    /// 日志时间
     /// </summary>
-    [SugarColumn(ColumnDescription = "异常对象", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
-    [AutoGenerateColumn(ShowTips = true, Filterable = true, Sortable = true)]
-    public string? Exception { get; set; }
+    [SugarColumn(ColumnDescription = "日志时间", IsNullable = false)]
+    [AutoGenerateColumn(Visible = true, DefaultSort = true, Sortable = true, DefaultSortOrder = SortOrder.Desc)]
+    public DateTime LogTime { get; set; }
 }

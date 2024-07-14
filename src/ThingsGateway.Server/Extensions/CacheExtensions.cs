@@ -17,6 +17,10 @@ namespace ThingsGateway.Server;
 /// <inheritdoc/>
 internal static class CacheExtensions
 {
+    private static int? _age;
+
+    private static List<string>? _files;
+
     public static void ProcessCache(this StaticFileResponseContext context, IConfiguration configuration)
     {
         if (context.CanCache(configuration, out var age))
@@ -56,7 +60,17 @@ internal static class CacheExtensions
         return ret;
     }
 
-    private static List<string>? _files;
+    private static int GetAge(this IConfiguration configuration)
+    {
+        _age ??= GetAge();
+        return _age.Value;
+
+        int GetAge()
+        {
+            var cacheSection = configuration.GetSection("Cache-Control");
+            return cacheSection.GetValue<int>("Max-Age", 1000 * 60 * 10);
+        }
+    }
 
     private static List<string> GetFiles(this IConfiguration configuration)
     {
@@ -67,20 +81,6 @@ internal static class CacheExtensions
         {
             var cacheSection = configuration.GetSection("Cache-Control");
             return cacheSection.GetSection("Files").Get<List<string>>() ?? new();
-        }
-    }
-
-    private static int? _age;
-
-    private static int GetAge(this IConfiguration configuration)
-    {
-        _age ??= GetAge();
-        return _age.Value;
-
-        int GetAge()
-        {
-            var cacheSection = configuration.GetSection("Cache-Control");
-            return cacheSection.GetValue<int>("Max-Age", 1000 * 60 * 10);
         }
     }
 }

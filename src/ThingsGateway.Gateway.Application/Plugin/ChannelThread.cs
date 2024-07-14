@@ -28,6 +28,25 @@ public class ChannelThread
 {
     #region 动态配置
 
+    /// <summary>
+    /// 线程等待间隔时间
+    /// </summary>
+    public static volatile int CycleInterval = 10;
+
+    /// <summary>
+    /// 线程最大等待间隔时间
+    /// </summary>
+    public static int MaxCycleInterval = 100;
+
+    /// <summary>
+    /// 线程最小等待间隔时间
+    /// </summary>
+    public static int MinCycleInterval = 10;
+
+    internal static volatile int MaxCount;
+
+    internal static volatile int MaxVariableCount;
+
     static ChannelThread()
     {
         var minCycleInterval = App.Configuration.GetSection("ChannelThread:MinCycleInterval").Get<int?>() ?? 10;
@@ -85,24 +104,6 @@ public class ChannelThread
         }
     }
 
-    /// <summary>
-    /// 线程最大等待间隔时间
-    /// </summary>
-    public static int MaxCycleInterval = 100;
-
-    /// <summary>
-    /// 线程最小等待间隔时间
-    /// </summary>
-    public static int MinCycleInterval = 10;
-
-    /// <summary>
-    /// 线程等待间隔时间
-    /// </summary>
-    public static volatile int CycleInterval = 10;
-
-    internal static volatile int MaxCount;
-    internal static volatile int MaxVariableCount;
-
     #endregion 动态配置
 
     /// <summary>
@@ -142,22 +143,10 @@ public class ChannelThread
         LogEnable = channel.LogEnable;
     }
 
-    private IStringLocalizer Localizer { get; }
-
     /// <summary>
-    /// 插件集合
+    /// 是否采集通道
     /// </summary>
-    private ConcurrentList<DriverBase> DriverBases { get; set; } = new();
-
-    /// <summary>
-    /// 启停锁
-    /// </summary>
-    protected EasyLock EasyLock { get; } = new();
-
-    /// <summary>
-    /// 读写锁
-    /// </summary>
-    protected internal EasyLock WriteLock { get; } = new();
+    public bool IsCollectChannel { get; private set; }
 
     /// <summary>
     /// 设备线程
@@ -170,18 +159,32 @@ public class ChannelThread
     protected internal TouchSocketConfig FoundataionConfig => Channel?.Config;
 
     /// <summary>
-    /// 是否采集通道
+    /// 读写锁
     /// </summary>
-    public bool IsCollectChannel { get; private set; }
+    protected internal EasyLock WriteLock { get; } = new();
+
+    /// <summary>
+    /// 启停锁
+    /// </summary>
+    protected EasyLock EasyLock { get; } = new();
 
     /// <summary>
     /// 取消令箭列表
     /// </summary>
     private ConcurrentDictionary<long, CancellationTokenSource> CancellationTokenSources { get; set; } = new();
 
+    /// <summary>
+    /// 插件集合
+    /// </summary>
+    private ConcurrentList<DriverBase> DriverBases { get; set; } = new();
+
+    private IStringLocalizer Localizer { get; }
+
     #region 日志
 
     public LoggerGroup LogMessage { get; internal set; }
+
+    public string LogPath { get; }
 
     /// <summary>
     /// 日志
@@ -203,25 +206,20 @@ public class ChannelThread
         Logger.Log_Out(arg1, arg2, arg3, arg4);
     }
 
-    public string LogPath { get; }
-
     #endregion 日志
 
     #region 通道
 
-    protected internal Channel ChannelTable { get; }
-
     public long ChannelId { get; }
-
     protected internal IChannel? Channel { get; }
+    protected internal Channel ChannelTable { get; }
 
     #endregion 通道
 
     #region 调试日志
 
-    private TextFileLogger? TextLogger;
-    private bool logEnable { get; set; }
     private object logEnableLock = new();
+    private TextFileLogger? TextLogger;
 
     /// <summary>
     /// 获取或设置日志使能状态。当设置为 true 时，将启用日志记录功能；当设置为 false 时，将禁用日志记录功能。
@@ -274,6 +272,8 @@ public class ChannelThread
             }
         }
     }
+
+    private bool logEnable { get; set; }
 
     #endregion 调试日志
 
@@ -385,6 +385,8 @@ public class ChannelThread
     #endregion 外部获取
 
     #region 线程生命周期
+
+    private int releaseCount = 0;
 
     /// <summary>
     /// 停止插件前，执行取消传播
@@ -520,8 +522,6 @@ public class ChannelThread
             EasyLock.Release();
         }
     }
-
-    private int releaseCount = 0;
 
     /// <summary>
     /// DoWork

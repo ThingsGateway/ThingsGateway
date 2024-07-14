@@ -25,11 +25,25 @@ public interface IReflect
 {
     #region 反射获取
 
-    /// <summary>根据名称获取类型</summary>
-    /// <param name="typeName">类型名</param>
-    /// <param name="isLoadAssembly">是否从未加载程序集中获取类型。使用仅反射的方法检查目标类型，如果存在，则进行常规加载</param>
+    /// <summary>获取字段</summary>
+    /// <param name="type">类型</param>
+    /// <param name="name">名称</param>
+    /// <param name="ignoreCase">忽略大小写</param>
     /// <returns></returns>
-    Type? GetType(String typeName, Boolean isLoadAssembly);
+    FieldInfo? GetField(Type type, String name, Boolean ignoreCase);
+
+    /// <summary>获取字段</summary>
+    /// <param name="type"></param>
+    /// <param name="baseFirst"></param>
+    /// <returns></returns>
+    IList<FieldInfo> GetFields(Type type, Boolean baseFirst = true);
+
+    /// <summary>获取成员</summary>
+    /// <param name="type">类型</param>
+    /// <param name="name">名称</param>
+    /// <param name="ignoreCase">忽略大小写</param>
+    /// <returns></returns>
+    MemberInfo? GetMember(Type type, String name, Boolean ignoreCase);
 
     /// <summary>获取方法</summary>
     /// <remarks>用于具有多个签名的同名方法的场合，不确定是否存在性能问题，不建议普通场合使用</remarks>
@@ -47,37 +61,23 @@ public interface IReflect
     MethodInfo[] GetMethods(Type type, String name, Int32 paramCount = -1);
 
     /// <summary>获取属性</summary>
+    /// <param name="type"></param>
+    /// <param name="baseFirst"></param>
+    /// <returns></returns>
+    IList<PropertyInfo> GetProperties(Type type, Boolean baseFirst = true);
+
+    /// <summary>获取属性</summary>
     /// <param name="type">类型</param>
     /// <param name="name">名称</param>
     /// <param name="ignoreCase">忽略大小写</param>
     /// <returns></returns>
     PropertyInfo? GetProperty(Type type, String name, Boolean ignoreCase);
 
-    /// <summary>获取字段</summary>
-    /// <param name="type">类型</param>
-    /// <param name="name">名称</param>
-    /// <param name="ignoreCase">忽略大小写</param>
+    /// <summary>根据名称获取类型</summary>
+    /// <param name="typeName">类型名</param>
+    /// <param name="isLoadAssembly">是否从未加载程序集中获取类型。使用仅反射的方法检查目标类型，如果存在，则进行常规加载</param>
     /// <returns></returns>
-    FieldInfo? GetField(Type type, String name, Boolean ignoreCase);
-
-    /// <summary>获取成员</summary>
-    /// <param name="type">类型</param>
-    /// <param name="name">名称</param>
-    /// <param name="ignoreCase">忽略大小写</param>
-    /// <returns></returns>
-    MemberInfo? GetMember(Type type, String name, Boolean ignoreCase);
-
-    /// <summary>获取字段</summary>
-    /// <param name="type"></param>
-    /// <param name="baseFirst"></param>
-    /// <returns></returns>
-    IList<FieldInfo> GetFields(Type type, Boolean baseFirst = true);
-
-    /// <summary>获取属性</summary>
-    /// <param name="type"></param>
-    /// <param name="baseFirst"></param>
-    /// <returns></returns>
-    IList<PropertyInfo> GetProperties(Type type, Boolean baseFirst = true);
+    Type? GetType(String typeName, Boolean isLoadAssembly);
 
     #endregion 反射获取
 
@@ -88,6 +88,18 @@ public interface IReflect
     /// <param name="parameters">参数数组</param>
     /// <returns></returns>
     Object? CreateInstance(Type type, params Object?[] parameters);
+
+    /// <summary>获取目标对象的属性值</summary>
+    /// <param name="target">目标对象</param>
+    /// <param name="property">属性</param>
+    /// <returns></returns>
+    Object? GetValue(Object? target, PropertyInfo property);
+
+    /// <summary>获取目标对象的字段值</summary>
+    /// <param name="target">目标对象</param>
+    /// <param name="field">字段</param>
+    /// <returns></returns>
+    Object? GetValue(Object? target, FieldInfo field);
 
     /// <summary>反射调用指定对象的方法</summary>
     /// <param name="target">要调用其方法的对象，如果要调用静态方法，则target是类型</param>
@@ -102,18 +114,6 @@ public interface IReflect
     /// <param name="parameters">方法参数字典</param>
     /// <returns></returns>
     Object? InvokeWithParams(Object? target, MethodBase method, IDictionary? parameters);
-
-    /// <summary>获取目标对象的属性值</summary>
-    /// <param name="target">目标对象</param>
-    /// <param name="property">属性</param>
-    /// <returns></returns>
-    Object? GetValue(Object? target, PropertyInfo property);
-
-    /// <summary>获取目标对象的字段值</summary>
-    /// <param name="target">目标对象</param>
-    /// <param name="field">字段</param>
-    /// <returns></returns>
-    Object? GetValue(Object? target, FieldInfo field);
 
     /// <summary>设置目标对象的属性值</summary>
     /// <param name="target">目标对象</param>
@@ -131,16 +131,16 @@ public interface IReflect
 
     #region 类型辅助
 
-    /// <summary>获取一个类型的元素类型</summary>
-    /// <param name="type">类型</param>
-    /// <returns></returns>
-    Type? GetElementType(Type type);
-
     /// <summary>类型转换</summary>
     /// <param name="value">数值</param>
     /// <param name="conversionType"></param>
     /// <returns></returns>
     Object? ChangeType(Object? value, Type conversionType);
+
+    /// <summary>获取一个类型的元素类型</summary>
+    /// <param name="type">类型</param>
+    /// <returns></returns>
+    Type? GetElementType(Type type);
 
     /// <summary>获取类型的友好名称</summary>
     /// <param name="type">指定类型</param>
@@ -168,14 +168,64 @@ public class DefaultReflect : IReflect
 {
     #region 反射获取
 
-    /// <summary>根据名称获取类型</summary>
-    /// <param name="typeName">类型名</param>
-    /// <param name="isLoadAssembly">是否从未加载程序集中获取类型。使用仅反射的方法检查目标类型，如果存在，则进行常规加载</param>
-    /// <returns></returns>
-    public virtual Type? GetType(String typeName, Boolean isLoadAssembly) => AssemblyX.GetType(typeName, isLoadAssembly);
-
     private static readonly BindingFlags bf = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+
     private static readonly BindingFlags bfic = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.IgnoreCase;
+
+    /// <summary>获取字段</summary>
+    /// <param name="type">类型</param>
+    /// <param name="name">名称</param>
+    /// <param name="ignoreCase">忽略大小写</param>
+    /// <returns></returns>
+    public virtual FieldInfo? GetField(Type type, String name, Boolean ignoreCase)
+    {
+        // 父类私有字段的获取需要递归，可见范围则不需要，有些类型的父类为空，比如接口
+        var type2 = type;
+        while (type2 != null && type2 != typeof(Object))
+        {
+            //var fi = type.GetField(name, ignoreCase ? bfic : bf);
+            var fi = type2.GetField(name, bf);
+            if (fi != null) return fi;
+            if (ignoreCase)
+            {
+                fi = type2.GetField(name, bfic);
+                if (fi != null) return fi;
+            }
+
+            type2 = type2.BaseType;
+        }
+        return null;
+    }
+
+    /// <summary>获取成员</summary>
+    /// <param name="type">类型</param>
+    /// <param name="name">名称</param>
+    /// <param name="ignoreCase">忽略大小写</param>
+    /// <returns></returns>
+    public virtual MemberInfo? GetMember(Type type, String name, Boolean ignoreCase)
+    {
+        // 父类私有成员的获取需要递归，可见范围则不需要，有些类型的父类为空，比如接口
+        var type2 = type;
+        while (type2 != null && type2 != typeof(Object))
+        {
+            var fs = type2.GetMember(name, ignoreCase ? bfic : bf);
+            if (fs != null && fs.Length > 0)
+            {
+                // 得到多个的时候，优先返回精确匹配
+                if (ignoreCase && fs.Length > 1)
+                {
+                    foreach (var fi in fs)
+                    {
+                        if (fi.Name == name) return fi;
+                    }
+                }
+                return fs[0];
+            }
+
+            type2 = type2.BaseType;
+        }
+        return null;
+    }
 
     /// <summary>获取方法</summary>
     /// <remarks>用于具有多个签名的同名方法的场合，不确定是否存在性能问题，不建议普通场合使用</remarks>
@@ -247,60 +297,11 @@ public class DefaultReflect : IReflect
         return null;
     }
 
-    /// <summary>获取字段</summary>
-    /// <param name="type">类型</param>
-    /// <param name="name">名称</param>
-    /// <param name="ignoreCase">忽略大小写</param>
+    /// <summary>根据名称获取类型</summary>
+    /// <param name="typeName">类型名</param>
+    /// <param name="isLoadAssembly">是否从未加载程序集中获取类型。使用仅反射的方法检查目标类型，如果存在，则进行常规加载</param>
     /// <returns></returns>
-    public virtual FieldInfo? GetField(Type type, String name, Boolean ignoreCase)
-    {
-        // 父类私有字段的获取需要递归，可见范围则不需要，有些类型的父类为空，比如接口
-        var type2 = type;
-        while (type2 != null && type2 != typeof(Object))
-        {
-            //var fi = type.GetField(name, ignoreCase ? bfic : bf);
-            var fi = type2.GetField(name, bf);
-            if (fi != null) return fi;
-            if (ignoreCase)
-            {
-                fi = type2.GetField(name, bfic);
-                if (fi != null) return fi;
-            }
-
-            type2 = type2.BaseType;
-        }
-        return null;
-    }
-
-    /// <summary>获取成员</summary>
-    /// <param name="type">类型</param>
-    /// <param name="name">名称</param>
-    /// <param name="ignoreCase">忽略大小写</param>
-    /// <returns></returns>
-    public virtual MemberInfo? GetMember(Type type, String name, Boolean ignoreCase)
-    {
-        // 父类私有成员的获取需要递归，可见范围则不需要，有些类型的父类为空，比如接口
-        var type2 = type;
-        while (type2 != null && type2 != typeof(Object))
-        {
-            var fs = type2.GetMember(name, ignoreCase ? bfic : bf);
-            if (fs != null && fs.Length > 0)
-            {
-                // 得到多个的时候，优先返回精确匹配
-                if (ignoreCase && fs.Length > 1)
-                {
-                    foreach (var fi in fs)
-                    {
-                        if (fi.Name == name) return fi;
-                    }
-                }
-                return fs[0];
-            }
-
-            type2 = type2.BaseType;
-        }
-        return null;
-    }
+    public virtual Type? GetType(String typeName, Boolean isLoadAssembly) => AssemblyX.GetType(typeName, isLoadAssembly);
 
     #endregion 反射获取
 
@@ -308,6 +309,10 @@ public class DefaultReflect : IReflect
 
     private readonly ConcurrentDictionary<Type, IList<FieldInfo>> _cache1 = new();
     private readonly ConcurrentDictionary<Type, IList<FieldInfo>> _cache2 = new();
+
+    private readonly ConcurrentDictionary<Type, IList<PropertyInfo>> _cache3 = new();
+
+    private readonly ConcurrentDictionary<Type, IList<PropertyInfo>> _cache4 = new();
 
     /// <summary>获取字段</summary>
     /// <param name="type"></param>
@@ -319,6 +324,18 @@ public class DefaultReflect : IReflect
             return _cache1.GetOrAdd(type, key => GetFields2(key, true));
         else
             return _cache2.GetOrAdd(type, key => GetFields2(key, false));
+    }
+
+    /// <summary>获取属性</summary>
+    /// <param name="type"></param>
+    /// <param name="baseFirst"></param>
+    /// <returns></returns>
+    public virtual IList<PropertyInfo> GetProperties(Type type, Boolean baseFirst = true)
+    {
+        if (baseFirst)
+            return _cache3.GetOrAdd(type, key => GetProperties2(key, true));
+        else
+            return _cache4.GetOrAdd(type, key => GetProperties2(key, false));
     }
 
     private IList<FieldInfo> GetFields2(Type type, Boolean baseFirst)
@@ -341,21 +358,6 @@ public class DefaultReflect : IReflect
         if (!baseFirst) list.AddRange(GetFields(type.BaseType));
 
         return list;
-    }
-
-    private readonly ConcurrentDictionary<Type, IList<PropertyInfo>> _cache3 = new();
-    private readonly ConcurrentDictionary<Type, IList<PropertyInfo>> _cache4 = new();
-
-    /// <summary>获取属性</summary>
-    /// <param name="type"></param>
-    /// <param name="baseFirst"></param>
-    /// <returns></returns>
-    public virtual IList<PropertyInfo> GetProperties(Type type, Boolean baseFirst = true)
-    {
-        if (baseFirst)
-            return _cache3.GetOrAdd(type, key => GetProperties2(key, true));
-        else
-            return _cache4.GetOrAdd(type, key => GetProperties2(key, false));
     }
 
     private IList<PropertyInfo> GetProperties2(Type type, Boolean baseFirst)
@@ -452,6 +454,18 @@ public class DefaultReflect : IReflect
         }
     }
 
+    /// <summary>获取目标对象的属性值</summary>
+    /// <param name="target">目标对象</param>
+    /// <param name="property">属性</param>
+    /// <returns></returns>
+    public virtual Object? GetValue(Object? target, PropertyInfo property) => property.GetValue(target, null);
+
+    /// <summary>获取目标对象的字段值</summary>
+    /// <param name="target">目标对象</param>
+    /// <param name="field">字段</param>
+    /// <returns></returns>
+    public virtual Object? GetValue(Object? target, FieldInfo field) => field.GetValue(target);
+
     /// <summary>反射调用指定对象的方法</summary>
     /// <param name="target">要调用其方法的对象，如果要调用静态方法，则target是类型</param>
     /// <param name="method">方法</param>
@@ -482,18 +496,6 @@ public class DefaultReflect : IReflect
         return method.Invoke(target, ps);
     }
 
-    /// <summary>获取目标对象的属性值</summary>
-    /// <param name="target">目标对象</param>
-    /// <param name="property">属性</param>
-    /// <returns></returns>
-    public virtual Object? GetValue(Object? target, PropertyInfo property) => property.GetValue(target, null);
-
-    /// <summary>获取目标对象的字段值</summary>
-    /// <param name="target">目标对象</param>
-    /// <param name="field">字段</param>
-    /// <returns></returns>
-    public virtual Object? GetValue(Object? target, FieldInfo field) => field.GetValue(target);
-
     /// <summary>设置目标对象的属性值</summary>
     /// <param name="target">目标对象</param>
     /// <param name="property">属性</param>
@@ -509,28 +511,6 @@ public class DefaultReflect : IReflect
     #endregion 反射调用
 
     #region 类型辅助
-
-    /// <summary>获取一个类型的元素类型</summary>
-    /// <param name="type">类型</param>
-    /// <returns></returns>
-    public virtual Type? GetElementType(Type type)
-    {
-        if (type.HasElementType) return type.GetElementType();
-
-        if (type.As<IEnumerable>())
-        {
-            // 如果实现了IEnumerable<>接口，那么取泛型参数
-            foreach (var item in type.GetInterfaces())
-            {
-                if (item.IsGenericType && item.GetGenericTypeDefinition() == typeof(IEnumerable<>)) return item.GetGenericArguments()[0];
-            }
-            //// 通过索引器猜测元素类型
-            //var pi = type.GetProperty("Item", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            //if (pi != null) return pi.PropertyType;
-        }
-
-        return null;
-    }
 
     /// <summary>类型转换</summary>
     /// <param name="value">数值</param>
@@ -625,6 +605,28 @@ public class DefaultReflect : IReflect
         if (conversionType.IsAssignableFrom(vtype)) return value;
 
         return value;
+    }
+
+    /// <summary>获取一个类型的元素类型</summary>
+    /// <param name="type">类型</param>
+    /// <returns></returns>
+    public virtual Type? GetElementType(Type type)
+    {
+        if (type.HasElementType) return type.GetElementType();
+
+        if (type.As<IEnumerable>())
+        {
+            // 如果实现了IEnumerable<>接口，那么取泛型参数
+            foreach (var item in type.GetInterfaces())
+            {
+                if (item.IsGenericType && item.GetGenericTypeDefinition() == typeof(IEnumerable<>)) return item.GetGenericArguments()[0];
+            }
+            //// 通过索引器猜测元素类型
+            //var pi = type.GetProperty("Item", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            //if (pi != null) return pi.PropertyType;
+        }
+
+        return null;
     }
 
     /// <summary>获取类型的友好名称</summary>

@@ -28,14 +28,14 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
     protected TimeTick _exTTimerTick;
 
     /// <summary>
-    /// 获取业务属性与缓存间隔的抽象属性。
-    /// </summary>
-    protected abstract BusinessPropertyWithCacheInterval _businessPropertyWithCacheInterval { get; }
-
-    /// <summary>
     /// 获取具体业务属性的缓存设置。
     /// </summary>
     protected override BusinessPropertyWithCache _businessPropertyWithCache => _businessPropertyWithCacheInterval;
+
+    /// <summary>
+    /// 获取业务属性与缓存间隔的抽象属性。
+    /// </summary>
+    protected abstract BusinessPropertyWithCacheInterval _businessPropertyWithCacheInterval { get; }
 
     /// <summary>
     /// 初始化方法，初始化插件。
@@ -73,14 +73,12 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
     }
 
     /// <summary>
-    /// 在开始前的保护方法，异步执行间隔插入任务。
+    /// 设备状态变化时发生的虚拟方法，用于处理设备状态变化事件。
     /// </summary>
-    /// <param name="cancellationToken">取消令牌</param>
-    /// <returns>异步任务</returns>
-    protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
+    /// <param name="deviceRunTime">设备运行时对象</param>
+    /// <param name="deviceData">设备数据对象</param>
+    protected virtual void DeviceChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
     {
-        _ = IntervalInsert();
-        return base.ProtectedBeforStartAsync(cancellationToken);
     }
 
     /// <summary>
@@ -155,12 +153,14 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
     }
 
     /// <summary>
-    /// 设备状态变化时发生的虚拟方法，用于处理设备状态变化事件。
+    /// 在开始前的保护方法，异步执行间隔插入任务。
     /// </summary>
-    /// <param name="deviceRunTime">设备运行时对象</param>
-    /// <param name="deviceData">设备数据对象</param>
-    protected virtual void DeviceChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
+    /// <param name="cancellationToken">取消令牌</param>
+    /// <returns>异步任务</returns>
+    protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
+        _ = IntervalInsert();
+        return base.ProtectedBeforStartAsync(cancellationToken);
     }
 
     /// <summary>
@@ -170,26 +170,6 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
     /// <param name="variable">变量数据对象</param>
     protected virtual void VariableChange(VariableRunTime variableRunTime, VariableData variable)
     {
-    }
-
-    /// <summary>
-    /// 变量值改变时的事件处理方法。
-    /// </summary>
-    /// <param name="variableRunTime">变量运行时对象</param>
-    /// <param name="variable">变量数据对象</param>
-    private void VariableValueChange(VariableRunTime variableRunTime, VariableData variable)
-    {
-        // 如果当前设备已停止运行，则直接返回，不进行处理
-        if (!CurrentDevice.KeepRun)
-            return;
-
-        // 如果业务属性不是间隔上传，则执行变量状态改变的处理逻辑
-        if (_businessPropertyWithCacheInterval?.IsInterval != true)
-        {
-            // 检查当前设备是否包含该变量，并进行相应处理
-            if (CurrentDevice.VariableRunTimes.ContainsKey(variableRunTime.Name))
-                VariableChange(variableRunTime, variable);
-        }
     }
 
     /// <summary>
@@ -209,6 +189,26 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
             // 检查当前设备集合中是否包含该设备，并进行相应处理
             if (CollectDevices.ContainsKey(deviceRunTime.Name))
                 DeviceChange(deviceRunTime, deviceData);
+        }
+    }
+
+    /// <summary>
+    /// 变量值改变时的事件处理方法。
+    /// </summary>
+    /// <param name="variableRunTime">变量运行时对象</param>
+    /// <param name="variable">变量数据对象</param>
+    private void VariableValueChange(VariableRunTime variableRunTime, VariableData variable)
+    {
+        // 如果当前设备已停止运行，则直接返回，不进行处理
+        if (!CurrentDevice.KeepRun)
+            return;
+
+        // 如果业务属性不是间隔上传，则执行变量状态改变的处理逻辑
+        if (_businessPropertyWithCacheInterval?.IsInterval != true)
+        {
+            // 检查当前设备是否包含该变量，并进行相应处理
+            if (CurrentDevice.VariableRunTimes.ContainsKey(variableRunTime.Name))
+                VariableChange(variableRunTime, variable);
         }
     }
 }

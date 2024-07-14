@@ -29,21 +29,21 @@ public abstract partial class DevicePage : IDisposable
     protected abstract PluginTypeEnum PluginType { get; }
     protected abstract string RolePrex { get; }
 
-    [Inject]
-    [NotNull]
-    private IPluginService? PluginService { get; set; }
+    private Dictionary<long, Channel> ChannelDict { get; set; } = new();
 
     [Inject]
     [NotNull]
-    private IDeviceService? DeviceService { get; set; }
+    private IDispatchService<Channel>? ChannelDispatchService { get; set; }
 
     [Inject]
     [NotNull]
     private IChannelService? ChannelService { get; set; }
 
+    private Dictionary<long, string> DeviceDict { get; set; } = new();
+
     [Inject]
     [NotNull]
-    private IDispatchService<Channel>? ChannelDispatchService { get; set; }
+    private IDeviceService? DeviceService { get; set; }
 
     [Inject]
     [NotNull]
@@ -53,7 +53,24 @@ public abstract partial class DevicePage : IDisposable
     [NotNull]
     private IDispatchService<PluginOutput>? PluginDispatchService { get; set; }
 
+    [Inject]
+    [NotNull]
+    private IPluginService? PluginService { get; set; }
+
     private Device? SearchModel { get; set; } = new();
+
+    public void Dispose()
+    {
+        ChannelDispatchService.UnSubscribe(Notify);
+        DispatchService.UnSubscribe(Notify);
+        PluginDispatchService.UnSubscribe(Notify);
+    }
+
+    protected override void OnInitialized()
+    {
+        SearchModel.PluginType = PluginType;
+        base.OnInitialized();
+    }
 
     protected override Task OnInitializedAsync()
     {
@@ -61,6 +78,14 @@ public abstract partial class DevicePage : IDisposable
         PluginDispatchService.Subscribe(Notify);
         DispatchService.Subscribe(Notify);
         return base.OnInitializedAsync();
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        ChannelDict = ChannelService.GetAll().ToDictionary(a => a.Id);
+        DeviceDict = DeviceService.GetAll().ToDictionary(a => a.Id, a => a.Name);
+        PluginNames = PluginService.GetList(PluginType).BuildPluginSelectList();
+        return base.OnParametersSetAsync();
     }
 
     private async Task Notify(DispatchEntry<PluginOutput> entry)
@@ -82,30 +107,6 @@ public abstract partial class DevicePage : IDisposable
         await OnParametersSetAsync();
         await InvokeAsync(table.QueryAsync);
         await InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose()
-    {
-        ChannelDispatchService.UnSubscribe(Notify);
-        DispatchService.UnSubscribe(Notify);
-        PluginDispatchService.UnSubscribe(Notify);
-    }
-
-    protected override void OnInitialized()
-    {
-        SearchModel.PluginType = PluginType;
-        base.OnInitialized();
-    }
-
-    private Dictionary<long, Channel> ChannelDict { get; set; } = new();
-    private Dictionary<long, string> DeviceDict { get; set; } = new();
-
-    protected override Task OnParametersSetAsync()
-    {
-        ChannelDict = ChannelService.GetAll().ToDictionary(a => a.Id);
-        DeviceDict = DeviceService.GetAll().ToDictionary(a => a.Id, a => a.Name);
-        PluginNames = PluginService.GetList(PluginType).BuildPluginSelectList();
-        return base.OnParametersSetAsync();
     }
 
     private Task<QueryData<SelectedItem>> OnRedundantDevicesQuery(VirtualizeQueryOption option, Device device)
@@ -137,47 +138,6 @@ public abstract partial class DevicePage : IDisposable
     #endregion 查询
 
     #region 修改
-
-    private async Task DeleteAllAsync()
-    {
-        try
-        {
-            await DeviceService.ClearDeviceAsync(PluginType);
-            await Change();
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(null, $"{ex.Message}");
-        }
-    }
-
-    private async Task Change()
-    {
-        await OnParametersSetAsync();
-    }
-
-    private async Task<bool> Save(Device device, ItemChangedType itemChangedType)
-    {
-        try
-        {
-            var result = (!PluginServiceUtil.HasDynamicProperty(device.PluginPropertyModel.Value)) || (device.PluginPropertyModel.ValidateForm?.Validate() != false);
-
-            if (result == false)
-            {
-                return false;
-            }
-            device.PluginType = PluginType;
-            device.DevicePropertys = PluginServiceUtil.SetDict(device.PluginPropertyModel.Value);
-            var saveResult = await DeviceService.SaveDeviceAsync(device, itemChangedType);
-            await Change();
-            return saveResult;
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(null, $"{ex.Message}");
-            return false;
-        }
-    }
 
     private async Task BatchEdit(IEnumerable<Device> devices)
     {
@@ -214,6 +174,11 @@ public abstract partial class DevicePage : IDisposable
         await DialogService.Show(op);
     }
 
+    private async Task Change()
+    {
+        await OnParametersSetAsync();
+    }
+
     private async Task<bool> Delete(IEnumerable<Device> devices)
     {
         try
@@ -229,16 +194,52 @@ public abstract partial class DevicePage : IDisposable
         }
     }
 
+    private async Task DeleteAllAsync()
+    {
+        try
+        {
+            await DeviceService.ClearDeviceAsync(PluginType);
+            await Change();
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(null, $"{ex.Message}");
+        }
+    }
+
+    private async Task<bool> Save(Device device, ItemChangedType itemChangedType)
+    {
+        try
+        {
+            var result = (!PluginServiceUtil.HasDynamicProperty(device.PluginPropertyModel.Value)) || (device.PluginPropertyModel.ValidateForm?.Validate() != false);
+
+            if (result == false)
+            {
+                return false;
+            }
+            device.PluginType = PluginType;
+            device.DevicePropertys = PluginServiceUtil.SetDict(device.PluginPropertyModel.Value);
+            var saveResult = await DeviceService.SaveDeviceAsync(device, itemChangedType);
+            await Change();
+            return saveResult;
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(null, $"{ex.Message}");
+            return false;
+        }
+    }
+
     #endregion 修改
 
     #region 导出
 
     [Inject]
-    [NotNull]
-    private ITableExport? TableExport { get; set; }
+    private IJSRuntime JSRuntime { get; set; }
 
     [Inject]
-    private IJSRuntime JSRuntime { get; set; }
+    [NotNull]
+    private ITableExport? TableExport { get; set; }
 
     private async Task ExcelExportAsync(ITableExportContext<Device> tableExportContext)
     {

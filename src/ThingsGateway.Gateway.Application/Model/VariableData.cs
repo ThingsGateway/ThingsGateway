@@ -13,27 +13,43 @@ using Newtonsoft.Json;
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
+/// 变量基础数据
+/// </summary>
+public class VariableBasicData : VariableData
+{
+    /// <inheritdoc cref="Variable.DataType"/>
+    public DataTypeEnum DataType { get; set; }
+
+    /// <inheritdoc cref="Variable.Description"/>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? Description { get; set; }
+
+    /// <inheritdoc cref="Variable.ProtectType"/>
+    public ProtectTypeEnum ProtectType { get; set; }
+
+    /// <inheritdoc cref="Variable.Unit"/>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? Unit { get; set; }
+}
+
+/// <summary>
 /// 变量业务变化数据
 /// </summary>
 public class VariableData : IPrimaryIdEntity
 {
-    /// <inheritdoc cref="PrimaryIdEntity.Id"/>
-    public long Id { get; set; }
-
-    /// <inheritdoc cref="Variable.Name"/>
-    public string Name { get; set; }
-
-    /// <inheritdoc cref="VariableRunTime.DeviceName"/>
-    public string DeviceName { get; set; }
-
-    /// <inheritdoc cref="VariableRunTime.Value"/>
-    public object Value { get; set; }
-
     /// <inheritdoc cref="VariableRunTime.ChangeTime"/>
     public DateTime ChangeTime { get; set; }
 
     /// <inheritdoc cref="VariableRunTime.CollectTime"/>
     public DateTime CollectTime { get; set; }
+
+    /// <inheritdoc cref="VariableRunTime.DeviceName"/>
+    public string DeviceName { get; set; }
+
+    /// <inheritdoc cref="PrimaryIdEntity.Id"/>
+    public long Id { get; set; }
 
     /// <inheritdoc cref="VariableRunTime.IsOnline"/>
     public bool IsOnline { get; set; }
@@ -42,6 +58,9 @@ public class VariableData : IPrimaryIdEntity
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? LastErrorMessage { get; set; }
+
+    /// <inheritdoc cref="Variable.Name"/>
+    public string Name { get; set; }
 
     /// <inheritdoc cref="Device.Remark1"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -67,38 +86,13 @@ public class VariableData : IPrimaryIdEntity
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string Remark5 { get; set; }
-}
 
-/// <summary>
-/// 变量基础数据
-/// </summary>
-public class VariableBasicData : VariableData
-{
-    /// <inheritdoc cref="Variable.Unit"/>
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
-    public string? Unit { get; set; }
-
-    /// <inheritdoc cref="Variable.Description"/>
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
-    public string? Description { get; set; }
-
-    /// <inheritdoc cref="Variable.ProtectType"/>
-    public ProtectTypeEnum ProtectType { get; set; }
-
-    /// <inheritdoc cref="Variable.DataType"/>
-    public DataTypeEnum DataType { get; set; }
+    /// <inheritdoc cref="VariableRunTime.Value"/>
+    public object Value { get; set; }
 }
 
 internal class VariableDataWithValue
 {
-    /// <inheritdoc cref="DeviceRunTime.Name"/>
-    public string Name { get; set; }
-
-    /// <inheritdoc cref="VariableRunTime.Value"/>
-    public object RawValue { get; set; }
-
     /// <inheritdoc cref="VariableRunTime.CollectTime"/>
     public DateTime CollectTime { get; set; }
 
@@ -109,4 +103,10 @@ internal class VariableDataWithValue
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? LastErrorMessage { get; set; }
+
+    /// <inheritdoc cref="DeviceRunTime.Name"/>
+    public string Name { get; set; }
+
+    /// <inheritdoc cref="VariableRunTime.Value"/>
+    public object RawValue { get; set; }
 }

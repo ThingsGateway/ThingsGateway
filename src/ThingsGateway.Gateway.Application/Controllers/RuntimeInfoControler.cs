@@ -45,6 +45,20 @@ public class RuntimeInfoControler : ControllerBase
     }
 
     /// <summary>
+    /// 获取实时报警信息
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("realAlarmList")]
+    public SqlSugarPagedList<VariableData> GetRealAlarmList([FromQuery] VariablePageInput input)
+    {
+        var data = GlobalData.ReadOnlyRealAlarmVariables
+            .WhereIF(!input.Name.IsNullOrEmpty(), a => a.Name == input.Name)
+            .WhereIF(input.DeviceId != null, a => a.DeviceId == input.DeviceId)
+            .ToPagedList(input);
+        return data.Adapt<SqlSugarPagedList<VariableData>>();
+    }
+
+    /// <summary>
     /// 获取变量信息
     /// </summary>
     /// <returns></returns>
@@ -55,20 +69,6 @@ public class RuntimeInfoControler : ControllerBase
             .WhereIF(!input.Name.IsNullOrWhiteSpace(), a => a.Name == input.Name)
             .WhereIF(input.DeviceId != null, a => a.DeviceId == input.DeviceId)
             .WhereIF(!input.RegisterAddress.IsNullOrWhiteSpace(), a => a.RegisterAddress == input.RegisterAddress)
-            .ToPagedList(input);
-        return data.Adapt<SqlSugarPagedList<VariableData>>();
-    }
-
-    /// <summary>
-    /// 获取实时报警信息
-    /// </summary>
-    /// <returns></returns>
-    [HttpGet("realAlarmList")]
-    public SqlSugarPagedList<VariableData> GetRealAlarmList([FromQuery] VariablePageInput input)
-    {
-        var data = GlobalData.ReadOnlyRealAlarmVariables
-            .WhereIF(!input.Name.IsNullOrEmpty(), a => a.Name == input.Name)
-            .WhereIF(input.DeviceId != null, a => a.DeviceId == input.DeviceId)
             .ToPagedList(input);
         return data.Adapt<SqlSugarPagedList<VariableData>>();
     }

@@ -13,15 +13,10 @@ namespace NewLife.Caching;
 /// <summary>分布式锁</summary>
 public class CacheLock : DisposeBase
 {
-    private ICache Client { get; set; }
-
     /// <summary>
     /// 是否持有锁
     /// </summary>
     private Boolean _hasLock = false;
-
-    /// <summary>键</summary>
-    public String Key { get; set; }
 
     /// <summary>实例化</summary>
     /// <param name="client"></param>
@@ -34,6 +29,11 @@ public class CacheLock : DisposeBase
         Client = client;
         Key = key;
     }
+
+    /// <summary>键</summary>
+    public String Key { get; set; }
+
+    private ICache Client { get; set; }
 
     /// <summary>申请锁</summary>
     /// <param name="msTimeout">锁等待时间，申请加锁时如果遇到冲突则等待的最大时间，单位毫秒</param>

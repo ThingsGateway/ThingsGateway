@@ -14,7 +14,6 @@ using Mapster;
 
 using SqlSugar;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 
@@ -25,23 +24,26 @@ namespace ThingsGateway.Plugin.QuestDB;
 /// </summary>
 public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<QuestDBHistoryValue>, IDBHistoryValueService
 {
-    private readonly QuestDBProducerVariableProperty _variablePropertys = new();
     internal readonly QuestDBProducerProperty _driverPropertys = new();
+    private readonly QuestDBProducerVariableProperty _variablePropertys = new();
+
+    /// <inheritdoc/>
+    public override Type DriverUIType => typeof(QuestDBPage);
 
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
     protected override BusinessPropertyWithCacheInterval _businessPropertyWithCacheInterval => _driverPropertys;
 
-    /// <inheritdoc/>
-    public override Type DriverUIType => typeof(QuestDBPage);
-
-    /// <inheritdoc/>
-    public override bool IsConnected() => success;
-
-    /// <inheritdoc/>
-    public override string ToString()
+    public async Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBHistoryValuePageInput input)
     {
-        return $" {nameof(QuestDBProducer)}";
+        var data = await Query(input).ToPagedListAsync<QuestDBHistoryValue, IDBHistoryValue>(input.Current, input.Size);//分页
+        return data;
+    }
+
+    public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBHistoryValuePageInput input)
+    {
+        var data = await Query(input).ToListAsync();
+        return data.Cast<IDBHistoryValue>().ToList(); ;
     }
 
     public override void Init(IChannel? channel = null)
@@ -58,21 +60,32 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
         base.Init(channel);
     }
 
-    protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
+    /// <inheritdoc/>
+    public override bool IsConnected() => success;
+
+    /// <inheritdoc/>
+    public override string ToString()
     {
-        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
-        var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
-        db.DbMaintenance.CreateDatabase();
-        db.CodeFirst.InitTables(typeof(QuestDBHistoryValue));
+        return $" {nameof(QuestDBProducer)}";
     }
 
-    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
+    internal ISugarQueryable<QuestDBHistoryValue> Query(DBHistoryValuePageInput input)
     {
-        await UpdateVarModelMemory(cancellationToken).ConfigureAwait(false);
+        var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var query = db.Queryable<QuestDBHistoryValue>()
+                             .WhereIF(input.StartTime != null, a => a.CreateTime >= input.StartTime)
+                           .WhereIF(input.EndTime != null, a => a.CreateTime <= input.EndTime)
+                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
+                           .WhereIF(input.VariableNames != null, it => input.VariableNames.Contains(it.Name))
+                           ;
 
-        await UpdateVarModelCache(cancellationToken).ConfigureAwait(false);
+        for (int i = input.SortField.Count - 1; i >= 0; i--)
+        {
+            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
+        }
+        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
 
-        await Delay(cancellationToken).ConfigureAwait(false);
+        return query;
     }
 
     internal async Task<QueryData<QuestDBHistoryValue>> QueryData(QueryPageOptions option)
@@ -118,34 +131,20 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
         return ret;
     }
 
-    internal ISugarQueryable<QuestDBHistoryValue> Query(DBHistoryValuePageInput input)
+    protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
+        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
         var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
-        var query = db.Queryable<QuestDBHistoryValue>()
-                             .WhereIF(input.StartTime != null, a => a.CreateTime >= input.StartTime)
-                           .WhereIF(input.EndTime != null, a => a.CreateTime <= input.EndTime)
-                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
-                           .WhereIF(input.VariableNames != null, it => input.VariableNames.Contains(it.Name))
-                           ;
-
-        for (int i = input.SortField.Count - 1; i >= 0; i--)
-        {
-            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
-        }
-        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
-
-        return query;
+        db.DbMaintenance.CreateDatabase();
+        db.CodeFirst.InitTables(typeof(QuestDBHistoryValue));
     }
 
-    public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBHistoryValuePageInput input)
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-        var data = await Query(input).ToListAsync();
-        return data.Cast<IDBHistoryValue>().ToList(); ;
-    }
+        await UpdateVarModelMemory(cancellationToken).ConfigureAwait(false);
 
-    public async Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBHistoryValuePageInput input)
-    {
-        var data = await Query(input).ToPagedListAsync<QuestDBHistoryValue, IDBHistoryValue>(input.Current, input.Size);//分页
-        return data;
+        await UpdateVarModelCache(cancellationToken).ConfigureAwait(false);
+
+        await Delay(cancellationToken).ConfigureAwait(false);
     }
 }

@@ -40,6 +40,109 @@ public class JWTEncryption
     private static readonly string[] _refreshTokenClaims = ["f", "e", "s", "l", "k"];
 
     /// <summary>
+    /// 日期类型的 Claim 类型
+    /// </summary>
+    private static readonly string[] DateTypeClaimTypes = [JwtRegisteredClaimNames.Iat, JwtRegisteredClaimNames.Nbf, JwtRegisteredClaimNames.Exp];
+
+    /// <summary>
+    /// 框架 App 静态类
+    /// </summary>
+    internal static Type FrameworkApp { get; set; }
+
+    /// <summary>
+    /// 自动刷新 Token 信息
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="httpContext"></param>
+    /// <param name="expiredTime">新 Token 过期时间（分钟）</param>
+    /// <param name="refreshTokenExpiredTime">新刷新 Token 有效期（分钟）</param>
+    /// <param name="tokenPrefix"></param>
+    /// <param name="clockSkew"></param>
+    /// <returns></returns>
+    public static bool AutoRefreshToken(AuthorizationHandlerContext context, DefaultHttpContext httpContext, long? expiredTime = null, int refreshTokenExpiredTime = 43200, string tokenPrefix = "Bearer ", long clockSkew = 5)
+    {
+        // 如果验证有效，则跳过刷新
+        if (context.User.Identity?.IsAuthenticated == true)
+        {
+            // 禁止使用刷新 Token 进行单独校验
+            if (_refreshTokenClaims.All(k => context.User.Claims.Any(c => c.Type == k)))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        // 判断是否含有匿名特性
+        if (httpContext.GetEndpoint()?.Metadata?.GetMetadata<AllowAnonymousAttribute>() != null) return true;
+
+        // 获取过期Token 和 刷新Token
+        var expiredToken = GetJwtBearerToken(httpContext, tokenPrefix: tokenPrefix);
+        var refreshToken = GetJwtBearerToken(httpContext, "X-Authorization", tokenPrefix: tokenPrefix);
+        if (string.IsNullOrWhiteSpace(expiredToken) || string.IsNullOrWhiteSpace(refreshToken)) return false;
+
+        // 交换新的 Token
+        var accessToken = Exchange(expiredToken, refreshToken, expiredTime, clockSkew);
+        if (string.IsNullOrWhiteSpace(accessToken)) return false;
+
+        // 读取新的 Token Clamis
+        var claims = ReadJwtToken(accessToken)?.Claims;
+        if (claims == null) return false;
+
+        // 创建身份信息
+        var claimIdentity = new ClaimsIdentity("AuthenticationTypes.Federation");
+        claimIdentity.AddClaims(claims);
+        var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
+
+        // 设置 HttpContext.User 并登录
+        httpContext.User = claimsPrincipal;
+        httpContext.SignInAsync(claimsPrincipal);
+
+        string accessTokenKey = "access-token"
+             , xAccessTokenKey = "x-access-token"
+             , accessControlExposeKey = "Access-Control-Expose-Headers";
+
+        // 返回新的 Token
+        httpContext.Response.Headers[accessTokenKey] = accessToken;
+        // 返回新的 刷新Token
+        httpContext.Response.Headers[xAccessTokenKey] = GenerateRefreshToken(accessToken, refreshTokenExpiredTime);
+
+        // 处理 axios 问题
+        httpContext.Response.Headers.TryGetValue(accessControlExposeKey, out var acehs);
+        httpContext.Response.Headers[accessControlExposeKey] = string.Join(',', StringValues.Concat(acehs, new StringValues([accessTokenKey, xAccessTokenKey])).Distinct());
+
+        return true;
+    }
+
+    /// <summary>
+    /// 生成Token验证参数
+    /// </summary>
+    /// <param name="jwtSettings"></param>
+    /// <returns></returns>
+    public static TokenValidationParameters CreateTokenValidationParameters(JWTSettingsOptions jwtSettings)
+    {
+        return new TokenValidationParameters
+        {
+            // 验证签发方密钥
+            ValidateIssuerSigningKey = jwtSettings.ValidateIssuerSigningKey!.Value,
+            // 签发方密钥
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.IssuerSigningKey)),
+            // 验证签发方
+            ValidateIssuer = jwtSettings.ValidateIssuer!.Value,
+            // 设置签发方
+            ValidIssuer = jwtSettings.ValidIssuer,
+            // 验证签收方
+            ValidateAudience = jwtSettings.ValidateAudience!.Value,
+            // 设置接收方
+            ValidAudience = jwtSettings.ValidAudience,
+            // 验证生存期
+            ValidateLifetime = jwtSettings.ValidateLifetime!.Value,
+            // 过期时间容错值
+            ClockSkew = TimeSpan.FromSeconds(jwtSettings.ClockSkew!.Value),
+        };
+    }
+
+    /// <summary>
     /// 生成 Token
     /// </summary>
     /// <param name="payload"></param>
@@ -87,32 +190,6 @@ public class JWTEncryption
 
         var tokenHandler = new JsonWebTokenHandler();
         return credentials == null ? tokenHandler.CreateToken(payload) : tokenHandler.CreateToken(payload, credentials);
-    }
-
-    /// <summary>
-    /// 生成刷新 Token
-    /// </summary>
-    /// <param name="accessToken"></param>
-    /// <param name="expiredTime">刷新 Token 有效期（分钟）</param>
-    /// <returns></returns>
-    public static string GenerateRefreshToken(string accessToken, int expiredTime = 43200)
-    {
-        // 分割Token
-        var tokenParagraphs = accessToken.Split('.', StringSplitOptions.RemoveEmptyEntries);
-
-        var s = RandomNumberGenerator.GetInt32(10, tokenParagraphs[1].Length / 2 + 2);
-        var l = RandomNumberGenerator.GetInt32(3, 13);
-
-        var payload = new Dictionary<string, object>
-            {
-                { "f",tokenParagraphs[0] },
-                { "e",tokenParagraphs[2] },
-                { "s",s },
-                { "l",l },
-                { "k",tokenParagraphs[1].Substring(s,l) }
-            };
-
-        return Encrypt(payload, expiredTime);
     }
 
     /// <summary>
@@ -185,68 +262,123 @@ public class JWTEncryption
     }
 
     /// <summary>
-    /// 自动刷新 Token 信息
+    /// 生成刷新 Token
     /// </summary>
-    /// <param name="context"></param>
-    /// <param name="httpContext"></param>
-    /// <param name="expiredTime">新 Token 过期时间（分钟）</param>
-    /// <param name="refreshTokenExpiredTime">新刷新 Token 有效期（分钟）</param>
-    /// <param name="tokenPrefix"></param>
-    /// <param name="clockSkew"></param>
+    /// <param name="accessToken"></param>
+    /// <param name="expiredTime">刷新 Token 有效期（分钟）</param>
     /// <returns></returns>
-    public static bool AutoRefreshToken(AuthorizationHandlerContext context, DefaultHttpContext httpContext, long? expiredTime = null, int refreshTokenExpiredTime = 43200, string tokenPrefix = "Bearer ", long clockSkew = 5)
+    public static string GenerateRefreshToken(string accessToken, int expiredTime = 43200)
     {
-        // 如果验证有效，则跳过刷新
-        if (context.User.Identity?.IsAuthenticated == true)
-        {
-            // 禁止使用刷新 Token 进行单独校验
-            if (_refreshTokenClaims.All(k => context.User.Claims.Any(c => c.Type == k)))
-            {
-                return false;
-            }
+        // 分割Token
+        var tokenParagraphs = accessToken.Split('.', StringSplitOptions.RemoveEmptyEntries);
 
-            return true;
+        var s = RandomNumberGenerator.GetInt32(10, tokenParagraphs[1].Length / 2 + 2);
+        var l = RandomNumberGenerator.GetInt32(3, 13);
+
+        var payload = new Dictionary<string, object>
+            {
+                { "f",tokenParagraphs[0] },
+                { "e",tokenParagraphs[2] },
+                { "s",s },
+                { "l",l },
+                { "k",tokenParagraphs[1].Substring(s,l) }
+            };
+
+        return Encrypt(payload, expiredTime);
+    }
+
+    /// <summary>
+    /// 获取 JWT Bearer Token
+    /// </summary>
+    /// <param name="httpContext"></param>
+    /// <param name="headerKey"></param>
+    /// <param name="tokenPrefix"></param>
+    /// <returns></returns>
+    public static string GetJwtBearerToken(DefaultHttpContext httpContext, string headerKey = "Authorization", string tokenPrefix = "Bearer ")
+    {
+        // 判断请求报文头中是否有 "Authorization" 报文头
+        var bearerToken = httpContext.Request.Headers[headerKey].ToString();
+        if (string.IsNullOrWhiteSpace(bearerToken)) return default;
+
+        var prefixLenght = tokenPrefix.Length;
+        return bearerToken.StartsWith(tokenPrefix, true, null) && bearerToken.Length > prefixLenght ? bearerToken[prefixLenght..] : default;
+    }
+
+    /// <summary>
+    /// 获取 JWT 配置
+    /// </summary>
+    /// <returns></returns>
+    public static JWTSettingsOptions GetJWTSettings()
+    {
+        var result = App.Configuration?.GetSection(nameof(JWTSettingsOptions)).Get<JWTSettingsOptions>();
+        if (result == null)
+        {
+            result = new();
+            JWTEncryption.SetDefaultJwtSettings(result);
+            return result;
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// 读取 Token，不含验证
+    /// </summary>
+    /// <param name="accessToken"></param>
+    /// <returns></returns>
+    public static JsonWebToken ReadJwtToken(string accessToken)
+    {
+        var tokenHandler = new JsonWebTokenHandler();
+        if (tokenHandler.CanReadToken(accessToken))
+        {
+            return tokenHandler.ReadJsonWebToken(accessToken);
         }
 
-        // 判断是否含有匿名特性
-        if (httpContext.GetEndpoint()?.Metadata?.GetMetadata<AllowAnonymousAttribute>() != null) return true;
+        return default;
+    }
 
-        // 获取过期Token 和 刷新Token
-        var expiredToken = GetJwtBearerToken(httpContext, tokenPrefix: tokenPrefix);
-        var refreshToken = GetJwtBearerToken(httpContext, "X-Authorization", tokenPrefix: tokenPrefix);
-        if (string.IsNullOrWhiteSpace(expiredToken) || string.IsNullOrWhiteSpace(refreshToken)) return false;
+    /// <summary>
+    /// 读取 Token，不含验证
+    /// </summary>
+    /// <param name="accessToken"></param>
+    /// <returns></returns>
+    public static JwtSecurityToken SecurityReadJwtToken(string accessToken)
+    {
+        var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+        var jwtSecurityToken = jwtSecurityTokenHandler.ReadJwtToken(accessToken);
+        return jwtSecurityToken;
+    }
 
-        // 交换新的 Token
-        var accessToken = Exchange(expiredToken, refreshToken, expiredTime, clockSkew);
-        if (string.IsNullOrWhiteSpace(accessToken)) return false;
+    /// <summary>
+    /// 设置默认 Jwt 配置
+    /// </summary>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public static JWTSettingsOptions SetDefaultJwtSettings(JWTSettingsOptions options)
+    {
+        options.ValidateIssuerSigningKey ??= true;
+        if (options.ValidateIssuerSigningKey == true)
+        {
+            options.IssuerSigningKey ??= "3ccad13f546eda3cc568c3aa5ac91780fbe703f0996c33333ea96dc85c70bbc0a";
+        }
+        options.ValidateIssuer ??= true;
+        if (options.ValidateIssuer == true)
+        {
+            options.ValidIssuer ??= "ThingsGateway";
+        }
+        options.ValidateAudience ??= true;
+        if (options.ValidateAudience == true)
+        {
+            options.ValidAudience ??= "powerby ThingsGateway";
+        }
+        options.ValidateLifetime ??= true;
+        if (options.ValidateLifetime == true)
+        {
+            options.ClockSkew ??= 10;
+        }
+        options.ExpiredTime ??= 10080;
+        options.Algorithm ??= SecurityAlgorithms.HmacSha256;
 
-        // 读取新的 Token Clamis
-        var claims = ReadJwtToken(accessToken)?.Claims;
-        if (claims == null) return false;
-
-        // 创建身份信息
-        var claimIdentity = new ClaimsIdentity("AuthenticationTypes.Federation");
-        claimIdentity.AddClaims(claims);
-        var claimsPrincipal = new ClaimsPrincipal(claimIdentity);
-
-        // 设置 HttpContext.User 并登录
-        httpContext.User = claimsPrincipal;
-        httpContext.SignInAsync(claimsPrincipal);
-
-        string accessTokenKey = "access-token"
-             , xAccessTokenKey = "x-access-token"
-             , accessControlExposeKey = "Access-Control-Expose-Headers";
-
-        // 返回新的 Token
-        httpContext.Response.Headers[accessTokenKey] = accessToken;
-        // 返回新的 刷新Token
-        httpContext.Response.Headers[xAccessTokenKey] = GenerateRefreshToken(accessToken, refreshTokenExpiredTime);
-
-        // 处理 axios 问题
-        httpContext.Response.Headers.TryGetValue(accessControlExposeKey, out var acehs);
-        httpContext.Response.Headers[accessControlExposeKey] = string.Join(',', StringValues.Concat(acehs, new StringValues([accessTokenKey, xAccessTokenKey])).Distinct());
-
-        return true;
+        return options;
     }
 
     /// <summary>
@@ -309,95 +441,6 @@ public class JWTEncryption
     }
 
     /// <summary>
-    /// 读取 Token，不含验证
-    /// </summary>
-    /// <param name="accessToken"></param>
-    /// <returns></returns>
-    public static JsonWebToken ReadJwtToken(string accessToken)
-    {
-        var tokenHandler = new JsonWebTokenHandler();
-        if (tokenHandler.CanReadToken(accessToken))
-        {
-            return tokenHandler.ReadJsonWebToken(accessToken);
-        }
-
-        return default;
-    }
-
-    /// <summary>
-    /// 读取 Token，不含验证
-    /// </summary>
-    /// <param name="accessToken"></param>
-    /// <returns></returns>
-    public static JwtSecurityToken SecurityReadJwtToken(string accessToken)
-    {
-        var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
-        var jwtSecurityToken = jwtSecurityTokenHandler.ReadJwtToken(accessToken);
-        return jwtSecurityToken;
-    }
-
-    /// <summary>
-    /// 获取 JWT Bearer Token
-    /// </summary>
-    /// <param name="httpContext"></param>
-    /// <param name="headerKey"></param>
-    /// <param name="tokenPrefix"></param>
-    /// <returns></returns>
-    public static string GetJwtBearerToken(DefaultHttpContext httpContext, string headerKey = "Authorization", string tokenPrefix = "Bearer ")
-    {
-        // 判断请求报文头中是否有 "Authorization" 报文头
-        var bearerToken = httpContext.Request.Headers[headerKey].ToString();
-        if (string.IsNullOrWhiteSpace(bearerToken)) return default;
-
-        var prefixLenght = tokenPrefix.Length;
-        return bearerToken.StartsWith(tokenPrefix, true, null) && bearerToken.Length > prefixLenght ? bearerToken[prefixLenght..] : default;
-    }
-
-    /// <summary>
-    /// 获取 JWT 配置
-    /// </summary>
-    /// <returns></returns>
-    public static JWTSettingsOptions GetJWTSettings()
-    {
-        var result = App.Configuration?.GetSection(nameof(JWTSettingsOptions)).Get<JWTSettingsOptions>();
-        if (result == null)
-        {
-            result = new();
-            JWTEncryption.SetDefaultJwtSettings(result);
-            return result;
-        }
-        return result;
-    }
-
-    /// <summary>
-    /// 生成Token验证参数
-    /// </summary>
-    /// <param name="jwtSettings"></param>
-    /// <returns></returns>
-    public static TokenValidationParameters CreateTokenValidationParameters(JWTSettingsOptions jwtSettings)
-    {
-        return new TokenValidationParameters
-        {
-            // 验证签发方密钥
-            ValidateIssuerSigningKey = jwtSettings.ValidateIssuerSigningKey!.Value,
-            // 签发方密钥
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.IssuerSigningKey)),
-            // 验证签发方
-            ValidateIssuer = jwtSettings.ValidateIssuer!.Value,
-            // 设置签发方
-            ValidIssuer = jwtSettings.ValidIssuer,
-            // 验证签收方
-            ValidateAudience = jwtSettings.ValidateAudience!.Value,
-            // 设置接收方
-            ValidAudience = jwtSettings.ValidAudience,
-            // 验证生存期
-            ValidateLifetime = jwtSettings.ValidateLifetime!.Value,
-            // 过期时间容错值
-            ClockSkew = TimeSpan.FromSeconds(jwtSettings.ClockSkew!.Value),
-        };
-    }
-
-    /// <summary>
     /// 组合 Claims 负荷
     /// </summary>
     /// <param name="payload"></param>
@@ -438,39 +481,6 @@ public class JWTEncryption
     }
 
     /// <summary>
-    /// 设置默认 Jwt 配置
-    /// </summary>
-    /// <param name="options"></param>
-    /// <returns></returns>
-    public static JWTSettingsOptions SetDefaultJwtSettings(JWTSettingsOptions options)
-    {
-        options.ValidateIssuerSigningKey ??= true;
-        if (options.ValidateIssuerSigningKey == true)
-        {
-            options.IssuerSigningKey ??= "3ccad13f546eda3cc568c3aa5ac91780fbe703f0996c33333ea96dc85c70bbc0a";
-        }
-        options.ValidateIssuer ??= true;
-        if (options.ValidateIssuer == true)
-        {
-            options.ValidIssuer ??= "ThingsGateway";
-        }
-        options.ValidateAudience ??= true;
-        if (options.ValidateAudience == true)
-        {
-            options.ValidAudience ??= "powerby ThingsGateway";
-        }
-        options.ValidateLifetime ??= true;
-        if (options.ValidateLifetime == true)
-        {
-            options.ClockSkew ??= 10;
-        }
-        options.ExpiredTime ??= 10080;
-        options.Algorithm ??= SecurityAlgorithms.HmacSha256;
-
-        return options;
-    }
-
-    /// <summary>
     /// 获取当前的 HttpContext
     /// </summary>
     /// <returns></returns>
@@ -478,16 +488,6 @@ public class JWTEncryption
     {
         return App.HttpContext;
     }
-
-    /// <summary>
-    /// 日期类型的 Claim 类型
-    /// </summary>
-    private static readonly string[] DateTypeClaimTypes = [JwtRegisteredClaimNames.Iat, JwtRegisteredClaimNames.Nbf, JwtRegisteredClaimNames.Exp];
-
-    /// <summary>
-    /// 框架 App 静态类
-    /// </summary>
-    internal static Type FrameworkApp { get; set; }
 }
 
 /// <summary>
@@ -496,39 +496,9 @@ public class JWTEncryption
 public sealed class JWTSettingsOptions
 {
     /// <summary>
-    /// 验证签发方密钥
+    /// 加密算法
     /// </summary>
-    public bool? ValidateIssuerSigningKey { get; set; }
-
-    /// <summary>
-    /// 签发方密钥
-    /// </summary>
-    public string IssuerSigningKey { get; set; }
-
-    /// <summary>
-    /// 验证签发方
-    /// </summary>
-    public bool? ValidateIssuer { get; set; }
-
-    /// <summary>
-    /// 签发方
-    /// </summary>
-    public string ValidIssuer { get; set; }
-
-    /// <summary>
-    /// 验证签收方
-    /// </summary>
-    public bool? ValidateAudience { get; set; }
-
-    /// <summary>
-    /// 签收方
-    /// </summary>
-    public string ValidAudience { get; set; }
-
-    /// <summary>
-    /// 验证生存期
-    /// </summary>
-    public bool? ValidateLifetime { get; set; }
+    public string Algorithm { get; set; }
 
     /// <summary>
     /// 过期时间容错值，解决服务器端时间不同步问题（秒）
@@ -541,12 +511,42 @@ public sealed class JWTSettingsOptions
     public long? ExpiredTime { get; set; }
 
     /// <summary>
-    /// 加密算法
+    /// 签发方密钥
     /// </summary>
-    public string Algorithm { get; set; }
+    public string IssuerSigningKey { get; set; }
 
     /// <summary>
     /// 验证过期时间，设置 false 永不过期
     /// </summary>
     public bool RequireExpirationTime { get; set; } = true;
+
+    /// <summary>
+    /// 验证签收方
+    /// </summary>
+    public bool? ValidateAudience { get; set; }
+
+    /// <summary>
+    /// 验证签发方
+    /// </summary>
+    public bool? ValidateIssuer { get; set; }
+
+    /// <summary>
+    /// 验证签发方密钥
+    /// </summary>
+    public bool? ValidateIssuerSigningKey { get; set; }
+
+    /// <summary>
+    /// 验证生存期
+    /// </summary>
+    public bool? ValidateLifetime { get; set; }
+
+    /// <summary>
+    /// 签收方
+    /// </summary>
+    public string ValidAudience { get; set; }
+
+    /// <summary>
+    /// 签发方
+    /// </summary>
+    public string ValidIssuer { get; set; }
 }

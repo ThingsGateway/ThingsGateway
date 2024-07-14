@@ -17,8 +17,6 @@ using SqlSugar;
 
 using System.Security.Claims;
 
-using ThingsGateway.Core;
-
 using Yitter.IdGenerator;
 
 namespace ThingsGateway.Admin.Application;
@@ -26,9 +24,9 @@ namespace ThingsGateway.Admin.Application;
 public class AuthService : IAuthService
 {
     private readonly ISysDictService _configService;
-    private readonly ISysUserService _userService;
     private readonly ISysResourceService _sysResourceService;
     private readonly IUserCenterService _userCenterService;
+    private readonly ISysUserService _userService;
     private IStringLocalizer<AuthService> _localizer;
     private IVerificatInfoService _verificatInfoService;
 
@@ -135,20 +133,6 @@ public class AuthService : IAuthService
     }
 
     /// <summary>
-    /// 登录错误反馈
-    /// </summary>
-    /// <param name="loginPolicy">登录策略</param>
-    /// <param name="userName">用户名称</param>
-    private void LoginError(LoginPolicy loginPolicy, string userName)
-    {
-        var key = CacheConst.Cache_LoginErrorCount + userName;//获取登录错误次数Key值
-        App.CacheService.Increment(key, 1);// 登录错误次数+1
-        App.CacheService.SetExpire(key, TimeSpan.FromMinutes(loginPolicy.ErrorResetTime));//设置过期时间
-        var errorCountCache = App.CacheService.Get<int>(key);//获取登录错误次数
-        throw Oops.Bah("AuthErrorMax", loginPolicy.ErrorCount, loginPolicy.ErrorLockTime, errorCountCache);//账号密码错误
-    }
-
-    /// <summary>
     /// 执行登录
     /// </summary>
     /// <param name="loginPolicy">登录策略</param>
@@ -247,6 +231,44 @@ public class AuthService : IAuthService
     }
 
     /// <summary>
+    /// 登录错误反馈
+    /// </summary>
+    /// <param name="loginPolicy">登录策略</param>
+    /// <param name="userName">用户名称</param>
+    private void LoginError(LoginPolicy loginPolicy, string userName)
+    {
+        var key = CacheConst.Cache_LoginErrorCount + userName;//获取登录错误次数Key值
+        App.CacheService.Increment(key, 1);// 登录错误次数+1
+        App.CacheService.SetExpire(key, TimeSpan.FromMinutes(loginPolicy.ErrorResetTime));//设置过期时间
+        var errorCountCache = App.CacheService.Get<int>(key);//获取登录错误次数
+        throw Oops.Bah("AuthErrorMax", loginPolicy.ErrorCount, loginPolicy.ErrorLockTime, errorCountCache);//账号密码错误
+    }
+
+    /// <summary>
+    /// 从cache删除用户verificat
+    /// </summary>
+    /// <param name="loginEvent">登录事件参数</param>
+    private void RemoveTokenFromCache(LoginEvent loginEvent)
+    {
+        //更新verificat列表
+        _verificatInfoService.Delete(loginEvent.VerificatId);
+    }
+
+    /// <summary>
+    /// 单用户登录通知用户下线
+    /// </summary>
+    /// <param name="userId">用户Id</param>
+    private async Task SingleLogin(long userId)
+    {
+        var clientIds = _verificatInfoService.GetClientIdListByUserId(userId);
+        await NoticeUtil.UserLoginOut(new UserLoginOutEvent
+        {
+            Message = _localizer["SingleLoginWarn"],
+            ClientIds = clientIds,
+        });
+    }
+
+    /// <summary>
     /// 登录事件
     /// </summary>
     /// <param name="loginEvent"></param>
@@ -314,30 +336,6 @@ public class AuthService : IAuthService
         _verificatInfoService.Add(verificatInfo);
     }
 
-    /// <summary>
-    /// 从cache删除用户verificat
-    /// </summary>
-    /// <param name="loginEvent">登录事件参数</param>
-    private void RemoveTokenFromCache(LoginEvent loginEvent)
-    {
-        //更新verificat列表
-        _verificatInfoService.Delete(loginEvent.VerificatId);
-    }
-
-    /// <summary>
-    /// 单用户登录通知用户下线
-    /// </summary>
-    /// <param name="userId">用户Id</param>
-    private async Task SingleLogin(long userId)
-    {
-        var clientIds = _verificatInfoService.GetClientIdListByUserId(userId);
-        await NoticeUtil.UserLoginOut(new UserLoginOutEvent
-        {
-            Message = _localizer["SingleLoginWarn"],
-            ClientIds = clientIds,
-        });
-    }
-
     #endregion 方法
 }
 
@@ -347,24 +345,9 @@ public class AuthService : IAuthService
 public class LoginEvent
 {
     /// <summary>
-    /// 用户信息
+    /// 时间
     /// </summary>
-    public SysUser SysUser { get; set; }
-
-    /// <summary>
-    /// Ip地址
-    /// </summary>
-    public string? Ip { get; set; }
-
-    /// <summary>
-    /// VerificatId
-    /// </summary>
-    public long VerificatId { get; set; }
-
-    /// <summary>
-    /// 过期时间
-    /// </summary>
-    public int Expire { get; set; }
+    public DateTime DateTime = DateTime.Now;
 
     /// <summary>
     /// 登录设备
@@ -372,7 +355,22 @@ public class LoginEvent
     public AuthDeviceTypeEnum Device { get; set; }
 
     /// <summary>
-    /// 时间
+    /// 过期时间
     /// </summary>
-    public DateTime DateTime = DateTime.Now;
+    public int Expire { get; set; }
+
+    /// <summary>
+    /// Ip地址
+    /// </summary>
+    public string? Ip { get; set; }
+
+    /// <summary>
+    /// 用户信息
+    /// </summary>
+    public SysUser SysUser { get; set; }
+
+    /// <summary>
+    /// VerificatId
+    /// </summary>
+    public long VerificatId { get; set; }
 }

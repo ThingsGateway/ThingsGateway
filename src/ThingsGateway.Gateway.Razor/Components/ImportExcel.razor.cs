@@ -19,8 +19,7 @@ namespace ThingsGateway.Gateway.Razor;
 
 public partial class ImportExcel
 {
-    [Required]
-    private IBrowserFile _importFile { get; set; }
+    private Dictionary<string, ImportPreviewOutputBase> _importPreviews = new();
 
     /// <summary>
     /// 导入
@@ -29,14 +28,18 @@ public partial class ImportExcel
     [EditorRequired]
     public Func<Dictionary<string, ImportPreviewOutputBase>, Task> Import { get; set; }
 
-    private Dictionary<string, ImportPreviewOutputBase> _importPreviews = new();
-
     /// <summary>
     /// 预览
     /// </summary>
     [Parameter]
     [EditorRequired]
     public Func<IBrowserFile, Task<Dictionary<string, ImportPreviewOutputBase>>> Preview { get; set; }
+
+    [Required]
+    private IBrowserFile _importFile { get; set; }
+
+    [CascadingParameter]
+    private Func<Task>? OnCloseAsync { get; set; }
 
     private async Task DeviceImport(IBrowserFile file)
     {
@@ -67,7 +70,4 @@ public partial class ImportExcel
             await ToastService.Error(null, ex.Message);
         }
     }
-
-    [CascadingParameter]
-    private Func<Task>? OnCloseAsync { get; set; }
 }

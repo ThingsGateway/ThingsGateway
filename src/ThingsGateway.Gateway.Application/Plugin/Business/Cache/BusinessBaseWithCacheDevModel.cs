@@ -22,6 +22,8 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
 {
     protected ConcurrentQueue<CacheDBItem<DevModel>> _memoryDevModelQueue = new();
 
+    private volatile bool LocalDBCacheDevModelInited;
+
     /// <summary>
     /// 入缓存
     /// </summary>
@@ -104,8 +106,6 @@ public abstract class BusinessBaseWithCacheDevModel<VarModel, DevModel> : Busine
             _memoryDevModelQueue.Enqueue(data);
         }
     }
-
-    private volatile bool LocalDBCacheDevModelInited;
 
     /// <summary>
     /// 获取缓存对象，注意每次获取的对象可能不一样，如顺序操作，需固定引用

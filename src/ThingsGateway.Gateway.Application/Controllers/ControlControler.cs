@@ -31,16 +31,6 @@ public class ControlControler : ControllerBase
     private IRpcService _rpcService { get; set; }
 
     /// <summary>
-    /// 控制采集线程启停
-    /// </summary>
-    /// <returns></returns>
-    [HttpPost("pasueCollectThread")]
-    public void PasueCollectThread(long id, bool isStart)
-    {
-        HostedServiceUtil.CollectDeviceHostedService.PasueThread(id, isStart);
-    }
-
-    /// <summary>
     /// 控制业务线程启停
     /// </summary>
     /// <returns></returns>
@@ -51,20 +41,13 @@ public class ControlControler : ControllerBase
     }
 
     /// <summary>
-    /// 重启采集线程
+    /// 控制采集线程启停
     /// </summary>
     /// <returns></returns>
-    [HttpPost("restartCollectThread")]
-    public async Task RestartCollectDeviceThread(long id)
+    [HttpPost("pasueCollectThread")]
+    public void PasueCollectThread(long id, bool isStart)
     {
-        if (id <= 0)
-        {
-            await HostedServiceUtil.CollectDeviceHostedService.RestartAsync();
-        }
-        else
-        {
-            await HostedServiceUtil.CollectDeviceHostedService.RestartChannelThreadAsync(id, true);
-        }
+        HostedServiceUtil.CollectDeviceHostedService.PasueThread(id, isStart);
     }
 
     /// <summary>
@@ -81,6 +64,23 @@ public class ControlControler : ControllerBase
         else
         {
             await HostedServiceUtil.BusinessDeviceHostedService.RestartChannelThreadAsync(id, true);
+        }
+    }
+
+    /// <summary>
+    /// 重启采集线程
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost("restartCollectThread")]
+    public async Task RestartCollectDeviceThread(long id)
+    {
+        if (id <= 0)
+        {
+            await HostedServiceUtil.CollectDeviceHostedService.RestartAsync();
+        }
+        else
+        {
+            await HostedServiceUtil.CollectDeviceHostedService.RestartChannelThreadAsync(id, true);
         }
     }
 

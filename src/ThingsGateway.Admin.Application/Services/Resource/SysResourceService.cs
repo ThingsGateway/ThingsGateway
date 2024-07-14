@@ -24,14 +24,75 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
 {
     private readonly IRelationService _relationService;
 
+    private string CacheKey = $"{CacheConst.Cache_SysResource}-{CultureInfo.CurrentUICulture.Name}";
+
     public SysResourceService(IRelationService relationService)
     {
         this._relationService = relationService;
     }
 
-    private string CacheKey = $"{CacheConst.Cache_SysResource}-{CultureInfo.CurrentUICulture.Name}";
-
     #region 增删改查
+
+    /// <summary>
+    /// 删除资源
+    /// </summary>
+    /// <param name="ids">id列表</param>
+    /// <returns></returns>
+    [OperDesc("DeleteResource")]
+    public async Task<bool> DeleteResourceAsync(IEnumerable<long> ids)
+    {
+        //删除
+        if (ids.Any())
+        {
+            //获取所有菜单和按钮
+            var resourceList = await GetAllAsync();
+            //找到要删除的菜单
+            var delSysResources = resourceList.Where(it => ids.Contains(it.Id));
+            //找到要删除的模块
+            var delModules = resourceList.Where(a => a.Category == ResourceCategoryEnum.Module).Where(it => ids.Contains(it.Id));
+            if (delModules.Any())
+            {
+                //获取模块下的所有列表
+                var delModuleResources = resourceList.Where(it => delModules.Select(a => a.Id).Contains(it.Module));
+                delSysResources = delSysResources.Concat(delModuleResources).ToHashSet();
+            }
+            //查找内置菜单
+            var system = delSysResources.FirstOrDefault(it => it.Code == ResourceConst.System);
+            if (system != null)
+                throw Oops.Bah($"CanotDeleteSystemResource", system.Title);
+
+            //需要删除的资源ID列表
+            var resourceIds = delSysResources.SelectMany(it =>
+            {
+                var child = ResourceUtil.GetResourceChilden(resourceList, it.Id);
+                return child.Select(c => c.Id).Concat(new List<long>() { it.Id });
+            });
+            var deleteIds = ids.Concat(resourceIds).ToHashSet();//添加到删除ID列表
+
+            using var db = GetDB();
+            //事务
+            var result = await db.UseTranAsync(async () =>
+            {
+                await db.Deleteable<SysResource>().In(deleteIds.ToList()).ExecuteCommandAsync();//删除菜单和按钮
+                await db.Deleteable<SysRelation>()//关系表删除对应RoleHasResource
+                 .Where(it => it.Category == RelationCategoryEnum.RoleHasResource && resourceIds.Contains(SqlFunc.ToInt64(it.TargetId))).ExecuteCommandAsync();
+                await db.Deleteable<SysRelation>()//关系表删除对应UserHasResource
+               .Where(it => it.Category == RelationCategoryEnum.UserHasResource && resourceIds.Contains(SqlFunc.ToInt64(it.TargetId))).ExecuteCommandAsync();
+            });
+            if (result.IsSuccess)//如果成功了
+            {
+                RefreshCache();//资源表菜单刷新缓存
+                _relationService.RefreshCache(RelationCategoryEnum.RoleHasResource);//关系表刷新缓存
+                _relationService.RefreshCache(RelationCategoryEnum.UserHasResource);//关系表刷新缓存
+                return true;
+            }
+            else
+            {
+                throw new(result.ErrorMessage, result.ErrorException);
+            }
+        }
+        return false;
+    }
 
     /// <summary>
     /// 从缓存/数据库读取全部资源列表
@@ -47,17 +108,6 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
             App.CacheService.Set(CacheKey, sysResources);
         }
         return sysResources;
-    }
-
-    /// <summary>
-    /// 表格查询
-    /// </summary>
-    /// <param name="options">查询条件</param>
-    /// <param name="searchModel">查询条件</param>
-    /// <returns></returns>
-    public Task<QueryData<SysResource>> PageAsync(QueryPageOptions options, ResourceSearchInput searchModel)
-    {
-        return QueryAsync(options, b => b.Where(a => (a.Category == ResourceCategoryEnum.Module && a.Id == searchModel.Module) || (a.Category != ResourceCategoryEnum.Module && a.Module == searchModel.Module)));
     }
 
     /// <summary>
@@ -82,6 +132,17 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
         var moduleList = await GetAllAsync();
         var modules = moduleList.Where(it => it.Category == ResourceCategoryEnum.Module && moduleIds.Contains(it.Id));
         return modules;
+    }
+
+    /// <summary>
+    /// 表格查询
+    /// </summary>
+    /// <param name="options">查询条件</param>
+    /// <param name="searchModel">查询条件</param>
+    /// <returns></returns>
+    public Task<QueryData<SysResource>> PageAsync(QueryPageOptions options, ResourceSearchInput searchModel)
+    {
+        return QueryAsync(options, b => b.Where(a => (a.Category == ResourceCategoryEnum.Module && a.Id == searchModel.Module) || (a.Category != ResourceCategoryEnum.Module && a.Module == searchModel.Module)));
     }
 
     /// <summary>
@@ -143,67 +204,6 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
                 throw new(result.ErrorMessage, result.ErrorException);
             }
         }
-    }
-
-    /// <summary>
-    /// 删除资源
-    /// </summary>
-    /// <param name="ids">id列表</param>
-    /// <returns></returns>
-    [OperDesc("DeleteResource")]
-    public async Task<bool> DeleteResourceAsync(IEnumerable<long> ids)
-    {
-        //删除
-        if (ids.Any())
-        {
-            //获取所有菜单和按钮
-            var resourceList = await GetAllAsync();
-            //找到要删除的菜单
-            var delSysResources = resourceList.Where(it => ids.Contains(it.Id));
-            //找到要删除的模块
-            var delModules = resourceList.Where(a => a.Category == ResourceCategoryEnum.Module).Where(it => ids.Contains(it.Id));
-            if (delModules.Any())
-            {
-                //获取模块下的所有列表
-                var delModuleResources = resourceList.Where(it => delModules.Select(a => a.Id).Contains(it.Module));
-                delSysResources = delSysResources.Concat(delModuleResources).ToHashSet();
-            }
-            //查找内置菜单
-            var system = delSysResources.FirstOrDefault(it => it.Code == ResourceConst.System);
-            if (system != null)
-                throw Oops.Bah($"CanotDeleteSystemResource", system.Title);
-
-            //需要删除的资源ID列表
-            var resourceIds = delSysResources.SelectMany(it =>
-            {
-                var child = ResourceUtil.GetResourceChilden(resourceList, it.Id);
-                return child.Select(c => c.Id).Concat(new List<long>() { it.Id });
-            });
-            var deleteIds = ids.Concat(resourceIds).ToHashSet();//添加到删除ID列表
-
-            using var db = GetDB();
-            //事务
-            var result = await db.UseTranAsync(async () =>
-            {
-                await db.Deleteable<SysResource>().In(deleteIds.ToList()).ExecuteCommandAsync();//删除菜单和按钮
-                await db.Deleteable<SysRelation>()//关系表删除对应RoleHasResource
-                 .Where(it => it.Category == RelationCategoryEnum.RoleHasResource && resourceIds.Contains(SqlFunc.ToInt64(it.TargetId))).ExecuteCommandAsync();
-                await db.Deleteable<SysRelation>()//关系表删除对应UserHasResource
-               .Where(it => it.Category == RelationCategoryEnum.UserHasResource && resourceIds.Contains(SqlFunc.ToInt64(it.TargetId))).ExecuteCommandAsync();
-            });
-            if (result.IsSuccess)//如果成功了
-            {
-                RefreshCache();//资源表菜单刷新缓存
-                _relationService.RefreshCache(RelationCategoryEnum.RoleHasResource);//关系表刷新缓存
-                _relationService.RefreshCache(RelationCategoryEnum.UserHasResource);//关系表刷新缓存
-                return true;
-            }
-            else
-            {
-                throw new(result.ErrorMessage, result.ErrorException);
-            }
-        }
-        return false;
     }
 
     #endregion 增删改查

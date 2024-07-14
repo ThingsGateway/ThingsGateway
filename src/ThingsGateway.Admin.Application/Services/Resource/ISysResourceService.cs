@@ -18,18 +18,17 @@ namespace ThingsGateway.Admin.Application;
 public interface ISysResourceService
 {
     /// <summary>
+    /// 删除资源
+    /// </summary>
+    /// <param name="ids">id列表</param>
+    /// <returns></returns>
+    Task<bool> DeleteResourceAsync(IEnumerable<long> ids);
+
+    /// <summary>
     /// 从缓存/数据库读取全部资源列表
     /// </summary>
     /// <returns>全部资源列表</returns>
     Task<List<SysResource>> GetAllAsync();
-
-    /// <summary>
-    /// 表格查询
-    /// </summary>
-    /// <param name="options">查询条件</param>
-    /// <param name="searchModel">查询条件</param>
-    /// <returns></returns>
-    Task<QueryData<SysResource>> PageAsync(QueryPageOptions options, ResourceSearchInput searchModel);
 
     /// <summary>
     /// 根据菜单Id获取菜单列表
@@ -46,21 +45,22 @@ public interface ISysResourceService
     Task<IEnumerable<SysResource>> GetMuduleByMuduleIdsAsync(IEnumerable<long> moduleIds);
 
     /// <summary>
-    /// 保存资源
+    /// 表格查询
     /// </summary>
-    /// <param name="input">资源</param>
-    /// <param name="type">保存类型</param>
-    Task<bool> SaveResourceAsync(SysResource input, ItemChangedType type);
-
-    /// <summary>
-    /// 删除资源
-    /// </summary>
-    /// <param name="ids">id列表</param>
+    /// <param name="options">查询条件</param>
+    /// <param name="searchModel">查询条件</param>
     /// <returns></returns>
-    Task<bool> DeleteResourceAsync(IEnumerable<long> ids);
+    Task<QueryData<SysResource>> PageAsync(QueryPageOptions options, ResourceSearchInput searchModel);
 
     /// <summary>
     /// 刷新缓存
     /// </summary>
     void RefreshCache();
+
+    /// <summary>
+    /// 保存资源
+    /// </summary>
+    /// <param name="input">资源</param>
+    /// <param name="type">保存类型</param>
+    Task<bool> SaveResourceAsync(SysResource input, ItemChangedType type);
 }

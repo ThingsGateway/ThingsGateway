@@ -30,11 +30,6 @@ public abstract class AdapterDebugBase : ComponentBase, IDisposable
     }
 
     /// <summary>
-    /// 变量地址
-    /// </summary>
-    public string RegisterAddress { get; set; } = "400001";
-
-    /// <summary>
     /// 长度
     /// </summary>
     public int ArrayLength { get; set; } = 1;
@@ -46,6 +41,11 @@ public abstract class AdapterDebugBase : ComponentBase, IDisposable
     public IProtocol Plc { get; set; }
 
     /// <summary>
+    /// 变量地址
+    /// </summary>
+    public string RegisterAddress { get; set; } = "400001";
+
+    /// <summary>
     /// 写入值
     /// </summary>
     public string WriteValue { get; set; }
@@ -54,6 +54,9 @@ public abstract class AdapterDebugBase : ComponentBase, IDisposable
     /// 数据类型
     /// </summary>
     protected DataTypeEnum DataType { get; set; } = DataTypeEnum.Int16;
+
+    [Inject]
+    private IStringLocalizer<AdapterDebugBase> Localizer { get; set; }
 
     /// <inheritdoc/>
     public void Dispose()
@@ -85,9 +88,6 @@ public abstract class AdapterDebugBase : ComponentBase, IDisposable
             }
         }
     }
-
-    [Inject]
-    private IStringLocalizer<AdapterDebugBase> Localizer { get; set; }
 
     /// <inheritdoc/>
     public virtual async Task WriteAsync()

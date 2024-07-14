@@ -29,6 +29,10 @@ public interface ReadWriteExpressions
 /// </summary>
 public static class ExpressionEvaluatorExtension
 {
+    private static string CacheKey = $"{nameof(ExpressionEvaluatorExtension)}-{nameof(GetReadWriteExpressions)}";
+
+    private static EasyLock m_waiterLock = new EasyLock();
+
     static ExpressionEvaluatorExtension()
     {
         Task.Factory.StartNew(async () =>
@@ -66,8 +70,20 @@ public static class ExpressionEvaluatorExtension
     }
 
     private static MemoryCache Instance { get; set; } = new MemoryCache();
-    private static EasyLock m_waiterLock = new EasyLock();
-    private static string CacheKey = $"{nameof(ExpressionEvaluatorExtension)}-{nameof(GetReadWriteExpressions)}";
+
+    /// <summary>
+    /// 计算表达式：例如：(int)raw*100，raw为原始值
+    /// </summary>
+    public static object GetExpressionsResult(this string expressions, object? rawvalue)
+    {
+        if (string.IsNullOrWhiteSpace(expressions))
+        {
+            return rawvalue;
+        }
+        var readWriteExpressions = GetReadWriteExpressions(expressions);
+        var value = readWriteExpressions.GetNewValue(rawvalue);
+        return value;
+    }
 
     /// <summary>
     /// 执行脚本获取返回值ReadWriteExpressions
@@ -128,19 +144,5 @@ public static class ExpressionEvaluatorExtension
             Instance.Set(field, runScript);
         }
         return runScript;
-    }
-
-    /// <summary>
-    /// 计算表达式：例如：(int)raw*100，raw为原始值
-    /// </summary>
-    public static object GetExpressionsResult(this string expressions, object? rawvalue)
-    {
-        if (string.IsNullOrWhiteSpace(expressions))
-        {
-            return rawvalue;
-        }
-        var readWriteExpressions = GetReadWriteExpressions(expressions);
-        var value = readWriteExpressions.GetNewValue(rawvalue);
-        return value;
     }
 }

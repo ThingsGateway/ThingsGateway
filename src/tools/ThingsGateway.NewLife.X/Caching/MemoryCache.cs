@@ -25,14 +25,14 @@ public class MemoryCache : Cache
     /// <summary>缓存核心</summary>
     protected ConcurrentDictionary<String, CacheItem> _cache = new();
 
+    /// <summary>缓存键过期</summary>
+    public event EventHandler<EventArgs<String>>? KeyExpired;
+
     /// <summary>容量。容量超标时，采用LRU机制删除，默认100_000</summary>
     public Int32 Capacity { get; set; } = 100_000;
 
     /// <summary>定时清理时间，默认60秒</summary>
     public Int32 Period { get; set; } = 60;
-
-    /// <summary>缓存键过期</summary>
-    public event EventHandler<EventArgs<String>>? KeyExpired;
 
     #endregion 属性
 
@@ -80,20 +80,8 @@ public class MemoryCache : Cache
 
     #region 方法
 
-    /// <summary>初始化配置</summary>
-    /// <param name="config"></param>
-    public override void Init(String? config)
-    {
-        if (_clearTimer == null)
-        {
-            var period = Period;
-            _clearTimer = new TimerX(RemoveNotAlive, null, 10 * 1000, period * 1000)
-            {
-                Async = true,
-                //CanExecute = () => _cache.Any(),
-            };
-        }
-    }
+    /// <summary>返回全部</summary>
+    public IReadOnlyDictionary<string, CacheItem> GetAll() => _cache;
 
     /// <summary>获取或添加缓存项</summary>
     /// <typeparam name="T">值类型</typeparam>
@@ -118,17 +106,78 @@ public class MemoryCache : Cache
         return (T?)ci.Visit();
     }
 
-    /// <summary>返回全部</summary>
-    public  IReadOnlyDictionary<string, CacheItem> GetAll() => _cache;
+    /// <summary>初始化配置</summary>
+    /// <param name="config"></param>
+    public override void Init(String? config)
+    {
+        if (_clearTimer == null)
+        {
+            var period = Period;
+            _clearTimer = new TimerX(RemoveNotAlive, null, 10 * 1000, period * 1000)
+            {
+                Async = true,
+                //CanExecute = () => _cache.Any(),
+            };
+        }
+    }
 
     #endregion 方法
 
     #region 基本操作
 
+    /// <summary>清空所有缓存项</summary>
+    public override void Clear()
+    {
+        _cache.Clear();
+        _count = 0;
+    }
+
     /// <summary>是否包含缓存项</summary>
     /// <param name="key"></param>
     /// <returns></returns>
     public override Boolean ContainsKey(String key) => _cache.TryGetValue(key, out var item) && item != null && !item.Expired;
+
+    /// <summary>获取缓存项，不存在时返回默认值</summary>
+    /// <param name="key">键</param>
+    /// <returns></returns>
+    [return: MaybeNull]
+    public override T Get<T>(String key)
+    {
+        if (!_cache.TryGetValue(key, out var item) || item == null || item.Expired) return default;
+
+        var rs = item.Visit();
+        if (rs == null) return default;
+
+        return rs.ChangeType<T>();
+    }
+
+    /// <summary>获取缓存项有效期，不存在时返回Zero</summary>
+    /// <param name="key">键</param>
+    /// <returns></returns>
+    public override TimeSpan GetExpire(String key)
+    {
+        if (!_cache.TryGetValue(key, out var item) || item == null) return TimeSpan.Zero;
+
+        return TimeSpan.FromMilliseconds(item.ExpiredTime - Runtime.TickCount64);
+    }
+
+    /// <summary>批量移除缓存项</summary>
+    /// <param name="keys">键集合</param>
+    /// <returns>实际移除个数</returns>
+    public override Int32 Remove(params String[] keys)
+    {
+        var count = 0;
+        foreach (var k in keys)
+        {
+            if (_cache.TryRemove(k, out _))
+            {
+                count++;
+
+                Interlocked.Decrement(ref _count);
+            }
+        }
+        return count;
+    }
 
     /// <summary>添加缓存项，已存在时更新</summary>
     /// <typeparam name="T">值类型</typeparam>
@@ -168,45 +217,6 @@ public class MemoryCache : Cache
         return true;
     }
 
-    /// <summary>获取缓存项，不存在时返回默认值</summary>
-    /// <param name="key">键</param>
-    /// <returns></returns>
-    [return: MaybeNull]
-    public override T Get<T>(String key)
-    {
-        if (!_cache.TryGetValue(key, out var item) || item == null || item.Expired) return default;
-
-        var rs = item.Visit();
-        if (rs == null) return default;
-
-        return rs.ChangeType<T>();
-    }
-
-    /// <summary>批量移除缓存项</summary>
-    /// <param name="keys">键集合</param>
-    /// <returns>实际移除个数</returns>
-    public override Int32 Remove(params String[] keys)
-    {
-        var count = 0;
-        foreach (var k in keys)
-        {
-            if (_cache.TryRemove(k, out _))
-            {
-                count++;
-
-                Interlocked.Decrement(ref _count);
-            }
-        }
-        return count;
-    }
-
-    /// <summary>清空所有缓存项</summary>
-    public override void Clear()
-    {
-        _cache.Clear();
-        _count = 0;
-    }
-
     /// <summary>设置缓存项有效期</summary>
     /// <param name="key">键</param>
     /// <param name="expire">过期时间</param>
@@ -218,16 +228,6 @@ public class MemoryCache : Cache
         item.ExpiredTime = Runtime.TickCount64 + (Int64)expire.TotalMilliseconds;
 
         return true;
-    }
-
-    /// <summary>获取缓存项有效期，不存在时返回Zero</summary>
-    /// <param name="key">键</param>
-    /// <returns></returns>
-    public override TimeSpan GetExpire(String key)
-    {
-        if (!_cache.TryGetValue(key, out var item) || item == null) return TimeSpan.Zero;
-
-        return TimeSpan.FromMilliseconds(item.ExpiredTime - Runtime.TickCount64);
     }
 
     #endregion 基本操作
@@ -255,6 +255,70 @@ public class MemoryCache : Cache
         Interlocked.Increment(ref _count);
 
         return true;
+    }
+
+    /// <summary>递减，原子操作</summary>
+    /// <param name="key">键</param>
+    /// <param name="value">变化量</param>
+    /// <returns></returns>
+    public override Int64 Decrement(String key, Int64 value)
+    {
+        var item = GetOrAddItem(key, k => 0L);
+        return item.Dec(value);
+    }
+
+    /// <summary>递减，原子操作</summary>
+    /// <param name="key">键</param>
+    /// <param name="value">变化量</param>
+    /// <returns></returns>
+    public override Double Decrement(String key, Double value)
+    {
+        var item = GetOrAddItem(key, k => 0d);
+        return item.Dec(value);
+    }
+
+    /// <summary>获取 或 添加 缓存数据，在数据不存在时执行委托请求数据</summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="key"></param>
+    /// <param name="callback"></param>
+    /// <param name="expire">过期时间，秒。小于0时采用默认缓存时间<seealso cref="Cache.Expire"/></param>
+    /// <returns></returns>
+    [return: MaybeNull]
+    public override T GetOrAdd<T>(String key, Func<String, T> callback, Int32 expire = -1)
+    {
+        if (expire < 0) expire = Expire;
+
+        CacheItem? ci = null;
+        do
+        {
+            if (_cache.TryGetValue(key, out var item)) return (T?)item.Visit();
+
+            ci ??= new CacheItem(callback(key), expire);
+        } while (!_cache.TryAdd(key, ci));
+
+        Interlocked.Increment(ref _count);
+
+        return (T?)ci.Visit();
+    }
+
+    /// <summary>累加，原子操作</summary>
+    /// <param name="key">键</param>
+    /// <param name="value">变化量</param>
+    /// <returns></returns>
+    public override Int64 Increment(String key, Int64 value)
+    {
+        var item = GetOrAddItem(key, k => 0L);
+        return item.Inc(value);
+    }
+
+    /// <summary>累加，原子操作</summary>
+    /// <param name="key">键</param>
+    /// <param name="value">变化量</param>
+    /// <returns></returns>
+    public override Double Increment(String key, Double value)
+    {
+        var item = GetOrAddItem(key, k => 0d);
+        return item.Inc(value);
     }
 
     /// <summary>设置新值并获取旧值，原子操作</summary>
@@ -309,84 +373,9 @@ public class MemoryCache : Cache
         return !item.Expired;
     }
 
-    /// <summary>获取 或 添加 缓存数据，在数据不存在时执行委托请求数据</summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="key"></param>
-    /// <param name="callback"></param>
-    /// <param name="expire">过期时间，秒。小于0时采用默认缓存时间<seealso cref="Cache.Expire"/></param>
-    /// <returns></returns>
-    [return: MaybeNull]
-    public override T GetOrAdd<T>(String key, Func<String, T> callback, Int32 expire = -1)
-    {
-        if (expire < 0) expire = Expire;
-
-        CacheItem? ci = null;
-        do
-        {
-            if (_cache.TryGetValue(key, out var item)) return (T?)item.Visit();
-
-            ci ??= new CacheItem(callback(key), expire);
-        } while (!_cache.TryAdd(key, ci));
-
-        Interlocked.Increment(ref _count);
-
-        return (T?)ci.Visit();
-    }
-
-    /// <summary>累加，原子操作</summary>
-    /// <param name="key">键</param>
-    /// <param name="value">变化量</param>
-    /// <returns></returns>
-    public override Int64 Increment(String key, Int64 value)
-    {
-        var item = GetOrAddItem(key, k => 0L);
-        return item.Inc(value);
-    }
-
-    /// <summary>累加，原子操作</summary>
-    /// <param name="key">键</param>
-    /// <param name="value">变化量</param>
-    /// <returns></returns>
-    public override Double Increment(String key, Double value)
-    {
-        var item = GetOrAddItem(key, k => 0d);
-        return item.Inc(value);
-    }
-
-    /// <summary>递减，原子操作</summary>
-    /// <param name="key">键</param>
-    /// <param name="value">变化量</param>
-    /// <returns></returns>
-    public override Int64 Decrement(String key, Int64 value)
-    {
-        var item = GetOrAddItem(key, k => 0L);
-        return item.Dec(value);
-    }
-
-    /// <summary>递减，原子操作</summary>
-    /// <param name="key">键</param>
-    /// <param name="value">变化量</param>
-    /// <returns></returns>
-    public override Double Decrement(String key, Double value)
-    {
-        var item = GetOrAddItem(key, k => 0d);
-        return item.Dec(value);
-    }
-
     #endregion 高级操作
 
     #region 集合操作
-
-    /// <summary>获取列表</summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    public override IList<T> GetList<T>(String key)
-    {
-        var item = GetOrAddItem(key, k => new List<T>());
-        return item.Visit() as IList<T> ??
-         throw new InvalidCastException($"Unable to convert the value of [{key}] from {item.Value?.GetType()} to {typeof(IList<T>)}");
-    }
 
     /// <summary>获取哈希</summary>
     /// <typeparam name="T"></typeparam>
@@ -399,6 +388,17 @@ public class MemoryCache : Cache
          throw new InvalidCastException($"Unable to convert the value of [{key}] from {item.Value?.GetType()} to {typeof(IDictionary<String, T>)}");
     }
 
+    /// <summary>获取列表</summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public override IList<T> GetList<T>(String key)
+    {
+        var item = GetOrAddItem(key, k => new List<T>());
+        return item.Visit() as IList<T> ??
+         throw new InvalidCastException($"Unable to convert the value of [{key}] from {item.Value?.GetType()} to {typeof(IList<T>)}");
+    }
+
     /// <summary>获取队列</summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="key"></param>
@@ -406,17 +406,6 @@ public class MemoryCache : Cache
     public override IProducerConsumer<T> GetQueue<T>(String key)
     {
         var item = GetOrAddItem(key, k => new MemoryQueue<T>());
-        return item.Visit() as IProducerConsumer<T> ??
-            throw new InvalidCastException($"Unable to convert the value of [{key}] from {item.Value?.GetType()} to {typeof(IProducerConsumer<T>)}");
-    }
-
-    /// <summary>获取栈</summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    public override IProducerConsumer<T> GetStack<T>(String key)
-    {
-        var item = GetOrAddItem(key, k => new MemoryQueue<T>(new ConcurrentStack<T>()));
         return item.Visit() as IProducerConsumer<T> ??
             throw new InvalidCastException($"Unable to convert the value of [{key}] from {item.Value?.GetType()} to {typeof(IProducerConsumer<T>)}");
     }
@@ -431,6 +420,17 @@ public class MemoryCache : Cache
         var item = GetOrAddItem(key, k => new HashSet<T>());
         return item.Visit() as ICollection<T> ??
             throw new InvalidCastException($"Unable to convert the value of [{key}] from {item.Value?.GetType()} to {typeof(ICollection<T>)}");
+    }
+
+    /// <summary>获取栈</summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public override IProducerConsumer<T> GetStack<T>(String key)
+    {
+        var item = GetOrAddItem(key, k => new MemoryQueue<T>(new ConcurrentStack<T>()));
+        return item.Visit() as IProducerConsumer<T> ??
+            throw new InvalidCastException($"Unable to convert the value of [{key}] from {item.Value?.GetType()} to {typeof(IProducerConsumer<T>)}");
     }
 
     /// <summary>获取 或 添加 缓存项</summary>
@@ -463,43 +463,59 @@ public class MemoryCache : Cache
     {
         private Object? _Value;
 
-        /// <summary>数值</summary>
-        public Object? Value { get => _Value; set => _Value = value; }
-
-        /// <summary>过期时间</summary>
-        public Int64 ExpiredTime { get;internal set; }
-
-        /// <summary>是否过期</summary>
-        public Boolean Expired => ExpiredTime <= Runtime.TickCount64;
-
-        /// <summary>访问时间</summary>
-        public Int64 VisitTime { get; private set; }
-
         /// <summary>构造缓存项</summary>
         /// <param name="value"></param>
         /// <param name="expire"></param>
         public CacheItem(Object? value, Int32 expire) => Set(value, expire);
 
-        /// <summary>设置数值和过期时间</summary>
-        /// <param name="value"></param>
-        /// <param name="expire">过期时间，秒</param>
-        internal void Set(Object? value, Int32 expire)
-        {
-            Value = value;
+        /// <summary>是否过期</summary>
+        public Boolean Expired => ExpiredTime <= Runtime.TickCount64;
 
-            var now = VisitTime = Runtime.TickCount64;
-            if (expire <= 0)
-                ExpiredTime = Int64.MaxValue;
-            else
-                ExpiredTime = now + expire * 1000L;
+        /// <summary>过期时间</summary>
+        public Int64 ExpiredTime { get; internal set; }
+
+        /// <summary>数值</summary>
+        public Object? Value { get => _Value; set => _Value = value; }
+
+        /// <summary>访问时间</summary>
+        public Int64 VisitTime { get; private set; }
+
+        /// <summary>递减</summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        internal Int64 Dec(Int64 value)
+        {
+            // 原子操作
+            Int64 newValue;
+            Object oldValue;
+            do
+            {
+                oldValue = _Value ?? 0;
+                newValue = oldValue.ToLong() - value.ToLong();
+            } while (Interlocked.CompareExchange(ref _Value, newValue, oldValue) != oldValue);
+
+            Visit();
+
+            return newValue;
         }
 
-        /// <summary>更新访问时间并返回数值</summary>
+        /// <summary>递减</summary>
+        /// <param name="value"></param>
         /// <returns></returns>
-        internal Object? Visit()
+        internal Double Dec(Double value)
         {
-            VisitTime = Runtime.TickCount64;
-            return Value;
+            // 原子操作
+            Double newValue;
+            Object oldValue;
+            do
+            {
+                oldValue = _Value ?? 0;
+                newValue = oldValue.ToDouble() - value.ToDouble();
+            } while (Interlocked.CompareExchange(ref _Value, newValue, oldValue) != oldValue);
+
+            Visit();
+
+            return newValue;
         }
 
         /// <summary>递增</summary>
@@ -540,42 +556,26 @@ public class MemoryCache : Cache
             return newValue;
         }
 
-        /// <summary>递减</summary>
+        /// <summary>设置数值和过期时间</summary>
         /// <param name="value"></param>
-        /// <returns></returns>
-        internal Int64 Dec(Int64 value)
+        /// <param name="expire">过期时间，秒</param>
+        internal void Set(Object? value, Int32 expire)
         {
-            // 原子操作
-            Int64 newValue;
-            Object oldValue;
-            do
-            {
-                oldValue = _Value ?? 0;
-                newValue = oldValue.ToLong() - value.ToLong();
-            } while (Interlocked.CompareExchange(ref _Value, newValue, oldValue) != oldValue);
+            Value = value;
 
-            Visit();
-
-            return newValue;
+            var now = VisitTime = Runtime.TickCount64;
+            if (expire <= 0)
+                ExpiredTime = Int64.MaxValue;
+            else
+                ExpiredTime = now + expire * 1000L;
         }
 
-        /// <summary>递减</summary>
-        /// <param name="value"></param>
+        /// <summary>更新访问时间并返回数值</summary>
         /// <returns></returns>
-        internal Double Dec(Double value)
+        internal Object? Visit()
         {
-            // 原子操作
-            Double newValue;
-            Object oldValue;
-            do
-            {
-                oldValue = _Value ?? 0;
-                newValue = oldValue.ToDouble() - value.ToDouble();
-            } while (Interlocked.CompareExchange(ref _Value, newValue, oldValue) != oldValue);
-
-            Visit();
-
-            return newValue;
+            VisitTime = Runtime.TickCount64;
+            return Value;
         }
     }
 
@@ -585,6 +585,10 @@ public class MemoryCache : Cache
 
     /// <summary>清理会话计时器</summary>
     private TimerX? _clearTimer;
+
+    /// <summary>缓存过期</summary>
+    /// <param name="key"></param>
+    protected virtual void OnExpire(String key) => KeyExpired?.Invoke(this, new EventArgs<String>(key));
 
     /// <summary>移除过期的缓存项</summary>
     private void RemoveNotAlive(Object? state)
@@ -624,7 +628,6 @@ public class MemoryCache : Cache
                     ss.Add(item.Key);
                 }
             }
-
         }
 
         // 如果满了，删除前面
@@ -657,10 +660,6 @@ public class MemoryCache : Cache
         // 修正
         _count = k;
     }
-
-    /// <summary>缓存过期</summary>
-    /// <param name="key"></param>
-    protected virtual void OnExpire(String key) => KeyExpired?.Invoke(this, new EventArgs<String>(key));
 
     #endregion 清理过期缓存
 }
@@ -702,14 +701,10 @@ public class MemoryQueue<T> : DisposeBase, IProducerConsumer<T>
         }
     }
 
-    /// <summary>销毁</summary>
-    /// <param name="disposing"></param>
-    protected override void Dispose(Boolean disposing)
-    {
-        base.Dispose(disposing);
-
-        _occupiedNodes.TryDispose();
-    }
+    /// <summary>确认消费</summary>
+    /// <param name="keys"></param>
+    /// <returns></returns>
+    public Int32 Acknowledge(params String[] keys) => 0;
 
     /// <summary>生产添加</summary>
     /// <param name="values"></param>
@@ -789,10 +784,14 @@ public class MemoryQueue<T> : DisposeBase, IProducerConsumer<T>
         return _collection.TryTake(out var item) ? item : default;
     }
 
-    /// <summary>确认消费</summary>
-    /// <param name="keys"></param>
-    /// <returns></returns>
-    public Int32 Acknowledge(params String[] keys) => 0;
+    /// <summary>销毁</summary>
+    /// <param name="disposing"></param>
+    protected override void Dispose(Boolean disposing)
+    {
+        base.Dispose(disposing);
+
+        _occupiedNodes.TryDispose();
+    }
 }
 
 //#nullable restore

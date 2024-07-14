@@ -26,6 +26,10 @@ namespace ThingsGateway.Debug;
 
 public partial class LogConsole : IDisposable
 {
+    private bool IsPause;
+
+    public bool Disposed { get; set; }
+
     [Parameter]
     [EditorRequired]
     public string HeaderText { get; set; }
@@ -33,137 +37,34 @@ public partial class LogConsole : IDisposable
     [Parameter]
     public string HeightText { get; set; } = "400px";
 
-    private bool IsPause;
-
-    private Task Pause()
-    {
-        IsPause = !IsPause;
-        if (IsPause)
-            PauseMessagesText = Messages.ToList();
-        return Task.CompletedTask;
-    }
-
-    [Inject]
-    private DownloadService DownloadService { get; set; }
+    [Parameter, EditorRequired]
+    public string LogPath { get; set; }
 
     /// <summary>
     /// 日志
     /// </summary>
     public ICollection<LogMessage> Messages { get; set; } = new List<LogMessage>();
 
+    private ICollection<LogMessage> CurrentMessages => IsPause ? PauseMessagesText : Messages;
+
+    [Inject]
+    private DownloadService DownloadService { get; set; }
+
     /// <summary>
     /// 暂停缓存
     /// </summary>
     private ICollection<LogMessage> PauseMessagesText { get; set; } = new List<LogMessage>();
 
-    private ICollection<LogMessage> CurrentMessages => IsPause ? PauseMessagesText : Messages;
-
     [Inject]
     private IPlatformService PlatformService { get; set; }
 
-    private async Task HandleOnExportClick(MouseEventArgs args)
-    {
-        try
-        {
-            if (IsPause)
-            {
-                using var memoryStream = new MemoryStream();
-                using StreamWriter writer = new(memoryStream);
-                foreach (var item in PauseMessagesText)
-                {
-                    writer.WriteLine(item.Message);
-                }
-                writer.Flush();
-                memoryStream.Seek(0, SeekOrigin.Begin);
-
-                // 定义文件名称规则的正则表达式模式
-                string pattern = @"[\\/:*?""<>|]";
-                // 使用正则表达式将不符合规则的部分替换为下划线
-                string sanitizedFileName = Regex.Replace(HeaderText, pattern, "_");
-                await DownloadService.DownloadFromStreamAsync(sanitizedFileName + DateTime.Now.ToFileDateTimeFormat(), memoryStream);
-            }
-            else
-            {
-                if (PlatformService != null)
-                    await PlatformService.OnLogExport(LogPath);
-            }
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warn(ex);
-        }
-    }
-
     [Inject]
     private ToastService ToastService { get; set; }
-
-    [Parameter, EditorRequired]
-    public string LogPath { get; set; }
-
-    protected override void OnInitialized()
-    {
-        _ = RunTimerAsync();
-        base.OnInitialized();
-    }
-
-    public bool Disposed { get; set; }
 
     public void Dispose()
     {
         Disposed = true;
         GC.SuppressFinalize(this);
-    }
-
-    private async Task RunTimerAsync()
-    {
-        while (!Disposed)
-        {
-            try
-            {
-                await ExecuteAsync();
-                await InvokeAsync(StateHasChanged);
-                await Task.Delay(1000);
-            }
-            catch (Exception ex)
-            {
-                System.Console.WriteLine(ex);
-            }
-        }
-    }
-
-    private async Task Delete()
-    {
-        if (LogPath != null)
-        {
-            var files = TextFileReader.GetFiles(LogPath);
-            if (files == null || files.FirstOrDefault() == null || !files.FirstOrDefault().IsSuccess)
-            {
-            }
-            else
-            {
-                foreach (var item in files)
-                {
-                    if (File.Exists(item.FullName))
-                    {
-                        int error = 0;
-                        while (error < 3)
-                        {
-                            try
-                            {
-                                File.SetAttributes(item.FullName, FileAttributes.Normal);
-                                File.Delete(item.FullName);
-                                break;
-                            }
-                            catch
-                            {
-                                await Task.Delay(3000);
-                                error++;
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     protected async Task ExecuteAsync()
@@ -204,6 +105,105 @@ public partial class LogConsole : IDisposable
         catch (Exception ex)
         {
             System.Console.WriteLine(ex);
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _ = RunTimerAsync();
+        base.OnInitialized();
+    }
+
+    private async Task Delete()
+    {
+        if (LogPath != null)
+        {
+            var files = TextFileReader.GetFiles(LogPath);
+            if (files == null || files.FirstOrDefault() == null || !files.FirstOrDefault().IsSuccess)
+            {
+            }
+            else
+            {
+                foreach (var item in files)
+                {
+                    if (File.Exists(item.FullName))
+                    {
+                        int error = 0;
+                        while (error < 3)
+                        {
+                            try
+                            {
+                                File.SetAttributes(item.FullName, FileAttributes.Normal);
+                                File.Delete(item.FullName);
+                                break;
+                            }
+                            catch
+                            {
+                                await Task.Delay(3000);
+                                error++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private async Task HandleOnExportClick(MouseEventArgs args)
+    {
+        try
+        {
+            if (IsPause)
+            {
+                using var memoryStream = new MemoryStream();
+                using StreamWriter writer = new(memoryStream);
+                foreach (var item in PauseMessagesText)
+                {
+                    writer.WriteLine(item.Message);
+                }
+                writer.Flush();
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                // 定义文件名称规则的正则表达式模式
+                string pattern = @"[\\/:*?""<>|]";
+                // 使用正则表达式将不符合规则的部分替换为下划线
+                string sanitizedFileName = Regex.Replace(HeaderText, pattern, "_");
+                await DownloadService.DownloadFromStreamAsync(sanitizedFileName + DateTime.Now.ToFileDateTimeFormat(), memoryStream);
+            }
+            else
+            {
+                if (PlatformService != null)
+                    await PlatformService.OnLogExport(LogPath);
+            }
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warn(ex);
+        }
+    }
+
+    private Task Pause()
+    {
+        IsPause = !IsPause;
+        if (IsPause)
+            PauseMessagesText = Messages.ToList();
+        return Task.CompletedTask;
+    }
+
+    private async Task RunTimerAsync()
+    {
+        while (!Disposed)
+        {
+            try
+            {
+                await ExecuteAsync();
+                await InvokeAsync(StateHasChanged);
+                await Task.Delay(1000);
+            }
+            catch (Exception ex)
+            {
+                System.Console.WriteLine(ex);
+            }
         }
     }
 }

@@ -18,10 +18,10 @@ internal class OpcUaTag : BaseDataVariableState
     {
     }
 
-    internal bool IsDataTypeInit { get; set; }
-
     /// <summary>
     /// 变量Id
     /// </summary>
     internal long Id { get; set; }
+
+    internal bool IsDataTypeInit { get; set; }
 }

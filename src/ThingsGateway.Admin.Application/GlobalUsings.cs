@@ -8,4 +8,4 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-global using ThingsGateway.Sql;
+global using ThingsGateway.Core;

@@ -2,9 +2,9 @@
   <Import Project="$(SolutionDir)Version.props" />
 
   <ItemGroup>
-    <PackageReference Include="MiniExcel" Version="1.33.0" />
     <PackageReference Include="Rougamo.Fody" Version="3.0.2" />
     <PackageReference Include="UAParser" Version="3.1.47" />
+    <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.Startup\ThingsGateway.Startup.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,7 +33,5 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.Sql\ThingsGateway.Sql.csproj" />
-  </ItemGroup>
+ 
 </Project>

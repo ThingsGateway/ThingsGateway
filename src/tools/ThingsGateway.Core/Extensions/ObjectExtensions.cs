@@ -18,50 +18,6 @@ namespace ThingsGateway.Core.Extension;
 public static class ObjectExtensions
 {
     /// <summary>
-    /// 判断是否是富基元类型
-    /// </summary>
-    /// <param name="type">类型</param>
-    /// <returns></returns>
-    internal static bool IsRichPrimitive(this Type? type)
-    {
-        if (type == null) return false;
-
-        // 处理元组类型
-        if (type.IsValueTuple()) return false;
-
-        // 处理数组类型，基元数组类型也可以是基元类型
-        if (type.IsArray) return type.GetElementType()?.IsRichPrimitive() ?? false;
-
-        // 基元类型或值类型或字符串类型
-        if (type.IsPrimitive || type.IsValueType || type == typeof(string)) return true;
-
-        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>)) return type.GenericTypeArguments[0].IsRichPrimitive();
-
-        return false;
-    }
-
-    /// <summary>
-    /// 判断是否是元组类型
-    /// </summary>
-    /// <param name="type">类型</param>
-    /// <returns></returns>
-    internal static bool IsValueTuple(this Type type)
-    {
-        return type.Namespace == "System" && type.Name.Contains("ValueTuple`");
-    }
-
-    /// <summary>
-    /// 判断方法是否是异步
-    /// </summary>
-    /// <param name="method">方法</param>
-    /// <returns></returns>
-    internal static bool IsAsync(this MethodInfo method)
-    {
-        return method.GetCustomAttribute<AsyncMethodBuilderAttribute>() != null
-            || method.ReturnType.ToString().StartsWith(typeof(Task).FullName!);
-    }
-
-    /// <summary>
     /// 判断类型是否实现某个泛型
     /// </summary>
     /// <param name="type">类型</param>
@@ -85,60 +41,6 @@ public static class ObjectExtensions
 
         // 判断逻辑
         bool IsTheRawGenericType(Type type) => generic == (type.IsGenericType ? type.GetGenericTypeDefinition() : type);
-    }
-
-    /// <summary>
-    /// 判断是否是匿名类型
-    /// </summary>
-    /// <param name="obj">对象</param>
-    /// <returns></returns>
-    internal static bool IsAnonymous(this object obj)
-    {
-        var type = obj is Type t ? t : obj.GetType();
-
-        return Attribute.IsDefined(type, typeof(CompilerGeneratedAttribute), false)
-               && type.IsGenericType && type.Name.Contains("AnonymousType")
-               && (type.Name.StartsWith("<>") || type.Name.StartsWith("VB$"))
-               && type.Attributes.HasFlag(TypeAttributes.NotPublic);
-    }
-
-    /// <summary>
-    /// 获取所有祖先类型
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    internal static IEnumerable<Type> GetAncestorTypes(this Type type)
-    {
-        var ancestorTypes = new List<Type>();
-        while (type != null && type != typeof(object))
-        {
-            if (IsNoObjectBaseType(type))
-            {
-                var baseType = type.BaseType!;
-                ancestorTypes.Add(baseType);
-                type = baseType;
-            }
-            else break;
-        }
-
-        return ancestorTypes;
-
-        static bool IsNoObjectBaseType(Type type) => type.BaseType != typeof(object);
-    }
-
-    /// <summary>
-    /// 获取方法真实返回类型
-    /// </summary>
-    /// <param name="method"></param>
-    /// <returns></returns>
-    internal static Type GetRealReturnType(this MethodInfo method)
-    {
-        // 判断是否是异步方法
-        var isAsyncMethod = method.IsAsync();
-
-        // 获取类型返回值并处理 Task 和 Task<T> 类型返回值
-        var returnType = method.ReturnType;
-        return isAsyncMethod ? (returnType.GenericTypeArguments.FirstOrDefault() ?? typeof(void)) : returnType;
     }
 
     /// <summary>
@@ -227,6 +129,30 @@ public static class ObjectExtensions
     }
 
     /// <summary>
+    /// 获取所有祖先类型
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    internal static IEnumerable<Type> GetAncestorTypes(this Type type)
+    {
+        var ancestorTypes = new List<Type>();
+        while (type != null && type != typeof(object))
+        {
+            if (IsNoObjectBaseType(type))
+            {
+                var baseType = type.BaseType!;
+                ancestorTypes.Add(baseType);
+                type = baseType;
+            }
+            else break;
+        }
+
+        return ancestorTypes;
+
+        static bool IsNoObjectBaseType(Type type) => type.BaseType != typeof(object);
+    }
+
+    /// <summary>
     /// 查找方法指定特性，如果没找到则继续查找声明类
     /// </summary>
     /// <typeparam name="TAttribute"></typeparam>
@@ -251,6 +177,110 @@ public static class ObjectExtensions
             );
 
         return foundAttribute;
+    }
+
+    /// <summary>
+    /// 获取方法真实返回类型
+    /// </summary>
+    /// <param name="method"></param>
+    /// <returns></returns>
+    internal static Type GetRealReturnType(this MethodInfo method)
+    {
+        // 判断是否是异步方法
+        var isAsyncMethod = method.IsAsync();
+
+        // 获取类型返回值并处理 Task 和 Task<T> 类型返回值
+        var returnType = method.ReturnType;
+        return isAsyncMethod ? (returnType.GenericTypeArguments.FirstOrDefault() ?? typeof(void)) : returnType;
+    }
+
+    /// <summary>
+    /// 获取类型自定义特性
+    /// </summary>
+    /// <typeparam name="TAttribute">特性类型</typeparam>
+    /// <param name="type">类类型</param>
+    /// <param name="inherit">是否继承查找</param>
+    /// <returns>特性对象</returns>
+    internal static TAttribute GetTypeAttribute<TAttribute>(this Type type, bool inherit = false)
+        where TAttribute : Attribute
+    {
+        // 空检查
+        ArgumentNullException.ThrowIfNull(type);
+
+        // 检查特性并获取特性对象
+        return type.IsDefined(typeof(TAttribute), inherit)
+            ? type.GetCustomAttribute<TAttribute>(inherit)
+            : default;
+    }
+
+    /// <summary>
+    /// 判断是否是匿名类型
+    /// </summary>
+    /// <param name="obj">对象</param>
+    /// <returns></returns>
+    internal static bool IsAnonymous(this object obj)
+    {
+        var type = obj is Type t ? t : obj.GetType();
+
+        return Attribute.IsDefined(type, typeof(CompilerGeneratedAttribute), false)
+               && type.IsGenericType && type.Name.Contains("AnonymousType")
+               && (type.Name.StartsWith("<>") || type.Name.StartsWith("VB$"))
+               && type.Attributes.HasFlag(TypeAttributes.NotPublic);
+    }
+
+    /// <summary>
+    /// 判断方法是否是异步
+    /// </summary>
+    /// <param name="method">方法</param>
+    /// <returns></returns>
+    internal static bool IsAsync(this MethodInfo method)
+    {
+        return method.GetCustomAttribute<AsyncMethodBuilderAttribute>() != null
+            || method.ReturnType.ToString().StartsWith(typeof(Task).FullName!);
+    }
+
+    /// <summary>
+    /// 判断集合是否为空
+    /// </summary>
+    /// <typeparam name="T">元素类型</typeparam>
+    /// <param name="collection">集合对象</param>
+    /// <returns><see cref="bool"/> 实例，true 表示空集合，false 表示非空集合</returns>
+    internal static bool IsEmpty<T>(this IEnumerable<T> collection)
+    {
+        return collection == null || !collection.Any();
+    }
+
+    /// <summary>
+    /// 判断是否是富基元类型
+    /// </summary>
+    /// <param name="type">类型</param>
+    /// <returns></returns>
+    internal static bool IsRichPrimitive(this Type? type)
+    {
+        if (type == null) return false;
+
+        // 处理元组类型
+        if (type.IsValueTuple()) return false;
+
+        // 处理数组类型，基元数组类型也可以是基元类型
+        if (type.IsArray) return type.GetElementType()?.IsRichPrimitive() ?? false;
+
+        // 基元类型或值类型或字符串类型
+        if (type.IsPrimitive || type.IsValueType || type == typeof(string)) return true;
+
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>)) return type.GenericTypeArguments[0].IsRichPrimitive();
+
+        return false;
+    }
+
+    /// <summary>
+    /// 判断是否是元组类型
+    /// </summary>
+    /// <param name="type">类型</param>
+    /// <returns></returns>
+    internal static bool IsValueTuple(this Type type)
+    {
+        return type.Namespace == "System" && type.Name.Contains("ValueTuple`");
     }
 
     /// <summary>
@@ -297,35 +327,5 @@ public static class ObjectExtensions
             default:
                 return default;
         }
-    }
-
-    /// <summary>
-    /// 判断集合是否为空
-    /// </summary>
-    /// <typeparam name="T">元素类型</typeparam>
-    /// <param name="collection">集合对象</param>
-    /// <returns><see cref="bool"/> 实例，true 表示空集合，false 表示非空集合</returns>
-    internal static bool IsEmpty<T>(this IEnumerable<T> collection)
-    {
-        return collection == null || !collection.Any();
-    }
-
-    /// <summary>
-    /// 获取类型自定义特性
-    /// </summary>
-    /// <typeparam name="TAttribute">特性类型</typeparam>
-    /// <param name="type">类类型</param>
-    /// <param name="inherit">是否继承查找</param>
-    /// <returns>特性对象</returns>
-    internal static TAttribute GetTypeAttribute<TAttribute>(this Type type, bool inherit = false)
-        where TAttribute : Attribute
-    {
-        // 空检查
-        ArgumentNullException.ThrowIfNull(type);
-
-        // 检查特性并获取特性对象
-        return type.IsDefined(typeof(TAttribute), inherit)
-            ? type.GetCustomAttribute<TAttribute>(inherit)
-            : default;
     }
 }

@@ -8,22 +8,28 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway;
 
-/// <inheritdoc/>
-public class UserFriendlyException : Exception
+/// <summary>
+/// 种子数据忽略新增
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+public class IgnoreSeedDataAddAttribute : Attribute
 {
-    public UserFriendlyException()
-    {
-    }
+}
 
-    public UserFriendlyException(string? message) : base(message)
-    {
-    }
+/// <summary>
+/// 种子数据忽略修改
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+public class IgnoreSeedDataUpdateAttribute : Attribute
+{
+}
 
-    public UserFriendlyException(string? message, Exception? innerException) : base(message, innerException)
-    {
-    }
-
-    public bool? IsValidationException { get; set; }
+/// <summary>
+/// 忽略初始化表
+/// </summary>
+[AttributeUsage(AttributeTargets.Class)]
+public class IgnoreInitTableAttribute : Attribute
+{
 }

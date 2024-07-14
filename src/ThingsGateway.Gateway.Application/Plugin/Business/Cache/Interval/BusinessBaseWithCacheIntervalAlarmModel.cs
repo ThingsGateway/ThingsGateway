@@ -73,13 +73,22 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     }
 
     /// <summary>
-    /// 启动前异步方法
+    /// 当报警状态变化时触发此方法。如果不需要进行报警上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheAlarmModel{T,T2,T3}.AddQueueT3(T3)"/> 方法。
     /// </summary>
-    protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
+    /// <param name="alarmVariable">报警变量</param>
+    protected virtual void AlarmChange(AlarmVariable alarmVariable)
     {
-        // 启动间隔上传的数据获取线程
-        _ = IntervalInsert();
-        return base.ProtectedBeforStartAsync(cancellationToken);
+        // 在报警状态变化时执行的自定义逻辑
+    }
+
+    /// <summary>
+    /// 当设备状态变化时触发此方法。如果不需要进行设备上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheDevModel{T,T2}.AddQueueDevModel(T2)"/> 方法。
+    /// </summary>
+    /// <param name="deviceRunTime">设备运行时信息</param>
+    /// <param name="deviceData">设备数据</param>
+    protected virtual void DeviceChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
+    {
+        // 在设备状态变化时执行的自定义逻辑
     }
 
     /// <summary>
@@ -152,22 +161,13 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     }
 
     /// <summary>
-    /// 当报警状态变化时触发此方法。如果不需要进行报警上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheAlarmModel{T,T2,T3}.AddQueueT3(T3)"/> 方法。
+    /// 启动前异步方法
     /// </summary>
-    /// <param name="alarmVariable">报警变量</param>
-    protected virtual void AlarmChange(AlarmVariable alarmVariable)
+    protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
-        // 在报警状态变化时执行的自定义逻辑
-    }
-
-    /// <summary>
-    /// 当设备状态变化时触发此方法。如果不需要进行设备上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheDevModel{T,T2}.AddQueueDevModel(T2)"/> 方法。
-    /// </summary>
-    /// <param name="deviceRunTime">设备运行时信息</param>
-    /// <param name="deviceData">设备数据</param>
-    protected virtual void DeviceChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
-    {
-        // 在设备状态变化时执行的自定义逻辑
+        // 启动间隔上传的数据获取线程
+        _ = IntervalInsert();
+        return base.ProtectedBeforStartAsync(cancellationToken);
     }
 
     /// <summary>
@@ -198,24 +198,6 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     }
 
     /// <summary>
-    /// 当变量值发生变化时触发此事件处理方法。该方法内部会检查是否需要进行变量上传，如果需要，则调用 <see cref="VariableChange(VariableRunTime, VariableData)"/> 方法。
-    /// </summary>
-    /// <param name="variableRunTime">变量运行时信息</param>
-    /// <param name="variable">变量数据</param>
-    private void VariableValueChange(VariableRunTime variableRunTime, VariableData variable)
-    {
-        if (!CurrentDevice.KeepRun)
-            return;
-        // 如果业务属性的缓存为间隔上传，则不执行后续操作
-        if (_businessPropertyWithCacheInterval?.IsInterval != true)
-        {
-            // 检查当前设备的变量是否包含此变量，如果包含，则触发变量的变化处理方法
-            if (CurrentDevice.VariableRunTimes.ContainsKey(variable.Name))
-                VariableChange(variableRunTime, variable);
-        }
-    }
-
-    /// <summary>
     /// 当设备状态发生变化时触发此事件处理方法。该方法内部会检查是否需要进行设备上传，如果需要，则调用 <see cref="DeviceChange(DeviceRunTime, DeviceData)"/> 方法。
     /// </summary>
     /// <param name="deviceRunTime">设备运行时信息</param>
@@ -230,6 +212,24 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
             // 检查当前设备的设备列表是否包含此设备，如果包含，则触发设备的状态变化处理方法
             if (CollectDevices.ContainsKey(deviceData.Name))
                 DeviceChange(deviceRunTime, deviceData);
+        }
+    }
+
+    /// <summary>
+    /// 当变量值发生变化时触发此事件处理方法。该方法内部会检查是否需要进行变量上传，如果需要，则调用 <see cref="VariableChange(VariableRunTime, VariableData)"/> 方法。
+    /// </summary>
+    /// <param name="variableRunTime">变量运行时信息</param>
+    /// <param name="variable">变量数据</param>
+    private void VariableValueChange(VariableRunTime variableRunTime, VariableData variable)
+    {
+        if (!CurrentDevice.KeepRun)
+            return;
+        // 如果业务属性的缓存为间隔上传，则不执行后续操作
+        if (_businessPropertyWithCacheInterval?.IsInterval != true)
+        {
+            // 检查当前设备的变量是否包含此变量，如果包含，则触发变量的变化处理方法
+            if (CurrentDevice.VariableRunTimes.ContainsKey(variable.Name))
+                VariableChange(variableRunTime, variable);
         }
     }
 }

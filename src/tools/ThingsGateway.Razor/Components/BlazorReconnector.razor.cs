@@ -17,15 +17,6 @@ public partial class BlazorReconnector
     private IStringLocalizer<BlazorReconnector>? Localizer { get; set; }
 
     [NotNull]
-    private string? Reconnecting1 { get; set; }
-
-    [NotNull]
-    private string? Reconnecting2 { get; set; }
-
-    [NotNull]
-    private string? Reconnecting3 { get; set; }
-
-    [NotNull]
     private string? ReconnectFailed1 { get; set; }
 
     [NotNull]
@@ -39,6 +30,15 @@ public partial class BlazorReconnector
 
     [NotNull]
     private string? ReconnectFailed5 { get; set; }
+
+    [NotNull]
+    private string? Reconnecting1 { get; set; }
+
+    [NotNull]
+    private string? Reconnecting2 { get; set; }
+
+    [NotNull]
+    private string? Reconnecting3 { get; set; }
 
     [NotNull]
     private string? ReconnectRejected1 { get; set; }

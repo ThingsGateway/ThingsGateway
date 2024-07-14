@@ -17,19 +17,19 @@ public partial class GrantApiComponent
     [Parameter]
     [EditorRequired]
     [NotNull]
-    public List<string> Value { get; set; }
-
-    [Parameter]
-    public EventCallback<List<string>> ValueChanged { get; set; }
-
-    [Parameter]
-    [EditorRequired]
-    [NotNull]
     public long Id { get; set; }
 
     [Parameter]
     [NotNull]
     public bool IsRole { get; set; }
+
+    [Parameter]
+    [EditorRequired]
+    [NotNull]
+    public List<string> Value { get; set; }
+
+    [Parameter]
+    public EventCallback<List<string>> ValueChanged { get; set; }
 
     [NotNull]
     private List<TreeViewItem<OpenApiPermissionTreeSelector>>? Items { get; set; }
@@ -39,11 +39,11 @@ public partial class GrantApiComponent
 
     [Inject]
     [NotNull]
-    private ISysUserService? SysUserService { get; set; }
+    private ISysRoleService? SysRoleService { get; set; }
 
     [Inject]
     [NotNull]
-    private ISysRoleService? SysRoleService { get; set; }
+    private ISysUserService? SysUserService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,14 +52,7 @@ public partial class GrantApiComponent
         Items = ResourceUtil.BuildTreeItemList(items, Value, RenderTreeItem);
     }
 
-    private async Task OnTreeItemChecked(List<TreeViewItem<OpenApiPermissionTreeSelector>> items)
-    {
-        Value = items.Select(a => a.Value.ApiRoute).ToList();
-        if (ValueChanged.HasDelegate)
-        {
-            await ValueChanged.InvokeAsync(Value);
-        }
-    }
+    private bool ModelEqualityComparer(OpenApiPermissionTreeSelector x, OpenApiPermissionTreeSelector y) => x.ApiRoute == y.ApiRoute;
 
     private async Task OnClickClose()
     {
@@ -88,5 +81,12 @@ public partial class GrantApiComponent
         }
     }
 
-    private bool ModelEqualityComparer(OpenApiPermissionTreeSelector x, OpenApiPermissionTreeSelector y) => x.ApiRoute == y.ApiRoute;
+    private async Task OnTreeItemChecked(List<TreeViewItem<OpenApiPermissionTreeSelector>> items)
+    {
+        Value = items.Select(a => a.Value.ApiRoute).ToList();
+        if (ValueChanged.HasDelegate)
+        {
+            await ValueChanged.InvokeAsync(Value);
+        }
+    }
 }

@@ -19,9 +19,7 @@ using Opc.Ua;
 using Opc.Ua.Configuration;
 
 using System.Collections.Concurrent;
-using System.Diagnostics;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Gateway.Application;
 
@@ -41,13 +39,15 @@ public partial class OpcUaServer : BusinessBase
     private ThingsGatewayServer m_server;
     private volatile bool success = true;
 
+    public override IProtocol? Protocol => null;
+
     /// <inheritdoc/>
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
     /// <inheritdoc/>
     protected override BusinessPropertyBase _businessPropertyBase => _driverPropertys;
 
-    public override IProtocol? Protocol => null;
+    protected IStringLocalizer Localizer { get; private set; }
     private ConcurrentQueue<VariableData> CollectVariableRunTimes { get; set; } = new();
 
     public override void Init(IChannel? channel = null)
@@ -84,8 +84,6 @@ public partial class OpcUaServer : BusinessBase
         });
         Localizer = App.CreateLocalizerByType(typeof(OpcUaServer))!;
     }
-
-    protected IStringLocalizer Localizer { get; private set; }
 
     /// <inheritdoc/>
     public override bool IsConnected() => m_server?.CurrentInstance.CurrentState == Opc.Ua.ServerState.Running;

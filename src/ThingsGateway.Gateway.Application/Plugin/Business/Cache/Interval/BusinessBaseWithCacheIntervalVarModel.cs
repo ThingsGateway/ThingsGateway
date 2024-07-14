@@ -66,18 +66,6 @@ public abstract class BusinessBaseWithCacheIntervalVarModel<T> : BusinessBaseWit
     }
 
     /// <summary>
-    /// 在启动前执行的异步操作。
-    /// </summary>
-    /// <param name="cancellationToken">取消令牌</param>
-    /// <returns>表示异步操作的任务</returns>
-    protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
-    {
-        // 启动间隔插入操作
-        _ = IntervalInsert();
-        return base.ProtectedBeforStartAsync(cancellationToken);
-    }
-
-    /// <summary>
     /// 释放资源的方法。
     /// </summary>
     /// <param name="disposing">是否释放托管资源</param>
@@ -132,6 +120,18 @@ public abstract class BusinessBaseWithCacheIntervalVarModel<T> : BusinessBaseWit
                 LogMessage.LogWarning(ex, BusinessBaseLocalizer["IntervalInsertVariableFail"]);
             }
         }
+    }
+
+    /// <summary>
+    /// 在启动前执行的异步操作。
+    /// </summary>
+    /// <param name="cancellationToken">取消令牌</param>
+    /// <returns>表示异步操作的任务</returns>
+    protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
+    {
+        // 启动间隔插入操作
+        _ = IntervalInsert();
+        return base.ProtectedBeforStartAsync(cancellationToken);
     }
 
     /// <summary>

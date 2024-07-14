@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
 using Microsoft.AspNetCore.Components;
 
 using ThingsGateway.Foundation;
@@ -40,6 +38,13 @@ public partial class Dlt645_2007Master : ComponentBase, IDisposable
         GC.SuppressFinalize(this);
     }
 
+    private void OnConfimClick(ChannelData channelData)
+    {
+        ChannelData = channelData;
+        _plc = new ThingsGateway.Foundation.Dlt645.Dlt645_2007Master(channelData.Channel);
+        LogPath = channelData.Id.GetDebugLogPath();
+    }
+
     private async Task OnConnectClick(ChannelData channelData)
     {
         if (ChannelData?.Channel != null)
@@ -54,13 +59,6 @@ public partial class Dlt645_2007Master : ComponentBase, IDisposable
             }
         }
         await InvokeAsync(StateHasChanged);
-    }
-
-    private void OnConfimClick(ChannelData channelData)
-    {
-        ChannelData = channelData;
-        _plc = new ThingsGateway.Foundation.Dlt645.Dlt645_2007Master(channelData.Channel);
-        LogPath = channelData.Id.GetDebugLogPath();
     }
 
     private async Task OnDisConnectClick()

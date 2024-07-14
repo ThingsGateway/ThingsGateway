@@ -50,11 +50,11 @@ public static class BusinessDatabaseUtil
     }
 
     /// <summary>
-    /// 按条件获取DB插件中的全部历史数据(不分页)
+    /// 按条件获取DB插件中的全部历史报警(不分页)
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    public static async Task<OperResult<List<IDBHistoryValue>>> GetDBHistoryValuesAsync(string businessDeviceName, DBHistoryValuePageInput input)
+    public static async Task<OperResult<SqlSugarPagedList<IDBHistoryAlarm>>> GetDBHistoryAlarmPagesAsync(string businessDeviceName, DBHistoryAlarmPageInput input)
     {
         try
         {
@@ -67,39 +67,12 @@ public static class BusinessDatabaseUtil
             {
                 return new(new Exception("Connect Fail"));
             }
-            var data = await ((IDBHistoryValueService)businessDevice).GetDBHistoryValuesAsync(input).ConfigureAwait(false);
+            var data = await ((IDBHistoryAlarmService)businessDevice).GetDBHistoryAlarmPagesAsync(input).ConfigureAwait(false);
             return OperResult.CreateSuccessResult(data);
         }
         catch (Exception ex)
         {
-            return new("GetDBHistoryValues Fail", ex);
-        }
-    }
-
-    /// <summary>
-    /// 按条件获取DB插件中的全部历史数据(不分页)
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    public static async Task<OperResult<SqlSugarPagedList<IDBHistoryValue>>> GetDBHistoryValuePagesAsync(string businessDeviceName, DBHistoryValuePageInput input)
-    {
-        try
-        {
-            var businessDevice = HostedServiceUtil.BusinessDeviceHostedService.DriverBases.Where(a => a is IDBHistoryValueService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
-            if (businessDevice == null)
-            {
-                return new(new ArgumentNullException(nameof(businessDevice)));
-            }
-            if (!businessDevice.IsConnected())
-            {
-                return new(new Exception("Connect Fail"));
-            }
-            var data = await ((IDBHistoryValueService)businessDevice).GetDBHistoryValuePagesAsync(input).ConfigureAwait(false);
-            return OperResult.CreateSuccessResult(data);
-        }
-        catch (Exception ex)
-        {
-            return new("GetDBHistoryValuePages Fail", ex);
+            return new("GetDBHistoryAlarmPages Fail", ex);
         }
     }
 
@@ -131,11 +104,11 @@ public static class BusinessDatabaseUtil
     }
 
     /// <summary>
-    /// 按条件获取DB插件中的全部历史报警(不分页)
+    /// 按条件获取DB插件中的全部历史数据(不分页)
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
-    public static async Task<OperResult<SqlSugarPagedList<IDBHistoryAlarm>>> GetDBHistoryAlarmPagesAsync(string businessDeviceName, DBHistoryAlarmPageInput input)
+    public static async Task<OperResult<SqlSugarPagedList<IDBHistoryValue>>> GetDBHistoryValuePagesAsync(string businessDeviceName, DBHistoryValuePageInput input)
     {
         try
         {
@@ -148,12 +121,39 @@ public static class BusinessDatabaseUtil
             {
                 return new(new Exception("Connect Fail"));
             }
-            var data = await ((IDBHistoryAlarmService)businessDevice).GetDBHistoryAlarmPagesAsync(input).ConfigureAwait(false);
+            var data = await ((IDBHistoryValueService)businessDevice).GetDBHistoryValuePagesAsync(input).ConfigureAwait(false);
             return OperResult.CreateSuccessResult(data);
         }
         catch (Exception ex)
         {
-            return new("GetDBHistoryAlarmPages Fail", ex);
+            return new("GetDBHistoryValuePages Fail", ex);
+        }
+    }
+
+    /// <summary>
+    /// 按条件获取DB插件中的全部历史数据(不分页)
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static async Task<OperResult<List<IDBHistoryValue>>> GetDBHistoryValuesAsync(string businessDeviceName, DBHistoryValuePageInput input)
+    {
+        try
+        {
+            var businessDevice = HostedServiceUtil.BusinessDeviceHostedService.DriverBases.Where(a => a is IDBHistoryValueService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
+            if (businessDevice == null)
+            {
+                return new(new ArgumentNullException(nameof(businessDevice)));
+            }
+            if (!businessDevice.IsConnected())
+            {
+                return new(new Exception("Connect Fail"));
+            }
+            var data = await ((IDBHistoryValueService)businessDevice).GetDBHistoryValuesAsync(input).ConfigureAwait(false);
+            return OperResult.CreateSuccessResult(data);
+        }
+        catch (Exception ex)
+        {
+            return new("GetDBHistoryValues Fail", ex);
         }
     }
 }

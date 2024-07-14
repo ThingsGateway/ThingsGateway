@@ -20,17 +20,17 @@ namespace ThingsGateway.Plugin.Modbus;
 public class ModbusSlaveVariableProperty : VariablePropertyBase
 {
     /// <summary>
+    /// 数据类型
+    /// </summary>
+    [DynamicProperty]
+    public DataTypeEnum DataType { get; set; } = DataTypeEnum.Int16;
+
+    /// <summary>
     /// 从站变量地址
     /// </summary>
     [DynamicProperty]
     [Required]
     public string ServiceAddress { get; set; }
-
-    /// <summary>
-    /// 数据类型
-    /// </summary>
-    [DynamicProperty]
-    public DataTypeEnum DataType { get; set; } = DataTypeEnum.Int16;
 
     /// <summary>
     /// 允许写入

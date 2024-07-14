@@ -93,7 +93,6 @@ public interface IDynamicModelData
 /// </summary>
 public static class CSharpScriptEngineExtension
 {
-
     static CSharpScriptEngineExtension()
     {
         Task.Factory.StartNew(async () =>
@@ -119,7 +118,6 @@ public static class CSharpScriptEngineExtension
                 }
                 catch
                 {
-
                 }
                 finally
                 {
@@ -131,11 +129,10 @@ public static class CSharpScriptEngineExtension
         });
     }
 
+    private static MemoryCache Instance { get; set; } = new MemoryCache();
+    private static EasyLock m_waiterLock = new EasyLock();
+    private static string CacheKey = $"{nameof(CSharpScriptEngineExtension)}-{nameof(Do)}";
 
-
-    static MemoryCache Instance { get; set; } = new MemoryCache();
-    static EasyLock m_waiterLock = new EasyLock();
-    static string CacheKey = $"{nameof(CSharpScriptEngineExtension)}-{nameof(Do)}";
     /// <summary>
     /// 执行脚本获取返回值ReadWriteExpressions
     /// </summary>
@@ -182,7 +179,6 @@ public static class CSharpScriptEngineExtension
 
         return runScript;
     }
-
 
     /// <summary>
     /// GetDynamicModel

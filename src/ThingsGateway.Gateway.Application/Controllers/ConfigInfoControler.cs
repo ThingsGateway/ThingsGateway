@@ -33,9 +33,9 @@ public class ConfigInfoControler : ControllerBase
         _channelService = channelService;
     }
 
+    private IChannelService _channelService { get; set; }
     private IDeviceService _collectDeviceService { get; set; }
     private IVariableService _variableService { get; set; }
-    private IChannelService _channelService { get; set; }
 
     /// <summary>
     /// 获取通道信息

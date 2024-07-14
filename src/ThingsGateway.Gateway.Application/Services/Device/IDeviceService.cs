@@ -26,19 +26,13 @@ namespace ThingsGateway.Gateway.Application;
 public interface IDeviceService
 {
     /// <summary>
-    /// 异步保存设备信息。
+    /// 批量修改
     /// </summary>
-    /// <param name="input">设备信息</param>
-    /// <param name="type">保存类型</param>
-    /// <returns>保存是否成功的异步任务</returns>
-    Task<bool> SaveDeviceAsync(Device input, ItemChangedType type);
-
-    /// <summary>
-    /// 异步删除设备信息。
-    /// </summary>
-    /// <param name="ids">待删除设备的ID集合</param>
-    /// <returns>删除是否成功的异步任务</returns>
-    Task<bool> DeleteDeviceAsync(IEnumerable<long> ids);
+    /// <param name="models">列表</param>
+    /// <param name="oldModel">旧数据</param>
+    /// <param name="model">新数据</param>
+    /// <returns></returns>
+    Task<bool> BatchEditAsync(IEnumerable<Device> models, Device oldModel, Device model);
 
     /// <summary>
     /// 清除指定类型的设备信息。
@@ -56,57 +50,16 @@ public interface IDeviceService
     Task DeleteByChannelIdAsync(IEnumerable<long> ids, SqlSugarClient db);
 
     /// <summary>
+    /// 异步删除设备信息。
+    /// </summary>
+    /// <param name="ids">待删除设备的ID集合</param>
+    /// <returns>删除是否成功的异步任务</returns>
+    Task<bool> DeleteDeviceAsync(IEnumerable<long> ids);
+
+    /// <summary>
     /// 删除设备缓存信息。
     /// </summary>
     void DeleteDeviceFromCache();
-
-    /// <summary>
-    /// 根据ID获取设备信息。
-    /// </summary>
-    /// <param name="id">设备ID</param>
-    /// <returns>设备信息</returns>
-    Device? GetDeviceById(long id);
-
-    /// <summary>
-    /// 获取所有设备信息。
-    /// </summary>
-    /// <returns>所有设备信息</returns>
-    List<Device> GetAll();
-
-    /// <summary>
-    /// 根据设备名称获取设备ID。
-    /// </summary>
-    /// <param name="name">设备名称</param>
-    /// <returns>设备ID</returns>
-    long? GetIdByName(string name);
-
-    /// <summary>
-    /// 根据设备ID获取设备名称。
-    /// </summary>
-    /// <param name="id">设备ID</param>
-    /// <returns>设备名称</returns>
-    string? GetNameById(long id);
-
-    /// <summary>
-    /// 异步分页查询设备信息。
-    /// </summary>
-    /// <param name="option">查询条件</param>
-    /// <returns>查询结果</returns>
-    Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType);
-
-    /// <summary>
-    /// 异步获取采集设备的运行时信息。
-    /// </summary>
-    /// <param name="devId">设备ID（可选）</param>
-    /// <returns>采集设备运行时信息</returns>
-    Task<List<CollectDeviceRunTime>> GetCollectDeviceRuntimeAsync(long? devId = null);
-
-    /// <summary>
-    /// 异步获取业务设备的运行时信息。
-    /// </summary>
-    /// <param name="devId">设备ID（可选）</param>
-    /// <returns>业务设备运行时信息</returns>
-    Task<List<DeviceRunTime>> GetBusinessDeviceRuntimeAsync(long? devId = null);
 
     /// <summary>
     /// 导出设备信息到文件流。
@@ -124,11 +77,45 @@ public interface IDeviceService
     Task<MemoryStream> ExportMemoryStream(IEnumerable<Device>? data, PluginTypeEnum pluginType, string channelName = null);
 
     /// <summary>
-    /// 预览导入设备信息。
+    /// 获取所有设备信息。
     /// </summary>
-    /// <param name="browserFile">待导入的文件</param>
-    /// <returns>导入预览结果</returns>
-    Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile);
+    /// <returns>所有设备信息</returns>
+    List<Device> GetAll();
+
+    /// <summary>
+    /// 异步获取业务设备的运行时信息。
+    /// </summary>
+    /// <param name="devId">设备ID（可选）</param>
+    /// <returns>业务设备运行时信息</returns>
+    Task<List<DeviceRunTime>> GetBusinessDeviceRuntimeAsync(long? devId = null);
+
+    /// <summary>
+    /// 异步获取采集设备的运行时信息。
+    /// </summary>
+    /// <param name="devId">设备ID（可选）</param>
+    /// <returns>采集设备运行时信息</returns>
+    Task<List<CollectDeviceRunTime>> GetCollectDeviceRuntimeAsync(long? devId = null);
+
+    /// <summary>
+    /// 根据ID获取设备信息。
+    /// </summary>
+    /// <param name="id">设备ID</param>
+    /// <returns>设备信息</returns>
+    Device? GetDeviceById(long id);
+
+    /// <summary>
+    /// 根据设备名称获取设备ID。
+    /// </summary>
+    /// <param name="name">设备名称</param>
+    /// <returns>设备ID</returns>
+    long? GetIdByName(string name);
+
+    /// <summary>
+    /// 根据设备ID获取设备名称。
+    /// </summary>
+    /// <param name="id">设备ID</param>
+    /// <returns>设备名称</returns>
+    string? GetNameById(long id);
 
     /// <summary>
     /// 导入设备信息。
@@ -138,6 +125,13 @@ public interface IDeviceService
     Task ImportDeviceAsync(Dictionary<string, ImportPreviewOutputBase> input);
 
     /// <summary>
+    /// 异步分页查询设备信息。
+    /// </summary>
+    /// <param name="option">查询条件</param>
+    /// <returns>查询结果</returns>
+    Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType);
+
+    /// <summary>
     /// API查询
     /// </summary>
     /// <param name="input"></param>
@@ -145,11 +139,17 @@ public interface IDeviceService
     Task<SqlSugarPagedList<Device>> PageAsync(DevicePageInput input);
 
     /// <summary>
-    /// 批量修改
+    /// 预览导入设备信息。
     /// </summary>
-    /// <param name="models">列表</param>
-    /// <param name="oldModel">旧数据</param>
-    /// <param name="model">新数据</param>
-    /// <returns></returns>
-    Task<bool> BatchEditAsync(IEnumerable<Device> models, Device oldModel, Device model);
+    /// <param name="browserFile">待导入的文件</param>
+    /// <returns>导入预览结果</returns>
+    Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile);
+
+    /// <summary>
+    /// 异步保存设备信息。
+    /// </summary>
+    /// <param name="input">设备信息</param>
+    /// <param name="type">保存类型</param>
+    /// <returns>保存是否成功的异步任务</returns>
+    Task<bool> SaveDeviceAsync(Device input, ItemChangedType type);
 }

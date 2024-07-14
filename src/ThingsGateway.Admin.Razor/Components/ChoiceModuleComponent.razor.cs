@@ -17,11 +17,6 @@ public partial class ChoiceModuleComponent
     [Parameter]
     [EditorRequired]
     [NotNull]
-    public long Value { get; set; }
-
-    [Parameter]
-    [EditorRequired]
-    [NotNull]
     public List<SysResource> ModuleList { get; set; }
 
     [Parameter]
@@ -29,11 +24,10 @@ public partial class ChoiceModuleComponent
     [NotNull]
     public Func<long, Task> OnSave { get; set; }
 
-    private async Task Save()
-    {
-        if (OnSave != null)
-            await OnSave.Invoke(Value);
-    }
+    [Parameter]
+    [EditorRequired]
+    [NotNull]
+    public long Value { get; set; }
 
     private IEnumerable<long> SelectedItems { get; set; }
 
@@ -44,5 +38,11 @@ public partial class ChoiceModuleComponent
     {
         SelectedItems = ModuleList.Select(a => a.Id);
         base.OnParametersSet();
+    }
+
+    private async Task Save()
+    {
+        if (OnSave != null)
+            await OnSave.Invoke(Value);
     }
 }

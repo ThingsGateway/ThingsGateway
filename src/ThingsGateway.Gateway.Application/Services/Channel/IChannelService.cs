@@ -25,17 +25,18 @@ namespace ThingsGateway.Gateway.Application;
 public interface IChannelService
 {
     /// <summary>
-    /// 从缓存/数据库获取全部信息
+    /// 批量修改
     /// </summary>
-    /// <returns>通道列表</returns>
-    List<Channel> GetAll();
+    /// <param name="models">列表</param>
+    /// <param name="oldModel">旧数据</param>
+    /// <param name="model">新数据</param>
+    /// <returns></returns>
+    Task<bool> BatchEditAsync(IEnumerable<Channel> models, Channel oldModel, Channel model);
 
     /// <summary>
-    /// 保存通道
+    /// 清除所有通道
     /// </summary>
-    /// <param name="input">通道对象</param>
-    /// <param name="type">保存类型</param>
-    Task<bool> SaveChannelAsync(Channel input, ItemChangedType type);
+    Task ClearChannelAsync();
 
     /// <summary>
     /// 删除通道
@@ -44,9 +45,35 @@ public interface IChannelService
     Task<bool> DeleteChannelAsync(IEnumerable<long> ids);
 
     /// <summary>
-    /// 清除所有通道
+    /// 从缓存中删除通道
     /// </summary>
-    Task ClearChannelAsync();
+    void DeleteChannelFromCache();
+
+    /// <summary>
+    /// 导出通道为文件流结果
+    /// </summary>
+    /// <param name="input">数据读取器</param>
+    /// <returns>文件流结果</returns>
+    Task<FileStreamResult> ExportChannelAsync(IDataReader? input = null);
+
+    /// <summary>
+    /// 导出通道为文件流结果
+    /// </summary>
+    /// <returns>文件流结果</returns>
+    Task<FileStreamResult> ExportChannelAsync(QueryPageOptions options);
+
+    /// <summary>
+    /// 导出通道为内存流
+    /// </summary>
+    /// <param name="data">通道数据</param>
+    /// <returns>内存流</returns>
+    Task<MemoryStream> ExportMemoryStream(List<Channel> data);
+
+    /// <summary>
+    /// 从缓存/数据库获取全部信息
+    /// </summary>
+    /// <returns>通道列表</returns>
+    List<Channel> GetAll();
 
     /// <summary>
     /// 通过配置获取通道
@@ -55,11 +82,6 @@ public interface IChannelService
     /// <param name="config">配置信息</param>
     /// <returns>通道</returns>
     IChannel GetChannel(Channel channel, TouchSocketConfig config);
-
-    /// <summary>
-    /// 从缓存中删除通道
-    /// </summary>
-    void DeleteChannelFromCache();
 
     /// <summary>
     /// 通过ID获取通道
@@ -83,33 +105,6 @@ public interface IChannelService
     string? GetNameById(long id);
 
     /// <summary>
-    /// 导出通道为文件流结果
-    /// </summary>
-    /// <param name="input">数据读取器</param>
-    /// <returns>文件流结果</returns>
-    Task<FileStreamResult> ExportChannelAsync(IDataReader? input = null);
-
-    /// <summary>
-    /// 导出通道为文件流结果
-    /// </summary>
-    /// <returns>文件流结果</returns>
-    Task<FileStreamResult> ExportChannelAsync(QueryPageOptions options);
-
-    /// <summary>
-    /// 导出通道为内存流
-    /// </summary>
-    /// <param name="data">通道数据</param>
-    /// <returns>内存流</returns>
-    Task<MemoryStream> ExportMemoryStream(List<Channel> data);
-
-    /// <summary>
-    /// 预览导入数据
-    /// </summary>
-    /// <param name="browserFile">浏览器文件对象</param>
-    /// <returns>导入预览结果</returns>
-    Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile);
-
-    /// <summary>
     /// 导入通道数据
     /// </summary>
     /// <param name="input">导入数据</param>
@@ -129,11 +124,16 @@ public interface IChannelService
     Task<SqlSugarPagedList<Channel>> PageAsync(ChannelPageInput input);
 
     /// <summary>
-    /// 批量修改
+    /// 预览导入数据
     /// </summary>
-    /// <param name="models">列表</param>
-    /// <param name="oldModel">旧数据</param>
-    /// <param name="model">新数据</param>
-    /// <returns></returns>
-    Task<bool> BatchEditAsync(IEnumerable<Channel> models, Channel oldModel, Channel model);
+    /// <param name="browserFile">浏览器文件对象</param>
+    /// <returns>导入预览结果</returns>
+    Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile);
+
+    /// <summary>
+    /// 保存通道
+    /// </summary>
+    /// <param name="input">通道对象</param>
+    /// <param name="type">保存类型</param>
+    Task<bool> SaveChannelAsync(Channel input, ItemChangedType type);
 }

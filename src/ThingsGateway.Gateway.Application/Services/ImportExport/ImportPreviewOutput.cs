@@ -18,14 +18,14 @@ namespace ThingsGateway.Gateway.Application;
 public class ImportPreviewOutputBase
 {
     /// <summary>
-    /// 是否有错误
-    /// </summary>
-    public bool HasError { get; set; }
-
-    /// <summary>
     /// 导入数据数量
     /// </summary>
     public int DataCount { get => Results.Count; }
+
+    /// <summary>
+    /// 是否有错误
+    /// </summary>
+    public bool HasError { get; set; }
 
     /// <summary>
     /// 返回状态

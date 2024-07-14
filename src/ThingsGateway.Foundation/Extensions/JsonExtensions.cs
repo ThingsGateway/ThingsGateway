@@ -23,11 +23,6 @@ public static class JsonExtensions
         NullValueHandling = NullValueHandling.Ignore // 忽略空值属性
     };
 
-    public static string ToJsonNetString(this object item, JsonSerializerSettings? jsonSerializerSettings = null)
-    {
-        return Newtonsoft.Json.JsonConvert.SerializeObject(item, jsonSerializerSettings ?? Options);
-    }
-
     public static object FromJsonNetString(this string json, Type type, JsonSerializerSettings? jsonSerializerSettings = null)
     {
         return Newtonsoft.Json.JsonConvert.DeserializeObject(json, type, jsonSerializerSettings ?? Options);
@@ -36,5 +31,10 @@ public static class JsonExtensions
     public static T FromJsonNetString<T>(this string json, JsonSerializerSettings? jsonSerializerSettings = null)
     {
         return (T)FromJsonNetString(json, typeof(T), jsonSerializerSettings);
+    }
+
+    public static string ToJsonNetString(this object item, JsonSerializerSettings? jsonSerializerSettings = null)
+    {
+        return Newtonsoft.Json.JsonConvert.SerializeObject(item, jsonSerializerSettings ?? Options);
     }
 }

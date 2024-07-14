@@ -23,15 +23,15 @@ public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<
 {
     private TypeAdapterConfig _config;
 
+    protected override ValueTask<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<TDengineDBHistoryValue>> item, CancellationToken cancellationToken)
+    {
+        return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
+    }
+
     protected override void VariableChange(VariableRunTime variableRunTime, VariableData variable)
     {
         AddQueueVarModel(new(variableRunTime.Adapt<TDengineDBHistoryValue>()));
         base.VariableChange(variableRunTime, variable);
-    }
-
-    protected override ValueTask<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<TDengineDBHistoryValue>> item, CancellationToken cancellationToken)
-    {
-        return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
     private async ValueTask<OperResult> UpdateVarModel(IEnumerable<TDengineDBHistoryValue> item, CancellationToken cancellationToken)

@@ -49,15 +49,15 @@ public class PluginService : IPluginService
 
     private const string _cacheKeyGetPluginOutputs = $"{ThingsGatewayCacheConst.Cache_Prefix}{nameof(PluginService)}{nameof(GetList)}";
 
-    private IStringLocalizer Localizer;
+    private readonly IDispatchService<PluginOutput> _dispatchService;
+    private readonly EasyLock _locker = new();
 
     /// <summary>
     /// 驱动服务日志
     /// </summary>
     private readonly ILogger _logger;
 
-    private readonly EasyLock _locker = new();
-    private readonly IDispatchService<PluginOutput> _dispatchService;
+    private IStringLocalizer Localizer;
 
     public PluginService(ILogger<PluginService> logger, IStringLocalizer<PluginService> localizer, IDispatchService<PluginOutput> dispatchService)
     {
@@ -89,28 +89,6 @@ public class PluginService : IPluginService
     private ConcurrentDictionary<string, Type> _driverBaseDict { get; } = new();
 
     #region public
-
-    /// <summary>
-    /// 获取插件信息的方法，可以根据插件类型筛选插件列表。
-    /// </summary>
-    /// <param name="pluginType">要筛选的插件类型，可选参数</param>
-    /// <returns>符合条件的插件列表</returns>
-    public List<PluginOutput> GetList(PluginTypeEnum? pluginType = null)
-    {
-        // 获取完整的插件列表
-        var pluginList = GetList();
-
-        if (pluginType == null)
-        {
-            // 如果未指定插件类型，则返回完整的插件列表
-            return pluginList;
-        }
-
-        // 筛选出指定类型的插件
-        var filteredPlugins = pluginList.Where(c => c.PluginType == pluginType).ToList();
-
-        return filteredPlugins;
-    }
 
     /// <summary>
     /// 根据插件名称获取对应的驱动程序。
@@ -193,85 +171,6 @@ public class PluginService : IPluginService
     }
 
     /// <summary>
-    /// 获取指定插件的属性类型及其信息，将其缓存在内存中
-    /// </summary>
-    /// <param name="pluginName">插件名称</param>
-    /// <param name="driverBase">驱动基类实例，可选参数</param>
-    /// <returns>返回包含属性名称及其信息的字典</returns>
-    public (IEnumerable<IEditorItem> EditorItems, object Model) GetDriverPropertyTypes(string pluginName, DriverBase? driverBase = null)
-    {
-        // 使用锁确保线程安全
-        lock (this)
-        {
-            string cacheKey = $"{nameof(PluginService)}_{nameof(GetDriverPropertyTypes)}_{CultureInfo.CurrentUICulture.Name}";
-
-            var dispose = driverBase == null;
-            driverBase ??= this.GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
-            // 检查插件名称是否为空或空字符串
-            if (!pluginName.IsNullOrEmpty())
-            {
-                // 从缓存中获取属性类型数据
-                var data = App.CacheService.HashGetAll<List<IEditorItem>>(cacheKey);
-                // 如果缓存中存在数据
-                if (data?.ContainsKey(pluginName) == true)
-                {
-                    // 返回缓存中存储的属性类型数据
-                    var editorItems = data[pluginName];
-                    return (editorItems, driverBase.DriverProperties);
-                }
-            }
-            // 如果缓存中不存在该插件的数据，则重新获取并缓存
-
-            return (SetCache(driverBase, pluginName, cacheKey, dispose), driverBase.DriverProperties); // 调用 SetCache 方法进行缓存并返回结果
-
-            // 定义 SetCache 方法，用于设置缓存并返回
-            IEnumerable<IEditorItem> SetCache(DriverBase driverBase, string pluginName, string cacheKey, bool dispose)
-            {
-                var editorItems = driverBase.PluginPropertyEditorItems;
-                // 将结果存入缓存中，键为插件名称
-                App.CacheService.HashAdd(cacheKey, pluginName, editorItems);
-                // 如果 dispose 参数为 true，则释放 driverBase 对象
-                if (dispose)
-                    driverBase.SafeDispose();
-                return editorItems;
-            }
-        }
-    }
-
-    /// <summary>
-    /// 获取变量的属性类型
-    /// </summary>
-    public (IEnumerable<IEditorItem> EditorItems, object Model) GetVariablePropertyTypes(string pluginName, BusinessBase? businessBase = null)
-    {
-        lock (this)
-        {
-            string cacheKey = $"{nameof(PluginService)}_{nameof(GetVariablePropertyTypes)}_{CultureInfo.CurrentUICulture.Name}";
-            var dispose = businessBase == null;
-            businessBase ??= (BusinessBase)this.GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
-
-            var data = App.CacheService.HashGetAll<List<IEditorItem>>(cacheKey);
-            if (data?.ContainsKey(pluginName) == true)
-            {
-                return (data[pluginName], businessBase.VariablePropertys);
-            }
-            // 如果缓存中不存在该插件的数据，则重新获取并缓存
-            return (SetCache(pluginName, cacheKey), businessBase.VariablePropertys);
-
-            // 定义 SetCache 方法，用于设置缓存并返回
-            IEnumerable<IEditorItem> SetCache(string pluginName, string cacheKey)
-            {
-                var editorItems = businessBase.PluginVariablePropertyEditorItems;
-                // 将结果存入缓存中，键为插件名称
-                App.CacheService.HashAdd(cacheKey, pluginName, editorItems);
-                // 如果 dispose 参数为 true，则释放 driverBase 对象
-                if (dispose)
-                    businessBase.SafeDispose();
-                return editorItems;
-            }
-        }
-    }
-
-    /// <summary>
     /// 获取指定插件的特殊方法。
     /// </summary>
     /// <param name="pluginName">插件名称。</param>
@@ -334,29 +233,103 @@ public class PluginService : IPluginService
     }
 
     /// <summary>
-    /// 设置插件的属性值。
+    /// 获取指定插件的属性类型及其信息，将其缓存在内存中
     /// </summary>
-    /// <param name="driver">插件实例。</param>
-    /// <param name="deviceProperties">插件属性，检索相同名称的属性后写入。</param>
-    public void SetDriverProperties(DriverBase driver, Dictionary<string, string> deviceProperties)
+    /// <param name="pluginName">插件名称</param>
+    /// <param name="driverBase">驱动基类实例，可选参数</param>
+    /// <returns>返回包含属性名称及其信息的字典</returns>
+    public (IEnumerable<IEditorItem> EditorItems, object Model) GetDriverPropertyTypes(string pluginName, DriverBase? driverBase = null)
     {
-        // 获取插件的属性信息列表
-        var pluginProperties = driver.DriverProperties?.GetType().GetRuntimeProperties()
-            // 筛选出带有 DynamicPropertyAttribute 特性的属性
-            .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>(false) != null);
-
-        // 遍历插件的属性信息列表
-        foreach (var propertyInfo in pluginProperties ?? new List<PropertyInfo>())
+        // 使用锁确保线程安全
+        lock (this)
         {
-            // 在设备属性列表中查找与当前属性相同名称的属性
-            if (!deviceProperties.TryGetValue(propertyInfo.Name, out var deviceProperty))
+            string cacheKey = $"{nameof(PluginService)}_{nameof(GetDriverPropertyTypes)}_{CultureInfo.CurrentUICulture.Name}";
+
+            var dispose = driverBase == null;
+            driverBase ??= this.GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
+            // 检查插件名称是否为空或空字符串
+            if (!pluginName.IsNullOrEmpty())
             {
-                continue;
+                // 从缓存中获取属性类型数据
+                var data = App.CacheService.HashGetAll<List<IEditorItem>>(cacheKey);
+                // 如果缓存中存在数据
+                if (data?.ContainsKey(pluginName) == true)
+                {
+                    // 返回缓存中存储的属性类型数据
+                    var editorItems = data[pluginName];
+                    return (editorItems, driverBase.DriverProperties);
+                }
             }
-            // 获取设备属性的值，如果设备属性值为空，则将其转换为当前属性类型的默认值
-            var value = ThingsGatewayStringConverter.Default.Deserialize(null, deviceProperty, propertyInfo.PropertyType);
-            // 设置插件属性的值
-            propertyInfo.SetValue(driver.DriverProperties, value);
+            // 如果缓存中不存在该插件的数据，则重新获取并缓存
+
+            return (SetCache(driverBase, pluginName, cacheKey, dispose), driverBase.DriverProperties); // 调用 SetCache 方法进行缓存并返回结果
+
+            // 定义 SetCache 方法，用于设置缓存并返回
+            IEnumerable<IEditorItem> SetCache(DriverBase driverBase, string pluginName, string cacheKey, bool dispose)
+            {
+                var editorItems = driverBase.PluginPropertyEditorItems;
+                // 将结果存入缓存中，键为插件名称
+                App.CacheService.HashAdd(cacheKey, pluginName, editorItems);
+                // 如果 dispose 参数为 true，则释放 driverBase 对象
+                if (dispose)
+                    driverBase.SafeDispose();
+                return editorItems;
+            }
+        }
+    }
+
+    /// <summary>
+    /// 获取插件信息的方法，可以根据插件类型筛选插件列表。
+    /// </summary>
+    /// <param name="pluginType">要筛选的插件类型，可选参数</param>
+    /// <returns>符合条件的插件列表</returns>
+    public List<PluginOutput> GetList(PluginTypeEnum? pluginType = null)
+    {
+        // 获取完整的插件列表
+        var pluginList = GetList();
+
+        if (pluginType == null)
+        {
+            // 如果未指定插件类型，则返回完整的插件列表
+            return pluginList;
+        }
+
+        // 筛选出指定类型的插件
+        var filteredPlugins = pluginList.Where(c => c.PluginType == pluginType).ToList();
+
+        return filteredPlugins;
+    }
+
+    /// <summary>
+    /// 获取变量的属性类型
+    /// </summary>
+    public (IEnumerable<IEditorItem> EditorItems, object Model) GetVariablePropertyTypes(string pluginName, BusinessBase? businessBase = null)
+    {
+        lock (this)
+        {
+            string cacheKey = $"{nameof(PluginService)}_{nameof(GetVariablePropertyTypes)}_{CultureInfo.CurrentUICulture.Name}";
+            var dispose = businessBase == null;
+            businessBase ??= (BusinessBase)this.GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
+
+            var data = App.CacheService.HashGetAll<List<IEditorItem>>(cacheKey);
+            if (data?.ContainsKey(pluginName) == true)
+            {
+                return (data[pluginName], businessBase.VariablePropertys);
+            }
+            // 如果缓存中不存在该插件的数据，则重新获取并缓存
+            return (SetCache(pluginName, cacheKey), businessBase.VariablePropertys);
+
+            // 定义 SetCache 方法，用于设置缓存并返回
+            IEnumerable<IEditorItem> SetCache(string pluginName, string cacheKey)
+            {
+                var editorItems = businessBase.PluginVariablePropertyEditorItems;
+                // 将结果存入缓存中，键为插件名称
+                App.CacheService.HashAdd(cacheKey, pluginName, editorItems);
+                // 如果 dispose 参数为 true，则释放 driverBase 对象
+                if (dispose)
+                    businessBase.SafeDispose();
+                return editorItems;
+            }
         }
     }
 
@@ -390,32 +363,6 @@ public class PluginService : IPluginService
         finally
         {
             _locker.Release();
-        }
-    }
-
-    /// <summary>
-    /// 清除缓存
-    /// </summary>
-    private void ClearCache()
-    {
-        lock (this)
-        {
-            App.CacheService.Remove(_cacheKeyGetPluginOutputs);
-            App.CacheService.DelByPattern($"{nameof(PluginService)}_");
-
-            // 获取私有字段
-            FieldInfo fieldInfo = typeof(ResourceManagerStringLocalizerFactory).GetField("_localizerCache", BindingFlags.Instance | BindingFlags.NonPublic);
-            // 获取字段的值
-            var dictionary = (ConcurrentDictionary<string, ResourceManagerStringLocalizer>)fieldInfo.GetValue(App.StringLocalizerFactory);
-            foreach (var item in _assemblyLoadContextDict)
-            {
-                // 移除特定键
-                dictionary.RemoveWhere(a => item.Value.Assembly.ExportedTypes.Select(b => b.AssemblyQualifiedName).Contains(a.Key));
-            }
-            _ = Task.Run(() =>
-            {
-                _dispatchService.Dispatch(new());
-            });
         }
     }
 
@@ -518,7 +465,142 @@ public class PluginService : IPluginService
         }
     }
 
+    /// <summary>
+    /// 设置插件的属性值。
+    /// </summary>
+    /// <param name="driver">插件实例。</param>
+    /// <param name="deviceProperties">插件属性，检索相同名称的属性后写入。</param>
+    public void SetDriverProperties(DriverBase driver, Dictionary<string, string> deviceProperties)
+    {
+        // 获取插件的属性信息列表
+        var pluginProperties = driver.DriverProperties?.GetType().GetRuntimeProperties()
+            // 筛选出带有 DynamicPropertyAttribute 特性的属性
+            .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>(false) != null);
+
+        // 遍历插件的属性信息列表
+        foreach (var propertyInfo in pluginProperties ?? new List<PropertyInfo>())
+        {
+            // 在设备属性列表中查找与当前属性相同名称的属性
+            if (!deviceProperties.TryGetValue(propertyInfo.Name, out var deviceProperty))
+            {
+                continue;
+            }
+            // 获取设备属性的值，如果设备属性值为空，则将其转换为当前属性类型的默认值
+            var value = ThingsGatewayStringConverter.Default.Deserialize(null, deviceProperty, propertyInfo.PropertyType);
+            // 设置插件属性的值
+            propertyInfo.SetValue(driver.DriverProperties, value);
+        }
+    }
+
+    /// <summary>
+    /// 清除缓存
+    /// </summary>
+    private void ClearCache()
+    {
+        lock (this)
+        {
+            App.CacheService.Remove(_cacheKeyGetPluginOutputs);
+            App.CacheService.DelByPattern($"{nameof(PluginService)}_");
+
+            // 获取私有字段
+            FieldInfo fieldInfo = typeof(ResourceManagerStringLocalizerFactory).GetField("_localizerCache", BindingFlags.Instance | BindingFlags.NonPublic);
+            // 获取字段的值
+            var dictionary = (ConcurrentDictionary<string, ResourceManagerStringLocalizer>)fieldInfo.GetValue(App.StringLocalizerFactory);
+            foreach (var item in _assemblyLoadContextDict)
+            {
+                // 移除特定键
+                dictionary.RemoveWhere(a => item.Value.Assembly.ExportedTypes.Select(b => b.AssemblyQualifiedName).Contains(a.Key));
+            }
+            _ = Task.Run(() =>
+            {
+                _dispatchService.Dispatch(new());
+            });
+        }
+    }
+
     #endregion public
+
+    /// <summary>
+    /// 删除插件域，卸载插件
+    /// </summary>
+    /// <param name="path">主程序集文件名称</param>
+    private void DeletePlugin(string path)
+    {
+        if (_assemblyLoadContextDict.TryGetValue(path, out var assemblyLoadContext))
+        {
+            //移除字典
+            _driverBaseDict.RemoveWhere(a => path == PluginServiceUtil.GetFileNameAndTypeName(a.Key).FileName);
+            _assemblyLoadContextDict.Remove(path);
+            //卸载
+            assemblyLoadContext.AssemblyLoadContext.Unload();
+            GC.Collect();
+        }
+    }
+
+    /// <summary>
+    /// 获取程序集
+    /// </summary>
+    /// <param name="path">插件主文件绝对路径</param>
+    /// <param name="fileName">插件主文件名称</param>
+    /// <returns></returns>
+    private Assembly GetAssembly(string path, string fileName)
+    {
+        Assembly assembly = null;
+        _logger?.LogInformation(Localizer["AddPluginFile", path]);
+        //全部程序集路径
+        List<string> paths = new();
+        Directory.GetFiles(Path.GetDirectoryName(path), "*.dll").ToList().ForEach(a => paths.Add(a));
+
+        if (_assemblyLoadContextDict.ContainsKey(fileName))
+        {
+            assembly = _assemblyLoadContextDict[fileName].Assembly;
+        }
+        else
+        {
+            //新建插件域，并注明可卸载
+            var assemblyLoadContext = new AssemblyLoadContext(fileName, true);
+            //获取插件程序集
+            assembly = GetAssembly(path, paths, assemblyLoadContext);
+            if (assembly == null)
+            {
+                assemblyLoadContext.Unload();
+                return null;
+            }
+            //添加到全局对象
+            _assemblyLoadContextDict.TryAdd(fileName, (assemblyLoadContext, assembly));
+        }
+        return assembly;
+    }
+
+    /// <summary>
+    /// 获取程序集
+    /// </summary>
+    /// <param name="path">主程序的路径</param>
+    /// <param name="paths">全部文件的路径</param>
+    /// <param name="assemblyLoadContext">当前插件域</param>
+    /// <returns></returns>
+    private Assembly GetAssembly(string path, List<string> paths, AssemblyLoadContext assemblyLoadContext)
+    {
+        Assembly assembly = null;
+        foreach (var item in paths)
+        {
+            using var fs = new FileStream(item, FileMode.Open);
+            if (item == path)
+                assembly = assemblyLoadContext.LoadFromStream(fs); //加载主程序集，并获取
+            else
+            {
+                try
+                {
+                    assemblyLoadContext.LoadFromStream(fs);//加载其余程序集
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogWarning(ex, Localizer[$"LoadOtherFileFail", item]);
+                }
+            }
+        }
+        return assembly;
+    }
 
     /// <summary>
     /// 获取全部插件信息
@@ -628,87 +710,5 @@ public class PluginService : IPluginService
             }
             return plugins;
         }
-    }
-
-    /// <summary>
-    /// 删除插件域，卸载插件
-    /// </summary>
-    /// <param name="path">主程序集文件名称</param>
-    private void DeletePlugin(string path)
-    {
-        if (_assemblyLoadContextDict.TryGetValue(path, out var assemblyLoadContext))
-        {
-            //移除字典
-            _driverBaseDict.RemoveWhere(a => path == PluginServiceUtil.GetFileNameAndTypeName(a.Key).FileName);
-            _assemblyLoadContextDict.Remove(path);
-            //卸载
-            assemblyLoadContext.AssemblyLoadContext.Unload();
-            GC.Collect();
-        }
-    }
-
-    /// <summary>
-    /// 获取程序集
-    /// </summary>
-    /// <param name="path">插件主文件绝对路径</param>
-    /// <param name="fileName">插件主文件名称</param>
-    /// <returns></returns>
-    private Assembly GetAssembly(string path, string fileName)
-    {
-        Assembly assembly = null;
-        _logger?.LogInformation(Localizer["AddPluginFile", path]);
-        //全部程序集路径
-        List<string> paths = new();
-        Directory.GetFiles(Path.GetDirectoryName(path), "*.dll").ToList().ForEach(a => paths.Add(a));
-
-        if (_assemblyLoadContextDict.ContainsKey(fileName))
-        {
-            assembly = _assemblyLoadContextDict[fileName].Assembly;
-        }
-        else
-        {
-            //新建插件域，并注明可卸载
-            var assemblyLoadContext = new AssemblyLoadContext(fileName, true);
-            //获取插件程序集
-            assembly = GetAssembly(path, paths, assemblyLoadContext);
-            if (assembly == null)
-            {
-                assemblyLoadContext.Unload();
-                return null;
-            }
-            //添加到全局对象
-            _assemblyLoadContextDict.TryAdd(fileName, (assemblyLoadContext, assembly));
-        }
-        return assembly;
-    }
-
-    /// <summary>
-    /// 获取程序集
-    /// </summary>
-    /// <param name="path">主程序的路径</param>
-    /// <param name="paths">全部文件的路径</param>
-    /// <param name="assemblyLoadContext">当前插件域</param>
-    /// <returns></returns>
-    private Assembly GetAssembly(string path, List<string> paths, AssemblyLoadContext assemblyLoadContext)
-    {
-        Assembly assembly = null;
-        foreach (var item in paths)
-        {
-            using var fs = new FileStream(item, FileMode.Open);
-            if (item == path)
-                assembly = assemblyLoadContext.LoadFromStream(fs); //加载主程序集，并获取
-            else
-            {
-                try
-                {
-                    assemblyLoadContext.LoadFromStream(fs);//加载其余程序集
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogWarning(ex, Localizer[$"LoadOtherFileFail", item]);
-                }
-            }
-        }
-        return assembly;
     }
 }

@@ -52,12 +52,12 @@ public class UserLoginOutEvent
 public class NewMessageEvent
 {
     /// <summary>
-    /// 用户Id
-    /// </summary>
-    public List<long> UserIds { get; set; }
-
-    /// <summary>
     /// 内容
     /// </summary>
     public SignalRMessage Message { get; set; }
+
+    /// <summary>
+    /// 用户Id
+    /// </summary>
+    public List<long> UserIds { get; set; }
 }

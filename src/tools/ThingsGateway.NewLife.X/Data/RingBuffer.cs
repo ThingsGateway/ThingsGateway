@@ -15,19 +15,19 @@ public class RingBuffer
 {
     #region 属性
 
+    private Byte[] _data;
+
     /// <summary>容量</summary>
     public Int32 Capacity => _data.Length;
 
     /// <summary>头指针。写入位置</summary>
     public Int32 Head { get; set; }
 
-    /// <summary>尾指针。读取位置</summary>
-    public Int32 Tail { get; set; }
-
     /// <summary>数据长度</summary>
     public Int32 Length => Head >= Tail ? (Head - Tail) : (Head + _data.Length - Tail);
 
-    private Byte[] _data;
+    /// <summary>尾指针。读取位置</summary>
+    public Int32 Tail { get; set; }
 
     #endregion 属性
 
@@ -55,44 +55,6 @@ public class RingBuffer
         if (Length > 0)
             Buffer.BlockCopy(_data, 0, data, 0, _data.Length);
         _data = data;
-    }
-
-    private void CheckCapacity(Int32 capacity)
-    {
-        var len = _data.Length;
-
-        // 两倍增长
-        while (len < capacity) len *= 2;
-
-        EnsureCapacity(len);
-    }
-
-    /// <summary>写入数据</summary>
-    /// <param name="data">数据</param>
-    /// <param name="offset">偏移量</param>
-    /// <param name="count">个数</param>
-    public void Write(Byte[] data, Int32 offset = 0, Int32 count = -1)
-    {
-        if (count < 0) count = data.Length - offset;
-
-        CheckCapacity(Length + count);
-
-        var len = _data.Length - Head;
-        if (len > count) len = count;
-
-        Buffer.BlockCopy(data, offset, _data, Head, len);
-
-        count -= len;
-        Head += len;
-        if (Head == _data.Length) Head = 0;
-
-        // 还有数据，移到开头
-        if (count > 0)
-        {
-            Buffer.BlockCopy(data, offset, _data, Head, len);
-
-            Head = count;
-        }
     }
 
     /// <summary>读取数据</summary>
@@ -130,6 +92,44 @@ public class RingBuffer
         }
 
         return rs;
+    }
+
+    /// <summary>写入数据</summary>
+    /// <param name="data">数据</param>
+    /// <param name="offset">偏移量</param>
+    /// <param name="count">个数</param>
+    public void Write(Byte[] data, Int32 offset = 0, Int32 count = -1)
+    {
+        if (count < 0) count = data.Length - offset;
+
+        CheckCapacity(Length + count);
+
+        var len = _data.Length - Head;
+        if (len > count) len = count;
+
+        Buffer.BlockCopy(data, offset, _data, Head, len);
+
+        count -= len;
+        Head += len;
+        if (Head == _data.Length) Head = 0;
+
+        // 还有数据，移到开头
+        if (count > 0)
+        {
+            Buffer.BlockCopy(data, offset, _data, Head, len);
+
+            Head = count;
+        }
+    }
+
+    private void CheckCapacity(Int32 capacity)
+    {
+        var len = _data.Length;
+
+        // 两倍增长
+        while (len < capacity) len *= 2;
+
+        EnsureCapacity(len);
     }
 
     #endregion 方法

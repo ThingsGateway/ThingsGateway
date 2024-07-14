@@ -17,8 +17,8 @@ public sealed class ZerosPaddingTransform : ICryptoTransform
 {
     #region 属性
 
-    private readonly ICryptoTransform _transform;
     private readonly Boolean _encryptMode;
+    private readonly ICryptoTransform _transform;
 
     /// <summary>获取一个值，该值指示是否可重复使用当前转换。</summary>
     public Boolean CanReuseTransform => _transform.CanReuseTransform;

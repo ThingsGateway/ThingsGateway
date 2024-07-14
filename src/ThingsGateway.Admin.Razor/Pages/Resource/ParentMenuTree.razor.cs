@@ -19,15 +19,15 @@ public partial class ParentMenuTree
     [Parameter]
     [EditorRequired]
     [NotNull]
-    public long Value { get; set; }
-
-    [Parameter]
-    public EventCallback<long> ValueChanged { get; set; }
+    public long ModuleId { get; set; }
 
     [Parameter]
     [EditorRequired]
     [NotNull]
-    public long ModuleId { get; set; }
+    public long Value { get; set; }
+
+    [Parameter]
+    public EventCallback<long> ValueChanged { get; set; }
 
     [NotNull]
     private List<TreeViewItem<SysResource>>? Items { get; set; }
@@ -45,6 +45,8 @@ public partial class ParentMenuTree
         await base.OnParametersSetAsync();
     }
 
+    private bool ModelEqualityComparer(SysResource x, SysResource y) => x.Id == y.Id;
+
     private async Task OnTreeItemClick(TreeViewItem<SysResource> item)
     {
         Value = item.Value.Id;
@@ -53,6 +55,4 @@ public partial class ParentMenuTree
             await ValueChanged.InvokeAsync(Value);
         }
     }
-
-    private bool ModelEqualityComparer(SysResource x, SysResource y) => x.Id == y.Id;
 }

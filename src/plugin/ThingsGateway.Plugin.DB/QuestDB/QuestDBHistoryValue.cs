@@ -23,10 +23,6 @@ namespace ThingsGateway.Plugin.QuestDB;
 [SugarIndex(null, nameof(QuestDBHistoryValue.Name), OrderByType.Asc)]
 public class QuestDBHistoryValue : IPrimaryIdEntity, IDBHistoryValue
 {
-    [SugarColumn(ColumnDescription = "变量Id")]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public long Id { get; set; }
-
     /// <summary>
     /// 采集时间
     /// </summary>
@@ -46,18 +42,22 @@ public class QuestDBHistoryValue : IPrimaryIdEntity, IDBHistoryValue
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string DeviceName { get; set; }
 
-    /// <summary>
-    /// 变量名称
-    /// </summary>
-    [SugarColumn(ColumnDataType = "symbol")]
+    [SugarColumn(ColumnDescription = "变量Id")]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public string Name { get; set; }
+    public long Id { get; set; }
 
     /// <summary>
     /// 是否在线
     /// </summary>
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public bool IsOnline { get; set; }
+
+    /// <summary>
+    /// 变量名称
+    /// </summary>
+    [SugarColumn(ColumnDataType = "symbol")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public string Name { get; set; }
 
     /// <summary>
     /// 变量值

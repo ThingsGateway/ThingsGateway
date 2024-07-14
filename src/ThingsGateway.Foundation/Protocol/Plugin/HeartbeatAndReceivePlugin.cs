@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System.Net.Sockets;
-
 using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Foundation;
@@ -17,8 +15,8 @@ namespace ThingsGateway.Foundation;
 [PluginOption(Singleton = true)]
 internal class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcpReceivingPlugin
 {
-    public string HeartbeatHexString { get; set; } = "HeartbeatHexString";
     public string DtuId { get; set; } = "DtuId";
+    public string HeartbeatHexString { get; set; } = "HeartbeatHexString";
     public int HeartbeatTime { get; set; } = 3;
 
     public async Task OnTcpConnected(ITcpSession client, ConnectedEventArgs e)

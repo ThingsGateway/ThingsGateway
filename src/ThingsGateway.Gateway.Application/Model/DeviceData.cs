@@ -13,26 +13,40 @@ using Newtonsoft.Json;
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
+/// 设备业务基础数据
+/// </summary>
+public class DeviceBasicData : DeviceData
+{
+    /// <inheritdoc cref="Device.Description"/>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? Description { get; set; }
+
+    /// <inheritdoc cref="Device.PluginName"/>
+    public string PluginName { get; set; }
+}
+
+/// <summary>
 /// 设备业务变化数据
 /// </summary>
 public class DeviceData : IPrimaryIdEntity
 {
-    /// <inheritdoc cref="PrimaryIdEntity.Id"/>
-    public long Id { get; set; }
-
-    /// <inheritdoc cref="Device.Name"/>
-    public string Name { get; set; }
-
     /// <inheritdoc cref="DeviceRunTime.ActiveTime"/>
     public DateTime ActiveTime { get; set; }
 
     /// <inheritdoc cref="DeviceRunTime.DeviceStatus"/>
     public DeviceStatusEnum DeviceStatus { get; set; }
 
+    /// <inheritdoc cref="PrimaryIdEntity.Id"/>
+    public long Id { get; set; }
+
     /// <inheritdoc cref="DeviceRunTime.LastErrorMessage"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string LastErrorMessage { get; set; }
+
+    /// <inheritdoc cref="Device.Name"/>
+    public string Name { get; set; }
 
     /// <inheritdoc cref="Device.Remark1"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
@@ -60,25 +74,8 @@ public class DeviceData : IPrimaryIdEntity
     public string Remark5 { get; set; }
 }
 
-/// <summary>
-/// 设备业务基础数据
-/// </summary>
-public class DeviceBasicData : DeviceData
-{
-    /// <inheritdoc cref="Device.PluginName"/>
-    public string PluginName { get; set; }
-
-    /// <inheritdoc cref="Device.Description"/>
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
-    public string? Description { get; set; }
-}
-
 public class DeviceDataWithValue
 {
-    /// <inheritdoc cref="DeviceRunTime.Name"/>
-    public string Name { get; set; }
-
     /// <inheritdoc cref="DeviceRunTime.ActiveTime"/>
     public DateTime ActiveTime { get; set; }
 
@@ -89,4 +86,7 @@ public class DeviceDataWithValue
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string LastErrorMessage { get; set; }
+
+    /// <inheritdoc cref="DeviceRunTime.Name"/>
+    public string Name { get; set; }
 }

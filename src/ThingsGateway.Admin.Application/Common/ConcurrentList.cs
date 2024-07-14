@@ -47,6 +47,27 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     }
 
     /// <summary>
+    /// 获取或设置容量
+    /// </summary>
+    public int Capacity
+    {
+        get
+        {
+            lock (((ICollection)this.m_list).SyncRoot)
+            {
+                return this.m_list.Capacity;
+            }
+        }
+        set
+        {
+            lock (((ICollection)this.m_list).SyncRoot)
+            {
+                this.m_list.Capacity = value;
+            }
+        }
+    }
+
+    /// <summary>
     /// 元素数量
     /// </summary>
     public int Count
@@ -97,142 +118,6 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
         lock (((ICollection)this.m_list).SyncRoot)
         {
             this.m_list.Add(item);
-        }
-    }
-
-    /// <summary>
-    /// 清空所有元素
-    /// </summary>
-    public void Clear()
-    {
-        lock (((ICollection)this.m_list).SyncRoot)
-        {
-            this.m_list.Clear();
-        }
-    }
-
-    /// <summary>
-    /// 是否包含某个元素
-    /// </summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    public bool Contains(T item)
-    {
-        lock (((ICollection)this.m_list).SyncRoot)
-        {
-            return this.m_list.Contains(item);
-        }
-    }
-
-    /// <summary>
-    /// 复制到
-    /// </summary>
-    /// <param name="array"></param>
-    /// <param name="arrayIndex"></param>
-    public void CopyTo(T[] array, int arrayIndex)
-    {
-        lock (((ICollection)this.m_list).SyncRoot)
-        {
-            this.m_list.CopyTo(array, arrayIndex);
-        }
-    }
-
-    /// <summary>
-    /// 返回迭代器
-    /// </summary>
-    /// <returns></returns>
-    public IEnumerator<T> GetEnumerator()
-    {
-        lock (((ICollection)this.m_list).SyncRoot)
-        {
-            return this.m_list.ToList().GetEnumerator();
-        }
-    }
-
-    /// <summary>
-    /// 返回迭代器组合
-    /// </summary>
-    /// <returns></returns>
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        lock (((ICollection)this.m_list).SyncRoot)
-        {
-            return this.GetEnumerator();
-        }
-    }
-
-    /// <summary>
-    /// 索引
-    /// </summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    public int IndexOf(T item)
-    {
-        lock (((ICollection)this.m_list).SyncRoot)
-        {
-            return this.m_list.IndexOf(item);
-        }
-    }
-
-    /// <summary>
-    /// 插入
-    /// </summary>
-    /// <param name="index"></param>
-    /// <param name="item"></param>
-    public void Insert(int index, T item)
-    {
-        lock (((ICollection)this.m_list).SyncRoot)
-        {
-            this.m_list.Insert(index, item);
-        }
-    }
-
-    /// <summary>
-    /// 移除元素
-    /// </summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    public bool Remove(T item)
-    {
-        lock (((ICollection)this.m_list).SyncRoot)
-        {
-            return this.m_list.Remove(item);
-        }
-    }
-
-    /// <summary>
-    /// 按索引移除
-    /// </summary>
-    /// <param name="index"></param>
-    public void RemoveAt(int index)
-    {
-        lock (((ICollection)this.m_list).SyncRoot)
-        {
-            if (index < this.m_list.Count)
-            {
-                this.m_list.RemoveAt(index);
-            }
-        }
-    }
-
-    /// <summary>
-    /// 获取或设置容量
-    /// </summary>
-    public int Capacity
-    {
-        get
-        {
-            lock (((ICollection)this.m_list).SyncRoot)
-            {
-                return this.m_list.Capacity;
-            }
-        }
-        set
-        {
-            lock (((ICollection)this.m_list).SyncRoot)
-            {
-                this.m_list.Capacity = value;
-            }
         }
     }
 
@@ -292,6 +177,30 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     }
 
     /// <summary>
+    /// 清空所有元素
+    /// </summary>
+    public void Clear()
+    {
+        lock (((ICollection)this.m_list).SyncRoot)
+        {
+            this.m_list.Clear();
+        }
+    }
+
+    /// <summary>
+    /// 是否包含某个元素
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public bool Contains(T item)
+    {
+        lock (((ICollection)this.m_list).SyncRoot)
+        {
+            return this.m_list.Contains(item);
+        }
+    }
+
+    /// <summary>
     /// <inheritdoc cref="List{T}.ConvertAll{TOutput}(Converter{T, TOutput})"/>
     /// </summary>
     /// <typeparam name="TOutput"></typeparam>
@@ -302,6 +211,19 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
         lock (((ICollection)this.m_list).SyncRoot)
         {
             return this.m_list.ConvertAll(converter);
+        }
+    }
+
+    /// <summary>
+    /// 复制到
+    /// </summary>
+    /// <param name="array"></param>
+    /// <param name="arrayIndex"></param>
+    public void CopyTo(T[] array, int arrayIndex)
+    {
+        lock (((ICollection)this.m_list).SyncRoot)
+        {
+            this.m_list.CopyTo(array, arrayIndex);
         }
     }
 
@@ -441,6 +363,30 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     }
 
     /// <summary>
+    /// 返回迭代器
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerator<T> GetEnumerator()
+    {
+        lock (((ICollection)this.m_list).SyncRoot)
+        {
+            return this.m_list.ToList().GetEnumerator();
+        }
+    }
+
+    /// <summary>
+    /// 返回迭代器组合
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        lock (((ICollection)this.m_list).SyncRoot)
+        {
+            return this.GetEnumerator();
+        }
+    }
+
+    /// <summary>
     /// <inheritdoc cref="List{T}.GetRange(int, int)"/>
     /// </summary>
     /// <param name="index"></param>
@@ -451,6 +397,19 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
         lock (((ICollection)this.m_list).SyncRoot)
         {
             return this.m_list.GetRange(index, count);
+        }
+    }
+
+    /// <summary>
+    /// 索引
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public int IndexOf(T item)
+    {
+        lock (((ICollection)this.m_list).SyncRoot)
+        {
+            return this.m_list.IndexOf(item);
         }
     }
 
@@ -480,6 +439,19 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
         lock (((ICollection)this.m_list).SyncRoot)
         {
             return this.m_list.IndexOf(item, index, count);
+        }
+    }
+
+    /// <summary>
+    /// 插入
+    /// </summary>
+    /// <param name="index"></param>
+    /// <param name="item"></param>
+    public void Insert(int index, T item)
+    {
+        lock (((ICollection)this.m_list).SyncRoot)
+        {
+            this.m_list.Insert(index, item);
         }
     }
 
@@ -539,6 +511,19 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     }
 
     /// <summary>
+    /// 移除元素
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    public bool Remove(T item)
+    {
+        lock (((ICollection)this.m_list).SyncRoot)
+        {
+            return this.m_list.Remove(item);
+        }
+    }
+
+    /// <summary>
     /// <inheritdoc cref="List{T}.RemoveAll(Predicate{T})"/>
     /// </summary>
     /// <param name="match"></param>
@@ -547,6 +532,21 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
         lock (((ICollection)this.m_list).SyncRoot)
         {
             this.m_list.RemoveAll(match);
+        }
+    }
+
+    /// <summary>
+    /// 按索引移除
+    /// </summary>
+    /// <param name="index"></param>
+    public void RemoveAt(int index)
+    {
+        lock (((ICollection)this.m_list).SyncRoot)
+        {
+            if (index < this.m_list.Count)
+            {
+                this.m_list.RemoveAt(index);
+            }
         }
     }
 

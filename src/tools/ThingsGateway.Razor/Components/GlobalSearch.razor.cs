@@ -17,19 +17,19 @@ public partial class GlobalSearch
     [NotNull]
     public IEnumerable<MenuItem>? Menus { get; set; }
 
+    [NotNull]
+    private IEnumerable<string?>? ComponentItems => Menus?.Select(i => i.Text);
+
     [Inject]
     [NotNull]
     private IStringLocalizer<GlobalSearch>? Localizer { get; set; }
-
-    [NotNull]
-    private string? SearchText { get; set; }
 
     [Inject]
     [NotNull]
     private NavigationManager? NavigationManager { get; set; }
 
     [NotNull]
-    private IEnumerable<string?>? ComponentItems => Menus?.Select(i => i.Text);
+    private string? SearchText { get; set; }
 
     protected override void OnInitialized()
     {

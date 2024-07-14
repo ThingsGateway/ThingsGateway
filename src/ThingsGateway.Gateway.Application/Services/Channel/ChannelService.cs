@@ -53,32 +53,6 @@ public class ChannelService : BaseService<Channel>, IChannelService
         _dispatchService = dispatchService;
     }
 
-    /// <summary>
-    /// 报表查询
-    /// </summary>
-    /// <param name="option">查询条件</param>
-    public Task<QueryData<Channel>> PageAsync(QueryPageOptions option)
-    {
-        return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)));
-    }
-
-    /// <summary>
-    /// 从缓存/数据库获取全部信息
-    /// </summary>
-    /// <returns>列表</returns>
-    public List<Channel> GetAll()
-    {
-        var key = ThingsGatewayCacheConst.Cache_Channel;
-        var channels = App.CacheService.Get<List<Channel>>(key);
-        if (channels == null)
-        {
-            using var db = GetDB();
-            channels = db.Queryable<Channel>().ToList();
-            App.CacheService.Set(key, channels);
-        }
-        return channels;
-    }
-
     /// <inheritdoc/>
     [OperDesc("SaveChannel", localizerType: typeof(Channel), isRecordPar: false)]
     public async Task<bool> BatchEditAsync(IEnumerable<Channel> models, Channel oldModel, Channel model)
@@ -98,47 +72,6 @@ public class ChannelService : BaseService<Channel>, IChannelService
         else
         {
             return true;
-        }
-    }
-
-    /// <summary>
-    /// 保存通道
-    /// </summary>
-    /// <param name="input">通道</param>
-    /// <param name="type">保存类型</param>
-    [OperDesc("SaveChannel", localizerType: typeof(Channel))]
-    public async Task<bool> SaveChannelAsync(Channel input, ItemChangedType type)
-    {
-        //验证
-        CheckInput(input);
-        if (await base.SaveAsync(input, type))
-        {
-            DeleteChannelFromCache();
-            return true;
-        }
-        return false;
-    }
-
-    [OperDesc("DeleteChannel", localizerType: typeof(Channel))]
-    public async Task<bool> DeleteChannelAsync(IEnumerable<long> ids)
-    {
-        var deviceService = App.RootServices.GetRequiredService<IDeviceService>();
-        using var db = GetDB();
-        //事务
-        var result = await db.UseTranAsync(async () =>
-        {
-            await db.Deleteable<Channel>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync();
-            await deviceService.DeleteByChannelIdAsync(ids, db);
-        });
-        if (result.IsSuccess)//如果成功了
-        {
-            DeleteChannelFromCache();
-            return true;
-        }
-        else
-        {
-            //写日志
-            throw new(result.ErrorMessage, result.ErrorException);
         }
     }
 
@@ -165,9 +98,27 @@ public class ChannelService : BaseService<Channel>, IChannelService
         }
     }
 
-    public IChannel GetChannel(Channel channel, TouchSocketConfig config)
+    [OperDesc("DeleteChannel", localizerType: typeof(Channel))]
+    public async Task<bool> DeleteChannelAsync(IEnumerable<long> ids)
     {
-        return config.GetChannel(channel.ChannelType, channel.RemoteUrl, channel.BindUrl, channel.Adapt<SerialPortOption>());
+        var deviceService = App.RootServices.GetRequiredService<IDeviceService>();
+        using var db = GetDB();
+        //事务
+        var result = await db.UseTranAsync(async () =>
+        {
+            await db.Deleteable<Channel>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync();
+            await deviceService.DeleteByChannelIdAsync(ids, db);
+        });
+        if (result.IsSuccess)//如果成功了
+        {
+            DeleteChannelFromCache();
+            return true;
+        }
+        else
+        {
+            //写日志
+            throw new(result.ErrorMessage, result.ErrorException);
+        }
     }
 
     /// <inheritdoc />
@@ -175,6 +126,28 @@ public class ChannelService : BaseService<Channel>, IChannelService
     {
         App.CacheService.Remove(ThingsGatewayCacheConst.Cache_Channel);//删除通道缓存
         _dispatchService.Dispatch(new());
+    }
+
+    /// <summary>
+    /// 从缓存/数据库获取全部信息
+    /// </summary>
+    /// <returns>列表</returns>
+    public List<Channel> GetAll()
+    {
+        var key = ThingsGatewayCacheConst.Cache_Channel;
+        var channels = App.CacheService.Get<List<Channel>>(key);
+        if (channels == null)
+        {
+            using var db = GetDB();
+            channels = db.Queryable<Channel>().ToList();
+            App.CacheService.Set(key, channels);
+        }
+        return channels;
+    }
+
+    public IChannel GetChannel(Channel channel, TouchSocketConfig config)
+    {
+        return config.GetChannel(channel.ChannelType, channel.RemoteUrl, channel.BindUrl, channel.Adapt<SerialPortOption>());
     }
 
     public Channel? GetChannelById(long id)
@@ -193,6 +166,33 @@ public class ChannelService : BaseService<Channel>, IChannelService
     {
         var data = GetAll();
         return data?.FirstOrDefault(x => x.Id == id)?.Name;
+    }
+
+    /// <summary>
+    /// 报表查询
+    /// </summary>
+    /// <param name="option">查询条件</param>
+    public Task<QueryData<Channel>> PageAsync(QueryPageOptions option)
+    {
+        return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)));
+    }
+
+    /// <summary>
+    /// 保存通道
+    /// </summary>
+    /// <param name="input">通道</param>
+    /// <param name="type">保存类型</param>
+    [OperDesc("SaveChannel", localizerType: typeof(Channel))]
+    public async Task<bool> SaveChannelAsync(Channel input, ItemChangedType type)
+    {
+        //验证
+        CheckInput(input);
+        if (await base.SaveAsync(input, type))
+        {
+            DeleteChannelFromCache();
+            return true;
+        }
+        return false;
     }
 
     private void CheckInput(Channel input)
@@ -288,13 +288,6 @@ public class ChannelService : BaseService<Channel>, IChannelService
         return memoryStream;
     }
 
-    private async Task<FileStreamResult> ExportChannel(IEnumerable<Channel>? data)
-    {
-        Dictionary<string, object> sheets = ExportChannelCore(data);
-
-        return await _importExportService.ExportAsync<Channel>(sheets, "Channel", false);
-    }
-
     private static Dictionary<string, object> ExportChannelCore(IEnumerable<Channel>? data)
     {
         //总数据
@@ -342,6 +335,13 @@ public class ChannelService : BaseService<Channel>, IChannelService
         //添加设备页
         sheets.Add(ExportString.ChannelName, channelExports);
         return sheets;
+    }
+
+    private async Task<FileStreamResult> ExportChannel(IEnumerable<Channel>? data)
+    {
+        Dictionary<string, object> sheets = ExportChannelCore(data);
+
+        return await _importExportService.ExportAsync<Channel>(sheets, "Channel", false);
     }
 
     #endregion 导出
@@ -477,8 +477,8 @@ public class ChannelService : BaseService<Channel>, IChannelService
 public class ChannelPageInput : BasePageInput
 {
     /// <inheritdoc/>
-    public string Name { get; set; }
+    public ChannelTypeEnum? ChannelType { get; set; }
 
     /// <inheritdoc/>
-    public ChannelTypeEnum? ChannelType { get; set; }
+    public string Name { get; set; }
 }

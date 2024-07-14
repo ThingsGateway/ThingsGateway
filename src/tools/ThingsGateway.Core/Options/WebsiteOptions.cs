@@ -20,20 +20,12 @@ public class WebsiteOptions
     /// </summary>
     public string Copyright { get; set; } = "版权所有 © 2023-present Diego";
 
+    public bool Demo { get; set; }
+
     /// <summary>
     /// 是否显示关于页面
     /// </summary>
     public bool IsShowAbout { get; set; } = true;
-
-    /// <summary>
-    /// 开源地址
-    /// </summary>
-    public string SourceUrl { get; set; } = "https://gitee.com/diego2098/ThingsGateway";
-
-    /// <summary>
-    /// 文档地址
-    /// </summary>
-    public string WikiUrl { get; set; } = "https://kimdiego2098.github.io/";
 
     /// <summary>
     /// QQ群链接地址
@@ -45,7 +37,15 @@ public class WebsiteOptions
     /// </summary>
     public string? QQGroup1Number { get; set; } = "605534569";
 
+    /// <summary>
+    /// 开源地址
+    /// </summary>
+    public string SourceUrl { get; set; } = "https://gitee.com/diego2098/ThingsGateway";
+
     public string? Title { get; set; } = "ThingsGateway";
 
-    public bool Demo { get; set; }
+    /// <summary>
+    /// 文档地址
+    /// </summary>
+    public string WikiUrl { get; set; } = "https://kimdiego2098.github.io/";
 }

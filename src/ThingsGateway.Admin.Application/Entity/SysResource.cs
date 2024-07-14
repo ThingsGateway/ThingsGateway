@@ -28,33 +28,18 @@ namespace ThingsGateway.Admin.Application;
 public class SysResource : BaseEntity
 {
     /// <summary>
-    /// 父id
+    /// 分类
     ///</summary>
-    [SugarColumn(ColumnDescription = "父id")]
+    [SugarColumn(ColumnDescription = "分类")]
+    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true)]
+    public ResourceCategoryEnum Category { get; set; } = ResourceCategoryEnum.Menu;
+
+    /// <summary>
+    /// 子节点
+    /// </summary>
+    [SugarColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
-    public virtual long ParentId { get; set; } = 0;
-
-    /// <summary>
-    /// 模块
-    ///</summary>
-    [SugarColumn(ColumnDescription = "模块")]
-    [AutoGenerateColumn(Visible = false, IsVisibleWhenAdd = false, IsVisibleWhenEdit = false, Searchable = true)]
-    public virtual long Module { get; set; }
-
-    /// <summary>
-    /// 标题
-    ///</summary>
-    [SugarColumn(ColumnDescription = "标题", Length = 200)]
-    [Required]
-    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true, Searchable = true)]
-    public virtual string Title { get; set; }
-
-    /// <summary>
-    /// 图标
-    ///</summary>
-    [SugarColumn(ColumnDescription = "图标", Length = 200, IsNullable = true)]
-    [AutoGenerateColumn(Visible = true, Sortable = false, Filterable = false)]
-    public virtual string? Icon { get; set; }
+    public List<SysResource>? Children { get; set; }
 
     /// <summary>
     /// 编码
@@ -65,18 +50,25 @@ public class SysResource : BaseEntity
     public virtual string Code { get; set; }
 
     /// <summary>
-    /// 分类
+    /// 路径
     ///</summary>
-    [SugarColumn(ColumnDescription = "分类")]
-    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true)]
-    public ResourceCategoryEnum Category { get; set; } = ResourceCategoryEnum.Menu;
+    [SugarColumn(ColumnDescription = "路径", Length = 200, IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true, Searchable = true)]
+    public virtual string Href { get; set; }
 
     /// <summary>
-    /// 目标类型
+    /// 图标
     ///</summary>
-    [SugarColumn(ColumnDescription = "目标类型", IsNullable = true)]
-    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true)]
-    public virtual TargetEnum? Target { get; set; }
+    [SugarColumn(ColumnDescription = "图标", Length = 200, IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Sortable = false, Filterable = false)]
+    public virtual string? Icon { get; set; }
+
+    /// <summary>
+    /// 模块
+    ///</summary>
+    [SugarColumn(ColumnDescription = "模块")]
+    [AutoGenerateColumn(Visible = false, IsVisibleWhenAdd = false, IsVisibleWhenEdit = false, Searchable = true)]
+    public virtual long Module { get; set; }
 
     /// <summary>
     /// 菜单匹配类型
@@ -86,16 +78,24 @@ public class SysResource : BaseEntity
     public virtual NavLinkMatch? NavLinkMatch { get; set; }
 
     /// <summary>
-    /// 路径
+    /// 父id
     ///</summary>
-    [SugarColumn(ColumnDescription = "路径", Length = 200, IsNullable = true)]
-    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true, Searchable = true)]
-    public virtual string Href { get; set; }
+    [SugarColumn(ColumnDescription = "父id")]
+    [AutoGenerateColumn(Ignore = true)]
+    public virtual long ParentId { get; set; } = 0;
 
     /// <summary>
-    /// 子节点
-    /// </summary>
-    [SugarColumn(IsIgnore = true)]
-    [AutoGenerateColumn(Ignore = true)]
-    public List<SysResource>? Children { get; set; }
+    /// 目标类型
+    ///</summary>
+    [SugarColumn(ColumnDescription = "目标类型", IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true)]
+    public virtual TargetEnum? Target { get; set; }
+
+    /// <summary>
+    /// 标题
+    ///</summary>
+    [SugarColumn(ColumnDescription = "标题", Length = 200)]
+    [Required]
+    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true, Searchable = true)]
+    public virtual string Title { get; set; }
 }

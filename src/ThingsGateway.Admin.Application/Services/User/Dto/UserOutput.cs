@@ -17,11 +17,6 @@ public class UserSelectorOutput : PrimaryIdEntity
 {
     public string Account { get; set; }
 
-    public override int GetHashCode()
-    {
-        return Id.GetHashCode();
-    }
-
     public override bool Equals(object? obj)
     {
         if (obj == null || !(obj is UserSelectorOutput))
@@ -30,5 +25,10 @@ public class UserSelectorOutput : PrimaryIdEntity
         }
 
         return Id == ((UserSelectorOutput)obj).Id;
+    }
+
+    public override int GetHashCode()
+    {
+        return Id.GetHashCode();
     }
 }

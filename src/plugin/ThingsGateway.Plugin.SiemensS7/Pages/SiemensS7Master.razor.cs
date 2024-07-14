@@ -36,6 +36,13 @@ public partial class SiemensS7Master : IDisposable
         GC.SuppressFinalize(this);
     }
 
+    private void OnConfimClick(ChannelData channelData)
+    {
+        ChannelData = channelData;
+        _plc = new ThingsGateway.Foundation.SiemensS7.SiemensS7Master(channelData.Channel);
+        LogPath = channelData.Id.GetDebugLogPath();
+    }
+
     private async Task OnConnectClick(ChannelData channelData)
     {
         if (ChannelData?.Channel != null)
@@ -50,13 +57,6 @@ public partial class SiemensS7Master : IDisposable
             }
         }
         await InvokeAsync(StateHasChanged);
-    }
-
-    private void OnConfimClick(ChannelData channelData)
-    {
-        ChannelData = channelData;
-        _plc = new ThingsGateway.Foundation.SiemensS7.SiemensS7Master(channelData.Channel);
-        LogPath = channelData.Id.GetDebugLogPath();
     }
 
     private async Task OnDisConnectClick()

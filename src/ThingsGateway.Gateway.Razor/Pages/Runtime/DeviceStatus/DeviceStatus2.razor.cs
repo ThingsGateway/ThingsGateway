@@ -15,7 +15,7 @@ namespace ThingsGateway.Gateway.Razor;
 public partial class DeviceStatus2
 {
     [Parameter, EditorRequired]
-    public DriverBase? Item { get; set; }
+    public Func<DeviceRunTime, Task> DeleteCacheAsync { get; set; }
 
     [Parameter, EditorRequired]
     public DeviceHostedService? DeviceHostedService { get; set; }
@@ -24,20 +24,20 @@ public partial class DeviceStatus2
     public EventCallback DeviceQuery { get; set; }
 
     [Parameter, EditorRequired]
-    public Func<Task> ShowDriverUI { get; set; }
-
-    [Parameter, EditorRequired]
     public Func<long, Task> DeviceRedundantThreadAsync { get; set; }
 
     [Parameter, EditorRequired]
-    public Func<DeviceRunTime, Task> DeleteCacheAsync { get; set; }
+    public DriverBase? Item { get; set; }
 
     [Parameter, EditorRequired]
     public Action<long, bool?> PasueThread { get; set; }
 
     [Parameter, EditorRequired]
+    public Func<long, Task> RestartAsync { get; set; }
+
+    [Parameter, EditorRequired]
     public EventCallback SetLogEnable { get; set; }
 
     [Parameter, EditorRequired]
-    public Func<long, Task> RestartAsync { get; set; }
+    public Func<Task> ShowDriverUI { get; set; }
 }

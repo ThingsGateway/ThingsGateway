@@ -56,27 +56,6 @@ public static class IOHelper
         return ms;
     }
 
-    /// <summary>解压缩数据流</summary>
-    /// <returns>Deflate算法，如果是ZLIB格式，则前面多两个字节，解压缩之前去掉，RocketMQ中有用到</returns>
-    /// <param name="inStream">输入流</param>
-    /// <param name="outStream">输出流。如果不指定，则内部实例化一个内存流</param>
-    /// <remarks>返回输出流，注意此时指针位于末端</remarks>
-    public static Stream Decompress(this Stream inStream, Stream? outStream = null)
-    {
-        var ms = outStream ?? new MemoryStream();
-
-        // 第三个参数为true，保持数据流打开，内部不应该干涉外部，不要关闭外部的数据流
-        using (var stream = new DeflateStream(inStream, CompressionMode.Decompress, true))
-        {
-            stream.CopyTo(ms);
-        }
-
-        // 内部数据流需要把位置指向开头
-        if (outStream == null) ms.Position = 0;
-
-        return ms;
-    }
-
     /// <summary>压缩字节数组</summary>
     /// <param name="data">字节数组</param>
     /// <returns></returns>
@@ -84,17 +63,6 @@ public static class IOHelper
     {
         var ms = new MemoryStream();
         Compress(new MemoryStream(data), ms);
-        return ms.ToArray();
-    }
-
-    /// <summary>解压缩字节数组</summary>
-    /// <returns>Deflate算法，如果是ZLIB格式，则前面多两个字节，解压缩之前去掉，RocketMQ中有用到</returns>
-    /// <param name="data">字节数组</param>
-    /// <returns></returns>
-    public static Byte[] Decompress(this Byte[] data)
-    {
-        var ms = new MemoryStream();
-        Decompress(new MemoryStream(data), ms);
         return ms.ToArray();
     }
 
@@ -119,6 +87,48 @@ public static class IOHelper
         return ms;
     }
 
+    /// <summary>压缩字节数组</summary>
+    /// <param name="data">字节数组</param>
+    /// <returns></returns>
+    public static Byte[] CompressGZip(this Byte[] data)
+    {
+        var ms = new MemoryStream();
+        CompressGZip(new MemoryStream(data), ms);
+        return ms.ToArray();
+    }
+
+    /// <summary>解压缩数据流</summary>
+    /// <returns>Deflate算法，如果是ZLIB格式，则前面多两个字节，解压缩之前去掉，RocketMQ中有用到</returns>
+    /// <param name="inStream">输入流</param>
+    /// <param name="outStream">输出流。如果不指定，则内部实例化一个内存流</param>
+    /// <remarks>返回输出流，注意此时指针位于末端</remarks>
+    public static Stream Decompress(this Stream inStream, Stream? outStream = null)
+    {
+        var ms = outStream ?? new MemoryStream();
+
+        // 第三个参数为true，保持数据流打开，内部不应该干涉外部，不要关闭外部的数据流
+        using (var stream = new DeflateStream(inStream, CompressionMode.Decompress, true))
+        {
+            stream.CopyTo(ms);
+        }
+
+        // 内部数据流需要把位置指向开头
+        if (outStream == null) ms.Position = 0;
+
+        return ms;
+    }
+
+    /// <summary>解压缩字节数组</summary>
+    /// <returns>Deflate算法，如果是ZLIB格式，则前面多两个字节，解压缩之前去掉，RocketMQ中有用到</returns>
+    /// <param name="data">字节数组</param>
+    /// <returns></returns>
+    public static Byte[] Decompress(this Byte[] data)
+    {
+        var ms = new MemoryStream();
+        Decompress(new MemoryStream(data), ms);
+        return ms.ToArray();
+    }
+
     /// <summary>解压缩数据流</summary>
     /// <param name="inStream">输入流</param>
     /// <param name="outStream">输出流。如果不指定，则内部实例化一个内存流</param>
@@ -139,16 +149,6 @@ public static class IOHelper
         return ms;
     }
 
-    /// <summary>压缩字节数组</summary>
-    /// <param name="data">字节数组</param>
-    /// <returns></returns>
-    public static Byte[] CompressGZip(this Byte[] data)
-    {
-        var ms = new MemoryStream();
-        CompressGZip(new MemoryStream(data), ms);
-        return ms.ToArray();
-    }
-
     /// <summary>解压缩字节数组</summary>
     /// <returns>Deflate算法，如果是ZLIB格式，则前面多两个字节，解压缩之前去掉，RocketMQ中有用到</returns>
     /// <param name="data">字节数组</param>
@@ -163,34 +163,6 @@ public static class IOHelper
     #endregion 压缩/解压缩 数据
 
     #region 复制数据流
-
-    /// <summary>把一个字节数组写入到一个数据流</summary>
-    /// <param name="des">目的数据流</param>
-    /// <param name="src">源数据流</param>
-    /// <returns></returns>
-    public static Stream Write(this Stream des, params Byte[] src)
-    {
-        if (src != null && src.Length > 0) des.Write(src, 0, src.Length);
-        return des;
-    }
-
-    /// <summary>写入字节数组，先写入压缩整数表示的长度</summary>
-    /// <param name="des"></param>
-    /// <param name="src"></param>
-    /// <returns></returns>
-    public static Stream WriteArray(this Stream des, params Byte[] src)
-    {
-        if (src == null || src.Length == 0)
-        {
-            des.WriteByte(0);
-            return des;
-        }
-
-        des.WriteEncodedInt(src.Length);
-        des.Write(src);
-
-        return des;
-    }
 
     /// <summary>读取字节数组，先读取压缩整数表示的长度</summary>
     /// <param name="des"></param>
@@ -211,30 +183,6 @@ public static class IOHelper
         return buf;
     }
 
-    /// <summary>写入Unix格式时间，1970年以来秒数，绝对时间，非UTC</summary>
-    /// <param name="stream"></param>
-    /// <param name="dt"></param>
-    /// <returns></returns>
-    public static Stream WriteDateTime(this Stream stream, DateTime dt)
-    {
-        var seconds = dt.ToInt();
-        stream.Write(seconds.GetBytes());
-
-        return stream;
-    }
-
-    /// <summary>读取Unix格式时间，1970年以来秒数，绝对时间，非UTC</summary>
-    /// <param name="stream"></param>
-    /// <returns></returns>
-    public static DateTime ReadDateTime(this Stream stream)
-    {
-        var buf = new Byte[4];
-        stream.Read(buf, 0, 4);
-        var seconds = (Int32)buf.ToUInt32();
-
-        return seconds.ToDateTime();
-    }
-
     /// <summary>复制数组</summary>
     /// <param name="src">源数组</param>
     /// <param name="offset">起始位置。一般从0开始</param>
@@ -252,6 +200,28 @@ public static class IOHelper
         return bts;
     }
 
+    /// <summary>读取Unix格式时间，1970年以来秒数，绝对时间，非UTC</summary>
+    /// <param name="stream"></param>
+    /// <returns></returns>
+    public static DateTime ReadDateTime(this Stream stream)
+    {
+        var buf = new Byte[4];
+        stream.Read(buf, 0, 4);
+        var seconds = (Int32)buf.ToUInt32();
+
+        return seconds.ToDateTime();
+    }
+
+    /// <summary>把一个字节数组写入到一个数据流</summary>
+    /// <param name="des">目的数据流</param>
+    /// <param name="src">源数据流</param>
+    /// <returns></returns>
+    public static Stream Write(this Stream des, params Byte[] src)
+    {
+        if (src != null && src.Length > 0) des.Write(src, 0, src.Length);
+        return des;
+    }
+
     /// <summary>向字节数组写入一片数据</summary>
     /// <param name="dst">目标数组</param>
     /// <param name="dstOffset">目标偏移</param>
@@ -266,6 +236,36 @@ public static class IOHelper
 
         Buffer.BlockCopy(src, srcOffset, dst, dstOffset, count);
         return count;
+    }
+
+    /// <summary>写入字节数组，先写入压缩整数表示的长度</summary>
+    /// <param name="des"></param>
+    /// <param name="src"></param>
+    /// <returns></returns>
+    public static Stream WriteArray(this Stream des, params Byte[] src)
+    {
+        if (src == null || src.Length == 0)
+        {
+            des.WriteByte(0);
+            return des;
+        }
+
+        des.WriteEncodedInt(src.Length);
+        des.Write(src);
+
+        return des;
+    }
+
+    /// <summary>写入Unix格式时间，1970年以来秒数，绝对时间，非UTC</summary>
+    /// <param name="stream"></param>
+    /// <param name="dt"></param>
+    /// <returns></returns>
+    public static Stream WriteDateTime(this Stream stream, DateTime dt)
+    {
+        var seconds = dt.ToInt();
+        stream.Write(seconds.GetBytes());
+
+        return stream;
     }
 
     #endregion 复制数据流
@@ -375,6 +375,106 @@ public static class IOHelper
     #endregion 数据流转换
 
     #region 数据转整数
+
+    /// <summary>整数转为字节数组，注意大小端字节序</summary>
+    /// <param name="value"></param>
+    /// <param name="isLittleEndian"></param>
+    /// <returns></returns>
+    public static Byte[] GetBytes(this UInt16 value, Boolean isLittleEndian = true)
+    {
+        if (isLittleEndian) return BitConverter.GetBytes(value);
+
+        var buf = new Byte[2];
+        return buf.Write(value, 0, isLittleEndian);
+    }
+
+    /// <summary>整数转为字节数组，注意大小端字节序</summary>
+    /// <param name="value"></param>
+    /// <param name="isLittleEndian"></param>
+    /// <returns></returns>
+    public static Byte[] GetBytes(this Int16 value, Boolean isLittleEndian = true)
+    {
+        if (isLittleEndian) return BitConverter.GetBytes(value);
+
+        var buf = new Byte[2];
+        return buf.Write((UInt16)value, 0, isLittleEndian);
+    }
+
+    /// <summary>整数转为字节数组，注意大小端字节序</summary>
+    /// <param name="value"></param>
+    /// <param name="isLittleEndian"></param>
+    /// <returns></returns>
+    public static Byte[] GetBytes(this UInt32 value, Boolean isLittleEndian = true)
+    {
+        if (isLittleEndian) return BitConverter.GetBytes(value);
+
+        var buf = new Byte[4];
+        return buf.Write(value, 0, isLittleEndian);
+    }
+
+    /// <summary>整数转为字节数组，注意大小端字节序</summary>
+    /// <param name="value"></param>
+    /// <param name="isLittleEndian"></param>
+    /// <returns></returns>
+    public static Byte[] GetBytes(this Int32 value, Boolean isLittleEndian = true)
+    {
+        if (isLittleEndian) return BitConverter.GetBytes(value);
+
+        var buf = new Byte[4];
+        return buf.Write((UInt32)value, 0, isLittleEndian);
+    }
+
+    /// <summary>整数转为字节数组，注意大小端字节序</summary>
+    /// <param name="value"></param>
+    /// <param name="isLittleEndian"></param>
+    /// <returns></returns>
+    public static Byte[] GetBytes(this UInt64 value, Boolean isLittleEndian = true)
+    {
+        if (isLittleEndian) return BitConverter.GetBytes(value);
+
+        var buf = new Byte[8];
+        return buf.Write(value, 0, isLittleEndian);
+    }
+
+    /// <summary>整数转为字节数组，注意大小端字节序</summary>
+    /// <param name="value"></param>
+    /// <param name="isLittleEndian"></param>
+    /// <returns></returns>
+    public static Byte[] GetBytes(this Int64 value, Boolean isLittleEndian = true)
+    {
+        if (isLittleEndian) return BitConverter.GetBytes(value);
+
+        var buf = new Byte[8];
+        return buf.Write((UInt64)value, 0, isLittleEndian);
+    }
+
+    /// <summary>字节翻转。支持双字节和四字节多批次翻转，主要用于大小端转换</summary>
+    /// <param name="data"></param>
+    /// <param name="swap16"></param>
+    /// <param name="swap32"></param>
+    /// <returns></returns>
+    public static Byte[] Swap(this Byte[] data, Boolean swap16, Boolean swap32)
+    {
+        var buf = new Byte[data.Length];
+        Buffer.BlockCopy(data, 0, buf, 0, data.Length);
+        if (swap16)
+        {
+            for (var i = 0; i < buf.Length - 1; i += 2)
+            {
+                (buf[i + 1], buf[i]) = (buf[i], buf[i + 1]);
+            }
+        }
+
+        if (swap32)
+        {
+            for (var i = 0; i < buf.Length - 3; i += 4)
+            {
+                (buf[i + 2], buf[i + 3], buf[i], buf[i + 1]) = (buf[i], buf[i + 1], buf[i + 2], buf[i + 3]);
+            }
+        }
+
+        return buf;
+    }
 
     /// <summary>从字节数据指定位置读取一个无符号16位整数</summary>
     /// <param name="data"></param>
@@ -511,109 +611,31 @@ public static class IOHelper
         return data;
     }
 
-    /// <summary>整数转为字节数组，注意大小端字节序</summary>
-    /// <param name="value"></param>
-    /// <param name="isLittleEndian"></param>
-    /// <returns></returns>
-    public static Byte[] GetBytes(this UInt16 value, Boolean isLittleEndian = true)
-    {
-        if (isLittleEndian) return BitConverter.GetBytes(value);
-
-        var buf = new Byte[2];
-        return buf.Write(value, 0, isLittleEndian);
-    }
-
-    /// <summary>整数转为字节数组，注意大小端字节序</summary>
-    /// <param name="value"></param>
-    /// <param name="isLittleEndian"></param>
-    /// <returns></returns>
-    public static Byte[] GetBytes(this Int16 value, Boolean isLittleEndian = true)
-    {
-        if (isLittleEndian) return BitConverter.GetBytes(value);
-
-        var buf = new Byte[2];
-        return buf.Write((UInt16)value, 0, isLittleEndian);
-    }
-
-    /// <summary>整数转为字节数组，注意大小端字节序</summary>
-    /// <param name="value"></param>
-    /// <param name="isLittleEndian"></param>
-    /// <returns></returns>
-    public static Byte[] GetBytes(this UInt32 value, Boolean isLittleEndian = true)
-    {
-        if (isLittleEndian) return BitConverter.GetBytes(value);
-
-        var buf = new Byte[4];
-        return buf.Write(value, 0, isLittleEndian);
-    }
-
-    /// <summary>整数转为字节数组，注意大小端字节序</summary>
-    /// <param name="value"></param>
-    /// <param name="isLittleEndian"></param>
-    /// <returns></returns>
-    public static Byte[] GetBytes(this Int32 value, Boolean isLittleEndian = true)
-    {
-        if (isLittleEndian) return BitConverter.GetBytes(value);
-
-        var buf = new Byte[4];
-        return buf.Write((UInt32)value, 0, isLittleEndian);
-    }
-
-    /// <summary>整数转为字节数组，注意大小端字节序</summary>
-    /// <param name="value"></param>
-    /// <param name="isLittleEndian"></param>
-    /// <returns></returns>
-    public static Byte[] GetBytes(this UInt64 value, Boolean isLittleEndian = true)
-    {
-        if (isLittleEndian) return BitConverter.GetBytes(value);
-
-        var buf = new Byte[8];
-        return buf.Write(value, 0, isLittleEndian);
-    }
-
-    /// <summary>整数转为字节数组，注意大小端字节序</summary>
-    /// <param name="value"></param>
-    /// <param name="isLittleEndian"></param>
-    /// <returns></returns>
-    public static Byte[] GetBytes(this Int64 value, Boolean isLittleEndian = true)
-    {
-        if (isLittleEndian) return BitConverter.GetBytes(value);
-
-        var buf = new Byte[8];
-        return buf.Write((UInt64)value, 0, isLittleEndian);
-    }
-
-    /// <summary>字节翻转。支持双字节和四字节多批次翻转，主要用于大小端转换</summary>
-    /// <param name="data"></param>
-    /// <param name="swap16"></param>
-    /// <param name="swap32"></param>
-    /// <returns></returns>
-    public static Byte[] Swap(this Byte[] data, Boolean swap16, Boolean swap32)
-    {
-        var buf = new Byte[data.Length];
-        Buffer.BlockCopy(data, 0, buf, 0, data.Length);
-        if (swap16)
-        {
-            for (var i = 0; i < buf.Length - 1; i += 2)
-            {
-                (buf[i + 1], buf[i]) = (buf[i], buf[i + 1]);
-            }
-        }
-
-        if (swap32)
-        {
-            for (var i = 0; i < buf.Length - 3; i += 4)
-            {
-                (buf[i + 2], buf[i + 3], buf[i], buf[i + 1]) = (buf[i], buf[i + 1], buf[i + 2], buf[i + 3]);
-            }
-        }
-
-        return buf;
-    }
-
     #endregion 数据转整数
 
     #region 7位压缩编码整数
+
+    [ThreadStatic]
+    private static Byte[]? _encodes;
+
+    /// <summary>获取压缩编码整数</summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static Byte[] GetEncodedInt(Int64 value)
+    {
+        _encodes ??= new Byte[16];
+
+        var count = 0;
+        var num = (UInt64)value;
+        while (num >= 0x80)
+        {
+            _encodes[count++] = (Byte)(num | 0x80);
+            num >>= 7;
+        }
+        _encodes[count++] = (Byte)num;
+
+        return _encodes.ReadBytes(0, count);
+    }
 
     /// <summary>以压缩格式读取32位整数</summary>
     /// <param name="stream">数据流</param>
@@ -663,34 +685,6 @@ public static class IOHelper
         return rs;
     }
 
-    /// <summary>尝试读取压缩编码整数</summary>
-    /// <param name="stream"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    internal static Boolean TryReadEncodedInt(this Stream stream, out UInt32 value)
-    {
-        Byte b;
-        value = 0;
-        Byte n = 0;
-        while (true)
-        {
-            var bt = stream.ReadByte();
-            if (bt < 0) return false;
-            b = (Byte)bt;
-
-            // 必须转为Int32，否则可能溢出
-            value += (UInt32)((b & 0x7f) << n);
-            if ((b & 0x80) == 0) break;
-
-            n += 7;
-            if (n >= 32) throw new FormatException("The number value is too large to read in compressed format!");
-        }
-        return true;
-    }
-
-    [ThreadStatic]
-    private static Byte[]? _encodes;
-
     /// <summary>
     /// 以7位压缩格式写入32位整数，小于7位用1个字节，小于14位用2个字节。
     /// 由每次写入的一个字节的第一位标记后面的字节是否还是当前数据，所以每个字节实际可利用存储空间只有后7位。
@@ -716,23 +710,29 @@ public static class IOHelper
         return stream;
     }
 
-    /// <summary>获取压缩编码整数</summary>
+    /// <summary>尝试读取压缩编码整数</summary>
+    /// <param name="stream"></param>
     /// <param name="value"></param>
     /// <returns></returns>
-    public static Byte[] GetEncodedInt(Int64 value)
+    internal static Boolean TryReadEncodedInt(this Stream stream, out UInt32 value)
     {
-        _encodes ??= new Byte[16];
-
-        var count = 0;
-        var num = (UInt64)value;
-        while (num >= 0x80)
+        Byte b;
+        value = 0;
+        Byte n = 0;
+        while (true)
         {
-            _encodes[count++] = (Byte)(num | 0x80);
-            num >>= 7;
-        }
-        _encodes[count++] = (Byte)num;
+            var bt = stream.ReadByte();
+            if (bt < 0) return false;
+            b = (Byte)bt;
 
-        return _encodes.ReadBytes(0, count);
+            // 必须转为Int32，否则可能溢出
+            value += (UInt32)((b & 0x7f) << n);
+            if ((b & 0x80) == 0) break;
+
+            n += 7;
+            if (n >= 32) throw new FormatException("The number value is too large to read in compressed format!");
+        }
+        return true;
     }
 
     #endregion 7位压缩编码整数
@@ -835,8 +835,6 @@ public static class IOHelper
         return new String(cs);
     }
 
-    private static Char GetHexValue(Int32 i) => i < 10 ? (Char)(i + '0') : (Char)(i - 10 + 'A');
-
     /// <summary>解密</summary>
     /// <param name="data">Hex编码的字符串</param>
     /// <param name="startIndex">起始位置</param>
@@ -866,6 +864,8 @@ public static class IOHelper
         return bts;
     }
 
+    private static Char GetHexValue(Int32 i) => i < 10 ? (Char)(i + '0') : (Char)(i - 10 + 'A');
+
     #endregion 十六进制编码
 
     #region BASE64编码
@@ -888,19 +888,6 @@ public static class IOHelper
         return Convert.ToBase64String(data, offset, count, lineBreak ? Base64FormattingOptions.InsertLineBreaks : Base64FormattingOptions.None);
     }
 
-    /// <summary>字节数组转为Url改进型Base64编码</summary>
-    /// <param name="data"></param>
-    /// <param name="offset"></param>
-    /// <param name="count"></param>
-    /// <returns></returns>
-    public static String ToUrlBase64(this Byte[] data, Int32 offset = 0, Int32 count = -1)
-    {
-        var str = ToBase64(data, offset, count, false);
-        str = str.TrimEnd('=');
-        str = str.Replace('+', '-').Replace('/', '_');
-        return str;
-    }
-
     /// <summary>Base64字符串转为字节数组</summary>
     /// <param name="data"></param>
     /// <returns></returns>
@@ -920,6 +907,19 @@ public static class IOHelper
         data = data.Replace('-', '+').Replace('_', '/');
 
         return Convert.FromBase64String(data);
+    }
+
+    /// <summary>字节数组转为Url改进型Base64编码</summary>
+    /// <param name="data"></param>
+    /// <param name="offset"></param>
+    /// <param name="count"></param>
+    /// <returns></returns>
+    public static String ToUrlBase64(this Byte[] data, Int32 offset = 0, Int32 count = -1)
+    {
+        var str = ToBase64(data, offset, count, false);
+        str = str.TrimEnd('=');
+        str = str.Replace('+', '-').Replace('/', '_');
+        return str;
     }
 
     #endregion BASE64编码

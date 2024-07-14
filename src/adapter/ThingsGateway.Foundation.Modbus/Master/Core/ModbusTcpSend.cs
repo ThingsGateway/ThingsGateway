@@ -15,21 +15,8 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 public class ModbusTcpSend : ISendMessage
 {
-    /// <summary>
-    /// 事务处理标识符。即序号
-    /// </summary>
-    public ushort TransactionId { get; set; }
-
-    /// <summary>
-    /// 协议标识符
-    /// </summary>
-    public ushort ProtocolId { get; set; }
-
-    public int Sign { get; set; }
-
-    public int MaxLength => 300;
-
     private ModbusAddress ModbusAddress;
+
     private bool Read;
 
     public ModbusTcpSend(ModbusAddress modbusAddress, ushort transactionId, bool read, ushort protocolId = 0)
@@ -40,6 +27,20 @@ public class ModbusTcpSend : ISendMessage
         ModbusAddress = modbusAddress;
         Read = read;
     }
+
+    public int MaxLength => 300;
+
+    /// <summary>
+    /// 协议标识符
+    /// </summary>
+    public ushort ProtocolId { get; set; }
+
+    public int Sign { get; set; }
+
+    /// <summary>
+    /// 事务处理标识符。即序号
+    /// </summary>
+    public ushort TransactionId { get; set; }
 
     public void Build<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock
     {

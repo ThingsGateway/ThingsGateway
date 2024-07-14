@@ -22,6 +22,13 @@ namespace ThingsGateway.Gateway.Application;
 public class RpcLog : PrimaryIdEntity
 {
     /// <summary>
+    /// 操作结果
+    ///</summary>
+    [SugarColumn(ColumnDescription = "操作结果", IsNullable = false)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public bool IsSuccess { get; set; }
+
+    /// <summary>
     /// 日志时间
     /// </summary>
     [SugarColumn(ColumnDescription = "日志时间", IsNullable = false)]
@@ -29,18 +36,11 @@ public class RpcLog : PrimaryIdEntity
     public DateTime LogTime { get; set; }
 
     /// <summary>
-    /// 操作源
+    /// 具体消息
     ///</summary>
-    [SugarColumn(ColumnDescription = "操作源", IsNullable = false)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public string OperateSource { get; set; }
-
-    /// <summary>
-    /// 操作对象
-    ///</summary>
-    [SugarColumn(ColumnDescription = "操作对象", IsNullable = false)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public string OperateObject { get; set; }
+    [SugarColumn(ColumnDescription = "具体消息", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, ShowTips = true)]
+    public string? OperateMessage { get; set; }
 
     /// <summary>
     /// 操作方法
@@ -50,11 +50,18 @@ public class RpcLog : PrimaryIdEntity
     public string OperateMethod { get; set; }
 
     /// <summary>
-    /// 操作结果
+    /// 操作对象
     ///</summary>
-    [SugarColumn(ColumnDescription = "操作结果", IsNullable = false)]
+    [SugarColumn(ColumnDescription = "操作对象", IsNullable = false)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public bool IsSuccess { get; set; }
+    public string OperateObject { get; set; }
+
+    /// <summary>
+    /// 操作源
+    ///</summary>
+    [SugarColumn(ColumnDescription = "操作源", IsNullable = false)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public string OperateSource { get; set; }
 
     /// <summary>
     /// 请求参数
@@ -69,11 +76,4 @@ public class RpcLog : PrimaryIdEntity
     [SugarColumn(ColumnDescription = "返回结果", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, ShowTips = true)]
     public string? ResultJson { get; set; }
-
-    /// <summary>
-    /// 具体消息
-    ///</summary>
-    [SugarColumn(ColumnDescription = "具体消息", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, ShowTips = true)]
-    public string? OperateMessage { get; set; }
 }

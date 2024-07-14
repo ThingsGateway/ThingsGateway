@@ -25,6 +25,36 @@ internal class AdminTaskService : BackgroundService
         _logger = logger;
     }
 
+    public Task DeleteLocalDB(CancellationToken stoppingToken)
+    {
+        var deviceService = App.RootServices.GetService<IDeviceService>();
+        var data = deviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).Select(a => a.Id);
+        var dir = CacheDBUtil.GetFileBasePath();
+        string[] dirs = Directory.GetDirectories(dir);
+        foreach (var item in dirs)
+        {
+            if (stoppingToken.IsCancellationRequested)
+            {
+                return Task.CompletedTask;
+            }
+            //删除文件夹
+            try
+            {
+                var id = Path.GetFileName(item).ToLong();
+                if (id > 0)
+                {
+                    if (!data.Contains(id))
+                    {
+                        Directory.Delete(item, true);
+                    }
+                }
+            }
+            catch { }
+        }
+
+        return Task.CompletedTask;
+    }
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         //实现 删除过期日志 功能，不需要精确的时间
@@ -107,36 +137,6 @@ internal class AdminTaskService : BackgroundService
             try
             {
                 Directory.Delete(debugDir.CombinePathWithOs(item), true);
-            }
-            catch { }
-        }
-
-        return Task.CompletedTask;
-    }
-
-    public Task DeleteLocalDB(CancellationToken stoppingToken)
-    {
-        var deviceService = App.RootServices.GetService<IDeviceService>();
-        var data = deviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).Select(a => a.Id);
-        var dir = CacheDBUtil.GetFileBasePath();
-        string[] dirs = Directory.GetDirectories(dir);
-        foreach (var item in dirs)
-        {
-            if (stoppingToken.IsCancellationRequested)
-            {
-                return Task.CompletedTask;
-            }
-            //删除文件夹
-            try
-            {
-                var id = Path.GetFileName(item).ToLong();
-                if (id > 0)
-                {
-                    if (!data.Contains(id))
-                    {
-                        Directory.Delete(item, true);
-                    }
-                }
             }
             catch { }
         }

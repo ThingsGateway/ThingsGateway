@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
 using Mapster;
 
 using Microsoft.AspNetCore.Components.Forms;
@@ -29,11 +27,16 @@ public partial class ChannelPage : IDisposable
     [NotNull]
     private IChannelService? ChannelService { get; set; }
 
-    private Channel? SearchModel { get; set; } = new();
-
     [Inject]
     [NotNull]
     private IDispatchService<bool>? DispatchService { get; set; }
+
+    private Channel? SearchModel { get; set; } = new();
+
+    public void Dispose()
+    {
+        DispatchService.UnSubscribe(Notify);
+    }
 
     protected override Task OnInitializedAsync()
     {
@@ -47,11 +50,6 @@ public partial class ChannelPage : IDisposable
         await InvokeAsync(StateHasChanged);
     }
 
-    public void Dispose()
-    {
-        DispatchService.UnSubscribe(Notify);
-    }
-
     #region 查询
 
     private async Task<QueryData<Channel>> OnQueryAsync(QueryPageOptions options)
@@ -63,32 +61,6 @@ public partial class ChannelPage : IDisposable
     #endregion 查询
 
     #region 修改
-
-    private async Task DeleteAllAsync()
-    {
-        try
-        {
-            await ChannelService.ClearChannelAsync();
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(null, $"{ex.Message}");
-        }
-    }
-
-    private async Task<bool> Save(Channel channel, ItemChangedType itemChangedType)
-    {
-        try
-        {
-            var result = await ChannelService.SaveChannelAsync(channel, itemChangedType);
-            return result;
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(null, $"{ex.Message}");
-            return false;
-        }
-    }
 
     private async Task BatchEdit(IEnumerable<Channel> channels)
     {
@@ -133,16 +105,42 @@ public partial class ChannelPage : IDisposable
         }
     }
 
+    private async Task DeleteAllAsync()
+    {
+        try
+        {
+            await ChannelService.ClearChannelAsync();
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(null, $"{ex.Message}");
+        }
+    }
+
+    private async Task<bool> Save(Channel channel, ItemChangedType itemChangedType)
+    {
+        try
+        {
+            var result = await ChannelService.SaveChannelAsync(channel, itemChangedType);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(null, $"{ex.Message}");
+            return false;
+        }
+    }
+
     #endregion 修改
 
     #region 导出
 
     [Inject]
-    [NotNull]
-    private ITableExport? TableExport { get; set; }
+    private IJSRuntime JSRuntime { get; set; }
 
     [Inject]
-    private IJSRuntime JSRuntime { get; set; }
+    [NotNull]
+    private ITableExport? TableExport { get; set; }
 
     private async Task ExcelExportAsync(ITableExportContext<Channel> tableExportContext)
     {

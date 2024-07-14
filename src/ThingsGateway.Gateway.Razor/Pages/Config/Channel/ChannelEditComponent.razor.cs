@@ -18,17 +18,17 @@ namespace ThingsGateway.Gateway.Razor;
 public partial class ChannelEditComponent
 {
     [Parameter]
+    public bool BatchEditEnable { get; set; }
+
+    [Parameter]
     [EditorRequired]
     public Channel Model { get; set; }
 
     [Parameter]
-    public bool BatchEditEnable { get; set; }
+    public Func<Task> OnValidSubmit { get; set; }
 
     [Parameter]
     public bool ValidateEnable { get; set; }
-
-    [Parameter]
-    public Func<Task> OnValidSubmit { get; set; }
 
     [CascadingParameter]
     private Func<Task>? OnCloseAsync { get; set; }

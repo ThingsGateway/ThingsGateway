@@ -18,12 +18,9 @@ namespace ThingsGateway.Gateway.Application;
 public class CollectDeviceRunTime : DeviceRunTime
 {
     /// <summary>
-    /// 特殊方法变量
+    /// 特殊方法数量
     /// </summary>
-    [System.Text.Json.Serialization.JsonIgnore]
-    [Newtonsoft.Json.JsonIgnore]
-    [AdaptIgnore]
-    public List<VariableMethod>? VariableMethods { get; set; }
+    public int MethodVariableCount => VariableMethods?.Count ?? 0;
 
     /// <summary>
     /// 特殊方法变量
@@ -34,20 +31,23 @@ public class CollectDeviceRunTime : DeviceRunTime
     public List<VariableMethod>? ReadVariableMethods { get; set; }
 
     /// <summary>
+    /// 设备读取打包数量
+    /// </summary>
+    public int SourceVariableCount => VariableSourceReads?.Count ?? 0;
+
+    /// <summary>
+    /// 特殊方法变量
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    [AdaptIgnore]
+    public List<VariableMethod>? VariableMethods { get; set; }
+
+    /// <summary>
     /// 打包变量
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
     [AdaptIgnore]
     public List<VariableSourceRead>? VariableSourceReads { get; set; }
-
-    /// <summary>
-    /// 特殊方法数量
-    /// </summary>
-    public int MethodVariableCount => VariableMethods?.Count ?? 0;
-
-    /// <summary>
-    /// 设备读取打包数量
-    /// </summary>
-    public int SourceVariableCount => VariableSourceReads?.Count ?? 0;
 }

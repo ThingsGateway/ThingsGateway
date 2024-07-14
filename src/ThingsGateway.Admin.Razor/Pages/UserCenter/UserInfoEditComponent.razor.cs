@@ -26,6 +26,25 @@ public partial class UserInfoEditComponent
 
     #region 头像
 
+    private List<UploadFile> PreviewFileList;
+
+    [FileValidation(Extensions = [".png", ".jpg", ".jpeg"], FileSize = 200 * 1024)]
+    public IBrowserFile? Picture { get; set; }
+
+    private CancellationTokenSource? ReadAvatarToken { get; set; }
+
+    public void Dispose()
+    {
+        ReadAvatarToken?.Cancel();
+        GC.SuppressFinalize(this);
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        PreviewFileList = new(new[] { new UploadFile { PrevUrl = Model.Avatar } });
+        return base.OnParametersSetAsync();
+    }
+
     private async Task OnAvatarUpload(UploadFile file)
     {
         if (file != null && file.File != null)
@@ -50,25 +69,6 @@ public partial class UserInfoEditComponent
             }
         }
     }
-
-    private List<UploadFile> PreviewFileList;
-
-    [FileValidation(Extensions = [".png", ".jpg", ".jpeg"], FileSize = 200 * 1024)]
-    public IBrowserFile? Picture { get; set; }
-
-    protected override Task OnParametersSetAsync()
-    {
-        PreviewFileList = new(new[] { new UploadFile { PrevUrl = Model.Avatar } });
-        return base.OnParametersSetAsync();
-    }
-
-    public void Dispose()
-    {
-        ReadAvatarToken?.Cancel();
-        GC.SuppressFinalize(this);
-    }
-
-    private CancellationTokenSource? ReadAvatarToken { get; set; }
 
     #endregion 头像
 }

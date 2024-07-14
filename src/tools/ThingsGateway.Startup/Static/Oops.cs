@@ -8,39 +8,29 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System.ComponentModel.DataAnnotations;
+using NewLife.Extension;
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway;
 
 /// <summary>
-/// 最小值校验
+/// 抛异常静态类
 /// </summary>
-public class MinValueAttribute : ValidationAttribute
+public class Oops
 {
     /// <summary>
-    /// 最小值
+    /// 抛出业务异常信息
     /// </summary>
-    /// <param name="value"></param>
-    public MinValueAttribute(UInt64 value)
+    /// <param name="errorMessage">异常消息</param>
+    /// <param name="args">String.Format 参数</param>
+    /// <returns>异常实例</returns>
+    public static UserFriendlyException Bah(string errorMessage, params object[] args)
     {
-        MinValue = value;
-    }
-
-    private UInt64 MinValue { get; set; }
-
-    /// <summary>
-    /// 最小值校验
-    /// </summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public override bool IsValid(object? value)
-    {
-        if (value is null)
+        if (errorMessage.IsNullOrWhiteSpace())
         {
-            return false;
+            return new UserFriendlyException("unkown error");
         }
-
-        var input = Convert.ToUInt64(value);
-        return input >= MinValue;
+        var localizer = App.CreateLocalizerByType(typeof(Oops))!;
+        var friendlyException = new UserFriendlyException(localizer[errorMessage, args]);
+        return friendlyException;
     }
 }

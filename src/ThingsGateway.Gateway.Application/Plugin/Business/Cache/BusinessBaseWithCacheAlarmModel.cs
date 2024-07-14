@@ -22,6 +22,8 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
 {
     protected ConcurrentQueue<CacheDBItem<AlarmModel>> _memoryAlarmModelQueue = new();
 
+    private volatile bool LocalDBCacheAlarmModelInited;
+
     /// <summary>
     /// 入缓存
     /// </summary>
@@ -104,8 +106,6 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
             _memoryAlarmModelQueue.Enqueue(data);
         }
     }
-
-    private volatile bool LocalDBCacheAlarmModelInited;
 
     /// <summary>
     /// 获取缓存对象，注意每次获取的对象可能不一样，如顺序操作，需固定引用

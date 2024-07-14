@@ -12,13 +12,11 @@ namespace ThingsGateway.Admin.Application;
 
 public class OperateLogIndexOutput
 {
-    public DateTime OpTime { get; set; }
-
     public string Name { get; set; }
-    public string? OpIp { get; set; }
-    public string OpBrowser { get; set; }
-
     public string? OpAccount { get; set; }
+    public string OpBrowser { get; set; }
+    public string? OpIp { get; set; }
+    public DateTime OpTime { get; set; }
 }
 
 public class OperateLogDayStatisticsOutput
@@ -27,11 +25,6 @@ public class OperateLogDayStatisticsOutput
     /// 日期
     /// </summary>
     public string Date { get; set; }
-
-    /// <summary>
-    /// 操作次数
-    /// </summary>
-    public int OperateCount { get; set; }
 
     /// <summary>
     /// 异常次数
@@ -47,4 +40,9 @@ public class OperateLogDayStatisticsOutput
     /// 登出次数
     /// </summary>
     public int LogoutCount { get; set; }
+
+    /// <summary>
+    /// 操作次数
+    /// </summary>
+    public int OperateCount { get; set; }
 }

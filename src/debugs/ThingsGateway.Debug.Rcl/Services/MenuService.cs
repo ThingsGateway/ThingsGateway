@@ -27,11 +27,11 @@ public class MenuConfigs : AppConfigBase
         Default = AppConfigBase.GetNewDefault<MenuConfigs>();
     }
 
-    public List<MenuItem> MenuItems { get; set; } = new();
-
     public MenuConfigs() : base(AppContext.BaseDirectory.CombinePath("menu.config.json"))
     {
     }
+
+    public List<MenuItem> MenuItems { get; set; } = new();
 }
 
 public class MenuService : IMenuService

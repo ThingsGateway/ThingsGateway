@@ -26,8 +26,8 @@ namespace ThingsGateway.Plugin.SqlHisAlarm;
 /// </summary>
 public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, IDBHistoryAlarmService
 {
-    private readonly SqlHisAlarmVariableProperty _variablePropertys = new();
     internal readonly SqlHisAlarmProperty _driverPropertys = new();
+    private readonly SqlHisAlarmVariableProperty _variablePropertys = new();
     private TypeAdapterConfig _config = new();
     public override Type DriverUIType => typeof(HisAlarmPage);
 
@@ -35,12 +35,6 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
     protected override BusinessPropertyWithCache _businessPropertyWithCache => _driverPropertys;
-
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    /// <returns></returns>
-    public override bool IsConnected() => success;
 
     public override void Init(IChannel? channel = null)
     {
@@ -51,6 +45,18 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
 
         _config.ForType<AlarmVariable, HistoryAlarm>().Map(dest => dest.Id, (src) => YitIdHelper.NextId());
         HostedServiceUtil.AlarmHostedService.OnAlarmChanged += AlarmWorker_OnAlarmChanged;
+    }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    /// <returns></returns>
+    public override bool IsConnected() => success;
+
+    protected override void Dispose(bool disposing)
+    {
+        HostedServiceUtil.AlarmHostedService.OnAlarmChanged -= AlarmWorker_OnAlarmChanged;
+        base.Dispose(disposing);
     }
 
     protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
@@ -68,13 +74,39 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
         await Delay(cancellationToken).ConfigureAwait(false);
     }
 
-    protected override void Dispose(bool disposing)
+    #region 数据查询
+
+    public async Task<SqlSugarPagedList<IDBHistoryAlarm>> GetDBHistoryAlarmPagesAsync(DBHistoryAlarmPageInput input)
     {
-        HostedServiceUtil.AlarmHostedService.OnAlarmChanged -= AlarmWorker_OnAlarmChanged;
-        base.Dispose(disposing);
+        var data = await Query(input).ToPagedListAsync<HistoryAlarm, IDBHistoryAlarm>(input.Current, input.Size);//分页
+        return data;
     }
 
-    #region 数据查询
+    public async Task<List<IDBHistoryAlarm>> GetDBHistoryAlarmsAsync(DBHistoryAlarmPageInput input)
+    {
+        var data = await Query(input).ToListAsync();
+        return data.Cast<IDBHistoryAlarm>().ToList();
+    }
+
+    internal ISugarQueryable<HistoryAlarm> Query(DBHistoryAlarmPageInput input)
+    {
+        using var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var query = db.Queryable<HistoryAlarm>().SplitTable()
+                             .WhereIF(input.StartTime != null, a => a.EventTime >= input.StartTime)
+                           .WhereIF(input.EndTime != null, a => a.EventTime <= input.EndTime)
+                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
+                           .WhereIF(input.AlarmType != null, a => a.AlarmType == input.AlarmType)
+                           .WhereIF(input.EventType != null, a => a.EventType == input.EventType)
+                           ;
+
+        for (int i = input.SortField.Count - 1; i >= 0; i--)
+        {
+            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
+        }
+        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
+
+        return query;
+    }
 
     internal async Task<QueryData<HistoryAlarm>> QueryData(QueryPageOptions option)
     {
@@ -117,38 +149,6 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
             ret.Items = items;
         }
         return ret;
-    }
-
-    internal ISugarQueryable<HistoryAlarm> Query(DBHistoryAlarmPageInput input)
-    {
-        using var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
-        var query = db.Queryable<HistoryAlarm>().SplitTable()
-                             .WhereIF(input.StartTime != null, a => a.EventTime >= input.StartTime)
-                           .WhereIF(input.EndTime != null, a => a.EventTime <= input.EndTime)
-                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
-                           .WhereIF(input.AlarmType != null, a => a.AlarmType == input.AlarmType)
-                           .WhereIF(input.EventType != null, a => a.EventType == input.EventType)
-                           ;
-
-        for (int i = input.SortField.Count - 1; i >= 0; i--)
-        {
-            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
-        }
-        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
-
-        return query;
-    }
-
-    public async Task<List<IDBHistoryAlarm>> GetDBHistoryAlarmsAsync(DBHistoryAlarmPageInput input)
-    {
-        var data = await Query(input).ToListAsync();
-        return data.Cast<IDBHistoryAlarm>().ToList();
-    }
-
-    public async Task<SqlSugarPagedList<IDBHistoryAlarm>> GetDBHistoryAlarmPagesAsync(DBHistoryAlarmPageInput input)
-    {
-        var data = await Query(input).ToPagedListAsync<HistoryAlarm, IDBHistoryAlarm>(input.Current, input.Size);//分页
-        return data;
     }
 
     #endregion 数据查询

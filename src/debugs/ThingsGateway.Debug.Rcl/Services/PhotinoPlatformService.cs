@@ -14,6 +14,12 @@ namespace ThingsGateway.Debug;
 
 public class PhotinoPlatformService : IPlatformService
 {
+    public Task OnLogExport(string logPath)
+    {
+        OpenFolder(logPath);
+        return Task.CompletedTask;
+    }
+
     private void OpenFolder(string path)
     {
         // Normalize the path for the current operating system
@@ -31,11 +37,5 @@ public class PhotinoPlatformService : IPlatformService
         {
             System.Diagnostics.Process.Start("open", path);
         }
-    }
-
-    public Task OnLogExport(string logPath)
-    {
-        OpenFolder(logPath);
-        return Task.CompletedTask;
     }
 }

@@ -36,6 +36,10 @@ public class VariableClass : IVariable
     /// </summary>
     public virtual int? IntervalTime { get; set; }
 
+    public bool IsOnline { get; set; }
+
+    public string LastErrorMessage => VariableSource?.LastErrorMessage;
+
     /// <summary>
     /// 寄存器地址
     /// </summary>
@@ -55,10 +59,6 @@ public class VariableClass : IVariable
     /// IVariableSource
     /// </summary>
     public IVariableSource VariableSource { get; set; }
-
-    public string LastErrorMessage => VariableSource?.LastErrorMessage;
-
-    public bool IsOnline { get; set; }
 
     /// <summary>
     /// 赋值变量

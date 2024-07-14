@@ -46,16 +46,7 @@ public class Dlt645_2007Request
 /// </summary>
 internal class Dlt645_2007Send : ISendMessage
 {
-    public int Sign { get; set; }
-
-    public int MaxLength => 300;
-
-    internal Dlt645_2007Address Dlt645_2007Address { get; }
-    public int SendHeadCodeIndex { get; private set; }
-
     internal ControlCode ControlCode = default;
-
-    private byte[] Fehead = default;
 
     /// <summary>
     /// 密码、操作码
@@ -67,6 +58,8 @@ internal class Dlt645_2007Send : ISendMessage
     /// </summary>
     private string[] Datas = default;
 
+    private byte[] Fehead = default;
+
     public Dlt645_2007Send(Dlt645_2007Address dlt645_2007Address, ushort sign, ControlCode controlCode, byte[] fehead = default, byte[] codes = default, string[] datas = default)
     {
         Sign = sign;
@@ -77,6 +70,11 @@ internal class Dlt645_2007Send : ISendMessage
         Codes = codes ?? Array.Empty<byte>();
         Datas = datas ?? Array.Empty<string>();
     }
+
+    public int MaxLength => 300;
+    public int SendHeadCodeIndex { get; private set; }
+    public int Sign { get; set; }
+    internal Dlt645_2007Address Dlt645_2007Address { get; }
 
     public void Build<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock
     {

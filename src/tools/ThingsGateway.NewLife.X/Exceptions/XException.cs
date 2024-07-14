@@ -12,6 +12,25 @@ using System.ComponentModel;
 
 namespace NewLife;
 
+/// <summary>异常事件参数</summary>
+public class ExceptionEventArgs : CancelEventArgs
+{
+    /// <summary>实例化</summary>
+    /// <param name="action"></param>
+    /// <param name="ex"></param>
+    public ExceptionEventArgs(String action, Exception ex)
+    {
+        Action = action;
+        Exception = ex;
+    }
+
+    /// <summary>发生异常时进行的动作</summary>
+    public String Action { get; set; }
+
+    /// <summary>异常</summary>
+    public Exception Exception { get; set; }
+}
+
 /// <summary>X组件异常</summary>
 [Serializable]
 public class XException : Exception
@@ -52,25 +71,6 @@ public class XException : Exception
     //protected XException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 
     #endregion 构造
-}
-
-/// <summary>异常事件参数</summary>
-public class ExceptionEventArgs : CancelEventArgs
-{
-    /// <summary>发生异常时进行的动作</summary>
-    public String Action { get; set; }
-
-    /// <summary>异常</summary>
-    public Exception Exception { get; set; }
-
-    /// <summary>实例化</summary>
-    /// <param name="action"></param>
-    /// <param name="ex"></param>
-    public ExceptionEventArgs(String action, Exception ex)
-    {
-        Action = action;
-        Exception = ex;
-    }
 }
 
 /// <summary>异常助手</summary>

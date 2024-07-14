@@ -20,9 +20,9 @@ namespace ThingsGateway.Server;
 /// <inheritdoc/>
 public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
 {
-    private readonly ISysUserService _sysUserService;
-    private readonly ISysRoleService _sysRoleService;
     private readonly ISysDictService _sysDictService;
+    private readonly ISysRoleService _sysRoleService;
+    private readonly ISysUserService _sysUserService;
     private readonly IVerificatInfoService _verificatInfoService;
 
     public BlazorAuthenticationStateProvider(IVerificatInfoService verificatInfoService, ISysUserService sysUserService, ISysRoleService sysRoleService, ISysDictService sysDictService)

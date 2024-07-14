@@ -18,17 +18,29 @@ namespace ThingsGateway.Gateway.Razor;
 /// </summary>
 public partial class QuickActions
 {
-    private string? TooltipText { get; set; }
-    private string? HeaderText { get; set; }
-    private string? ReloadPluginText { get; set; }
+    [Inject]
+    [NotNull]
+    protected BlazorAppContext? AppContext { get; set; }
 
-    private string? ReloadServiceText { get; set; }
-    private string? ReloadPluginConfirmText { get; set; }
-    private string? ReloadServiceConfirmText { get; set; }
+    private string? HeaderText { get; set; }
 
     [Inject]
     [NotNull]
     private IStringLocalizer<QuickActions>? Localizer { get; set; }
+
+    [Inject]
+    private IPluginService PluginService { get; set; }
+
+    private string? ReloadPluginConfirmText { get; set; }
+    private string? ReloadPluginText { get; set; }
+    private string? ReloadServiceConfirmText { get; set; }
+    private string? ReloadServiceText { get; set; }
+    private string? TooltipText { get; set; }
+
+    protected bool AuthorizeButton(string operate)
+    {
+        return AppContext.IsHasButtonWithRole("/gateway/devicestatus", operate);
+    }
 
     protected override void OnInitialized()
     {
@@ -42,28 +54,11 @@ public partial class QuickActions
         base.OnInitialized();
     }
 
-    private async Task ToggleOpen()
-    {
-        await Module!.InvokeVoidAsync("toggle", Id);
-    }
-
-    [Inject]
-    private IPluginService PluginService { get; set; }
-
     private Task OnReloadPlugin()
     {
         PluginService.Remove();
 
         return Task.CompletedTask;
-    }
-
-    [Inject]
-    [NotNull]
-    protected BlazorAppContext? AppContext { get; set; }
-
-    protected bool AuthorizeButton(string operate)
-    {
-        return AppContext.IsHasButtonWithRole("/gateway/devicestatus", operate);
     }
 
     private async Task OnReloadService()
@@ -78,5 +73,10 @@ public partial class QuickActions
         finally
         {
         }
+    }
+
+    private async Task ToggleOpen()
+    {
+        await Module!.InvokeVoidAsync("toggle", Id);
     }
 }

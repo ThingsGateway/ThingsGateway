@@ -36,14 +36,19 @@ public sealed class ConsoleFormatterExtendOptions : ConsoleFormatterOptions
     public LoggerColorBehavior ColorBehavior { get; set; }
 
     /// <summary>
+    /// 日期格式化
+    /// </summary>
+    public string DateFormat { get; set; } = "yyyy-MM-dd HH:mm:ss.fffffff zzz dddd";
+
+    /// <summary>
     /// 自定义日志消息格式化程序
     /// </summary>
     public Func<LogMessage, string> MessageFormat { get; set; }
 
     /// <summary>
-    /// 日期格式化
+    /// 显示跟踪/请求 Id
     /// </summary>
-    public string DateFormat { get; set; } = "yyyy-MM-dd HH:mm:ss.fffffff zzz dddd";
+    public bool WithTraceId { get; set; } = false;
 
     /// <summary>
     /// 自定义日志筛选器
@@ -54,9 +59,4 @@ public sealed class ConsoleFormatterExtendOptions : ConsoleFormatterOptions
     /// 自定义格式化日志处理程序
     /// </summary>
     public Action<LogMessage, IExternalScopeProvider, TextWriter, string, ConsoleFormatterExtendOptions> WriteHandler { get; set; }
-
-    /// <summary>
-    /// 显示跟踪/请求 Id
-    /// </summary>
-    public bool WithTraceId { get; set; } = false;
 }

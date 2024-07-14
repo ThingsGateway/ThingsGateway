@@ -21,25 +21,44 @@ public class AssemblyX
 {
     #region 属性
 
-    /// <summary>程序集</summary>
-    public Assembly Asm { get; }
+    private String? _Company;
+
+    private DateTime? _Compile;
+
+    private String? _Description;
+
+    private String? _FileVersion;
 
     private String? _Name;
 
-    /// <summary>名称</summary>
-    public String Name => _Name ??= "" + Asm.GetName().Name;
+    private String? _Title;
 
     private String? _Version;
 
-    /// <summary>程序集版本</summary>
-    public String Version => _Version ??= "" + Asm.GetName().Version;
+    /// <summary>程序集</summary>
+    public Assembly Asm { get; }
 
-    private String? _Title;
+    /// <summary>公司名称</summary>
+    public String Company => _Company ??= "" + Asm.GetCustomAttributeValue<AssemblyCompanyAttribute, String>();
 
-    /// <summary>程序集标题</summary>
-    public String Title => _Title ??= "" + Asm.GetCustomAttributeValue<AssemblyTitleAttribute, String>();
+    /// <summary>编译时间</summary>
+    public DateTime Compile
+    {
+        get
+        {
+            if (_Compile == null)
+            {
+                var time = GetCompileTime(Version);
+                if (time == time.Date && FileVersion.Contains("-beta")) time = GetCompileTime(FileVersion);
 
-    private String? _FileVersion;
+                _Compile = time;
+            }
+            return _Compile.Value;
+        }
+    }
+
+    /// <summary>说明</summary>
+    public String Description => _Description ??= "" + Asm.GetCustomAttributeValue<AssemblyDescriptionAttribute, String>();
 
     /// <summary>文件版本</summary>
     public String FileVersion
@@ -65,34 +84,6 @@ public class AssemblyX
         }
     }
 
-    private DateTime? _Compile;
-
-    /// <summary>编译时间</summary>
-    public DateTime Compile
-    {
-        get
-        {
-            if (_Compile == null)
-            {
-                var time = GetCompileTime(Version);
-                if (time == time.Date && FileVersion.Contains("-beta")) time = GetCompileTime(FileVersion);
-
-                _Compile = time;
-            }
-            return _Compile.Value;
-        }
-    }
-
-    private String? _Company;
-
-    /// <summary>公司名称</summary>
-    public String Company => _Company ??= "" + Asm.GetCustomAttributeValue<AssemblyCompanyAttribute, String>();
-
-    private String? _Description;
-
-    /// <summary>说明</summary>
-    public String Description => _Description ??= "" + Asm.GetCustomAttributeValue<AssemblyDescriptionAttribute, String>();
-
     /// <summary>获取包含清单的已加载文件的路径或 UNC 位置。</summary>
     public String? Location
     {
@@ -106,13 +97,28 @@ public class AssemblyX
         }
     }
 
+    /// <summary>名称</summary>
+    public String Name => _Name ??= "" + Asm.GetName().Name;
+
+    /// <summary>程序集标题</summary>
+    public String Title => _Title ??= "" + Asm.GetCustomAttributeValue<AssemblyTitleAttribute, String>();
+
+    /// <summary>程序集版本</summary>
+    public String Version => _Version ??= "" + Asm.GetName().Version;
+
     #endregion 属性
 
     #region 构造
 
-    private AssemblyX(Assembly asm) => Asm = asm;
-
     private static readonly ConcurrentDictionary<Assembly, AssemblyX> cache = new();
+
+    static AssemblyX()
+    {
+        //AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += OnReflectionOnlyAssemblyResolve;
+        AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
+    }
+
+    private AssemblyX(Assembly asm) => Asm = asm;
 
     /// <summary>创建程序集辅助对象</summary>
     /// <param name="asm"></param>
@@ -122,12 +128,6 @@ public class AssemblyX
         if (asm == null) return null;
 
         return cache.GetOrAdd(asm, key => new AssemblyX(key));
-    }
-
-    static AssemblyX()
-    {
-        //AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += OnReflectionOnlyAssemblyResolve;
-        AppDomain.CurrentDomain.AssemblyResolve += OnAssemblyResolve;
     }
 
     private static Assembly? OnAssemblyResolve(Object? sender, ResolveEventArgs args)
@@ -261,6 +261,89 @@ public class AssemblyX
 
     #region 静态加载
 
+    private static readonly ConcurrentHashSet<String> _BakImages = new();
+
+    private static ICollection<String>? _AssemblyPaths;
+
+    /// <summary>程序集目录集合</summary>
+    public static ICollection<String> AssemblyPaths
+    {
+        [return: NotNull]
+        get
+        {
+            if (_AssemblyPaths == null)
+            {
+                var set = new HashSet<String>(StringComparer.OrdinalIgnoreCase);
+
+                var basedir = AppDomain.CurrentDomain.BaseDirectory;
+                if (!basedir.IsNullOrEmpty()) set.Add(basedir);
+
+                _AssemblyPaths = set;
+            }
+            return _AssemblyPaths;
+        }
+        set => _AssemblyPaths = value;
+    }
+
+    /// <summary>获取指定程序域所有程序集</summary>
+    /// <param name="domain"></param>
+    /// <returns></returns>
+    public static IEnumerable<AssemblyX> GetAssemblies(AppDomain? domain = null)
+    {
+        domain ??= AppDomain.CurrentDomain;
+
+        var asms = domain.GetAssemblies();
+        if (asms == null || asms.Length <= 0) yield break;
+
+        //return asms.Select(item => Create(item));
+        foreach (var item in asms)
+        {
+            var rs = Create(item);
+            if (rs != null) yield return rs;
+        }
+    }
+
+    /// <summary>获取当前应用程序的所有程序集，不包括系统程序集，仅限本目录</summary>
+    /// <returns></returns>
+    public static List<AssemblyX> GetMyAssemblies()
+    {
+        var list = new List<AssemblyX>();
+        var hs = new HashSet<String>(StringComparer.OrdinalIgnoreCase);
+        var cur = AppDomain.CurrentDomain.BaseDirectory;
+        foreach (var asmx in GetAssemblies())
+        {
+            // 加载程序集列表很容易抛出异常，全部屏蔽
+            try
+            {
+                if (asmx.FileVersion.IsNullOrEmpty()) continue;
+
+                var file = "";
+                //file = asmx.Asm.CodeBase;
+                if (file.IsNullOrEmpty()) file = asmx.Asm.Location;
+                if (file.IsNullOrEmpty()) continue;
+
+                if (file.StartsWith("file:///"))
+                {
+                    file = file.TrimStart("file:///");
+                    if (Path.DirectorySeparatorChar == '\\')
+                        file = file.Replace('/', '\\');
+                    else
+                        file = file.Replace('\\', '/').EnsureStart("/");
+                }
+                if (file.IsNullOrEmpty()) continue;
+                if (!file.StartsWithIgnoreCase(cur)) continue;
+
+                if (!hs.Contains(file))
+                {
+                    hs.Add(file);
+                    list.Add(asmx);
+                }
+            }
+            catch { }
+        }
+        return list;
+    }
+
     /// <summary>根据名称获取类型</summary>
     /// <param name="typeName">类型名</param>
     /// <param name="isLoadAssembly">是否从未加载程序集中获取类型。使用仅反射的方法检查目标类型，如果存在，则进行常规加载</param>
@@ -348,46 +431,6 @@ public class AssemblyX
         return null;
     }
 
-    /// <summary>获取指定程序域所有程序集</summary>
-    /// <param name="domain"></param>
-    /// <returns></returns>
-    public static IEnumerable<AssemblyX> GetAssemblies(AppDomain? domain = null)
-    {
-        domain ??= AppDomain.CurrentDomain;
-
-        var asms = domain.GetAssemblies();
-        if (asms == null || asms.Length <= 0) yield break;
-
-        //return asms.Select(item => Create(item));
-        foreach (var item in asms)
-        {
-            var rs = Create(item);
-            if (rs != null) yield return rs;
-        }
-    }
-
-    private static ICollection<String>? _AssemblyPaths;
-
-    /// <summary>程序集目录集合</summary>
-    public static ICollection<String> AssemblyPaths
-    {
-        [return: NotNull]
-        get
-        {
-            if (_AssemblyPaths == null)
-            {
-                var set = new HashSet<String>(StringComparer.OrdinalIgnoreCase);
-
-                var basedir = AppDomain.CurrentDomain.BaseDirectory;
-                if (!basedir.IsNullOrEmpty()) set.Add(basedir);
-
-                _AssemblyPaths = set;
-            }
-            return _AssemblyPaths;
-        }
-        set => _AssemblyPaths = value;
-    }
-
     /// <summary>获取当前程序域所有只反射程序集的辅助类。NETCore不支持只反射加载，该方法动态加载DLL后返回</summary>
     /// <returns></returns>
     public static IEnumerable<AssemblyX> ReflectionOnlyGetAssemblies()
@@ -415,8 +458,6 @@ public class AssemblyX
             foreach (var asm in ReflectionOnlyLoad(item)) yield return asm;
         }
     }
-
-    private static readonly ConcurrentHashSet<String> _BakImages = new();
 
     /// <summary>只反射加载指定路径的所有程序集。NETCore不支持只反射加载，该方法动态加载DLL后返回</summary>
     /// <param name="path"></param>
@@ -476,47 +517,6 @@ public class AssemblyX
             var asmx = Create(asm);
             if (asmx != null) yield return asmx;
         }
-    }
-
-    /// <summary>获取当前应用程序的所有程序集，不包括系统程序集，仅限本目录</summary>
-    /// <returns></returns>
-    public static List<AssemblyX> GetMyAssemblies()
-    {
-        var list = new List<AssemblyX>();
-        var hs = new HashSet<String>(StringComparer.OrdinalIgnoreCase);
-        var cur = AppDomain.CurrentDomain.BaseDirectory;
-        foreach (var asmx in GetAssemblies())
-        {
-            // 加载程序集列表很容易抛出异常，全部屏蔽
-            try
-            {
-                if (asmx.FileVersion.IsNullOrEmpty()) continue;
-
-                var file = "";
-                //file = asmx.Asm.CodeBase;
-                if (file.IsNullOrEmpty()) file = asmx.Asm.Location;
-                if (file.IsNullOrEmpty()) continue;
-
-                if (file.StartsWith("file:///"))
-                {
-                    file = file.TrimStart("file:///");
-                    if (Path.DirectorySeparatorChar == '\\')
-                        file = file.Replace('/', '\\');
-                    else
-                        file = file.Replace('\\', '/').EnsureStart("/");
-                }
-                if (file.IsNullOrEmpty()) continue;
-                if (!file.StartsWithIgnoreCase(cur)) continue;
-
-                if (!hs.Contains(file))
-                {
-                    hs.Add(file);
-                    list.Add(asmx);
-                }
-            }
-            catch { }
-        }
-        return list;
     }
 
     #endregion 静态加载

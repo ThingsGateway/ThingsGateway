@@ -37,17 +37,6 @@ public class SystemTextJsonSerializerProvider : IJsonSerializerProvider
     }
 
     /// <summary>
-    /// 序列化对象
-    /// </summary>
-    /// <param name="value"></param>
-    /// <param name="jsonSerializerOptions"></param>
-    /// <returns></returns>
-    public string Serialize(object value, object jsonSerializerOptions = null)
-    {
-        return JsonSerializer.Serialize(value, (jsonSerializerOptions ?? GetSerializerOptions()) as JsonSerializerOptions);
-    }
-
-    /// <summary>
     /// 反序列化字符串
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -78,5 +67,16 @@ public class SystemTextJsonSerializerProvider : IJsonSerializerProvider
     public object GetSerializerOptions()
     {
         return _jsonOptions?.JsonSerializerOptions;
+    }
+
+    /// <summary>
+    /// 序列化对象
+    /// </summary>
+    /// <param name="value"></param>
+    /// <param name="jsonSerializerOptions"></param>
+    /// <returns></returns>
+    public string Serialize(object value, object jsonSerializerOptions = null)
+    {
+        return JsonSerializer.Serialize(value, (jsonSerializerOptions ?? GetSerializerOptions()) as JsonSerializerOptions);
     }
 }

@@ -18,10 +18,29 @@ namespace ThingsGateway.Admin.Application;
 public interface ISysRoleService
 {
     /// <summary>
+    /// 获取角色拥有的OpenApi权限
+    /// </summary>
+    /// <param name="id">角色id</param>
+    Task<GrantPermissionData> ApiOwnPermissionAsync(long id);
+
+    /// <summary>
+    /// 删除角色
+    /// </summary>
+    /// <param name="ids">id列表</param>
+    Task<bool> DeleteRoleAsync(IEnumerable<long> ids);
+
+    /// <summary>
     /// 从缓存/数据库获取全部角色信息
     /// </summary>
     /// <returns>角色列表</returns>
     Task<List<SysRole>> GetAllAsync();
+
+    /// <summary>
+    /// 根据角色id获取角色列表
+    /// </summary>
+    /// <param name="input">角色id列表</param>
+    /// <returns>角色列表</returns>
+    Task<IEnumerable<SysRole>> GetRoleListByIdListAsync(IEnumerable<long> input);
 
     /// <summary>
     /// 根据用户id获取角色列表
@@ -31,23 +50,22 @@ public interface ISysRoleService
     Task<IEnumerable<SysRole>> GetRoleListByUserIdAsync(long userId);
 
     /// <summary>
-    /// 报表查询
+    /// 授权OpenApi权限
     /// </summary>
-    /// <param name="option">查询条件</param>
-    Task<QueryData<SysRole>> PageAsync(QueryPageOptions option);
+    /// <param name="input">授权信息</param>
+    Task GrantApiPermissionAsync(GrantPermissionData input);
 
     /// <summary>
-    /// 保存角色
+    /// 授权资源
     /// </summary>
-    /// <param name="input">角色</param>
-    /// <param name="type">保存类型</param>
-    Task<bool> SaveRoleAsync(SysRole input, ItemChangedType type);
+    /// <param name="input">授权信息</param>
+    Task GrantResourceAsync(GrantResourceData input);
 
     /// <summary>
-    /// 删除角色
+    /// 授权用户
     /// </summary>
-    /// <param name="ids">id列表</param>
-    Task<bool> DeleteRoleAsync(IEnumerable<long> ids);
+    /// <param name="input">授权参数</param>
+    Task GrantUserAsync(GrantUserOrRoleInput input);
 
     /// <summary>
     /// 获取拥有的资源
@@ -57,24 +75,6 @@ public interface ISysRoleService
     Task<GrantResourceData> OwnResourceAsync(long id, RelationCategoryEnum category = RelationCategoryEnum.RoleHasResource);
 
     /// <summary>
-    /// 授权资源
-    /// </summary>
-    /// <param name="input">授权信息</param>
-    Task GrantResourceAsync(GrantResourceData input);
-
-    /// <summary>
-    /// 获取角色拥有的OpenApi权限
-    /// </summary>
-    /// <param name="id">角色id</param>
-    Task<GrantPermissionData> ApiOwnPermissionAsync(long id);
-
-    /// <summary>
-    /// 授权OpenApi权限
-    /// </summary>
-    /// <param name="input">授权信息</param>
-    Task GrantApiPermissionAsync(GrantPermissionData input);
-
-    /// <summary>
     /// 获取角色的用户id列表
     /// </summary>
     /// <param name="id"></param>
@@ -82,10 +82,10 @@ public interface ISysRoleService
     Task<IEnumerable<long>> OwnUserAsync(long id);
 
     /// <summary>
-    /// 授权用户
+    /// 报表查询
     /// </summary>
-    /// <param name="input">授权参数</param>
-    Task GrantUserAsync(GrantUserOrRoleInput input);
+    /// <param name="option">查询条件</param>
+    Task<QueryData<SysRole>> PageAsync(QueryPageOptions option);
 
     /// <summary>
     /// 刷新权限
@@ -93,9 +93,9 @@ public interface ISysRoleService
     void RefreshCache();
 
     /// <summary>
-    /// 根据角色id获取角色列表
+    /// 保存角色
     /// </summary>
-    /// <param name="input">角色id列表</param>
-    /// <returns>角色列表</returns>
-    Task<IEnumerable<SysRole>> GetRoleListByIdListAsync(IEnumerable<long> input);
+    /// <param name="input">角色</param>
+    /// <param name="type">保存类型</param>
+    Task<bool> SaveRoleAsync(SysRole input, ItemChangedType type);
 }

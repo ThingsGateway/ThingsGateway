@@ -28,31 +28,33 @@ public class TextFileLogger : LoggerBase, IDisposable
     public static string Separator = Environment.NewLine + "-----ThingsGateway-Log-Separator-----" + Environment.NewLine;
     public static byte[] SeparatorBytes = Encoding.UTF8.GetBytes(Separator);
 
-    /// <summary>日志文件上限。超过上限后拆分新日志文件，默认10MB，0表示不限制大小</summary>
-    public static Int32 FileMaxBytes { get; set; } = 20;
-
     /// <summary>日志文件备份。超过备份数后，最旧的文件将被删除，默认100，0表示不限制个数</summary>
     public static Int32 FileBackups { get; set; } = 5;
 
+    /// <summary>日志文件上限。超过上限后拆分新日志文件，默认10MB，0表示不限制大小</summary>
+    public static Int32 FileMaxBytes { get; set; } = 20;
+
     #region 属性
 
-    /// <summary>日志目录</summary>
-    public String LogPath { get; set; } = "";
-
-    /// <summary>日志文件格式。默认{0:yyyy_MM_dd}.log</summary>
-    public String FileFormat { get; set; } = "{0:yyyy_MM_dd}.log";
-
-    /// <summary>日志文件上限。超过上限后拆分新日志文件，默认10MB，0表示不限制大小</summary>
-    public Int32 MaxBytes { get; set; } = 10;
+    private readonly Boolean _isFile = false;
 
     /// <summary>日志文件备份。超过备份数后，最旧的文件将被删除，默认100，0表示不限制个数</summary>
     public Int32 Backups { get; set; } = 100;
 
-    private readonly Boolean _isFile = false;
+    /// <summary>日志文件格式。默认{0:yyyy_MM_dd}.log</summary>
+    public String FileFormat { get; set; } = "{0:yyyy_MM_dd}.log";
+
+    /// <summary>日志目录</summary>
+    public String LogPath { get; set; } = "";
+
+    /// <summary>日志文件上限。超过上限后拆分新日志文件，默认10MB，0表示不限制大小</summary>
+    public Int32 MaxBytes { get; set; } = 10;
 
     #endregion 属性
 
     #region 构造
+
+    private static readonly ConcurrentDictionary<String, TextFileLogger> cache = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>该构造函数没有作用，为了继承而设置</summary>
     public TextFileLogger()
@@ -71,8 +73,6 @@ public class TextFileLogger : LoggerBase, IDisposable
 
         _Timer = new TimerX(DoWriteAndClose, null, 0_000, 5_000) { Async = true };
     }
-
-    private static readonly ConcurrentDictionary<String, TextFileLogger> cache = new(StringComparer.OrdinalIgnoreCase);
 
     /// <summary>每个目录的日志实例应该只有一个，所以采用静态创建</summary>
     /// <param name="path">日志目录或日志文件路径</param>
@@ -114,28 +114,9 @@ public class TextFileLogger : LoggerBase, IDisposable
 
     #region 内部方法
 
-    private StreamWriter LogWriter;
-    private String CurrentLogFile;
     private Int32 _logFileError;
-
-    /// <summary>初始化日志记录文件</summary>
-    private StreamWriter? InitLog(String logfile)
-    {
-        try
-        {
-            logfile.EnsureDirectory(true);
-            var stream = new FileStream(logfile, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
-            var writer = new StreamWriter(stream, Encoding.UTF8);
-            _logFileError = 0;
-            return LogWriter = writer;
-        }
-        catch (Exception ex)
-        {
-            _logFileError++;
-            Console.WriteLine("create logfile fail：{0}", ex.Message);
-            return null;
-        }
-    }
+    private String CurrentLogFile;
+    private StreamWriter LogWriter;
 
     /// <summary>获取日志文件路径</summary>
     /// <returns></returns>
@@ -165,15 +146,56 @@ public class TextFileLogger : LoggerBase, IDisposable
         return null;
     }
 
+    /// <summary>初始化日志记录文件</summary>
+    private StreamWriter? InitLog(String logfile)
+    {
+        try
+        {
+            logfile.EnsureDirectory(true);
+            var stream = new FileStream(logfile, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            var writer = new StreamWriter(stream, Encoding.UTF8);
+            _logFileError = 0;
+            return LogWriter = writer;
+        }
+        catch (Exception ex)
+        {
+            _logFileError++;
+            Console.WriteLine("create logfile fail：{0}", ex.Message);
+            return null;
+        }
+    }
+
     #endregion 内部方法
 
     #region 异步写日志
 
-    private readonly TimerX _Timer;
     private readonly ConcurrentQueue<String> _Logs = new();
+    private readonly TimerX _Timer;
     private volatile Int32 _logCount;
-    private Int32 _writing;
     private DateTime _NextClose;
+    private Int32 _writing;
+
+    /// <summary>写入队列日志并关闭文件</summary>
+    protected virtual void WriteAndClose(DateTime closeTime)
+    {
+        try
+        {
+            // 处理残余
+            var writer = LogWriter;
+            if (!_Logs.IsEmpty) WriteFile();
+
+            // 连续5秒没日志，就关闭
+            if (writer != null && closeTime < TimerX.Now)
+            {
+                writer.TryDispose();
+                LogWriter = null;
+            }
+        }
+        finally
+        {
+            _writing = 0;
+        }
+    }
 
     /// <summary>写文件</summary>
     protected virtual void WriteFile()
@@ -268,28 +290,6 @@ public class TextFileLogger : LoggerBase, IDisposable
                     }
                 }
             }
-        }
-    }
-
-    /// <summary>写入队列日志并关闭文件</summary>
-    protected virtual void WriteAndClose(DateTime closeTime)
-    {
-        try
-        {
-            // 处理残余
-            var writer = LogWriter;
-            if (!_Logs.IsEmpty) WriteFile();
-
-            // 连续5秒没日志，就关闭
-            if (writer != null && closeTime < TimerX.Now)
-            {
-                writer.TryDispose();
-                LogWriter = null;
-            }
-        }
-        finally
-        {
-            _writing = 0;
         }
     }
 

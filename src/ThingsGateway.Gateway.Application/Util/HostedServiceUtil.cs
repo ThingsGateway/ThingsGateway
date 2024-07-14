@@ -19,6 +19,14 @@ public static class HostedServiceUtil
 {
     private static AlarmHostedService? alarmHostedService;
 
+    private static BusinessDeviceHostedService? businessDeviceHostedService;
+
+    private static CollectDeviceHostedService? collectDeviceHostedService;
+
+    private static HardwareInfoService? hardwareInfoHostedService;
+
+    private static ManagementHostedService? managementHostedService;
+
     public static AlarmHostedService AlarmHostedService
     {
         get
@@ -27,19 +35,6 @@ public static class HostedServiceUtil
             return alarmHostedService;
         }
     }
-
-    private static CollectDeviceHostedService? collectDeviceHostedService;
-
-    public static CollectDeviceHostedService CollectDeviceHostedService
-    {
-        get
-        {
-            collectDeviceHostedService ??= GetHostedService<CollectDeviceHostedService>();
-            return collectDeviceHostedService;
-        }
-    }
-
-    private static BusinessDeviceHostedService? businessDeviceHostedService;
 
     public static BusinessDeviceHostedService BusinessDeviceHostedService
     {
@@ -50,7 +45,14 @@ public static class HostedServiceUtil
         }
     }
 
-    private static HardwareInfoService? hardwareInfoHostedService;
+    public static CollectDeviceHostedService CollectDeviceHostedService
+    {
+        get
+        {
+            collectDeviceHostedService ??= GetHostedService<CollectDeviceHostedService>();
+            return collectDeviceHostedService;
+        }
+    }
 
     public static HardwareInfoService HardwareInfoHostedService
     {
@@ -60,8 +62,6 @@ public static class HostedServiceUtil
             return hardwareInfoHostedService;
         }
     }
-
-    private static ManagementHostedService? managementHostedService;
 
     public static ManagementHostedService ManagementHostedService
     {

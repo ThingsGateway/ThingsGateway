@@ -20,6 +20,46 @@ public class ModbusTcpMessage : MessageBase, IResultMessage
 
     public ModbusResponse Response { get; set; } = new();
 
+    public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
+    {
+        if (Response.ErrorCode != null)
+        {
+            return FilterResult.Success;
+        }
+
+        if (Response.FunctionCode <= 4)
+        {
+            this.OperCode = 0;
+            this.Content = byteBlock.ToArrayTake(BodyLength);
+            Response.Data = this.Content;
+            return FilterResult.Success;
+        }
+        else if (Response.FunctionCode == 5 || Response.FunctionCode == 6)
+        {
+            byteBlock.Position = HeaderLength - 1;
+            Response.StartAddress = byteBlock.ReadUInt16();
+            this.OperCode = 0;
+            this.Content = byteBlock.ToArrayTake(BodyLength - 1);
+            Response.Data = this.Content;
+            return FilterResult.Success;
+        }
+        else if (Response.FunctionCode == 15 || Response.FunctionCode == 16)
+        {
+            byteBlock.Position = HeaderLength - 1;
+            Response.StartAddress = byteBlock.ReadUInt16(EndianType.Big);
+            Response.Length = byteBlock.ReadUInt16(EndianType.Big);
+            this.OperCode = 0;
+            this.Content = Array.Empty<byte>();
+            return FilterResult.Success;
+        }
+        else
+        {
+            this.OperCode = 999;
+            this.ErrorMessage = ModbusResource.Localizer["ModbusError1"];
+        }
+        return FilterResult.GoOn;
+    }
+
     public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
     {
         this.Sign = byteBlock.ReadUInt16(EndianType.Big);
@@ -59,45 +99,5 @@ public class ModbusTcpMessage : MessageBase, IResultMessage
             }
             return true;
         }
-    }
-
-    public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
-    {
-        if (Response.ErrorCode != null)
-        {
-            return FilterResult.Success;
-        }
-
-        if (Response.FunctionCode <= 4)
-        {
-            this.OperCode = 0;
-            this.Content = byteBlock.ToArrayTake(BodyLength);
-            Response.Data = this.Content;
-            return FilterResult.Success;
-        }
-        else if (Response.FunctionCode == 5 || Response.FunctionCode == 6)
-        {
-            byteBlock.Position = HeaderLength - 1;
-            Response.StartAddress = byteBlock.ReadUInt16();
-            this.OperCode = 0;
-            this.Content = byteBlock.ToArrayTake(BodyLength - 1);
-            Response.Data = this.Content;
-            return FilterResult.Success;
-        }
-        else if (Response.FunctionCode == 15 || Response.FunctionCode == 16)
-        {
-            byteBlock.Position = HeaderLength - 1;
-            Response.StartAddress = byteBlock.ReadUInt16(EndianType.Big);
-            Response.Length = byteBlock.ReadUInt16(EndianType.Big);
-            this.OperCode = 0;
-            this.Content = Array.Empty<byte>();
-            return FilterResult.Success;
-        }
-        else
-        {
-            this.OperCode = 999;
-            this.ErrorMessage = ModbusResource.Localizer["ModbusError1"];
-        }
-        return FilterResult.GoOn;
     }
 }

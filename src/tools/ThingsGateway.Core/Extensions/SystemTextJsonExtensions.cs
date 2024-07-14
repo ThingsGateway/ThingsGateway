@@ -28,11 +28,6 @@ public static class SystemTextJsonExtensions
         NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,//NaN支持
     };
 
-    public static string ToSystemTextJsonString(this object item, JsonSerializerOptions? jsonSerializerOptions = null)
-    {
-        return System.Text.Json.JsonSerializer.Serialize(item, jsonSerializerOptions ?? Options);
-    }
-
     public static object FromSystemTextJsonString(this string json, Type type)
     {
         return System.Text.Json.JsonSerializer.Deserialize(json, type, Options);
@@ -41,5 +36,10 @@ public static class SystemTextJsonExtensions
     public static T FromSystemTextJsonString<T>(this string json)
     {
         return (T)FromSystemTextJsonString(json, typeof(T));
+    }
+
+    public static string ToSystemTextJsonString(this object item, JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        return System.Text.Json.JsonSerializer.Serialize(item, jsonSerializerOptions ?? Options);
     }
 }

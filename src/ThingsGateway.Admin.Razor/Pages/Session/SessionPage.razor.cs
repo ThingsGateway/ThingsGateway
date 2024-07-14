@@ -14,11 +14,11 @@ namespace ThingsGateway.Admin.Razor;
 
 public partial class SessionPage
 {
+    private SessionOutput? SearchModel { get; set; } = new();
+
     [Inject]
     [NotNull]
     private ISessionService? SessionService { get; set; }
-
-    private SessionOutput? SearchModel { get; set; } = new();
 
     #region 查询
 

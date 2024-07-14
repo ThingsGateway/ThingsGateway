@@ -29,24 +29,6 @@ public interface ICacheProvider
     /// <summary>应用内本地缓存。默认内存缓存，无需考虑对象序列化成本，缺点是不支持跨进程共享数据</summary>
     ICache InnerCache { get; set; }
 
-    /// <summary>获取队列。各功能模块跨进程共用的队列</summary>
-    /// <remarks>
-    /// 使用队列时，可根据是否设置消费组来决定使用简单队列还是完整队列。
-    /// 简单队列（如RedisQueue）可用作命令队列，Topic很多，但几乎没有消息。
-    /// 完整队列（如RedisStream）可用作消息队列，Topic很少，但消息很多，并且支持多消费组。
-    /// </remarks>
-    /// <typeparam name="T">消息类型。用于消息生产者时，可指定为Object</typeparam>
-    /// <param name="topic">主题</param>
-    /// <param name="group">消费组。未指定消费组时使用简单队列（如RedisQueue），指定消费组时使用完整队列（如RedisStream）</param>
-    /// <returns></returns>
-    IProducerConsumer<T> GetQueue<T>(String topic, String? group = null);
-
-    /// <summary>获取内部队列。默认内存队列</summary>
-    /// <typeparam name="T">消息类型</typeparam>
-    /// <param name="topic">主题</param>
-    /// <returns></returns>
-    IProducerConsumer<T> GetInnerQueue<T>(String topic);
-
     /// <summary>申请分布式锁</summary>
     /// <remarks>
     /// 一般实现为Redis分布式锁，申请锁的具体表现为锁定某个key，锁维持时间为msTimeout，遇到冲突时等待msTimeout时间。
@@ -59,4 +41,22 @@ public interface ICacheProvider
     /// <param name="msTimeout">遇到冲突时等待的最大时间，同时也是锁维持的时间</param>
     /// <returns></returns>
     IDisposable? AcquireLock(String lockKey, Int32 msTimeout);
+
+    /// <summary>获取内部队列。默认内存队列</summary>
+    /// <typeparam name="T">消息类型</typeparam>
+    /// <param name="topic">主题</param>
+    /// <returns></returns>
+    IProducerConsumer<T> GetInnerQueue<T>(String topic);
+
+    /// <summary>获取队列。各功能模块跨进程共用的队列</summary>
+    /// <remarks>
+    /// 使用队列时，可根据是否设置消费组来决定使用简单队列还是完整队列。
+    /// 简单队列（如RedisQueue）可用作命令队列，Topic很多，但几乎没有消息。
+    /// 完整队列（如RedisStream）可用作消息队列，Topic很少，但消息很多，并且支持多消费组。
+    /// </remarks>
+    /// <typeparam name="T">消息类型。用于消息生产者时，可指定为Object</typeparam>
+    /// <param name="topic">主题</param>
+    /// <param name="group">消费组。未指定消费组时使用简单队列（如RedisQueue），指定消费组时使用完整队列（如RedisStream）</param>
+    /// <returns></returns>
+    IProducerConsumer<T> GetQueue<T>(String topic, String? group = null);
 }

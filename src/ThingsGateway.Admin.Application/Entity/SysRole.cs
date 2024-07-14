@@ -24,6 +24,13 @@ namespace ThingsGateway.Admin.Application;
 public class SysRole : BaseEntity
 {
     /// <summary>
+    /// 分类
+    ///</summary>
+    [SugarColumn(ColumnDescription = "分类", Length = 200, IsNullable = false)]
+    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true)]
+    public virtual RoleCategoryEnum Category { get; set; }
+
+    /// <summary>
     /// 编码
     ///</summary>
     [SugarColumn(ColumnDescription = "编码", Length = 200)]
@@ -37,13 +44,6 @@ public class SysRole : BaseEntity
     [Required]
     [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true)]
     public virtual string Name { get; set; }
-
-    /// <summary>
-    /// 分类
-    ///</summary>
-    [SugarColumn(ColumnDescription = "分类", Length = 200, IsNullable = false)]
-    [AutoGenerateColumn(Visible = true, Sortable = true, Filterable = true)]
-    public virtual RoleCategoryEnum Category { get; set; }
 
     public override int GetHashCode()
     {

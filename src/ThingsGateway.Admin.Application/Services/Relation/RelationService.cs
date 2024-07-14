@@ -117,41 +117,6 @@ public class RelationService : BaseService<SysRelation>, IRelationService
     /// </summary>
     /// <param name="category">分类</param>
     /// <param name="objectId">对象ID</param>
-    /// <param name="targetIdAndExtJsons">目标ID和拓展信息</param>
-    /// <param name="clear">是否清除老的数据</param>
-    public async Task SaveRelationBatchAsync(RelationCategoryEnum category, long objectId, IEnumerable<(string targetId, string extJson)> targetIdAndExtJsons, bool clear)
-    {
-        var sysRelations = targetIdAndExtJsons.Select(a => new SysRelation
-        {
-            ObjectId = objectId,
-            TargetId = a.targetId,
-            Category = category,
-            ExtJson = a.extJson
-        });
-
-        using var db = GetDB();
-        //事务
-        var result = await db.UseTranAsync(async () =>
-        {
-            if (clear)
-                await db.Deleteable<SysRelation>().Where(it => it.ObjectId == objectId && it.Category == category).ExecuteCommandAsync();//删除老的
-            await db.Insertable(sysRelations.ToList()).ExecuteCommandAsync();//添加新的
-        });
-        if (result.IsSuccess)//如果成功了
-        {
-            RefreshCache(category);
-        }
-        else
-        {
-            throw new(result.ErrorMessage, result.ErrorException);
-        }
-    }
-
-    /// <summary>
-    /// 保存关系
-    /// </summary>
-    /// <param name="category">分类</param>
-    /// <param name="objectId">对象ID</param>
     /// <param name="targetId">目标ID</param>
     /// <param name="extJson">拓展信息</param>
     /// <param name="clear">是否清除老的数据</param>
@@ -178,6 +143,41 @@ public class RelationService : BaseService<SysRelation>, IRelationService
         {
             if (refreshCache)
                 RefreshCache(category);
+        }
+        else
+        {
+            throw new(result.ErrorMessage, result.ErrorException);
+        }
+    }
+
+    /// <summary>
+    /// 保存关系
+    /// </summary>
+    /// <param name="category">分类</param>
+    /// <param name="objectId">对象ID</param>
+    /// <param name="targetIdAndExtJsons">目标ID和拓展信息</param>
+    /// <param name="clear">是否清除老的数据</param>
+    public async Task SaveRelationBatchAsync(RelationCategoryEnum category, long objectId, IEnumerable<(string targetId, string extJson)> targetIdAndExtJsons, bool clear)
+    {
+        var sysRelations = targetIdAndExtJsons.Select(a => new SysRelation
+        {
+            ObjectId = objectId,
+            TargetId = a.targetId,
+            Category = category,
+            ExtJson = a.extJson
+        });
+
+        using var db = GetDB();
+        //事务
+        var result = await db.UseTranAsync(async () =>
+        {
+            if (clear)
+                await db.Deleteable<SysRelation>().Where(it => it.ObjectId == objectId && it.Category == category).ExecuteCommandAsync();//删除老的
+            await db.Insertable(sysRelations.ToList()).ExecuteCommandAsync();//添加新的
+        });
+        if (result.IsSuccess)//如果成功了
+        {
+            RefreshCache(category);
         }
         else
         {

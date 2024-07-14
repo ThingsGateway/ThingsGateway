@@ -19,9 +19,11 @@ using System.Reflection;
 using System.Text;
 using System.Web;
 
+using ThingsGateway.Core;
+
 using Yitter.IdGenerator;
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway;
 
 public class ImportExportService : IImportExportService
 {

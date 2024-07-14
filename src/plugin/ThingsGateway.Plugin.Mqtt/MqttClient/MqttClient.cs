@@ -21,19 +21,10 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// </summary>
 public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableData, DeviceData, AlarmVariable>
 {
-    private readonly MqttClientVariableProperty _variablePropertys = new();
     private readonly MqttClientProperty _driverPropertys = new();
+    private readonly MqttClientVariableProperty _variablePropertys = new();
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
     protected override BusinessPropertyWithCacheIntervalScript _businessPropertyWithCacheIntervalScript => _driverPropertys;
-
-    /// <inheritdoc/>
-    public override bool IsConnected() => _mqttClient?.IsConnected == true;
-
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        return $" {nameof(MqttClient)} IP:{_driverPropertys.IP} Port:{_driverPropertys.Port}";
-    }
 
     public override void Init(IChannel? channel = null)
     {
@@ -72,6 +63,15 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         _mqttClient.ApplicationMessageReceivedAsync += MqttClient_ApplicationMessageReceivedAsync;
 
         #endregion 初始化
+    }
+
+    /// <inheritdoc/>
+    public override bool IsConnected() => _mqttClient?.IsConnected == true;
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $" {nameof(MqttClient)} IP:{_driverPropertys.IP} Port:{_driverPropertys.Port}";
     }
 
     /// <inheritdoc/>

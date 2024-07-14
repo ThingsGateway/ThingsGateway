@@ -12,8 +12,6 @@ using NewLife.Caching;
 
 using ThingsGateway.Foundation.Extension.String;
 
-using TouchSocket.Core;
-
 namespace ThingsGateway.Foundation.SiemensS7;
 
 /// <summary>
@@ -84,17 +82,6 @@ public class SiemensAddress : S7Request
     #region 解析
 
     /// <summary>
-    /// 解析地址
-    /// </summary>
-    /// <returns></returns>
-    public static SiemensAddress ParseFrom(string address, int len)
-    {
-        SiemensAddress s7AddressData = ParseFrom(address);
-        s7AddressData.Length = len;
-        return s7AddressData;
-    }
-
-    /// <summary>
     /// 获取起始地址
     /// </summary>
     /// <param name="address"></param>
@@ -124,6 +111,17 @@ public class SiemensAddress : S7Request
         }
         string[] strArray = address.Split('.');
         return Convert.ToByte(strArray[1]);
+    }
+
+    /// <summary>
+    /// 解析地址
+    /// </summary>
+    /// <returns></returns>
+    public static SiemensAddress ParseFrom(string address, int len)
+    {
+        SiemensAddress s7AddressData = ParseFrom(address);
+        s7AddressData.Length = len;
+        return s7AddressData;
     }
 
     /// <summary>

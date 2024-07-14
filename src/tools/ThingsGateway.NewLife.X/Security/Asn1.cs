@@ -18,11 +18,11 @@ public class Asn1
 {
     #region 属性
 
-    /// <summary>标签</summary>
-    public Asn1Tags Tag { get; set; }
-
     /// <summary>长度</summary>
     public Int32 Length { get; set; }
+
+    /// <summary>标签</summary>
+    public Asn1Tags Tag { get; set; }
 
     /// <summary>数值</summary>
     public Object? Value { get; set; }
@@ -248,45 +248,6 @@ public class Asn1
 
     #region 辅助
 
-    /// <summary>读取TLV，Tag+Length+Value</summary>
-    /// <param name="reader">读取器</param>
-    /// <param name="tag"></param>
-    /// <returns>返回长度，数据流指针移到Value第一个字节</returns>
-    private static Int32 ReadTLV(BinaryReader reader, out Byte tag)
-    {
-        tag = 0;
-
-        var v = reader.BaseStream.ReadByte();
-        if (v < 0) return v;
-
-        tag = (Byte)v;
-
-        var len = (Int32)reader.ReadByte();
-        if (len == 0x81)
-            len = reader.ReadByte();
-        else if (len == 0x82)
-            len = reader.ReadBytes(2).ToUInt16(0, false);
-        else if (len == 0x84)
-            len = (Int32)reader.ReadBytes(4).ToUInt32(0, false);
-
-        return len;
-    }
-
-    /// <summary>读取TLV，Tag+Length+Value</summary>
-    /// <param name="reader">读取器</param>
-    /// <param name="trimZero">是否剔除头部的0x00</param>
-    /// <returns></returns>
-    private static Byte[] ReadTLV(BinaryReader reader, Boolean trimZero = true)
-    {
-        var len = ReadTLV(reader, out _);
-        //Debug.Assert(tag == 0x02);
-
-        //if (offset > 0) reader.BaseStream.Seek(1, SeekOrigin.Current);
-        if (trimZero && reader.PeekChar() == 0) { reader.ReadByte(); len--; }
-
-        return reader.ReadBytes(len);
-    }
-
     private const Int64 LONG_LIMIT = (Int64.MaxValue >> 7) - 0x7f;
 
     private static String MakeOidStringFromBytes(Byte[] bytes)
@@ -362,6 +323,45 @@ public class Asn1
         }
 
         return objId.ToString();
+    }
+
+    /// <summary>读取TLV，Tag+Length+Value</summary>
+    /// <param name="reader">读取器</param>
+    /// <param name="tag"></param>
+    /// <returns>返回长度，数据流指针移到Value第一个字节</returns>
+    private static Int32 ReadTLV(BinaryReader reader, out Byte tag)
+    {
+        tag = 0;
+
+        var v = reader.BaseStream.ReadByte();
+        if (v < 0) return v;
+
+        tag = (Byte)v;
+
+        var len = (Int32)reader.ReadByte();
+        if (len == 0x81)
+            len = reader.ReadByte();
+        else if (len == 0x82)
+            len = reader.ReadBytes(2).ToUInt16(0, false);
+        else if (len == 0x84)
+            len = (Int32)reader.ReadBytes(4).ToUInt32(0, false);
+
+        return len;
+    }
+
+    /// <summary>读取TLV，Tag+Length+Value</summary>
+    /// <param name="reader">读取器</param>
+    /// <param name="trimZero">是否剔除头部的0x00</param>
+    /// <returns></returns>
+    private static Byte[] ReadTLV(BinaryReader reader, Boolean trimZero = true)
+    {
+        var len = ReadTLV(reader, out _);
+        //Debug.Assert(tag == 0x02);
+
+        //if (offset > 0) reader.BaseStream.Seek(1, SeekOrigin.Current);
+        if (trimZero && reader.PeekChar() == 0) { reader.ReadByte(); len--; }
+
+        return reader.ReadBytes(len);
     }
 
     #endregion 辅助

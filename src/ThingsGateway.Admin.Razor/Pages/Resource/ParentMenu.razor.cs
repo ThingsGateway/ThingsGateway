@@ -18,6 +18,10 @@ public partial class ParentMenu
     [NotNull]
     public IStringLocalizer<ThingsGateway.Razor._Imports>? DefaultLocalizer { get; set; }
 
+    [Parameter]
+    [NotNull]
+    public string? DisplayText { get; set; }
+
     [Inject]
     [NotNull]
     public IStringLocalizer<ParentMenu>? Localizer { get; set; }
@@ -27,14 +31,15 @@ public partial class ParentMenu
     public IEnumerable<SelectedItem>? Lookup { get; set; }
 
     [Parameter]
+    [EditorRequired]
     [NotNull]
-    public string? DisplayText { get; set; }
+    public long ModuleId { get; set; }
+
+    public long TreeValue { get; set; }
 
     [Parameter]
     [NotNull]
     public long Value { get; set; }
-
-    public long TreeValue { get; set; }
 
     [Parameter]
     [NotNull]
@@ -46,10 +51,7 @@ public partial class ParentMenu
 
     private DialogOption? Option { get; set; }
 
-    [Parameter]
-    [EditorRequired]
-    [NotNull]
-    public long ModuleId { get; set; }
+    private Task OnClearText() => OnValueChanged(0, true);
 
     private async Task OnSelectMenu()
     {
@@ -83,8 +85,6 @@ public partial class ParentMenu
         };
         await DialogService.Show(Option);
     }
-
-    private Task OnClearText() => OnValueChanged(0, true);
 
     private async Task OnValueChanged(long v, bool change = false)
     {

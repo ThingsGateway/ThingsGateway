@@ -29,7 +29,6 @@
     "ERROR7": "日期类型不一致",
     "ERROR10": "对象不存在",
 
-
     "MulWriteError": "不支持多写",
     "StringLengthReadError": "不支持变长字符串的连读",
 

@@ -21,13 +21,13 @@ namespace ThingsGateway.Admin.Application;
 /// </summary>
 public class ResourceSearchInput : ITableSearchModel
 {
+    public string? Href { get; set; }
+
     /// <summary>
     /// 模块ID，单独搜索
     /// </summary>
     [Required]
     public long Module { get; set; }
-
-    public string? Href { get; set; }
 
     public virtual string? Title { get; set; }
 

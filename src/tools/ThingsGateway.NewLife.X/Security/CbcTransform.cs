@@ -24,16 +24,16 @@ public sealed class CbcTransform : ICryptoTransform
 {
     #region 属性
 
-    private readonly ICryptoTransform _transform;
     private readonly Boolean _encryptMode;
     private readonly Byte[] _iv;
     private readonly Byte[] _lastBlock;
-
-    /// <summary>获取一个值，该值指示是否可以转换多个块。</summary>
-    public Boolean CanTransformMultipleBlocks => true;
+    private readonly ICryptoTransform _transform;
 
     /// <summary>获取一个值，该值指示是否可重复使用当前转换。</summary>
     public Boolean CanReuseTransform => _transform.CanReuseTransform;
+
+    /// <summary>获取一个值，该值指示是否可以转换多个块。</summary>
+    public Boolean CanTransformMultipleBlocks => true;
 
     /// <summary>获取输入块大小。</summary>
     public Int32 InputBlockSize => _transform.InputBlockSize;
@@ -95,6 +95,30 @@ public sealed class CbcTransform : ICryptoTransform
         return inputCount;
     }
 
+    /// <summary>转换指定字节数组的指定区域。</summary>
+    /// <param name="inputBuffer"></param>
+    /// <param name="inputOffset"></param>
+    /// <param name="inputCount"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public Byte[] TransformFinalBlock(Byte[] inputBuffer, Int32 inputOffset, Int32 inputCount)
+    {
+        if (inputCount == 0) return [];
+
+        var blocks = inputCount / InputBlockSize;
+        var output = new Byte[blocks * OutputBlockSize];
+        if (blocks > 1)
+            TransformBlock(inputBuffer, inputOffset, inputCount - InputBlockSize, output, 0);
+
+        if (blocks >= 1)
+            TransformOneBlock(inputBuffer, inputOffset + inputCount - InputBlockSize, output, output.Length - InputBlockSize, true);
+        else
+            output = _transform.TransformFinalBlock(inputBuffer, inputOffset, inputCount);
+
+        Array.Copy(_iv, _lastBlock, InputBlockSize);
+        return output;
+    }
+
     private void TransformOneBlock(Byte[] inputBuffer, Int32 inputOffset, Byte[] outputBuffer, Int32 outputOffset, Boolean signalFinalBlock)
     {
         var imm = new Byte[InputBlockSize];
@@ -119,29 +143,5 @@ public sealed class CbcTransform : ICryptoTransform
         }
         else
             Array.Copy(outputBuffer, outputOffset, _lastBlock, 0, InputBlockSize);
-    }
-
-    /// <summary>转换指定字节数组的指定区域。</summary>
-    /// <param name="inputBuffer"></param>
-    /// <param name="inputOffset"></param>
-    /// <param name="inputCount"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentException"></exception>
-    public Byte[] TransformFinalBlock(Byte[] inputBuffer, Int32 inputOffset, Int32 inputCount)
-    {
-        if (inputCount == 0) return [];
-
-        var blocks = inputCount / InputBlockSize;
-        var output = new Byte[blocks * OutputBlockSize];
-        if (blocks > 1)
-            TransformBlock(inputBuffer, inputOffset, inputCount - InputBlockSize, output, 0);
-
-        if (blocks >= 1)
-            TransformOneBlock(inputBuffer, inputOffset + inputCount - InputBlockSize, output, output.Length - InputBlockSize, true);
-        else
-            output = _transform.TransformFinalBlock(inputBuffer, inputOffset, inputCount);
-
-        Array.Copy(_iv, _lastBlock, InputBlockSize);
-        return output;
     }
 }

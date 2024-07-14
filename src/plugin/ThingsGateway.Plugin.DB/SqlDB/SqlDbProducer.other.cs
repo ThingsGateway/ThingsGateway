@@ -25,6 +25,11 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
     private TimeTick _exRealTimerTick;
     private volatile bool _initRealData;
 
+    protected override ValueTask<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<SQLHistoryValue>> item, CancellationToken cancellationToken)
+    {
+        return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
+    }
+
     protected override void VariableChange(VariableRunTime variableRunTime, VariableData variable)
     {
         if (_driverPropertys.IsHisDB)
@@ -32,11 +37,6 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
             AddQueueVarModel(new(variableRunTime.Adapt<SQLHistoryValue>(_config)));
             base.VariableChange(variableRunTime, variable);
         }
-    }
-
-    protected override ValueTask<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<SQLHistoryValue>> item, CancellationToken cancellationToken)
-    {
-        return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
     private async ValueTask<OperResult> UpdateVarModel(IEnumerable<SQLHistoryValue> item, CancellationToken cancellationToken)

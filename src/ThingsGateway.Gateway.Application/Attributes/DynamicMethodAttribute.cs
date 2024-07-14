@@ -17,6 +17,13 @@ namespace ThingsGateway.Gateway.Application;
 [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
 public class DynamicMethodAttribute : Attribute
 {
+    /// <inheritdoc cref="DynamicMethodAttribute"/>
+    public DynamicMethodAttribute(string desc, string? remark = null)
+    {
+        Description = desc;
+        Remark = remark;
+    }
+
     /// <summary>
     /// 名称
     /// </summary>
@@ -26,11 +33,4 @@ public class DynamicMethodAttribute : Attribute
     /// 描述
     /// </summary>
     public string? Remark { get; }
-
-    /// <inheritdoc cref="DynamicMethodAttribute"/>
-    public DynamicMethodAttribute(string desc, string? remark = null)
-    {
-        Description = desc;
-        Remark = remark;
-    }
 }

@@ -46,20 +46,6 @@ public class CollectDeviceHostedService : DeviceHostedService
 
     #region 重写
 
-    /// <inheritdoc/>
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        //重启采集线程，会启动其他后台服务
-        await HostedServiceUtil.ManagementHostedService.StartLock.WaitAsync().ConfigureAwait(false);
-        //await RestartAsync();
-        await WhileExecuteAsync(stoppingToken);
-    }
-
-    protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId)
-    {
-        return await DeviceService.GetCollectDeviceRuntimeAsync(deviceId).ConfigureAwait(false);
-    }
-
     /// <summary>
     /// 读取数据库，创建全部设备
     /// </summary>
@@ -110,6 +96,20 @@ public class CollectDeviceHostedService : DeviceHostedService
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }
+    }
+
+    /// <inheritdoc/>
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        //重启采集线程，会启动其他后台服务
+        await HostedServiceUtil.ManagementHostedService.StartLock.WaitAsync().ConfigureAwait(false);
+        //await RestartAsync();
+        await WhileExecuteAsync(stoppingToken);
+    }
+
+    protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId)
+    {
+        return await DeviceService.GetCollectDeviceRuntimeAsync(deviceId).ConfigureAwait(false);
     }
 
     #endregion 重写

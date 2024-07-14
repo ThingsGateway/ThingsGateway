@@ -13,20 +13,6 @@ namespace ThingsGateway.Foundation.OpcDa;
 internal static class CollectionExtension
 {
     /// <summary>
-    /// 移除符合条件的元素
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="this"></param>
-    /// <param name="where"></param>
-    internal static void RemoveWhere<T>(this ICollection<T> @this, Func<T, bool> @where)
-    {
-        foreach (var obj in @this.Where(where).ToList())
-        {
-            @this.Remove(obj);
-        }
-    }
-
-    /// <summary>
     /// 将项目列表分解为特定大小的块
     /// </summary>
     /// <typeparam name="T"></typeparam>
@@ -43,5 +29,19 @@ internal static class CollectionExtension
             pos += chunksize;
         }
         return n;
+    }
+
+    /// <summary>
+    /// 移除符合条件的元素
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="this"></param>
+    /// <param name="where"></param>
+    internal static void RemoveWhere<T>(this ICollection<T> @this, Func<T, bool> @where)
+    {
+        foreach (var obj in @this.Where(where).ToList())
+        {
+            @this.Remove(obj);
+        }
     }
 }

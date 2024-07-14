@@ -22,64 +22,6 @@ public delegate ValueTask<OperResult> ModbusServerWriteEventHandler(ModbusAddres
 /// <inheritdoc/>
 public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
 {
-    /// <inheritdoc/>
-    public ModbusSlave(IChannel channel) : base(channel)
-    {
-        ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
-        RegisterByteLength = 2;
-        if (channel is IClientChannel client)
-            client.WaitHandlePool.MaxSign = ushort.MaxValue;
-    }
-
-    #region 属性
-
-    private ModbusTypeEnum modbusType;
-
-    /// <summary>
-    /// 客户端连接滑动过期时间(TCP服务通道时)
-    /// </summary>
-    public int CheckClearTime { get; set; } = 120;
-
-    /// <summary>
-    /// Modbus类型
-    /// </summary>
-    public ModbusTypeEnum ModbusType
-    {
-        get { return modbusType; }
-        set { modbusType = value; }
-    }
-
-    /// <summary>
-    /// 多站点
-    /// </summary>
-    public bool MulStation { get; set; } = true;
-
-    /// <summary>
-    /// 默认站点
-    /// </summary>
-    public byte Station { get; set; } = 1;
-
-    /// <summary>
-    /// 写入内存
-    /// </summary>
-    public bool IsWriteMemory { get; set; }
-
-    /// <summary>
-    /// 最大连接数
-    /// </summary>
-    public int MaxClientCount { get; set; } = 10000;
-
-    public string DtuId { get; set; } = "DtuId";
-    public int HeartbeatTime { get; set; } = 5;
-    public string HeartbeatHexString { get; set; } = "FFFF8080";
-
-    #endregion 属性
-
-    /// <summary>
-    /// 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
-    /// </summary>
-    public ModbusServerWriteEventHandler WriteData { get; set; }
-
     /// <summary>
     /// 继电器
     /// </summary>
@@ -101,10 +43,64 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
     private ConcurrentDictionary<byte, ValueByteBlock> ModbusServer04ByteBlocks = new();
 
     /// <inheritdoc/>
-    public override string GetAddressDescription()
+    public ModbusSlave(IChannel channel) : base(channel)
     {
-        return $"{base.GetAddressDescription()}{Environment.NewLine}{ModbusHelper.GetAddressDescription()}";
+        ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
+        RegisterByteLength = 2;
+        if (channel is IClientChannel client)
+            client.WaitHandlePool.MaxSign = ushort.MaxValue;
     }
+
+    #region 属性
+
+    private ModbusTypeEnum modbusType;
+
+    /// <summary>
+    /// 客户端连接滑动过期时间(TCP服务通道时)
+    /// </summary>
+    public int CheckClearTime { get; set; } = 120;
+
+    public string DtuId { get; set; } = "DtuId";
+
+    public string HeartbeatHexString { get; set; } = "FFFF8080";
+
+    public int HeartbeatTime { get; set; } = 5;
+
+    /// <summary>
+    /// 写入内存
+    /// </summary>
+    public bool IsWriteMemory { get; set; }
+
+    /// <summary>
+    /// 最大连接数
+    /// </summary>
+    public int MaxClientCount { get; set; } = 10000;
+
+    /// <summary>
+    /// Modbus类型
+    /// </summary>
+    public ModbusTypeEnum ModbusType
+    {
+        get { return modbusType; }
+        set { modbusType = value; }
+    }
+
+    /// <summary>
+    /// 多站点
+    /// </summary>
+    public bool MulStation { get; set; } = true;
+
+    /// <summary>
+    /// 默认站点
+    /// </summary>
+    public byte Station { get; set; } = 1;
+
+    #endregion 属性
+
+    /// <summary>
+    /// 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
+    /// </summary>
+    public ModbusServerWriteEventHandler WriteData { get; set; }
 
     /// <inheritdoc/>
     public override Action<IPluginManager> ConfigurePlugins()
@@ -119,6 +115,12 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                 return PluginUtil.GetDtuClientPlugin(this);
         }
         return base.ConfigurePlugins();
+    }
+
+    /// <inheritdoc/>
+    public override string GetAddressDescription()
+    {
+        return $"{base.GetAddressDescription()}{Environment.NewLine}{ModbusHelper.GetAddressDescription()}";
     }
 
     /// <inheritdoc/>
@@ -175,15 +177,6 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
     }
 
     /// <inheritdoc/>
-    private void Init(ModbusRequest mAddress)
-    {
-        ModbusServer01ByteBlocks.GetOrAdd(mAddress.Station, a => new ValueByteBlock(new byte[ushort.MaxValue * 2]));
-        ModbusServer02ByteBlocks.GetOrAdd(mAddress.Station, a => new ValueByteBlock(new byte[ushort.MaxValue * 2]));
-        ModbusServer03ByteBlocks.GetOrAdd(mAddress.Station, a => new ValueByteBlock(new byte[ushort.MaxValue * 2]));
-        ModbusServer04ByteBlocks.GetOrAdd(mAddress.Station, a => new ValueByteBlock(new byte[ushort.MaxValue * 2]));
-    }
-
-    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         foreach (var item in ModbusServer01ByteBlocks)
@@ -209,7 +202,188 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
         base.Dispose(disposing);
     }
 
+    /// <inheritdoc/>
+    private void Init(ModbusRequest mAddress)
+    {
+        ModbusServer01ByteBlocks.GetOrAdd(mAddress.Station, a => new ValueByteBlock(new byte[ushort.MaxValue * 2]));
+        ModbusServer02ByteBlocks.GetOrAdd(mAddress.Station, a => new ValueByteBlock(new byte[ushort.MaxValue * 2]));
+        ModbusServer03ByteBlocks.GetOrAdd(mAddress.Station, a => new ValueByteBlock(new byte[ushort.MaxValue * 2]));
+        ModbusServer04ByteBlocks.GetOrAdd(mAddress.Station, a => new ValueByteBlock(new byte[ushort.MaxValue * 2]));
+    }
+
     #region 核心
+
+    private readonly ReaderWriterLockSlim _lockSlim = new();
+
+    /// <inheritdoc/>
+    public OperResult<ReadOnlyMemory<byte>> ModbusRequest(ModbusRequest mAddress, bool read, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (this.MulStation)
+            {
+                this.Init(mAddress);
+            }
+            else
+            {
+                if (this.Station != mAddress.Station)
+                {
+                    return new(ModbusResource.Localizer["StationNotSame", mAddress.Station, this.Station]);
+                }
+                this.Init(mAddress);
+            }
+            var ModbusServer01ByteBlock = this.ModbusServer01ByteBlocks[mAddress.Station];
+            var ModbusServer02ByteBlock = this.ModbusServer02ByteBlocks[mAddress.Station];
+            var ModbusServer03ByteBlock = this.ModbusServer03ByteBlocks[mAddress.Station];
+            var ModbusServer04ByteBlock = this.ModbusServer04ByteBlocks[mAddress.Station];
+            if (read)
+            {
+                using (new ReadLock(this._lockSlim))
+                {
+                    int len = mAddress.Length;
+
+                    switch (mAddress.FunctionCode)
+                    {
+                        case 1:
+                            return OperResult.CreateSuccessResult(ModbusServer01ByteBlock.Memory.Slice(mAddress.StartAddress, len));
+
+                        case 2:
+                            return OperResult.CreateSuccessResult(ModbusServer02ByteBlock.Memory.Slice(mAddress.StartAddress, len));
+
+                        case 3:
+
+                            return OperResult.CreateSuccessResult(ModbusServer03ByteBlock.Memory.Slice(mAddress.StartAddress * this.RegisterByteLength, len));
+
+                        case 4:
+                            return OperResult.CreateSuccessResult(ModbusServer04ByteBlock.Memory.Slice(mAddress.StartAddress * this.RegisterByteLength, len));
+                    }
+                }
+            }
+            else
+            {
+                if (mAddress.FunctionCode == 0x05)
+                {
+                    var data = ModbusServer01ByteBlock.Memory.Slice(mAddress.StartAddress, 1);
+                    mAddress.Data = new ReadOnlyMemory<byte>([data.Span[0].SetBit(mAddress.StartAddress % 8, mAddress.Data.Span[0] == 0xff)]);
+                }
+                using (new WriteLock(this._lockSlim))
+                {
+                    switch (mAddress.FunctionCode)
+                    {
+                        case 2:
+                            ModbusServer02ByteBlock.Position = mAddress.StartAddress;
+                            ModbusServer02ByteBlock.Write(mAddress.Data.Span);
+                            return new();
+
+                        case 1:
+                        case 5:
+                        case 15:
+                            ModbusServer01ByteBlock.Position = mAddress.StartAddress;
+                            ModbusServer01ByteBlock.Write(mAddress.Data.Span);
+                            return new();
+
+                        case 4:
+                            ModbusServer04ByteBlock.Position = mAddress.StartAddress;
+                            ModbusServer04ByteBlock.Write(mAddress.Data.Span);
+                            return new();
+
+                        case 3:
+                        case 6:
+                        case 16:
+                            ModbusServer03ByteBlock.Position = mAddress.StartAddress * this.RegisterByteLength;
+                            ModbusServer03ByteBlock.Write(mAddress.Data.Span);
+                            return new();
+                    }
+                }
+            }
+
+            return new(ModbusResource.Localizer["FunctionError"]);
+        }
+        catch (Exception ex)
+        {
+            return new(ex);
+        }
+    }
+
+    /// <inheritdoc/>
+    public override ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
+    {
+        ModbusAddress mAddress = ModbusAddress.ParseFrom(address, this.Station);
+        mAddress.Length = (ushort)(length * RegisterByteLength);
+        var result = ModbusRequest(mAddress, true, cancellationToken);
+        if (result.IsSuccess)
+        {
+            return EasyValueTask.FromResult(new OperResult<byte[]>() { Content = result.Content.ToArray() });
+        }
+        else
+        {
+            return EasyValueTask.FromResult(new OperResult<byte[]>(result));
+        }
+    }
+
+    /// <inheritdoc/>
+    public override async ValueTask<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await EasyValueTask.CompletedTask;
+            var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
+            mAddress.Data = value;
+            return ModbusRequest(mAddress, false, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return new OperResult(ex);
+        }
+    }
+
+    /// <inheritdoc/>
+    public override async ValueTask<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await EasyValueTask.CompletedTask;
+            var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
+            if (value.Length > 1 && mAddress.FunctionCode == 1)
+            {
+                mAddress.WriteFunctionCode = 15;
+                mAddress.Data = value.BoolArrayToByte();
+                ModbusRequest(mAddress, false, cancellationToken);
+                return OperResult.Success;
+            }
+            else if (mAddress.BitIndex == null)
+            {
+                mAddress.Data = value[0] ? new byte[2] { 255, 0 } : [0, 0];
+                ModbusRequest(mAddress, false, cancellationToken);
+                return OperResult.Success;
+            }
+            else
+            {
+                if (mAddress.BitIndex < 16)
+                {
+                    mAddress.Length = 2;
+                    var readData = ModbusRequest(mAddress, true, cancellationToken);
+                    if (!readData.IsSuccess) return readData;
+                    var writeData = TouchSocketBitConverter.BigEndian.To<ushort>(readData.Content.Span);
+                    for (int i = 0; i < value.Length; i++)
+                    {
+                        writeData = writeData.SetBit(mAddress.BitIndex.Value + i, value[i]);
+                    }
+                    mAddress.Data = ThingsGatewayBitConverter.GetBytes(writeData);
+                    ModbusRequest(mAddress, false, cancellationToken);
+                    return OperResult.Success;
+                }
+                else
+                {
+                    return new OperResult(ModbusResource.Localizer["ValueOverlimit", nameof(mAddress.BitIndex), 16]);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            return new OperResult(ex);
+        }
+    }
 
     /// <inheritdoc/>
     protected override async Task ChannelReceived(IClientChannel client, ReceivedDataEventArgs e)
@@ -430,178 +604,6 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
         finally
         {
             valueByteBlock.SafeDispose();
-        }
-    }
-
-    private readonly ReaderWriterLockSlim _lockSlim = new();
-
-    /// <inheritdoc/>
-    public OperResult<ReadOnlyMemory<byte>> ModbusRequest(ModbusRequest mAddress, bool read, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            if (this.MulStation)
-            {
-                this.Init(mAddress);
-            }
-            else
-            {
-                if (this.Station != mAddress.Station)
-                {
-                    return new(ModbusResource.Localizer["StationNotSame", mAddress.Station, this.Station]);
-                }
-                this.Init(mAddress);
-            }
-            var ModbusServer01ByteBlock = this.ModbusServer01ByteBlocks[mAddress.Station];
-            var ModbusServer02ByteBlock = this.ModbusServer02ByteBlocks[mAddress.Station];
-            var ModbusServer03ByteBlock = this.ModbusServer03ByteBlocks[mAddress.Station];
-            var ModbusServer04ByteBlock = this.ModbusServer04ByteBlocks[mAddress.Station];
-            if (read)
-            {
-                using (new ReadLock(this._lockSlim))
-                {
-                    int len = mAddress.Length;
-
-                    switch (mAddress.FunctionCode)
-                    {
-                        case 1:
-                            return OperResult.CreateSuccessResult(ModbusServer01ByteBlock.Memory.Slice(mAddress.StartAddress, len));
-
-                        case 2:
-                            return OperResult.CreateSuccessResult(ModbusServer02ByteBlock.Memory.Slice(mAddress.StartAddress, len));
-
-                        case 3:
-
-                            return OperResult.CreateSuccessResult(ModbusServer03ByteBlock.Memory.Slice(mAddress.StartAddress * this.RegisterByteLength, len));
-
-                        case 4:
-                            return OperResult.CreateSuccessResult(ModbusServer04ByteBlock.Memory.Slice(mAddress.StartAddress * this.RegisterByteLength, len));
-                    }
-                }
-            }
-            else
-            {
-                if (mAddress.FunctionCode == 0x05)
-                {
-                    var data = ModbusServer01ByteBlock.Memory.Slice(mAddress.StartAddress, 1);
-                    mAddress.Data = new ReadOnlyMemory<byte>([data.Span[0].SetBit(mAddress.StartAddress % 8, mAddress.Data.Span[0] == 0xff)]);
-                }
-                using (new WriteLock(this._lockSlim))
-                {
-                    switch (mAddress.FunctionCode)
-                    {
-                        case 2:
-                            ModbusServer02ByteBlock.Position = mAddress.StartAddress;
-                            ModbusServer02ByteBlock.Write(mAddress.Data.Span);
-                            return new();
-
-                        case 1:
-                        case 5:
-                        case 15:
-                            ModbusServer01ByteBlock.Position = mAddress.StartAddress;
-                            ModbusServer01ByteBlock.Write(mAddress.Data.Span);
-                            return new();
-
-                        case 4:
-                            ModbusServer04ByteBlock.Position = mAddress.StartAddress;
-                            ModbusServer04ByteBlock.Write(mAddress.Data.Span);
-                            return new();
-
-                        case 3:
-                        case 6:
-                        case 16:
-                            ModbusServer03ByteBlock.Position = mAddress.StartAddress * this.RegisterByteLength;
-                            ModbusServer03ByteBlock.Write(mAddress.Data.Span);
-                            return new();
-                    }
-                }
-            }
-
-            return new(ModbusResource.Localizer["FunctionError"]);
-        }
-        catch (Exception ex)
-        {
-            return new(ex);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
-    {
-        ModbusAddress mAddress = ModbusAddress.ParseFrom(address, this.Station);
-        mAddress.Length = (ushort)(length * RegisterByteLength);
-        var result = ModbusRequest(mAddress, true, cancellationToken);
-        if (result.IsSuccess)
-        {
-            return EasyValueTask.FromResult(new OperResult<byte[]>() { Content = result.Content.ToArray() });
-        }
-        else
-        {
-            return EasyValueTask.FromResult(new OperResult<byte[]>(result));
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async ValueTask<OperResult> WriteAsync(string address, byte[] value, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await EasyValueTask.CompletedTask;
-            var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
-            mAddress.Data = value;
-            return ModbusRequest(mAddress, false, cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            return new OperResult(ex);
-        }
-    }
-
-    /// <inheritdoc/>
-    public override async ValueTask<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            await EasyValueTask.CompletedTask;
-            var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
-            if (value.Length > 1 && mAddress.FunctionCode == 1)
-            {
-                mAddress.WriteFunctionCode = 15;
-                mAddress.Data = value.BoolArrayToByte();
-                ModbusRequest(mAddress, false, cancellationToken);
-                return OperResult.Success;
-            }
-            else if (mAddress.BitIndex == null)
-            {
-                mAddress.Data = value[0] ? new byte[2] { 255, 0 } : [0, 0];
-                ModbusRequest(mAddress, false, cancellationToken);
-                return OperResult.Success;
-            }
-            else
-            {
-                if (mAddress.BitIndex < 16)
-                {
-                    mAddress.Length = 2;
-                    var readData = ModbusRequest(mAddress, true, cancellationToken);
-                    if (!readData.IsSuccess) return readData;
-                    var writeData = TouchSocketBitConverter.BigEndian.To<ushort>(readData.Content.Span);
-                    for (int i = 0; i < value.Length; i++)
-                    {
-                        writeData = writeData.SetBit(mAddress.BitIndex.Value + i, value[i]);
-                    }
-                    mAddress.Data = ThingsGatewayBitConverter.GetBytes(writeData);
-                    ModbusRequest(mAddress, false, cancellationToken);
-                    return OperResult.Success;
-                }
-                else
-                {
-                    return new OperResult(ModbusResource.Localizer["ValueOverlimit", nameof(mAddress.BitIndex), 16]);
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            return new OperResult(ex);
         }
     }
 

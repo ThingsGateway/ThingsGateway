@@ -25,11 +25,12 @@ public class Pool<T> : IPool<T> where T : class
 {
     #region 属性
 
-    /// <summary>对象池大小。默认CPU*2，初始化后改变无效</summary>
-    public Int32 Max { get; set; }
+    private T? _current;
 
     private Item[]? _items;
-    private T? _current;
+
+    /// <summary>对象池大小。默认CPU*2，初始化后改变无效</summary>
+    public Int32 Max { get; set; }
 
     private struct Item
     {
@@ -64,6 +65,34 @@ public class Pool<T> : IPool<T> where T : class
     #endregion 构造
 
     #region 方法
+
+    /// <summary>清空</summary>
+    /// <returns></returns>
+    public virtual Int32 Clear()
+    {
+        var count = 0;
+
+        if (_current != null)
+        {
+            _current = null;
+            count++;
+        }
+
+        var items = _items;
+        if (items == null) return count;
+
+        for (var i = 0; i < items.Length; ++i)
+        {
+            if (items[i].Value != null)
+            {
+                items[i].Value = null;
+                count++;
+            }
+        }
+        _items = null;
+
+        return count;
+    }
 
     /// <summary>获取</summary>
     /// <returns></returns>
@@ -124,34 +153,6 @@ public class Pool<T> : IPool<T> where T : class
         }
 
         return false;
-    }
-
-    /// <summary>清空</summary>
-    /// <returns></returns>
-    public virtual Int32 Clear()
-    {
-        var count = 0;
-
-        if (_current != null)
-        {
-            _current = null;
-            count++;
-        }
-
-        var items = _items;
-        if (items == null) return count;
-
-        for (var i = 0; i < items.Length; ++i)
-        {
-            if (items[i].Value != null)
-            {
-                items[i].Value = null;
-                count++;
-            }
-        }
-        _items = null;
-
-        return count;
     }
 
     #endregion 方法

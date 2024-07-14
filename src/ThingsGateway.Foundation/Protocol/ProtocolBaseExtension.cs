@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using TouchSocket.Resources;
-
 namespace ThingsGateway.Foundation;
 
 /// <summary>
@@ -27,16 +25,16 @@ public static partial class ProtocolBaseExtension
     }
 
     /// <inheritdoc/>
-    public static async ValueTask<OperResult<Int16>> ReadInt16Async(this IProtocol protocol, string address, CancellationToken cancellationToken = default)
+    public static async ValueTask<OperResult<Double>> ReadDoubleAsync(this IProtocol protocol, string address, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadInt16Async(address, 1, null, cancellationToken).ConfigureAwait(false);
+        var result = await protocol.ReadDoubleAsync(address, 1, null, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 
     /// <inheritdoc/>
-    public static async ValueTask<OperResult<UInt16>> ReadUInt16Async(this IProtocol protocol, string address, CancellationToken cancellationToken = default)
+    public static async ValueTask<OperResult<Int16>> ReadInt16Async(this IProtocol protocol, string address, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadUInt16Async(address, 1, null, cancellationToken).ConfigureAwait(false);
+        var result = await protocol.ReadInt16Async(address, 1, null, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 
@@ -48,23 +46,9 @@ public static partial class ProtocolBaseExtension
     }
 
     /// <inheritdoc/>
-    public static async ValueTask<OperResult<UInt32>> ReadUInt32Async(this IProtocol protocol, string address, CancellationToken cancellationToken = default)
-    {
-        var result = await protocol.ReadUInt32Async(address, 1, null, cancellationToken).ConfigureAwait(false);
-        return result.OperResultFrom(() => result.Content[0]);
-    }
-
-    /// <inheritdoc/>
     public static async ValueTask<OperResult<Int64>> ReadInt64Async(this IProtocol protocol, string address, CancellationToken cancellationToken = default)
     {
         var result = await protocol.ReadInt64Async(address, 1, null, cancellationToken).ConfigureAwait(false);
-        return result.OperResultFrom(() => result.Content[0]);
-    }
-
-    /// <inheritdoc/>
-    public static async ValueTask<OperResult<UInt64>> ReadUInt64Async(this IProtocol protocol, string address, CancellationToken cancellationToken = default)
-    {
-        var result = await protocol.ReadUInt64Async(address, 1, null, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 
@@ -76,16 +60,30 @@ public static partial class ProtocolBaseExtension
     }
 
     /// <inheritdoc/>
-    public static async ValueTask<OperResult<Double>> ReadDoubleAsync(this IProtocol protocol, string address, CancellationToken cancellationToken = default)
+    public static async ValueTask<OperResult<String>> ReadStringAsync(this IProtocol protocol, string address, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadDoubleAsync(address, 1, null, cancellationToken).ConfigureAwait(false);
+        var result = await protocol.ReadStringAsync(address, 1, null, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 
     /// <inheritdoc/>
-    public static async ValueTask<OperResult<String>> ReadStringAsync(this IProtocol protocol, string address, CancellationToken cancellationToken = default)
+    public static async ValueTask<OperResult<UInt16>> ReadUInt16Async(this IProtocol protocol, string address, CancellationToken cancellationToken = default)
     {
-        var result = await protocol.ReadStringAsync(address, 1, null, cancellationToken).ConfigureAwait(false);
+        var result = await protocol.ReadUInt16Async(address, 1, null, cancellationToken).ConfigureAwait(false);
+        return result.OperResultFrom(() => result.Content[0]);
+    }
+
+    /// <inheritdoc/>
+    public static async ValueTask<OperResult<UInt32>> ReadUInt32Async(this IProtocol protocol, string address, CancellationToken cancellationToken = default)
+    {
+        var result = await protocol.ReadUInt32Async(address, 1, null, cancellationToken).ConfigureAwait(false);
+        return result.OperResultFrom(() => result.Content[0]);
+    }
+
+    /// <inheritdoc/>
+    public static async ValueTask<OperResult<UInt64>> ReadUInt64Async(this IProtocol protocol, string address, CancellationToken cancellationToken = default)
+    {
+        var result = await protocol.ReadUInt64Async(address, 1, null, cancellationToken).ConfigureAwait(false);
         return result.OperResultFrom(() => result.Content[0]);
     }
 

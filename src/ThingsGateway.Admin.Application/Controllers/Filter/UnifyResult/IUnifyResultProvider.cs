@@ -29,6 +29,14 @@ public interface IUnifyResultProvider
     IActionResult OnException(ActionExecutedContext context);
 
     /// <summary>
+    /// 拦截返回状态码
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="statusCode"></param>
+    /// <returns></returns>
+    Task OnResponseStatusCodes(HttpContext context, int statusCode);
+
+    /// <summary>
     /// 成功返回值
     /// </summary>
     /// <param name="context"></param>
@@ -43,12 +51,4 @@ public interface IUnifyResultProvider
     /// <param name="errors"></param>
     /// <returns></returns>
     IActionResult OnValidateFailed(ActionExecutingContext context, string? errors);
-
-    /// <summary>
-    /// 拦截返回状态码
-    /// </summary>
-    /// <param name="context"></param>
-    /// <param name="statusCode"></param>
-    /// <returns></returns>
-    Task OnResponseStatusCodes(HttpContext context, int statusCode);
 }

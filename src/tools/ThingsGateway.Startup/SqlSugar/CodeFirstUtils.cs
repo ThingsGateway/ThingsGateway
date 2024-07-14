@@ -16,7 +16,7 @@ using System.Reflection;
 
 using ThingsGateway.Core.Extension;
 
-namespace ThingsGateway.Sql;
+namespace ThingsGateway;
 
 /// <summary>
 /// CodeFirst功能类
@@ -31,33 +31,6 @@ public static class CodeFirstUtils
     {
         InitTable(assemblyName);
         InitSeedData(assemblyName);
-    }
-
-    /// <summary>
-    /// 初始化数据库表结构
-    /// </summary>
-    /// <param name="assemblyName">程序集名称</param>
-    private static void InitTable(string assemblyName)
-    {
-        // 获取所有实体表-初始化表结构
-        var entityTypes = App.EffectiveTypes.Where(u =>
-            !u.IsInterface && !u.IsAbstract && u.IsClass && u.IsDefined(typeof(SugarTable), false) && u.Assembly.FullName == assemblyName);
-        if (!entityTypes.Any()) return;//没有就退出
-        foreach (var entityType in entityTypes)
-        {
-            var tenantAtt = entityType.GetCustomAttribute<TenantAttribute>();//获取Sqlsugar多库特性
-            var config = DbContext.DbConfigs?.FirstOrDefault(u => u.ConfigId.ToString() == tenantAtt?.configId.ToString());//获取数据库配置
-            if (config?.InitTable != true) continue;
-            var ignoreInit = entityType.GetCustomAttribute<IgnoreInitTableAttribute>();//获取忽略初始化特性
-            if (ignoreInit != null) continue;//如果有忽略初始化特性
-            if (tenantAtt == null) continue;//如果没有多库特性就下一个
-            using var db = DbContext.Db.GetConnectionScope(tenantAtt.configId.ToString()).CopyNew();//获取数据库对象
-            var splitTable = entityType.GetCustomAttribute<SplitTableAttribute>();//获取自动分表特性
-            if (splitTable == null)//如果特性是空
-                db.CodeFirst.InitTables(entityType);//普通创建
-            else
-                db.CodeFirst.SplitTables().InitTables(entityType);//自动分表创建
-        }
     }
 
     /// <summary>
@@ -104,6 +77,33 @@ public static class CodeFirstUtils
                 if (!db.Queryable(entityInfo.DbTableName, entityInfo.DbTableName).Any() && ignoreAdd == null)
                     db.InsertableByObject(seedData.ToList()).ExecuteCommand();
             }
+        }
+    }
+
+    /// <summary>
+    /// 初始化数据库表结构
+    /// </summary>
+    /// <param name="assemblyName">程序集名称</param>
+    private static void InitTable(string assemblyName)
+    {
+        // 获取所有实体表-初始化表结构
+        var entityTypes = App.EffectiveTypes.Where(u =>
+            !u.IsInterface && !u.IsAbstract && u.IsClass && u.IsDefined(typeof(SugarTable), false) && u.Assembly.FullName == assemblyName);
+        if (!entityTypes.Any()) return;//没有就退出
+        foreach (var entityType in entityTypes)
+        {
+            var tenantAtt = entityType.GetCustomAttribute<TenantAttribute>();//获取Sqlsugar多库特性
+            var config = DbContext.DbConfigs?.FirstOrDefault(u => u.ConfigId.ToString() == tenantAtt?.configId.ToString());//获取数据库配置
+            if (config?.InitTable != true) continue;
+            var ignoreInit = entityType.GetCustomAttribute<IgnoreInitTableAttribute>();//获取忽略初始化特性
+            if (ignoreInit != null) continue;//如果有忽略初始化特性
+            if (tenantAtt == null) continue;//如果没有多库特性就下一个
+            using var db = DbContext.Db.GetConnectionScope(tenantAtt.configId.ToString()).CopyNew();//获取数据库对象
+            var splitTable = entityType.GetCustomAttribute<SplitTableAttribute>();//获取自动分表特性
+            if (splitTable == null)//如果特性是空
+                db.CodeFirst.InitTables(entityType);//普通创建
+            else
+                db.CodeFirst.SplitTables().InitTables(entityType);//自动分表创建
         }
     }
 }

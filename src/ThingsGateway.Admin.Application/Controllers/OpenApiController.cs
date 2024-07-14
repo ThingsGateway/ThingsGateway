@@ -43,6 +43,5 @@ public class OpenApiController : ControllerBase
     public async Task LogoutAsync()
     {
         await _authService.LoginOutAsync();
-
     }
 }

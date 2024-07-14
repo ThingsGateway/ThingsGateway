@@ -22,41 +22,46 @@ public static class Reflect
 {
     #region 静态
 
+    static Reflect() => Provider = new DefaultReflect();
+
     /// <summary>当前反射提供者</summary>
     public static IReflect Provider { get; set; }
 
-    static Reflect() => Provider = new DefaultReflect();// 如果需要使用快速反射，启用下面这一行//Provider = new EmitReflect();
+    // 如果需要使用快速反射，启用下面这一行//Provider = new EmitReflect();
 
     #endregion 静态
 
     #region 反射获取
 
-    /// <summary>根据名称获取类型。可搜索当前目录DLL，自动加载</summary>
-    /// <param name="typeName">类型名</param>
+    /// <summary>获取字段。搜索私有、静态、基类，优先返回大小写精确匹配成员</summary>
+    /// <param name="type">类型</param>
+    /// <param name="name">名称</param>
+    /// <param name="ignoreCase">忽略大小写</param>
     /// <returns></returns>
-    public static Type? GetTypeEx(this String typeName)
+    public static FieldInfo? GetFieldEx(this Type type, String name, Boolean ignoreCase = false)
     {
-        if (String.IsNullOrEmpty(typeName)) return null;
+        if (String.IsNullOrEmpty(name)) return null;
 
-        var type = Type.GetType(typeName);
-        if (type != null) return type;
-
-        return Provider.GetType(typeName, false);
+        return Provider.GetField(type, name, ignoreCase);
     }
 
-    /// <summary>根据名称获取类型。可搜索当前目录DLL，自动加载</summary>
-    /// <param name="typeName">类型名</param>
-    /// <param name="isLoadAssembly">是否从未加载程序集中获取类型。使用仅反射的方法检查目标类型，如果存在，则进行常规加载</param>
+    /// <summary>获取用于序列化的字段</summary>
+    /// <remarks>过滤<seealso cref="T:NonSerializedAttribute"/>特性的字段</remarks>
+    /// <param name="type"></param>
+    /// <param name="baseFirst"></param>
     /// <returns></returns>
-    [Obsolete("不再支持isLoadAssembly")]
-    public static Type? GetTypeEx(this String typeName, Boolean isLoadAssembly)
+    public static IList<FieldInfo> GetFields(this Type type, Boolean baseFirst) => Provider.GetFields(type, baseFirst);
+
+    /// <summary>获取成员。搜索私有、静态、基类，优先返回大小写精确匹配成员</summary>
+    /// <param name="type">类型</param>
+    /// <param name="name">名称</param>
+    /// <param name="ignoreCase">忽略大小写</param>
+    /// <returns></returns>
+    public static MemberInfo? GetMemberEx(this Type type, String name, Boolean ignoreCase = false)
     {
-        if (String.IsNullOrEmpty(typeName)) return null;
+        if (String.IsNullOrEmpty(name)) return null;
 
-        var type = Type.GetType(typeName);
-        if (type != null) return type;
-
-        return Provider.GetType(typeName, isLoadAssembly);
+        return Provider.GetMember(type, name, ignoreCase);
     }
 
     /// <summary>获取方法</summary>
@@ -87,6 +92,13 @@ public static class Reflect
         return Provider.GetMethods(type, name, paramCount);
     }
 
+    /// <summary>获取用于序列化的属性</summary>
+    /// <remarks>过滤<seealso cref="T:XmlIgnoreAttribute"/>特性的属性和索引器</remarks>
+    /// <param name="type"></param>
+    /// <param name="baseFirst"></param>
+    /// <returns></returns>
+    public static IList<PropertyInfo> GetProperties(this Type type, Boolean baseFirst) => Provider.GetProperties(type, baseFirst);
+
     /// <summary>获取属性。搜索私有、静态、基类，优先返回大小写精确匹配成员</summary>
     /// <param name="type">类型</param>
     /// <param name="name">名称</param>
@@ -99,43 +111,33 @@ public static class Reflect
         return Provider.GetProperty(type, name, ignoreCase);
     }
 
-    /// <summary>获取字段。搜索私有、静态、基类，优先返回大小写精确匹配成员</summary>
-    /// <param name="type">类型</param>
-    /// <param name="name">名称</param>
-    /// <param name="ignoreCase">忽略大小写</param>
+    /// <summary>根据名称获取类型。可搜索当前目录DLL，自动加载</summary>
+    /// <param name="typeName">类型名</param>
     /// <returns></returns>
-    public static FieldInfo? GetFieldEx(this Type type, String name, Boolean ignoreCase = false)
+    public static Type? GetTypeEx(this String typeName)
     {
-        if (String.IsNullOrEmpty(name)) return null;
+        if (String.IsNullOrEmpty(typeName)) return null;
 
-        return Provider.GetField(type, name, ignoreCase);
+        var type = Type.GetType(typeName);
+        if (type != null) return type;
+
+        return Provider.GetType(typeName, false);
     }
 
-    /// <summary>获取成员。搜索私有、静态、基类，优先返回大小写精确匹配成员</summary>
-    /// <param name="type">类型</param>
-    /// <param name="name">名称</param>
-    /// <param name="ignoreCase">忽略大小写</param>
+    /// <summary>根据名称获取类型。可搜索当前目录DLL，自动加载</summary>
+    /// <param name="typeName">类型名</param>
+    /// <param name="isLoadAssembly">是否从未加载程序集中获取类型。使用仅反射的方法检查目标类型，如果存在，则进行常规加载</param>
     /// <returns></returns>
-    public static MemberInfo? GetMemberEx(this Type type, String name, Boolean ignoreCase = false)
+    [Obsolete("不再支持isLoadAssembly")]
+    public static Type? GetTypeEx(this String typeName, Boolean isLoadAssembly)
     {
-        if (String.IsNullOrEmpty(name)) return null;
+        if (String.IsNullOrEmpty(typeName)) return null;
 
-        return Provider.GetMember(type, name, ignoreCase);
+        var type = Type.GetType(typeName);
+        if (type != null) return type;
+
+        return Provider.GetType(typeName, isLoadAssembly);
     }
-
-    /// <summary>获取用于序列化的字段</summary>
-    /// <remarks>过滤<seealso cref="T:NonSerializedAttribute"/>特性的字段</remarks>
-    /// <param name="type"></param>
-    /// <param name="baseFirst"></param>
-    /// <returns></returns>
-    public static IList<FieldInfo> GetFields(this Type type, Boolean baseFirst) => Provider.GetFields(type, baseFirst);
-
-    /// <summary>获取用于序列化的属性</summary>
-    /// <remarks>过滤<seealso cref="T:XmlIgnoreAttribute"/>特性的属性和索引器</remarks>
-    /// <param name="type"></param>
-    /// <param name="baseFirst"></param>
-    /// <returns></returns>
-    public static IList<PropertyInfo> GetProperties(this Type type, Boolean baseFirst) => Provider.GetProperties(type, baseFirst);
 
     #endregion 反射获取
 
@@ -153,6 +155,49 @@ public static class Reflect
         return Provider.CreateInstance(type, parameters);
     }
 
+    /// <summary>获取目标对象指定名称的属性/字段值</summary>
+    /// <param name="target">目标对象</param>
+    /// <param name="name">名称</param>
+    /// <param name="throwOnError">出错时是否抛出异常</param>
+    /// <returns></returns>
+    [DebuggerHidden]
+    public static Object? GetValue(this Object target, String name, Boolean throwOnError = true)
+    {
+        if (target == null) throw new ArgumentNullException(nameof(target));
+        if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
+
+        if (TryGetValue(target, name, out var value)) return value;
+
+        if (!throwOnError) return null;
+
+        var type = GetType(target);
+        throw new ArgumentException($"The [{name}] property or field does not exist in class [{type.FullName}].");
+    }
+
+    /// <summary>获取目标对象的成员值</summary>
+    /// <param name="target">目标对象</param>
+    /// <param name="member">成员</param>
+    /// <returns></returns>
+    [DebuggerHidden]
+    public static Object? GetValue(this Object? target, MemberInfo member)
+    {
+        // 有可能跟普通的 PropertyInfo.GetValue(Object target) 搞混了
+        if (member == null && target is MemberInfo mi)
+        {
+            member = mi;
+            target = null;
+        }
+
+        //if (target is IModel model && member is PropertyInfo) return model[member.Name];
+
+        if (member is PropertyInfo property)
+            return Provider.GetValue(target, property);
+        else if (member is FieldInfo field)
+            return Provider.GetValue(target, field);
+        else
+            throw new ArgumentOutOfRangeException(nameof(member));
+    }
+
     /// <summary>反射调用指定对象的方法。target为类型时调用其静态方法</summary>
     /// <param name="target">要调用其方法的对象，如果要调用静态方法，则target是类型</param>
     /// <param name="name">方法名</param>
@@ -167,33 +212,6 @@ public static class Reflect
 
         var type = GetType(target);
         throw new XException("Cannot find method named {1} in class {0}!", type, name);
-    }
-
-    /// <summary>反射调用指定对象的方法</summary>
-    /// <param name="target">要调用其方法的对象，如果要调用静态方法，则target是类型</param>
-    /// <param name="name">方法名</param>
-    /// <param name="value">数值</param>
-    /// <param name="parameters">方法参数</param>
-    /// <remarks>反射调用是否成功</remarks>
-    public static Boolean TryInvoke(this Object target, String name, out Object? value, params Object?[] parameters)
-    {
-        value = null;
-
-        if (String.IsNullOrEmpty(name)) return false;
-
-        var type = GetType(target);
-
-        // 参数类型数组
-        var ps = parameters.Select(e => e?.GetType()).ToArray();
-
-        // 如果参数数组出现null，则无法精确匹配，可按参数个数进行匹配
-        var method = ps.Any(e => e == null) ? GetMethodEx(type, name) : GetMethodEx(type, name, ps!);
-        method ??= GetMethodsEx(type, name, ps.Length > 0 ? ps.Length : -1).FirstOrDefault();
-        if (method == null) return false;
-
-        value = Invoke(target, method, parameters);
-
-        return true;
     }
 
     /// <summary>反射调用指定对象的方法</summary>
@@ -224,70 +242,6 @@ public static class Reflect
         if (!method.IsStatic && target == null) throw new ArgumentNullException(nameof(target));
 
         return Provider.InvokeWithParams(target, method, parameters);
-    }
-
-    /// <summary>获取目标对象指定名称的属性/字段值</summary>
-    /// <param name="target">目标对象</param>
-    /// <param name="name">名称</param>
-    /// <param name="throwOnError">出错时是否抛出异常</param>
-    /// <returns></returns>
-    [DebuggerHidden]
-    public static Object? GetValue(this Object target, String name, Boolean throwOnError = true)
-    {
-        if (target == null) throw new ArgumentNullException(nameof(target));
-        if (String.IsNullOrEmpty(name)) throw new ArgumentNullException(nameof(name));
-
-        if (TryGetValue(target, name, out var value)) return value;
-
-        if (!throwOnError) return null;
-
-        var type = GetType(target);
-        throw new ArgumentException($"The [{name}] property or field does not exist in class [{type.FullName}].");
-    }
-
-    /// <summary>获取目标对象指定名称的属性/字段值</summary>
-    /// <param name="target">目标对象</param>
-    /// <param name="name">名称</param>
-    /// <param name="value">数值</param>
-    /// <returns>是否成功获取数值</returns>
-    internal static Boolean TryGetValue(this Object target, String name, out Object? value)
-    {
-        value = null;
-
-        if (String.IsNullOrEmpty(name)) return false;
-
-        var type = GetType(target);
-
-        var mi = type.GetMemberEx(name, true);
-        if (mi == null) return false;
-
-        value = target.GetValue(mi);
-
-        return true;
-    }
-
-    /// <summary>获取目标对象的成员值</summary>
-    /// <param name="target">目标对象</param>
-    /// <param name="member">成员</param>
-    /// <returns></returns>
-    [DebuggerHidden]
-    public static Object? GetValue(this Object? target, MemberInfo member)
-    {
-        // 有可能跟普通的 PropertyInfo.GetValue(Object target) 搞混了
-        if (member == null && target is MemberInfo mi)
-        {
-            member = mi;
-            target = null;
-        }
-
-        //if (target is IModel model && member is PropertyInfo) return model[member.Name];
-
-        if (member is PropertyInfo property)
-            return Provider.GetValue(target, property);
-        else if (member is FieldInfo field)
-            return Provider.GetValue(target, field);
-        else
-            throw new ArgumentOutOfRangeException(nameof(member));
     }
 
     /// <summary>设置目标对象指定名称的属性/字段值，若不存在返回false</summary>
@@ -337,14 +291,57 @@ public static class Reflect
             throw new ArgumentOutOfRangeException(nameof(member));
     }
 
+    /// <summary>反射调用指定对象的方法</summary>
+    /// <param name="target">要调用其方法的对象，如果要调用静态方法，则target是类型</param>
+    /// <param name="name">方法名</param>
+    /// <param name="value">数值</param>
+    /// <param name="parameters">方法参数</param>
+    /// <remarks>反射调用是否成功</remarks>
+    public static Boolean TryInvoke(this Object target, String name, out Object? value, params Object?[] parameters)
+    {
+        value = null;
+
+        if (String.IsNullOrEmpty(name)) return false;
+
+        var type = GetType(target);
+
+        // 参数类型数组
+        var ps = parameters.Select(e => e?.GetType()).ToArray();
+
+        // 如果参数数组出现null，则无法精确匹配，可按参数个数进行匹配
+        var method = ps.Any(e => e == null) ? GetMethodEx(type, name) : GetMethodEx(type, name, ps!);
+        method ??= GetMethodsEx(type, name, ps.Length > 0 ? ps.Length : -1).FirstOrDefault();
+        if (method == null) return false;
+
+        value = Invoke(target, method, parameters);
+
+        return true;
+    }
+
+    /// <summary>获取目标对象指定名称的属性/字段值</summary>
+    /// <param name="target">目标对象</param>
+    /// <param name="name">名称</param>
+    /// <param name="value">数值</param>
+    /// <returns>是否成功获取数值</returns>
+    internal static Boolean TryGetValue(this Object target, String name, out Object? value)
+    {
+        value = null;
+
+        if (String.IsNullOrEmpty(name)) return false;
+
+        var type = GetType(target);
+
+        var mi = type.GetMemberEx(name, true);
+        if (mi == null) return false;
+
+        value = target.GetValue(mi);
+
+        return true;
+    }
+
     #endregion 反射调用
 
     #region 类型辅助
-
-    /// <summary>获取一个类型的元素类型</summary>
-    /// <param name="type">类型</param>
-    /// <returns></returns>
-    public static Type? GetElementTypeEx(this Type type) => Provider.GetElementType(type);
 
     /// <summary>类型转换</summary>
     /// <param name="value">数值</param>
@@ -361,6 +358,35 @@ public static class Reflect
         if (value is TResult result) return result;
 
         return (TResult?)ChangeType(value, typeof(TResult));
+    }
+
+    /// <summary>获取一个类型的元素类型</summary>
+    /// <param name="type">类型</param>
+    /// <returns></returns>
+    public static Type? GetElementTypeEx(this Type type) => Provider.GetElementType(type);
+
+    /// <summary>获取成员的类型，字段和属性是它们的类型，方法是返回类型，类型是自身</summary>
+    /// <param name="member"></param>
+    /// <returns></returns>
+    public static Type? GetMemberType(this MemberInfo member)
+    {
+        //return member.MemberType switch
+        //{
+        //    MemberTypes.Constructor => (member as ConstructorInfo).DeclaringType,
+        //    MemberTypes.Field => (member as FieldInfo).FieldType,
+        //    MemberTypes.Method => (member as MethodInfo).ReturnType,
+        //    MemberTypes.Property => (member as PropertyInfo).PropertyType,
+        //    MemberTypes.TypeInfo or MemberTypes.NestedType => member as Type,
+        //    _ => null,
+        //};
+
+        if (member is ConstructorInfo ctor) return ctor.DeclaringType;
+        if (member is FieldInfo field) return field.FieldType;
+        if (member is MethodInfo method) return method.ReturnType;
+        if (member is PropertyInfo property) return property.PropertyType;
+        if (member is Type type) return type;
+
+        return null;
     }
 
     /// <summary>获取类型的友好名称</summary>
@@ -388,34 +414,15 @@ public static class Reflect
         return typeArray;
     }
 
-    /// <summary>获取成员的类型，字段和属性是它们的类型，方法是返回类型，类型是自身</summary>
-    /// <param name="member"></param>
-    /// <returns></returns>
-    public static Type? GetMemberType(this MemberInfo member)
-    {
-        //return member.MemberType switch
-        //{
-        //    MemberTypes.Constructor => (member as ConstructorInfo).DeclaringType,
-        //    MemberTypes.Field => (member as FieldInfo).FieldType,
-        //    MemberTypes.Method => (member as MethodInfo).ReturnType,
-        //    MemberTypes.Property => (member as PropertyInfo).PropertyType,
-        //    MemberTypes.TypeInfo or MemberTypes.NestedType => member as Type,
-        //    _ => null,
-        //};
-
-        if (member is ConstructorInfo ctor) return ctor.DeclaringType;
-        if (member is FieldInfo field) return field.FieldType;
-        if (member is MethodInfo method) return method.ReturnType;
-        if (member is PropertyInfo property) return property.PropertyType;
-        if (member is Type type) return type;
-
-        return null;
-    }
-
     /// <summary>获取类型代码</summary>
     /// <param name="type"></param>
     /// <returns></returns>
     public static TypeCode GetTypeCode(this Type type) => Type.GetTypeCode(type);
+
+    /// <summary>是否泛型字典</summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static Boolean IsDictionary(this Type type) => type != null && type.IsGenericType && type.As(typeof(IDictionary<,>));
 
     /// <summary>是否整数。Byte/Int16/Int32/Int64</summary>
     /// <param name="type"></param>
@@ -438,11 +445,6 @@ public static class Reflect
     /// <returns></returns>
     public static Boolean IsList(this Type type) => type != null && type.IsGenericType && type.As(typeof(IList<>));
 
-    /// <summary>是否泛型字典</summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static Boolean IsDictionary(this Type type) => type != null && type.IsGenericType && type.As(typeof(IDictionary<,>));
-
     #endregion 类型辅助
 
     #region 插件
@@ -462,6 +464,21 @@ public static class Reflect
     #endregion 插件
 
     #region 辅助方法
+
+    /// <summary>把一个方法转为泛型委托，便于快速反射调用</summary>
+    /// <typeparam name="TFunc"></typeparam>
+    /// <param name="method"></param>
+    /// <param name="target"></param>
+    /// <returns></returns>
+    public static TFunc? As<TFunc>(this MethodInfo method, Object? target = null)
+    {
+        if (method == null) return default;
+
+        if (target == null)
+            return (TFunc?)(Object?)Delegate.CreateDelegate(typeof(TFunc), method, true);
+        else
+            return (TFunc?)(Object?)Delegate.CreateDelegate(typeof(TFunc), target, method, true);
+    }
 
     /// <summary>获取类型，如果target是Type类型，则表示要反射的是静态成员</summary>
     /// <param name="target">目标对象</param>
@@ -491,21 +508,6 @@ public static class Reflect
 
     //    return false;
     //}
-
-    /// <summary>把一个方法转为泛型委托，便于快速反射调用</summary>
-    /// <typeparam name="TFunc"></typeparam>
-    /// <param name="method"></param>
-    /// <param name="target"></param>
-    /// <returns></returns>
-    public static TFunc? As<TFunc>(this MethodInfo method, Object? target = null)
-    {
-        if (method == null) return default;
-
-        if (target == null)
-            return (TFunc?)(Object?)Delegate.CreateDelegate(typeof(TFunc), method, true);
-        else
-            return (TFunc?)(Object?)Delegate.CreateDelegate(typeof(TFunc), target, method, true);
-    }
 
     #endregion 辅助方法
 }

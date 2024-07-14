@@ -33,11 +33,6 @@ public partial class SiemensS7Master : ProtocolBase
     #region 设置
 
     /// <summary>
-    /// S7类型
-    /// </summary>
-    public SiemensTypeEnum SiemensS7Type { get; set; }
-
-    /// <summary>
     /// 本地TSAP，需重新连接
     /// </summary>
     public int LocalTSAP { get; set; }
@@ -48,11 +43,22 @@ public partial class SiemensS7Master : ProtocolBase
     public byte Rack { get; set; }
 
     /// <summary>
+    /// S7类型
+    /// </summary>
+    public SiemensTypeEnum SiemensS7Type { get; set; }
+
+    /// <summary>
     /// 槽号，需重新连接
     /// </summary>
     public byte Slot { get; set; }
 
     #endregion 设置
+
+    /// <inheritdoc/>
+    public override bool BitReverse(string address)
+    {
+        return false;
+    }
 
     /// <inheritdoc/>
     public override string GetAddressDescription()
@@ -82,12 +88,6 @@ public partial class SiemensS7Master : ProtocolBase
             }
         }
         return 0;
-    }
-
-    /// <inheritdoc/>
-    public override bool BitReverse(string address)
-    {
-        return false;
     }
 
     /// <inheritdoc/>

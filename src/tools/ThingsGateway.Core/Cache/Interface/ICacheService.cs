@@ -17,15 +17,38 @@ namespace ThingsGateway.Core;
 /// </summary>
 public partial interface ICacheService
 {
-
     #region 基础操作
 
-    T? GetOrCreate<T>(string key, Func<string, T> callback, int expire = -1);
+    /// <summary>清空所有缓存项</summary>
+    void Clear();
 
     /// <summary>是否包含缓存项</summary>
     /// <param name="key"></param>
     /// <returns></returns>
     bool ContainsKey(string key);
+
+    /// <summary>
+    /// 模糊删除
+    /// </summary>
+    /// <param name="pattern">匹配关键字</param>
+    void DelByPattern(string pattern);
+
+    /// <summary>获取缓存项</summary>
+    /// <param name="key">键</param>
+    /// <returns></returns>
+    T Get<T>(string key);
+
+    /// <summary>获取缓存项有效期</summary>
+    /// <param name="key">键</param>
+    /// <returns></returns>
+    TimeSpan GetExpire(string key);
+
+    T? GetOrCreate<T>(string key, Func<string, T> callback, int expire = -1);
+
+    /// <summary>批量移除缓存项</summary>
+    /// <param name="keys">键集合</param>
+    /// <returns></returns>
+    int Remove(params string[] keys);
 
     /// <summary>设置缓存项</summary>
     /// <param name="key">键</param>
@@ -41,34 +64,10 @@ public partial interface ICacheService
     /// <returns></returns>
     bool Set<T>(string key, T value, TimeSpan expire);
 
-    /// <summary>获取缓存项</summary>
-    /// <param name="key">键</param>
-    /// <returns></returns>
-    T Get<T>(string key);
-
-    /// <summary>批量移除缓存项</summary>
-    /// <param name="keys">键集合</param>
-    /// <returns></returns>
-    int Remove(params string[] keys);
-
-    /// <summary>清空所有缓存项</summary>
-    void Clear();
-
     /// <summary>设置缓存项有效期</summary>
     /// <param name="key">键</param>
     /// <param name="expire">过期时间</param>
     bool SetExpire(string key, TimeSpan expire);
-
-    /// <summary>获取缓存项有效期</summary>
-    /// <param name="key">键</param>
-    /// <returns></returns>
-    TimeSpan GetExpire(string key);
-
-    /// <summary>
-    /// 模糊删除
-    /// </summary>
-    /// <param name="pattern">匹配关键字</param>
-    void DelByPattern(string pattern);
 
     #endregion 基础操作
 
@@ -80,11 +79,11 @@ public partial interface ICacheService
     /// <returns></returns>
     IDictionary<string, T> GetAll<T>(IEnumerable<string> keys);
 
-    /// <summary>批量设置缓存项</summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="values"></param>
-    /// <param name="expire">过期时间，秒。小于0时采用默认缓存时间</param>
-    void SetAll<T>(IDictionary<string, T> values, int expire = -1);
+    /// <summary>获取哈希</summary>
+    /// <typeparam name="T">元素类型</typeparam>
+    /// <param name="key">键</param>
+    /// <returns></returns>
+    IDictionary<string, T> GetDictionary<T>(string key);
 
     /// <summary>获取列表</summary>
     /// <typeparam name="T">元素类型</typeparam>
@@ -92,17 +91,17 @@ public partial interface ICacheService
     /// <returns></returns>
     IList<T> GetList<T>(string key);
 
-    /// <summary>获取哈希</summary>
-    /// <typeparam name="T">元素类型</typeparam>
-    /// <param name="key">键</param>
-    /// <returns></returns>
-    IDictionary<string, T> GetDictionary<T>(string key);
-
     /// <summary>获取队列</summary>
     /// <typeparam name="T">元素类型</typeparam>
     /// <param name="key">键</param>
     /// <returns></returns>
     IProducerConsumer<T> GetQueue<T>(string key);
+
+    /// <summary>获取Set</summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    ICollection<T> GetSet<T>(string key);
 
     /// <summary>获取栈</summary>
     /// <typeparam name="T">元素类型</typeparam>
@@ -110,11 +109,11 @@ public partial interface ICacheService
     /// <returns></returns>
     IProducerConsumer<T> GetStack<T>(string key);
 
-    /// <summary>获取Set</summary>
+    /// <summary>批量设置缓存项</summary>
     /// <typeparam name="T"></typeparam>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    ICollection<T> GetSet<T>(string key);
+    /// <param name="values"></param>
+    /// <param name="expire">过期时间，秒。小于0时采用默认缓存时间</param>
+    void SetAll<T>(IDictionary<string, T> values, int expire = -1);
 
     #endregion 集合操作
 
@@ -127,6 +126,30 @@ public partial interface ICacheService
     /// <param name="expire">过期时间，秒。小于0时采用默认缓存时间</param>
     /// <returns></returns>
     bool Add<T>(string key, T value, int expire = -1);
+
+    /// <summary>递减，原子操作</summary>
+    /// <param name="key">键</param>
+    /// <param name="value">变化量</param>
+    /// <returns></returns>
+    long Decrement(string key, long value);
+
+    /// <summary>递减，原子操作</summary>
+    /// <param name="key">键</param>
+    /// <param name="value">变化量</param>
+    /// <returns></returns>
+    double Decrement(string key, double value);
+
+    /// <summary>累加，原子操作</summary>
+    /// <param name="key">键</param>
+    /// <param name="value">变化量</param>
+    /// <returns></returns>
+    long Increment(string key, long value);
+
+    /// <summary>累加，原子操作</summary>
+    /// <param name="key">键</param>
+    /// <param name="value">变化量</param>
+    /// <returns></returns>
+    double Increment(string key, double value);
 
     /// <summary>设置新值并获取旧值，原子操作</summary>
     /// <remarks>
@@ -145,37 +168,9 @@ public partial interface ICacheService
     /// <returns>返回是否包含值，即使反序列化失败</returns>
     bool TryGetValue<T>(string key, out T value);
 
-    /// <summary>累加，原子操作</summary>
-    /// <param name="key">键</param>
-    /// <param name="value">变化量</param>
-    /// <returns></returns>
-    long Increment(string key, long value);
-
-    /// <summary>累加，原子操作</summary>
-    /// <param name="key">键</param>
-    /// <param name="value">变化量</param>
-    /// <returns></returns>
-    double Increment(string key, double value);
-
-    /// <summary>递减，原子操作</summary>
-    /// <param name="key">键</param>
-    /// <param name="value">变化量</param>
-    /// <returns></returns>
-    long Decrement(string key, long value);
-
-    /// <summary>递减，原子操作</summary>
-    /// <param name="key">键</param>
-    /// <param name="value">变化量</param>
-    /// <returns></returns>
-    double Decrement(string key, double value);
-
     #endregion 高级操作
 
     #region 事务
-
-    /// <summary>提交变更。部分提供者需要刷盘</summary>
-    /// <returns></returns>
-    int Commit();
 
     /// <summary>申请分布式锁</summary>
     /// <param name="key">要锁定的key</param>
@@ -190,6 +185,10 @@ public partial interface ICacheService
     /// <param name="throwOnFailure">失败时是否抛出异常，如果不抛出异常，可通过返回null得知申请锁失败</param>
     /// <returns></returns>
     IDisposable AcquireLock(string key, int msTimeout, int msExpire, bool throwOnFailure);
+
+    /// <summary>提交变更。部分提供者需要刷盘</summary>
+    /// <returns></returns>
+    int Commit();
 
     #endregion 事务
 }

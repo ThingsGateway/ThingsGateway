@@ -13,16 +13,16 @@ namespace ThingsGateway.Gateway.Application;
 public interface IDBHistoryValueService
 {
     /// <summary>
-    /// 按条件获取DB插件中的全部历史数据(不分页)
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    public Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBHistoryValuePageInput input);
-
-    /// <summary>
     /// 按条件获取DB插件中的全部历史数据(分页)
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     public Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBHistoryValuePageInput input);
+
+    /// <summary>
+    /// 按条件获取DB插件中的全部历史数据(不分页)
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBHistoryValuePageInput input);
 }

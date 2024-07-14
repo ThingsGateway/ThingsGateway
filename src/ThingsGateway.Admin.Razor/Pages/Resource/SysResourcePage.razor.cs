@@ -14,14 +14,11 @@ namespace ThingsGateway.Admin.Razor;
 
 public partial class SysResourcePage
 {
-    [Inject]
-    [NotNull]
-    private ISysResourceService? SysResourceService { get; set; }
+    private ResourceSearchInput CustomerSearchModel { get; set; } = new ResourceSearchInput();
 
     private List<SelectedItem> ModuleSelectedItems { get; set; }
-    private IEnumerable<SelectedItem> ParementSelectedItems { get; set; }
 
-    private ResourceSearchInput CustomerSearchModel { get; set; } = new ResourceSearchInput();
+    private IEnumerable<SelectedItem> ParementSelectedItems { get; set; }
 
     [CascadingParameter(Name = "ReloadMenu")]
     private Func<Task>? ReloadMenu { get; set; }
@@ -29,18 +26,22 @@ public partial class SysResourcePage
     [CascadingParameter(Name = "ReloadUser")]
     private Func<Task>? ReloadUser { get; set; }
 
+    [Inject]
+    [NotNull]
+    private ISysResourceService? SysResourceService { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        CustomerSearchModel.Module = (await SysResourceService.GetAllAsync()).FirstOrDefault(a => a.Category == ResourceCategoryEnum.Module)?.Id ?? ResourceConst.SystemId;
+        await base.OnInitializedAsync();
+    }
+
     protected override async Task OnParametersSetAsync()
     {
         ModuleSelectedItems = ResourceUtil.BuildModuleSelectList((await SysResourceService.GetAllAsync())).ToList();
         ModuleSelectedItems.Add(new SelectedItem(ResourceConst.SpaId.ToString(), ResourceConst.SpaTitle));
         ParementSelectedItems = ResourceUtil.BuildMenuSelectList((await SysResourceService.GetAllAsync())).Concat(new List<SelectedItem>() { new("0", Localizer["Root"]) }).ToList();
         await base.OnParametersSetAsync();
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        CustomerSearchModel.Module = (await SysResourceService.GetAllAsync()).FirstOrDefault(a => a.Category == ResourceCategoryEnum.Module)?.Id ?? ResourceConst.SystemId;
-        await base.OnInitializedAsync();
     }
 
     #region 查询
@@ -54,6 +55,24 @@ public partial class SysResourcePage
     #endregion 查询
 
     #region 修改
+
+    private async Task<bool> Delete(IEnumerable<SysResource> sysResources)
+    {
+        try
+        {
+            var result = await SysResourceService.DeleteResourceAsync(sysResources.Select(a => a.Id));
+            if (ReloadUser != null)
+            {
+                await ReloadUser();
+            }
+            return result;
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(null, $"{ex.Message}");
+            return false;
+        }
+    }
 
     private async Task<bool> Save(SysResource sysResource, ItemChangedType itemChangedType)
     {
@@ -75,27 +94,11 @@ public partial class SysResourcePage
         }
     }
 
-    private async Task<bool> Delete(IEnumerable<SysResource> sysResources)
-    {
-        try
-        {
-            var result = await SysResourceService.DeleteResourceAsync(sysResources.Select(a => a.Id));
-            if (ReloadUser != null)
-            {
-                await ReloadUser();
-            }
-            return result;
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(null, $"{ex.Message}");
-            return false;
-        }
-    }
-
     #endregion 修改
 
     #region 树节点
+
+    private bool ModelEqualityComparer(SysResource x, SysResource y) => x.Id == y.Id;
 
     private async Task<IEnumerable<TableTreeNode<SysResource>>> OnTreeExpand(SysResource menu)
     {
@@ -110,8 +113,6 @@ public partial class SysResourcePage
         var result = ResourceUtil.BuildTableTrees(items, 0);
         return result;
     }
-
-    private bool ModelEqualityComparer(SysResource x, SysResource y) => x.Id == y.Id;
 
     #endregion 树节点
 

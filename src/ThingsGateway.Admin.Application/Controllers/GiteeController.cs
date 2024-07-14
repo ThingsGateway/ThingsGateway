@@ -13,8 +13,6 @@ using BootstrapBlazor.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
-using ThingsGateway.Core;
-
 using RouteAttribute = Microsoft.AspNetCore.Mvc.RouteAttribute;
 
 namespace ThingsGateway.Admin.Application;
@@ -26,6 +24,13 @@ namespace ThingsGateway.Admin.Application;
 [ApiController]
 public class GiteeController : ControllerBase
 {
+    /// <summary>
+    /// 跨域握手协议
+    /// </summary>
+    /// <returns></returns>
+    [HttpOptions]
+    public string Options() => string.Empty;
+
     /// <summary>
     /// Gitee Webhook
     /// </summary>
@@ -72,11 +77,4 @@ public class GiteeController : ControllerBase
     {
         return Ok(new { Message = "Ok" });
     }
-
-    /// <summary>
-    /// 跨域握手协议
-    /// </summary>
-    /// <returns></returns>
-    [HttpOptions]
-    public string Options() => string.Empty;
 }

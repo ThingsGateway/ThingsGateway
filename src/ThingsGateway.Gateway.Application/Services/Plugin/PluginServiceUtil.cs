@@ -23,99 +23,6 @@ namespace ThingsGateway.Gateway.Application;
 public static class PluginServiceUtil
 {
     /// <summary>
-    /// 插件是否支持平台
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static bool IsSupported(Type type)
-    {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            return !Attribute.IsDefined(type, typeof(OnlyWindowsSupportAttribute));
-
-        return true;
-    }
-
-    /// <summary>
-    /// 插件是否支持平台
-    /// </summary>
-    /// <param name="type"></param>
-    /// <returns></returns>
-    public static bool HasDynamicProperty(object model)
-    {
-        var type = model.GetType();
-        return type.GetRuntimeProperties().Any(a => a.GetCustomAttribute<DynamicPropertyAttribute>(false) != null);
-    }
-
-    /// <summary>
-    /// 通过实体赋值到字典中
-    /// </summary>
-    /// <param name="model"></param>
-    /// <param name="dict"></param>
-    public static ConcurrentDictionary<long, Dictionary<string, string>> SetDict(ConcurrentDictionary<long, ModelValueValidateForm>? models)
-    {
-        ConcurrentDictionary<long, Dictionary<string, string>> results = new();
-        models ??= new();
-        foreach (var model in models)
-        {
-            var data = SetDict(model.Value.Value);
-            results.TryAdd(model.Key, data);
-        }
-        return results;
-    }
-
-    /// <summary>
-    /// 通过实体赋值到字典中
-    /// </summary>
-    /// <param name="model"></param>
-    /// <param name="dict"></param>
-    public static Dictionary<string, string> SetDict(object model)
-    {
-        Type type = model.GetType();
-        var properties = type.GetRuntimeProperties();
-        Dictionary<string, string> dict = new();
-        foreach (var property in properties)
-        {
-            string propertyName = property.Name;
-            // 如果属性存在且可写
-            if (property != null && property.CanWrite)
-            {
-                // 进行类型转换
-                var value = ThingsGatewayStringConverter.Default.Serialize(null, property.GetValue(model));
-                dict.Add(propertyName, value);
-            }
-        }
-        return dict;
-    }
-
-    /// <summary>
-    /// 通过字典赋值到实体中
-    /// </summary>
-    /// <param name="model"></param>
-    /// <param name="dict"></param>
-    public static void SetModel(object model, Dictionary<string, string> dict)
-    {
-        Type type = model.GetType();
-        var properties = type.GetRuntimeProperties();
-
-        foreach (var property in properties)
-        {
-            string propertyName = property.Name;
-
-            // 如果属性存在且可写
-            if (property != null && property.CanWrite)
-            {
-                if (dict.TryGetValue(propertyName, out var dictValue))
-                {
-                    // 进行类型转换
-                    object value = ThingsGatewayStringConverter.Default.Deserialize(null, dictValue, property.PropertyType);
-                    // 设置属性值
-                    property.SetValue(model, value);
-                }
-            }
-        }
-    }
-
-    /// <summary>
     /// 属性赋值方法
     /// </summary>
     /// <param name="dest"></param>
@@ -149,45 +56,6 @@ public static class PluginServiceUtil
         {
             source1.CopyValue(dest1);
         }
-    }
-
-    private static void CopyValue(this ITableColumn col, ITableColumn dest)
-    {
-        if (col.Align.HasValue) dest.Align = col.Align;
-        if (col.TextWrap.HasValue) dest.TextWrap = col.TextWrap;
-        if (!string.IsNullOrEmpty(col.CssClass)) dest.CssClass = col.CssClass;
-        if (col.DefaultSort) dest.DefaultSort = col.DefaultSort;
-        if (col.DefaultSortOrder != SortOrder.Unset) dest.DefaultSortOrder = col.DefaultSortOrder;
-        if (col.Filter != null) dest.Filter = col.Filter;
-        if (col.Filterable.HasValue) dest.Filterable = col.Filterable;
-        if (col.FilterTemplate != null) dest.FilterTemplate = col.FilterTemplate;
-        if (col.Fixed) dest.Fixed = col.Fixed;
-        if (col.FormatString != null) dest.FormatString = col.FormatString;
-        if (col.Formatter != null) dest.Formatter = col.Formatter;
-        if (col.HeaderTemplate != null) dest.HeaderTemplate = col.HeaderTemplate;
-        if (col.OnCellRender != null) dest.OnCellRender = col.OnCellRender;
-        if (col.Searchable.HasValue) dest.Searchable = col.Searchable;
-        if (col.SearchTemplate != null) dest.SearchTemplate = col.SearchTemplate;
-        if (col.ShownWithBreakPoint != BreakPoint.None) dest.ShownWithBreakPoint = col.ShownWithBreakPoint;
-        if (col.ShowTips.HasValue) dest.ShowTips = col.ShowTips = true;
-        if (col.Sortable.HasValue) dest.Sortable = col.Sortable;
-        if (col.Template != null) dest.Template = col.Template;
-        if (col.TextEllipsis.HasValue) dest.TextEllipsis = col.TextEllipsis;
-        if (!col.Visible.HasValue) dest.Visible = col.Visible;
-        if (col.Width != null) dest.Width = col.Width;
-        if (col.ShowCopyColumn.HasValue) dest.ShowCopyColumn = col.ShowCopyColumn;
-        if (col.HeaderTextWrap) dest.HeaderTextWrap = col.HeaderTextWrap;
-        if (!string.IsNullOrEmpty(col.HeaderTextTooltip)) dest.HeaderTextTooltip = col.HeaderTextTooltip;
-        if (col.ShowHeaderTooltip) dest.ShowHeaderTooltip = col.ShowHeaderTooltip;
-        if (col.HeaderTextEllipsis) dest.HeaderTextEllipsis = col.HeaderTextEllipsis;
-        if (col.IsMarkupString) dest.IsMarkupString = col.IsMarkupString;
-        if (col.Visible.HasValue) dest.Visible = col.Visible;
-        if (col.IsVisibleWhenAdd.HasValue) dest.IsVisibleWhenAdd = col.IsVisibleWhenAdd;
-        if (col.IsVisibleWhenEdit.HasValue) dest.IsVisibleWhenEdit = col.IsVisibleWhenEdit;
-        if (col.IsReadonlyWhenAdd.HasValue) dest.IsReadonlyWhenAdd = col.IsReadonlyWhenAdd;
-        if (col.IsReadonlyWhenEdit.HasValue) dest.IsReadonlyWhenEdit = col.IsReadonlyWhenEdit;
-        if (col.GetTooltipTextCallback != null) dest.GetTooltipTextCallback = col.GetTooltipTextCallback;
-        if (col.CustomSearch != null) dest.CustomSearch = col.CustomSearch;
     }
 
     /// <summary>
@@ -265,5 +133,137 @@ public static class PluginServiceUtil
     public static string GetFullName(string fileName, string name)
     {
         return string.IsNullOrEmpty(fileName) ? name : $"{fileName}.{name}";
+    }
+
+    /// <summary>
+    /// 插件是否支持平台
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static bool HasDynamicProperty(object model)
+    {
+        var type = model.GetType();
+        return type.GetRuntimeProperties().Any(a => a.GetCustomAttribute<DynamicPropertyAttribute>(false) != null);
+    }
+
+    /// <summary>
+    /// 插件是否支持平台
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static bool IsSupported(Type type)
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return !Attribute.IsDefined(type, typeof(OnlyWindowsSupportAttribute));
+
+        return true;
+    }
+
+    /// <summary>
+    /// 通过实体赋值到字典中
+    /// </summary>
+    /// <param name="model"></param>
+    /// <param name="dict"></param>
+    public static ConcurrentDictionary<long, Dictionary<string, string>> SetDict(ConcurrentDictionary<long, ModelValueValidateForm>? models)
+    {
+        ConcurrentDictionary<long, Dictionary<string, string>> results = new();
+        models ??= new();
+        foreach (var model in models)
+        {
+            var data = SetDict(model.Value.Value);
+            results.TryAdd(model.Key, data);
+        }
+        return results;
+    }
+
+    /// <summary>
+    /// 通过实体赋值到字典中
+    /// </summary>
+    /// <param name="model"></param>
+    /// <param name="dict"></param>
+    public static Dictionary<string, string> SetDict(object model)
+    {
+        Type type = model.GetType();
+        var properties = type.GetRuntimeProperties();
+        Dictionary<string, string> dict = new();
+        foreach (var property in properties)
+        {
+            string propertyName = property.Name;
+            // 如果属性存在且可写
+            if (property != null && property.CanWrite)
+            {
+                // 进行类型转换
+                var value = ThingsGatewayStringConverter.Default.Serialize(null, property.GetValue(model));
+                dict.Add(propertyName, value);
+            }
+        }
+        return dict;
+    }
+
+    /// <summary>
+    /// 通过字典赋值到实体中
+    /// </summary>
+    /// <param name="model"></param>
+    /// <param name="dict"></param>
+    public static void SetModel(object model, Dictionary<string, string> dict)
+    {
+        Type type = model.GetType();
+        var properties = type.GetRuntimeProperties();
+
+        foreach (var property in properties)
+        {
+            string propertyName = property.Name;
+
+            // 如果属性存在且可写
+            if (property != null && property.CanWrite)
+            {
+                if (dict.TryGetValue(propertyName, out var dictValue))
+                {
+                    // 进行类型转换
+                    object value = ThingsGatewayStringConverter.Default.Deserialize(null, dictValue, property.PropertyType);
+                    // 设置属性值
+                    property.SetValue(model, value);
+                }
+            }
+        }
+    }
+
+    private static void CopyValue(this ITableColumn col, ITableColumn dest)
+    {
+        if (col.Align.HasValue) dest.Align = col.Align;
+        if (col.TextWrap.HasValue) dest.TextWrap = col.TextWrap;
+        if (!string.IsNullOrEmpty(col.CssClass)) dest.CssClass = col.CssClass;
+        if (col.DefaultSort) dest.DefaultSort = col.DefaultSort;
+        if (col.DefaultSortOrder != SortOrder.Unset) dest.DefaultSortOrder = col.DefaultSortOrder;
+        if (col.Filter != null) dest.Filter = col.Filter;
+        if (col.Filterable.HasValue) dest.Filterable = col.Filterable;
+        if (col.FilterTemplate != null) dest.FilterTemplate = col.FilterTemplate;
+        if (col.Fixed) dest.Fixed = col.Fixed;
+        if (col.FormatString != null) dest.FormatString = col.FormatString;
+        if (col.Formatter != null) dest.Formatter = col.Formatter;
+        if (col.HeaderTemplate != null) dest.HeaderTemplate = col.HeaderTemplate;
+        if (col.OnCellRender != null) dest.OnCellRender = col.OnCellRender;
+        if (col.Searchable.HasValue) dest.Searchable = col.Searchable;
+        if (col.SearchTemplate != null) dest.SearchTemplate = col.SearchTemplate;
+        if (col.ShownWithBreakPoint != BreakPoint.None) dest.ShownWithBreakPoint = col.ShownWithBreakPoint;
+        if (col.ShowTips.HasValue) dest.ShowTips = col.ShowTips = true;
+        if (col.Sortable.HasValue) dest.Sortable = col.Sortable;
+        if (col.Template != null) dest.Template = col.Template;
+        if (col.TextEllipsis.HasValue) dest.TextEllipsis = col.TextEllipsis;
+        if (!col.Visible.HasValue) dest.Visible = col.Visible;
+        if (col.Width != null) dest.Width = col.Width;
+        if (col.ShowCopyColumn.HasValue) dest.ShowCopyColumn = col.ShowCopyColumn;
+        if (col.HeaderTextWrap) dest.HeaderTextWrap = col.HeaderTextWrap;
+        if (!string.IsNullOrEmpty(col.HeaderTextTooltip)) dest.HeaderTextTooltip = col.HeaderTextTooltip;
+        if (col.ShowHeaderTooltip) dest.ShowHeaderTooltip = col.ShowHeaderTooltip;
+        if (col.HeaderTextEllipsis) dest.HeaderTextEllipsis = col.HeaderTextEllipsis;
+        if (col.IsMarkupString) dest.IsMarkupString = col.IsMarkupString;
+        if (col.Visible.HasValue) dest.Visible = col.Visible;
+        if (col.IsVisibleWhenAdd.HasValue) dest.IsVisibleWhenAdd = col.IsVisibleWhenAdd;
+        if (col.IsVisibleWhenEdit.HasValue) dest.IsVisibleWhenEdit = col.IsVisibleWhenEdit;
+        if (col.IsReadonlyWhenAdd.HasValue) dest.IsReadonlyWhenAdd = col.IsReadonlyWhenAdd;
+        if (col.IsReadonlyWhenEdit.HasValue) dest.IsReadonlyWhenEdit = col.IsReadonlyWhenEdit;
+        if (col.GetTooltipTextCallback != null) dest.GetTooltipTextCallback = col.GetTooltipTextCallback;
+        if (col.CustomSearch != null) dest.CustomSearch = col.CustomSearch;
     }
 }

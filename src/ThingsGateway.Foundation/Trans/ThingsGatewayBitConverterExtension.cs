@@ -139,91 +139,6 @@ public static class ThingsGatewayBitConverterExtension
     #region 获取对应数据类型的数据
 
     /// <summary>
-    /// 根据数据类型获取实际值
-    /// </summary>
-    public static object GetDataFormBytes(this IThingsGatewayBitConverter byteConverter, IProtocol protocol, string address, byte[] buffer, int index, DataTypeEnum dataType)
-    {
-        switch (dataType)
-        {
-            case DataTypeEnum.Boolean:
-                return byteConverter.ArrayLength > 1 ?
-                byteConverter.ToBoolean(buffer, index, byteConverter.ArrayLength.Value, protocol.BitReverse(address)) :
-                byteConverter.ToBoolean(buffer, index, protocol.BitReverse(address));
-
-            case DataTypeEnum.Byte:
-                return
-                byteConverter.ArrayLength > 1 ?
-                byteConverter.ToByte(buffer, index, byteConverter.ArrayLength.Value) :
-                byteConverter.ToByte(buffer, index);
-
-            case DataTypeEnum.Int16:
-                return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToInt16(buffer, index, byteConverter.ArrayLength.Value) :
-                byteConverter.ToInt16(buffer, index);
-
-            case DataTypeEnum.UInt16:
-                return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToUInt16(buffer, index, byteConverter.ArrayLength.Value) :
-                byteConverter.ToUInt16(buffer, index);
-
-            case DataTypeEnum.Int32:
-                return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToInt32(buffer, index, byteConverter.ArrayLength.Value) :
-                byteConverter.ToInt32(buffer, index);
-
-            case DataTypeEnum.UInt32:
-                return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToUInt32(buffer, index, byteConverter.ArrayLength.Value) :
-                byteConverter.ToUInt32(buffer, index);
-
-            case DataTypeEnum.Int64:
-                return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToInt64(buffer, index, byteConverter.ArrayLength.Value) :
-                byteConverter.ToInt64(buffer, index);
-
-            case DataTypeEnum.UInt64:
-                return
-                byteConverter.ArrayLength > 1 ?
-                byteConverter.ToUInt64(buffer, index, byteConverter.ArrayLength.Value) :
-                byteConverter.ToUInt64(buffer, index);
-
-            case DataTypeEnum.Single:
-                return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToSingle(buffer, index, byteConverter.ArrayLength.Value) :
-                byteConverter.ToSingle(buffer, index);
-
-            case DataTypeEnum.Double:
-                return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToDouble(buffer, index, byteConverter.ArrayLength.Value) :
-                byteConverter.ToDouble(buffer, index);
-
-            case DataTypeEnum.String:
-            default:
-                if (byteConverter.ArrayLength > 1)
-                {
-                    List<String> strings = new();
-                    for (int i = 0; i < byteConverter.ArrayLength; i++)
-                    {
-                        var data = byteConverter.ToString(buffer, index + i * byteConverter.StringLength ?? 1, byteConverter.StringLength ?? 1);
-                        strings.Add(data);
-                    }
-                    return strings.ToArray();
-                }
-                else
-                {
-                    return byteConverter.ToString(buffer, index, byteConverter.StringLength ?? 1);
-                }
-        }
-    }
-
-    /// <summary>
     /// 根据数据类型获取字节数组
     /// </summary>
     public static byte[] GetBytesFormData(this IThingsGatewayBitConverter byteConverter, JToken value, DataTypeEnum dataType)
@@ -312,6 +227,91 @@ public static class ThingsGatewayBitConverterExtension
                 default:
                     return byteConverter.GetBytes(value.ToObject<String>());
             }
+        }
+    }
+
+    /// <summary>
+    /// 根据数据类型获取实际值
+    /// </summary>
+    public static object GetDataFormBytes(this IThingsGatewayBitConverter byteConverter, IProtocol protocol, string address, byte[] buffer, int index, DataTypeEnum dataType)
+    {
+        switch (dataType)
+        {
+            case DataTypeEnum.Boolean:
+                return byteConverter.ArrayLength > 1 ?
+                byteConverter.ToBoolean(buffer, index, byteConverter.ArrayLength.Value, protocol.BitReverse(address)) :
+                byteConverter.ToBoolean(buffer, index, protocol.BitReverse(address));
+
+            case DataTypeEnum.Byte:
+                return
+                byteConverter.ArrayLength > 1 ?
+                byteConverter.ToByte(buffer, index, byteConverter.ArrayLength.Value) :
+                byteConverter.ToByte(buffer, index);
+
+            case DataTypeEnum.Int16:
+                return
+                 byteConverter.ArrayLength > 1 ?
+                byteConverter.ToInt16(buffer, index, byteConverter.ArrayLength.Value) :
+                byteConverter.ToInt16(buffer, index);
+
+            case DataTypeEnum.UInt16:
+                return
+                 byteConverter.ArrayLength > 1 ?
+                byteConverter.ToUInt16(buffer, index, byteConverter.ArrayLength.Value) :
+                byteConverter.ToUInt16(buffer, index);
+
+            case DataTypeEnum.Int32:
+                return
+                 byteConverter.ArrayLength > 1 ?
+                byteConverter.ToInt32(buffer, index, byteConverter.ArrayLength.Value) :
+                byteConverter.ToInt32(buffer, index);
+
+            case DataTypeEnum.UInt32:
+                return
+                 byteConverter.ArrayLength > 1 ?
+                byteConverter.ToUInt32(buffer, index, byteConverter.ArrayLength.Value) :
+                byteConverter.ToUInt32(buffer, index);
+
+            case DataTypeEnum.Int64:
+                return
+                 byteConverter.ArrayLength > 1 ?
+                byteConverter.ToInt64(buffer, index, byteConverter.ArrayLength.Value) :
+                byteConverter.ToInt64(buffer, index);
+
+            case DataTypeEnum.UInt64:
+                return
+                byteConverter.ArrayLength > 1 ?
+                byteConverter.ToUInt64(buffer, index, byteConverter.ArrayLength.Value) :
+                byteConverter.ToUInt64(buffer, index);
+
+            case DataTypeEnum.Single:
+                return
+                 byteConverter.ArrayLength > 1 ?
+                byteConverter.ToSingle(buffer, index, byteConverter.ArrayLength.Value) :
+                byteConverter.ToSingle(buffer, index);
+
+            case DataTypeEnum.Double:
+                return
+                 byteConverter.ArrayLength > 1 ?
+                byteConverter.ToDouble(buffer, index, byteConverter.ArrayLength.Value) :
+                byteConverter.ToDouble(buffer, index);
+
+            case DataTypeEnum.String:
+            default:
+                if (byteConverter.ArrayLength > 1)
+                {
+                    List<String> strings = new();
+                    for (int i = 0; i < byteConverter.ArrayLength; i++)
+                    {
+                        var data = byteConverter.ToString(buffer, index + i * byteConverter.StringLength ?? 1, byteConverter.StringLength ?? 1);
+                        strings.Add(data);
+                    }
+                    return strings.ToArray();
+                }
+                else
+                {
+                    return byteConverter.ToString(buffer, index, byteConverter.StringLength ?? 1);
+                }
         }
     }
 

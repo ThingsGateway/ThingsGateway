@@ -18,12 +18,15 @@ namespace ThingsGateway.Admin.Razor;
 
 public partial class GrantUserComponent
 {
-    private HashSet<UserSelectorOutput> SelectedRows { get; set; } = new();
-    private List<UserSelectorOutput> SelectedAddRows { get; set; } = new();
-    private List<UserSelectorOutput> SelectedDeleteRows { get; set; } = new();
-
     [Parameter]
     public long RoleId { get; set; }
+
+    [CascadingParameter]
+    private Func<Task>? OnCloseAsync { get; set; }
+
+    private List<UserSelectorOutput> SelectedAddRows { get; set; } = new();
+    private List<UserSelectorOutput> SelectedDeleteRows { get; set; } = new();
+    private HashSet<UserSelectorOutput> SelectedRows { get; set; } = new();
 
     [Inject]
     [NotNull]
@@ -41,8 +44,13 @@ public partial class GrantUserComponent
         await base.OnInitializedAsync();
     }
 
-    [CascadingParameter]
-    private Func<Task>? OnCloseAsync { get; set; }
+    private async Task<QueryData<UserSelectorOutput>> OnQueryAsync(QueryPageOptions options)
+    {
+        var data = await SysUserService.PageAsync(options);
+        QueryData<UserSelectorOutput> queryData = data.Adapt<QueryData<UserSelectorOutput>>();
+
+        return queryData;
+    }
 
     private async Task OnSave(MouseEventArgs args)
     {
@@ -60,13 +68,5 @@ public partial class GrantUserComponent
         {
             await ToastService.Warning(ex.Message);
         }
-    }
-
-    private async Task<QueryData<UserSelectorOutput>> OnQueryAsync(QueryPageOptions options)
-    {
-        var data = await SysUserService.PageAsync(options);
-        QueryData<UserSelectorOutput> queryData = data.Adapt<QueryData<UserSelectorOutput>>();
-
-        return queryData;
     }
 }

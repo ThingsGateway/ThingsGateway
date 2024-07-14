@@ -19,19 +19,48 @@ using TouchSocket.Core;
 namespace ThingsGateway.Foundation;
 
 /// <summary>
-/// String类型数据转换器
+/// Json字符串转到对应类
 /// </summary>
-public class ThingsGatewayStringConverter : StringSerializerConverter
+public class JsonStringToClassSerializerFormatter<TState> : ISerializerFormatter<string, TState>
 {
-    public static ThingsGatewayStringConverter Default = new ThingsGatewayStringConverter();
+    /// <summary>
+    /// JsonSettings
+    /// </summary>
+    public JsonSerializerSettings JsonSettings { get; set; } = new JsonSerializerSettings();
 
     /// <summary>
-    /// 构造函数
+    /// <inheritdoc/>
     /// </summary>
-    public ThingsGatewayStringConverter(params ISerializerFormatter<string, object>[] converters) : base(converters)
+    public int Order { get; set; } = -99;
+
+    /// <inheritdoc/>
+    public bool TryDeserialize(TState state, in string source, Type targetType, out object target)
     {
-        this.Add(new StringToClassConverter<object>());
-        this.Add(new JsonStringToClassSerializerFormatter<object>());
+        try
+        {
+            target = JsonConvert.DeserializeObject(source, targetType, this.JsonSettings)!;
+            return true;
+        }
+        catch
+        {
+            target = default;
+            return false;
+        }
+    }
+
+    /// <inheritdoc/>
+    public bool TrySerialize(TState state, in object target, out string source)
+    {
+        try
+        {
+            source = JsonConvert.SerializeObject(target, JsonSettings);
+            return true;
+        }
+        catch (Exception)
+        {
+            source = null;
+            return false;
+        }
     }
 }
 
@@ -68,48 +97,19 @@ public class StringToClassConverter<TState> : ISerializerFormatter<string, TStat
 }
 
 /// <summary>
-/// Json字符串转到对应类
+/// String类型数据转换器
 /// </summary>
-public class JsonStringToClassSerializerFormatter<TState> : ISerializerFormatter<string, TState>
+public class ThingsGatewayStringConverter : StringSerializerConverter
 {
-    /// <summary>
-    /// <inheritdoc/>
-    /// </summary>
-    public int Order { get; set; } = -99;
+    public static ThingsGatewayStringConverter Default = new ThingsGatewayStringConverter();
 
     /// <summary>
-    /// JsonSettings
+    /// 构造函数
     /// </summary>
-    public JsonSerializerSettings JsonSettings { get; set; } = new JsonSerializerSettings();
-
-    /// <inheritdoc/>
-    public bool TryDeserialize(TState state, in string source, Type targetType, out object target)
+    public ThingsGatewayStringConverter(params ISerializerFormatter<string, object>[] converters) : base(converters)
     {
-        try
-        {
-            target = JsonConvert.DeserializeObject(source, targetType, this.JsonSettings)!;
-            return true;
-        }
-        catch
-        {
-            target = default;
-            return false;
-        }
-    }
-
-    /// <inheritdoc/>
-    public bool TrySerialize(TState state, in object target, out string source)
-    {
-        try
-        {
-            source = JsonConvert.SerializeObject(target, JsonSettings);
-            return true;
-        }
-        catch (Exception)
-        {
-            source = null;
-            return false;
-        }
+        this.Add(new StringToClassConverter<object>());
+        this.Add(new JsonStringToClassSerializerFormatter<object>());
     }
 }
 

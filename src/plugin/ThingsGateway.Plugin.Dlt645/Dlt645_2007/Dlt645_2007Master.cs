@@ -22,22 +22,15 @@ public class Dlt645_2007Master : CollectBase
     private ThingsGateway.Foundation.Dlt645.Dlt645_2007Master _plc;
 
     /// <inheritdoc/>
-    public override Type DriverDebugUIType => typeof(ThingsGateway.Debug.Dlt645_2007Master);
+    public override CollectPropertyBase CollectProperties => _driverPropertys;
 
     /// <inheritdoc/>
-    public override CollectPropertyBase CollectProperties => _driverPropertys;
+    public override Type DriverDebugUIType => typeof(ThingsGateway.Debug.Dlt645_2007Master);
 
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
     public override IProtocol Protocol => _plc;
-
-    protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
-    {
-        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
-        if (CurrentDevice.Channel.ChannelType == ChannelTypeEnum.TcpService)
-            await Task.Delay(6000).ConfigureAwait(false);//等待6秒连接
-    }
 
     /// <inheritdoc/>
     public override void Init(IChannel? channel = null)
@@ -59,6 +52,13 @@ public class Dlt645_2007Master : CollectBase
             Station = _driverPropertys.Station,
             HeartbeatHexString = _driverPropertys.HeartbeatHexString,
         };
+    }
+
+    protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
+    {
+        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
+        if (CurrentDevice.Channel.ChannelType == ChannelTypeEnum.TcpService)
+            await Task.Delay(6000).ConfigureAwait(false);//等待6秒连接
     }
 
     /// <inheritdoc/>

@@ -26,6 +26,11 @@ namespace ThingsGateway.Logging;
 public sealed class DatabaseLoggerProvider : ILoggerProvider, ISupportExternalScope
 {
     /// <summary>
+    /// 数据库日志写入器作用域范围
+    /// </summary>
+    internal IServiceScope _serviceScope;
+
+    /// <summary>
     /// 存储多日志分类日志记录器
     /// </summary>
     private readonly ConcurrentDictionary<string, DatabaseLogger> _databaseLoggers = new();
@@ -34,16 +39,6 @@ public sealed class DatabaseLoggerProvider : ILoggerProvider, ISupportExternalSc
     /// 日志消息队列（线程安全）
     /// </summary>
     private readonly BlockingCollection<LogMessage> _logMessageQueue = new(12000);
-
-    /// <summary>
-    /// 日志作用域提供器
-    /// </summary>
-    private IExternalScopeProvider _scopeProvider;
-
-    /// <summary>
-    /// 数据库日志写入器作用域范围
-    /// </summary>
-    internal IServiceScope _serviceScope;
 
     /// <summary>
     /// 数据库日志写入器
@@ -55,6 +50,11 @@ public sealed class DatabaseLoggerProvider : ILoggerProvider, ISupportExternalSc
     /// </summary>
     /// <remarks>实现不间断写入</remarks>
     private Task _processQueueTask;
+
+    /// <summary>
+    /// 日志作用域提供器
+    /// </summary>
+    private IExternalScopeProvider _scopeProvider;
 
     /// <summary>
     /// 构造函数
@@ -93,15 +93,6 @@ public sealed class DatabaseLoggerProvider : ILoggerProvider, ISupportExternalSc
     }
 
     /// <summary>
-    /// 设置作用域提供器
-    /// </summary>
-    /// <param name="scopeProvider"></param>
-    public void SetScopeProvider(IExternalScopeProvider scopeProvider)
-    {
-        _scopeProvider = scopeProvider;
-    }
-
-    /// <summary>
     /// 释放非托管资源
     /// </summary>
     /// <remarks>控制日志消息队列</remarks>
@@ -127,22 +118,12 @@ public sealed class DatabaseLoggerProvider : ILoggerProvider, ISupportExternalSc
     }
 
     /// <summary>
-    /// 将日志消息写入队列中等待后台任务出队写入数据库
+    /// 设置作用域提供器
     /// </summary>
-    /// <param name="logMsg">结构化日志消息</param>
-    internal void WriteToQueue(LogMessage logMsg)
+    /// <param name="scopeProvider"></param>
+    public void SetScopeProvider(IExternalScopeProvider scopeProvider)
     {
-        // 只有队列可持续入队才写入
-        if (!_logMessageQueue.IsAddingCompleted)
-        {
-            try
-            {
-                _logMessageQueue.Add(logMsg);
-                return;
-            }
-            catch (InvalidOperationException) { }
-            catch { }
-        }
+        _scopeProvider = scopeProvider;
     }
 
     /// <summary>
@@ -164,6 +145,25 @@ public sealed class DatabaseLoggerProvider : ILoggerProvider, ISupportExternalSc
         // 创建长时间运行的后台任务，并将日志消息队列中数据写入存储中
         _processQueueTask = Task.Factory.StartNew(state => ((DatabaseLoggerProvider)state!).ProcessQueueAsync()
             , this, TaskCreationOptions.LongRunning);
+    }
+
+    /// <summary>
+    /// 将日志消息写入队列中等待后台任务出队写入数据库
+    /// </summary>
+    /// <param name="logMsg">结构化日志消息</param>
+    internal void WriteToQueue(LogMessage logMsg)
+    {
+        // 只有队列可持续入队才写入
+        if (!_logMessageQueue.IsAddingCompleted)
+        {
+            try
+            {
+                _logMessageQueue.Add(logMsg);
+                return;
+            }
+            catch (InvalidOperationException) { }
+            catch { }
+        }
     }
 
     /// <summary>

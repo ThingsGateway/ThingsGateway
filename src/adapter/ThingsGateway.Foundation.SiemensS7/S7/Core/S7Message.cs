@@ -17,29 +17,16 @@ namespace ThingsGateway.Foundation.SiemensS7;
 /// </summary>
 internal class S7Message : MessageBase, IResultMessage
 {
-    /// <inheritdoc/>
-    public override int HeaderLength => 4;
-
     /// <summary>
     /// 错误码
     /// </summary>
     public byte? Error { get; set; }
 
+    /// <inheritdoc/>
+    public override int HeaderLength => 4;
+
     public SiemensAddress[] Request { get; set; }
     public S7Send? S7Send { get; set; }
-
-    public override void SendInfo(ISendMessage sendMessage)
-    {
-        S7Send = ((S7Send)sendMessage);
-        Request = S7Send.SiemensAddress;
-    }
-
-    public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
-    {
-        byteBlock.Position += 2;
-        BodyLength = byteBlock.ReadUInt16(EndianType.Big) - 4;
-        return true;
-    }
 
     public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
     {
@@ -186,5 +173,18 @@ internal class S7Message : MessageBase, IResultMessage
                 return FilterResult.Success;
             }
         }
+    }
+
+    public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
+    {
+        byteBlock.Position += 2;
+        BodyLength = byteBlock.ReadUInt16(EndianType.Big) - 4;
+        return true;
+    }
+
+    public override void SendInfo(ISendMessage sendMessage)
+    {
+        S7Send = ((S7Send)sendMessage);
+        Request = S7Send.SiemensAddress;
     }
 }

@@ -16,27 +16,16 @@ namespace ThingsGateway.Gateway.Application;
 public class VariableSourceRead : IVariableSource
 {
     /// <summary>
-    /// 读取地址，传入时需要去除额外信息
+    /// 读取次数
     /// </summary>
-    public string RegisterAddress { get; set; }
-
-    /// <summary>
-    /// 需分配的变量列表
-    /// </summary>
-    public IEnumerable<IVariable> VariableRunTimes => _variableRunTimes;
+    public ulong ReadCount;
 
     private List<IVariable> _variableRunTimes = new List<IVariable>();
 
     /// <summary>
-    /// 间隔时间实现
+    /// 离线原因
     /// </summary>
-    public TimeTick TimeTick { get; set; }
-
-    public void AddVariable(IVariable variable)
-    {
-        variable.VariableSource = this;
-        _variableRunTimes.Add(variable);
-    }
+    public string? LastErrorMessage { get; set; }
 
     /// <summary>
     /// 读取长度
@@ -44,11 +33,25 @@ public class VariableSourceRead : IVariableSource
     public int Length { get; set; }
 
     /// <summary>
-    /// 检测是否达到读取间隔
+    /// 读取地址，传入时需要去除额外信息
     /// </summary>
-    /// <param name="time"></param>
-    /// <returns></returns>
-    public bool CheckIfRequestAndUpdateTime(DateTime time) => TimeTick.IsTickHappen(time);
+    public string RegisterAddress { get; set; }
+
+    /// <summary>
+    /// 间隔时间实现
+    /// </summary>
+    public TimeTick TimeTick { get; set; }
+
+    /// <summary>
+    /// 需分配的变量列表
+    /// </summary>
+    public IEnumerable<IVariable> VariableRunTimes => _variableRunTimes;
+
+    public void AddVariable(IVariable variable)
+    {
+        variable.VariableSource = this;
+        _variableRunTimes.Add(variable);
+    }
 
     /// <inheritdoc/>
     public virtual void AddVariableRange(IEnumerable<IVariable> variables)
@@ -61,12 +64,9 @@ public class VariableSourceRead : IVariableSource
     }
 
     /// <summary>
-    /// 读取次数
+    /// 检测是否达到读取间隔
     /// </summary>
-    public ulong ReadCount;
-
-    /// <summary>
-    /// 离线原因
-    /// </summary>
-    public string? LastErrorMessage { get; set; }
+    /// <param name="time"></param>
+    /// <returns></returns>
+    public bool CheckIfRequestAndUpdateTime(DateTime time) => TimeTick.IsTickHappen(time);
 }

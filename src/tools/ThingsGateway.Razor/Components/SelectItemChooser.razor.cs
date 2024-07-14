@@ -12,27 +12,17 @@ namespace ThingsGateway.Razor;
 
 public partial class SelectItemChooser
 {
-    [Parameter]
-    [EditorRequired]
-    [NotNull]
-    public RenderFragment<long>? ItemTemplate { get; set; }
+    private long _selectedItem;
 
     [Parameter]
     [NotNull]
     [EditorRequired]
     public IEnumerable<long> Items { get; set; }
 
-    private long _selectedItem;
-
-    private string? GetItemClass(long item) => CssBuilder.Default("btn m-2")
-    .AddClass("btn-primary", _selectedItem == item)
-    .Build();
-
-    protected override async Task OnParametersSetAsync()
-    {
-        _selectedItem = Value;
-        await base.OnParametersSetAsync();
-    }
+    [Parameter]
+    [EditorRequired]
+    [NotNull]
+    public RenderFragment<long>? ItemTemplate { get; set; }
 
     [Parameter]
     [NotNull]
@@ -41,6 +31,16 @@ public partial class SelectItemChooser
     [Parameter]
     [NotNull]
     public EventCallback<long> ValueChanged { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _selectedItem = Value;
+        await base.OnParametersSetAsync();
+    }
+
+    private string? GetItemClass(long item) => CssBuilder.Default("btn m-2")
+                .AddClass("btn-primary", _selectedItem == item)
+    .Build();
 
     private async Task OnClickItem(long item)
     {

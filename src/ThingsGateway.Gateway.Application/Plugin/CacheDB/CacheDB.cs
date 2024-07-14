@@ -19,6 +19,8 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class CacheDB : DisposeBase
 {
+    private SqlSugarClient _dBProvider;
+
     internal CacheDB(Type type, CacheDBOption? cacheDBOption = null)
     {
         TableType = type;
@@ -27,7 +29,6 @@ public class CacheDB : DisposeBase
     }
 
     public CacheDBOption CacheDBOption { get; }
-    private Type TableType { get; set; }
 
     public SqlSugarClient DBProvider
     {
@@ -37,7 +38,7 @@ public class CacheDB : DisposeBase
         }
     }
 
-    private SqlSugarClient _dBProvider;
+    private Type TableType { get; set; }
 
     public void InitDb()
     {

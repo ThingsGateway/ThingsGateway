@@ -14,23 +14,17 @@ using Microsoft.Extensions.Localization;
 
 using SqlSugar;
 
-using ThingsGateway.Core;
-
 namespace ThingsGateway.Admin.Application;
 
 public class BaseService<T> : IDataService<T>, IDisposable where T : class, new()
 {
-    protected IStringLocalizer Localizer { get; }
-
     public BaseService()
     {
         this.Localizer = App.CreateLocalizerByType(typeof(T))!;
     }
 
-    protected SqlSugarClient GetDB()
-    {
-        return DbContext.Db.GetConnectionScopeWithAttr<T>().CopyNew();
-    }
+    public bool IsDisposed { get; private set; }
+    protected IStringLocalizer Localizer { get; }
 
     public Task<bool> AddAsync(T model)
     {
@@ -51,17 +45,14 @@ public class BaseService<T> : IDataService<T>, IDisposable where T : class, new(
         return await db.Deleteable<T>().In(models.ToList()).ExecuteCommandHasChangeAsync();
     }
 
-    public virtual async Task<bool> SaveAsync(T model, ItemChangedType changedType)
+    /// <summary>
+    /// 释放资源
+    /// </summary>
+    public void Dispose()
     {
-        using var db = GetDB();
-        if (changedType == ItemChangedType.Add)
-        {
-            return (await db.Insertable(model).ExecuteCommandAsync()) > 0;
-        }
-        else
-        {
-            return (await db.Updateable(model).ExecuteCommandAsync()) > 0;
-        }
+        Dispose(true);
+        IsDisposed = true;
+        GC.SuppressFinalize(this);
     }
 
     public Task<QueryData<T>> QueryAsync(QueryPageOptions option)
@@ -113,16 +104,17 @@ public class BaseService<T> : IDataService<T>, IDisposable where T : class, new(
         return ret;
     }
 
-    public bool IsDisposed { get; private set; }
-
-    /// <summary>
-    /// 释放资源
-    /// </summary>
-    public void Dispose()
+    public virtual async Task<bool> SaveAsync(T model, ItemChangedType changedType)
     {
-        Dispose(true);
-        IsDisposed = true;
-        GC.SuppressFinalize(this);
+        using var db = GetDB();
+        if (changedType == ItemChangedType.Add)
+        {
+            return (await db.Insertable(model).ExecuteCommandAsync()) > 0;
+        }
+        else
+        {
+            return (await db.Updateable(model).ExecuteCommandAsync()) > 0;
+        }
     }
 
     /// <summary>
@@ -131,5 +123,10 @@ public class BaseService<T> : IDataService<T>, IDisposable where T : class, new(
     /// <param name="disposing"></param>
     protected virtual void Dispose(bool disposing)
     {
+    }
+
+    protected SqlSugarClient GetDB()
+    {
+        return DbContext.Db.GetConnectionScopeWithAttr<T>().CopyNew();
     }
 }

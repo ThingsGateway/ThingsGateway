@@ -49,14 +49,14 @@ public class ModbusAddress : ModbusRequest
     }
 
     /// <summary>
+    /// 读取终止
+    /// </summary>
+    public int AddressEnd => (ushort)(StartAddress + Math.Max(Math.Ceiling(Length / 2.0), 1));
+
+    /// <summary>
     /// BitIndex
     /// </summary>
     public int? BitIndex { get; set; }
-
-    /// <summary>
-    /// 写入功能码，主站请求时生效，其余情况应选择<see cref="ModbusRequest.FunctionCode"/>
-    /// </summary>
-    public byte? WriteFunctionCode { get; set; }
 
     /// <summary>
     /// 作为Slave时需提供的SocketId，用于分辨Socket客户端，通常对比的是初始链接时的注册包
@@ -64,41 +64,9 @@ public class ModbusAddress : ModbusRequest
     public string? SocketId { get; set; }
 
     /// <summary>
-    /// 读取终止
+    /// 写入功能码，主站请求时生效，其余情况应选择<see cref="ModbusRequest.FunctionCode"/>
     /// </summary>
-    public int AddressEnd => (ushort)(StartAddress + Math.Max(Math.Ceiling(Length / 2.0), 1));
-
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        StringBuilder stringGeter = new();
-        if (Station > 0)
-        {
-            stringGeter.Append($"S={Station};");
-        }
-        if (WriteFunctionCode > 0)
-        {
-            stringGeter.Append($"W={WriteFunctionCode};");
-        }
-        if (!string.IsNullOrEmpty(SocketId))
-        {
-            stringGeter.Append($"ID={SocketId};");
-        }
-        stringGeter.Append($"{GetFunctionString(FunctionCode)}{StartAddress + 1}{(BitIndex != null ? $".{BitIndex}" : null)}");
-        return stringGeter.ToString();
-    }
-
-    private string GetFunctionString(byte readF)
-    {
-        return readF switch
-        {
-            1 => "0",
-            2 => "1",
-            3 => "4",
-            4 => "3",
-            _ => "4",
-        };
-    }
+    public byte? WriteFunctionCode { get; set; }
 
     /// <summary>
     /// 解析地址
@@ -181,5 +149,37 @@ public class ModbusAddress : ModbusRequest
                 modbusAddress.BitIndex = int.Parse(strArray[1]);
             }
         }
+    }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        StringBuilder stringGeter = new();
+        if (Station > 0)
+        {
+            stringGeter.Append($"S={Station};");
+        }
+        if (WriteFunctionCode > 0)
+        {
+            stringGeter.Append($"W={WriteFunctionCode};");
+        }
+        if (!string.IsNullOrEmpty(SocketId))
+        {
+            stringGeter.Append($"ID={SocketId};");
+        }
+        stringGeter.Append($"{GetFunctionString(FunctionCode)}{StartAddress + 1}{(BitIndex != null ? $".{BitIndex}" : null)}");
+        return stringGeter.ToString();
+    }
+
+    private string GetFunctionString(byte readF)
+    {
+        return readF switch
+        {
+            1 => "0",
+            2 => "1",
+            3 => "4",
+            4 => "3",
+            _ => "4",
+        };
     }
 }

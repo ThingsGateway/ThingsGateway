@@ -21,6 +21,9 @@ public partial class SysSignalR : IAsyncDisposable
     private HubConnection _hubConnection;
 
     [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    [Inject]
     private ToastService ToastService { get; set; }
 
     /// <inheritdoc/>
@@ -31,9 +34,6 @@ public partial class SysSignalR : IAsyncDisposable
             await _hubConnection.DisposeAsync();
         }
     }
-
-    [Inject]
-    private NavigationManager NavigationManager { get; set; }
 
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)

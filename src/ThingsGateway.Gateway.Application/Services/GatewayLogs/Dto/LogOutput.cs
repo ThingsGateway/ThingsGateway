@@ -21,14 +21,14 @@ public class RpcLogDayStatisticsOutput
     public string Date { get; set; }
 
     /// <summary>
-    /// 成功次数
-    /// </summary>
-    public int SuccessCount { get; set; }
-
-    /// <summary>
     /// 失败次数
     /// </summary>
     public int FailCount { get; set; }
+
+    /// <summary>
+    /// 成功次数
+    /// </summary>
+    public int SuccessCount { get; set; }
 }
 
 /// <summary>
@@ -42,7 +42,7 @@ public class BackendLogDayStatisticsOutput
     public string Date { get; set; }
 
     public int DebugCount { get; set; }
+    public int ErrorCount { get; set; }
     public int InfoCount { get; set; }
     public int WarningCount { get; set; }
-    public int ErrorCount { get; set; }
 }

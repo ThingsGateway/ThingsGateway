@@ -29,12 +29,12 @@ internal readonly struct ConsoleColors
     }
 
     /// <summary>
-    /// 前景色
-    /// </summary>
-    public ConsoleColor? Foreground { get; }
-
-    /// <summary>
     /// 背景色
     /// </summary>
     public ConsoleColor? Background { get; }
+
+    /// <summary>
+    /// 前景色
+    /// </summary>
+    public ConsoleColor? Foreground { get; }
 }

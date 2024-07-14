@@ -28,56 +28,17 @@ internal class Dlt645_2007Response : Dlt645_2007Request
 /// </summary>
 internal class Dlt645_2007Message : MessageBase, IResultMessage
 {
+    private readonly byte[] ReadStation = [0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA];
+
+    private int HeadCodeIndex;
+
+    public Dlt645_2007Send? Dlt645_2007Send { get; set; }
+
     /// <inheritdoc/>
     public override int HeaderLength { get; set; } = 10;
 
     public Dlt645_2007Address? Request { get; set; }
-    public Dlt645_2007Send? Dlt645_2007Send { get; set; }
-
     public Dlt645_2007Response Response { get; set; } = new();
-
-    public override void SendInfo(ISendMessage sendMessage)
-    {
-        Dlt645_2007Send = ((Dlt645_2007Send)sendMessage);
-        Request = Dlt645_2007Send.Dlt645_2007Address;
-    }
-
-    private int HeadCodeIndex;
-    private readonly byte[] ReadStation = [0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA];
-
-    /// <inheritdoc/>
-    public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
-    {
-        if (Request != null)
-        {
-            //因为设备可能带有FE前导符开头，这里找到0x68的位置
-
-            if (byteBlock != null)
-            {
-                for (int index = byteBlock.Position; index < byteBlock.Length; index++)
-                {
-                    if (byteBlock[index] == 0x68)
-                    {
-                        HeadCodeIndex = index;
-                        break;
-                    }
-                }
-            }
-
-            //帧起始符 地址域  帧起始符 控制码 数据域长度共10个字节
-            HeaderLength = HeadCodeIndex - byteBlock.Position + 10;
-            if (byteBlock.CanReadLength < HeaderLength + HeadCodeIndex)
-            {
-                return true;
-            }
-            BodyLength = byteBlock[HeadCodeIndex + 9] + 2;
-            return true;
-        }
-        else
-        {
-            return false;//不是主动请求的，可能是心跳DTU包，直接放弃
-        }
-    }
 
     public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
     {
@@ -143,5 +104,45 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
         }
 
         return FilterResult.GoOn;
+    }
+
+    /// <inheritdoc/>
+    public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
+    {
+        if (Request != null)
+        {
+            //因为设备可能带有FE前导符开头，这里找到0x68的位置
+
+            if (byteBlock != null)
+            {
+                for (int index = byteBlock.Position; index < byteBlock.Length; index++)
+                {
+                    if (byteBlock[index] == 0x68)
+                    {
+                        HeadCodeIndex = index;
+                        break;
+                    }
+                }
+            }
+
+            //帧起始符 地址域  帧起始符 控制码 数据域长度共10个字节
+            HeaderLength = HeadCodeIndex - byteBlock.Position + 10;
+            if (byteBlock.CanReadLength < HeaderLength + HeadCodeIndex)
+            {
+                return true;
+            }
+            BodyLength = byteBlock[HeadCodeIndex + 9] + 2;
+            return true;
+        }
+        else
+        {
+            return false;//不是主动请求的，可能是心跳DTU包，直接放弃
+        }
+    }
+
+    public override void SendInfo(ISendMessage sendMessage)
+    {
+        Dlt645_2007Send = ((Dlt645_2007Send)sendMessage);
+        Request = Dlt645_2007Send.Dlt645_2007Address;
     }
 }

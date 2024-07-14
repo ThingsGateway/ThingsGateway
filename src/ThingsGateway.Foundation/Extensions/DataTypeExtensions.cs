@@ -16,26 +16,26 @@ namespace ThingsGateway.Foundation;
 public static class DataTypeExtensions
 {
     /// <summary>
-    /// 获取DOTNET RUNTIME TYPE
+    /// 获取实际字节长度，不能确定返回0，bool返回1
     /// </summary>
     /// <param name="coreDataType"></param>
     /// <returns></returns>
-    public static Type GetSystemType(this DataTypeEnum coreDataType)
+    public static byte GetByteLength(this DataTypeEnum coreDataType)
     {
         return coreDataType switch
         {
-            DataTypeEnum.String => typeof(string),
-            DataTypeEnum.Boolean => typeof(bool),
-            DataTypeEnum.Byte => typeof(byte),
-            DataTypeEnum.Int16 => typeof(short),
-            DataTypeEnum.UInt16 => typeof(ushort),
-            DataTypeEnum.Int32 => typeof(int),
-            DataTypeEnum.UInt32 => typeof(uint),
-            DataTypeEnum.Int64 => typeof(long),
-            DataTypeEnum.UInt64 => typeof(ulong),
-            DataTypeEnum.Single => typeof(float),
-            DataTypeEnum.Double => typeof(double),
-            _ => typeof(object),
+            DataTypeEnum.Boolean => 1,
+            DataTypeEnum.Byte => 1,
+            DataTypeEnum.Int16 => 2,
+            DataTypeEnum.UInt16 => 2,
+            DataTypeEnum.Int32 => 4,
+            DataTypeEnum.UInt32 => 4,
+            DataTypeEnum.Int64 => 8,
+            DataTypeEnum.UInt64 => 8,
+            DataTypeEnum.Single => 4,
+            DataTypeEnum.Double => 8,
+            DataTypeEnum.Decimal => 16,
+            _ => 0,
         };
     }
 
@@ -64,26 +64,26 @@ public static class DataTypeExtensions
     }
 
     /// <summary>
-    /// 获取实际字节长度，不能确定返回0，bool返回1
+    /// 获取DOTNET RUNTIME TYPE
     /// </summary>
     /// <param name="coreDataType"></param>
     /// <returns></returns>
-    public static byte GetByteLength(this DataTypeEnum coreDataType)
+    public static Type GetSystemType(this DataTypeEnum coreDataType)
     {
         return coreDataType switch
         {
-            DataTypeEnum.Boolean => 1,
-            DataTypeEnum.Byte => 1,
-            DataTypeEnum.Int16 => 2,
-            DataTypeEnum.UInt16 => 2,
-            DataTypeEnum.Int32 => 4,
-            DataTypeEnum.UInt32 => 4,
-            DataTypeEnum.Int64 => 8,
-            DataTypeEnum.UInt64 => 8,
-            DataTypeEnum.Single => 4,
-            DataTypeEnum.Double => 8,
-            DataTypeEnum.Decimal => 16,
-            _ => 0,
+            DataTypeEnum.String => typeof(string),
+            DataTypeEnum.Boolean => typeof(bool),
+            DataTypeEnum.Byte => typeof(byte),
+            DataTypeEnum.Int16 => typeof(short),
+            DataTypeEnum.UInt16 => typeof(ushort),
+            DataTypeEnum.Int32 => typeof(int),
+            DataTypeEnum.UInt32 => typeof(uint),
+            DataTypeEnum.Int64 => typeof(long),
+            DataTypeEnum.UInt64 => typeof(ulong),
+            DataTypeEnum.Single => typeof(float),
+            DataTypeEnum.Double => typeof(double),
+            _ => typeof(object),
         };
     }
 }

@@ -12,12 +12,32 @@ namespace ThingsGateway.Admin.Application;
 
 public class CacheConst
 {
+    /// <summary>
+    /// Token表缓存Key
+    /// </summary>
+    public const string Cache_HardwareInfo = $"{CacheConst.Cache_Prefix_Admin}Cache_HardwareInfo:";
+
     public const string Cache_Prefix_Admin = "ThingsGatewayAdmin:";
 
     /// <summary>
     /// 系统字典表缓存Key
     /// </summary>
     public const string Cache_SysDict = $"{CacheConst.Cache_Prefix_Admin}SysDict:";
+
+    /// <summary>
+    /// 关系表缓存Key
+    /// </summary>
+    public const string Cache_SysRelation = $"{CacheConst.Cache_Prefix_Admin}SysRelation:";
+
+    /// <summary>
+    /// 资源表缓存Key
+    /// </summary>
+    public const string Cache_SysResource = $"{CacheConst.Cache_Prefix_Admin}SysResource:";
+
+    /// <summary>
+    /// 角色表缓存Key
+    /// </summary>
+    public const string Cache_SysRole = $"{CacheConst.Cache_Prefix_Admin}SysRole:";
 
     /// <summary>
     /// 用户表缓存Key
@@ -30,29 +50,9 @@ public class CacheConst
     public const string Cache_SysUserAccount = $"{CacheConst.Cache_Prefix_Admin}SysUserAccount:";
 
     /// <summary>
-    /// 资源表缓存Key
-    /// </summary>
-    public const string Cache_SysResource = $"{CacheConst.Cache_Prefix_Admin}SysResource:";
-
-    /// <summary>
-    /// 关系表缓存Key
-    /// </summary>
-    public const string Cache_SysRelation = $"{CacheConst.Cache_Prefix_Admin}SysRelation:";
-
-    /// <summary>
-    /// 角色表缓存Key
-    /// </summary>
-    public const string Cache_SysRole = $"{CacheConst.Cache_Prefix_Admin}SysRole:";
-
-    /// <summary>
     /// Token表缓存Key
     /// </summary>
     public const string Cache_Token = $"{CacheConst.Cache_Prefix_Admin}Token:";
-
-    /// <summary>
-    /// Token表缓存Key
-    /// </summary>
-    public const string Cache_HardwareInfo = $"{CacheConst.Cache_Prefix_Admin}Cache_HardwareInfo:";
 
     #region 登录错误次数
 

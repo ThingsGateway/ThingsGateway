@@ -18,6 +18,20 @@ namespace ThingsGateway.Foundation.Extension.Collection;
 public static class CollectionExtensions
 {
     /// <summary>
+    /// 添加多个元素
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="this"></param>
+    /// <param name="values"></param>
+    public static void AddRange<T>(this ICollection<T> @this, IEnumerable<T> values)
+    {
+        foreach (var obj in values)
+        {
+            @this.Add(obj);
+        }
+    }
+
+    /// <summary>
     /// 从并发字典中删除
     /// </summary>
     public static bool Remove<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> dict, TKey key) where TKey : notnull
@@ -36,20 +50,6 @@ public static class CollectionExtensions
         foreach (var obj in @this.Where(where).ToList())
         {
             @this.Remove(obj);
-        }
-    }
-
-    /// <summary>
-    /// 添加多个元素
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="this"></param>
-    /// <param name="values"></param>
-    public static void AddRange<T>(this ICollection<T> @this, IEnumerable<T> values)
-    {
-        foreach (var obj in values)
-        {
-            @this.Add(obj);
         }
     }
 }

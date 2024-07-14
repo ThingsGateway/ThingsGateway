@@ -19,11 +19,6 @@ public partial class GrantResourceComponent
     [Parameter]
     [EditorRequired]
     [NotNull]
-    public List<long> Value { get; set; }
-
-    [Parameter]
-    [EditorRequired]
-    [NotNull]
     public long Id { get; set; }
 
     [Parameter]
@@ -32,10 +27,18 @@ public partial class GrantResourceComponent
     public bool IsRole { get; set; }
 
     [Parameter]
+    [EditorRequired]
+    [NotNull]
+    public List<long> Value { get; set; }
+
+    [Parameter]
     public EventCallback<List<long>> ValueChanged { get; set; }
 
     [NotNull]
     private List<TreeViewItem<SysResource>>? Items { get; set; }
+
+    [CascadingParameter]
+    private Func<Task>? OnCloseAsync { get; set; }
 
     [Inject]
     [NotNull]
@@ -43,14 +46,11 @@ public partial class GrantResourceComponent
 
     [Inject]
     [NotNull]
-    private ISysUserService? SysUserService { get; set; }
+    private ISysRoleService? SysRoleService { get; set; }
 
     [Inject]
     [NotNull]
-    private ISysRoleService? SysRoleService { get; set; }
-
-    [CascadingParameter]
-    private Func<Task>? OnCloseAsync { get; set; }
+    private ISysUserService? SysUserService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,14 +60,9 @@ public partial class GrantResourceComponent
         ModuleList = (await SysResourceService.GetAllAsync()).Where(a => a.Category == ResourceCategoryEnum.Module).ToList();
     }
 
-    private async Task OnTreeItemChecked(List<TreeViewItem<SysResource>> items)
-    {
-        Value = items.Select(a => a.Value.Id).ToList();
-        if (ValueChanged.HasDelegate)
-        {
-            await ValueChanged.InvokeAsync(Value);
-        }
-    }
+    private string GetApp(long? moduleId) => ModuleList.FirstOrDefault(i => i.Id == moduleId)?.Title ?? ResourceConst.SpaTitle;
+
+    private bool ModelEqualityComparer(SysResource x, SysResource y) => x.Id == y.Id;
 
     private async Task OnClickClose()
     {
@@ -98,7 +93,12 @@ public partial class GrantResourceComponent
         }
     }
 
-    private string GetApp(long? moduleId) => ModuleList.FirstOrDefault(i => i.Id == moduleId)?.Title ?? ResourceConst.SpaTitle;
-
-    private bool ModelEqualityComparer(SysResource x, SysResource y) => x.Id == y.Id;
+    private async Task OnTreeItemChecked(List<TreeViewItem<SysResource>> items)
+    {
+        Value = items.Select(a => a.Value.Id).ToList();
+        if (ValueChanged.HasDelegate)
+        {
+            await ValueChanged.InvokeAsync(Value);
+        }
+    }
 }

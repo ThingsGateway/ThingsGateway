@@ -10,7 +10,6 @@
 
 using Newtonsoft.Json;
 
-using System.ComponentModel.DataAnnotations;
 using System.IO.Ports;
 
 using TouchSocket.SerialPorts;

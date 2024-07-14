@@ -18,26 +18,6 @@ namespace ThingsGateway.Foundation;
 public static class LoggerExtensions
 {
     /// <summary>
-    /// 获取DEBUG日志路径
-    /// </summary>
-    /// <param name="channelId"></param>
-    /// <returns></returns>
-    public static string GetDebugLogPath(this long channelId)
-    {
-        return GetDebugLogBasePath().CombinePath(channelId.ToString()).FileNameReplace();
-    }
-
-    /// <summary>
-    /// 获取日志路径
-    /// </summary>
-    /// <param name="channelId"></param>
-    /// <returns></returns>
-    public static string GetLogPath(this long channelId)
-    {
-        return GetLogBasePath().CombinePath(channelId.ToString()).FileNameReplace();
-    }
-
-    /// <summary>
     /// 替换名称中不符合文件路径规则的字符为_
     /// </summary>
     /// <param name="fileName"></param>
@@ -52,6 +32,24 @@ public static class LoggerExtensions
     }
 
     /// <summary>
+    /// GetDebugLogBasePath
+    /// </summary>
+    public static string GetDebugLogBasePath()
+    {
+        return "wwwroot".CombinePath("debugLogs");
+    }
+
+    /// <summary>
+    /// 获取DEBUG日志路径
+    /// </summary>
+    /// <param name="channelId"></param>
+    /// <returns></returns>
+    public static string GetDebugLogPath(this long channelId)
+    {
+        return GetDebugLogBasePath().CombinePath(channelId.ToString()).FileNameReplace();
+    }
+
+    /// <summary>
     /// GetLogBasePath
     /// </summary>
     public static string GetLogBasePath()
@@ -60,11 +58,13 @@ public static class LoggerExtensions
     }
 
     /// <summary>
-    /// GetDebugLogBasePath
+    /// 获取日志路径
     /// </summary>
-    public static string GetDebugLogBasePath()
+    /// <param name="channelId"></param>
+    /// <returns></returns>
+    public static string GetLogPath(this long channelId)
     {
-        return "wwwroot".CombinePath("debugLogs");
+        return GetLogBasePath().CombinePath(channelId.ToString()).FileNameReplace();
     }
 
     #region 日志
@@ -83,6 +83,22 @@ public static class LoggerExtensions
     public static void LogError(this ILog logger, Exception ex)
     {
         logger.Log(TouchSocket.Core.LogLevel.Error, null, ex.Message, ex);
+    }
+
+    /// <summary>
+    /// 输出提示日志
+    /// </summary>
+    public static void LogInformation(this ILog logger, string msg)
+    {
+        logger.Log(TouchSocket.Core.LogLevel.Info, null, msg, null);
+    }
+
+    /// <summary>
+    /// 输出Trace日志
+    /// </summary>
+    public static void LogTrace(this ILog logger, string msg)
+    {
+        logger.Log(TouchSocket.Core.LogLevel.Trace, null, msg, null);
     }
 
     /// <summary>
@@ -107,22 +123,6 @@ public static class LoggerExtensions
     public static void LogWarning(this ILog logger, string msg)
     {
         logger.Log(TouchSocket.Core.LogLevel.Warning, null, msg, null);
-    }
-
-    /// <summary>
-    /// 输出Trace日志
-    /// </summary>
-    public static void LogTrace(this ILog logger, string msg)
-    {
-        logger.Log(TouchSocket.Core.LogLevel.Trace, null, msg, null);
-    }
-
-    /// <summary>
-    /// 输出提示日志
-    /// </summary>
-    public static void LogInformation(this ILog logger, string msg)
-    {
-        logger.Log(TouchSocket.Core.LogLevel.Info, null, msg, null);
     }
 
     #endregion 日志

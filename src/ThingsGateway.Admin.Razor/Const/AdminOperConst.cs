@@ -13,6 +13,6 @@ namespace ThingsGateway.Admin.Razor;
 public class AdminOperConst
 {
     public const string Add = "新增";
-    public const string Edit = "编辑";
     public const string Delete = "删除";
+    public const string Edit = "编辑";
 }

@@ -19,11 +19,6 @@ namespace ThingsGateway.Gateway.Application;
 public class BackendLogPageInput : ITableSearchModel
 {
     /// <summary>
-    /// 时间区间
-    /// </summary>
-    public DateTimeRangeValue? SearchDate { get; set; }
-
-    /// <summary>
     /// 日志等级
     /// </summary>
     public virtual LogLevel? LogLevel { get; set; }
@@ -32,6 +27,11 @@ public class BackendLogPageInput : ITableSearchModel
     /// 日志源
     /// </summary>
     public string? LogSource { get; set; }
+
+    /// <summary>
+    /// 时间区间
+    /// </summary>
+    public DateTimeRangeValue? SearchDate { get; set; }
 
     /// <inheritdoc/>
     public IEnumerable<IFilterAction> GetSearches()
@@ -56,11 +56,6 @@ public class BackendLogPageInput : ITableSearchModel
 public class RpcLogPageInput : ITableSearchModel
 {
     /// <summary>
-    /// 时间区间
-    /// </summary>
-    public DateTimeRangeValue? SearchDate { get; set; }
-
-    /// <summary>
     /// 操作对象
     /// </summary>
     public string? OperateObject { get; set; }
@@ -69,6 +64,11 @@ public class RpcLogPageInput : ITableSearchModel
     /// 操作源
     /// </summary>
     public string? OperateSource { get; set; }
+
+    /// <summary>
+    /// 时间区间
+    /// </summary>
+    public DateTimeRangeValue? SearchDate { get; set; }
 
     /// <inheritdoc/>
     public IEnumerable<IFilterAction> GetSearches()

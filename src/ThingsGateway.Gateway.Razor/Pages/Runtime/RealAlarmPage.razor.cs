@@ -10,7 +10,6 @@
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.Sql;
 
 namespace ThingsGateway.Gateway.Razor;
 

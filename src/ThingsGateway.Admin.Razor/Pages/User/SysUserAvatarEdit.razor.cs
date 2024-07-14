@@ -16,13 +16,32 @@ namespace ThingsGateway.Admin.Razor;
 
 public partial class SysUserAvatarEdit : IDisposable
 {
+    private List<UploadFile> PreviewFileList;
+
     [Parameter]
     [NotNull]
     public SysUser? Model { get; set; }
 
+    [FileValidation(Extensions = [".png", ".jpg", ".jpeg"], FileSize = 200 * 1024)]
+    public IBrowserFile? Picture { get; set; }
+
+    private CancellationTokenSource? ReadAvatarToken { get; set; }
+
     [Inject]
     [NotNull]
     private ToastService ToastService { get; set; }
+
+    public void Dispose()
+    {
+        ReadAvatarToken?.Cancel();
+        GC.SuppressFinalize(this);
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        PreviewFileList = new(new[] { new UploadFile { PrevUrl = Model.Avatar } });
+        return base.OnParametersSetAsync();
+    }
 
     private async Task OnAvatarUpload(UploadFile file)
     {
@@ -48,23 +67,4 @@ public partial class SysUserAvatarEdit : IDisposable
             }
         }
     }
-
-    private List<UploadFile> PreviewFileList;
-
-    [FileValidation(Extensions = [".png", ".jpg", ".jpeg"], FileSize = 200 * 1024)]
-    public IBrowserFile? Picture { get; set; }
-
-    protected override Task OnParametersSetAsync()
-    {
-        PreviewFileList = new(new[] { new UploadFile { PrevUrl = Model.Avatar } });
-        return base.OnParametersSetAsync();
-    }
-
-    public void Dispose()
-    {
-        ReadAvatarToken?.Cancel();
-        GC.SuppressFinalize(this);
-    }
-
-    private CancellationTokenSource? ReadAvatarToken { get; set; }
 }

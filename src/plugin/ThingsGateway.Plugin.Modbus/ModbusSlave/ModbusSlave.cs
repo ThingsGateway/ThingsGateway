@@ -18,7 +18,6 @@ using SqlSugar;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Foundation.Modbus;
@@ -32,17 +31,15 @@ namespace ThingsGateway.Plugin.Modbus;
 public class ModbusSlave : BusinessBase
 {
     private readonly ModbusSlaveProperty _driverPropertys = new();
+    private readonly ConcurrentQueue<(string, VariableRunTime)> _modbusVariableDict = new();
     private readonly ModbusSlaveVariableProperty _variablePropertys = new();
     private Dictionary<ModbusAddress, VariableRunTime> _modbusTags;
-    private readonly ConcurrentQueue<(string, VariableRunTime)> _modbusVariableDict = new();
-
     private ThingsGateway.Foundation.Modbus.ModbusSlave _plc;
+
+    private volatile bool success = true;
 
     /// <inheritdoc/>
     public override Type DriverDebugUIType => typeof(ThingsGateway.Debug.ModbusSlave);
-
-    /// <inheritdoc/>
-    protected override BusinessPropertyBase _businessPropertyBase => _driverPropertys;
 
     /// <inheritdoc/>
     public override Type DriverUIType
@@ -57,19 +54,15 @@ public class ModbusSlave : BusinessBase
     }
 
     /// <inheritdoc/>
-    public override VariablePropertyBase VariablePropertys => _variablePropertys;
-
-    /// <inheritdoc/>
     public override IProtocol Protocol => _plc;
 
     /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        _modbusTags?.Clear();
-        _modbusVariableDict?.Clear();
-        GlobalData.VariableValueChangeEvent -= VariableValueChange;
-        base.Dispose(disposing);
-    }
+    public override VariablePropertyBase VariablePropertys => _variablePropertys;
+
+    /// <inheritdoc/>
+    protected override BusinessPropertyBase _businessPropertyBase => _driverPropertys;
+
+    protected IStringLocalizer Localizer { get; private set; }
 
     /// <inheritdoc/>
     public override void Init(IChannel? channel = null)
@@ -112,8 +105,14 @@ public class ModbusSlave : BusinessBase
         Localizer = App.CreateLocalizerByType(typeof(ModbusSlave))!;
     }
 
-    private volatile bool success = true;
-    protected IStringLocalizer Localizer { get; private set; }
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        _modbusTags?.Clear();
+        _modbusVariableDict?.Clear();
+        GlobalData.VariableValueChangeEvent -= VariableValueChange;
+        base.Dispose(disposing);
+    }
 
     protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {

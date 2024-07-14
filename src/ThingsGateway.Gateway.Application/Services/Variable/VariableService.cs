@@ -36,13 +36,13 @@ namespace ThingsGateway.Gateway.Application;
 
 public class VariableService : BaseService<Variable>, IVariableService
 {
+    protected readonly IChannelService _channelService;
+    protected readonly IDeviceService _deviceService;
     protected readonly IFileService _fileService;
     protected readonly IImportExportService _importExportService;
-    protected readonly IDeviceService _deviceService;
-    protected readonly IChannelService _channelService;
     protected readonly IPluginService _pluginService;
-    private readonly IDispatchService<Variable> _dispatchService;
     private readonly IDispatchService<bool> _allDispatchService;
+    private readonly IDispatchService<Variable> _dispatchService;
 
     /// <inheritdoc cref="IVariableService"/>
     public VariableService(
@@ -196,31 +196,13 @@ public class VariableService : BaseService<Variable>, IVariableService
         }
     }
 
-    /// <summary>
-    /// 保存变量
-    /// </summary>
-    /// <param name="input">变量</param>
-    /// <param name="type">保存类型</param>
-    [OperDesc("SaveVariable", localizerType: typeof(Variable))]
-    public async Task<bool> SaveVariableAsync(Variable input, ItemChangedType type)
+    /// <inheritdoc/>
+    [OperDesc("ClearVariable", localizerType: typeof(Variable), isRecordPar: false)]
+    public async Task ClearVariableAsync(SqlSugarClient db = null)
     {
-        CheckInput(input);
-        if (await base.SaveAsync(input, type))
-        {
-            _dispatchService.Dispatch(new());
-            return true;
-        }
-        return false;
-    }
-
-    [OperDesc("DeleteVariable", isRecordPar: false, localizerType: typeof(Variable))]
-    public async Task<bool> DeleteVariableAsync(IEnumerable<long> input)
-    {
-        using var db = GetDB();
-        var ids = input.ToList();
-        var result = (await db.Deleteable<Variable>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync()) > 0;
+        db ??= GetDB();
+        await db.Deleteable<Variable>().ExecuteCommandAsync();
         _dispatchService.Dispatch(new());
-        return result;
     }
 
     [OperDesc("DeleteVariable", isRecordPar: false, localizerType: typeof(Variable))]
@@ -231,22 +213,14 @@ public class VariableService : BaseService<Variable>, IVariableService
         _dispatchService.Dispatch(new());
     }
 
-    /// <summary>
-    /// 报表查询
-    /// </summary>
-    /// <param name="option">查询条件</param>
-    public Task<QueryData<Variable>> PageAsync(QueryPageOptions option)
+    [OperDesc("DeleteVariable", isRecordPar: false, localizerType: typeof(Variable))]
+    public async Task<bool> DeleteVariableAsync(IEnumerable<long> input)
     {
-        return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)));
-    }
-
-    /// <inheritdoc/>
-    [OperDesc("ClearVariable", localizerType: typeof(Variable), isRecordPar: false)]
-    public async Task ClearVariableAsync(SqlSugarClient db = null)
-    {
-        db ??= GetDB();
-        await db.Deleteable<Variable>().ExecuteCommandAsync();
+        using var db = GetDB();
+        var ids = input.ToList();
+        var result = (await db.Deleteable<Variable>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync()) > 0;
         _dispatchService.Dispatch(new());
+        return result;
     }
 
     public async Task<List<VariableRunTime>> GetVariableRuntimeAsync(long? devId = null)
@@ -271,6 +245,32 @@ public class VariableService : BaseService<Variable>, IVariableService
         {
             GC.Collect();
         }
+    }
+
+    /// <summary>
+    /// 报表查询
+    /// </summary>
+    /// <param name="option">查询条件</param>
+    public Task<QueryData<Variable>> PageAsync(QueryPageOptions option)
+    {
+        return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)));
+    }
+
+    /// <summary>
+    /// 保存变量
+    /// </summary>
+    /// <param name="input">变量</param>
+    /// <param name="type">保存类型</param>
+    [OperDesc("SaveVariable", localizerType: typeof(Variable))]
+    public async Task<bool> SaveVariableAsync(Variable input, ItemChangedType type)
+    {
+        CheckInput(input);
+        if (await base.SaveAsync(input, type))
+        {
+            _dispatchService.Dispatch(new());
+            return true;
+        }
+        return false;
     }
 
     private void CheckInput(Variable input)
@@ -316,6 +316,22 @@ public class VariableService : BaseService<Variable>, IVariableService
     /// <param name="input"></param>
     /// <returns></returns>
     [OperDesc("ExportVariable", isRecordPar: false, localizerType: typeof(Variable))]
+    public async Task<MemoryStream> ExportMemoryStream(IEnumerable<Variable> data, string deviceName = null)
+    {
+        Dictionary<string, object> sheets = ExportCore(data, deviceName);
+
+        var memoryStream = new MemoryStream();
+        await memoryStream.SaveAsAsync(sheets);
+        memoryStream.Seek(0, SeekOrigin.Begin);
+        return memoryStream;
+    }
+
+    /// <summary>
+    /// 导出文件
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    [OperDesc("ExportVariable", isRecordPar: false, localizerType: typeof(Variable))]
     public async Task<FileStreamResult> ExportVariableAsync(QueryPageOptions options)
     {
         var data = (await QueryAsync(options));
@@ -327,22 +343,6 @@ public class VariableService : BaseService<Variable>, IVariableService
         var fileName = "Variable";
         Dictionary<string, object> sheets = ExportCore(data);
         return await _importExportService.ExportAsync<Variable>(sheets, fileName, false);
-    }
-
-    /// <summary>
-    /// 导出文件
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    [OperDesc("ExportVariable", isRecordPar: false, localizerType: typeof(Variable))]
-    public async Task<MemoryStream> ExportMemoryStream(IEnumerable<Variable> data, string deviceName = null)
-    {
-        Dictionary<string, object> sheets = ExportCore(data, deviceName);
-
-        var memoryStream = new MemoryStream();
-        await memoryStream.SaveAsAsync(sheets);
-        memoryStream.Seek(0, SeekOrigin.Begin);
-        return memoryStream;
     }
 
     private Dictionary<string, object> ExportCore(IEnumerable<Variable> data, string deviceName = null)

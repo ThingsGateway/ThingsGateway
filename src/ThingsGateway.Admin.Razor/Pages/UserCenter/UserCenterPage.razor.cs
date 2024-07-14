@@ -20,22 +20,23 @@ namespace ThingsGateway.Admin.Razor;
 
 public partial class UserCenterPage
 {
-    [Inject]
-    [NotNull]
-    private IUserCenterService? UserCenterService { get; set; }
-
-    [CascadingParameter(Name = "ReloadUser")]
-    private Func<Task>? ReloadUser { get; set; }
+    private IEnumerable<SelectedItem> SelectedItems;
 
     [CascadingParameter(Name = "ReloadMenu")]
     private Func<Task>? ReloadMenu { get; set; }
+
+    [CascadingParameter(Name = "ReloadUser")]
+    private Func<Task>? ReloadUser { get; set; }
 
     private SysUser SysUser { get; set; }
 
     private UpdatePasswordInput UpdatePasswordInput { get; set; } = new();
 
+    [Inject]
+    [NotNull]
+    private IUserCenterService? UserCenterService { get; set; }
+
     private WorkbenchInfo WorkbenchInfo { get; set; } = new();
-    private IEnumerable<SelectedItem> SelectedItems;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -44,23 +45,6 @@ public partial class UserCenterPage
         WorkbenchInfo = (await UserCenterService.GetLoginWorkbenchAsync(SysUser.Id)).Adapt<WorkbenchInfo>();
         SelectedItems = ResourceUtil.BuildMenuSelectList(AppContext.OwnMenus.Where(a => !a.Href.IsNullOrWhiteSpace()));
         await base.OnParametersSetAsync();
-    }
-
-    private async Task OnSaveUserInfo(EditContext editContext)
-    {
-        try
-        {
-            await UserCenterService.UpdateUserInfoAsync(SysUser);
-            if (ReloadUser != null)
-            {
-                await ReloadUser();
-            }
-            await ToastService.Success(Localizer["UpdateUserInfo"], $"{DefaultLocalizer["Save"]}{DefaultLocalizer["Success"]}");
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(Localizer["UpdateUserInfo"], $"{DefaultLocalizer["Save"]}{DefaultLocalizer["Fail", ex.Message]}");
-        }
     }
 
     private async Task OnSavePassword(EditContext editContext)
@@ -77,6 +61,23 @@ public partial class UserCenterPage
         catch (Exception ex)
         {
             await ToastService.Warning(Localizer["UpdatePassword"], $"{DefaultLocalizer["Save"]}{DefaultLocalizer["Fail", ex.Message]}");
+        }
+    }
+
+    private async Task OnSaveUserInfo(EditContext editContext)
+    {
+        try
+        {
+            await UserCenterService.UpdateUserInfoAsync(SysUser);
+            if (ReloadUser != null)
+            {
+                await ReloadUser();
+            }
+            await ToastService.Success(Localizer["UpdateUserInfo"], $"{DefaultLocalizer["Save"]}{DefaultLocalizer["Success"]}");
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(Localizer["UpdateUserInfo"], $"{DefaultLocalizer["Save"]}{DefaultLocalizer["Fail", ex.Message]}");
         }
     }
 

@@ -16,36 +16,10 @@ using System.Web;
 
 using Yitter.IdGenerator;
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway;
 
 public class FileService : IFileService
 {
-    /// <summary>
-    /// 上传文件，保存在磁盘中
-    /// </summary>
-    /// <param name="pPath">保存路径</param>
-    /// <param name="file">文件</param>
-    /// <returns>最终全路径</returns>
-    public async Task<string> UploadFileAsync(string pPath, IBrowserFile file)
-    {
-        return await StorageLocal(pPath, file);
-    }
-
-    /// <summary>
-    /// 验证文件信息
-    /// </summary>
-    /// <param name="file">文件</param>
-    /// <param name="maxSize">最大文件大小</param>
-    /// <param name="allowTypes">扩展名称匹配</param>
-    public void Verification(IBrowserFile file, int maxSize = 200, string[]? allowTypes = null)
-    {
-        if (file == null) throw Oops.Bah("FileNullError");
-        if (file.Size > maxSize * 1024 * 1024) throw Oops.Bah("FileLengthError", maxSize);
-        var fileSuffix = Path.GetExtension(file.Name).ToLower().Split(".")[1]; // 文件后缀
-        string[] allowTypeS = allowTypes == null ? ["xlsx"] : allowTypes;//允许上传的文件类型
-        if (!allowTypeS.Contains(fileSuffix)) throw Oops.Bah("FileTypeError", fileSuffix);
-    }
-
     /// <summary>
     /// 获取本地存储文件流
     /// </summary>
@@ -80,6 +54,32 @@ public class FileService : IFileService
             FileDownloadName = fileName
         };
         return result;
+    }
+
+    /// <summary>
+    /// 上传文件，保存在磁盘中
+    /// </summary>
+    /// <param name="pPath">保存路径</param>
+    /// <param name="file">文件</param>
+    /// <returns>最终全路径</returns>
+    public async Task<string> UploadFileAsync(string pPath, IBrowserFile file)
+    {
+        return await StorageLocal(pPath, file);
+    }
+
+    /// <summary>
+    /// 验证文件信息
+    /// </summary>
+    /// <param name="file">文件</param>
+    /// <param name="maxSize">最大文件大小</param>
+    /// <param name="allowTypes">扩展名称匹配</param>
+    public void Verification(IBrowserFile file, int maxSize = 200, string[]? allowTypes = null)
+    {
+        if (file == null) throw Oops.Bah("FileNullError");
+        if (file.Size > maxSize * 1024 * 1024) throw Oops.Bah("FileLengthError", maxSize);
+        var fileSuffix = Path.GetExtension(file.Name).ToLower().Split(".")[1]; // 文件后缀
+        string[] allowTypeS = allowTypes == null ? ["xlsx"] : allowTypes;//允许上传的文件类型
+        if (!allowTypeS.Contains(fileSuffix)) throw Oops.Bah("FileTypeError", fileSuffix);
     }
 
     #region 方法

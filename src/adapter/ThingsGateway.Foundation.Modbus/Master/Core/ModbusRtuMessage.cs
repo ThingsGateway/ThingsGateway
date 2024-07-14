@@ -22,63 +22,6 @@ public class ModbusRtuMessage : MessageBase, IResultMessage
 
     public ModbusResponse Response { get; set; } = new();
 
-    public override void SendInfo(ISendMessage sendMessage)
-    {
-        Request = ((ModbusRtuSend)sendMessage).ModbusAddress;
-    }
-
-    public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
-    {
-        Response.Station = byteBlock.ReadByte();
-        bool error = false;
-        var code = byteBlock.ReadByte();
-        if ((code & 0x80) == 0)
-        {
-            Response.FunctionCode = code;
-        }
-        else
-        {
-            code = code.SetBit(7, false);
-            Response.FunctionCode = code;
-            error = true;
-        }
-
-        if (error)
-        {
-            Response.ErrorCode = byteBlock.ReadByte();
-            this.OperCode = 999;
-            this.ErrorMessage = ModbusHelper.GetDescriptionByErrorCode(Response.ErrorCode.Value);
-            BodyLength = 2;
-            return true;
-        }
-        else
-        {
-            Response.ErrorCode = null;
-            if (Request == null)
-            {
-                return false;
-            }
-
-            if (Response.FunctionCode == 5 || Response.FunctionCode == 6)
-            {
-                BodyLength = 5;
-                return true;
-            }
-            else if (Response.FunctionCode == 15 || Response.FunctionCode == 16)
-            {
-                BodyLength = 5;
-                return true;
-            }
-            else if (Response.FunctionCode <= 4)
-            {
-                Response.Length = byteBlock.ReadByte();
-                BodyLength = Response.Length + 2; //数据区+crc
-                return true;
-            }
-        }
-        return false;
-    }
-
     public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
     {
         if (Response.ErrorCode != null)
@@ -155,5 +98,62 @@ public class ModbusRtuMessage : MessageBase, IResultMessage
             }
         }
         return FilterResult.GoOn;
+    }
+
+    public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
+    {
+        Response.Station = byteBlock.ReadByte();
+        bool error = false;
+        var code = byteBlock.ReadByte();
+        if ((code & 0x80) == 0)
+        {
+            Response.FunctionCode = code;
+        }
+        else
+        {
+            code = code.SetBit(7, false);
+            Response.FunctionCode = code;
+            error = true;
+        }
+
+        if (error)
+        {
+            Response.ErrorCode = byteBlock.ReadByte();
+            this.OperCode = 999;
+            this.ErrorMessage = ModbusHelper.GetDescriptionByErrorCode(Response.ErrorCode.Value);
+            BodyLength = 2;
+            return true;
+        }
+        else
+        {
+            Response.ErrorCode = null;
+            if (Request == null)
+            {
+                return false;
+            }
+
+            if (Response.FunctionCode == 5 || Response.FunctionCode == 6)
+            {
+                BodyLength = 5;
+                return true;
+            }
+            else if (Response.FunctionCode == 15 || Response.FunctionCode == 16)
+            {
+                BodyLength = 5;
+                return true;
+            }
+            else if (Response.FunctionCode <= 4)
+            {
+                Response.Length = byteBlock.ReadByte();
+                BodyLength = Response.Length + 2; //数据区+crc
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public override void SendInfo(ISendMessage sendMessage)
+    {
+        Request = ((ModbusRtuSend)sendMessage).ModbusAddress;
     }
 }

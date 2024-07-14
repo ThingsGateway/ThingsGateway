@@ -14,7 +14,6 @@ using NewLife.Extension;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
-using ThingsGateway.Sql;
 
 namespace ThingsGateway.Admin.Razor;
 
@@ -26,10 +25,13 @@ public partial class GrantRoleComponent
     [Parameter]
     public long UserId { get; set; }
 
+    [CascadingParameter]
+    private Func<Task>? OnCloseAsync { get; set; }
+
     private SysRole? SearchModel { get; set; } = new();
-    private HashSet<SysRole> SelectedRows { get; set; } = new();
     private List<SysRole> SelectedAddRows { get; set; } = new();
     private List<SysRole> SelectedDeleteRows { get; set; } = new();
+    private HashSet<SysRole> SelectedRows { get; set; } = new();
 
     [Inject]
     [NotNull]
@@ -39,9 +41,6 @@ public partial class GrantRoleComponent
     [NotNull]
     private ISysUserService? SysUserService { get; set; }
 
-    [CascadingParameter]
-    private Func<Task>? OnCloseAsync { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
         Items = await SysRoleService.GetAllAsync();
@@ -49,6 +48,13 @@ public partial class GrantRoleComponent
         var roles = await SysRoleService.GetRoleListByIdListAsync(data);
         SelectedRows = roles.Where(a => data.Contains(a.Id)).ToHashSet();
         await base.OnInitializedAsync();
+    }
+
+    private async Task<QueryData<SysRole>> OnQueryAsync(QueryPageOptions options)
+    {
+        await Task.Delay(100);
+        var items = Items.WhereIF(!options.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(options.SearchText)).GetQueryData(options);
+        return items;
     }
 
     private async Task OnSave(MouseEventArgs args)
@@ -67,12 +73,5 @@ public partial class GrantRoleComponent
         {
             await ToastService.Warning(ex.Message);
         }
-    }
-
-    private async Task<QueryData<SysRole>> OnQueryAsync(QueryPageOptions options)
-    {
-        await Task.Delay(100);
-        var items = Items.WhereIF(!options.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(options.SearchText)).GetQueryData(options);
-        return items;
     }
 }

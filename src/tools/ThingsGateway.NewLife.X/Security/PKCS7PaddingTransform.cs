@@ -17,10 +17,10 @@ public sealed class PKCS7PaddingTransform : ICryptoTransform
 {
     #region 属性
 
-    private readonly ICryptoTransform _transform;
+    private readonly Boolean _encryptMode;
     private readonly Byte[] _lastBlock;
     private readonly PaddingMode _mode;
-    private readonly Boolean _encryptMode;
+    private readonly ICryptoTransform _transform;
     private Boolean _hasWithheldBlock;
 
     /// <summary>获取一个值，该值指示是否可重复使用当前转换。</summary>

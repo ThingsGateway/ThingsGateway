@@ -15,8 +15,6 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 public class ModbusTcpSlaveMessage : MessageBase, IResultMessage
 {
-    public ModbusRequest Request { get; set; } = new();
-
     /// <summary>
     /// 当前关联的字节数组
     /// </summary>
@@ -24,6 +22,22 @@ public class ModbusTcpSlaveMessage : MessageBase, IResultMessage
 
     /// <inheritdoc/>
     public override int HeaderLength => 12;
+
+    public ModbusRequest Request { get; set; } = new();
+
+    public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
+    {
+        var pos = byteBlock.Position - HeaderLength;
+        this.Bytes = byteBlock.AsSegment(pos, HeaderLength + BodyLength);
+
+        if (Request.FunctionCode == 15 || Request.FunctionCode == 16)
+        {
+            byteBlock.Position += 1;
+            Request.Data = byteBlock.AsSegmentTake(Request.Length);
+        }
+        this.OperCode = 0;
+        return FilterResult.Success;
+    }
 
     public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
     {
@@ -61,19 +75,5 @@ public class ModbusTcpSlaveMessage : MessageBase, IResultMessage
             return true;
         }
         return false;
-    }
-
-    public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
-    {
-        var pos = byteBlock.Position - HeaderLength;
-        this.Bytes = byteBlock.AsSegment(pos, HeaderLength + BodyLength);
-
-        if (Request.FunctionCode == 15 || Request.FunctionCode == 16)
-        {
-            byteBlock.Position += 1;
-            Request.Data = byteBlock.AsSegmentTake(Request.Length);
-        }
-        this.OperCode = 0;
-        return FilterResult.Success;
     }
 }

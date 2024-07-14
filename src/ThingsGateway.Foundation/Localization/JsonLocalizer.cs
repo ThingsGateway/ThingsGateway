@@ -24,33 +24,13 @@ namespace ThingsGateway.Foundation;
 public class JsonLocalizer : IStringLocalizer
 {
     private readonly ConcurrentDictionary<string, JObject> _resources = new();
-    private Type _type;
     private string _folderName;
+    private Type _type;
 
     public JsonLocalizer(Type resourceType, string folderName)
     {
         _type = resourceType;
         _folderName = folderName;
-    }
-
-    private bool Add(Type resourceType, string folderName)
-    {
-        try
-        {
-            var assembly = resourceType.Assembly;
-            var culture = CultureInfo.CurrentUICulture.Name;
-            using var stream = assembly.GetManifestResourceStream($@"{assembly.GetName().Name}.{folderName}.{culture}.json");
-            using var reader = new StreamReader(stream, Encoding.UTF8);
-            var jsonData = reader.ReadToEnd();
-
-            var resource = (JObject.Parse(jsonData)[resourceType.FullName] as JObject)!;
-            _resources.TryAdd(culture, resource);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     public LocalizedString this[string name]
@@ -99,6 +79,26 @@ public class JsonLocalizer : IStringLocalizer
             {
                 yield return new LocalizedString(item.Key, item.Value.ToString());
             }
+        }
+    }
+
+    private bool Add(Type resourceType, string folderName)
+    {
+        try
+        {
+            var assembly = resourceType.Assembly;
+            var culture = CultureInfo.CurrentUICulture.Name;
+            using var stream = assembly.GetManifestResourceStream($@"{assembly.GetName().Name}.{folderName}.{culture}.json");
+            using var reader = new StreamReader(stream, Encoding.UTF8);
+            var jsonData = reader.ReadToEnd();
+
+            var resource = (JObject.Parse(jsonData)[resourceType.FullName] as JObject)!;
+            _resources.TryAdd(culture, resource);
+            return true;
+        }
+        catch
+        {
+            return false;
         }
     }
 }

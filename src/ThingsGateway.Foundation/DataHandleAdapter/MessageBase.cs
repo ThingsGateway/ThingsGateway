@@ -38,6 +38,11 @@ public class MessageBase : OperResultClass<byte[]>, IResultMessage, IWaitHandle
     /// <inheritdoc/>
     public virtual int Sign { get; set; } = -1;
 
+    public virtual FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock
+    {
+        return FilterResult.Success;
+    }
+
     /// <inheritdoc/>
     public virtual bool CheckHead<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock
     {
@@ -47,10 +52,5 @@ public class MessageBase : OperResultClass<byte[]>, IResultMessage, IWaitHandle
     /// <inheritdoc/>
     public virtual void SendInfo(ISendMessage sendMessage)
     {
-    }
-
-    public virtual FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock
-    {
-        return FilterResult.Success;
     }
 }

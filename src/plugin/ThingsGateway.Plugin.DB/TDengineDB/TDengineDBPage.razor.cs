@@ -19,6 +19,7 @@ public partial class TDengineDBPage : IDriverUIBase
     [Parameter, EditorRequired]
     public object Driver { get; set; }
 
+    public TDengineDBProducer TDengineDBProducer => (TDengineDBProducer)Driver;
     private TDengineDBPageInput CustomerSearchModel { get; set; } = new();
 
     private async Task<QueryData<TDengineDBHistoryValue>> OnQueryAsync(QueryPageOptions options)
@@ -26,6 +27,4 @@ public partial class TDengineDBPage : IDriverUIBase
         var query = await TDengineDBProducer.QueryData(options);
         return query;
     }
-
-    public TDengineDBProducer TDengineDBProducer => (TDengineDBProducer)Driver;
 }

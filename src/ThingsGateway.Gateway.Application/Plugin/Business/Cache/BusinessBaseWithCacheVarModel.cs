@@ -22,11 +22,11 @@ public abstract class BusinessBaseWithCacheVarModel<VarModel> : BusinessBase
 {
     protected ConcurrentQueue<CacheDBItem<VarModel>> _memoryVarModelQueue = new();
     protected volatile bool success = true;
+    private volatile bool LocalDBCacheVarModelInited;
+    public override IProtocol? Protocol => null;
     protected override BusinessPropertyBase _businessPropertyBase => _businessPropertyWithCache;
 
     protected abstract BusinessPropertyWithCache _businessPropertyWithCache { get; }
-
-    public override IProtocol? Protocol => null;
 
     /// <summary>
     /// 入缓存
@@ -108,8 +108,6 @@ public abstract class BusinessBaseWithCacheVarModel<VarModel> : BusinessBase
             _memoryVarModelQueue.Enqueue(data);
         }
     }
-
-    private volatile bool LocalDBCacheVarModelInited;
 
     /// <summary>
     /// 获取缓存对象，注意using

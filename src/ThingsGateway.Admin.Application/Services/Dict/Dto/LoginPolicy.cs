@@ -13,9 +13,10 @@ namespace ThingsGateway.Admin.Application;
 public class LoginPolicy
 {
     /// <summary>
-    /// 单用户登录开关
+    /// 登录错误次数锁定阈值
     /// </summary>
-    public bool SingleOpen { get; set; }
+    [MinValue(3)]
+    public int ErrorCount { get; set; }
 
     /// <summary>
     /// 登录错误锁定时间(分)
@@ -30,10 +31,9 @@ public class LoginPolicy
     public int ErrorResetTime { get; set; }
 
     /// <summary>
-    /// 登录错误次数锁定阈值
+    /// 单用户登录开关
     /// </summary>
-    [MinValue(3)]
-    public int ErrorCount { get; set; }
+    public bool SingleOpen { get; set; }
 
     /// <summary>
     /// 登录过期时间(分)

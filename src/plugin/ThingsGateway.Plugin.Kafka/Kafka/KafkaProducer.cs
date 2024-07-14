@@ -21,21 +21,11 @@ namespace ThingsGateway.Plugin.Kafka;
 /// </summary>
 public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<VariableData, DeviceData, AlarmVariable>
 {
-    private readonly KafkaProducerVariableProperty _variablePropertys = new();
     private readonly KafkaProducerProperty _driverPropertys = new();
-
+    private readonly KafkaProducerVariableProperty _variablePropertys = new();
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
     protected override BusinessPropertyWithCacheIntervalScript _businessPropertyWithCacheIntervalScript => _driverPropertys;
-
-    /// <inheritdoc/>
-    public override bool IsConnected() => success;
-
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        return $" {nameof(KafkaProducer)} :{_driverPropertys.BootStrapServers}";
-    }
 
     public override void Init(IChannel? channel = null)
     {
@@ -72,6 +62,15 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
         #endregion Kafka 生产者
 
         #endregion 初始化
+    }
+
+    /// <inheritdoc/>
+    public override bool IsConnected() => success;
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $" {nameof(KafkaProducer)} :{_driverPropertys.BootStrapServers}";
     }
 
     /// <inheritdoc/>

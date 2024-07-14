@@ -15,13 +15,6 @@ namespace ThingsGateway.Admin.Application;
 public interface ISessionService
 {
     /// <summary>
-    /// 异步分页查询会话信息
-    /// </summary>
-    /// <param name="option">查询条件</param>
-    /// <returns>查询结果</returns>
-    Task<QueryData<SessionOutput>> PageAsync(QueryPageOptions option);
-
-    /// <summary>
     /// 强制退出用户会话
     /// </summary>
     /// <param name="userId">用户ID</param>
@@ -34,4 +27,11 @@ public interface ISessionService
     /// <param name="input">参数</param>
     /// <returns>异步操作结果</returns>
     Task ExitVerificat(ExitVerificatInput input);
+
+    /// <summary>
+    /// 异步分页查询会话信息
+    /// </summary>
+    /// <param name="option">查询条件</param>
+    /// <returns>查询结果</returns>
+    Task<QueryData<SessionOutput>> PageAsync(QueryPageOptions option);
 }

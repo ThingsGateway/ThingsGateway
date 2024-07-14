@@ -46,27 +46,20 @@ public class OperDescAttribute : MoAttribute
         LocalizerType = (Type)localizerType;
     }
 
-    public override AccessFlags Flags => AccessFlags.Public | AccessFlags.Method;
-    public override Feature Features => Feature.OnException | Feature.OnSuccess;
-
     /// <summary>
     /// 说明，需配置本地化json文件
     /// </summary>
     public string Description { get; }
 
-    public Type? LocalizerType { get; }
+    public override Feature Features => Feature.OnException | Feature.OnSuccess;
+    public override AccessFlags Flags => AccessFlags.Public | AccessFlags.Method;
 
     /// <summary>
     /// 是否记录进出参数
     /// </summary>
     public bool IsRecordPar { get; }
 
-    public override void OnSuccess(MethodContext context)
-    {
-        //插入操作日志
-        SysOperateLog log = GetOperLog(LocalizerType, context);
-        WriteToQueue(log);
-    }
+    public Type? LocalizerType { get; }
 
     public override void OnException(MethodContext context)
     {
@@ -80,6 +73,13 @@ public class OperDescAttribute : MoAttribute
         else
             log.ExeMessage = context.Exception?.ToString();
 
+        WriteToQueue(log);
+    }
+
+    public override void OnSuccess(MethodContext context)
+    {
+        //插入操作日志
+        SysOperateLog log = GetOperLog(LocalizerType, context);
         WriteToQueue(log);
     }
 

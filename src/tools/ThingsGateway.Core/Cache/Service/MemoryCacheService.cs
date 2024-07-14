@@ -16,7 +16,7 @@ namespace ThingsGateway.Core;
 /// <inheritdoc cref="ICacheService"/>
 /// 内存缓存
 /// </summary>
-public partial class MemoryCacheService : ICacheService,IDisposable
+public partial class MemoryCacheService : ICacheService, IDisposable
 {
     private readonly MemoryCache _memoryCache;
 
@@ -27,10 +27,12 @@ public partial class MemoryCacheService : ICacheService,IDisposable
     {
         _memoryCache = new MemoryCache();
     }
-    ~ MemoryCacheService()
+
+    ~MemoryCacheService()
     {
         this.Dispose();
     }
+
     public void Dispose()
     {
         _memoryCache.Dispose();
@@ -40,10 +42,39 @@ public partial class MemoryCacheService : ICacheService,IDisposable
     #region 普通操作
 
     /// <inheritdoc/>
+    public void Clear()
+    {
+        _memoryCache.Clear();
+    }
+
+    /// <inheritdoc/>
+    public bool ContainsKey(string key)
+    {
+        return _memoryCache.ContainsKey(key);
+    }
+
+    /// <inheritdoc/>
+    public void DelByPattern(string pattern)
+    {
+        var keys = _memoryCache.Keys;//获取所有key
+        foreach (var item in keys.ToList())
+        {
+            if (item.Contains(pattern))//如果匹配
+                _memoryCache.Remove(item);
+        }
+    }
+
+    /// <inheritdoc/>
     public T Get<T>(string key)
     {
         var data = _memoryCache.Get<T>(key);
         return data;
+    }
+
+    /// <inheritdoc/>
+    public TimeSpan GetExpire(string key)
+    {
+        return _memoryCache.GetExpire(key);
     }
 
     /// <inheritdoc/>
@@ -92,35 +123,6 @@ public partial class MemoryCacheService : ICacheService,IDisposable
         return _memoryCache.SetExpire(key, expire);
     }
 
-    /// <inheritdoc/>
-    public TimeSpan GetExpire(string key)
-    {
-        return _memoryCache.GetExpire(key);
-    }
-
-    /// <inheritdoc/>
-    public bool ContainsKey(string key)
-    {
-        return _memoryCache.ContainsKey(key);
-    }
-
-    /// <inheritdoc/>
-    public void Clear()
-    {
-        _memoryCache.Clear();
-    }
-
-    /// <inheritdoc/>
-    public void DelByPattern(string pattern)
-    {
-        var keys = _memoryCache.Keys;//获取所有key
-        foreach (var item in keys.ToList())
-        {
-            if (item.Contains(pattern))//如果匹配
-                _memoryCache.Remove(item);
-        }
-    }
-
     #endregion 普通操作
 
     #region 集合操作
@@ -130,12 +132,6 @@ public partial class MemoryCacheService : ICacheService,IDisposable
     {
         var data = _memoryCache.GetAll<T>(keys);//获取数据
         return data!;
-    }
-
-    /// <inheritdoc/>
-    public void SetAll<T>(IDictionary<string, T> values, int expire = -1)
-    {
-        _memoryCache.SetAll(values, expire);
     }
 
     /// <inheritdoc/>
@@ -152,15 +148,21 @@ public partial class MemoryCacheService : ICacheService,IDisposable
     }
 
     /// <inheritdoc/>
+    public ICollection<T> GetSet<T>(string key)
+    {
+        return _memoryCache.GetSet<T>(key);
+    }
+
+    /// <inheritdoc/>
     public IProducerConsumer<T> GetStack<T>(string key)
     {
         return _memoryCache.GetStack<T>(key);
     }
 
     /// <inheritdoc/>
-    public ICollection<T> GetSet<T>(string key)
+    public void SetAll<T>(IDictionary<string, T> values, int expire = -1)
     {
-        return _memoryCache.GetSet<T>(key);
+        _memoryCache.SetAll(values, expire);
     }
 
     #endregion 集合操作
@@ -171,25 +173,6 @@ public partial class MemoryCacheService : ICacheService,IDisposable
     public bool Add<T>(string key, T value, int expire = -1)
     {
         return _memoryCache.Add(key, value, expire);
-    }
-
-    /// <inheritdoc/>
-    public IList<T> GetList<T>(string key)
-    {
-        var data = _memoryCache.GetList<T>(key);
-        return data;
-    }
-
-    /// <inheritdoc/>
-    public T Replace<T>(string key, T value)
-    {
-        return _memoryCache.Replace(key, value);
-    }
-
-    /// <inheritdoc/>
-    public bool TryGetValue<T>(string key, out T value)
-    {
-        return _memoryCache.TryGetValue<T>(key, out value!);
     }
 
     /// <inheritdoc/>
@@ -205,6 +188,13 @@ public partial class MemoryCacheService : ICacheService,IDisposable
     }
 
     /// <inheritdoc/>
+    public IList<T> GetList<T>(string key)
+    {
+        var data = _memoryCache.GetList<T>(key);
+        return data;
+    }
+
+    /// <inheritdoc/>
     public long Increment(string key, long value)
     {
         return _memoryCache.Increment(key, value);
@@ -216,15 +206,21 @@ public partial class MemoryCacheService : ICacheService,IDisposable
         return _memoryCache.Increment(key, value);
     }
 
+    /// <inheritdoc/>
+    public T Replace<T>(string key, T value)
+    {
+        return _memoryCache.Replace(key, value);
+    }
+
+    /// <inheritdoc/>
+    public bool TryGetValue<T>(string key, out T value)
+    {
+        return _memoryCache.TryGetValue<T>(key, out value!);
+    }
+
     #endregion 高级操作
 
     #region 事务
-
-    /// <inheritdoc/>
-    public int Commit()
-    {
-        return _memoryCache.Commit();
-    }
 
     /// <inheritdoc/>
     public IDisposable AcquireLock(string key, int msTimeout)
@@ -238,7 +234,11 @@ public partial class MemoryCacheService : ICacheService,IDisposable
         return _memoryCache.AcquireLock(key, msTimeout, msExpire, throwOnFailure);
     }
 
-
+    /// <inheritdoc/>
+    public int Commit()
+    {
+        return _memoryCache.Commit();
+    }
 
     #endregion 事务
 }

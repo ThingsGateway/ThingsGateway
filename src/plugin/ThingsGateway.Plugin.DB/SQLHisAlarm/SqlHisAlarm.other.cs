@@ -13,7 +13,6 @@ using Mapster;
 using NewLife.Threading;
 
 using ThingsGateway.Foundation;
-using ThingsGateway.Gateway.Application;
 
 using TouchSocket.Core;
 
@@ -24,29 +23,16 @@ namespace ThingsGateway.Plugin.SqlHisAlarm;
 /// </summary>
 public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>
 {
-    private void AlarmWorker_OnAlarmChanged(AlarmVariable alarmVariable)
-    {
-        if (!CurrentDevice.KeepRun)
-            return;
-        AddQueueVarModel(new(alarmVariable.Adapt<HistoryAlarm>(_config)));
-    }
-
     protected override ValueTask<OperResult> UpdateVarModel(IEnumerable<CacheDBItem<HistoryAlarm>> item, CancellationToken cancellationToken)
     {
         return UpdateT(item.Select(a => a.Value), cancellationToken);
     }
 
-    private async ValueTask<OperResult> UpdateT(IEnumerable<HistoryAlarm> item, CancellationToken cancellationToken)
+    private void AlarmWorker_OnAlarmChanged(AlarmVariable alarmVariable)
     {
-        var result = await InserableAsync(item.ToList(), cancellationToken).ConfigureAwait(false);
-        if (success != result.IsSuccess)
-        {
-            if (!result.IsSuccess)
-                LogMessage.LogWarning(result.ToString());
-            success = result.IsSuccess;
-        }
-
-        return result;
+        if (!CurrentDevice.KeepRun)
+            return;
+        AddQueueVarModel(new(alarmVariable.Adapt<HistoryAlarm>(_config)));
     }
 
     private async ValueTask<OperResult> InserableAsync(List<HistoryAlarm> dbInserts, CancellationToken cancellationToken)
@@ -76,5 +62,18 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>
             CurrentDevice.SetDeviceStatus(TimerX.Now, 999);
             return new OperResult(ex);
         }
+    }
+
+    private async ValueTask<OperResult> UpdateT(IEnumerable<HistoryAlarm> item, CancellationToken cancellationToken)
+    {
+        var result = await InserableAsync(item.ToList(), cancellationToken).ConfigureAwait(false);
+        if (success != result.IsSuccess)
+        {
+            if (!result.IsSuccess)
+                LogMessage.LogWarning(result.ToString());
+            success = result.IsSuccess;
+        }
+
+        return result;
     }
 }

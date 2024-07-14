@@ -14,31 +14,31 @@ namespace ThingsGateway.Gateway.Razor;
 
 public partial class IndexComponent : IDisposable
 {
+    public bool Disposed { get; set; }
+
     [Parameter]
     [EditorRequired]
     public IStringLocalizer Localizer { get; set; }
 
-    private Chart CollectDevicePie { get; set; }
-    private Chart BusinessDevicePie { get; set; }
-    private Chart VariablePie { get; set; }
     private Chart AlarmPie { get; set; }
-    private bool CollectDevicePieInit { get; set; }
-    private bool BusinessDevicePieInit { get; set; }
-    private bool VariablePieInit { get; set; }
     private bool AlarmPieInit { get; set; }
-
-    protected override void OnInitialized()
-    {
-        _ = RunTimerAsync();
-        base.OnInitialized();
-    }
-
-    public bool Disposed { get; set; }
+    private Chart BusinessDevicePie { get; set; }
+    private bool BusinessDevicePieInit { get; set; }
+    private Chart CollectDevicePie { get; set; }
+    private bool CollectDevicePieInit { get; set; }
+    private Chart VariablePie { get; set; }
+    private bool VariablePieInit { get; set; }
 
     public void Dispose()
     {
         Disposed = true;
         GC.SuppressFinalize(this);
+    }
+
+    protected override void OnInitialized()
+    {
+        _ = RunTimerAsync();
+        base.OnInitialized();
     }
 
     private async Task RunTimerAsync()
@@ -67,30 +67,30 @@ public partial class IndexComponent : IDisposable
 
     #region 曲线
 
-    private ChartDataSource? CollectDeviceChartDataSource;
-    private ChartDataSource? BusinessDeviceChartDataSource;
-    private ChartDataSource? VariableChartDataSource;
     private ChartDataSource? AlarmChartDataSource;
+    private ChartDataSource? BusinessDeviceChartDataSource;
+    private ChartDataSource? CollectDeviceChartDataSource;
+    private ChartDataSource? VariableChartDataSource;
 
-    private Task<ChartDataSource> OnInitCollectDevicePie()
+    private Task<ChartDataSource> OnInitAlarmPie()
     {
-        var data = typeof(DeviceStatusEnum).ToSelectList();
-        if (CollectDeviceChartDataSource == null)
+        var data = new List<bool>() { true };
+        if (AlarmChartDataSource == null)
         {
-            CollectDeviceChartDataSource = new ChartDataSource();
-            CollectDeviceChartDataSource.Options.Title = Localizer["CollectDevice"];
-            CollectDeviceChartDataSource.Options.ShowLegend = false;
-            CollectDeviceChartDataSource.Labels = data.Select(a => a.Text);
-            CollectDeviceChartDataSource.Data.Add(new ChartDataset()
+            AlarmChartDataSource = new ChartDataSource();
+            AlarmChartDataSource.Options.Title = Localizer["Alarm"];
+            AlarmChartDataSource.Options.ShowLegend = false;
+            AlarmChartDataSource.Labels = data.Select(a => Localizer["AlarmCount"].Value);
+            AlarmChartDataSource.Data.Add(new ChartDataset()
             {
-                Data = data.Select(i => GlobalData.ReadOnlyCollectDevices.Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>()
+                Data = new List<object>() { GlobalData.ReadOnlyRealAlarmVariables.Count() }
             });
         }
         else
         {
-            CollectDeviceChartDataSource.Data[0].Data = data.Select(i => GlobalData.ReadOnlyCollectDevices.Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>();
+            AlarmChartDataSource.Data[0].Data = new List<object>() { GlobalData.ReadOnlyRealAlarmVariables.Count() };
         }
-        return Task.FromResult(CollectDeviceChartDataSource!);
+        return Task.FromResult(AlarmChartDataSource!);
     }
 
     private Task<ChartDataSource> OnInitBusinessDevicePie()
@@ -114,6 +114,27 @@ public partial class IndexComponent : IDisposable
         return Task.FromResult(BusinessDeviceChartDataSource!);
     }
 
+    private Task<ChartDataSource> OnInitCollectDevicePie()
+    {
+        var data = typeof(DeviceStatusEnum).ToSelectList();
+        if (CollectDeviceChartDataSource == null)
+        {
+            CollectDeviceChartDataSource = new ChartDataSource();
+            CollectDeviceChartDataSource.Options.Title = Localizer["CollectDevice"];
+            CollectDeviceChartDataSource.Options.ShowLegend = false;
+            CollectDeviceChartDataSource.Labels = data.Select(a => a.Text);
+            CollectDeviceChartDataSource.Data.Add(new ChartDataset()
+            {
+                Data = data.Select(i => GlobalData.ReadOnlyCollectDevices.Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>()
+            });
+        }
+        else
+        {
+            CollectDeviceChartDataSource.Data[0].Data = data.Select(i => GlobalData.ReadOnlyCollectDevices.Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>();
+        }
+        return Task.FromResult(CollectDeviceChartDataSource!);
+    }
+
     private Task<ChartDataSource> OnInitVariablePie()
     {
         var data = new List<bool>() { true, false };
@@ -133,27 +154,6 @@ public partial class IndexComponent : IDisposable
             VariableChartDataSource.Data[0].Data = data.Select(i => GlobalData.ReadOnlyVariables.Count(device => device.Value.IsOnline == i)).Cast<object>();
         }
         return Task.FromResult(VariableChartDataSource!);
-    }
-
-    private Task<ChartDataSource> OnInitAlarmPie()
-    {
-        var data = new List<bool>() { true };
-        if (AlarmChartDataSource == null)
-        {
-            AlarmChartDataSource = new ChartDataSource();
-            AlarmChartDataSource.Options.Title = Localizer["Alarm"];
-            AlarmChartDataSource.Options.ShowLegend = false;
-            AlarmChartDataSource.Labels = data.Select(a => Localizer["AlarmCount"].Value);
-            AlarmChartDataSource.Data.Add(new ChartDataset()
-            {
-                Data = new List<object>() { GlobalData.ReadOnlyRealAlarmVariables.Count() }
-            });
-        }
-        else
-        {
-            AlarmChartDataSource.Data[0].Data = new List<object>() { GlobalData.ReadOnlyRealAlarmVariables.Count() };
-        }
-        return Task.FromResult(AlarmChartDataSource!);
     }
 
     #endregion 曲线

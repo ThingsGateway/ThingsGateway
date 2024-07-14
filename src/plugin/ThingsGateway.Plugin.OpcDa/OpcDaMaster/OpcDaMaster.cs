@@ -35,20 +35,15 @@ public class OpcDaMaster : CollectBase
     private volatile bool success = true;
 
     /// <inheritdoc/>
-    public override Type DriverDebugUIType => typeof(ThingsGateway.Debug.OpcDaMaster);
+    public override CollectPropertyBase CollectProperties => _driverProperties;
 
     /// <inheritdoc/>
-    public override CollectPropertyBase CollectProperties => _driverProperties;
+    public override Type DriverDebugUIType => typeof(ThingsGateway.Debug.OpcDaMaster);
 
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
     public override IProtocol Protocol => null;
-
-    public override string ToString()
-    {
-        return $"{_driverProperties.OpcIP}-{_driverProperties.OpcName}";
-    }
 
     /// <inheritdoc/>
     public override void Init(IChannel? channel = null)
@@ -76,6 +71,26 @@ public class OpcDaMaster : CollectBase
     /// <inheritdoc/>
     public override bool IsConnected() => _plc?.IsConnected == true;
 
+    public override string ToString()
+    {
+        return $"{_driverProperties.OpcIP}-{_driverProperties.OpcName}";
+    }
+
+    /// <inheritdoc/>
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (_plc != null)
+            _plc.DataChangedHandler -= DataChangedHandler;
+        _plc?.SafeDispose();
+        base.Dispose(disposing);
+    }
+
+    protected override string GetAddressDescription()
+    {
+        return _plc?.GetAddressDescription();
+    }
+
     protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         _token = cancellationToken;
@@ -83,9 +98,25 @@ public class OpcDaMaster : CollectBase
         return base.ProtectedBeforStartAsync(cancellationToken);
     }
 
-    protected override string GetAddressDescription()
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-        return _plc?.GetAddressDescription();
+        if (_driverProperties.ActiveSubscribe)
+        {
+            //获取设备连接状态
+            if (IsConnected())
+            {
+                //更新设备活动时间
+                CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
+            }
+            else
+            {
+                CurrentDevice.SetDeviceStatus(TimerX.Now, 999);
+            }
+        }
+        else
+        {
+            await base.ProtectedExecuteAsync(cancellationToken).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
@@ -159,37 +190,6 @@ public class OpcDaMaster : CollectBase
         {
             WriteLock.Release();
         }
-    }
-
-    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
-    {
-        if (_driverProperties.ActiveSubscribe)
-        {
-            //获取设备连接状态
-            if (IsConnected())
-            {
-                //更新设备活动时间
-                CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
-            }
-            else
-            {
-                CurrentDevice.SetDeviceStatus(TimerX.Now, 999);
-            }
-        }
-        else
-        {
-            await base.ProtectedExecuteAsync(cancellationToken).ConfigureAwait(false);
-        }
-    }
-
-    /// <inheritdoc/>
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        if (_plc != null)
-            _plc.DataChangedHandler -= DataChangedHandler;
-        _plc?.SafeDispose();
-        base.Dispose(disposing);
     }
 
     private void DataChangedHandler(string name, int serverGroupHandle, List<ItemReadResult> values)

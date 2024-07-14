@@ -60,13 +60,10 @@ public interface IRelationService
     Task<IEnumerable<long>> GetUserModuleId(IEnumerable<long> roleIdList, long userId);
 
     /// <summary>
-    /// 保存关系
+    /// 更新缓存
     /// </summary>
     /// <param name="category">分类</param>
-    /// <param name="objectId">对象ID</param>
-    /// <param name="targetIdAndExtJsons">目标ID和拓展信息</param>
-    /// <param name="clear">是否清除老的数据</param>
-    Task SaveRelationBatchAsync(RelationCategoryEnum category, long objectId, IEnumerable<(string targetId, string extJson)> targetIdAndExtJsons, bool clear);
+    void RefreshCache(RelationCategoryEnum category);
 
     /// <summary>
     /// 保存关系
@@ -80,8 +77,11 @@ public interface IRelationService
     Task SaveRelationAsync(RelationCategoryEnum category, long objectId, string? targetId, string extJson, bool clear, bool refreshCache = true);
 
     /// <summary>
-    /// 更新缓存
+    /// 保存关系
     /// </summary>
     /// <param name="category">分类</param>
-    void RefreshCache(RelationCategoryEnum category);
+    /// <param name="objectId">对象ID</param>
+    /// <param name="targetIdAndExtJsons">目标ID和拓展信息</param>
+    /// <param name="clear">是否清除老的数据</param>
+    Task SaveRelationBatchAsync(RelationCategoryEnum category, long objectId, IEnumerable<(string targetId, string extJson)> targetIdAndExtJsons, bool clear);
 }

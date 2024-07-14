@@ -12,8 +12,6 @@ using SqlSugar;
 
 using System.Reflection;
 
-using ThingsGateway.Admin.Application;
-
 namespace ThingsGateway.Server;
 
 /// <summary>

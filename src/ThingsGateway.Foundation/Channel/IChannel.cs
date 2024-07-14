@@ -11,10 +11,25 @@
 namespace ThingsGateway.Foundation;
 
 /// <summary>
+/// ChannelEventHandler
+/// </summary>
+public delegate Task ChannelEventHandler(IClientChannel channel);
+
+/// <summary>
 /// 通道管理
 /// </summary>
 public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
 {
+    /// <summary>
+    /// 接收到数据
+    /// </summary>
+    public ChannelReceivedEventHandler ChannelReceived { get; set; }
+
+    /// <summary>
+    /// 通道类型
+    /// </summary>
+    ChannelTypeEnum ChannelType { get; }
+
     /// <summary>
     /// 该通道下的所有设备
     /// </summary>
@@ -31,24 +46,14 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     public ChannelEventHandler Started { get; set; }
 
     /// <summary>
-    /// 通道停止
-    /// </summary>
-    public ChannelEventHandler Stoped { get; set; }
-
-    /// <summary>
     /// 通道启动即将成功
     /// </summary>
     public ChannelEventHandler Starting { get; set; }
 
     /// <summary>
-    /// 接收到数据
+    /// 通道停止
     /// </summary>
-    public ChannelReceivedEventHandler ChannelReceived { get; set; }
-
-    /// <summary>
-    /// 通道类型
-    /// </summary>
-    ChannelTypeEnum ChannelType { get; }
+    public ChannelEventHandler Stoped { get; set; }
 
     /// <summary>
     /// 关闭客户端。
@@ -74,11 +79,6 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     /// <exception cref="Exception"></exception>
     Task ConnectAsync(int millisecondsTimeout = 3000, CancellationToken token = default);
 }
-
-/// <summary>
-/// ChannelEventHandler
-/// </summary>
-public delegate Task ChannelEventHandler(IClientChannel channel);
 
 /// <summary>
 /// 接收数据

@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Sql;
+namespace ThingsGateway.Core;
 
 /// <summary>
 /// 忽略Excel导入导出

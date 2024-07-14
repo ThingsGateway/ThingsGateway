@@ -25,10 +25,10 @@ public class SiemensS7Master : CollectBase
     private ThingsGateway.Foundation.SiemensS7.SiemensS7Master _plc;
 
     /// <inheritdoc/>
-    public override Type DriverDebugUIType => typeof(ThingsGateway.Debug.SiemensS7Master);
+    public override CollectPropertyBase CollectProperties => _driverPropertys;
 
     /// <inheritdoc/>
-    public override CollectPropertyBase CollectProperties => _driverPropertys;
+    public override Type DriverDebugUIType => typeof(ThingsGateway.Debug.SiemensS7Master);
 
     public override Type DriverUIType => null;
 
@@ -52,17 +52,6 @@ public class SiemensS7Master : CollectBase
             Rack = _driverPropertys.Rack,
             Slot = _driverPropertys.Slot,
         };
-    }
-
-    /// <inheritdoc/>
-    protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRunTime> deviceVariables)
-    {
-        try { _plc.Channel.ConnectAsync(_driverPropertys.ConnectTimeout).GetFalseAwaitResult(); } catch { }
-        try
-        {
-            return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, _plc.OnLine ? _plc.PduLength : _driverPropertys.MaxPack, CurrentDevice.IntervalTime);
-        }
-        finally { _plc.Channel.Close(); }
     }
 
     /// <summary>
@@ -92,5 +81,16 @@ public class SiemensS7Master : CollectBase
             return await _plc.ReadDateTimeAsync(address, cancellationToken);
         else
             return new OperResult<System.DateTime>(await _plc.WriteDateTimeAsync(address, value.Value, cancellationToken).ConfigureAwait(false));
+    }
+
+    /// <inheritdoc/>
+    protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRunTime> deviceVariables)
+    {
+        try { _plc.Channel.ConnectAsync(_driverPropertys.ConnectTimeout).GetFalseAwaitResult(); } catch { }
+        try
+        {
+            return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, _plc.OnLine ? _plc.PduLength : _driverPropertys.MaxPack, CurrentDevice.IntervalTime);
+        }
+        finally { _plc.Channel.Close(); }
     }
 }

@@ -15,6 +15,30 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace ThingsGateway.Server;
 
 /// <summary>
+/// 安全定义需求子项
+/// </summary>
+public sealed class SpecificationOpenApiSecurityRequirementItem
+{
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    public SpecificationOpenApiSecurityRequirementItem()
+    {
+        Accesses = System.Array.Empty<string>();
+    }
+
+    /// <summary>
+    /// 权限
+    /// </summary>
+    public string[] Accesses { get; set; }
+
+    /// <summary>
+    /// 安全Schema
+    /// </summary>
+    public OpenApiSecurityScheme Scheme { get; set; }
+}
+
+/// <summary>
 /// 规范化文档安全配置
 /// </summary>
 public sealed class SpecificationOpenApiSecurityScheme : OpenApiSecurityScheme
@@ -35,30 +59,6 @@ public sealed class SpecificationOpenApiSecurityScheme : OpenApiSecurityScheme
     /// 安全需求
     /// </summary>
     public SpecificationOpenApiSecurityRequirementItem Requirement { get; set; }
-}
-
-/// <summary>
-/// 安全定义需求子项
-/// </summary>
-public sealed class SpecificationOpenApiSecurityRequirementItem
-{
-    /// <summary>
-    /// 构造函数
-    /// </summary>
-    public SpecificationOpenApiSecurityRequirementItem()
-    {
-        Accesses = System.Array.Empty<string>();
-    }
-
-    /// <summary>
-    /// 安全Schema
-    /// </summary>
-    public OpenApiSecurityScheme Scheme { get; set; }
-
-    /// <summary>
-    /// 权限
-    /// </summary>
-    public string[] Accesses { get; set; }
 }
 
 /// <inheritdoc/>

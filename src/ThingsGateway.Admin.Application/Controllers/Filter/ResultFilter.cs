@@ -36,6 +36,26 @@ public class ResultFilter : IAsyncActionFilter
 {
     public const string ValidationFailedKey = $"{nameof(ResultFilter)}Validate";
 
+    /// <summary>
+    /// 获取异常元数据
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    public static string GetExceptionMetadata(ActionContext context)
+    {
+        // 判断是否是 ExceptionContext 或者 ActionExecutedContext
+        var exception = context is ExceptionContext exContext
+            ? exContext.Exception
+            : (
+                context is ActionExecutedContext edContext
+                ? edContext.Exception
+                : default
+            );
+
+        string? errors = exception?.InnerException?.Message ?? exception?.Message;
+        return errors;
+    }
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         // 排除 WebSocket 请求处理
@@ -232,49 +252,6 @@ public class ResultFilter : IAsyncActionFilter
     }
 
     /// <summary>
-    /// 获取异常元数据
-    /// </summary>
-    /// <param name="context"></param>
-    /// <returns></returns>
-    public static string GetExceptionMetadata(ActionContext context)
-    {
-        // 判断是否是 ExceptionContext 或者 ActionExecutedContext
-        var exception = context is ExceptionContext exContext
-            ? exContext.Exception
-            : (
-                context is ActionExecutedContext edContext
-                ? edContext.Exception
-                : default
-            );
-
-        string? errors = exception?.InnerException?.Message ?? exception?.Message;
-        return errors;
-    }
-
-    /// <summary>
-    /// 验证整个模型时验证属性方法
-    /// </summary>
-    /// <param name="context"></param>
-    /// <param name="results"></param>
-    /// <param name="pName"></param>
-    private void ValidateProperty(ValidationContext context, List<ValidationResult> results, string pName)
-    {
-        // 获得所有可写属性
-        var pi = context.ObjectType.GetPropertyByName(pName);
-        if (pi != null)
-        {
-            // 设置其关联属性字段
-            var propertyValue = pi.GetValue(context.ObjectInstance);
-            var fieldIdentifier = new FieldIdentifier(context.ObjectInstance, pi.Name);
-            context.DisplayName = fieldIdentifier.GetDisplayName();
-            context.MemberName = fieldIdentifier.FieldName;
-
-            // 组件进行验证
-            ValidateDataAnnotations(propertyValue, context, results, pi);
-        }
-    }
-
-    /// <summary>
     /// 通过属性设置的 DataAnnotation 进行数据验证
     /// </summary>
     /// <param name="value"></param>
@@ -341,6 +318,29 @@ public class ResultFilter : IAsyncActionFilter
                     : rule.ErrorMessage;
                 results.Add(new ValidationResult(errorMessage, new string[] { memberName }));
             }
+        }
+    }
+
+    /// <summary>
+    /// 验证整个模型时验证属性方法
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="results"></param>
+    /// <param name="pName"></param>
+    private void ValidateProperty(ValidationContext context, List<ValidationResult> results, string pName)
+    {
+        // 获得所有可写属性
+        var pi = context.ObjectType.GetPropertyByName(pName);
+        if (pi != null)
+        {
+            // 设置其关联属性字段
+            var propertyValue = pi.GetValue(context.ObjectInstance);
+            var fieldIdentifier = new FieldIdentifier(context.ObjectInstance, pi.Name);
+            context.DisplayName = fieldIdentifier.GetDisplayName();
+            context.MemberName = fieldIdentifier.FieldName;
+
+            // 组件进行验证
+            ValidateDataAnnotations(propertyValue, context, results, pi);
         }
     }
 }

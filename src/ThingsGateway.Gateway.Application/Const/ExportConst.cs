@@ -14,18 +14,6 @@ namespace ThingsGateway.Gateway.Application;
 
 public class ExportString
 {
-    public static IStringLocalizer Localizer { get; private set; }
-
-    /// <summary>
-    /// 变量表名称
-    /// </summary>
-    public static string VariableName = (Localizer ?? App.CreateLocalizerByType(typeof(ExportString)))["VariableName"];
-
-    /// <summary>
-    /// 冗余设备名称
-    /// </summary>
-    public static string RedundantDeviceName = (Localizer ?? App.CreateLocalizerByType(typeof(ExportString)))["RedundantDeviceName"];
-
     /// <summary>
     /// 通道名称
     /// </summary>
@@ -35,4 +23,16 @@ public class ExportString
     /// 设备名称
     /// </summary>
     public static string DeviceName = (Localizer ?? App.CreateLocalizerByType(typeof(ExportString)))["DeviceName"];
+
+    /// <summary>
+    /// 冗余设备名称
+    /// </summary>
+    public static string RedundantDeviceName = (Localizer ?? App.CreateLocalizerByType(typeof(ExportString)))["RedundantDeviceName"];
+
+    /// <summary>
+    /// 变量表名称
+    /// </summary>
+    public static string VariableName = (Localizer ?? App.CreateLocalizerByType(typeof(ExportString)))["VariableName"];
+
+    public static IStringLocalizer Localizer { get; private set; }
 }

@@ -21,11 +21,11 @@ public class ConcurrentHashSet<T> : IEnumerable<T> where T : notnull
 {
     private readonly ConcurrentDictionary<T, Byte> _dic = new();
 
-    /// <summary>是否空集合</summary>
-    public Boolean IsEmpty => _dic.IsEmpty;
-
     /// <summary>元素个数</summary>
     public Int32 Count => _dic.Count;
+
+    /// <summary>是否空集合</summary>
+    public Boolean IsEmpty => _dic.IsEmpty;
 
     /// <summary>是否包含元素</summary>
     /// <param name="item"></param>

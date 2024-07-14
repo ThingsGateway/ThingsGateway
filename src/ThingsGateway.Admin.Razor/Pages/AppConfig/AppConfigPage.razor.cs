@@ -20,16 +20,17 @@ namespace ThingsGateway.Admin.Razor;
 
 public partial class AppConfigPage
 {
-    [Inject]
-    [NotNull]
-    private ISysDictService? SysDictService { get; set; }
+    private AppConfig AppConfig;
+
+    private IEnumerable<SelectedItem> SelectedItems;
 
     [Inject]
     [NotNull]
     private IStringLocalizer<AppConfig>? AppConfigLocalizer { get; set; }
 
-    private AppConfig AppConfig;
-    private IEnumerable<SelectedItem> SelectedItems;
+    [Inject]
+    [NotNull]
+    private ISysDictService? SysDictService { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -53,19 +54,6 @@ public partial class AppConfigPage
         }
     }
 
-    private async Task OnSavePassword(EditContext editContext)
-    {
-        try
-        {
-            await SysDictService.EditPasswordPolicyAsync(AppConfig.PasswordPolicy);
-            await ToastService.Success(AppConfigLocalizer[nameof(PasswordPolicy)], $"{DefaultLocalizer["Save"]}{DefaultLocalizer["Success"]}");
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(AppConfigLocalizer[nameof(PasswordPolicy)], $"{DefaultLocalizer["Save"]}{DefaultLocalizer["Fail", ex.Message]}");
-        }
-    }
-
     private async Task OnSavePagePolicy(EditContext editContext)
     {
         try
@@ -76,6 +64,19 @@ public partial class AppConfigPage
         catch (Exception ex)
         {
             await ToastService.Warning(AppConfigLocalizer[nameof(PagePolicy)], $"{DefaultLocalizer["Save"]}{DefaultLocalizer["Fail", ex.Message]}");
+        }
+    }
+
+    private async Task OnSavePassword(EditContext editContext)
+    {
+        try
+        {
+            await SysDictService.EditPasswordPolicyAsync(AppConfig.PasswordPolicy);
+            await ToastService.Success(AppConfigLocalizer[nameof(PasswordPolicy)], $"{DefaultLocalizer["Save"]}{DefaultLocalizer["Success"]}");
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(AppConfigLocalizer[nameof(PasswordPolicy)], $"{DefaultLocalizer["Save"]}{DefaultLocalizer["Fail", ex.Message]}");
         }
     }
 

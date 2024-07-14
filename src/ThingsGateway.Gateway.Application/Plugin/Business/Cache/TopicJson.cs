@@ -17,6 +17,6 @@ public struct TopicJson
         Topic = topic; Json = json;
     }
 
-    public string Topic { get; set; }
     public string Json { get; set; }
+    public string Topic { get; set; }
 }

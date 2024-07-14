@@ -17,9 +17,6 @@ public class ProtectedKey
 {
     #region 属性
 
-    /// <summary>保护数据的密钥</summary>
-    public Byte[]? Secret { get; set; }
-
     /// <summary>算法。默认AES</summary>
     public String Algorithm { get; set; } = "AES";
 
@@ -29,9 +26,31 @@ public class ProtectedKey
     /// <summary>密码名字</summary>
     public String[] Names { get; set; } = ["password", "pass", "pwd"];
 
+    /// <summary>保护数据的密钥</summary>
+    public Byte[]? Secret { get; set; }
+
     #endregion 属性
 
     #region 方法
+
+    /// <summary>隐藏连接字符串中的密码</summary>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public String Hide(String value)
+    {
+        var dic = value.SplitAsDictionary("=", ";");
+        foreach (var item in Names)
+        {
+            if (dic.TryGetValue(item, out var pass))
+            {
+                dic[item] = HideString;
+
+                return dic.Join(";", e => $"{e.Key}={e.Value}");
+            }
+        }
+
+        return value;
+    }
 
     /// <summary>保护连接字符串中的密码</summary>
     /// <param name="value"></param>
@@ -100,25 +119,6 @@ public class ProtectedKey
                 var alg = Create(ss[1]);
 
                 dic[item] = alg.Decrypt(ss[2].ToBase64(), Secret).ToStr();
-
-                return dic.Join(";", e => $"{e.Key}={e.Value}");
-            }
-        }
-
-        return value;
-    }
-
-    /// <summary>隐藏连接字符串中的密码</summary>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public String Hide(String value)
-    {
-        var dic = value.SplitAsDictionary("=", ";");
-        foreach (var item in Names)
-        {
-            if (dic.TryGetValue(item, out var pass))
-            {
-                dic[item] = HideString;
 
                 return dic.Join(";", e => $"{e.Key}={e.Value}");
             }

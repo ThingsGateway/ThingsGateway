@@ -36,48 +36,6 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
         return data;
     }
 
-    /// <inheritdoc/>
-    public override short ToInt16(byte[] buffer, int offset)
-    {
-        return Convert.ToInt16(this.ToString(buffer, offset, buffer.Length));
-    }
-
-    /// <inheritdoc/>
-    public override ushort ToUInt16(byte[] buffer, int offset)
-    {
-        return Convert.ToUInt16(this.ToString(buffer, offset, buffer.Length));
-    }
-
-    /// <inheritdoc/>
-    public override float ToSingle(byte[] buffer, int offset)
-    {
-        return Convert.ToSingle(this.ToString(buffer, offset, buffer.Length));
-    }
-
-    /// <inheritdoc/>
-    public override long ToInt64(byte[] buffer, int offset)
-    {
-        return Convert.ToInt64(this.ToString(buffer, offset, buffer.Length));
-    }
-
-    /// <inheritdoc/>
-    public override int ToInt32(byte[] buffer, int offset)
-    {
-        return Convert.ToInt32(this.ToString(buffer, offset, buffer.Length));
-    }
-
-    /// <inheritdoc/>
-    public override uint ToUInt32(byte[] buffer, int offset)
-    {
-        return Convert.ToUInt32(this.ToString(buffer, offset, buffer.Length));
-    }
-
-    /// <inheritdoc/>
-    public override ulong ToUInt64(byte[] buffer, int offset)
-    {
-        return Convert.ToUInt64(this.ToString(buffer, offset, buffer.Length));
-    }
-
     /// <summary>
     /// Dlt645协议转换double
     /// </summary>
@@ -87,6 +45,30 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
     public override double ToDouble(byte[] buffer, int offset)
     {
         return Convert.ToDouble(this.ToString(buffer, offset, buffer.Length));
+    }
+
+    /// <inheritdoc/>
+    public override short ToInt16(byte[] buffer, int offset)
+    {
+        return Convert.ToInt16(this.ToString(buffer, offset, buffer.Length));
+    }
+
+    /// <inheritdoc/>
+    public override int ToInt32(byte[] buffer, int offset)
+    {
+        return Convert.ToInt32(this.ToString(buffer, offset, buffer.Length));
+    }
+
+    /// <inheritdoc/>
+    public override long ToInt64(byte[] buffer, int offset)
+    {
+        return Convert.ToInt64(this.ToString(buffer, offset, buffer.Length));
+    }
+
+    /// <inheritdoc/>
+    public override float ToSingle(byte[] buffer, int offset)
+    {
+        return Convert.ToSingle(this.ToString(buffer, offset, buffer.Length));
     }
 
     /// <inheritdoc/>
@@ -143,5 +125,23 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
                 stringBuilder.Append($"{(index != 0 ? "," : "")}{((Convert.ToDouble(content.ToHexString()) / Math.Pow(10.0, dataInfo.Digtal))).ToString()}");
             }
         }
+    }
+
+    /// <inheritdoc/>
+    public override ushort ToUInt16(byte[] buffer, int offset)
+    {
+        return Convert.ToUInt16(this.ToString(buffer, offset, buffer.Length));
+    }
+
+    /// <inheritdoc/>
+    public override uint ToUInt32(byte[] buffer, int offset)
+    {
+        return Convert.ToUInt32(this.ToString(buffer, offset, buffer.Length));
+    }
+
+    /// <inheritdoc/>
+    public override ulong ToUInt64(byte[] buffer, int offset)
+    {
+        return Convert.ToUInt64(this.ToString(buffer, offset, buffer.Length));
     }
 }

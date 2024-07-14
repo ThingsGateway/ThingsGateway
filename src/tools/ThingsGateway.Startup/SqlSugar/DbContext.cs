@@ -18,18 +18,13 @@ using ThingsGateway.Core.Extension;
 
 using Yitter.IdGenerator;
 
-namespace ThingsGateway.Sql;
+namespace ThingsGateway;
 
 /// <summary>
 /// 数据库上下文对象
 /// </summary>
 public static class DbContext
 {
-    /// <summary>
-    /// 读取配置文件中的 ConnectionStrings:Sqlsugar 配置节点
-    /// </summary>
-    public static readonly SqlSugarOptions DbConfigs = App.Configuration?.GetSection(nameof(SqlSugarOptions)).Get<SqlSugarOptions>()!;
-
     /// <summary>
     /// SqlSugar 数据库实例
     /// </summary>
@@ -43,6 +38,11 @@ public static class DbContext
         }
         );
     });
+
+    /// <summary>
+    /// 读取配置文件中的 ConnectionStrings:Sqlsugar 配置节点
+    /// </summary>
+    public static readonly SqlSugarOptions DbConfigs = App.Configuration?.GetSection(nameof(SqlSugarOptions)).Get<SqlSugarOptions>()!;
 
     /// <summary>
     /// Aop设置
@@ -154,6 +154,12 @@ public static class DbContext
         };
     }
 
+    private static void WriteErrorLogWithSql(string msg)
+    {
+        Console.WriteLine("【Sql执行错误时间】：" + DateTime.Now.ToDefaultDateTimeFormat());
+        Console.WriteLine("【Sql语句】：" + msg + Environment.NewLine);
+    }
+
     private static void WriteLog(string msg)
     {
         Console.WriteLine("【库操作】：" + msg + Environment.NewLine);
@@ -162,12 +168,6 @@ public static class DbContext
     private static void WriteLogWithSql(string msg)
     {
         Console.WriteLine("【Sql执行时间】：" + DateTime.Now.ToDefaultDateTimeFormat());
-        Console.WriteLine("【Sql语句】：" + msg + Environment.NewLine);
-    }
-
-    private static void WriteErrorLogWithSql(string msg)
-    {
-        Console.WriteLine("【Sql执行错误时间】：" + DateTime.Now.ToDefaultDateTimeFormat());
         Console.WriteLine("【Sql语句】：" + msg + Environment.NewLine);
     }
 }

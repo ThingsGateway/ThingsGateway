@@ -21,35 +21,6 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class AlarmVariable : PrimaryIdEntity, IDBHistoryAlarm
 {
-    /// <inheritdoc  cref="Variable.Name"/>
-    [SugarColumn(ColumnDescription = "变量名称", IsNullable = false)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public string Name { get; set; }
-
-    /// <inheritdoc  cref="Variable.Description"/>
-    [SugarColumn(ColumnDescription = "描述", IsNullable = true)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
-    public string? Description { get; set; }
-
-    /// <inheritdoc  cref="VariableRunTime.DeviceName"/>
-    [SugarColumn(ColumnDescription = "设备名称", IsNullable = true)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public string DeviceName { get; set; }
-
-    /// <inheritdoc  cref="Variable.RegisterAddress"/>
-    [SugarColumn(ColumnDescription = "变量地址")]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
-    public string RegisterAddress { get; set; }
-
-    /// <inheritdoc  cref="Variable.DataType"/>
-    [SugarColumn(ColumnDescription = "数据类型")]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public DataTypeEnum DataType { get; set; }
-
     /// <inheritdoc  cref="VariableRunTime.AlarmCode"/>
     [SugarColumn(ColumnDescription = "报警值", IsNullable = false)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
@@ -70,12 +41,6 @@ public class AlarmVariable : PrimaryIdEntity, IDBHistoryAlarm
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public DateTime AlarmTime { get; set; }
 
-    /// <inheritdoc  cref="VariableRunTime.EventTime"/>
-    [SugarColumn(ColumnDescription = "事件时间", IsNullable = false)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    [TimeDbSplitField(DateType.Month)]
-    public DateTime EventTime { get; set; }
-
     /// <summary>
     /// 报警类型
     /// </summary>
@@ -83,12 +48,47 @@ public class AlarmVariable : PrimaryIdEntity, IDBHistoryAlarm
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public AlarmTypeEnum? AlarmType { get; set; }
 
+    /// <inheritdoc  cref="Variable.DataType"/>
+    [SugarColumn(ColumnDescription = "数据类型")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public DataTypeEnum DataType { get; set; }
+
+    /// <inheritdoc  cref="Variable.Description"/>
+    [SugarColumn(ColumnDescription = "描述", IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? Description { get; set; }
+
+    /// <inheritdoc  cref="VariableRunTime.DeviceName"/>
+    [SugarColumn(ColumnDescription = "设备名称", IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public string DeviceName { get; set; }
+
+    /// <inheritdoc  cref="VariableRunTime.EventTime"/>
+    [SugarColumn(ColumnDescription = "事件时间", IsNullable = false)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    [TimeDbSplitField(DateType.Month)]
+    public DateTime EventTime { get; set; }
+
     /// <summary>
     /// 事件类型
     /// </summary>
     [SugarColumn(ColumnDescription = "事件类型", IsNullable = false)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public EventTypeEnum EventType { get; set; }
+
+    /// <inheritdoc  cref="Variable.Name"/>
+    [SugarColumn(ColumnDescription = "变量名称", IsNullable = false)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public string Name { get; set; }
+
+    /// <inheritdoc  cref="Variable.RegisterAddress"/>
+    [SugarColumn(ColumnDescription = "变量地址")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string RegisterAddress { get; set; }
 
     /// <inheritdoc cref="Device.Remark1"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]

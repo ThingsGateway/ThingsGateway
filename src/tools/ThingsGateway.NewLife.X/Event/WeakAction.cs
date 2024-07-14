@@ -27,20 +27,20 @@ public class WeakAction<TArgs>
 {
     #region 属性
 
-    /// <summary>目标对象。弱引用，使得调用方对象可以被GC回收</summary>
-    private readonly WeakReference? Target;
+    /// <summary>经过包装的新的委托</summary>
+    private readonly Action<TArgs> Handler;
 
     /// <summary>委托方法</summary>
     private readonly MethodBase Method;
 
-    /// <summary>经过包装的新的委托</summary>
-    private readonly Action<TArgs> Handler;
+    /// <summary>是否只使用一次，如果只使用一次，执行委托后马上取消注册</summary>
+    private readonly Boolean Once;
+
+    /// <summary>目标对象。弱引用，使得调用方对象可以被GC回收</summary>
+    private readonly WeakReference? Target;
 
     /// <summary>取消注册的委托</summary>
     private Action<Action<TArgs>>? UnHandler;
-
-    /// <summary>是否只使用一次，如果只使用一次，执行委托后马上取消注册</summary>
-    private readonly Boolean Once;
 
     #endregion 属性
 
@@ -103,6 +103,11 @@ public class WeakAction<TArgs>
 
     #region 方法
 
+    /// <summary>把弱引用事件处理器转换为普通事件处理器</summary>
+    /// <param name="handler"></param>
+    /// <returns></returns>
+    public static implicit operator Action<TArgs>(WeakAction<TArgs> handler) => handler.Handler;
+
     /// <summary>调用委托</summary>
     /// <param name="e"></param>
     public void Invoke(TArgs e)
@@ -134,11 +139,6 @@ public class WeakAction<TArgs>
             UnHandler = null;
         }
     }
-
-    /// <summary>把弱引用事件处理器转换为普通事件处理器</summary>
-    /// <param name="handler"></param>
-    /// <returns></returns>
-    public static implicit operator Action<TArgs>(WeakAction<TArgs> handler) => handler.Handler;
 
     #endregion 方法
 

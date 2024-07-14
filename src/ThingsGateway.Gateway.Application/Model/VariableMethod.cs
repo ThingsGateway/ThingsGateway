@@ -22,6 +22,8 @@ public class VariableMethod
     /// </summary>
     private readonly TimeTick _timeTick;
 
+    private object?[]? OS;
+
     public VariableMethod(Method method, VariableRunTime variable, int milliSeconds = 1000)
     {
         _timeTick = new TimeTick(milliSeconds);
@@ -31,9 +33,9 @@ public class VariableMethod
     }
 
     /// <summary>
-    /// 需分配的变量
+    /// 最后一次失败原因
     /// </summary>
-    public VariableRunTime Variable { get; }
+    public string? LastErrorMessage { get; internal set; }
 
     /// <summary>
     /// 方法
@@ -41,11 +43,16 @@ public class VariableMethod
     public Method MethodInfo { get; }
 
     /// <summary>
-    /// 最后一次失败原因
+    /// 需分配的变量
     /// </summary>
-    public string? LastErrorMessage { get; internal set; }
+    public VariableRunTime Variable { get; }
 
-    private object?[]? OS;
+    /// <summary>
+    /// 检测是否达到读取间隔
+    /// </summary>
+    /// <param name="time"></param>
+    /// <returns></returns>
+    public bool CheckIfRequestAndUpdateTime(DateTime time) => _timeTick.IsTickHappen(time);
 
     /// <summary>
     /// 执行方法
@@ -119,7 +126,7 @@ public class VariableMethod
             {
                 os[i] = cancellationToken;
             }
-            else if(ps[i].HasDefaultValue)
+            else if (ps[i].HasDefaultValue)
             {
                 if (strs.Length <= index)
                 {
@@ -136,11 +143,4 @@ public class VariableMethod
         }
         return os;
     }
-
-    /// <summary>
-    /// 检测是否达到读取间隔
-    /// </summary>
-    /// <param name="time"></param>
-    /// <returns></returns>
-    public bool CheckIfRequestAndUpdateTime(DateTime time) => _timeTick.IsTickHappen(time);
 }

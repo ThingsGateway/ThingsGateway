@@ -17,22 +17,6 @@ public class CacheDBUtil
     public const string EX = ".db";
 
     /// <summary>
-    /// 获取缓存链接
-    /// </summary>
-    public static CacheDB GetCache(Type tableType, string folder, string name)
-    {
-        var dir = GetFilePath(folder);
-        var fileStart = GetFileName(name);
-        var fullName = dir.CombinePathWithOs($"{fileStart}{EX}");
-
-        lock (fullName)
-        {
-            var cache = new CacheDB(tableType, new CacheDBOption() { FileFullName = $"{fullName}" });
-            return cache;
-        }
-    }
-
-    /// <summary>
     /// 删除缓存文件
     /// </summary>
     public static bool DeleteCache(double maxFileLength, string fullName)
@@ -54,20 +38,28 @@ public class CacheDBUtil
         }
     }
 
-    public static string GetFilePath(string folderName)
-    {
-        var dir = GetFileBasePath().CombinePathWithOs(folderName);
-        //创建文件夹
-        Directory.CreateDirectory(dir);
-        return dir;
-    }
-
     public static void DeleteFile(string file)
     {
         if (File.Exists(file))
         {
             File.SetAttributes(file, FileAttributes.Normal);
             File.Delete(file);
+        }
+    }
+
+    /// <summary>
+    /// 获取缓存链接
+    /// </summary>
+    public static CacheDB GetCache(Type tableType, string folder, string name)
+    {
+        var dir = GetFilePath(folder);
+        var fileStart = GetFileName(name);
+        var fullName = dir.CombinePathWithOs($"{fileStart}{EX}");
+
+        lock (fullName)
+        {
+            var cache = new CacheDB(tableType, new CacheDBOption() { FileFullName = $"{fullName}" });
+            return cache;
         }
     }
 
@@ -98,5 +90,13 @@ public class CacheDBUtil
     {
         var fileStart = $"{Regex.Replace($"{typeName}", "[^a-zA-Z0-9]", "_")}";
         return fileStart;
+    }
+
+    public static string GetFilePath(string folderName)
+    {
+        var dir = GetFileBasePath().CombinePathWithOs(folderName);
+        //创建文件夹
+        Directory.CreateDirectory(dir);
+        return dir;
     }
 }

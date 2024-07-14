@@ -10,7 +10,7 @@
 
 using SqlSugar;
 
-namespace ThingsGateway.Sql;
+namespace ThingsGateway;
 
 /// <summary>
 /// SqlSugar配置
@@ -18,24 +18,24 @@ namespace ThingsGateway.Sql;
 public sealed class SqlSugarOption : ConnectionConfig
 {
     /// <summary>
-    /// 初始化表
-    /// </summary>
-    public bool InitTable { get; set; } = false;
-
-    /// <summary>
     /// 初始化数据
     /// </summary>
     public bool InitSeedData { get; set; } = false;
 
     /// <summary>
-    /// 更新数据
+    /// 初始化表
     /// </summary>
-    public bool IsUpdateSeedData { get; set; } = false;
+    public bool InitTable { get; set; } = false;
 
     /// <summary>
     /// 是否控制台显示Sql语句
     /// </summary>
     public bool IsShowSql { get; set; }
+
+    /// <summary>
+    /// 更新数据
+    /// </summary>
+    public bool IsUpdateSeedData { get; set; } = false;
 }
 
 /// <summary>

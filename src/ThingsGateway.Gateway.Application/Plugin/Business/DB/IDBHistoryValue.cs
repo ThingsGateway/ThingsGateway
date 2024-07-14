@@ -12,10 +12,10 @@ namespace ThingsGateway.Gateway.Application;
 
 public interface IDBHistoryValue
 {
-    public long Id { get; set; }
     DateTime CollectTime { get; set; }
     DateTime CreateTime { get; set; }
     string DeviceName { get; set; }
+    public long Id { get; set; }
     bool IsOnline { get; set; }
     string Name { get; set; }
     string Value { get; set; }

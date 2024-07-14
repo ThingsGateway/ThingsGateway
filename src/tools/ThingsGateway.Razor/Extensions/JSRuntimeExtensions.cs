@@ -18,15 +18,15 @@ namespace ThingsGateway.Razor;
 public static class JSRuntimeExtensions
 {
     /// <summary>
+    /// 获取文化信息
+    /// </summary>
+    /// <param name="jsRuntime"></param>
+    public static ValueTask<string> GetCulture(this IJSRuntime jsRuntime) => jsRuntime.InvokeAsync<string>("getCultureLocalStorage");
+
+    /// <summary>
     /// 设置文化信息
     /// </summary>
     /// <param name="jsRuntime"></param>
     /// <param name="cultureName"></param>
     public static ValueTask SetCulture(this IJSRuntime jsRuntime, string cultureName) => jsRuntime.InvokeVoidAsync("setCultureLocalStorage", cultureName);
-
-    /// <summary>
-    /// 获取文化信息
-    /// </summary>
-    /// <param name="jsRuntime"></param>
-    public static ValueTask<string> GetCulture(this IJSRuntime jsRuntime) => jsRuntime.InvokeAsync<string>("getCultureLocalStorage");
 }

@@ -15,6 +15,6 @@ namespace ThingsGateway.Gateway.Razor;
 [Route("/gateway/businessdevice")]
 public class BusinessDevicePage : DevicePage
 {
-    protected override string RolePrex { get; } = "GatewayBusinessDevice";
     protected override PluginTypeEnum PluginType => PluginTypeEnum.Business;
+    protected override string RolePrex { get; } = "GatewayBusinessDevice";
 }

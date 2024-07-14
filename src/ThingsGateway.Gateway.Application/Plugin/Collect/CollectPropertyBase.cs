@@ -21,6 +21,12 @@ namespace ThingsGateway.Gateway.Application;
 public abstract class CollectPropertyBase : DriverPropertyBase
 {
     /// <summary>
+    /// 最大并发数量
+    /// </summary>
+    [DynamicProperty]
+    public virtual int ConcurrentCount { get; set; } = 1;
+
+    /// <summary>
     /// 离线后恢复运行的间隔时间 /s，默认30s
     /// </summary>
     [DynamicProperty]
@@ -31,10 +37,4 @@ public abstract class CollectPropertyBase : DriverPropertyBase
     /// </summary>
     [DynamicProperty]
     public virtual int RetryCount { get; set; } = 3;
-
-    /// <summary>
-    /// 最大并发数量
-    /// </summary>
-    [DynamicProperty]
-    public virtual int ConcurrentCount { get; set; } = 1;
 }

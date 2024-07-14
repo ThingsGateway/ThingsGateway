@@ -23,7 +23,11 @@ namespace ThingsGateway.Plugin.TDengineDB;
 [SugarTable("historyValue")]
 public class TDengineDBHistoryValue : STable, IPrimaryIdEntity, IDBHistoryValue
 {
-    public long Id { get; set; }
+    /// <summary>
+    /// 采集时间
+    /// </summary>
+    [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
+    public DateTime CollectTime { get; set; }
 
     /// <summary>
     /// 上传时间
@@ -33,28 +37,24 @@ public class TDengineDBHistoryValue : STable, IPrimaryIdEntity, IDBHistoryValue
     public DateTime CreateTime { get; set; }
 
     /// <summary>
-    /// 采集时间
-    /// </summary>
-    [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
-    public DateTime CollectTime { get; set; }
-
-    /// <summary>
     /// 设备名称
     /// </summary>
     [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public string DeviceName { get; set; }
 
-    /// <summary>
-    /// 变量名称
-    /// </summary>
-    [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
-    public string Name { get; set; }
+    public long Id { get; set; }
 
     /// <summary>
     /// 是否在线
     /// </summary>
     [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
     public bool IsOnline { get; set; }
+
+    /// <summary>
+    /// 变量名称
+    /// </summary>
+    [AutoGenerateColumn(Order = 1, Visible = true, Sortable = true, Filterable = false)]
+    public string Name { get; set; }
 
     /// <summary>
     /// 变量值

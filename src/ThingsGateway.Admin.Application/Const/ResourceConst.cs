@@ -16,16 +16,6 @@ namespace ThingsGateway.Admin.Application;
 public class ResourceConst
 {
     /// <summary>
-    /// 系统内置编码
-    /// </summary>
-    public const string System = "System";
-
-    /// <summary>
-    /// 系统管理内置ID 1
-    /// </summary>
-    public const long SystemId = 2;
-
-    /// <summary>
     /// SPA内置ID 2
     /// </summary>
     public const long SpaId = 1;
@@ -34,4 +24,14 @@ public class ResourceConst
     /// SPA内置
     /// </summary>
     public const string SpaTitle = "SPA";
+
+    /// <summary>
+    /// 系统内置编码
+    /// </summary>
+    public const string System = "System";
+
+    /// <summary>
+    /// 系统管理内置ID 1
+    /// </summary>
+    public const long SystemId = 2;
 }

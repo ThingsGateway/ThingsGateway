@@ -18,6 +18,32 @@ namespace ThingsGateway.Plugin.OpcDa;
 public class OpcDaMasterProperty : CollectPropertyBase
 {
     /// <summary>
+    /// 激活订阅
+    /// </summary>
+    [DynamicProperty]
+    public bool ActiveSubscribe { get; set; } = true;
+
+    /// <summary>
+    /// 检测重连频率min
+    /// </summary>
+    [DynamicProperty]
+    public int CheckRate { get; set; } = 10;
+
+    public override int ConcurrentCount { get; set; } = 1;
+
+    /// <summary>
+    /// 死区
+    /// </summary>
+    [DynamicProperty]
+    public float DeadBand { get; set; } = 0;
+
+    /// <summary>
+    /// 最大组大小
+    /// </summary>
+    [DynamicProperty]
+    public int GroupSize { get; set; } = 500;
+
+    /// <summary>
     /// OpcIP
     /// </summary>
     [DynamicProperty]
@@ -36,34 +62,8 @@ public class OpcDaMasterProperty : CollectPropertyBase
     public bool SourceTimestampEnable { get; set; } = true;
 
     /// <summary>
-    /// 激活订阅
-    /// </summary>
-    [DynamicProperty]
-    public bool ActiveSubscribe { get; set; } = true;
-
-    /// <summary>
-    /// 检测重连频率min
-    /// </summary>
-    [DynamicProperty]
-    public int CheckRate { get; set; } = 10;
-
-    /// <summary>
-    /// 死区
-    /// </summary>
-    [DynamicProperty]
-    public float DeadBand { get; set; } = 0;
-
-    /// <summary>
-    /// 最大组大小
-    /// </summary>
-    [DynamicProperty]
-    public int GroupSize { get; set; } = 500;
-
-    /// <summary>
     /// 更新频率
     /// </summary>
     [DynamicProperty]
     public int UpdateRate { get; set; } = 1000;
-
-    public override int ConcurrentCount { get; set; } = 1;
 }

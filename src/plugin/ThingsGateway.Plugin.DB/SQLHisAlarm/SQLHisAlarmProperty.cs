@@ -14,8 +14,6 @@ using SqlSugar;
 
 using System.ComponentModel.DataAnnotations;
 
-using ThingsGateway.Gateway.Application;
-
 namespace ThingsGateway.Plugin.SqlHisAlarm;
 
 /// <summary>
@@ -24,10 +22,10 @@ namespace ThingsGateway.Plugin.SqlHisAlarm;
 public class SqlHisAlarmProperty : BusinessPropertyWithCache
 {
     [DynamicProperty]
-    public DbType DbType { get; set; } = DbType.SqlServer;
-
-    [DynamicProperty]
     [Required]
     [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
     public string BigTextConnectStr { get; set; } = "server=.;uid=sa;pwd=111111;database=test;";
+
+    [DynamicProperty]
+    public DbType DbType { get; set; } = DbType.SqlServer;
 }

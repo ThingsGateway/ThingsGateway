@@ -18,19 +18,14 @@ public class ModbusRequest
     #region Request
 
     /// <summary>
+    /// 数据
+    /// </summary>
+    public ReadOnlyMemory<byte> Data { get; set; }
+
+    /// <summary>
     /// 功能码
     /// </summary>
     public byte FunctionCode { get; set; }
-
-    /// <summary>
-    /// 站号
-    /// </summary>
-    public byte Station { get; set; }
-
-    /// <summary>
-    /// 起始位置
-    /// </summary>
-    public ushort StartAddress { get; set; }
 
     /// <summary>
     /// 读取字节数组长度
@@ -38,9 +33,14 @@ public class ModbusRequest
     public ushort Length { get; set; } = 1;
 
     /// <summary>
-    /// 数据
+    /// 起始位置
     /// </summary>
-    public ReadOnlyMemory<byte> Data { get; set; }
+    public ushort StartAddress { get; set; }
+
+    /// <summary>
+    /// 站号
+    /// </summary>
+    public byte Station { get; set; }
 
     #endregion Request
 }

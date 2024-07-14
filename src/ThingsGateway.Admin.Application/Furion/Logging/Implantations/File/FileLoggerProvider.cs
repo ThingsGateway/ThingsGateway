@@ -24,25 +24,20 @@ namespace ThingsGateway.Logging;
 public sealed class FileLoggerProvider : ILoggerProvider, ISupportExternalScope
 {
     /// <summary>
-    /// 存储多日志分类日志记录器
-    /// </summary>
-    private readonly ConcurrentDictionary<string, FileLogger> _fileLoggers = new();
-
-    /// <summary>
-    /// 日志消息队列（线程安全）
-    /// </summary>
-    private readonly BlockingCollection<LogMessage> _logMessageQueue = new(12000);
-
-    /// <summary>
-    /// 日志作用域提供器
-    /// </summary>
-    private IExternalScopeProvider _scopeProvider;
-
-    /// <summary>
     /// 记录日志所有滚动文件名
     /// </summary>
     /// <remarks>只有 MaxRollingFiles 和 FileSizeLimitBytes 大于 0 有效</remarks>
     internal readonly ConcurrentDictionary<string, FileInfo> _rollingFileNames = new();
+
+    /// <summary>
+    /// 文件名
+    /// </summary>
+    internal string FileName;
+
+    /// <summary>
+    /// 存储多日志分类日志记录器
+    /// </summary>
+    private readonly ConcurrentDictionary<string, FileLogger> _fileLoggers = new();
 
     /// <summary>
     /// 文件日志写入器
@@ -50,10 +45,20 @@ public sealed class FileLoggerProvider : ILoggerProvider, ISupportExternalScope
     private readonly FileLoggingWriter _fileLoggingWriter;
 
     /// <summary>
+    /// 日志消息队列（线程安全）
+    /// </summary>
+    private readonly BlockingCollection<LogMessage> _logMessageQueue = new(12000);
+
+    /// <summary>
     /// 长时间运行的后台任务
     /// </summary>
     /// <remarks>实现不间断写入</remarks>
     private readonly Task _processQueueTask;
+
+    /// <summary>
+    /// 日志作用域提供器
+    /// </summary>
+    private IExternalScopeProvider _scopeProvider;
 
     /// <summary>
     /// 构造函数
@@ -94,11 +99,6 @@ public sealed class FileLoggerProvider : ILoggerProvider, ISupportExternalScope
     }
 
     /// <summary>
-    /// 文件名
-    /// </summary>
-    internal string FileName;
-
-    /// <summary>
     /// 文件日志记录器配置选项
     /// </summary>
     internal FileLoggerOptions LoggerOptions { get; private set; }
@@ -123,15 +123,6 @@ public sealed class FileLoggerProvider : ILoggerProvider, ISupportExternalScope
     public ILogger CreateLogger(string categoryName)
     {
         return _fileLoggers.GetOrAdd(categoryName, name => new FileLogger(name, this));
-    }
-
-    /// <summary>
-    /// 设置作用域提供器
-    /// </summary>
-    /// <param name="scopeProvider"></param>
-    public void SetScopeProvider(IExternalScopeProvider scopeProvider)
-    {
-        _scopeProvider = scopeProvider;
     }
 
     /// <summary>
@@ -160,6 +151,15 @@ public sealed class FileLoggerProvider : ILoggerProvider, ISupportExternalScope
 
         // 释放内部文件写入器
         _fileLoggingWriter.Close();
+    }
+
+    /// <summary>
+    /// 设置作用域提供器
+    /// </summary>
+    /// <param name="scopeProvider"></param>
+    public void SetScopeProvider(IExternalScopeProvider scopeProvider)
+    {
+        _scopeProvider = scopeProvider;
     }
 
     /// <summary>

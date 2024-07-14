@@ -21,21 +21,11 @@ namespace ThingsGateway.Plugin.RabbitMQ;
 /// </summary>
 public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<VariableData, DeviceData, AlarmVariable>
 {
-    private readonly RabbitMQProducerVariableProperty _variablePropertys = new();
     private readonly RabbitMQProducerProperty _driverPropertys = new();
-
+    private readonly RabbitMQProducerVariableProperty _variablePropertys = new();
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
     protected override BusinessPropertyWithCacheIntervalScript _businessPropertyWithCacheIntervalScript => _driverPropertys;
-
-    /// <inheritdoc/>
-    public override bool IsConnected() => success;
-
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        return $" {nameof(RabbitMQProducer)} IP:{_driverPropertys.IP} Port:{_driverPropertys.Port}";
-    }
 
     public override void Init(IChannel? channel = null)
     {
@@ -53,6 +43,15 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
         };
 
         #endregion 初始化
+    }
+
+    /// <inheritdoc/>
+    public override bool IsConnected() => success;
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $" {nameof(RabbitMQProducer)} IP:{_driverPropertys.IP} Port:{_driverPropertys.Port}";
     }
 
     /// <inheritdoc/>

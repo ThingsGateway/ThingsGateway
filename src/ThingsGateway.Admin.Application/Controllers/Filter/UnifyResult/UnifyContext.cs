@@ -31,19 +31,30 @@ public static class UnifyContext
     internal static bool EnabledUnifyHandler = true;
 
     /// <summary>
-    /// 检查请求成功是否进行规范化处理
+    /// 跳过规范化处理的 Response Content-Type
     /// </summary>
-    /// <param name="method"></param>
-    /// <returns>返回 true 跳过处理，否则进行规范化处理</returns>
-    internal static bool CheckSucceededNonUnify(MethodInfo method)
-    {
-        // 判断是否跳过规范化处理
-        var isSkip = !EnabledUnifyHandler
-              || method.CustomAttributes.Any(x => typeof(NonUnifyAttribute).IsAssignableFrom(x.AttributeType) || typeof(ProducesResponseTypeAttribute).IsAssignableFrom(x.AttributeType) || typeof(IApiResponseMetadataProvider).IsAssignableFrom(x.AttributeType))
-              || method.ReflectedType!.IsDefined(typeof(NonUnifyAttribute), true)
-              || method.DeclaringType!.Assembly.GetName().Name!.StartsWith("Microsoft.AspNetCore.OData");
+    internal static string[] ResponseContentTypesOfNonUnify =
+    [
+        "text/event-stream",
+        "application/pdf",
+        "application/octet-stream",
+        "image/"
+    ];
 
-        return isSkip;
+    /// <summary>
+    /// 检查 HttpContext 是否进行规范化处理
+    /// </summary>
+    /// <param name="httpContext"></param>
+    /// <returns>返回 true 跳过处理，否则进行规范化处理</returns>
+    internal static bool CheckHttpContextNonUnify(HttpContext httpContext)
+    {
+        var contentType = httpContext.Response.Headers["content-type"].ToString();
+        if (ResponseContentTypesOfNonUnify.Any(u => contentType.Contains(u, StringComparison.OrdinalIgnoreCase)))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -70,30 +81,19 @@ public static class UnifyContext
     }
 
     /// <summary>
-    /// 跳过规范化处理的 Response Content-Type
+    /// 检查请求成功是否进行规范化处理
     /// </summary>
-    internal static string[] ResponseContentTypesOfNonUnify =
-    [
-        "text/event-stream",
-        "application/pdf",
-        "application/octet-stream",
-        "image/"
-    ];
-
-    /// <summary>
-    /// 检查 HttpContext 是否进行规范化处理
-    /// </summary>
-    /// <param name="httpContext"></param>
+    /// <param name="method"></param>
     /// <returns>返回 true 跳过处理，否则进行规范化处理</returns>
-    internal static bool CheckHttpContextNonUnify(HttpContext httpContext)
+    internal static bool CheckSucceededNonUnify(MethodInfo method)
     {
-        var contentType = httpContext.Response.Headers["content-type"].ToString();
-        if (ResponseContentTypesOfNonUnify.Any(u => contentType.Contains(u, StringComparison.OrdinalIgnoreCase)))
-        {
-            return true;
-        }
+        // 判断是否跳过规范化处理
+        var isSkip = !EnabledUnifyHandler
+              || method.CustomAttributes.Any(x => typeof(NonUnifyAttribute).IsAssignableFrom(x.AttributeType) || typeof(ProducesResponseTypeAttribute).IsAssignableFrom(x.AttributeType) || typeof(IApiResponseMetadataProvider).IsAssignableFrom(x.AttributeType))
+              || method.ReflectedType!.IsDefined(typeof(NonUnifyAttribute), true)
+              || method.DeclaringType!.Assembly.GetName().Name!.StartsWith("Microsoft.AspNetCore.OData");
 
-        return false;
+        return isSkip;
     }
 
     /// <summary>

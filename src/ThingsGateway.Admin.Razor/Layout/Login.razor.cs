@@ -22,9 +22,9 @@ namespace ThingsGateway.Admin.Razor;
 
 public partial class Login
 {
-    private LoginInput loginModel = new LoginInput();
-
+    private string _versionString = string.Empty;
     private AuthDeviceTypeEnum authDeviceTypeEnum;
+    private LoginInput loginModel = new LoginInput();
 
     [SupplyParameterFromQuery]
     [Parameter]
@@ -41,6 +41,7 @@ public partial class Login
     [Inject]
     [NotNull]
     private ToastService? ToastService { get; set; }
+
     [Inject]
     [NotNull]
     private IAppVersionService? VersionService { get; set; }
@@ -48,17 +49,11 @@ public partial class Login
     [Inject]
     [NotNull]
     private IOptions<WebsiteOptions>? WebsiteOption { get; set; }
-    private string _versionString = string.Empty;
 
-    protected override  Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         _versionString = $"v{VersionService.Version}";
         return base.OnInitializedAsync();
-    }
-        private Task OnChanged(BreakPoint breakPoint)
-    {
-        authDeviceTypeEnum = breakPoint > BreakPoint.Medium ? AuthDeviceTypeEnum.PC : AuthDeviceTypeEnum.APP;
-        return Task.CompletedTask;
     }
 
     private async Task LoginAsync(EditContext context)
@@ -100,5 +95,11 @@ public partial class Login
         {
             await ToastService.Error(Localizer["LoginErrorh2"], Localizer["LoginErrorc2"]);
         }
+    }
+
+    private Task OnChanged(BreakPoint breakPoint)
+    {
+        authDeviceTypeEnum = breakPoint > BreakPoint.Medium ? AuthDeviceTypeEnum.PC : AuthDeviceTypeEnum.APP;
+        return Task.CompletedTask;
     }
 }

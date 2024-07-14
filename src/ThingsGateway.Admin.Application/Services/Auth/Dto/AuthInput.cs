@@ -45,15 +45,15 @@ public class LoginInput
     public string Account { get; set; }
 
     /// <summary>
+    /// 设备类型，默认PC
+    /// </summary>
+    /// <example>0</example>
+    public AuthDeviceTypeEnum Device { get; set; } = AuthDeviceTypeEnum.PC;
+
+    /// <summary>
     /// 密码
     ///</summary>
     ///<example>7DA385A25A98388E</example>
     [Required]
     public string Password { get; set; }
-
-    /// <summary>
-    /// 设备类型，默认PC
-    /// </summary>
-    /// <example>0</example>
-    public AuthDeviceTypeEnum Device { get; set; } = AuthDeviceTypeEnum.PC;
 }

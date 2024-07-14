@@ -15,6 +15,6 @@ namespace ThingsGateway.Gateway.Razor;
 [Route("/gateway/collectdevice")]
 public class CollectDevicePage : DevicePage
 {
-    protected override string RolePrex { get; } = "GatewayCollectDevice";
     protected override PluginTypeEnum PluginType => PluginTypeEnum.Collect;
+    protected override string RolePrex { get; } = "GatewayCollectDevice";
 }

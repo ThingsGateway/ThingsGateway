@@ -13,14 +13,14 @@ namespace ThingsGateway.Gateway.Application;
 public class HisAlarmDayStatisticsOutput
 {
     /// <summary>
-    /// 日期
-    /// </summary>
-    public string Date { get; set; }
-
-    /// <summary>
     /// 报警次数
     /// </summary>
     public int AlarmCount { get; set; }
+
+    /// <summary>
+    /// 日期
+    /// </summary>
+    public string Date { get; set; }
 
     /// <summary>
     /// 报警恢复次数

@@ -16,9 +16,9 @@ namespace ThingsGateway.Foundation;
 public interface IOperResult : IRequestInfo
 {
     /// <summary>
-    /// 是否成功
+    /// 执行错误返回类型
     /// </summary>
-    bool IsSuccess { get; }
+    ErrorCodeEnum? ErrorCode { get; }
 
     /// <summary>
     /// 返回消息
@@ -26,19 +26,19 @@ public interface IOperResult : IRequestInfo
     string? ErrorMessage { get; set; }
 
     /// <summary>
-    /// 错误代码，不为0时判定为失败
-    /// </summary>
-    int? OperCode { get; set; }
-
-    /// <summary>
-    /// 执行错误返回类型
-    /// </summary>
-    ErrorCodeEnum? ErrorCode { get; }
-
-    /// <summary>
     /// 异常堆栈
     /// </summary>
     public Exception? Exception { get; set; }
+
+    /// <summary>
+    /// 是否成功
+    /// </summary>
+    bool IsSuccess { get; }
+
+    /// <summary>
+    /// 错误代码，不为0时判定为失败
+    /// </summary>
+    int? OperCode { get; set; }
 }
 
 /// <summary>

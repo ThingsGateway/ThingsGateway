@@ -23,20 +23,11 @@ namespace ThingsGateway.Gateway.Razor;
 
 public partial class VariablePage : IDisposable
 {
-    protected IEnumerable<SelectedItem> CollectDeviceNames;
     protected IEnumerable<SelectedItem> BusinessDeviceNames;
-    private Dictionary<long, Device> CollectDeviceDict { get; set; } = new();
+    protected IEnumerable<SelectedItem> CollectDeviceNames;
     private Dictionary<long, Device> BusinessDeviceDict { get; set; } = new();
-
-    private int TestCount { get; set; }
-
-    [Inject]
-    [NotNull]
-    private IDeviceService? DeviceService { get; set; }
-
-    [Inject]
-    [NotNull]
-    private IVariableService? VariableService { get; set; }
+    private Dictionary<long, Device> CollectDeviceDict { get; set; } = new();
+    private VariableSearchInput CustomerSearchModel { get; set; } = new VariableSearchInput();
 
     [Inject]
     [NotNull]
@@ -44,15 +35,45 @@ public partial class VariablePage : IDisposable
 
     [Inject]
     [NotNull]
+    private IDeviceService? DeviceService { get; set; }
+
+    [Inject]
+    [NotNull]
     private IDispatchService<bool>? DispatchService { get; set; }
 
-    private VariableSearchInput CustomerSearchModel { get; set; } = new VariableSearchInput();
+    private int TestCount { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IVariableService? VariableService { get; set; }
+
+    public void Dispose()
+    {
+        DeviceDispatchService.UnSubscribe(Notify);
+        DispatchService.UnSubscribe(Notify);
+    }
 
     protected override Task OnInitializedAsync()
     {
         DeviceDispatchService.Subscribe(Notify);
         DispatchService.Subscribe(Notify);
         return base.OnInitializedAsync();
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        CollectDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).ToDictionary(a => a.Id);
+        BusinessDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).ToDictionary(a => a.Id);
+
+        CollectDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
+        BusinessDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
+
+        return base.OnParametersSetAsync();
+    }
+
+    private async Task Change()
+    {
+        await OnParametersSetAsync();
     }
 
     private async Task Notify(DispatchEntry<Device> entry)
@@ -69,23 +90,6 @@ public partial class VariablePage : IDisposable
         await InvokeAsync(StateHasChanged);
     }
 
-    public void Dispose()
-    {
-        DeviceDispatchService.UnSubscribe(Notify);
-        DispatchService.UnSubscribe(Notify);
-    }
-
-    protected override Task OnParametersSetAsync()
-    {
-        CollectDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).ToDictionary(a => a.Id);
-        BusinessDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).ToDictionary(a => a.Id);
-
-        CollectDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
-        BusinessDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
-
-        return base.OnParametersSetAsync();
-    }
-
     #region 查询
 
     private async Task<QueryData<Variable>> OnQueryAsync(QueryPageOptions options)
@@ -97,42 +101,6 @@ public partial class VariablePage : IDisposable
     #endregion 查询
 
     #region 修改
-
-    private async Task DeleteAllAsync()
-    {
-        try
-        {
-            await VariableService.ClearVariableAsync();
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(null, $"{ex.Message}");
-        }
-    }
-
-    private async Task<bool> Save(Variable variable, ItemChangedType itemChangedType)
-    {
-        try
-        {
-            variable.VariablePropertyModels ??= new();
-            foreach (var item in variable.VariablePropertyModels)
-            {
-                var result = (!PluginServiceUtil.HasDynamicProperty(item.Value.Value)) || (item.Value.ValidateForm?.Validate() != false);
-                if (result == false)
-                {
-                    return false;
-                }
-            }
-
-            variable.VariablePropertys = PluginServiceUtil.SetDict(variable.VariablePropertyModels);
-            return await VariableService.SaveVariableAsync(variable, itemChangedType);
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(null, $"{ex.Message}");
-            return false;
-        }
-    }
 
     private async Task BatchEdit(IEnumerable<Variable> variables)
     {
@@ -187,16 +155,52 @@ public partial class VariablePage : IDisposable
         }
     }
 
+    private async Task DeleteAllAsync()
+    {
+        try
+        {
+            await VariableService.ClearVariableAsync();
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(null, $"{ex.Message}");
+        }
+    }
+
+    private async Task<bool> Save(Variable variable, ItemChangedType itemChangedType)
+    {
+        try
+        {
+            variable.VariablePropertyModels ??= new();
+            foreach (var item in variable.VariablePropertyModels)
+            {
+                var result = (!PluginServiceUtil.HasDynamicProperty(item.Value.Value)) || (item.Value.ValidateForm?.Validate() != false);
+                if (result == false)
+                {
+                    return false;
+                }
+            }
+
+            variable.VariablePropertys = PluginServiceUtil.SetDict(variable.VariablePropertyModels);
+            return await VariableService.SaveVariableAsync(variable, itemChangedType);
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(null, $"{ex.Message}");
+            return false;
+        }
+    }
+
     #endregion 修改
 
     #region 导出
 
     [Inject]
-    [NotNull]
-    private ITableExport? TableExport { get; set; }
+    private IJSRuntime JSRuntime { get; set; }
 
     [Inject]
-    private IJSRuntime JSRuntime { get; set; }
+    [NotNull]
+    private ITableExport? TableExport { get; set; }
 
     private async Task ExcelExportAsync(ITableExportContext<Variable> tableExportContext)
     {
@@ -235,9 +239,4 @@ public partial class VariablePage : IDisposable
     }
 
     #endregion 导出
-
-    private async Task Change()
-    {
-        await OnParametersSetAsync();
-    }
 }

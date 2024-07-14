@@ -14,53 +14,41 @@ namespace ThingsGateway.Gateway.Razor;
 
 public partial class DeviceStatusPage : IDisposable
 {
-    private IEnumerable<DriverBase>? CollectBases;
     private IEnumerable<DriverBase>? BusinessBases;
-    private IEnumerable<SelectedItem>? Channels;
-    private IEnumerable<SelectedItem>? CollectDevices;
     private IEnumerable<SelectedItem>? BusinessDevices;
+    private IEnumerable<SelectedItem>? Channels;
+    private IEnumerable<DriverBase>? CollectBases;
+    private IEnumerable<SelectedItem>? CollectDevices;
     private IEnumerable<SelectedItem>? Plugins;
 
     [Inject]
     private IChannelService ChannelService { get; set; }
 
     [Inject]
-    private IDeviceService DeviceService { get; set; }
+    [NotNull]
+    private IDispatchService<DeviceRunTime>? DeviceRunTimeDispatchService { get; set; }
 
     [Inject]
-    private IPluginService PluginService { get; set; }
+    private IDeviceService DeviceService { get; set; }
 
     [Inject]
     [NotNull]
     private IDispatchService<PluginOutput>? PluginDispatchService { get; set; }
 
     [Inject]
-    [NotNull]
-    private IDispatchService<DeviceRunTime>? DeviceRunTimeDispatchService { get; set; }
+    private IPluginService PluginService { get; set; }
+
+    public void Dispose()
+    {
+        DeviceRunTimeDispatchService.UnSubscribe(Notify);
+        PluginDispatchService.UnSubscribe(Notify);
+    }
 
     protected override Task OnInitializedAsync()
     {
         DeviceRunTimeDispatchService.Subscribe(Notify);
         PluginDispatchService.Subscribe(Notify);
         return base.OnInitializedAsync();
-    }
-
-    private async Task Notify(DispatchEntry<PluginOutput> entry)
-    {
-        await OnParametersSetAsync();
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task Notify(DispatchEntry<DeviceRunTime> entry)
-    {
-        await OnParametersSetAsync();
-        await InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose()
-    {
-        DeviceRunTimeDispatchService.UnSubscribe(Notify);
-        PluginDispatchService.UnSubscribe(Notify);
     }
 
     protected override Task OnParametersSetAsync()
@@ -75,13 +63,25 @@ public partial class DeviceStatusPage : IDisposable
         return base.OnParametersSetAsync();
     }
 
+    private void BusinessDeviceQuery()
+    {
+        BusinessBases = HostedServiceUtil.BusinessDeviceHostedService?.DriverBases.Select(a => (BusinessBase)a)!;
+    }
+
     private void CollectDeviceQuery()
     {
         CollectBases = HostedServiceUtil.CollectDeviceHostedService?.DriverBases.Select(a => (CollectBase)a)!;
     }
 
-    private void BusinessDeviceQuery()
+    private async Task Notify(DispatchEntry<PluginOutput> entry)
     {
-        BusinessBases = HostedServiceUtil.BusinessDeviceHostedService?.DriverBases.Select(a => (BusinessBase)a)!;
+        await OnParametersSetAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task Notify(DispatchEntry<DeviceRunTime> entry)
+    {
+        await OnParametersSetAsync();
+        await InvokeAsync(StateHasChanged);
     }
 }

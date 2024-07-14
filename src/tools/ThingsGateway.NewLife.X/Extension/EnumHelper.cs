@@ -17,43 +17,6 @@ namespace NewLife;
 [EditorBrowsable(EditorBrowsableState.Never)]
 public static class EnumHelper
 {
-    /// <summary>枚举变量是否包含指定标识</summary>
-    /// <param name="value">枚举变量</param>
-    /// <param name="flag">要判断的标识</param>
-    /// <returns></returns>
-    public static Boolean Has(this Enum value, Enum flag)
-    {
-        if (value.GetType() != flag.GetType()) throw new ArgumentException("flag", "Enumeration identification judgment must be of the same type");
-
-        var num = Convert.ToUInt64(flag);
-        return (Convert.ToUInt64(value) & num) == num;
-    }
-
-    /// <summary>设置标识位</summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="source"></param>
-    /// <param name="flag"></param>
-    /// <param name="value">数值</param>
-    /// <returns></returns>
-    public static T Set<T>(this Enum source, T flag, Boolean value)
-    {
-        if (source is not T) throw new ArgumentException("source", "Enumeration identification judgment must be of the same type");
-
-        var s = Convert.ToUInt64(source);
-        var f = Convert.ToUInt64(flag);
-
-        if (value)
-        {
-            s |= f;
-        }
-        else
-        {
-            s &= ~f;
-        }
-
-        return (T)Enum.ToObject(typeof(T), s);
-    }
-
     /// <summary>获取枚举字段的注释</summary>
     /// <param name="value">数值</param>
     /// <returns></returns>
@@ -117,5 +80,42 @@ public static class EnumHelper
         }
 
         return dic;
+    }
+
+    /// <summary>枚举变量是否包含指定标识</summary>
+    /// <param name="value">枚举变量</param>
+    /// <param name="flag">要判断的标识</param>
+    /// <returns></returns>
+    public static Boolean Has(this Enum value, Enum flag)
+    {
+        if (value.GetType() != flag.GetType()) throw new ArgumentException("flag", "Enumeration identification judgment must be of the same type");
+
+        var num = Convert.ToUInt64(flag);
+        return (Convert.ToUInt64(value) & num) == num;
+    }
+
+    /// <summary>设置标识位</summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="source"></param>
+    /// <param name="flag"></param>
+    /// <param name="value">数值</param>
+    /// <returns></returns>
+    public static T Set<T>(this Enum source, T flag, Boolean value)
+    {
+        if (source is not T) throw new ArgumentException("source", "Enumeration identification judgment must be of the same type");
+
+        var s = Convert.ToUInt64(source);
+        var f = Convert.ToUInt64(flag);
+
+        if (value)
+        {
+            s |= f;
+        }
+        else
+        {
+            s &= ~f;
+        }
+
+        return (T)Enum.ToObject(typeof(T), s);
     }
 }

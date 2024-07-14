@@ -20,9 +20,9 @@ namespace ThingsGateway.Admin.Application;
 public class OperateLogPageInput : ITableSearchModel
 {
     /// <summary>
-    /// 时间区间
+    /// 账号
     /// </summary>
-    public DateTimeRangeValue? SearchDate { get; set; }
+    public string? Account { get; set; }
 
     /// <summary>
     /// 分类
@@ -30,9 +30,9 @@ public class OperateLogPageInput : ITableSearchModel
     public virtual LogCateGoryEnum? Category { get; set; }
 
     /// <summary>
-    /// 账号
+    /// 时间区间
     /// </summary>
-    public string? Account { get; set; }
+    public DateTimeRangeValue? SearchDate { get; set; }
 
     /// <inheritdoc/>
     public IEnumerable<IFilterAction> GetSearches()

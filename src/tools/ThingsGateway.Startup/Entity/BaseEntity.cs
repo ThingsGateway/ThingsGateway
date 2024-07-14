@@ -16,7 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using ThingsGateway.Core;
 
-namespace ThingsGateway.Sql;
+namespace ThingsGateway;
 
 /// <summary>
 /// 主键id基类
@@ -85,6 +85,13 @@ public abstract class BaseEntity : PrimaryKeyEntity
     public virtual bool IsDelete { get; set; } = false;
 
     /// <summary>
+    /// 排序码
+    ///</summary>
+    [SugarColumn(ColumnDescription = "排序码", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, DefaultSort = true, Sortable = true, DefaultSortOrder = SortOrder.Asc)]
+    public int? SortCode { get; set; }
+
+    /// <summary>
     /// 更新时间
     /// </summary>
     [SugarColumn(ColumnDescription = "更新时间", IsOnlyIgnoreInsert = true, IsNullable = true)]
@@ -107,11 +114,4 @@ public abstract class BaseEntity : PrimaryKeyEntity
     [IgnoreExcel]
     [AutoGenerateColumn(Ignore = true)]
     public virtual long? UpdateUserId { get; set; }
-
-    /// <summary>
-    /// 排序码
-    ///</summary>
-    [SugarColumn(ColumnDescription = "排序码", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, DefaultSort = true, Sortable = true, DefaultSortOrder = SortOrder.Asc)]
-    public int? SortCode { get; set; }
 }

@@ -11,8 +11,6 @@
 using ThingsGateway.Foundation.SiemensS7;
 using ThingsGateway.Gateway.Application;
 
-using TouchSocket.Core;
-
 namespace ThingsGateway.Plugin.SiemensS7;
 
 /// <summary>
@@ -20,8 +18,31 @@ namespace ThingsGateway.Plugin.SiemensS7;
 /// </summary>
 public class SiemensS7MasterProperty : CollectPropertyBase
 {
+    /// <summary>
+    /// 组包缓存超时ms
+    /// </summary>
     [DynamicProperty]
-    public SiemensTypeEnum SiemensS7Type { get; set; }
+    public int CacheTimeout { get; set; } = 1000;
+
+    public override int ConcurrentCount { get; set; } = 1;
+
+    /// <summary>
+    /// 连接超时时间
+    /// </summary>
+    [DynamicProperty]
+    public ushort ConnectTimeout { get; set; } = 3000;
+
+    /// <summary>
+    /// 默认解析顺序
+    /// </summary>
+    [DynamicProperty]
+    public DataFormatEnum DataFormat { get; set; }
+
+    /// <summary>
+    /// LocalTSAP
+    /// </summary>
+    [DynamicProperty]
+    public int LocalTSAP { get; set; } = 0;
 
     /// <summary>
     /// 最大打包长度
@@ -36,46 +57,23 @@ public class SiemensS7MasterProperty : CollectPropertyBase
     public byte Rack { get; set; } = 0;
 
     /// <summary>
+    /// 帧前时间ms
+    /// </summary>
+    [DynamicProperty]
+    public int SendDelayTime { get; set; } = 0;
+
+    [DynamicProperty]
+    public SiemensTypeEnum SiemensS7Type { get; set; }
+
+    /// <summary>
     /// Slot
     /// </summary>
     [DynamicProperty]
     public byte Slot { get; set; } = 0;
 
     /// <summary>
-    /// LocalTSAP
-    /// </summary>
-    [DynamicProperty]
-    public int LocalTSAP { get; set; } = 0;
-
-    /// <summary>
     /// 读写超时时间
     /// </summary>
     [DynamicProperty]
     public ushort Timeout { get; set; } = 3000;
-
-    /// <summary>
-    /// 连接超时时间
-    /// </summary>
-    [DynamicProperty]
-    public ushort ConnectTimeout { get; set; } = 3000;
-
-    /// <summary>
-    /// 帧前时间ms
-    /// </summary>
-    [DynamicProperty]
-    public int SendDelayTime { get; set; } = 0;
-
-    /// <summary>
-    /// 组包缓存超时ms
-    /// </summary>
-    [DynamicProperty]
-    public int CacheTimeout { get; set; } = 1000;
-
-    /// <summary>
-    /// 默认解析顺序
-    /// </summary>
-    [DynamicProperty]
-    public DataFormatEnum DataFormat { get; set; }
-
-    public override int ConcurrentCount { get; set; } = 1;
 }

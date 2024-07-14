@@ -19,22 +19,21 @@ public partial class CommitItem
     [EditorRequired]
     public GiteePostBody? Item { get; set; }
 
+    private string? Author { get; set; }
+
+    private string? Branch { get; set; }
+
     [Inject]
     [NotNull]
     private IStringLocalizer<CommitItem>? Localizer { get; set; }
 
-    private string? Author { get; set; }
-
-    private string? Timestamp { get; set; }
-
     private string? Message { get; set; }
-
-    private string? Url { get; set; }
-
-    private string? Branch { get; set; }
+    private string? Timestamp { get; set; }
 
     [NotNull]
     private string? TotalCount { get; set; }
+
+    private string? Url { get; set; }
 
     protected override void OnInitialized()
     {

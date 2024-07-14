@@ -15,18 +15,27 @@ namespace ThingsGateway.Gateway.Razor;
 
 public partial class DeviceStatus1 : ComponentDefault, IDisposable
 {
-    protected override void OnInitialized()
-    {
-        _ = RunTimerAsync();
-        base.OnInitialized();
-    }
+    [Parameter, EditorRequired]
+    public Device DeviceInput { get; set; } = new();
 
     public bool Disposed { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<DriverBase> DriverBaseOnClick { get; set; }
+
+    [Parameter, EditorRequired]
+    public IEnumerable<DriverBase>? DriverBases { get; set; }
 
     public void Dispose()
     {
         Disposed = true;
         GC.SuppressFinalize(this);
+    }
+
+    protected override void OnInitialized()
+    {
+        _ = RunTimerAsync();
+        base.OnInitialized();
     }
 
     private async Task RunTimerAsync()
@@ -44,13 +53,4 @@ public partial class DeviceStatus1 : ComponentDefault, IDisposable
             }
         }
     }
-
-    [Parameter, EditorRequired]
-    public IEnumerable<DriverBase>? DriverBases { get; set; }
-
-    [Parameter, EditorRequired]
-    public Device DeviceInput { get; set; } = new();
-
-    [Parameter, EditorRequired]
-    public EventCallback<DriverBase> DriverBaseOnClick { get; set; }
 }

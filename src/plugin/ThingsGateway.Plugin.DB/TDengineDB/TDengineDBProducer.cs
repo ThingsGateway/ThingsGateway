@@ -14,7 +14,6 @@ using Mapster;
 
 using SqlSugar;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 
@@ -25,23 +24,26 @@ namespace ThingsGateway.Plugin.TDengineDB;
 /// </summary>
 public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<TDengineDBHistoryValue>, IDBHistoryValueService
 {
-    private readonly TDengineDBProducerVariableProperty _variablePropertys = new();
     internal readonly TDengineDBProducerProperty _driverPropertys = new();
+    private readonly TDengineDBProducerVariableProperty _variablePropertys = new();
+
+    /// <inheritdoc/>
+    public override Type DriverUIType => typeof(TDengineDBPage);
 
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
     protected override BusinessPropertyWithCacheInterval _businessPropertyWithCacheInterval => _driverPropertys;
 
-    /// <inheritdoc/>
-    public override Type DriverUIType => typeof(TDengineDBPage);
-
-    /// <inheritdoc/>
-    public override bool IsConnected() => success;
-
-    /// <inheritdoc/>
-    public override string ToString()
+    public async Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBHistoryValuePageInput input)
     {
-        return $" {nameof(TDengineDBProducer)}";
+        var data = await Query(input).ToPagedListAsync<TDengineDBHistoryValue, IDBHistoryValue>(input.Current, input.Size);//分页
+        return data;
+    }
+
+    public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBHistoryValuePageInput input)
+    {
+        var data = await Query(input).ToListAsync();
+        return data.Cast<IDBHistoryValue>().ToList(); ;
     }
 
     public override void Init(IChannel? channel = null)
@@ -56,20 +58,32 @@ public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<
         base.Init(channel);
     }
 
-    protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
+    /// <inheritdoc/>
+    public override bool IsConnected() => success;
+
+    /// <inheritdoc/>
+    public override string ToString()
     {
-        var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
-        db.DbMaintenance.CreateDatabase();
-        db.CodeFirst.InitTables(typeof(TDengineDBHistoryValue));
-        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
+        return $" {nameof(TDengineDBProducer)}";
     }
 
-    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
+    internal ISugarQueryable<TDengineDBHistoryValue> Query(DBHistoryValuePageInput input)
     {
-        await UpdateVarModelMemory(cancellationToken).ConfigureAwait(false);
-        await UpdateVarModelCache(cancellationToken).ConfigureAwait(false);
+        var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        var query = db.Queryable<TDengineDBHistoryValue>()
+                             .WhereIF(input.StartTime != null, a => a.CreateTime >= input.StartTime)
+                           .WhereIF(input.EndTime != null, a => a.CreateTime <= input.EndTime)
+                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
+                           .WhereIF(input.VariableNames != null, it => input.VariableNames.Contains(it.Name))
+                           ;
 
-        await Delay(cancellationToken).ConfigureAwait(false);
+        for (int i = input.SortField.Count - 1; i >= 0; i--)
+        {
+            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
+        }
+        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
+
+        return query;
     }
 
     internal async Task<QueryData<TDengineDBHistoryValue>> QueryData(QueryPageOptions option)
@@ -115,34 +129,19 @@ public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<
         return ret;
     }
 
-    internal ISugarQueryable<TDengineDBHistoryValue> Query(DBHistoryValuePageInput input)
+    protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
-        var query = db.Queryable<TDengineDBHistoryValue>()
-                             .WhereIF(input.StartTime != null, a => a.CreateTime >= input.StartTime)
-                           .WhereIF(input.EndTime != null, a => a.CreateTime <= input.EndTime)
-                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
-                           .WhereIF(input.VariableNames != null, it => input.VariableNames.Contains(it.Name))
-                           ;
-
-        for (int i = input.SortField.Count - 1; i >= 0; i--)
-        {
-            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
-        }
-        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
-
-        return query;
+        db.DbMaintenance.CreateDatabase();
+        db.CodeFirst.InitTables(typeof(TDengineDBHistoryValue));
+        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBHistoryValuePageInput input)
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-        var data = await Query(input).ToListAsync();
-        return data.Cast<IDBHistoryValue>().ToList(); ;
-    }
+        await UpdateVarModelMemory(cancellationToken).ConfigureAwait(false);
+        await UpdateVarModelCache(cancellationToken).ConfigureAwait(false);
 
-    public async Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBHistoryValuePageInput input)
-    {
-        var data = await Query(input).ToPagedListAsync<TDengineDBHistoryValue, IDBHistoryValue>(input.Current, input.Size);//分页
-        return data;
+        await Delay(cancellationToken).ConfigureAwait(false);
     }
 }

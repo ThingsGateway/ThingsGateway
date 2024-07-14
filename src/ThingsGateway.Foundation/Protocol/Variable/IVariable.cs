@@ -16,6 +16,16 @@ namespace ThingsGateway.Foundation;
 public interface IVariable
 {
     /// <summary>
+    /// 数据类型
+    /// </summary>
+    DataTypeEnum DataType { get; set; }
+
+    /// <summary>
+    /// 偏移量，注意如果是布尔类型，Index应该为bit的偏移
+    /// </summary>
+    int Index { get; set; }
+
+    /// <summary>
     /// 执行间隔
     /// </summary>
     int? IntervalTime { get; set; }
@@ -26,29 +36,19 @@ public interface IVariable
     string? RegisterAddress { get; set; }
 
     /// <summary>
-    /// 偏移量，注意如果是布尔类型，Index应该为bit的偏移
-    /// </summary>
-    int Index { get; set; }
-
-    /// <summary>
     /// 数据转换规则
     /// </summary>
     IThingsGatewayBitConverter ThingsGatewayBitConverter { get; set; }
 
     /// <summary>
-    /// 数据类型
+    /// 实时值
     /// </summary>
-    DataTypeEnum DataType { get; set; }
+    object? Value { get; }
 
     /// <summary>
     /// 打包变量
     /// </summary>
     IVariableSource VariableSource { get; set; }
-
-    /// <summary>
-    /// 实时值
-    /// </summary>
-    object? Value { get; }
 
     /// <summary>
     /// 赋值变量，返回是否成功，一般在实体内部需要做异常保存

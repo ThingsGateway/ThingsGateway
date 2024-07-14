@@ -8,19 +8,14 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Photino.Blazor;
 
-using System.Globalization;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
-
-using ThingsGateway.Razor;
 
 namespace ThingsGateway.Debug;
 

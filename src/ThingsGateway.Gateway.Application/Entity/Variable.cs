@@ -28,6 +28,27 @@ namespace ThingsGateway.Gateway.Application;
 public class Variable : PrimaryIdEntity
 {
     /// <summary>
+    /// 变量额外属性Json
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    public ConcurrentDictionary<long, ModelValueValidateForm>? VariablePropertyModels;
+
+    /// <summary>
+    /// 数据类型
+    /// </summary>
+    [SugarColumn(ColumnDescription = "数据类型")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public virtual DataTypeEnum DataType { get; set; } = DataTypeEnum.Int16;
+
+    /// <summary>
+    /// 描述
+    /// </summary>
+    [SugarColumn(ColumnDescription = "描述", Length = 200, IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 2)]
+    public string? Description { get; set; }
+
+    /// <summary>
     /// 设备
     /// </summary>
     [SugarColumn(ColumnDescription = "设备")]
@@ -38,26 +59,11 @@ public class Variable : PrimaryIdEntity
     public virtual long? DeviceId { get; set; }
 
     /// <summary>
-    /// 变量名称
+    /// 使能
     /// </summary>
-    [SugarColumn(ColumnDescription = "变量名称", IsNullable = false)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 1)]
-    [Required]
-    public virtual string Name { get; set; }
-
-    /// <summary>
-    /// 描述
-    /// </summary>
-    [SugarColumn(ColumnDescription = "描述", Length = 200, IsNullable = true)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 2)]
-    public string? Description { get; set; }
-
-    /// <summary>
-    /// 单位
-    /// </summary>
-    [SugarColumn(ColumnDescription = "单位", Length = 200, IsNullable = true)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 3)]
-    public virtual string? Unit { get; set; }
+    [SugarColumn(ColumnDescription = "使能")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public virtual bool Enable { get; set; } = true;
 
     /// <summary>
     /// 执行间隔
@@ -67,11 +73,12 @@ public class Variable : PrimaryIdEntity
     public virtual int? IntervalTime { get; set; }
 
     /// <summary>
-    /// 变量地址，可能带有额外的信息，比如<see cref="DataFormatEnum"/> ，以;分割
+    /// 变量名称
     /// </summary>
-    [SugarColumn(ColumnDescription = "变量地址", Length = 200, IsNullable = true)]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public string? RegisterAddress { get; set; }
+    [SugarColumn(ColumnDescription = "变量名称", IsNullable = false)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 1)]
+    [Required]
+    public virtual string Name { get; set; }
 
     /// <summary>
     /// 其他方法，若不为空，此时RegisterAddress为方法参数
@@ -81,25 +88,11 @@ public class Variable : PrimaryIdEntity
     public string? OtherMethod { get; set; }
 
     /// <summary>
-    /// 使能
-    /// </summary>
-    [SugarColumn(ColumnDescription = "使能")]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public virtual bool Enable { get; set; } = true;
-
-    /// <summary>
     /// 读写权限
     /// </summary>
     [SugarColumn(ColumnDescription = "读写权限", IsNullable = false)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public virtual ProtectTypeEnum ProtectType { get; set; } = ProtectTypeEnum.ReadWrite;
-
-    /// <summary>
-    /// 数据类型
-    /// </summary>
-    [SugarColumn(ColumnDescription = "数据类型")]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public virtual DataTypeEnum DataType { get; set; } = DataTypeEnum.Int16;
 
     /// <summary>
     /// 读取表达式
@@ -109,11 +102,11 @@ public class Variable : PrimaryIdEntity
     public virtual string? ReadExpressions { get; set; }
 
     /// <summary>
-    /// 写入表达式
+    /// 变量地址，可能带有额外的信息，比如<see cref="DataFormatEnum"/> ，以;分割
     /// </summary>
-    [SugarColumn(ColumnDescription = "写入表达式", Length = 1000, IsNullable = true)]
+    [SugarColumn(ColumnDescription = "变量地址", Length = 200, IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public virtual string? WriteExpressions { get; set; }
+    public string? RegisterAddress { get; set; }
 
     /// <summary>
     /// 是否允许远程Rpc写入
@@ -123,6 +116,13 @@ public class Variable : PrimaryIdEntity
     public virtual bool RpcWriteEnable { get; set; } = true;
 
     /// <summary>
+    /// 单位
+    /// </summary>
+    [SugarColumn(ColumnDescription = "单位", Length = 200, IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 3)]
+    public virtual string? Unit { get; set; }
+
+    /// <summary>
     /// 变量额外属性Json
     /// </summary>
     [SugarColumn(IsJson = true, ColumnDataType = StaticConfig.CodeFirst_BigString, ColumnDescription = "变量属性Json", IsNullable = true)]
@@ -130,28 +130,14 @@ public class Variable : PrimaryIdEntity
     [AutoGenerateColumn(Visible = false)]
     public ConcurrentDictionary<long, Dictionary<string, string>>? VariablePropertys { get; set; }
 
+    /// <summary>
+    /// 写入表达式
+    /// </summary>
+    [SugarColumn(ColumnDescription = "写入表达式", Length = 1000, IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public virtual string? WriteExpressions { get; set; }
+
     #region 报警
-
-    /// <summary>
-    /// 布尔开报警使能
-    /// </summary>
-    [SugarColumn(ColumnDescription = "布尔开报警使能")]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public bool BoolOpenAlarmEnable { get; set; }
-
-    /// <summary>
-    /// 布尔开报警约束
-    /// </summary>
-    [SugarColumn(ColumnDescription = "布尔开报警约束", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? BoolOpenRestrainExpressions { get; set; }
-
-    /// <summary>
-    /// 布尔开报警文本
-    /// </summary>
-    [SugarColumn(ColumnDescription = "布尔开报警文本", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? BoolOpenAlarmText { get; set; }
 
     /// <summary>
     /// 布尔关报警使能
@@ -161,13 +147,6 @@ public class Variable : PrimaryIdEntity
     public bool BoolCloseAlarmEnable { get; set; }
 
     /// <summary>
-    /// 布尔关报警约束
-    /// </summary>
-    [SugarColumn(ColumnDescription = "布尔关报警约束", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? BoolCloseRestrainExpressions { get; set; }
-
-    /// <summary>
     /// 布尔关报警文本
     /// </summary>
     [SugarColumn(ColumnDescription = "布尔关报警文本", IsNullable = true)]
@@ -175,116 +154,39 @@ public class Variable : PrimaryIdEntity
     public string? BoolCloseAlarmText { get; set; }
 
     /// <summary>
-    /// 高报使能
+    /// 布尔关报警约束
     /// </summary>
-    [SugarColumn(ColumnDescription = "高报使能")]
+    [SugarColumn(ColumnDescription = "布尔关报警约束", IsNullable = true)]
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public bool HAlarmEnable { get; set; }
+    public string? BoolCloseRestrainExpressions { get; set; }
 
     /// <summary>
-    /// 高报约束
+    /// 布尔开报警使能
     /// </summary>
-    [SugarColumn(ColumnDescription = "高报约束", IsNullable = true)]
+    [SugarColumn(ColumnDescription = "布尔开报警使能")]
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? HRestrainExpressions { get; set; }
+    public bool BoolOpenAlarmEnable { get; set; }
 
     /// <summary>
-    /// 高报文本
+    /// 布尔开报警文本
     /// </summary>
-    [SugarColumn(ColumnDescription = "高报文本", IsNullable = true)]
+    [SugarColumn(ColumnDescription = "布尔开报警文本", IsNullable = true)]
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? HAlarmText { get; set; }
+    public string? BoolOpenAlarmText { get; set; }
 
     /// <summary>
-    /// 高限值
+    /// 布尔开报警约束
     /// </summary>
-    [SugarColumn(ColumnDescription = "高限值", IsNullable = true)]
+    [SugarColumn(ColumnDescription = "布尔开报警约束", IsNullable = true)]
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public double? HAlarmCode { get; set; }
+    public string? BoolOpenRestrainExpressions { get; set; }
 
     /// <summary>
-    /// 高高报使能
+    /// 自定义报警条件
     /// </summary>
-    [SugarColumn(ColumnDescription = "高高报使能")]
+    [SugarColumn(ColumnDescription = "自定义报警条件", IsNullable = true)]
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public bool HHAlarmEnable { get; set; }
-
-    /// <summary>
-    /// 高高报约束
-    /// </summary>
-    [SugarColumn(ColumnDescription = "高高报约束", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? HHRestrainExpressions { get; set; }
-
-    /// <summary>
-    /// 高高报文本
-    /// </summary>
-    [SugarColumn(ColumnDescription = "高高报文本", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? HHAlarmText { get; set; }
-
-    /// <summary>
-    /// 高高限值
-    /// </summary>
-    [SugarColumn(ColumnDescription = "高高限值", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public double? HHAlarmCode { get; set; }
-
-    /// <summary>
-    /// 低报使能
-    /// </summary>
-    [SugarColumn(ColumnDescription = "低报使能")]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public bool LAlarmEnable { get; set; }
-
-    /// <summary>
-    /// 低报约束
-    /// </summary>
-    [SugarColumn(ColumnDescription = "低报约束", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? LRestrainExpressions { get; set; }
-
-    /// <summary>
-    /// 低报文本
-    /// </summary>
-    [SugarColumn(ColumnDescription = "低报文本", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? LAlarmText { get; set; }
-
-    /// <summary>
-    /// 低限值
-    /// </summary>
-    [SugarColumn(ColumnDescription = "低限值", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public double? LAlarmCode { get; set; }
-
-    /// <summary>
-    /// 低低报使能
-    /// </summary>
-    [SugarColumn(ColumnDescription = "低低报使能")]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public bool LLAlarmEnable { get; set; }
-
-    /// <summary>
-    /// 低低报约束
-    /// </summary>
-    [SugarColumn(ColumnDescription = "低低报约束", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? LLRestrainExpressions { get; set; }
-
-    /// <summary>
-    /// 低低报文本
-    /// </summary>
-    [SugarColumn(ColumnDescription = "低低报文本", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? LLAlarmText { get; set; }
-
-    /// <summary>
-    /// 低低限值
-    /// </summary>
-    [SugarColumn(ColumnDescription = "低低限值", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public double? LLAlarmCode { get; set; }
+    public string? CustomAlarmCode { get; set; }
 
     /// <summary>
     /// 自定义报警使能
@@ -294,13 +196,6 @@ public class Variable : PrimaryIdEntity
     public bool CustomAlarmEnable { get; set; }
 
     /// <summary>
-    /// 自定义报警条件约束
-    /// </summary>
-    [SugarColumn(ColumnDescription = "自定义报警条件约束", IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? CustomRestrainExpressions { get; set; }
-
-    /// <summary>
     /// 自定义文本
     /// </summary>
     [SugarColumn(ColumnDescription = "自定义文本", IsNullable = true)]
@@ -308,11 +203,123 @@ public class Variable : PrimaryIdEntity
     public string? CustomAlarmText { get; set; }
 
     /// <summary>
-    /// 自定义报警条件
+    /// 自定义报警条件约束
     /// </summary>
-    [SugarColumn(ColumnDescription = "自定义报警条件", IsNullable = true)]
+    [SugarColumn(ColumnDescription = "自定义报警条件约束", IsNullable = true)]
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? CustomAlarmCode { get; set; }
+    public string? CustomRestrainExpressions { get; set; }
+
+    /// <summary>
+    /// 高限值
+    /// </summary>
+    [SugarColumn(ColumnDescription = "高限值", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public double? HAlarmCode { get; set; }
+
+    /// <summary>
+    /// 高报使能
+    /// </summary>
+    [SugarColumn(ColumnDescription = "高报使能")]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public bool HAlarmEnable { get; set; }
+
+    /// <summary>
+    /// 高报文本
+    /// </summary>
+    [SugarColumn(ColumnDescription = "高报文本", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public string? HAlarmText { get; set; }
+
+    /// <summary>
+    /// 高高限值
+    /// </summary>
+    [SugarColumn(ColumnDescription = "高高限值", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public double? HHAlarmCode { get; set; }
+
+    /// <summary>
+    /// 高高报使能
+    /// </summary>
+    [SugarColumn(ColumnDescription = "高高报使能")]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public bool HHAlarmEnable { get; set; }
+
+    /// <summary>
+    /// 高高报文本
+    /// </summary>
+    [SugarColumn(ColumnDescription = "高高报文本", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public string? HHAlarmText { get; set; }
+
+    /// <summary>
+    /// 高高报约束
+    /// </summary>
+    [SugarColumn(ColumnDescription = "高高报约束", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public string? HHRestrainExpressions { get; set; }
+
+    /// <summary>
+    /// 高报约束
+    /// </summary>
+    [SugarColumn(ColumnDescription = "高报约束", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public string? HRestrainExpressions { get; set; }
+
+    /// <summary>
+    /// 低限值
+    /// </summary>
+    [SugarColumn(ColumnDescription = "低限值", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public double? LAlarmCode { get; set; }
+
+    /// <summary>
+    /// 低报使能
+    /// </summary>
+    [SugarColumn(ColumnDescription = "低报使能")]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public bool LAlarmEnable { get; set; }
+
+    /// <summary>
+    /// 低报文本
+    /// </summary>
+    [SugarColumn(ColumnDescription = "低报文本", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public string? LAlarmText { get; set; }
+
+    /// <summary>
+    /// 低低限值
+    /// </summary>
+    [SugarColumn(ColumnDescription = "低低限值", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public double? LLAlarmCode { get; set; }
+
+    /// <summary>
+    /// 低低报使能
+    /// </summary>
+    [SugarColumn(ColumnDescription = "低低报使能")]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public bool LLAlarmEnable { get; set; }
+
+    /// <summary>
+    /// 低低报文本
+    /// </summary>
+    [SugarColumn(ColumnDescription = "低低报文本", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public string? LLAlarmText { get; set; }
+
+    /// <summary>
+    /// 低低报约束
+    /// </summary>
+    [SugarColumn(ColumnDescription = "低低报约束", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public string? LLRestrainExpressions { get; set; }
+
+    /// <summary>
+    /// 低报约束
+    /// </summary>
+    [SugarColumn(ColumnDescription = "低报约束", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public string? LRestrainExpressions { get; set; }
 
     #endregion 报警
 
@@ -374,17 +381,10 @@ public class Variable : PrimaryIdEntity
     [Newtonsoft.Json.JsonIgnore]
     [AutoGenerateColumn(Visible = false)]
     internal long Row { get; set; }
-
-    /// <summary>
-    /// 变量额外属性Json
-    /// </summary>
-    [System.Text.Json.Serialization.JsonIgnore]
-    [Newtonsoft.Json.JsonIgnore]
-    public ConcurrentDictionary<long, ModelValueValidateForm>? VariablePropertyModels;
 }
 
 public class ModelValueValidateForm
 {
-    public object Value { get; set; }
     public ValidateForm ValidateForm { get; set; }
+    public object Value { get; set; }
 }

@@ -13,6 +13,13 @@ namespace ThingsGateway.Admin.Application;
 public interface IUserCenterService
 {
     /// <summary>
+    /// 获取个人工作台
+    /// </summary>
+    /// <param name="userId">用户id</param>
+    /// <returns>个人工作台信息</returns>
+    Task<WorkbenchInfo> GetLoginWorkbenchAsync(long userId);
+
+    /// <summary>
     /// 获取菜单列表，不会转成树形数据
     /// </summary>
     /// <param name="userId">用户id</param>
@@ -21,18 +28,18 @@ public interface IUserCenterService
     Task<IEnumerable<SysResource>> GetOwnMenuAsync(long userId, long moduleId);
 
     /// <summary>
-    /// 获取个人工作台
-    /// </summary>
-    /// <param name="userId">用户id</param>
-    /// <returns>个人工作台信息</returns>
-    Task<WorkbenchInfo> GetLoginWorkbenchAsync(long userId);
-
-    /// <summary>
     /// 设置默认模块
     /// </summary>
     /// <param name="moduleId">模块id</param>
     /// <returns></returns>
     Task SetDefaultModule(long moduleId);
+
+    /// <summary>
+    /// 更新密码
+    /// </summary>
+    /// <param name="input">密码更新输入</param>
+    /// <returns></returns>
+    Task UpdatePasswordAsync(UpdatePasswordInput input);
 
     /// <summary>
     /// 更新用户信息
@@ -47,11 +54,4 @@ public interface IUserCenterService
     /// <param name="input">个人工作台信息</param>
     /// <returns></returns>
     Task UpdateWorkbenchInfoAsync(WorkbenchInfo input);
-
-    /// <summary>
-    /// 更新密码
-    /// </summary>
-    /// <param name="input">密码更新输入</param>
-    /// <returns></returns>
-    Task UpdatePasswordAsync(UpdatePasswordInput input);
 }

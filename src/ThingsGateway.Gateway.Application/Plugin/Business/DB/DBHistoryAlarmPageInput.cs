@@ -15,19 +15,19 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class DBHistoryAlarmPageInput : BasePageInput
 {
-    /// <summary>
-    /// 开始时间
-    /// </summary>
-    public DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
+    public AlarmTypeEnum? AlarmType { get; set; }
 
     /// <summary>
     /// 结束时间
     /// </summary>
     public DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
 
-    public string VariableName { get; set; }
-
-    public AlarmTypeEnum? AlarmType { get; set; }
-
     public EventTypeEnum? EventType { get; set; }
+
+    /// <summary>
+    /// 开始时间
+    /// </summary>
+    public DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
+
+    public string VariableName { get; set; }
 }

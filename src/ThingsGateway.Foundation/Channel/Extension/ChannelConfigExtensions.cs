@@ -17,22 +17,6 @@ namespace ThingsGateway.Foundation;
 public static class ChannelConfigExtensions
 {
     /// <summary>
-    /// 获取配置。可以指定日志等级以及日志方法
-    /// </summary>
-    /// <param name="logLevel"></param>
-    /// <param name="action"></param>
-    /// <param name="config"></param>
-    /// <returns></returns>
-    public static TouchSocketConfig GetConfigWithLog(this TouchSocketConfig config, LogLevel logLevel, Action<LogLevel, object, string, Exception> action)
-    {
-        config ??= new TouchSocketConfig();
-        var LogMessage = new LoggerGroup() { LogLevel = logLevel };
-        LogMessage.AddLogger(new EasyLogger(action) { LogLevel = logLevel });
-        config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-        return config;
-    }
-
-    /// <summary>
     /// 获取通道
     /// </summary>
     public static IChannel GetChannel(this TouchSocketConfig config, ChannelTypeEnum channel, string remoteUrl, string bindUrl, SerialPortOption serialPortOption)
@@ -56,6 +40,40 @@ public static class ChannelConfigExtensions
                 return config.GetUdpSessionWithIPHost(remoteUrl, bindUrl);
         }
         return null;
+    }
+
+    /// <summary>
+    /// 获取配置。可以指定日志等级以及日志方法
+    /// </summary>
+    /// <param name="logLevel"></param>
+    /// <param name="action"></param>
+    /// <param name="config"></param>
+    /// <returns></returns>
+    public static TouchSocketConfig GetConfigWithLog(this TouchSocketConfig config, LogLevel logLevel, Action<LogLevel, object, string, Exception> action)
+    {
+        config ??= new TouchSocketConfig();
+        var LogMessage = new LoggerGroup() { LogLevel = logLevel };
+        LogMessage.AddLogger(new EasyLogger(action) { LogLevel = logLevel });
+        config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
+        return config;
+    }
+
+    /// <summary>
+    /// 获取一个新的串口通道。传入串口配置信息
+    /// </summary>
+    /// <param name="config"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public static SerialPortChannel GetSerialPortWithOption(this TouchSocketConfig config, SerialPortOption value)
+    {
+        if (value == null) throw new ArgumentNullException(nameof(SerialPortOption));
+        config.SetSerialPortOption(value);
+
+        //载入配置
+        SerialPortChannel serialPortChannel = new SerialPortChannel();
+        serialPortChannel.Setup(config);
+
+        return serialPortChannel;
     }
 
     /// <summary>
@@ -107,23 +125,5 @@ public static class ChannelConfigExtensions
         UdpSessionChannel udpSessionChannel = new UdpSessionChannel();
         udpSessionChannel.Setup(config);
         return udpSessionChannel;
-    }
-
-    /// <summary>
-    /// 获取一个新的串口通道。传入串口配置信息
-    /// </summary>
-    /// <param name="config"></param>
-    /// <param name="value"></param>
-    /// <returns></returns>
-    public static SerialPortChannel GetSerialPortWithOption(this TouchSocketConfig config, SerialPortOption value)
-    {
-        if (value == null) throw new ArgumentNullException(nameof(SerialPortOption));
-        config.SetSerialPortOption(value);
-
-        //载入配置
-        SerialPortChannel serialPortChannel = new SerialPortChannel();
-        serialPortChannel.Setup(config);
-
-        return serialPortChannel;
     }
 }

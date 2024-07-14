@@ -13,20 +13,12 @@ namespace ThingsGateway.Foundation;
 /// <inheritdoc/>
 public class UdpSessionChannel : UdpSession, IClientChannel
 {
+    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
+
     public UdpSessionChannel()
     {
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
-
-    /// <inheritdoc/>
-    public EasyLock WaitLock { get; } = new EasyLock();
-
-    public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
-
-    /// <summary>
-    /// 等待池
-    /// </summary>
-    public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
 
     /// <summary>
     /// 当收到数据时
@@ -34,29 +26,64 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     public ChannelReceivedEventHandler ChannelReceived { get; set; }
 
     /// <inheritdoc/>
-    public ChannelEventHandler Started { get; set; }
+    public ChannelTypeEnum ChannelType => ChannelTypeEnum.UdpSession;
 
     /// <inheritdoc/>
-    public ChannelEventHandler Stoped { get; set; }
+    public ConcurrentList<IProtocol> Collects { get; } = new();
+
+    /// <inheritdoc/>
+    public bool Online => ServerState == ServerState.Running;
+
+    public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
+
+    /// <inheritdoc/>
+    public ChannelEventHandler Started { get; set; }
 
     /// <inheritdoc/>
     public ChannelEventHandler Starting { get; set; }
 
     /// <inheritdoc/>
-    public ChannelTypeEnum ChannelType => ChannelTypeEnum.UdpSession;
+    public ChannelEventHandler Stoped { get; set; }
+
+    /// <summary>
+    /// 等待池
+    /// </summary>
+    public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
 
     /// <inheritdoc/>
-    public bool Online => ServerState == ServerState.Running;
+    public EasyLock WaitLock { get; } = new EasyLock();
 
-    /// <inheritdoc/>
-    public ConcurrentList<IProtocol> Collects { get; } = new();
-
-    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
-
-    /// <inheritdoc/>
-    public override string? ToString()
+    public void Close(string msg)
     {
-        return RemoteIPHost?.ToString().Replace("tcp", "udp");
+        this.CloseAsync(msg).GetFalseAwaitResult();
+    }
+
+    public Task CloseAsync(string msg)
+    {
+        return this.StopAsync();
+    }
+
+    public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
+    {
+        this.ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
+    }
+
+    /// <inheritdoc/>
+    public async Task ConnectAsync(int timeout = 3000, CancellationToken token = default)
+    {
+        if (token.IsCancellationRequested)
+            return;
+        if (Starting != null)
+            await Starting.Invoke(this);
+        await StartAsync().ConfigureAwait(false);
+        if (Started != null)
+            await Started.Invoke(this).ConfigureAwait(false);
+    }
+
+    public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
+    {
+        if (adapter is UdpDataHandlingAdapter udpDataHandlingAdapter)
+            this.SetAdapter(udpDataHandlingAdapter);
     }
 
     /// <inheritdoc/>
@@ -105,36 +132,9 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     }
 
     /// <inheritdoc/>
-    public async Task ConnectAsync(int timeout = 3000, CancellationToken token = default)
+    public override string? ToString()
     {
-        if (token.IsCancellationRequested)
-            return;
-        if (Starting != null)
-            await Starting.Invoke(this);
-        await StartAsync().ConfigureAwait(false);
-        if (Started != null)
-            await Started.Invoke(this).ConfigureAwait(false);
-    }
-
-    public Task CloseAsync(string msg)
-    {
-        return this.StopAsync();
-    }
-
-    public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
-    {
-        if (adapter is UdpDataHandlingAdapter udpDataHandlingAdapter)
-            this.SetAdapter(udpDataHandlingAdapter);
-    }
-
-    public void Close(string msg)
-    {
-        this.CloseAsync(msg).GetFalseAwaitResult();
-    }
-
-    public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
-    {
-        this.ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
+        return RemoteIPHost?.ToString().Replace("tcp", "udp");
     }
 
     /// <inheritdoc/>

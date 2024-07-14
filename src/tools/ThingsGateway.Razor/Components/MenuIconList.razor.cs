@@ -12,14 +12,14 @@ namespace ThingsGateway.Razor;
 
 public partial class MenuIconList
 {
-    [Inject]
-    private IStringLocalizer<MenuIconList> Localizer { get; set; }
-
     [Parameter]
     public string? Value { get; set; }
 
     [Parameter]
     public EventCallback<string?> ValueChanged { get; set; }
+
+    [Inject]
+    private IStringLocalizer<MenuIconList> Localizer { get; set; }
 
     private async Task OnSelctedIcon()
     {

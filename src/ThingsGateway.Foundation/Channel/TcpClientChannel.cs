@@ -15,25 +15,12 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public class TcpClientChannel : TcpClient, IClientChannel
 {
+    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
+
     public TcpClientChannel()
     {
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
-
-    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
-
-    /// <inheritdoc/>
-    public ConcurrentList<IProtocol> Collects { get; } = new();
-
-    /// <inheritdoc/>
-    public EasyLock WaitLock { get; } = new EasyLock();
-
-    /// <summary>
-    /// 等待池
-    /// </summary>
-    public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
-
-    public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
 
     /// <summary>
     /// 接收到数据
@@ -44,29 +31,41 @@ public class TcpClientChannel : TcpClient, IClientChannel
     public ChannelTypeEnum ChannelType => ChannelTypeEnum.TcpClient;
 
     /// <inheritdoc/>
-    public ChannelEventHandler Started { get; set; }
+    public ConcurrentList<IProtocol> Collects { get; } = new();
+
+    public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
 
     /// <inheritdoc/>
-    public ChannelEventHandler Stoped { get; set; }
+    public ChannelEventHandler Started { get; set; }
 
     /// <inheritdoc/>
     public ChannelEventHandler Starting { get; set; }
 
     /// <inheritdoc/>
-    public override string ToString()
-    {
-        return $"{IP}:{Port}";
-    }
+    public ChannelEventHandler Stoped { get; set; }
 
-    public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
-    {
-        if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
-            this.SetAdapter(singleStreamDataHandlingAdapter);
-    }
+    /// <summary>
+    /// 等待池
+    /// </summary>
+    public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
+
+    /// <inheritdoc/>
+    public EasyLock WaitLock { get; } = new EasyLock();
 
     public void Close(string msg)
     {
         this.CloseAsync(msg).GetFalseAwaitResult();
+    }
+
+    public override async Task CloseAsync(string msg)
+    {
+        if (this.Online)
+        {
+            await base.CloseAsync(msg).ConfigureAwait(false);
+            Logger?.Debug($"{ToString()}  Closed{msg}");
+            if (Stoped != null)
+                await Stoped.Invoke(this).ConfigureAwait(false);
+        }
     }
 
     public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
@@ -97,15 +96,33 @@ public class TcpClientChannel : TcpClient, IClientChannel
         }
     }
 
-    public override async Task CloseAsync(string msg)
+    public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
     {
-        if (this.Online)
-        {
-            await base.CloseAsync(msg).ConfigureAwait(false);
-            Logger?.Debug($"{ToString()}  Closed{msg}");
-            if (Stoped != null)
-                await Stoped.Invoke(this).ConfigureAwait(false);
-        }
+        if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
+            this.SetAdapter(singleStreamDataHandlingAdapter);
+    }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{IP}:{Port}";
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnTcpClosing(ClosingEventArgs e)
+    {
+        Logger?.Debug($"{ToString()}  Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
+
+        await base.OnTcpClosing(e).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnTcpConnecting(ConnectingEventArgs e)
+    {
+        Logger?.Debug($"{ToString()}  Connecting{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
+        if (Starting != null)
+            await Starting.Invoke(this).ConfigureAwait(false);
+        await base.OnTcpConnecting(e).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -120,22 +137,5 @@ public class TcpClientChannel : TcpClient, IClientChannel
             }
         }
         await base.OnTcpReceived(e).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    protected override async Task OnTcpConnecting(ConnectingEventArgs e)
-    {
-        Logger?.Debug($"{ToString()}  Connecting{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
-        if (Starting != null)
-            await Starting.Invoke(this).ConfigureAwait(false);
-        await base.OnTcpConnecting(e).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    protected override async Task OnTcpClosing(ClosingEventArgs e)
-    {
-        Logger?.Debug($"{ToString()}  Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
-
-        await base.OnTcpClosing(e).ConfigureAwait(false);
     }
 }

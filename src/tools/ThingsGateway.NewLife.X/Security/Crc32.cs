@@ -76,6 +76,55 @@ public sealed class Crc32 //: HashAlgorithm
     public UInt32 Value
     { get { return crc ^ CrcSeed; } set { crc = value ^ CrcSeed; } }
 
+    /// <summary>计算校验码</summary>
+    /// <param name="buf"></param>
+    /// <param name="offset"></param>
+    /// <param name="count"></param>
+    /// <returns></returns>
+    public static UInt32 Compute(Byte[] buf, Int32 offset = 0, Int32 count = -1)
+    {
+        var crc = new Crc32();
+        crc.Update(buf, offset, count);
+        return crc.Value;
+    }
+
+    /// <summary>计算数据流校验码</summary>
+    /// <param name="stream"></param>
+    /// <param name="count"></param>
+    /// <returns></returns>
+    public static UInt32 Compute(Stream stream, Int32 count = -1)
+    {
+        var crc = new Crc32();
+        crc.Update(stream, count);
+        return crc.Value;
+    }
+
+    /// <summary>计算数据流校验码，指定起始位置和字节数偏移量</summary>
+    /// <remarks>
+    /// 一般用于计算数据包校验码，需要回过头去开始校验，并且可能需要跳过最后的校验码长度。
+    /// position小于0时，数据流从当前位置开始计算校验；
+    /// position大于等于0时，数据流移到该位置开始计算校验，最后由count决定可能差几个字节不参与计算；
+    /// </remarks>
+    /// <param name="stream"></param>
+    /// <param name="position">如果大于等于0，则表示从该位置开始计算</param>
+    /// <param name="count">字节数偏移量，一般用负数表示</param>
+    /// <returns></returns>
+    public static UInt32 ComputeRange(Stream stream, Int64 position = -1, Int32 count = -1)
+    {
+        if (position >= 0)
+        {
+            if (count > 0) count = -count;
+            count += (Int32)(stream.Position - position);
+            if (count == 0) return 0;
+
+            stream.Position = position;
+        }
+
+        var crc = new Crc32();
+        crc.Update(stream, count);
+        return crc.Value;
+    }
+
     /// <summary>重置清零</summary>
     public Crc32 Reset()
     { crc = CrcSeed; return this; }
@@ -134,55 +183,6 @@ public sealed class Crc32 //: HashAlgorithm
         }
 
         return this;
-    }
-
-    /// <summary>计算校验码</summary>
-    /// <param name="buf"></param>
-    /// <param name="offset"></param>
-    /// <param name="count"></param>
-    /// <returns></returns>
-    public static UInt32 Compute(Byte[] buf, Int32 offset = 0, Int32 count = -1)
-    {
-        var crc = new Crc32();
-        crc.Update(buf, offset, count);
-        return crc.Value;
-    }
-
-    /// <summary>计算数据流校验码</summary>
-    /// <param name="stream"></param>
-    /// <param name="count"></param>
-    /// <returns></returns>
-    public static UInt32 Compute(Stream stream, Int32 count = -1)
-    {
-        var crc = new Crc32();
-        crc.Update(stream, count);
-        return crc.Value;
-    }
-
-    /// <summary>计算数据流校验码，指定起始位置和字节数偏移量</summary>
-    /// <remarks>
-    /// 一般用于计算数据包校验码，需要回过头去开始校验，并且可能需要跳过最后的校验码长度。
-    /// position小于0时，数据流从当前位置开始计算校验；
-    /// position大于等于0时，数据流移到该位置开始计算校验，最后由count决定可能差几个字节不参与计算；
-    /// </remarks>
-    /// <param name="stream"></param>
-    /// <param name="position">如果大于等于0，则表示从该位置开始计算</param>
-    /// <param name="count">字节数偏移量，一般用负数表示</param>
-    /// <returns></returns>
-    public static UInt32 ComputeRange(Stream stream, Int64 position = -1, Int32 count = -1)
-    {
-        if (position >= 0)
-        {
-            if (count > 0) count = -count;
-            count += (Int32)(stream.Position - position);
-            if (count == 0) return 0;
-
-            stream.Position = position;
-        }
-
-        var crc = new Crc32();
-        crc.Update(stream, count);
-        return crc.Value;
     }
 
     //#region 抽象实现

@@ -18,12 +18,12 @@ namespace NewLife;
 [ComVisible(true)]
 public class EventArgs<TArg> : EventArgs
 {
-    /// <summary>参数</summary>
-    public TArg Arg { get; set; }
-
     /// <summary>使用参数初始化</summary>
     /// <param name="arg"></param>
     public EventArgs(TArg arg) => Arg = arg;
+
+    /// <summary>参数</summary>
+    public TArg Arg { get; set; }
 
     /// <summary>弹出</summary>
     /// <param name="arg"></param>
@@ -35,12 +35,6 @@ public class EventArgs<TArg> : EventArgs
 /// <typeparam name="TArg2"></typeparam>
 public class EventArgs<TArg1, TArg2> : EventArgs
 {
-    /// <summary>参数</summary>
-    public TArg1 Arg1 { get; set; }
-
-    /// <summary>参数2</summary>
-    public TArg2 Arg2 { get; set; }
-
     /// <summary>使用参数初始化</summary>
     /// <param name="arg1"></param>
     /// <param name="arg2"></param>
@@ -49,6 +43,12 @@ public class EventArgs<TArg1, TArg2> : EventArgs
         Arg1 = arg1;
         Arg2 = arg2;
     }
+
+    /// <summary>参数</summary>
+    public TArg1 Arg1 { get; set; }
+
+    /// <summary>参数2</summary>
+    public TArg2 Arg2 { get; set; }
 
     /// <summary>弹出</summary>
     /// <param name="arg1"></param>
@@ -66,15 +66,6 @@ public class EventArgs<TArg1, TArg2> : EventArgs
 /// <typeparam name="TArg3"></typeparam>
 public class EventArgs<TArg1, TArg2, TArg3> : EventArgs
 {
-    /// <summary>参数</summary>
-    public TArg1 Arg1 { get; set; }
-
-    /// <summary>参数2</summary>
-    public TArg2 Arg2 { get; set; }
-
-    /// <summary>参数3</summary>
-    public TArg3 Arg3 { get; set; }
-
     /// <summary>使用参数初始化</summary>
     /// <param name="arg1"></param>
     /// <param name="arg2"></param>
@@ -85,6 +76,15 @@ public class EventArgs<TArg1, TArg2, TArg3> : EventArgs
         Arg2 = arg2;
         Arg3 = arg3;
     }
+
+    /// <summary>参数</summary>
+    public TArg1 Arg1 { get; set; }
+
+    /// <summary>参数2</summary>
+    public TArg2 Arg2 { get; set; }
+
+    /// <summary>参数3</summary>
+    public TArg3 Arg3 { get; set; }
 
     /// <summary>弹出</summary>
     /// <param name="arg1"></param>
@@ -105,18 +105,6 @@ public class EventArgs<TArg1, TArg2, TArg3> : EventArgs
 /// <typeparam name="TArg4"></typeparam>
 public class EventArgs<TArg1, TArg2, TArg3, TArg4> : EventArgs
 {
-    /// <summary>参数</summary>
-    public TArg1 Arg1 { get; set; }
-
-    /// <summary>参数2</summary>
-    public TArg2 Arg2 { get; set; }
-
-    /// <summary>参数3</summary>
-    public TArg3 Arg3 { get; set; }
-
-    /// <summary>参数4</summary>
-    public TArg4 Arg4 { get; set; }
-
     /// <summary>使用参数初始化</summary>
     /// <param name="arg1"></param>
     /// <param name="arg2"></param>
@@ -129,6 +117,18 @@ public class EventArgs<TArg1, TArg2, TArg3, TArg4> : EventArgs
         Arg3 = arg3;
         Arg4 = arg4;
     }
+
+    /// <summary>参数</summary>
+    public TArg1 Arg1 { get; set; }
+
+    /// <summary>参数2</summary>
+    public TArg2 Arg2 { get; set; }
+
+    /// <summary>参数3</summary>
+    public TArg3 Arg3 { get; set; }
+
+    /// <summary>参数4</summary>
+    public TArg4 Arg4 { get; set; }
 
     /// <summary>弹出</summary>
     /// <param name="arg1"></param>

@@ -20,6 +20,57 @@ public static class RSAHelper
 {
     #region 加密解密
 
+    /// <summary>创建RSA对象，支持Xml密钥和Pem密钥</summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public static RSACryptoServiceProvider Create(String key)
+    {
+        key = key.Trim();
+        if (key.IsNullOrEmpty()) throw new ArgumentNullException(nameof(key));
+
+        var rsa = new RSACryptoServiceProvider();
+        if (key.StartsWith("<RSAKeyValue>") && key.EndsWith("</RSAKeyValue>"))
+            rsa.FromXmlString(key);
+        else if (key.StartsWith("--") || key.Contains('\r') || key.Contains('\n'))
+            rsa.ImportParameters(ReadPem(key));
+        else
+            rsa.ImportParameters(ReadParameters(key));
+
+        return rsa;
+    }
+
+    /// <summary>RSA私钥解密。仅用于加密少量数据</summary>
+    /// <remarks>
+    /// (PKCS # 1 v2) 的 OAEP 填充	模数大小-2-2 * hLen，其中 hLen 是哈希的大小。
+    /// 直接加密 (PKCS # 1 1.5 版)	模数大小-11。 (11 个字节是可能的最小填充。 )
+    /// </remarks>
+    /// <param name="data">数据密文</param>
+    /// <param name="priKey">私钥</param>
+    /// <param name="fOAEP">如果为 true，则使用 OAEP 填充（仅可用于运行 Microsoft Windows XP 及更高版本的计算机）执行直接 System.Security.Cryptography.RSA解密；否则，如果为 false 则使用 PKCS#1 v1.5 填充。</param>
+    /// <returns></returns>
+    public static Byte[] Decrypt(Byte[] data, String priKey, Boolean fOAEP = true)
+    {
+        var rsa = Create(priKey);
+
+        return rsa.Decrypt(data, fOAEP);
+    }
+
+    /// <summary>RSA公钥加密。仅用于加密少量数据</summary>
+    /// <remarks>
+    /// (PKCS # 1 v2) 的 OAEP 填充	模数大小-2-2 * hLen，其中 hLen 是哈希的大小。
+    /// 直接加密 (PKCS # 1 1.5 版)	模数大小-11。 (11 个字节是可能的最小填充。 )
+    /// </remarks>
+    /// <param name="data">数据明文</param>
+    /// <param name="pubKey">公钥</param>
+    /// <param name="fOAEP">如果为 true，则使用 OAEP 填充（仅可用于运行 Windows XP 及更高版本的计算机）执行直接 System.Security.Cryptography.RSA加密；否则，如果为 false，则使用 PKCS#1 v1.5 填充。</param>
+    /// <returns></returns>
+    public static Byte[] Encrypt(Byte[] data, String pubKey, Boolean fOAEP = true)
+    {
+        var rsa = Create(pubKey);
+
+        return rsa.Encrypt(data, fOAEP);
+    }
+
     /// <summary>产生非对称密钥对</summary>
     /// <remarks>
     /// RSAParameters的各个字段采用大端字节序，转为BigInteger的之前一定要倒序。
@@ -56,6 +107,32 @@ public static class RSAHelper
         return ss;
     }
 
+    /// <summary>根据Base64密钥创建RSA参数</summary>
+    /// <param name="key"></param>
+    /// <returns></returns>
+    public static RSAParameters ReadParameters(String key)
+    {
+        using var ms = new MemoryStream(key.ToBase64());
+
+        var p = new RSAParameters
+        {
+            Modulus = ms.ReadArray(),
+            Exponent = ms.ReadArray(),
+        };
+
+        if (ms.Position < ms.Length)
+        {
+            p.D = ms.ReadArray();
+            p.P = ms.ReadArray();
+            p.Q = ms.ReadArray();
+            p.DP = ms.ReadArray();
+            p.DQ = ms.ReadArray();
+            p.InverseQ = ms.ReadArray();
+        }
+
+        return p;
+    }
+
     /// <summary>RSA参数转为Base64密钥</summary>
     /// <param name="p"></param>
     /// <returns></returns>
@@ -83,86 +160,15 @@ public static class RSAHelper
         return ms.ToArray().ToUrlBase64();
     }
 
-    /// <summary>根据Base64密钥创建RSA参数</summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    public static RSAParameters ReadParameters(String key)
-    {
-        using var ms = new MemoryStream(key.ToBase64());
-
-        var p = new RSAParameters
-        {
-            Modulus = ms.ReadArray(),
-            Exponent = ms.ReadArray(),
-        };
-
-        if (ms.Position < ms.Length)
-        {
-            p.D = ms.ReadArray();
-            p.P = ms.ReadArray();
-            p.Q = ms.ReadArray();
-            p.DP = ms.ReadArray();
-            p.DQ = ms.ReadArray();
-            p.InverseQ = ms.ReadArray();
-        }
-
-        return p;
-    }
-
-    /// <summary>创建RSA对象，支持Xml密钥和Pem密钥</summary>
-    /// <param name="key"></param>
-    /// <returns></returns>
-    public static RSACryptoServiceProvider Create(String key)
-    {
-        key = key.Trim();
-        if (key.IsNullOrEmpty()) throw new ArgumentNullException(nameof(key));
-
-        var rsa = new RSACryptoServiceProvider();
-        if (key.StartsWith("<RSAKeyValue>") && key.EndsWith("</RSAKeyValue>"))
-            rsa.FromXmlString(key);
-        else if (key.StartsWith("--") || key.Contains('\r') || key.Contains('\n'))
-            rsa.ImportParameters(ReadPem(key));
-        else
-            rsa.ImportParameters(ReadParameters(key));
-
-        return rsa;
-    }
-
-    /// <summary>RSA公钥加密。仅用于加密少量数据</summary>
-    /// <remarks>
-    /// (PKCS # 1 v2) 的 OAEP 填充	模数大小-2-2 * hLen，其中 hLen 是哈希的大小。
-    /// 直接加密 (PKCS # 1 1.5 版)	模数大小-11。 (11 个字节是可能的最小填充。 )
-    /// </remarks>
-    /// <param name="data">数据明文</param>
-    /// <param name="pubKey">公钥</param>
-    /// <param name="fOAEP">如果为 true，则使用 OAEP 填充（仅可用于运行 Windows XP 及更高版本的计算机）执行直接 System.Security.Cryptography.RSA加密；否则，如果为 false，则使用 PKCS#1 v1.5 填充。</param>
-    /// <returns></returns>
-    public static Byte[] Encrypt(Byte[] data, String pubKey, Boolean fOAEP = true)
-    {
-        var rsa = Create(pubKey);
-
-        return rsa.Encrypt(data, fOAEP);
-    }
-
-    /// <summary>RSA私钥解密。仅用于加密少量数据</summary>
-    /// <remarks>
-    /// (PKCS # 1 v2) 的 OAEP 填充	模数大小-2-2 * hLen，其中 hLen 是哈希的大小。
-    /// 直接加密 (PKCS # 1 1.5 版)	模数大小-11。 (11 个字节是可能的最小填充。 )
-    /// </remarks>
-    /// <param name="data">数据密文</param>
-    /// <param name="priKey">私钥</param>
-    /// <param name="fOAEP">如果为 true，则使用 OAEP 填充（仅可用于运行 Microsoft Windows XP 及更高版本的计算机）执行直接 System.Security.Cryptography.RSA解密；否则，如果为 false 则使用 PKCS#1 v1.5 填充。</param>
-    /// <returns></returns>
-    public static Byte[] Decrypt(Byte[] data, String priKey, Boolean fOAEP = true)
-    {
-        var rsa = Create(priKey);
-
-        return rsa.Decrypt(data, fOAEP);
-    }
-
     #endregion 加密解密
 
     #region 数字签名
+
+    private static HashAlgorithm _sha256 = SHA256.Create();
+
+    private static HashAlgorithm _sha384 = SHA384.Create();
+
+    private static HashAlgorithm _sha512 = SHA512.Create();
 
     /// <summary>签名，MD5散列</summary>
     /// <param name="data"></param>
@@ -173,6 +179,36 @@ public static class RSAHelper
         var rsa = Create(priKey);
 
         return rsa.SignData(data, MD5.Create());
+    }
+
+    /// <summary>RS256</summary>
+    /// <param name="data"></param>
+    /// <param name="priKey"></param>
+    /// <returns></returns>
+    public static Byte[] SignSha256(this Byte[] data, String priKey)
+    {
+        var rsa = Create(priKey);
+        return rsa.SignData(data, _sha256);
+    }
+
+    /// <summary>RS384</summary>
+    /// <param name="data"></param>
+    /// <param name="priKey"></param>
+    /// <returns></returns>
+    public static Byte[] SignSha384(this Byte[] data, String priKey)
+    {
+        var rsa = Create(priKey);
+        return rsa.SignData(data, _sha384);
+    }
+
+    /// <summary>RS512</summary>
+    /// <param name="data"></param>
+    /// <param name="priKey"></param>
+    /// <returns></returns>
+    public static Byte[] SignSha512(this Byte[] data, String priKey)
+    {
+        var rsa = Create(priKey);
+        return rsa.SignData(data, _sha512);
     }
 
     /// <summary>验证，MD5散列</summary>
@@ -187,18 +223,6 @@ public static class RSAHelper
         return rsa.VerifyData(data, MD5.Create(), rgbSignature);
     }
 
-    private static HashAlgorithm _sha256 = SHA256.Create();
-
-    /// <summary>RS256</summary>
-    /// <param name="data"></param>
-    /// <param name="priKey"></param>
-    /// <returns></returns>
-    public static Byte[] SignSha256(this Byte[] data, String priKey)
-    {
-        var rsa = Create(priKey);
-        return rsa.SignData(data, _sha256);
-    }
-
     /// <summary>RS256</summary>
     /// <param name="data"></param>
     /// <param name="pukKey"></param>
@@ -210,18 +234,6 @@ public static class RSAHelper
         return rsa.VerifyData(data, _sha256, rgbSignature);
     }
 
-    private static HashAlgorithm _sha384 = SHA384.Create();
-
-    /// <summary>RS384</summary>
-    /// <param name="data"></param>
-    /// <param name="priKey"></param>
-    /// <returns></returns>
-    public static Byte[] SignSha384(this Byte[] data, String priKey)
-    {
-        var rsa = Create(priKey);
-        return rsa.SignData(data, _sha384);
-    }
-
     /// <summary>RS384</summary>
     /// <param name="data"></param>
     /// <param name="pukKey"></param>
@@ -231,18 +243,6 @@ public static class RSAHelper
     {
         var rsa = Create(pukKey);
         return rsa.VerifyData(data, _sha384, rgbSignature);
-    }
-
-    private static HashAlgorithm _sha512 = SHA512.Create();
-
-    /// <summary>RS512</summary>
-    /// <param name="data"></param>
-    /// <param name="priKey"></param>
-    /// <returns></returns>
-    public static Byte[] SignSha512(this Byte[] data, String priKey)
-    {
-        var rsa = Create(priKey);
-        return rsa.SignData(data, _sha512);
     }
 
     /// <summary>RS512</summary>

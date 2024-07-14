@@ -39,6 +39,14 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
     /// </summary>
     public TRequest Request { get; set; }
 
+    public void SetRequest(int sign, ISendMessage sendMessage)
+    {
+        var request = GetInstance();
+        request.Sign = sign;
+        request.SendInfo(sendMessage);
+        Request = request;
+    }
+
     /// <inheritdoc/>
     public override string? ToString()
     {
@@ -52,16 +60,6 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
     protected virtual TRequest GetInstance()
     {
         return new TRequest() { OperCode = -1, Sign = -1 };
-    }
-
-    /// <inheritdoc/>
-    protected override async Task PreviewSendAsync(EndPoint endPoint, ReadOnlyMemory<byte> memory)
-    {
-        if (Logger.LogLevel <= LogLevel.Trace)
-            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? memory.Span.ToHexString() : (memory.Span.ToString(Encoding.UTF8)))}");
-
-        //发送
-        await this.GoSendAsync(endPoint, memory).ConfigureFalseAwait();
     }
 
     /// <inheritdoc/>
@@ -144,6 +142,16 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
     }
 
     /// <inheritdoc/>
+    protected override async Task PreviewSendAsync(EndPoint endPoint, ReadOnlyMemory<byte> memory)
+    {
+        if (Logger.LogLevel <= LogLevel.Trace)
+            Logger?.Trace($"{ToString()}- Send:{(IsHexData ? memory.Span.ToHexString() : (memory.Span.ToString(Encoding.UTF8)))}");
+
+        //发送
+        await this.GoSendAsync(endPoint, memory).ConfigureFalseAwait();
+    }
+
+    /// <inheritdoc/>
     protected override async Task PreviewSendAsync(EndPoint endPoint, IRequestInfo requestInfo)
     {
         if (!(requestInfo is ISendMessage sendMessage))
@@ -170,13 +178,5 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
         {
             byteBlock.SafeDispose();
         }
-    }
-
-    public void SetRequest(int sign, ISendMessage sendMessage)
-    {
-        var request = GetInstance();
-        request.Sign = sign;
-        request.SendInfo(sendMessage);
-        Request = request;
     }
 }

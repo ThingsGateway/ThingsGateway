@@ -16,21 +16,6 @@ namespace NewLife.Algorithms;
 public class LagrangeInterpolation
 {
     /// <summary>
-    /// X各点坐标组成的数组
-    /// </summary>
-    public Int32[] Times { get; set; }
-
-    /// <summary>
-    /// X各点对应的Y坐标值组成的数组
-    /// </summary>
-    public Double[] Values { get; set; }
-
-    /// <summary>
-    /// x数组或者y数组中元素的个数, 注意两个数组中的元素个数需要一样
-    /// </summary>
-    public Int32 Threshold { get; set; }
-
-    /// <summary>
     /// 初始化拉格朗日插值
     /// </summary>
     /// <param name="times">X各点坐标组成的数组</param>
@@ -41,6 +26,21 @@ public class LagrangeInterpolation
         Values = values;
         Threshold = times.Length;
     }
+
+    /// <summary>
+    /// x数组或者y数组中元素的个数, 注意两个数组中的元素个数需要一样
+    /// </summary>
+    public Int32 Threshold { get; set; }
+
+    /// <summary>
+    /// X各点坐标组成的数组
+    /// </summary>
+    public Int32[] Times { get; set; }
+
+    /// <summary>
+    /// X各点对应的Y坐标值组成的数组
+    /// </summary>
+    public Double[] Values { get; set; }
 
     /// <summary>
     /// 获得某个横坐标对应的Y坐标值

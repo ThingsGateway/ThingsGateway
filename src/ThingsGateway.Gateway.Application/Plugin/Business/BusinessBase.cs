@@ -23,6 +23,13 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public abstract class BusinessBase : DriverBase
 {
+    /// <summary>
+    /// 当前关联的采集设备
+    /// </summary>
+    public IReadOnlyDictionary<string, CollectDeviceRunTime> CollectDevices { get; protected set; }
+
+    public override DriverPropertyBase DriverProperties => _businessPropertyBase;
+
     public List<IEditorItem> PluginVariablePropertyEditorItems
     {
         get
@@ -45,24 +52,8 @@ public abstract class BusinessBase : DriverBase
     /// </summary>
     public abstract VariablePropertyBase VariablePropertys { get; }
 
-    public override DriverPropertyBase DriverProperties => _businessPropertyBase;
-
     protected abstract BusinessPropertyBase _businessPropertyBase { get; }
-
-    /// <summary>
-    /// 当前关联的采集设备
-    /// </summary>
-    public IReadOnlyDictionary<string, CollectDeviceRunTime> CollectDevices { get; protected set; }
-
     protected IStringLocalizer BusinessBaseLocalizer { get; private set; }
-
-    /// <summary>
-    /// 默认延时
-    /// </summary>
-    protected async Task Delay(CancellationToken cancellationToken)
-    {
-        await Task.Delay(Math.Max(CurrentDevice.IntervalTime - ChannelThread.CycleInterval, ChannelThread.CycleInterval), cancellationToken).ConfigureAwait(false);
-    }
 
     /// <summary>
     /// 初始化方法，用于初始化设备运行时。
@@ -97,5 +88,13 @@ public abstract class BusinessBase : DriverBase
         // 如果设备的采集间隔小于等于50毫秒，则将其设置为50毫秒
         if (device.IntervalTime <= 50)
             device.IntervalTime = 50;
+    }
+
+    /// <summary>
+    /// 默认延时
+    /// </summary>
+    protected async Task Delay(CancellationToken cancellationToken)
+    {
+        await Task.Delay(Math.Max(CurrentDevice.IntervalTime - ChannelThread.CycleInterval, ChannelThread.CycleInterval), cancellationToken).ConfigureAwait(false);
     }
 }

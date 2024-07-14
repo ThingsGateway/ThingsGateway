@@ -21,15 +21,9 @@ public class PasswordPolicy
     public string DefaultPassword { get; set; }
 
     /// <summary>
-    /// 密码最小长度
+    /// 包含特殊字符
     /// </summary>
-    [MinValue(1)]
-    public int PasswordMinLen { get; set; }
-
-    /// <summary>
-    /// 包含数字
-    /// </summary>
-    public bool PasswordContainNum { get; set; }
+    public bool PasswordContainChar { get; set; }
 
     /// <summary>
     /// 包含小写字母
@@ -37,12 +31,18 @@ public class PasswordPolicy
     public bool PasswordContainLower { get; set; }
 
     /// <summary>
+    /// 包含数字
+    /// </summary>
+    public bool PasswordContainNum { get; set; }
+
+    /// <summary>
     /// 包含大写字母
     /// </summary>
     public bool PasswordContainUpper { get; set; }
 
     /// <summary>
-    /// 包含特殊字符
+    /// 密码最小长度
     /// </summary>
-    public bool PasswordContainChar { get; set; }
+    [MinValue(1)]
+    public int PasswordMinLen { get; set; }
 }

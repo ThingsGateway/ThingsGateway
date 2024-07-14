@@ -18,10 +18,28 @@ namespace ThingsGateway.Plugin.RabbitMQ;
 public class RabbitMQProducerProperty : BusinessPropertyWithCacheIntervalScript
 {
     /// <summary>
+    /// 交换机名称
+    /// </summary>
+    [DynamicProperty]
+    public string? ExchangeName { get; set; } = "";
+
+    /// <summary>
     /// IP
     /// </summary>
     [DynamicProperty]
     public string IP { get; set; } = "localhost";
+
+    /// <summary>
+    /// IsQueueDeclare
+    /// </summary>
+    [DynamicProperty]
+    public bool IsQueueDeclare { get; set; } = false;
+
+    /// <summary>
+    /// Password
+    /// </summary>
+    [DynamicProperty]
+    public string Password { get; set; } = "guest";
 
     /// <summary>
     /// 端口
@@ -36,18 +54,6 @@ public class RabbitMQProducerProperty : BusinessPropertyWithCacheIntervalScript
     public string UserName { get; set; } = "guest";
 
     /// <summary>
-    /// Password
-    /// </summary>
-    [DynamicProperty]
-    public string Password { get; set; } = "guest";
-
-    /// <summary>
-    /// IsQueueDeclare
-    /// </summary>
-    [DynamicProperty]
-    public bool IsQueueDeclare { get; set; } = false;
-
-    /// <summary>
     /// VirtualHost
     /// </summary>
     [DynamicProperty]
@@ -58,10 +64,4 @@ public class RabbitMQProducerProperty : BusinessPropertyWithCacheIntervalScript
     ///// </summary>
     //[DynamicProperty("路由名称", "")]
     //public string RoutingKey { get; set; } = "TG";
-
-    /// <summary>
-    /// 交换机名称
-    /// </summary>
-    [DynamicProperty]
-    public string? ExchangeName { get; set; } = "";
 }

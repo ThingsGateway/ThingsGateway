@@ -23,6 +23,11 @@ public interface IProducerConsumer<T>
     /// <summary>集合是否为空</summary>
     Boolean IsEmpty { get; }
 
+    /// <summary>确认消费</summary>
+    /// <param name="keys"></param>
+    /// <returns></returns>
+    Int32 Acknowledge(params String[] keys);
+
     /// <summary>生产添加</summary>
     /// <param name="values"></param>
     /// <returns></returns>
@@ -48,9 +53,4 @@ public interface IProducerConsumer<T>
     /// <param name="cancellationToken">取消通知</param>
     /// <returns></returns>
     Task<T?> TakeOneAsync(Int32 timeout, CancellationToken cancellationToken);
-
-    /// <summary>确认消费</summary>
-    /// <param name="keys"></param>
-    /// <returns></returns>
-    Int32 Acknowledge(params String[] keys);
 }

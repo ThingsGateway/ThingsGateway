@@ -18,10 +18,10 @@ namespace ThingsGateway.Plugin.TDengineDB;
 
 public class TDengineDBProducerProperty : BusinessPropertyWithCacheInterval
 {
-    public DbType DbType { get; set; } = DbType.TDengine;
-
     [DynamicProperty]
     [Required]
     [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
     public string BigTextConnectStr { get; set; } = "Host=localhost;Port=6030;Username=root;Password=taosdata;Database=test";
+
+    public DbType DbType { get; set; } = DbType.TDengine;
 }

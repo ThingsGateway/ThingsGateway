@@ -24,6 +24,9 @@ public partial class VariableEditComponent
     public long ChoiceBusinessDeviceId;
 
     [Parameter]
+    public bool BatchEditEnable { get; set; }
+
+    [Parameter]
     [EditorRequired]
     [NotNull]
     public Dictionary<long, Device> BusinessDeviceDict { get; set; }
@@ -31,9 +34,12 @@ public partial class VariableEditComponent
     [Parameter]
     [EditorRequired]
     [NotNull]
-    public Dictionary<long, Device> CollectDeviceDict { get; set; }
+    public IEnumerable<SelectedItem> BusinessDevices { get; set; }
 
-    private ConcurrentDictionary<long, IEnumerable<IEditorItem>>? VariablePropertyEditors { get; set; } = new();
+    [Parameter]
+    [EditorRequired]
+    [NotNull]
+    public Dictionary<long, Device> CollectDeviceDict { get; set; }
 
     [Parameter]
     [EditorRequired]
@@ -43,43 +49,39 @@ public partial class VariableEditComponent
     [Parameter]
     [EditorRequired]
     [NotNull]
-    public IEnumerable<SelectedItem> BusinessDevices { get; set; }
+    public Variable? Model { get; set; }
+
+    [Parameter]
+    public Func<Task> OnValidSubmit { get; set; }
 
     public IEnumerable<SelectedItem> OtherMethods { get; set; }
 
     [Parameter]
-    [EditorRequired]
-    [NotNull]
-    public Variable? Model { get; set; }
+    public bool ValidateEnable { get; set; }
+
+    [CascadingParameter]
+    private Func<Task>? OnCloseAsync { get; set; }
 
     [Inject]
     [NotNull]
     private IPluginService PluginService { get; set; }
 
-    [Parameter]
-    public bool BatchEditEnable { get; set; }
+    private ConcurrentDictionary<long, IEnumerable<IEditorItem>>? VariablePropertyEditors { get; set; } = new();
 
-    [Parameter]
-    public bool ValidateEnable { get; set; }
-
-    [Parameter]
-    public Func<Task> OnValidSubmit { get; set; }
-
-    private Task OnDeviceSelectedItemChanged(SelectedItem selectedItem)
+    public async Task ValidSubmit(EditContext editContext)
     {
         try
         {
-            if (CollectDeviceDict.TryGetValue(selectedItem.Value.ToLong(), out var device))
-            {
-                var data = PluginService.GetDriverMethodInfos(device.PluginName);
-                OtherMethods = data.Select(a => new SelectedItem(a.Name, a.Description)).Append(new SelectedItem(string.Empty,"none"));
-            }
+            if (OnValidSubmit != null)
+                await OnValidSubmit.Invoke();
+            if (OnCloseAsync != null)
+                await OnCloseAsync();
+            await ToastService.Default();
         }
         catch (Exception ex)
         {
-            System.Console.WriteLine(ex);
+            await ToastService.Warning(ex.Message);
         }
-        return Task.CompletedTask;
     }
 
     protected override async Task OnInitializedAsync()
@@ -91,6 +93,23 @@ public partial class VariableEditComponent
         {
             await RefreshBusinessPropertyClickAsync(item.Key);
         }
+    }
+
+    private Task OnDeviceSelectedItemChanged(SelectedItem selectedItem)
+    {
+        try
+        {
+            if (CollectDeviceDict.TryGetValue(selectedItem.Value.ToLong(), out var device))
+            {
+                var data = PluginService.GetDriverMethodInfos(device.PluginName);
+                OtherMethods = data.Select(a => new SelectedItem(a.Name, a.Description)).Append(new SelectedItem(string.Empty, "none"));
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Console.WriteLine(ex);
+        }
+        return Task.CompletedTask;
     }
 
     private async Task RefreshBusinessPropertyClickAsync(long id)
@@ -112,25 +131,6 @@ public partial class VariableEditComponent
         else
         {
             await ToastService.Warning(null, Localizer["RefreshBusinessPropertyError"]);
-        }
-    }
-
-    [CascadingParameter]
-    private Func<Task>? OnCloseAsync { get; set; }
-
-    public async Task ValidSubmit(EditContext editContext)
-    {
-        try
-        {
-            if (OnValidSubmit != null)
-                await OnValidSubmit.Invoke();
-            if (OnCloseAsync != null)
-                await OnCloseAsync();
-            await ToastService.Default();
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(ex.Message);
         }
     }
 }

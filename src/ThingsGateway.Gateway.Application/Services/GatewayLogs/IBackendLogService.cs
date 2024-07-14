@@ -15,11 +15,12 @@ namespace ThingsGateway.Gateway.Application;
 public interface IBackendLogService
 {
     /// <summary>
-    /// 分页查询 BackendLog 数据
+    /// 删除 BackendLog 表中的所有记录
     /// </summary>
-    /// <param name="option">查询选项</param>
-    /// <returns>查询到的数据</returns>
-    Task<QueryData<BackendLog>> PageAsync(QueryPageOptions option);
+    /// <remarks>
+    /// 调用此方法会删除 BackendLog 表中的所有记录。
+    /// </remarks>
+    Task DeleteBackendLogAsync();
 
     /// <summary>
     /// 获取最新的十条 BackendLog 记录
@@ -28,12 +29,11 @@ public interface IBackendLogService
     Task<List<BackendLog>> GetNewLog();
 
     /// <summary>
-    /// 删除 BackendLog 表中的所有记录
+    /// 分页查询 BackendLog 数据
     /// </summary>
-    /// <remarks>
-    /// 调用此方法会删除 BackendLog 表中的所有记录。
-    /// </remarks>
-    Task DeleteBackendLogAsync();
+    /// <param name="option">查询选项</param>
+    /// <returns>查询到的数据</returns>
+    Task<QueryData<BackendLog>> PageAsync(QueryPageOptions option);
 
     /// <summary>
     /// 获取最近一段时间内每天的后端日志统计信息

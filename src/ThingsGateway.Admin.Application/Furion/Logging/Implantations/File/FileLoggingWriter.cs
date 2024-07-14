@@ -23,9 +23,19 @@ internal class FileLoggingWriter
     private readonly FileLoggerProvider _fileLoggerProvider;
 
     /// <summary>
+    /// 判断是否启动滚动日志功能
+    /// </summary>
+    private readonly bool _isEnabledRollingFiles;
+
+    /// <summary>
     /// 日志配置选项
     /// </summary>
     private readonly FileLoggerOptions _options;
+
+    /// <summary>
+    /// 缓存上次返回的基本日志文件名，避免重复解析
+    /// </summary>
+    private string __LastBaseFileName = null;
 
     /// <summary>
     /// 日志文件名
@@ -43,16 +53,6 @@ internal class FileLoggingWriter
     private TextWriter _textWriter;
 
     /// <summary>
-    /// 缓存上次返回的基本日志文件名，避免重复解析
-    /// </summary>
-    private string __LastBaseFileName = null;
-
-    /// <summary>
-    /// 判断是否启动滚动日志功能
-    /// </summary>
-    private readonly bool _isEnabledRollingFiles;
-
-    /// <summary>
     /// 构造函数
     /// </summary>
     /// <param name="fileLoggerProvider">文件日志记录器提供程序</param>
@@ -67,6 +67,124 @@ internal class FileLoggingWriter
 
         // 打开文件并持续写入
         OpenFile(_options.Append);
+    }
+
+    /// <summary>
+    /// 关闭文本写入器并释放
+    /// </summary>
+    internal void Close()
+    {
+        if (_textWriter == null) return;
+
+        var textloWriter = _textWriter;
+        _textWriter = null;
+
+        textloWriter.Dispose();
+        _fileStream.Dispose();
+
+        _fileStream = null;
+    }
+
+    /// <summary>
+    /// 写入文件
+    /// </summary>
+    /// <param name="logMsg">日志消息</param>
+    /// <param name="flush"></param>
+    /// <returns></returns>
+    internal async Task WriteAsync(LogMessage logMsg, bool flush)
+    {
+        if (_textWriter == null) return;
+
+        CheckForNewLogFile();
+        await _textWriter.WriteLineAsync(logMsg.Message);
+
+        if (flush)
+        {
+            await _textWriter.FlushAsync();
+        }
+    }
+
+    /// <summary>
+    /// 判断是否需要创建新文件写入
+    /// </summary>
+    private void CheckForNewLogFile()
+    {
+        var openNewFile = false;
+        if (isMaxFileSizeThresholdReached() || isBaseFileNameChanged())
+            openNewFile = true;
+
+        // 重新创建新文件并写入
+        if (openNewFile)
+        {
+            Close();
+
+            // 计算新文件名
+            _fileName = GetNextFileName();
+
+            // 打开新文件并写入
+            OpenFile(false);
+        }
+
+        // 是否超出限制的最大大小
+        bool isMaxFileSizeThresholdReached() => _options.FileSizeLimitBytes > 0
+            && _fileStream.Length > _options.FileSizeLimitBytes;
+
+        // 是否重新自定义了文件名
+        bool isBaseFileNameChanged()
+        {
+            if (_options.FileNameRule != null)
+            {
+                var baseFileName = GetBaseFileName();
+
+                if (baseFileName != __LastBaseFileName)
+                {
+                    __LastBaseFileName = baseFileName;
+                    return true;
+                }
+
+                return false;
+            }
+
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// 删除超出滚动日志限制的文件
+    /// </summary>
+    /// <param name="fileInfo"></param>
+    private void DropFilesIfOverLimit(FileInfo fileInfo)
+    {
+        // 判断是否启用滚动文件功能
+        if (!_isEnabledRollingFiles) return;
+
+        // 处理 Windows 和 Linux 路径分隔符不一致问题
+        var fName = fileInfo.FullName.Replace('\\', '/');
+
+        // 将当前文件名存储到集合中
+        var succeed = _fileLoggerProvider._rollingFileNames.TryAdd(fName, fileInfo);
+
+        // 判断超出限制的文件自动删除
+        if (succeed && _fileLoggerProvider._rollingFileNames.Count > _options.MaxRollingFiles)
+        {
+            // 根据最后写入时间删除过时日志
+            var dropFiles = _fileLoggerProvider._rollingFileNames
+                .OrderBy(u => u.Value.LastWriteTimeUtc)
+                .Take(_fileLoggerProvider._rollingFileNames.Count - _options.MaxRollingFiles);
+
+            // 遍历所有需要删除的文件
+            foreach (var rollingFile in dropFiles)
+            {
+                var removeSucceed = _fileLoggerProvider._rollingFileNames.TryRemove(rollingFile.Key, out _);
+                if (!removeSucceed) continue;
+
+                // 执行删除
+                Task.Run(() =>
+                {
+                    if (File.Exists(rollingFile.Key)) File.Delete(rollingFile.Key);
+                });
+            }
+        }
     }
 
     /// <summary>
@@ -221,123 +339,5 @@ internal class FileLoggingWriter
             if (append) _fileStream.Seek(0, SeekOrigin.End);
             else _fileStream.SetLength(0);
         }
-    }
-
-    /// <summary>
-    /// 判断是否需要创建新文件写入
-    /// </summary>
-    private void CheckForNewLogFile()
-    {
-        var openNewFile = false;
-        if (isMaxFileSizeThresholdReached() || isBaseFileNameChanged())
-            openNewFile = true;
-
-        // 重新创建新文件并写入
-        if (openNewFile)
-        {
-            Close();
-
-            // 计算新文件名
-            _fileName = GetNextFileName();
-
-            // 打开新文件并写入
-            OpenFile(false);
-        }
-
-        // 是否超出限制的最大大小
-        bool isMaxFileSizeThresholdReached() => _options.FileSizeLimitBytes > 0
-            && _fileStream.Length > _options.FileSizeLimitBytes;
-
-        // 是否重新自定义了文件名
-        bool isBaseFileNameChanged()
-        {
-            if (_options.FileNameRule != null)
-            {
-                var baseFileName = GetBaseFileName();
-
-                if (baseFileName != __LastBaseFileName)
-                {
-                    __LastBaseFileName = baseFileName;
-                    return true;
-                }
-
-                return false;
-            }
-
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// 删除超出滚动日志限制的文件
-    /// </summary>
-    /// <param name="fileInfo"></param>
-    private void DropFilesIfOverLimit(FileInfo fileInfo)
-    {
-        // 判断是否启用滚动文件功能
-        if (!_isEnabledRollingFiles) return;
-
-        // 处理 Windows 和 Linux 路径分隔符不一致问题
-        var fName = fileInfo.FullName.Replace('\\', '/');
-
-        // 将当前文件名存储到集合中
-        var succeed = _fileLoggerProvider._rollingFileNames.TryAdd(fName, fileInfo);
-
-        // 判断超出限制的文件自动删除
-        if (succeed && _fileLoggerProvider._rollingFileNames.Count > _options.MaxRollingFiles)
-        {
-            // 根据最后写入时间删除过时日志
-            var dropFiles = _fileLoggerProvider._rollingFileNames
-                .OrderBy(u => u.Value.LastWriteTimeUtc)
-                .Take(_fileLoggerProvider._rollingFileNames.Count - _options.MaxRollingFiles);
-
-            // 遍历所有需要删除的文件
-            foreach (var rollingFile in dropFiles)
-            {
-                var removeSucceed = _fileLoggerProvider._rollingFileNames.TryRemove(rollingFile.Key, out _);
-                if (!removeSucceed) continue;
-
-                // 执行删除
-                Task.Run(() =>
-                {
-                    if (File.Exists(rollingFile.Key)) File.Delete(rollingFile.Key);
-                });
-            }
-        }
-    }
-
-    /// <summary>
-    /// 写入文件
-    /// </summary>
-    /// <param name="logMsg">日志消息</param>
-    /// <param name="flush"></param>
-    /// <returns></returns>
-    internal async Task WriteAsync(LogMessage logMsg, bool flush)
-    {
-        if (_textWriter == null) return;
-
-        CheckForNewLogFile();
-        await _textWriter.WriteLineAsync(logMsg.Message);
-
-        if (flush)
-        {
-            await _textWriter.FlushAsync();
-        }
-    }
-
-    /// <summary>
-    /// 关闭文本写入器并释放
-    /// </summary>
-    internal void Close()
-    {
-        if (_textWriter == null) return;
-
-        var textloWriter = _textWriter;
-        _textWriter = null;
-
-        textloWriter.Dispose();
-        _fileStream.Dispose();
-
-        _fileStream = null;
     }
 }

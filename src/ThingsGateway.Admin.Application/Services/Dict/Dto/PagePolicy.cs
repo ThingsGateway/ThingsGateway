@@ -13,13 +13,13 @@ namespace ThingsGateway.Admin.Application;
 public class PagePolicy
 {
     /// <summary>
-    /// 系统默认快捷方式菜单ID列表
-    /// </summary>
-    public List<long> DefaultShortcuts { get; set; }
-
-    /// <summary>
     /// 系统默认主页ID
     /// </summary>
     [MinValue(1)]
     public long DefaultRazor { get; set; }
+
+    /// <summary>
+    /// 系统默认快捷方式菜单ID列表
+    /// </summary>
+    public List<long> DefaultShortcuts { get; set; }
 }

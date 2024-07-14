@@ -8,28 +8,17 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Sql;
+namespace ThingsGateway;
 
 /// <summary>
-/// 种子数据忽略新增
+/// 实体种子数据接口
 /// </summary>
-[AttributeUsage(AttributeTargets.Class)]
-public class IgnoreSeedDataAddAttribute : Attribute
+/// <typeparam name="TEntity"></typeparam>
+public interface ISqlSugarEntitySeedData<TEntity> where TEntity : class, new()
 {
-}
-
-/// <summary>
-/// 种子数据忽略修改
-/// </summary>
-[AttributeUsage(AttributeTargets.Class)]
-public class IgnoreSeedDataUpdateAttribute : Attribute
-{
-}
-
-/// <summary>
-/// 忽略初始化表
-/// </summary>
-[AttributeUsage(AttributeTargets.Class)]
-public class IgnoreInitTableAttribute : Attribute
-{
+    /// <summary>
+    /// 种子数据
+    /// </summary>
+    /// <returns></returns>
+    IEnumerable<TEntity> SeedData();
 }

@@ -14,6 +14,8 @@ namespace ThingsGateway.Razor;
 
 public partial class CultureChooser
 {
+    private bool _firstRender;
+
     [Inject]
     [NotNull]
     private IOptionsMonitor<BootstrapBlazorOptions>? BootstrapOptions { get; set; }
@@ -23,7 +25,6 @@ public partial class CultureChooser
     private NavigationManager? NavigationManager { get; set; }
 
     private string SelectedCulture { get; set; } = CultureInfo.CurrentUICulture.Name;
-    private bool _firstRender;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -45,6 +46,25 @@ public partial class CultureChooser
             }
         }
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private static string GetDisplayName(CultureInfo culture)
+    {
+        string? ret;
+        if (OperatingSystem.IsBrowser())
+        {
+            ret = culture.Name switch
+            {
+                "zh-CN" => "中文（中国）",
+                "en-US" => "English (United States)",
+                _ => ""
+            };
+        }
+        else
+        {
+            ret = culture.DisplayName;
+        }
+        return ret;
     }
 
     private async Task SetCulture(SelectedItem item)
@@ -80,24 +100,5 @@ public partial class CultureChooser
                 }
             }
         }
-    }
-
-    private static string GetDisplayName(CultureInfo culture)
-    {
-        string? ret;
-        if (OperatingSystem.IsBrowser())
-        {
-            ret = culture.Name switch
-            {
-                "zh-CN" => "中文（中国）",
-                "en-US" => "English (United States)",
-                _ => ""
-            };
-        }
-        else
-        {
-            ret = culture.DisplayName;
-        }
-        return ret;
     }
 }

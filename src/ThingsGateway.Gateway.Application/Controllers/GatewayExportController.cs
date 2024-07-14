@@ -22,9 +22,9 @@ namespace ThingsGateway.Gateway.Application;
 public class GatewayExportController : ControllerBase
 {
     private readonly IBackendLogService _backendLogService;
-    private readonly IRpcLogService _rpcLogService;
     private readonly IChannelService _channelService;
     private readonly IDeviceService _deviceService;
+    private readonly IRpcLogService _rpcLogService;
     private readonly IVariableService _variableService;
 
     /// <summary>
@@ -43,6 +43,19 @@ public class GatewayExportController : ControllerBase
         _channelService = channelService;
         _deviceService = deviceService;
         _variableService = variableService;
+    }
+
+    /// <summary>
+    /// 下载设备
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("businessdevice")]
+    public async Task<IActionResult> DownloadBusinessDeviceAsync([FromQuery] QueryPageOptions input)
+    {
+        input.IsPage = false;
+        input.IsVirtualScroll = false;
+        var fileStreamResult = await _deviceService.ExportDeviceAsync(input, PluginTypeEnum.Business);
+        return fileStreamResult;
     }
 
     /// <summary>
@@ -70,19 +83,6 @@ public class GatewayExportController : ControllerBase
         input.IsVirtualScroll = false;
 
         var fileStreamResult = await _deviceService.ExportDeviceAsync(input, PluginTypeEnum.Collect);
-        return fileStreamResult;
-    }
-
-    /// <summary>
-    /// 下载设备
-    /// </summary>
-    /// <returns></returns>
-    [HttpGet("businessdevice")]
-    public async Task<IActionResult> DownloadBusinessDeviceAsync([FromQuery] QueryPageOptions input)
-    {
-        input.IsPage = false;
-        input.IsVirtualScroll = false;
-        var fileStreamResult = await _deviceService.ExportDeviceAsync(input, PluginTypeEnum.Business);
         return fileStreamResult;
     }
 

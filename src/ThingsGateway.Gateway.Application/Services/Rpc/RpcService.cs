@@ -28,9 +28,8 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class RpcService : IRpcService
 {
-    private readonly ConcurrentQueue<RpcLog> _logQueues = new();
     private readonly IHostApplicationLifetime _appLifetime;
-    private IStringLocalizer Localizer { get; }
+    private readonly ConcurrentQueue<RpcLog> _logQueues = new();
 
     /// <inheritdoc cref="RpcService"/>
     public RpcService(IHostApplicationLifetime appLifetime, IStringLocalizer<RpcService> localizer)
@@ -39,6 +38,8 @@ public class RpcService : IRpcService
         Localizer = localizer;
         Task.Factory.StartNew(RpcLogInsertAsync, TaskCreationOptions.LongRunning);
     }
+
+    private IStringLocalizer Localizer { get; }
 
     /// <inheritdoc />
     public async Task<Dictionary<string, OperResult>> InvokeDeviceMethodAsync(string sourceDes, Dictionary<string, string> items, CancellationToken cancellationToken = default)

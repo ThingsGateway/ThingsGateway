@@ -14,8 +14,6 @@ using Microsoft.Extensions.Logging;
 
 using System.Diagnostics;
 
-using ThingsGateway.Admin.Application;
-
 namespace ThingsGateway.Logging;
 
 /// <summary>
@@ -25,14 +23,14 @@ namespace ThingsGateway.Logging;
 public sealed class DatabaseLogger : ILogger
 {
     /// <summary>
-    /// 记录器类别名称
-    /// </summary>
-    private readonly string _logName;
-
-    /// <summary>
     /// 数据库日志记录器提供器
     /// </summary>
     private readonly DatabaseLoggerProvider _databaseLoggerProvider;
+
+    /// <summary>
+    /// 记录器类别名称
+    /// </summary>
+    private readonly string _logName;
 
     /// <summary>
     /// 日志配置选项

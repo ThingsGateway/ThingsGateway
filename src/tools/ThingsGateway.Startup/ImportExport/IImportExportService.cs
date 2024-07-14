@@ -11,7 +11,9 @@
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ThingsGateway.Admin.Application;
+using ThingsGateway.Core;
+
+namespace ThingsGateway;
 
 public interface IImportExportService
 {
@@ -26,16 +28,16 @@ public interface IImportExportService
     Task<FileStreamResult> ExportAsync<T>(object input, string fileName, bool isDynamicExcelColumn = true) where T : class;
 
     /// <summary>
-    /// 上传文件
-    /// </summary>
-    /// <param name="file">文件</param>
-    /// <returns>保存全路径</returns>
-    Task<string> UploadFileAsync(IBrowserFile file);
-
-    /// <summary>
     /// 获取文件名，默认xlsx类型
     /// </summary>
     /// <param name="fileName">文件名称，不含类型名称的话默认xlsx</param>
     /// <returns>编码后的文件名</returns>
     string GetUrlEncodeFileName(string fileName);
+
+    /// <summary>
+    /// 上传文件
+    /// </summary>
+    /// <param name="file">文件</param>
+    /// <returns>保存全路径</returns>
+    Task<string> UploadFileAsync(IBrowserFile file);
 }

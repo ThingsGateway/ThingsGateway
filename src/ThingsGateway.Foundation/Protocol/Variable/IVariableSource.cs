@@ -21,6 +21,21 @@ public interface IVariableSource
     string? LastErrorMessage { get; set; }
 
     /// <summary>
+    /// 长度
+    /// </summary>
+    int Length { get; set; }
+
+    /// <summary>
+    /// 变量地址
+    /// </summary>
+    string RegisterAddress { get; set; }
+
+    /// <summary>
+    /// TimeTick
+    /// </summary>
+    TimeTick TimeTick { get; set; }
+
+    /// <summary>
     /// 添加变量
     /// </summary>
     void AddVariable(IVariable variable);
@@ -29,19 +44,4 @@ public interface IVariableSource
     /// 添加变量
     /// </summary>
     void AddVariableRange(IEnumerable<IVariable> variables);
-
-    /// <summary>
-    /// TimeTick
-    /// </summary>
-    TimeTick TimeTick { get; set; }
-
-    /// <summary>
-    /// 变量地址
-    /// </summary>
-    string RegisterAddress { get; set; }
-
-    /// <summary>
-    /// 长度
-    /// </summary>
-    int Length { get; set; }
 }

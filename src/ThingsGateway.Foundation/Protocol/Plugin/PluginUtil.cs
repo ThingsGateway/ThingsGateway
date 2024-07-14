@@ -12,6 +12,20 @@ namespace ThingsGateway.Foundation;
 
 public static class PluginUtil
 {
+    public static Action<IPluginManager> GetDtuClientPlugin(IDtuClient dtuClient)
+    {
+        Action<IPluginManager> action = a => { };
+
+        action += a =>
+        {
+            var plugin = a.Add<HeartbeatAndReceivePlugin>();
+            plugin.HeartbeatHexString = dtuClient.HeartbeatHexString;
+            plugin.DtuId = dtuClient.DtuId;
+            plugin.HeartbeatTime = dtuClient.HeartbeatTime;
+        };
+        return action;
+    }
+
     public static Action<IPluginManager> GetDtuPlugin(IDtu dtu)
     {
         Action<IPluginManager> action = a => { };
@@ -52,20 +66,6 @@ public static class PluginUtil
     });
         };
 
-        return action;
-    }
-
-    public static Action<IPluginManager> GetDtuClientPlugin(IDtuClient dtuClient)
-    {
-        Action<IPluginManager> action = a => { };
-
-        action += a =>
-        {
-            var plugin = a.Add<HeartbeatAndReceivePlugin>();
-            plugin.HeartbeatHexString = dtuClient.HeartbeatHexString;
-            plugin.DtuId = dtuClient.DtuId;
-            plugin.HeartbeatTime = dtuClient.HeartbeatTime;
-        };
         return action;
     }
 }

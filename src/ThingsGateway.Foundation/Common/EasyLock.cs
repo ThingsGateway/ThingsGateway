@@ -30,13 +30,6 @@ public sealed class EasyLock : DisposableObject
         this.SafeDispose();
     }
 
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        m_waiterLock.SafeDispose();
-        base.Dispose(disposing);
-    }
-
     /// <summary>
     /// 当前锁是否在等待当中
     /// </summary>
@@ -85,5 +78,12 @@ public sealed class EasyLock : DisposableObject
     public Task<bool> WaitAsync(TimeSpan timeSpan, CancellationToken cancellationToken = default)
     {
         return m_waiterLock.WaitAsync(timeSpan, cancellationToken);
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        m_waiterLock.SafeDispose();
+        base.Dispose(disposing);
     }
 }

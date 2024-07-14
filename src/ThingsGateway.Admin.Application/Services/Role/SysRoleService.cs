@@ -72,26 +72,6 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
     #region 修改
 
     /// <summary>
-    /// 保存角色
-    /// </summary>
-    /// <param name="input">角色</param>
-    /// <param name="type">保存类型</param>
-    [OperDesc("SaveRole")]
-    public async Task<bool> SaveRoleAsync(SysRole input, ItemChangedType type)
-    {
-        if (input.Code == RoleConst.SuperAdmin)
-            throw Oops.Bah("CanotEditAdmin");
-        await CheckInput(input);//检查参数
-        if (await base.SaveAsync(input, type))
-        {
-            RefreshCache();
-            await ClearTokenUtil.DeleteUserCacheByRoleIds(new List<long> { input.Id });//清除角色下用户缓存
-            return true;
-        }
-        return false;
-    }
-
-    /// <summary>
     /// 删除角色
     /// </summary>
     /// <param name="ids">id列表</param>
@@ -137,23 +117,40 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
         }
     }
 
+    /// <summary>
+    /// 保存角色
+    /// </summary>
+    /// <param name="input">角色</param>
+    /// <param name="type">保存类型</param>
+    [OperDesc("SaveRole")]
+    public async Task<bool> SaveRoleAsync(SysRole input, ItemChangedType type)
+    {
+        if (input.Code == RoleConst.SuperAdmin)
+            throw Oops.Bah("CanotEditAdmin");
+        await CheckInput(input);//检查参数
+        if (await base.SaveAsync(input, type))
+        {
+            RefreshCache();
+            await ClearTokenUtil.DeleteUserCacheByRoleIds(new List<long> { input.Id });//清除角色下用户缓存
+            return true;
+        }
+        return false;
+    }
+
     #endregion 修改
 
     #region 授权
 
     /// <summary>
-    /// 获取拥有的资源
+    /// 根据角色id获取角色列表
     /// </summary>
-    /// <param name="id">id</param>
-    /// <param name="category">类型</param>
-    public async Task<GrantResourceData> OwnResourceAsync(long id, RelationCategoryEnum category = RelationCategoryEnum.RoleHasResource)
+    /// <param name="input">角色id列表</param>
+    /// <returns>角色列表</returns>
+    public async Task<IEnumerable<SysRole>> GetRoleListByIdListAsync(IEnumerable<long> input)
     {
-        var roleOwnResource = new GrantResourceData() { Id = id };//定义结果集
-
-        //获取关系列表
-        var relations = await _relationService.GetRelationListByObjectIdAndCategoryAsync(id, category);
-        roleOwnResource.GrantInfoList = relations.Select(it => (it.ExtJson?.FromSystemTextJsonString<long>() ?? 0)).Where(a => a != 0);
-        return roleOwnResource;
+        var roles = await GetAllAsync();
+        var roleList = roles.Where(it => input.Contains(it.Id));
+        return roleList;
     }
 
     /// <summary>
@@ -261,6 +258,56 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
         }
     }
 
+    /// <summary>
+    /// 授权用户
+    /// </summary>
+    /// <param name="input">授权参数</param>
+    [OperDesc("RoleGrantUser")]
+    public async Task GrantUserAsync(GrantUserOrRoleInput input)
+    {
+        var sysRelations = input.GrantInfoList.Select(it =>
+       new SysRelation()
+       {
+           ObjectId = it,
+           TargetId = input.Id.ToString(),
+           Category = RelationCategoryEnum.UserHasRole
+       }
+       );
+        using var db = GetDB();
+
+        //事务
+        var result = await db.UseTranAsync(async () =>
+        {
+            var targetId = input.Id.ToString();
+            await db.Deleteable<SysRelation>(it => it.TargetId == targetId && it.Category == RelationCategoryEnum.UserHasRole).ExecuteCommandAsync();//删除老的
+            await db.Insertable(sysRelations.ToList()).ExecuteCommandAsync();//添加新的
+        });
+        if (result.IsSuccess)//如果成功了
+        {
+            _relationService.RefreshCache(RelationCategoryEnum.UserHasRole);//刷新关系表UserHasRole缓存
+            await ClearTokenUtil.DeleteUserCacheByRoleIds(new List<long> { input.Id });//清除角色下用户缓存
+        }
+        else
+        {
+            throw new(result.ErrorMessage, result.ErrorException);
+        }
+    }
+
+    /// <summary>
+    /// 获取拥有的资源
+    /// </summary>
+    /// <param name="id">id</param>
+    /// <param name="category">类型</param>
+    public async Task<GrantResourceData> OwnResourceAsync(long id, RelationCategoryEnum category = RelationCategoryEnum.RoleHasResource)
+    {
+        var roleOwnResource = new GrantResourceData() { Id = id };//定义结果集
+
+        //获取关系列表
+        var relations = await _relationService.GetRelationListByObjectIdAndCategoryAsync(id, category);
+        roleOwnResource.GrantInfoList = relations.Select(it => (it.ExtJson?.FromSystemTextJsonString<long>() ?? 0)).Where(a => a != 0);
+        return roleOwnResource;
+    }
+
     #region OPENAPI
 
     /// <summary>
@@ -309,58 +356,11 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
     }
 
     /// <summary>
-    /// 授权用户
-    /// </summary>
-    /// <param name="input">授权参数</param>
-    [OperDesc("RoleGrantUser")]
-    public async Task GrantUserAsync(GrantUserOrRoleInput input)
-    {
-        var sysRelations = input.GrantInfoList.Select(it =>
-       new SysRelation()
-       {
-           ObjectId = it,
-           TargetId = input.Id.ToString(),
-           Category = RelationCategoryEnum.UserHasRole
-       }
-       );
-        using var db = GetDB();
-
-        //事务
-        var result = await db.UseTranAsync(async () =>
-        {
-            var targetId = input.Id.ToString();
-            await db.Deleteable<SysRelation>(it => it.TargetId == targetId && it.Category == RelationCategoryEnum.UserHasRole).ExecuteCommandAsync();//删除老的
-            await db.Insertable(sysRelations.ToList()).ExecuteCommandAsync();//添加新的
-        });
-        if (result.IsSuccess)//如果成功了
-        {
-            _relationService.RefreshCache(RelationCategoryEnum.UserHasRole);//刷新关系表UserHasRole缓存
-            await ClearTokenUtil.DeleteUserCacheByRoleIds(new List<long> { input.Id });//清除角色下用户缓存
-        }
-        else
-        {
-            throw new(result.ErrorMessage, result.ErrorException);
-        }
-    }
-
-    /// <summary>
     /// 刷新权限
     /// </summary>
     public void RefreshCache()
     {
         App.CacheService.Remove(CacheConst.Cache_SysRole);//删除KEY
-    }
-
-    /// <summary>
-    /// 根据角色id获取角色列表
-    /// </summary>
-    /// <param name="input">角色id列表</param>
-    /// <returns>角色列表</returns>
-    public async Task<IEnumerable<SysRole>> GetRoleListByIdListAsync(IEnumerable<long> input)
-    {
-        var roles = await GetAllAsync();
-        var roleList = roles.Where(it => input.Contains(it.Id));
-        return roleList;
     }
 
     #endregion 授权

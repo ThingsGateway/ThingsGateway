@@ -60,6 +60,13 @@ internal class OrcasNamer
         return writer.ToString();
     }
 
+    private static void WriteConstructor(ConstructorInfo constructor, TextWriter writer)
+    {
+        WriteType(constructor.DeclaringType, writer);
+        writer.Write(".#ctor");
+        WriteParameters(constructor.GetParameters(), writer);
+    }
+
     private static void WriteEvent(EventInfo trigger, TextWriter writer)
     {
         WriteType(trigger.DeclaringType, writer);
@@ -157,18 +164,16 @@ internal class OrcasNamer
         }
     }
 
-    private static void WriteConstructor(ConstructorInfo constructor, TextWriter writer)
+    private static void WriteParameters(ParameterInfo[] parameters, TextWriter writer)
     {
-        WriteType(constructor.DeclaringType, writer);
-        writer.Write(".#ctor");
-        WriteParameters(constructor.GetParameters(), writer);
-    }
-
-    private static void WriteStaticConstructor(ConstructorInfo constructor, TextWriter writer)
-    {
-        WriteType(constructor.DeclaringType, writer);
-        writer.Write(".#cctor");
-        WriteParameters(constructor.GetParameters(), writer);
+        if (parameters == null || parameters.Length == 0) return;
+        writer.Write("(");
+        for (var i = 0; i < parameters.Length; i++)
+        {
+            if (i > 0) writer.Write(",");
+            WriteType(parameters[i].ParameterType, writer);
+        }
+        writer.Write(")");
     }
 
     private static void WriteProperty(PropertyInfo property, TextWriter writer)
@@ -210,16 +215,11 @@ internal class OrcasNamer
         WriteParameters(property.GetIndexParameters(), writer);
     }
 
-    private static void WriteParameters(ParameterInfo[] parameters, TextWriter writer)
+    private static void WriteStaticConstructor(ConstructorInfo constructor, TextWriter writer)
     {
-        if (parameters == null || parameters.Length == 0) return;
-        writer.Write("(");
-        for (var i = 0; i < parameters.Length; i++)
-        {
-            if (i > 0) writer.Write(",");
-            WriteType(parameters[i].ParameterType, writer);
-        }
-        writer.Write(")");
+        WriteType(constructor.DeclaringType, writer);
+        writer.Write(".#cctor");
+        WriteParameters(constructor.GetParameters(), writer);
     }
 
     private static void WriteType(Type? type, TextWriter writer)

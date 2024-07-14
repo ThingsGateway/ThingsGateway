@@ -30,60 +30,6 @@ public static class Reflect
     }
 
     /// <summary>
-    /// 根据路径加载程序集
-    /// </summary>
-    /// <param name="path"></param>
-    /// <returns></returns>
-    public static Assembly LoadAssembly(string path)
-    {
-        if (!File.Exists(path)) return default;
-        return Assembly.LoadFrom(path);
-    }
-
-    /// <summary>
-    /// 通过流加载程序集
-    /// </summary>
-    /// <param name="assembly"></param>
-    /// <returns></returns>
-    public static Assembly LoadAssembly(MemoryStream assembly)
-    {
-        return Assembly.Load(assembly.ToArray());
-    }
-
-    /// <summary>
-    /// 根据程序集名称、类型完整限定名获取运行时类型
-    /// </summary>
-    /// <param name="assemblyName"></param>
-    /// <param name="typeFullName"></param>
-    /// <returns></returns>
-    public static Type GetType(string assemblyName, string typeFullName)
-    {
-        return GetAssembly(assemblyName).GetType(typeFullName);
-    }
-
-    /// <summary>
-    /// 根据程序集和类型完全限定名获取运行时类型
-    /// </summary>
-    /// <param name="assembly"></param>
-    /// <param name="typeFullName"></param>
-    /// <returns></returns>
-    public static Type GetType(Assembly assembly, string typeFullName)
-    {
-        return assembly.GetType(typeFullName);
-    }
-
-    /// <summary>
-    /// 根据程序集和类型完全限定名获取运行时类型
-    /// </summary>
-    /// <param name="assembly"></param>
-    /// <param name="typeFullName"></param>
-    /// <returns></returns>
-    public static Type GetType(MemoryStream assembly, string typeFullName)
-    {
-        return LoadAssembly(assembly).GetType(typeFullName);
-    }
-
-    /// <summary>
     /// 获取程序集名称
     /// </summary>
     /// <param name="assembly"></param>
@@ -122,5 +68,59 @@ public static class Reflect
     {
         var typeDefinitions = str.Split(';');
         return GetType(typeDefinitions[0], typeDefinitions[1]);
+    }
+
+    /// <summary>
+    /// 根据程序集名称、类型完整限定名获取运行时类型
+    /// </summary>
+    /// <param name="assemblyName"></param>
+    /// <param name="typeFullName"></param>
+    /// <returns></returns>
+    public static Type GetType(string assemblyName, string typeFullName)
+    {
+        return GetAssembly(assemblyName).GetType(typeFullName);
+    }
+
+    /// <summary>
+    /// 根据程序集和类型完全限定名获取运行时类型
+    /// </summary>
+    /// <param name="assembly"></param>
+    /// <param name="typeFullName"></param>
+    /// <returns></returns>
+    public static Type GetType(Assembly assembly, string typeFullName)
+    {
+        return assembly.GetType(typeFullName);
+    }
+
+    /// <summary>
+    /// 根据程序集和类型完全限定名获取运行时类型
+    /// </summary>
+    /// <param name="assembly"></param>
+    /// <param name="typeFullName"></param>
+    /// <returns></returns>
+    public static Type GetType(MemoryStream assembly, string typeFullName)
+    {
+        return LoadAssembly(assembly).GetType(typeFullName);
+    }
+
+    /// <summary>
+    /// 根据路径加载程序集
+    /// </summary>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static Assembly LoadAssembly(string path)
+    {
+        if (!File.Exists(path)) return default;
+        return Assembly.LoadFrom(path);
+    }
+
+    /// <summary>
+    /// 通过流加载程序集
+    /// </summary>
+    /// <param name="assembly"></param>
+    /// <returns></returns>
+    public static Assembly LoadAssembly(MemoryStream assembly)
+    {
+        return Assembly.Load(assembly.ToArray());
     }
 }

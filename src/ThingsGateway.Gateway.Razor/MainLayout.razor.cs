@@ -80,10 +80,10 @@ public partial class MainLayout : IDisposable
     #region 切换模块
 
     [Inject]
-    private IUserCenterService UserCenterService { get; set; }
+    private ISysResourceService SysResourceService { get; set; }
 
     [Inject]
-    private ISysResourceService SysResourceService { get; set; }
+    private IUserCenterService UserCenterService { get; set; }
 
     private async Task ChoiceModule()
     {
@@ -116,8 +116,10 @@ public partial class MainLayout : IDisposable
     #endregion 切换模块
 
     #region 注销
+
     [Inject]
-    AjaxService AjaxService { get; set; }
+    private AjaxService AjaxService { get; set; }
+
     private async Task LogoutAsync()
     {
         var ajaxOption = new AjaxOption
@@ -150,8 +152,78 @@ public partial class MainLayout : IDisposable
         }
     }
 
+    #endregion 注销
 
-    #endregion
+    private string _versionString = string.Empty;
+
+    [Inject]
+    [NotNull]
+    private BlazorAppContext? AppContext { get; set; }
+
+    [Inject]
+    private DialogService DialogService { get; set; }
+
+    [Inject]
+    [NotNull]
+    private FullScreenService FullScreenService { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IStringLocalizer<MainLayout>? Localizer { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IMenuService? MenuService { get; set; }
+
+    [Inject]
+    [NotNull]
+    private ToastService? ToastService { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IAppVersionService? VersionService { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IOptions<WebsiteOptions>? WebsiteOption { get; set; }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        GiteePostTitleText = Localizer[nameof(GiteePostTitleText)];
+        _versionString = $"v{VersionService.Version}";
+        DispatchService.Subscribe(Dispatch);
+        CommitDispatchService.Subscribe(NotifyCommit);
+        await AppContext.InitUserAsync();
+        await AppContext.InitMenus(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        await base.OnInitializedAsync();
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            DispatchService.UnSubscribe(Dispatch);
+            CommitDispatchService.UnSubscribe(NotifyCommit);
+        }
+    }
+
+    private async Task ReloadMenu()
+    {
+        await AppContext.InitMenus(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ReloadUser()
+    {
+        await AppContext.InitUserAsync();
+        await InvokeAsync(StateHasChanged);
+    }
 
     private async Task ShowAbout()
     {
@@ -180,75 +252,4 @@ public partial class MainLayout : IDisposable
     });
 
     #endregion 个人信息修改
-
-    [Inject]
-    private DialogService DialogService { get; set; }
-
-    [Inject]
-    [NotNull]
-    private FullScreenService FullScreenService { get; set; }
-
-    [Inject]
-    [NotNull]
-    private ToastService? ToastService { get; set; }
-
-    [Inject]
-    [NotNull]
-    private IAppVersionService? VersionService { get; set; }
-
-    [Inject]
-    [NotNull]
-    private IOptions<WebsiteOptions>? WebsiteOption { get; set; }
-
-    [Inject]
-    [NotNull]
-    private BlazorAppContext? AppContext { get; set; }
-
-    [Inject]
-    [NotNull]
-    private IMenuService? MenuService { get; set; }
-
-    [Inject]
-    [NotNull]
-    private IStringLocalizer<MainLayout>? Localizer { get; set; }
-
-    private string _versionString = string.Empty;
-
-    protected override async Task OnInitializedAsync()
-    {
-        GiteePostTitleText = Localizer[nameof(GiteePostTitleText)];
-        _versionString = $"v{VersionService.Version}";
-        DispatchService.Subscribe(Dispatch);
-        CommitDispatchService.Subscribe(NotifyCommit);
-        await AppContext.InitUserAsync();
-        await AppContext.InitMenus(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-        await base.OnInitializedAsync();
-    }
-
-    private async Task ReloadMenu()
-    {
-        await AppContext.InitMenus(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task ReloadUser()
-    {
-        await AppContext.InitUserAsync();
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            DispatchService.UnSubscribe(Dispatch);
-            CommitDispatchService.UnSubscribe(NotifyCommit);
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
 }

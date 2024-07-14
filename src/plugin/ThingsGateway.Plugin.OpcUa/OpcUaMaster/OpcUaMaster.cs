@@ -33,23 +33,20 @@ public class OpcUaMaster : CollectBase
 
     private CancellationToken _token;
 
+    private volatile bool connectFirstFail;
+    private volatile bool connectFirstFailLoged;
     private volatile bool success = true;
 
     /// <inheritdoc/>
-    public override Type DriverDebugUIType => typeof(ThingsGateway.Debug.OpcUaMaster);
+    public override CollectPropertyBase CollectProperties => _driverProperties;
 
     /// <inheritdoc/>
-    public override CollectPropertyBase CollectProperties => _driverProperties;
+    public override Type DriverDebugUIType => typeof(ThingsGateway.Debug.OpcUaMaster);
 
     public override Type DriverUIType => null;
 
     /// <inheritdoc/>
     public override IProtocol Protocol => null;
-
-    public override string ToString()
-    {
-        return $"{_driverProperties.OpcUrl}";
-    }
 
     /// <inheritdoc/>
     public override void Init(IChannel? channel = null)
@@ -81,7 +78,30 @@ public class OpcUaMaster : CollectBase
     /// <inheritdoc/>
     public override bool IsConnected() => _plc?.Connected == true;
 
-    private volatile bool connectFirstFail;
+    public override string ToString()
+    {
+        return $"{_driverProperties.OpcUrl}";
+    }
+
+    /// <inheritdoc/>
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        if (_plc != null)
+        {
+            _plc.DataChangedHandler -= DataChangedHandler;
+            _plc.LogEvent -= _plc_LogEvent;
+
+            _plc.Disconnect();
+            _plc.SafeDispose();
+        }
+        base.Dispose(disposing);
+    }
+
+    protected override string GetAddressDescription()
+    {
+        return _plc?.GetAddressDescription();
+    }
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
@@ -97,9 +117,46 @@ public class OpcUaMaster : CollectBase
         await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    protected override string GetAddressDescription()
+    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-        return _plc?.GetAddressDescription();
+        if (connectFirstFail && !IsConnected())
+        {
+            try
+            {
+                await _plc.ConnectAsync(cancellationToken).ConfigureAwait(false);
+                connectFirstFail = false;
+            }
+            catch (Exception ex)
+            {
+                if (!connectFirstFailLoged)
+                    LogMessage?.LogWarning(ex, "Connect Fail");
+
+                connectFirstFailLoged = true;
+                CurrentDevice.SetDeviceStatus(TimerX.Now, 999, ex.Message);
+                await Task.Delay(3000);
+            }
+        }
+        else
+        {
+            connectFirstFail = false;
+        }
+        if (_driverProperties.ActiveSubscribe)
+        {
+            //获取设备连接状态
+            if (IsConnected())
+            {
+                //更新设备活动时间
+                CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
+            }
+            else
+            {
+                CurrentDevice.SetDeviceStatus(TimerX.Now, 999);
+            }
+        }
+        else
+        {
+            await base.ProtectedExecuteAsync(cancellationToken).ConfigureAwait(false);
+        }
     }
 
     /// <inheritdoc/>
@@ -215,65 +272,6 @@ public class OpcUaMaster : CollectBase
         {
             WriteLock.Release();
         }
-    }
-
-    private volatile bool connectFirstFailLoged;
-
-    protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
-    {
-        if (connectFirstFail && !IsConnected())
-        {
-            try
-            {
-                await _plc.ConnectAsync(cancellationToken).ConfigureAwait(false);
-                connectFirstFail = false;
-            }
-            catch (Exception ex)
-            {
-                if (!connectFirstFailLoged)
-                    LogMessage?.LogWarning(ex, "Connect Fail");
-
-                connectFirstFailLoged = true;
-                CurrentDevice.SetDeviceStatus(TimerX.Now, 999, ex.Message);
-                await Task.Delay(3000);
-            }
-        }
-        else
-        {
-            connectFirstFail = false;
-        }
-        if (_driverProperties.ActiveSubscribe)
-        {
-            //获取设备连接状态
-            if (IsConnected())
-            {
-                //更新设备活动时间
-                CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
-            }
-            else
-            {
-                CurrentDevice.SetDeviceStatus(TimerX.Now, 999);
-            }
-        }
-        else
-        {
-            await base.ProtectedExecuteAsync(cancellationToken).ConfigureAwait(false);
-        }
-    }
-
-    /// <inheritdoc/>
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        if (_plc != null)
-        {
-            _plc.DataChangedHandler -= DataChangedHandler;
-            _plc.LogEvent -= _plc_LogEvent;
-
-            _plc.Disconnect();
-            _plc.SafeDispose();
-        }
-        base.Dispose(disposing);
     }
 
     private void _plc_LogEvent(byte level, object sender, string message, Exception ex)

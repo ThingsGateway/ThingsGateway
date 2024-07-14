@@ -13,51 +13,6 @@ namespace ThingsGateway.Core.Extension;
 public static class DateExtensions
 {
     /// <summary>
-    /// 返回yyyy-MM-dd HH:mm:ss:fff zz时间格式字符串
-    /// </summary>
-    public static string ToDefaultDateTimeFormat(this in DateTime dt, TimeSpan offset)
-    {
-        if (dt.Kind == DateTimeKind.Utc)
-            return new DateTimeOffset(dt.ToLocalTime(), offset).ToString("yyyy-MM-dd HH:mm:ss:fff zz");
-        else if (dt == DateTime.MinValue || dt == DateTime.MaxValue)
-            return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
-        else
-        {
-            if (offset == TimeSpan.Zero)
-            {
-                return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
-            }
-            else if (dt.Kind != DateTimeKind.Local)
-                return new DateTimeOffset(dt, offset).ToString("yyyy-MM-dd HH:mm:ss:fff zz");
-        }
-        return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
-    }
-
-    /// <summary>
-    /// 返回yyyy-MM-dd HH:mm:ss:fff zz时间格式字符串
-    /// </summary>
-    public static string ToDefaultDateTimeFormat(this in DateTime dt)
-    {
-        return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
-    }
-
-    /// <summary>
-    /// 返回yyyy-MM-dd HH-mm-ss-fff zz时间格式字符串
-    /// </summary>
-    public static string ToFileDateTimeFormat(this in DateTime dt)
-    {
-        return ToDefaultDateTimeFormat(dt).Replace(":", "-");
-    }
-
-    /// <summary>
-    /// 返回yyyy-MM-dd HH-mm-ss-fff zz时间格式字符串
-    /// </summary>
-    public static string ToFileDateTimeFormat(this in DateTime dt, TimeSpan offset)
-    {
-        return ToDefaultDateTimeFormat(dt, offset).Replace(":", "-");
-    }
-
-    /// <summary>
     /// 将 DateTimeOffset 转换成本地 DateTime
     /// </summary>
     /// <param name="dateTime"></param>
@@ -100,26 +55,6 @@ public static class DateExtensions
     public static DateTimeOffset? ConvertToDateTimeOffset(this DateTime? dateTime)
     {
         return dateTime.HasValue ? dateTime.Value.ConvertToDateTimeOffset() : null;
-    }
-
-    /// <summary>
-    /// 将时间戳转换为 DateTime
-    /// </summary>
-    /// <param name="timestamp"></param>
-    /// <returns></returns>
-    internal static DateTime ConvertToDateTime(this long timestamp)
-    {
-        var timeStampDateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        var digitCount = (int)Math.Floor(Math.Log10(timestamp) + 1);
-
-        if (digitCount != 13 && digitCount != 10)
-        {
-            throw new ArgumentException("Data is not a valid timestamp format.");
-        }
-
-        return (digitCount == 13
-            ? timeStampDateTime.AddMilliseconds(timestamp)  // 13 位时间戳
-            : timeStampDateTime.AddSeconds(timestamp)).ToLocalTime();   // 10 位时间戳
     }
 
     /// <summary>
@@ -166,5 +101,70 @@ public static class DateExtensions
         {
             return $"{(int)timeDifference.TotalMinutes} m";
         }
+    }
+
+    /// <summary>
+    /// 返回yyyy-MM-dd HH:mm:ss:fff zz时间格式字符串
+    /// </summary>
+    public static string ToDefaultDateTimeFormat(this in DateTime dt, TimeSpan offset)
+    {
+        if (dt.Kind == DateTimeKind.Utc)
+            return new DateTimeOffset(dt.ToLocalTime(), offset).ToString("yyyy-MM-dd HH:mm:ss:fff zz");
+        else if (dt == DateTime.MinValue || dt == DateTime.MaxValue)
+            return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
+        else
+        {
+            if (offset == TimeSpan.Zero)
+            {
+                return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
+            }
+            else if (dt.Kind != DateTimeKind.Local)
+                return new DateTimeOffset(dt, offset).ToString("yyyy-MM-dd HH:mm:ss:fff zz");
+        }
+        return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
+    }
+
+    /// <summary>
+    /// 返回yyyy-MM-dd HH:mm:ss:fff zz时间格式字符串
+    /// </summary>
+    public static string ToDefaultDateTimeFormat(this in DateTime dt)
+    {
+        return dt.ToString("yyyy-MM-dd HH:mm:ss:fff zz");
+    }
+
+    /// <summary>
+    /// 返回yyyy-MM-dd HH-mm-ss-fff zz时间格式字符串
+    /// </summary>
+    public static string ToFileDateTimeFormat(this in DateTime dt)
+    {
+        return ToDefaultDateTimeFormat(dt).Replace(":", "-");
+    }
+
+    /// <summary>
+    /// 返回yyyy-MM-dd HH-mm-ss-fff zz时间格式字符串
+    /// </summary>
+    public static string ToFileDateTimeFormat(this in DateTime dt, TimeSpan offset)
+    {
+        return ToDefaultDateTimeFormat(dt, offset).Replace(":", "-");
+    }
+
+    /// <summary>
+    /// 将时间戳转换为 DateTime
+    /// </summary>
+    /// <param name="timestamp"></param>
+    /// <returns></returns>
+    internal static DateTime ConvertToDateTime(this long timestamp)
+    {
+        var timeStampDateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var digitCount = (int)Math.Floor(Math.Log10(timestamp) + 1);
+
+        if (digitCount != 13 && digitCount != 10)
+        {
+            throw new ArgumentException("Data is not a valid timestamp format.");
+        }
+
+        return (digitCount == 13
+            ? timeStampDateTime.AddMilliseconds(timestamp)  // 13 位时间戳
+            : timeStampDateTime.AddSeconds(timestamp)).ToLocalTime();   // 10 位时间戳
     }
 }

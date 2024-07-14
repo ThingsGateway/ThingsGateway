@@ -32,15 +32,6 @@ public class SysOperateLogService : BaseService<SysOperateLog>, ISysOperateLogSe
     #region 查询
 
     /// <summary>
-    /// 表格查询
-    /// </summary>
-    /// <param name="option">查询条件</param>
-    public Task<QueryData<SysOperateLog>> PageAsync(QueryPageOptions option)
-    {
-        return QueryAsync(option, query => query.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText)));
-    }
-
-    /// <summary>
     /// 最新十条
     /// </summary>
     /// <param name="account">操作人</param>
@@ -49,6 +40,15 @@ public class SysOperateLogService : BaseService<SysOperateLog>, ISysOperateLogSe
         using var db = GetDB();
         var data = await db.Queryable<SysOperateLog>().Select(a => new OperateLogIndexOutput { OpTime = a.OpTime, Name = a.Name, OpAccount = a.OpAccount, OpBrowser = a.OpBrowser, OpIp = a.OpIp }).Where(a => a.OpAccount == account).OrderByDescending(a => a.OpTime).Take(10).ToListAsync();
         return data;
+    }
+
+    /// <summary>
+    /// 表格查询
+    /// </summary>
+    /// <param name="option">查询条件</param>
+    public Task<QueryData<SysOperateLog>> PageAsync(QueryPageOptions option)
+    {
+        return QueryAsync(option, query => query.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText)));
     }
 
     /// <summary>

@@ -59,14 +59,9 @@ public struct LogMessage
     }
 
     /// <summary>
-    /// 记录器类别名称
+    /// 日志上下文
     /// </summary>
-    public string LogName { get; }
-
-    /// <summary>
-    /// 日志级别
-    /// </summary>
-    public LogLevel LogLevel { get; }
+    public LogContext Context { get; set; }
 
     /// <summary>
     /// 事件 Id
@@ -74,14 +69,29 @@ public struct LogMessage
     public EventId EventId { get; }
 
     /// <summary>
-    /// 日志消息
-    /// </summary>
-    public string Message { get; internal set; }
-
-    /// <summary>
     /// 异常对象
     /// </summary>
     public Exception Exception { get; }
+
+    /// <summary>
+    /// 日志记录时间
+    /// </summary>
+    public DateTime LogDateTime { get; }
+
+    /// <summary>
+    /// 日志级别
+    /// </summary>
+    public LogLevel LogLevel { get; }
+
+    /// <summary>
+    /// 记录器类别名称
+    /// </summary>
+    public string LogName { get; }
+
+    /// <summary>
+    /// 日志消息
+    /// </summary>
+    public string Message { get; internal set; }
 
     /// <summary>
     /// 当前状态值
@@ -90,19 +100,9 @@ public struct LogMessage
     public object State { get; }
 
     /// <summary>
-    /// 日志记录时间
-    /// </summary>
-    public DateTime LogDateTime { get; }
-
-    /// <summary>
     /// 线程 Id
     /// </summary>
     public int ThreadId { get; }
-
-    /// <summary>
-    /// 是否使用 UTC 时间戳
-    /// </summary>
-    public bool UseUtcTimestamp { get; }
 
     /// <summary>
     /// 请求/跟踪 Id
@@ -110,9 +110,9 @@ public struct LogMessage
     public string TraceId { get; }
 
     /// <summary>
-    /// 日志上下文
+    /// 是否使用 UTC 时间戳
     /// </summary>
-    public LogContext Context { get; set; }
+    public bool UseUtcTimestamp { get; }
 
     /// <summary>
     /// 重写默认输出

@@ -12,8 +12,6 @@
 
 using Microsoft.Extensions.Logging;
 
-using ThingsGateway.Admin.Application;
-
 namespace ThingsGateway.Logging;
 
 /// <summary>
@@ -23,14 +21,14 @@ namespace ThingsGateway.Logging;
 public sealed class FileLogger : ILogger
 {
     /// <summary>
-    /// 记录器类别名称
-    /// </summary>
-    private readonly string _logName;
-
-    /// <summary>
     /// 文件日志记录器提供器
     /// </summary>
     private readonly FileLoggerProvider _fileLoggerProvider;
+
+    /// <summary>
+    /// 记录器类别名称
+    /// </summary>
+    private readonly string _logName;
 
     /// <summary>
     /// 日志配置选项

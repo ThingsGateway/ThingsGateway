@@ -13,9 +13,6 @@ namespace ThingsGateway.Foundation.Extension.String;
 /// <inheritdoc/>
 public static class StringExtensions
 {
-    /// <see cref="DataTransUtil.HexStringToBytes(string)"/>
-    public static byte[] HexStringToBytes(this string str) => DataTransUtil.HexStringToBytes(str);
-
     /// <summary>
     /// 将字符串数组转换成字符串
     /// </summary>
@@ -26,27 +23,8 @@ public static class StringExtensions
         return string.Join(separator, strArray);
     }
 
-    /// <summary>
-    /// 根据英文小数点进行分割字符串，去除空白的字符
-    /// </summary>
-    public static string[]? SplitStringByDelimiter(this string? str)
-    {
-        return str?.Split(new char[1]
-{
-  '.'
-}, StringSplitOptions.RemoveEmptyEntries);
-    }
-
-    /// <summary>
-    /// 根据英文分号分割字符串，去除空白的字符
-    /// </summary>
-    public static string[]? SplitStringBySemicolon(this string? str)
-    {
-        return str.Split(new char[1]
-{
-  ';'
-}, StringSplitOptions.RemoveEmptyEntries);
-    }
+    /// <see cref="DataTransUtil.HexStringToBytes(string)"/>
+    public static byte[] HexStringToBytes(this string str) => DataTransUtil.HexStringToBytes(str);
 
     /// <summary>
     /// 根据英文逗号分割字符串，去除空白的字符
@@ -91,6 +69,28 @@ public static class StringExtensions
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// 根据英文小数点进行分割字符串，去除空白的字符
+    /// </summary>
+    public static string[]? SplitStringByDelimiter(this string? str)
+    {
+        return str?.Split(new char[1]
+{
+  '.'
+}, StringSplitOptions.RemoveEmptyEntries);
+    }
+
+    /// <summary>
+    /// 根据英文分号分割字符串，去除空白的字符
+    /// </summary>
+    public static string[]? SplitStringBySemicolon(this string? str)
+    {
+        return str.Split(new char[1]
+{
+  ';'
+}, StringSplitOptions.RemoveEmptyEntries);
     }
 
     /// <summary>

@@ -21,6 +21,16 @@ public class SqlSugarConst
     public const string DB_Admin = "DB_Admin";
 
     /// <summary>
+    /// DB_Custom
+    /// </summary>
+    public const string DB_Custom = "DB_Custom";
+
+    /// <summary>
+    /// DB_HardwareInfo
+    /// </summary>
+    public const string DB_HardwareInfo = "DB_HardwareInfo";
+
+    /// <summary>
     /// DB_Log
     /// </summary>
     public const string DB_Log = "DB_Log";
@@ -29,14 +39,4 @@ public class SqlSugarConst
     /// DB_TokenCache
     /// </summary>
     public const string DB_TokenCache = "DB_TokenCache";
-
-    /// <summary>
-    /// DB_HardwareInfo
-    /// </summary>
-    public const string DB_HardwareInfo = "DB_HardwareInfo";
-
-    /// <summary>
-    /// DB_Custom
-    /// </summary>
-    public const string DB_Custom = "DB_Custom";
 }

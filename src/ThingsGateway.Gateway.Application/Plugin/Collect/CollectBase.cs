@@ -34,6 +34,11 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public abstract class CollectBase : DriverBase
 {
+    /// <summary>
+    /// 插件配置项
+    /// </summary>
+    public abstract CollectPropertyBase CollectProperties { get; }
+
     public new CollectDeviceRunTime CurrentDevice => (CollectDeviceRunTime)base.CurrentDevice;
 
     /// <summary>
@@ -42,141 +47,8 @@ public abstract class CollectBase : DriverBase
     public List<DriverMethodInfo>? DeviceMethods { get; private set; }
 
     public override object DriverProperties => CollectProperties;
-
-    /// <summary>
-    /// 插件配置项
-    /// </summary>
-    public abstract CollectPropertyBase CollectProperties { get; }
-
-    private IStringLocalizer Localizer { get; set; }
-
     public virtual bool IsSingleThread => true;
-
-    internal override void Init(DeviceRunTime device)
-    {
-        Localizer = App.CreateLocalizerByType(typeof(CollectBase))!;
-        // 调用基类的初始化方法
-        base.Init(device);
-
-        // 从插件服务中获取当前设备关联的驱动方法信息列表，并转换为列表形式
-        var data = PluginService.GetDriverMethodInfos(device.PluginName, this);
-
-        // 将获取到的驱动方法信息列表赋值给 DeviceMethods
-        DeviceMethods = data;
-
-        // 使用全局锁确保多线程安全地更新全局数据
-        //lock (GlobalData.CollectDevices)
-        {
-            // 从全局设备字典中移除具有相同 Id 的设备
-            GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == device.Id);
-
-            // 尝试向全局设备字典中添加当前设备，使用设备名称作为键
-            GlobalData.CollectDevices.TryAdd(CurrentDevice.Name, CurrentDevice);
-
-            // 从全局变量字典中移除与当前设备关联的变量
-            GlobalData.Variables.RemoveWhere(it => it.Value.DeviceId == device.Id);
-
-            // 遍历当前设备的变量运行时集合，将其中的变量添加到全局变量字典中
-            foreach (var item in CurrentDevice.VariableRunTimes)
-            {
-                GlobalData.Variables.TryAdd(item.Key, item.Value);
-            }
-        }
-    }
-
-    /// <summary>
-    /// 采集驱动读取，读取成功后直接赋值变量，失败不做处理，注意非通用设备需重写
-    /// </summary>
-    protected virtual async ValueTask<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead variableSourceRead, CancellationToken cancellationToken)
-    {
-        try
-        {
-            if (IsSingleThread)
-            {
-                while (WriteLock.IsWaitting)
-                {
-                    await Task.Delay(100).ConfigureAwait(false);
-                }
-            }
-
-            if (cancellationToken.IsCancellationRequested)
-                return new(new OperationCanceledException());
-            // 从协议读取数据
-            var read = await Protocol.ReadAsync(variableSourceRead.RegisterAddress, variableSourceRead.Length, cancellationToken).ConfigureAwait(false);
-
-            // 增加变量源的读取次数
-            Interlocked.Increment(ref variableSourceRead.ReadCount);
-
-            // 如果读取成功且有有效内容，则解析结构化内容
-            if (read.IsSuccess)
-            {
-                var prase = variableSourceRead.VariableRunTimes.PraseStructContent(Protocol, read.Content, false);
-                return new OperResult<byte[]>(prase);
-            }
-
-            // 返回读取结果
-            return read;
-        }
-        finally
-        {
-        }
-    }
-
-    /// <summary>
-    /// 批量写入变量值,需返回变量名称/结果，注意非通用设备需重写
-    /// </summary>
-    /// <returns></returns>
-    protected virtual async ValueTask<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
-    {
-        try
-        {
-            // 如果是单线程模式，则等待写入锁
-            if (IsSingleThread)
-                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
-
-            // 检查协议是否为空，如果为空则抛出异常
-            if (Protocol == null)
-                throw new NotSupportedException();
-
-            // 创建用于存储操作结果的并发字典
-            ConcurrentDictionary<string, OperResult> operResults = new();
-
-            // 使用并发方式遍历写入信息列表，并进行异步写入操作
-            await writeInfoLists.ParallelForEachAsync(async (writeInfo, cancellationToken) =>
-            {
-                try
-                {
-                    // 调用协议的写入方法，将写入信息中的数据写入到对应的寄存器地址，并获取操作结果
-                    var result = await Protocol.WriteAsync(writeInfo.Key.RegisterAddress, writeInfo.Value, writeInfo.Key.DataType, cancellationToken).ConfigureAwait(false);
-
-                    // 将操作结果添加到结果字典中，使用变量名称作为键
-                    operResults.TryAdd(writeInfo.Key.Name, result);
-                }
-                catch (Exception ex)
-                {
-                    operResults.TryAdd(writeInfo.Key.Name, new(ex));
-                }
-            }, CollectProperties.ConcurrentCount, cancellationToken).ConfigureAwait(false);
-
-            // 返回包含操作结果的字典
-            return new Dictionary<string, OperResult>(operResults);
-        }
-        finally
-        {
-            // 如果是单线程模式，则释放写入锁
-            if (IsSingleThread)
-                WriteLock.Release();
-        }
-    }
-
-    /// <summary>
-    /// 注意非通用设备需重写
-    /// </summary>
-    /// <returns></returns>
-    protected virtual string GetAddressDescription()
-    {
-        return Protocol?.GetAddressDescription();
-    }
+    private IStringLocalizer Localizer { get; set; }
 
     /// <summary>
     /// 获取设备变量打包列表/特殊方法列表
@@ -253,14 +125,45 @@ public abstract class CollectBase : DriverBase
         }
     }
 
-    private class ReadResultCount
+    internal override void Init(DeviceRunTime device)
     {
-        // 初始化成功和失败的计数器
-        public int deviceMethodsVariableSuccessNum = 0;
+        Localizer = App.CreateLocalizerByType(typeof(CollectBase))!;
+        // 调用基类的初始化方法
+        base.Init(device);
 
-        public int deviceMethodsVariableFailedNum = 0;
-        public int deviceSourceVariableSuccessNum = 0;
-        public int deviceSourceVariableFailedNum = 0;
+        // 从插件服务中获取当前设备关联的驱动方法信息列表，并转换为列表形式
+        var data = PluginService.GetDriverMethodInfos(device.PluginName, this);
+
+        // 将获取到的驱动方法信息列表赋值给 DeviceMethods
+        DeviceMethods = data;
+
+        // 使用全局锁确保多线程安全地更新全局数据
+        //lock (GlobalData.CollectDevices)
+        {
+            // 从全局设备字典中移除具有相同 Id 的设备
+            GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == device.Id);
+
+            // 尝试向全局设备字典中添加当前设备，使用设备名称作为键
+            GlobalData.CollectDevices.TryAdd(CurrentDevice.Name, CurrentDevice);
+
+            // 从全局变量字典中移除与当前设备关联的变量
+            GlobalData.Variables.RemoveWhere(it => it.Value.DeviceId == device.Id);
+
+            // 遍历当前设备的变量运行时集合，将其中的变量添加到全局变量字典中
+            foreach (var item in CurrentDevice.VariableRunTimes)
+            {
+                GlobalData.Variables.TryAdd(item.Key, item.Value);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 注意非通用设备需重写
+    /// </summary>
+    /// <returns></returns>
+    protected virtual string GetAddressDescription()
+    {
+        return Protocol?.GetAddressDescription();
     }
 
     /// <summary>
@@ -537,64 +440,38 @@ public abstract class CollectBase : DriverBase
     /// <returns></returns>
     protected abstract List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRunTime> deviceVariables);
 
-    #region 写入方法
-
     /// <summary>
-    /// 异步调用方法
+    /// 采集驱动读取，读取成功后直接赋值变量，失败不做处理，注意非通用设备需重写
     /// </summary>
-    /// <param name="variableMethod">要调用的方法</param>
-    /// <param name="value">传递给方法的参数值（可选）</param>
-    /// <param name="isRead">指示是否为读取操作</param>
-    /// <param name="cancellationToken">取消操作的通知</param>
-    /// <returns>操作结果，包含执行方法的结果</returns>
-    protected virtual async ValueTask<OperResult<object>> InvokeMethodAsync(VariableMethod variableMethod, string? value = null, bool isRead = true, CancellationToken cancellationToken = default)
+    protected virtual async ValueTask<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead variableSourceRead, CancellationToken cancellationToken)
     {
         try
         {
-            // 初始化操作结果
-            OperResult<object> result = new OperResult<object>();
-
-            // 获取要执行的方法
-            var method = variableMethod.MethodInfo;
-
-            // 如果方法未找到，则返回错误结果
-            if (method == null)
+            if (IsSingleThread)
             {
-                result.OperCode = 999;
-                result.ErrorMessage = Localizer["MethodNotNull", variableMethod.Variable.Name, variableMethod.Variable.OtherMethod];
-                return result;
-            }
-            else
-            {
-                // 调用方法并获取结果
-                var data = await variableMethod.InvokeMethodAsync(this, value, cancellationToken).ConfigureAwait(false);
-                result = data.Adapt<OperResult<object>>();
-
-                // 如果方法有返回值，并且是读取操作
-                if (method.HasReturn && isRead)
+                while (WriteLock.IsWaitting)
                 {
-                    if (result.IsSuccess == true)
-                    {
-                        // 将结果序列化并设置到变量中
-                        var variableResult = variableMethod.Variable.SetValue(result.Content);
-                        if (!variableResult.IsSuccess)
-                            variableMethod.LastErrorMessage = result.ErrorMessage;
-                    }
-                    else
-                    {
-                        // 如果读取操作失败，则将变量标记为离线
-                        var variableResult = variableMethod.Variable.SetValue(null, isOnline: false);
-                        if (!variableResult.IsSuccess)
-                            variableMethod.LastErrorMessage = result.ErrorMessage;
-                    }
+                    await Task.Delay(100).ConfigureAwait(false);
                 }
-                return result;
             }
-        }
-        catch (Exception ex)
-        {
-            // 捕获异常并返回错误结果
-            return new OperResult<object>(ex);
+
+            if (cancellationToken.IsCancellationRequested)
+                return new(new OperationCanceledException());
+            // 从协议读取数据
+            var read = await Protocol.ReadAsync(variableSourceRead.RegisterAddress, variableSourceRead.Length, cancellationToken).ConfigureAwait(false);
+
+            // 增加变量源的读取次数
+            Interlocked.Increment(ref variableSourceRead.ReadCount);
+
+            // 如果读取成功且有有效内容，则解析结构化内容
+            if (read.IsSuccess)
+            {
+                var prase = variableSourceRead.VariableRunTimes.PraseStructContent(Protocol, read.Content, false);
+                return new OperResult<byte[]>(prase);
+            }
+
+            // 返回读取结果
+            return read;
         }
         finally
         {
@@ -602,48 +479,64 @@ public abstract class CollectBase : DriverBase
     }
 
     /// <summary>
-    /// 异步写入方法
+    /// 批量写入变量值,需返回变量名称/结果，注意非通用设备需重写
     /// </summary>
-    /// <param name="writeInfoLists">要写入的变量及其对应的数据</param>
-    /// <param name="cancellationToken">取消操作的通知</param>
-    /// <returns>写入操作的结果字典</returns>
-    internal async ValueTask<Dictionary<string, OperResult>> InVokeWriteAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
+    /// <returns></returns>
+    protected virtual async ValueTask<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
     {
-        // 初始化结果字典
-        Dictionary<string, OperResult> results = new Dictionary<string, OperResult>();
-
-        // 遍历写入信息列表
-        foreach (var (deviceVariable, jToken) in writeInfoLists)
+        try
         {
-            // 检查是否有写入表达式
-            if (!string.IsNullOrEmpty(deviceVariable.WriteExpressions))
+            // 如果是单线程模式，则等待写入锁
+            if (IsSingleThread)
+                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            // 检查协议是否为空，如果为空则抛出异常
+            if (Protocol == null)
+                throw new NotSupportedException();
+
+            // 创建用于存储操作结果的并发字典
+            ConcurrentDictionary<string, OperResult> operResults = new();
+
+            // 使用并发方式遍历写入信息列表，并进行异步写入操作
+            await writeInfoLists.ParallelForEachAsync(async (writeInfo, cancellationToken) =>
             {
-                // 提取原始数据
-                object rawdata = jToken is JValue jValue ? jValue.Value : jToken is JArray jArray ? jArray : jToken.ToString();
                 try
                 {
-                    // 根据写入表达式转换数据
-                    object data = deviceVariable.WriteExpressions.GetExpressionsResult(rawdata);
-                    // 将转换后的数据重新赋值给写入信息列表
-                    writeInfoLists[deviceVariable] = JToken.FromObject(data);
+                    // 调用协议的写入方法，将写入信息中的数据写入到对应的寄存器地址，并获取操作结果
+                    var result = await Protocol.WriteAsync(writeInfo.Key.RegisterAddress, writeInfo.Value, writeInfo.Key.DataType, cancellationToken).ConfigureAwait(false);
+
+                    // 将操作结果添加到结果字典中，使用变量名称作为键
+                    operResults.TryAdd(writeInfo.Key.Name, result);
                 }
                 catch (Exception ex)
                 {
-                    // 如果转换失败，则记录错误信息
-                    results.Add(deviceVariable.Name, new OperResult(Localizer["WriteExpressionsError", deviceVariable.Name, deviceVariable.WriteExpressions, ex.Message], ex));
+                    operResults.TryAdd(writeInfo.Key.Name, new(ex));
                 }
-            }
+            }, CollectProperties.ConcurrentCount, cancellationToken).ConfigureAwait(false);
+
+            // 返回包含操作结果的字典
+            return new Dictionary<string, OperResult>(operResults);
         }
-
-        // 过滤掉转换失败的变量，只保留写入成功的变量进行写入操作
-        var results1 = await WriteValuesAsync(writeInfoLists
-            .Where(a => !results.Any(b => b.Key == a.Key.Name))
-            .ToDictionary(item => item.Key, item => item.Value),
-            cancellationToken).ConfigureAwait(false);
-
-        // 将转换失败的变量和写入成功的变量的操作结果合并到结果字典中
-        return results.Concat(results1).ToDictionary(a => a.Key, a => a.Value);
+        finally
+        {
+            // 如果是单线程模式，则释放写入锁
+            if (IsSingleThread)
+                WriteLock.Release();
+        }
     }
+
+    private class ReadResultCount
+    {
+        public int deviceMethodsVariableFailedNum = 0;
+
+        // 初始化成功和失败的计数器
+        public int deviceMethodsVariableSuccessNum = 0;
+
+        public int deviceSourceVariableFailedNum = 0;
+        public int deviceSourceVariableSuccessNum = 0;
+    }
+
+    #region 写入方法
 
     /// <summary>
     /// 异步写入方法
@@ -715,6 +608,112 @@ public abstract class CollectBase : DriverBase
 
         // 将转换失败的变量和写入成功的变量的操作结果合并到结果字典中
         return results.Concat(operResults).ToDictionary(a => a.Key, a => a.Value);
+    }
+
+    /// <summary>
+    /// 异步写入方法
+    /// </summary>
+    /// <param name="writeInfoLists">要写入的变量及其对应的数据</param>
+    /// <param name="cancellationToken">取消操作的通知</param>
+    /// <returns>写入操作的结果字典</returns>
+    internal async ValueTask<Dictionary<string, OperResult>> InVokeWriteAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
+    {
+        // 初始化结果字典
+        Dictionary<string, OperResult> results = new Dictionary<string, OperResult>();
+
+        // 遍历写入信息列表
+        foreach (var (deviceVariable, jToken) in writeInfoLists)
+        {
+            // 检查是否有写入表达式
+            if (!string.IsNullOrEmpty(deviceVariable.WriteExpressions))
+            {
+                // 提取原始数据
+                object rawdata = jToken is JValue jValue ? jValue.Value : jToken is JArray jArray ? jArray : jToken.ToString();
+                try
+                {
+                    // 根据写入表达式转换数据
+                    object data = deviceVariable.WriteExpressions.GetExpressionsResult(rawdata);
+                    // 将转换后的数据重新赋值给写入信息列表
+                    writeInfoLists[deviceVariable] = JToken.FromObject(data);
+                }
+                catch (Exception ex)
+                {
+                    // 如果转换失败，则记录错误信息
+                    results.Add(deviceVariable.Name, new OperResult(Localizer["WriteExpressionsError", deviceVariable.Name, deviceVariable.WriteExpressions, ex.Message], ex));
+                }
+            }
+        }
+
+        // 过滤掉转换失败的变量，只保留写入成功的变量进行写入操作
+        var results1 = await WriteValuesAsync(writeInfoLists
+            .Where(a => !results.Any(b => b.Key == a.Key.Name))
+            .ToDictionary(item => item.Key, item => item.Value),
+            cancellationToken).ConfigureAwait(false);
+
+        // 将转换失败的变量和写入成功的变量的操作结果合并到结果字典中
+        return results.Concat(results1).ToDictionary(a => a.Key, a => a.Value);
+    }
+
+    /// <summary>
+    /// 异步调用方法
+    /// </summary>
+    /// <param name="variableMethod">要调用的方法</param>
+    /// <param name="value">传递给方法的参数值（可选）</param>
+    /// <param name="isRead">指示是否为读取操作</param>
+    /// <param name="cancellationToken">取消操作的通知</param>
+    /// <returns>操作结果，包含执行方法的结果</returns>
+    protected virtual async ValueTask<OperResult<object>> InvokeMethodAsync(VariableMethod variableMethod, string? value = null, bool isRead = true, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            // 初始化操作结果
+            OperResult<object> result = new OperResult<object>();
+
+            // 获取要执行的方法
+            var method = variableMethod.MethodInfo;
+
+            // 如果方法未找到，则返回错误结果
+            if (method == null)
+            {
+                result.OperCode = 999;
+                result.ErrorMessage = Localizer["MethodNotNull", variableMethod.Variable.Name, variableMethod.Variable.OtherMethod];
+                return result;
+            }
+            else
+            {
+                // 调用方法并获取结果
+                var data = await variableMethod.InvokeMethodAsync(this, value, cancellationToken).ConfigureAwait(false);
+                result = data.Adapt<OperResult<object>>();
+
+                // 如果方法有返回值，并且是读取操作
+                if (method.HasReturn && isRead)
+                {
+                    if (result.IsSuccess == true)
+                    {
+                        // 将结果序列化并设置到变量中
+                        var variableResult = variableMethod.Variable.SetValue(result.Content);
+                        if (!variableResult.IsSuccess)
+                            variableMethod.LastErrorMessage = result.ErrorMessage;
+                    }
+                    else
+                    {
+                        // 如果读取操作失败，则将变量标记为离线
+                        var variableResult = variableMethod.Variable.SetValue(null, isOnline: false);
+                        if (!variableResult.IsSuccess)
+                            variableMethod.LastErrorMessage = result.ErrorMessage;
+                    }
+                }
+                return result;
+            }
+        }
+        catch (Exception ex)
+        {
+            // 捕获异常并返回错误结果
+            return new OperResult<object>(ex);
+        }
+        finally
+        {
+        }
     }
 
     #endregion 写入方法

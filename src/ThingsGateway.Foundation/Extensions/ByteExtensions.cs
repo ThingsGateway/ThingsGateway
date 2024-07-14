@@ -18,26 +18,20 @@ namespace ThingsGateway.Foundation;
 public static class ByteExtensions
 {
     /// <summary>
-    /// 获取异或校验
+    /// 获取byte数据类型的第offset位，是否为True<br />
     /// </summary>
-    /// <param name="data"></param>
-    /// <param name="left"></param>
-    /// <param name="right"></param>
-    /// <returns></returns>
-    public static byte[] GetAsciiXOR(this byte[] data, int left, int right)
+    /// <param name="value">byte数值</param>
+    /// <param name="offset">索引位置</param>
+    /// <returns>结果</returns>
+    public static bool BoolOnByteIndex(this byte value, int offset)
     {
-        if (data == null || left < 0 || right < 0 || left >= data.Length || right >= data.Length || left > right)
+        if (offset < 0 || offset > 7)
         {
-            throw new ArgumentException("Invalid input parameters");
+            throw new ArgumentOutOfRangeException(nameof(offset), "Offset value must be between 0 and 7.");
         }
 
-        byte tmp = data[left];
-        for (int i = left + 1; i <= right; i++)
-        {
-            tmp ^= data[i];
-        }
-
-        return Encoding.ASCII.GetBytes(tmp.ToString("X2"));
+        byte mask = (byte)(1 << offset);
+        return (value & mask) == mask;
     }
 
     /// <summary>
@@ -77,23 +71,6 @@ public static class ByteExtensions
         }
 
         return result;
-    }
-
-    /// <summary>
-    /// 获取byte数据类型的第offset位，是否为True<br />
-    /// </summary>
-    /// <param name="value">byte数值</param>
-    /// <param name="offset">索引位置</param>
-    /// <returns>结果</returns>
-    public static bool BoolOnByteIndex(this byte value, int offset)
-    {
-        if (offset < 0 || offset > 7)
-        {
-            throw new ArgumentOutOfRangeException(nameof(offset), "Offset value must be between 0 and 7.");
-        }
-
-        byte mask = (byte)(1 << offset);
-        return (value & mask) == mask;
     }
 
     /// <summary>
@@ -147,6 +124,29 @@ public static class ByteExtensions
         }
 
         return boolArray;
+    }
+
+    /// <summary>
+    /// 获取异或校验
+    /// </summary>
+    /// <param name="data"></param>
+    /// <param name="left"></param>
+    /// <param name="right"></param>
+    /// <returns></returns>
+    public static byte[] GetAsciiXOR(this byte[] data, int left, int right)
+    {
+        if (data == null || left < 0 || right < 0 || left >= data.Length || right >= data.Length || left > right)
+        {
+            throw new ArgumentException("Invalid input parameters");
+        }
+
+        byte tmp = data[left];
+        for (int i = left + 1; i <= right; i++)
+        {
+            tmp ^= data[i];
+        }
+
+        return Encoding.ASCII.GetBytes(tmp.ToString("X2"));
     }
 
     /// <summary>

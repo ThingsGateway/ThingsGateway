@@ -14,11 +14,11 @@ namespace ThingsGateway.Admin.Razor;
 
 public partial class SysRolePage
 {
+    private SysRole? SearchModel { get; set; } = new();
+
     [Inject]
     [NotNull]
     private ISysRoleService? SysRoleService { get; set; }
-
-    private SysRole? SearchModel { get; set; } = new();
 
     #region 查询
 
@@ -31,19 +31,6 @@ public partial class SysRolePage
     #endregion 查询
 
     #region 修改
-
-    private async Task<bool> Save(SysRole sysRole, ItemChangedType itemChangedType)
-    {
-        try
-        {
-            return await SysRoleService.SaveRoleAsync(sysRole, itemChangedType);
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(null, $"{ex.Message}");
-            return false;
-        }
-    }
 
     private async Task<bool> Delete(IEnumerable<SysRole> sysRoles)
     {
@@ -58,23 +45,41 @@ public partial class SysRolePage
         }
     }
 
+    private async Task<bool> Save(SysRole sysRole, ItemChangedType itemChangedType)
+    {
+        try
+        {
+            return await SysRoleService.SaveRoleAsync(sysRole, itemChangedType);
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(null, $"{ex.Message}");
+            return false;
+        }
+    }
+
     #endregion 修改
 
     #region 授权
 
-    private async Task GrantUser(long id)
+    private async Task GrantApi(long id)
     {
+        var hasResources = (await SysRoleService.ApiOwnPermissionAsync(id))?.GrantInfoList;
+        var ids = new List<string>();
+        ids.AddRange(hasResources.Select(a => a.ApiUrl));
         var op = new DialogOption()
         {
-            Title = OperDescLocalizer["RoleGrantUser"],
-            ShowFooter = false,
+            IsScrolling = true,
+            Size = Size.ExtraLarge,
+            Title = OperDescLocalizer["RoleGrantApiPermission"],
             ShowCloseButton = false,
-            Size = Size.ExtraLarge
+            BodyTemplate = BootstrapDynamicComponent.CreateComponent<GrantApiComponent>(new Dictionary<string, object?>
+            {
+                [nameof(GrantApiComponent.Value)] = ids,
+                [nameof(GrantApiComponent.Id)] = id,
+                [nameof(GrantApiComponent.IsRole)] = true,
+            }).Render(),
         };
-        op.Component = BootstrapDynamicComponent.CreateComponent<GrantUserComponent>(new Dictionary<string, object?>
-        {
-            [nameof(GrantUserComponent.RoleId)] = id,
-        });
         await DialogService.Show(op);
     }
 
@@ -97,24 +102,19 @@ public partial class SysRolePage
         await DialogService.Show(op);
     }
 
-    private async Task GrantApi(long id)
+    private async Task GrantUser(long id)
     {
-        var hasResources = (await SysRoleService.ApiOwnPermissionAsync(id))?.GrantInfoList;
-        var ids = new List<string>();
-        ids.AddRange(hasResources.Select(a => a.ApiUrl));
         var op = new DialogOption()
         {
-            IsScrolling = true,
-            Size = Size.ExtraLarge,
-            Title = OperDescLocalizer["RoleGrantApiPermission"],
+            Title = OperDescLocalizer["RoleGrantUser"],
+            ShowFooter = false,
             ShowCloseButton = false,
-            BodyTemplate = BootstrapDynamicComponent.CreateComponent<GrantApiComponent>(new Dictionary<string, object?>
-            {
-                [nameof(GrantApiComponent.Value)] = ids,
-                [nameof(GrantApiComponent.Id)] = id,
-                [nameof(GrantApiComponent.IsRole)] = true,
-            }).Render(),
+            Size = Size.ExtraLarge
         };
+        op.Component = BootstrapDynamicComponent.CreateComponent<GrantUserComponent>(new Dictionary<string, object?>
+        {
+            [nameof(GrantUserComponent.RoleId)] = id,
+        });
         await DialogService.Show(op);
     }
 

@@ -1,5 +1,4 @@
-﻿
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 //  此代码版权声明为全文件覆盖，如有原作者特别声明，会在下方手动补充
 //  此代码版权（除特别声明外的代码）归作者本人Diego所有
 //  源代码使用协议遵循本仓库的开源协议及附加协议
@@ -8,9 +7,6 @@
 //  使用文档：https://kimdiego2098.github.io/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
-
-
-
 
 using System.Collections;
 using System.ComponentModel;
@@ -24,12 +20,12 @@ namespace NewLife;
 /// <summary>具有是否已释放和释放后事件的接口</summary>
 public interface IDisposable2 : IDisposable
 {
+    /// <summary>被销毁时触发事件</summary>
+    event EventHandler OnDisposed;
+
     /// <summary>是否已经释放</summary>
     [XmlIgnore, IgnoreDataMember]
     Boolean Disposed { get; }
-
-    /// <summary>被销毁时触发事件</summary>
-    event EventHandler OnDisposed;
 }
 
 /// <summary>具有销毁资源处理的抽象基类</summary>
@@ -56,6 +52,35 @@ public abstract class DisposeBase : IDisposable2
 {
     #region 释放资源
 
+    [NonSerialized]
+    private Int32 _disposed = 0;
+
+    /// <summary>析构函数</summary>
+    /// <remarks>
+    /// 如果忘记调用Dispose，这里会释放非托管资源。
+    /// 如果曾经调用过Dispose，因为GC.SuppressFinalize(this)，不会再调用该析构函数。
+    /// 在 .NET 中，析构函数（Finalizer）不应该抛出未捕获的异常。如果析构函数引发未捕获的异常，它将导致应用程序崩溃或进程退出。
+    /// </remarks>
+    ~DisposeBase()
+    {
+        // 在 .NET 中，析构函数（Finalizer）不应该抛出未捕获的异常。如果析构函数引发未捕获的异常，它将导致应用程序崩溃或进程退出。
+        try
+        {
+            Dispose(false);
+        }
+        catch
+        {
+        }
+    }
+
+    /// <summary>被销毁时触发事件</summary>
+    [field: NonSerialized]
+    public event EventHandler? OnDisposed;
+
+    /// <summary>是否已经释放</summary>
+    [XmlIgnore, IgnoreDataMember]
+    public Boolean Disposed => _disposed > 0;
+
     /// <summary>释放资源</summary>
     public void Dispose()
     {
@@ -64,17 +89,6 @@ public abstract class DisposeBase : IDisposable2
         // 告诉GC，不要调用析构函数
         GC.SuppressFinalize(this);
     }
-
-    [NonSerialized]
-    private Int32 _disposed = 0;
-
-    /// <summary>是否已经释放</summary>
-    [XmlIgnore, IgnoreDataMember]
-    public Boolean Disposed => _disposed > 0;
-
-    /// <summary>被销毁时触发事件</summary>
-    [field: NonSerialized]
-    public event EventHandler? OnDisposed;
 
     /// <summary>释放资源，参数表示是否由Dispose调用。重载时先调用基类方法</summary>
     /// <param name="disposing"></param>
@@ -94,24 +108,6 @@ public abstract class DisposeBase : IDisposable2
         // 释放非托管资源
 
         OnDisposed?.Invoke(this, EventArgs.Empty);
-    }
-
-    /// <summary>析构函数</summary>
-    /// <remarks>
-    /// 如果忘记调用Dispose，这里会释放非托管资源。
-    /// 如果曾经调用过Dispose，因为GC.SuppressFinalize(this)，不会再调用该析构函数。
-    /// 在 .NET 中，析构函数（Finalizer）不应该抛出未捕获的异常。如果析构函数引发未捕获的异常，它将导致应用程序崩溃或进程退出。
-    /// </remarks>
-    ~DisposeBase()
-    {
-        // 在 .NET 中，析构函数（Finalizer）不应该抛出未捕获的异常。如果析构函数引发未捕获的异常，它将导致应用程序崩溃或进程退出。
-        try
-        {
-            Dispose(false);
-        }
-        catch
-        {
-        }
     }
 
     #endregion 释放资源

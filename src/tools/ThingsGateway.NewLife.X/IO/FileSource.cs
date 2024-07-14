@@ -15,6 +15,29 @@ namespace NewLife.IO;
 /// <summary>文件资源</summary>
 public static class FileSource
 {
+    /// <summary>获取文件资源</summary>
+    /// <param name="asm"></param>
+    /// <param name="filename"></param>
+    /// <returns></returns>
+    public static Stream? GetFileResource(this Assembly asm, String filename)
+    {
+        if (String.IsNullOrEmpty(filename)) return null;
+
+        var name = String.Empty;
+        if (asm == null) asm = Assembly.GetCallingAssembly();
+        var ss = asm.GetManifestResourceNames();
+        if (ss != null && ss.Length > 0)
+        {
+            //找到资源名
+            name = ss.FirstOrDefault(e => e == filename);
+            if (String.IsNullOrEmpty(name)) name = ss.FirstOrDefault(e => e.EqualIgnoreCase(filename));
+            if (String.IsNullOrEmpty(name)) name = ss.FirstOrDefault(e => e.EndsWith(filename));
+
+            if (!String.IsNullOrEmpty(name)) return asm.GetManifestResourceStream(name);
+        }
+        return null;
+    }
+
     /// <summary>释放文件</summary>
     /// <param name="asm"></param>
     /// <param name="fileName"></param>
@@ -119,28 +142,5 @@ public static class FileSource
             catch { }
             finally { stream?.Dispose(); }
         }
-    }
-
-    /// <summary>获取文件资源</summary>
-    /// <param name="asm"></param>
-    /// <param name="filename"></param>
-    /// <returns></returns>
-    public static Stream? GetFileResource(this Assembly asm, String filename)
-    {
-        if (String.IsNullOrEmpty(filename)) return null;
-
-        var name = String.Empty;
-        if (asm == null) asm = Assembly.GetCallingAssembly();
-        var ss = asm.GetManifestResourceNames();
-        if (ss != null && ss.Length > 0)
-        {
-            //找到资源名
-            name = ss.FirstOrDefault(e => e == filename);
-            if (String.IsNullOrEmpty(name)) name = ss.FirstOrDefault(e => e.EqualIgnoreCase(filename));
-            if (String.IsNullOrEmpty(name)) name = ss.FirstOrDefault(e => e.EndsWith(filename));
-
-            if (!String.IsNullOrEmpty(name)) return asm.GetManifestResourceStream(name);
-        }
-        return null;
     }
 }

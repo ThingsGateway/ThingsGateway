@@ -14,11 +14,11 @@ namespace ThingsGateway.Admin.Razor;
 
 public partial class SysUserPage
 {
+    private SysUser? SearchModel { get; set; } = new();
+
     [Inject]
     [NotNull]
     private ISysUserService? SysUserService { get; set; }
-
-    private SysUser? SearchModel { get; set; } = new();
 
     #region 查询
 
@@ -31,19 +31,6 @@ public partial class SysUserPage
     #endregion 查询
 
     #region 修改
-
-    private async Task<bool> Save(SysUser sysUser, ItemChangedType itemChangedType)
-    {
-        try
-        {
-            return await SysUserService.SaveUserAsync(sysUser, itemChangedType);
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(null, $"{ex.Message}");
-            return false;
-        }
-    }
 
     private async Task<bool> Delete(IEnumerable<SysUser> sysUsers)
     {
@@ -58,32 +45,23 @@ public partial class SysUserPage
         }
     }
 
-    private async Task ResetPassword(long id)
+    private async Task GrantApi(long id)
     {
-        try
-        {
-            await SysUserService.ResetPasswordAsync(id);
-            await ToastService.Default();
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(null, $"{ex.Message}");
-        }
-    }
-
-    private async Task GrantRole(long id)
-    {
+        var hasResources = (await SysUserService.ApiOwnPermissionAsync(id))?.GrantInfoList;
+        var ids = new List<string>();
+        ids.AddRange(hasResources.Select(a => a.ApiUrl));
         var op = new DialogOption()
         {
-            Title = OperDescLocalizer["UserGrantRole"],
-            ShowFooter = false,
+            IsScrolling = true,
+            Size = Size.ExtraLarge,
+            Title = OperDescLocalizer["UserGrantApiPermission"],
             ShowCloseButton = false,
-            Size = Size.ExtraLarge
+            BodyTemplate = BootstrapDynamicComponent.CreateComponent<GrantApiComponent>(new Dictionary<string, object?>
+            {
+                [nameof(GrantApiComponent.Value)] = ids,
+                [nameof(GrantResourceComponent.Id)] = id,
+            }).Render(),
         };
-        op.Component = BootstrapDynamicComponent.CreateComponent<GrantRoleComponent>(new Dictionary<string, object?>
-        {
-            [nameof(GrantRoleComponent.UserId)] = id,
-        });
         await DialogService.Show(op);
     }
 
@@ -105,24 +83,46 @@ public partial class SysUserPage
         await DialogService.Show(op);
     }
 
-    private async Task GrantApi(long id)
+    private async Task GrantRole(long id)
     {
-        var hasResources = (await SysUserService.ApiOwnPermissionAsync(id))?.GrantInfoList;
-        var ids = new List<string>();
-        ids.AddRange(hasResources.Select(a => a.ApiUrl));
         var op = new DialogOption()
         {
-            IsScrolling = true,
-            Size = Size.ExtraLarge,
-            Title = OperDescLocalizer["UserGrantApiPermission"],
+            Title = OperDescLocalizer["UserGrantRole"],
+            ShowFooter = false,
             ShowCloseButton = false,
-            BodyTemplate = BootstrapDynamicComponent.CreateComponent<GrantApiComponent>(new Dictionary<string, object?>
-            {
-                [nameof(GrantApiComponent.Value)] = ids,
-                [nameof(GrantResourceComponent.Id)] = id,
-            }).Render(),
+            Size = Size.ExtraLarge
         };
+        op.Component = BootstrapDynamicComponent.CreateComponent<GrantRoleComponent>(new Dictionary<string, object?>
+        {
+            [nameof(GrantRoleComponent.UserId)] = id,
+        });
         await DialogService.Show(op);
+    }
+
+    private async Task ResetPassword(long id)
+    {
+        try
+        {
+            await SysUserService.ResetPasswordAsync(id);
+            await ToastService.Default();
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(null, $"{ex.Message}");
+        }
+    }
+
+    private async Task<bool> Save(SysUser sysUser, ItemChangedType itemChangedType)
+    {
+        try
+        {
+            return await SysUserService.SaveUserAsync(sysUser, itemChangedType);
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(null, $"{ex.Message}");
+            return false;
+        }
     }
 
     #endregion 修改

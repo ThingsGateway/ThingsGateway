@@ -13,32 +13,6 @@ using System.Text;
 namespace ThingsGateway.Foundation;
 
 /// <summary>
-/// 日志数据
-/// </summary>
-public class LogData
-{
-    /// <summary>
-    /// 时间
-    /// </summary>
-    public string LogTime { get; set; }
-
-    /// <summary>
-    /// 级别
-    /// </summary>
-    public LogLevel LogLevel { get; set; }
-
-    /// <summary>
-    /// 消息
-    /// </summary>
-    public string Message { get; set; }
-
-    /// <summary>
-    /// 异常
-    /// </summary>
-    public string? ExceptionString { get; set; }
-}
-
-/// <summary>
 /// <inheritdoc/>
 /// </summary>
 public class LastLogResult : OperResultClass<IEnumerable<LogData>>
@@ -70,19 +44,45 @@ public class LastLogResult : OperResultClass<IEnumerable<LogData>>
 }
 
 /// <summary>
+/// 日志数据
+/// </summary>
+public class LogData
+{
+    /// <summary>
+    /// 异常
+    /// </summary>
+    public string? ExceptionString { get; set; }
+
+    /// <summary>
+    /// 级别
+    /// </summary>
+    public LogLevel LogLevel { get; set; }
+
+    /// <summary>
+    /// 时间
+    /// </summary>
+    public string LogTime { get; set; }
+
+    /// <summary>
+    /// 消息
+    /// </summary>
+    public string Message { get; set; }
+}
+
+/// <summary>
 /// <inheritdoc/>
 /// </summary>
 public class LogInfoResult : OperResultClass
 {
     /// <summary>
-    /// 流位置
-    /// </summary>
-    public long Length { set; get; }
-
-    /// <summary>
     /// 全名称
     /// </summary>
     public string FullName { set; get; }
+
+    /// <summary>
+    /// 流位置
+    /// </summary>
+    public long Length { set; get; }
 }
 
 /// <summary>日志文本文件倒序读取</summary>
@@ -185,83 +185,6 @@ public class TextFileReader
         }
     }
 
-    private static List<string> ParseCSV(string data)
-    {
-        List<string> items = new List<string>();
-
-        int i = 0;
-        while (i < data.Length)
-        {
-            // 当前字符不是逗号，开始解析一个新的数据项
-            if (data[i] != ',')
-            {
-                int j = i;
-                bool inQuotes = false;
-
-                // 解析到一个未闭合的双引号时，继续读取下一个数据项
-                while (j < data.Length && (inQuotes || data[j] != ','))
-                {
-                    if (data[j] == '\"')
-                    {
-                        inQuotes = !inQuotes;
-                    }
-                    j++;
-                }
-
-                // 去掉前后的双引号并将当前数据项加入列表中
-                items.Add(RemoveQuotes(data.Substring(i, j - i)));
-
-                // 跳过当前数据项结尾的逗号
-                if (j < data.Length && data[j] == ',')
-                {
-                    j++;
-                }
-
-                i = j;
-            }
-            // 当前字符是逗号，跳过它
-            else
-            {
-                i++;
-            }
-        }
-
-        return items;
-    }
-
-    private static string RemoveQuotes(string data)
-    {
-        if (data.Length >= 2 && data[0] == '\"' && data[data.Length - 1] == '\"')
-        {
-            return data.Substring(1, data.Length - 2);
-        }
-        else
-        {
-            return data;
-        }
-    }
-
-    private static bool MatchSeparator(LinkedList<byte> arr)
-    {
-        if (arr.Count < TextFileLogger.SeparatorBytes.Length)
-        {
-            return false;
-        }
-
-        var currentNode = arr.First; // 从头节点开始
-        for (int i = 0; i < TextFileLogger.SeparatorBytes.Length; i++)
-        {
-            if (currentNode.Value != TextFileLogger.SeparatorBytes[i])
-            {
-                return false;
-            }
-
-            currentNode = currentNode.Next; // 移动到下一个节点
-        }
-
-        return true;
-    }
-
     /// <summary>
     /// 从后向前按行读取文本文件，并根据特定规则筛选行数据
     /// </summary>
@@ -330,6 +253,83 @@ public class TextFileReader
         }
         finally
         {
+        }
+    }
+
+    private static bool MatchSeparator(LinkedList<byte> arr)
+    {
+        if (arr.Count < TextFileLogger.SeparatorBytes.Length)
+        {
+            return false;
+        }
+
+        var currentNode = arr.First; // 从头节点开始
+        for (int i = 0; i < TextFileLogger.SeparatorBytes.Length; i++)
+        {
+            if (currentNode.Value != TextFileLogger.SeparatorBytes[i])
+            {
+                return false;
+            }
+
+            currentNode = currentNode.Next; // 移动到下一个节点
+        }
+
+        return true;
+    }
+
+    private static List<string> ParseCSV(string data)
+    {
+        List<string> items = new List<string>();
+
+        int i = 0;
+        while (i < data.Length)
+        {
+            // 当前字符不是逗号，开始解析一个新的数据项
+            if (data[i] != ',')
+            {
+                int j = i;
+                bool inQuotes = false;
+
+                // 解析到一个未闭合的双引号时，继续读取下一个数据项
+                while (j < data.Length && (inQuotes || data[j] != ','))
+                {
+                    if (data[j] == '\"')
+                    {
+                        inQuotes = !inQuotes;
+                    }
+                    j++;
+                }
+
+                // 去掉前后的双引号并将当前数据项加入列表中
+                items.Add(RemoveQuotes(data.Substring(i, j - i)));
+
+                // 跳过当前数据项结尾的逗号
+                if (j < data.Length && data[j] == ',')
+                {
+                    j++;
+                }
+
+                i = j;
+            }
+            // 当前字符是逗号，跳过它
+            else
+            {
+                i++;
+            }
+        }
+
+        return items;
+    }
+
+    private static string RemoveQuotes(string data)
+    {
+        if (data.Length >= 2 && data[0] == '\"' && data[data.Length - 1] == '\"')
+        {
+            return data.Substring(1, data.Length - 2);
+        }
+        else
+        {
+            return data;
         }
     }
 }

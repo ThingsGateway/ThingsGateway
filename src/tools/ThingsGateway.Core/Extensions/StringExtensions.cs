@@ -15,6 +15,32 @@ namespace ThingsGateway.Core.Extension;
 public static class StringExtensions
 {
     /// <summary>
+    /// 首字母小写
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static string FirstCharToLower(this string input)
+    {
+        if (string.IsNullOrEmpty(input))
+        {
+            return input;
+        }
+        return input.First().ToString().ToLower() + input.Substring(1);
+    }
+
+    /// <summary>
+    /// 返回字符串首字符的大写字母
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static string FirstCharToUpper(this string input) => string.IsNullOrEmpty(input) ? input : input.First().ToString().ToUpper();
+
+    public static string Format(this string str, params object[] args)
+    {
+        return args == null || args.Length == 0 ? str : string.Format(str, args);
+    }
+
+    /// <summary>
     /// 获取字符串中的两个字符作为名称简述
     /// </summary>
     public static string GetNameLen2(this string name, int len = 2)
@@ -48,53 +74,58 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// 首字母小写
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    public static string FirstCharToLower(this string input)
-    {
-        if (string.IsNullOrEmpty(input))
-        {
-            return input;
-        }
-        return input.First().ToString().ToLower() + input.Substring(1);
-    }
-
-    /// <summary>
-    /// 返回字符串首字符的大写字母
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    public static string FirstCharToUpper(this string input) => string.IsNullOrEmpty(input) ? input : input.First().ToString().ToUpper();
-
-    /// <summary>
     /// 返回字符串尾字符的大写字母
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     public static string LastCharToUpper(this string input) => string.IsNullOrEmpty(input) ? input : input.Last().ToString().ToUpper();
 
-    public static string Format(this string str, params object[] args)
+    /// <summary>
+    /// 匹配邮箱格式
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public static bool MatchEmail(this string s)
     {
-        return args == null || args.Length == 0 ? str : string.Format(str, args);
+        if (string.IsNullOrEmpty(s) || s.Length < 7)
+        {
+            return false;
+        }
+        Match match = Regex.Match(s, "[^@ \\t\\r\\n]+@[^@ \\t\\r\\n]+\\.[^@ \\t\\r\\n]+");
+        bool flag = match.Success;
+
+        return flag;
     }
 
     /// <summary>
-    /// 切割骆驼命名式字符串
+    /// 匹配手机号码
+    /// </summary>
+    /// <param name="s">源字符串</param>
+    /// <returns>是否匹配成功</returns>
+    public static bool MatchPhoneNumber(this string s) => !string.IsNullOrEmpty(s) && Regex.IsMatch(s, @"^1[3456789][0-9]{9}$");
+
+    /// <summary>
+    /// 首字母小写
     /// </summary>
     /// <param name="str"></param>
     /// <returns></returns>
-    internal static string[] SplitCamelCase(this string str)
+    public static string ToLowerCamelCase(this string str)
     {
-        if (str == null) return Array.Empty<string>();
+        if (string.IsNullOrWhiteSpace(str)) return str;
 
-        if (string.IsNullOrWhiteSpace(str)) return [str];
-        if (str.Length == 1) return [str];
+        return string.Concat(str.First().ToString().ToLower(), str.AsSpan(1));
+    }
 
-        return Regex.Split(str, @"(?=\p{Lu}\p{Ll})|(?<=\p{Ll})(?=\p{Lu})")
-            .Where(u => u.Length > 0)
-            .ToArray();
+    /// <summary>
+    /// 首字母大写
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    public static string ToUpperCamelCase(this string str)
+    {
+        if (string.IsNullOrWhiteSpace(str)) return str;
+
+        return string.Concat(str.First().ToString().ToUpper(), str.AsSpan(1));
     }
 
     /// <summary>
@@ -138,52 +169,21 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// 首字母小写
+    /// 切割骆驼命名式字符串
     /// </summary>
     /// <param name="str"></param>
     /// <returns></returns>
-    public static string ToLowerCamelCase(this string str)
+    internal static string[] SplitCamelCase(this string str)
     {
-        if (string.IsNullOrWhiteSpace(str)) return str;
+        if (str == null) return Array.Empty<string>();
 
-        return string.Concat(str.First().ToString().ToLower(), str.AsSpan(1));
+        if (string.IsNullOrWhiteSpace(str)) return [str];
+        if (str.Length == 1) return [str];
+
+        return Regex.Split(str, @"(?=\p{Lu}\p{Ll})|(?<=\p{Ll})(?=\p{Lu})")
+            .Where(u => u.Length > 0)
+            .ToArray();
     }
-
-    /// <summary>
-    /// 首字母大写
-    /// </summary>
-    /// <param name="str"></param>
-    /// <returns></returns>
-    public static string ToUpperCamelCase(this string str)
-    {
-        if (string.IsNullOrWhiteSpace(str)) return str;
-
-        return string.Concat(str.First().ToString().ToUpper(), str.AsSpan(1));
-    }
-
-    /// <summary>
-    /// 匹配邮箱格式
-    /// </summary>
-    /// <param name="s"></param>
-    /// <returns></returns>
-    public static bool MatchEmail(this string s)
-    {
-        if (string.IsNullOrEmpty(s) || s.Length < 7)
-        {
-            return false;
-        }
-        Match match = Regex.Match(s, "[^@ \\t\\r\\n]+@[^@ \\t\\r\\n]+\\.[^@ \\t\\r\\n]+");
-        bool flag = match.Success;
-
-        return flag;
-    }
-
-    /// <summary>
-    /// 匹配手机号码
-    /// </summary>
-    /// <param name="s">源字符串</param>
-    /// <returns>是否匹配成功</returns>
-    public static bool MatchPhoneNumber(this string s) => !string.IsNullOrEmpty(s) && Regex.IsMatch(s, @"^1[3456789][0-9]{9}$");
 
     /// <summary>
     /// 用 正则表达式 判断字符是不是汉字

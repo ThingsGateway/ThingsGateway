@@ -18,6 +18,28 @@ namespace ThingsGateway.Gateway.Application;
 public interface IPluginService
 {
     /// <summary>
+    /// 根据插件全名称构建插件实例
+    /// </summary>
+    /// <param name="pluginName"></param>
+    /// <returns></returns>
+    DriverBase GetDriver(string pluginName);
+
+    /// <summary>
+    /// 获取插件动态注册的方法
+    /// </summary>
+    /// <param name="pluginName"></param>
+    /// <returns></returns>
+    List<DriverMethodInfo> GetDriverMethodInfos(string pluginName, DriverBase? driverBase = null);
+
+    /// <summary>
+    /// 获取插件属性
+    /// </summary>
+    /// <param name="pluginName"></param>
+    /// <param name="driverBase"></param>
+    /// <returns></returns>
+    (IEnumerable<IEditorItem> EditorItems, object Model) GetDriverPropertyTypes(string pluginName, DriverBase? driverBase = null);
+
+    /// <summary>
     /// 根据插件类型获取信息
     /// </summary>
     /// <param name="pluginType"></param>
@@ -25,11 +47,12 @@ public interface IPluginService
     List<PluginOutput> GetList(PluginTypeEnum? pluginType = null);
 
     /// <summary>
-    /// 根据插件全名称构建插件实例
+    /// 获取变量属性
     /// </summary>
     /// <param name="pluginName"></param>
+    /// <param name="businessBase"></param>
     /// <returns></returns>
-    DriverBase GetDriver(string pluginName);
+    (IEnumerable<IEditorItem> EditorItems, object Model) GetVariablePropertyTypes(string pluginName, BusinessBase? businessBase = null);
 
     /// <summary>
     /// 分页显示插件
@@ -42,13 +65,6 @@ public interface IPluginService
     void Remove();
 
     /// <summary>
-    /// 设置插件动态属性
-    /// </summary>
-    /// <param name="driver"></param>
-    /// <param name="deviceProperties"></param>
-    void SetDriverProperties(DriverBase driver, Dictionary<string, string> deviceProperties);
-
-    /// <summary>
     /// 添加插件
     /// </summary>
     /// <param name="plugin"></param>
@@ -56,25 +72,9 @@ public interface IPluginService
     Task SavePlugin(PluginAddInput plugin);
 
     /// <summary>
-    /// 获取插件属性
+    /// 设置插件动态属性
     /// </summary>
-    /// <param name="pluginName"></param>
-    /// <param name="driverBase"></param>
-    /// <returns></returns>
-    (IEnumerable<IEditorItem> EditorItems, object Model) GetDriverPropertyTypes(string pluginName, DriverBase? driverBase = null);
-
-    /// <summary>
-    /// 获取变量属性
-    /// </summary>
-    /// <param name="pluginName"></param>
-    /// <param name="businessBase"></param>
-    /// <returns></returns>
-    (IEnumerable<IEditorItem> EditorItems, object Model) GetVariablePropertyTypes(string pluginName, BusinessBase? businessBase = null);
-
-    /// <summary>
-    /// 获取插件动态注册的方法
-    /// </summary>
-    /// <param name="pluginName"></param>
-    /// <returns></returns>
-    List<DriverMethodInfo> GetDriverMethodInfos(string pluginName, DriverBase? driverBase = null);
+    /// <param name="driver"></param>
+    /// <param name="deviceProperties"></param>
+    void SetDriverProperties(DriverBase driver, Dictionary<string, string> deviceProperties);
 }

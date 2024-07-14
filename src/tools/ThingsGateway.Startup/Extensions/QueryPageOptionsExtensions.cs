@@ -14,39 +14,10 @@ using NewLife.Extension;
 
 using SqlSugar;
 
-namespace ThingsGateway.Sql;
+namespace ThingsGateway;
 
 public static class QueryPageOptionsExtensions
 {
-    /// <summary>
-    /// 根据查询条件返回sqlsugar ISugarQueryable
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    /// <param name="db"></param>
-    /// <param name="option"></param>
-    /// <returns></returns>
-    public static ISugarQueryable<T> GetQuery<T>(this SqlSugarClient db, QueryPageOptions option)
-    {
-        ISugarQueryable<T>? query = db.Queryable<T>();
-
-        var where = option.ToFilter();
-        if (where.HasFilters())
-        {
-            query = query.Where(where.GetFilterLambda<T>());//name asc模式
-        }
-
-        foreach (var item in option.SortList)
-        {
-            query = query.OrderByIF(!string.IsNullOrEmpty(item), $"{item}");//name asc模式
-        }
-        foreach (var item in option.AdvancedSortList)
-        {
-            query = query.OrderByIF(!string.IsNullOrEmpty(item), $"{item}");//name asc模式
-        }
-        query = query.OrderByIF(option.SortOrder != SortOrder.Unset, $"{option.SortName} {option.SortOrder}");
-        return query;
-    }
-
     /// <summary>
     /// 根据查询条件返回IEnumerable
     /// </summary>
@@ -83,6 +54,35 @@ public static class QueryPageOptionsExtensions
             datas = datas.Skip((option.StartIndex) * option.PageItems).Take(option.PageItems);
         }
         return datas;
+    }
+
+    /// <summary>
+    /// 根据查询条件返回sqlsugar ISugarQueryable
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="db"></param>
+    /// <param name="option"></param>
+    /// <returns></returns>
+    public static ISugarQueryable<T> GetQuery<T>(this SqlSugarClient db, QueryPageOptions option)
+    {
+        ISugarQueryable<T>? query = db.Queryable<T>();
+
+        var where = option.ToFilter();
+        if (where.HasFilters())
+        {
+            query = query.Where(where.GetFilterLambda<T>());//name asc模式
+        }
+
+        foreach (var item in option.SortList)
+        {
+            query = query.OrderByIF(!string.IsNullOrEmpty(item), $"{item}");//name asc模式
+        }
+        foreach (var item in option.AdvancedSortList)
+        {
+            query = query.OrderByIF(!string.IsNullOrEmpty(item), $"{item}");//name asc模式
+        }
+        query = query.OrderByIF(option.SortOrder != SortOrder.Unset, $"{option.SortName} {option.SortOrder}");
+        return query;
     }
 
     /// <summary>

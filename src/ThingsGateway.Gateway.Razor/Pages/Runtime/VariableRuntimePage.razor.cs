@@ -10,30 +10,74 @@
 
 using NewLife.Extension;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.Razor;
-using ThingsGateway.Sql;
 
 namespace ThingsGateway.Gateway.Razor;
 
 public partial class VariableRuntimePage : IDisposable
 {
-    protected override void OnInitialized()
-    {
-        _ = RunTimerAsync();
-        base.OnInitialized();
-    }
+    protected IEnumerable<SelectedItem> CollectDeviceNames;
 
     public bool Disposed { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IDispatchService<DeviceRunTime>? DeviceDispatchService { get; set; }
+
+    private VariableRunTime? SearchModel { get; set; } = new();
 
     public void Dispose()
     {
         Disposed = true;
         DeviceDispatchService.UnSubscribe(Notify);
         GC.SuppressFinalize(this);
+    }
+
+    protected override void OnInitialized()
+    {
+        _ = RunTimerAsync();
+        base.OnInitialized();
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        DeviceDispatchService.Subscribe(Notify);
+        return base.OnInitializedAsync();
+    }
+
+    protected override Task OnParametersSetAsync()
+    {
+        CollectDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(GlobalData.ReadOnlyCollectDevices.Keys.Select(a => new SelectedItem(a, a)));
+        return base.OnParametersSetAsync();
+    }
+
+    /// <summary>
+    /// IntFormatter
+    /// </summary>
+    /// <param name="d"></param>
+    /// <returns></returns>
+    private static Task<string> JsonFormatter(object? d)
+    {
+        var ret = "";
+        if (d is TableColumnContext<VariableRunTime, object?> data && data?.Value != null)
+        {
+            ret = data.Value.ToSystemTextJsonString();
+        }
+        return Task.FromResult(ret);
+    }
+
+    private async Task Change()
+    {
+        await OnParametersSetAsync();
+    }
+
+    private async Task Notify(DispatchEntry<DeviceRunTime> entry)
+    {
+        await Change();
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task RunTimerAsync()
@@ -50,36 +94,6 @@ public partial class VariableRuntimePage : IDisposable
                 System.Console.WriteLine(ex);
             }
         }
-    }
-
-    private VariableRunTime? SearchModel { get; set; } = new();
-    protected IEnumerable<SelectedItem> CollectDeviceNames;
-
-    [Inject]
-    [NotNull]
-    private IDispatchService<DeviceRunTime>? DeviceDispatchService { get; set; }
-
-    protected override Task OnInitializedAsync()
-    {
-        DeviceDispatchService.Subscribe(Notify);
-        return base.OnInitializedAsync();
-    }
-
-    private async Task Notify(DispatchEntry<DeviceRunTime> entry)
-    {
-        await Change();
-        await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task Change()
-    {
-        await OnParametersSetAsync();
-    }
-
-    protected override Task OnParametersSetAsync()
-    {
-        CollectDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(GlobalData.ReadOnlyCollectDevices.Keys.Select(a => new SelectedItem(a, a)));
-        return base.OnParametersSetAsync();
     }
 
     #region 查询
@@ -123,19 +137,4 @@ public partial class VariableRuntimePage : IDisposable
     }
 
     #endregion 写入变量
-
-    /// <summary>
-    /// IntFormatter
-    /// </summary>
-    /// <param name="d"></param>
-    /// <returns></returns>
-    private static Task<string> JsonFormatter(object? d)
-    {
-        var ret = "";
-        if (d is TableColumnContext<VariableRunTime, object?> data && data?.Value != null)
-        {
-            ret = data.Value.ToSystemTextJsonString();
-        }
-        return Task.FromResult(ret);
-    }
 }

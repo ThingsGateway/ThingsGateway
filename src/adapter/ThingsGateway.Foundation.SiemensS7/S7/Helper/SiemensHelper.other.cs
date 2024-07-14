@@ -12,6 +12,35 @@ namespace ThingsGateway.Foundation.SiemensS7;
 
 internal partial class SiemensHelper
 {
+    // S7变量多读Item
+    internal static readonly byte[] S7_MULRD_ITEM = [
+        0x12,            // Var 规范.
+		0x0a,            // 剩余的字节长度
+		0x10,            // Syntax ID
+		(byte)S7WordLength.Byte,  // 相关的数据长度代码（注意:根据传入的变量更改）
+		0x00,0x01,       // 数据长度						（注意:根据传入的变量更改）
+		0x00,0x00,       // DB编号							（注意:根据传入的变量更改）
+		0x84,            // 数据块类型					    （注意:根据传入的变量更改）
+		0x00,0x00,0x00   // 数据块偏移量			    （注意:根据传入的变量更改）
+	];
+
+    /// <summary>
+    /// S7连读写请求头(包含ISO头和COTP头)
+    /// </summary>
+    internal static readonly byte[] S7_MULRW_HEADER = [
+        0x03,0x00,
+        0x00,0x1f,       // 报文长度(item.len*12+19，注意:根据传入读取item数量更改)
+		0x02,0xf0, 0x80, //COTP信息
+		0x32,            // S7协议ID
+		0x01,            // 类型，请求命令
+		0x00,0x00,       // 冗余识别
+		0x00,0x01,       // 序列号
+		0x00,0x0e,       // parameter长度（item.len*12+2，注意:根据传入读取item数量更改）
+		0x00,0x00,       // Data Length+4 ,写入时填写，读取时为0
+		0x04,            //  4 Read Var, 5 Write Var  ，注意更改
+		0x01,            // Item数量（item.len，注意:根据传入读取item数量更改）
+	];
+
     // ISO连接请求报文(也包含ISO头和COTP头)
     internal static byte[] ISO_CR = [
 		// TPKT (RFC1006 Header)
@@ -115,34 +144,5 @@ internal partial class SiemensHelper
             0x00, 0x00, 0xf0, 0x00,
             0x00, 0x01, 0x00, 0x01,
             0x01,0xE0        // PDU Length Requested  这里默认960字节
-	];
-
-    /// <summary>
-    /// S7连读写请求头(包含ISO头和COTP头)
-    /// </summary>
-    internal static readonly byte[] S7_MULRW_HEADER = [
-        0x03,0x00,
-        0x00,0x1f,       // 报文长度(item.len*12+19，注意:根据传入读取item数量更改)
-		0x02,0xf0, 0x80, //COTP信息
-		0x32,            // S7协议ID
-		0x01,            // 类型，请求命令
-		0x00,0x00,       // 冗余识别
-		0x00,0x01,       // 序列号
-		0x00,0x0e,       // parameter长度（item.len*12+2，注意:根据传入读取item数量更改）
-		0x00,0x00,       // Data Length+4 ,写入时填写，读取时为0
-		0x04,            //  4 Read Var, 5 Write Var  ，注意更改
-		0x01,            // Item数量（item.len，注意:根据传入读取item数量更改）
-	];
-
-    // S7变量多读Item
-    internal static readonly byte[] S7_MULRD_ITEM = [
-        0x12,            // Var 规范.
-		0x0a,            // 剩余的字节长度
-		0x10,            // Syntax ID
-		(byte)S7WordLength.Byte,  // 相关的数据长度代码（注意:根据传入的变量更改）
-		0x00,0x01,       // 数据长度						（注意:根据传入的变量更改）
-		0x00,0x00,       // DB编号							（注意:根据传入的变量更改）
-		0x84,            // 数据块类型					    （注意:根据传入的变量更改）
-		0x00,0x00,0x00   // 数据块偏移量			    （注意:根据传入的变量更改）
 	];
 }

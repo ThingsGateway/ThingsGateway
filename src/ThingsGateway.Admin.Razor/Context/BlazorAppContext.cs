@@ -21,8 +21,10 @@ namespace ThingsGateway.Admin.Razor;
 /// </summary>
 public class BlazorAppContext : IAsyncDisposable
 {
+    public IStringLocalizer TitleLocalizer;
+
     public BlazorAppContext(
-        ISysResourceService sysResourceService
+            ISysResourceService sysResourceService
         , IUserCenterService userCenterService,
         ISysUserService sysUserService
         )
@@ -31,6 +33,31 @@ public class BlazorAppContext : IAsyncDisposable
         UserCenterService = userCenterService;
         ResourceService = sysResourceService;
     }
+
+    /// <summary>
+    /// 全部菜单
+    /// </summary>
+    public IEnumerable<SysResource> AllMenus { get; private set; }
+
+    /// <summary>
+    /// 当前用户
+    /// </summary>
+    public SysUser CurrentUser { get; private set; }
+
+    /// <summary>
+    /// 用户个人菜单
+    /// </summary>
+    public IEnumerable<MenuItem> OwnMenuItems { get; private set; }
+
+    /// <summary>
+    /// 用户个人菜单
+    /// </summary>
+    public IEnumerable<SysResource> OwnMenus { get; private set; }
+
+    /// <summary>
+    /// 用户个人菜单，非树形
+    /// </summary>
+    public IEnumerable<MenuItem> OwnSameLevelMenuItems { get; private set; }
 
     /// <summary>
     /// 个人工作台
@@ -42,48 +69,14 @@ public class BlazorAppContext : IAsyncDisposable
     /// </summary>
     public IEnumerable<SysResource> UserWorkbenchOutputs { get; private set; }
 
-    /// <summary>
-    /// 全部菜单
-    /// </summary>
-    public IEnumerable<SysResource> AllMenus { get; private set; }
-
-    /// <summary>
-    /// 用户个人菜单
-    /// </summary>
-    public IEnumerable<SysResource> OwnMenus { get; private set; }
-
-    /// <summary>
-    /// 用户个人菜单
-    /// </summary>
-    public IEnumerable<MenuItem> OwnMenuItems { get; private set; }
-
-    /// <summary>
-    /// 用户个人菜单，非树形
-    /// </summary>
-    public IEnumerable<MenuItem> OwnSameLevelMenuItems { get; private set; }
-
-    /// <summary>
-    /// 当前用户
-    /// </summary>
-    public SysUser CurrentUser { get; private set; }
-
+    private ISysResourceService ResourceService { get; }
     private ISysUserService SysUserService { get; }
     private IUserCenterService UserCenterService { get; }
-    private ISysResourceService ResourceService { get; }
 
-    /// <summary>
-    /// 初始化获取当前用户
-    /// </summary>
-    /// <returns></returns>
-    public async Task InitUserAsync()
+    public ValueTask DisposeAsync()
     {
-        if (UserManager.UserId > 0)
-        {
-            CurrentUser = (await SysUserService.GetUserByIdAsync(UserManager.UserId))!;
-        }
+        return ValueTask.CompletedTask;
     }
-
-    public IStringLocalizer TitleLocalizer;
 
     /// <summary>
     /// 获取当前的个人菜单，传入当前url，根据url判断模块，失败时使用默认模块
@@ -129,6 +122,18 @@ public class BlazorAppContext : IAsyncDisposable
     }
 
     /// <summary>
+    /// 初始化获取当前用户
+    /// </summary>
+    /// <returns></returns>
+    public async Task InitUserAsync()
+    {
+        if (UserManager.UserId > 0)
+        {
+            CurrentUser = (await SysUserService.GetUserByIdAsync(UserManager.UserId))!;
+        }
+    }
+
+    /// <summary>
     /// 是否拥有按钮授权
     /// </summary>
     /// <param name="code"></param>
@@ -139,10 +144,5 @@ public class BlazorAppContext : IAsyncDisposable
             return true;
         var data = CurrentUser?.ButtonCodeList?.TryGetValue(url.StartsWith("/") ? url : $"/{url}", out var titles) == true && titles.Contains(code);
         return data;
-    }
-
-    public ValueTask DisposeAsync()
-    {
-        return ValueTask.CompletedTask;
     }
 }

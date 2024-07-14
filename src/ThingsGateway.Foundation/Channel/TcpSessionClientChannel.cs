@@ -18,19 +18,6 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
 
-    /// <inheritdoc/>
-    public EasyLock WaitLock { get; } = new EasyLock();
-
-    /// <summary>
-    /// 等待池
-    /// </summary>
-    public WaitHandlePool<MessageBase> WaitHandlePool { get; private set; } = new();
-
-    public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
-
-    /// <inheritdoc/>
-    public ConcurrentList<IProtocol> Collects { get; } = new();
-
     /// <summary>
     /// 接收到数据
     /// </summary>
@@ -40,34 +27,26 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     public ChannelTypeEnum ChannelType => ChannelTypeEnum.TcpService;
 
     /// <inheritdoc/>
-    public ChannelEventHandler Started { get; set; }
+    public ConcurrentList<IProtocol> Collects { get; } = new();
+
+    public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
 
     /// <inheritdoc/>
-    public ChannelEventHandler Stoped { get; set; }
+    public ChannelEventHandler Started { get; set; }
 
     /// <inheritdoc/>
     public ChannelEventHandler Starting { get; set; }
 
     /// <inheritdoc/>
-    public override string ToString()
-    {
-        return $"{IP}:{Port}:{Id}";
-    }
+    public ChannelEventHandler Stoped { get; set; }
+
+    /// <summary>
+    /// 等待池
+    /// </summary>
+    public WaitHandlePool<MessageBase> WaitHandlePool { get; private set; } = new();
 
     /// <inheritdoc/>
-    public Task ConnectAsync(int timeout, CancellationToken token) => throw new NotImplementedException();
-
-    /// <inheritdoc/>
-    public Task SetupAsync(TouchSocketConfig config)
-    {
-        return EasyTask.CompletedTask;
-    }
-
-    public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
-    {
-        if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
-            this.SetAdapter(singleStreamDataHandlingAdapter);
-    }
+    public EasyLock WaitLock { get; } = new EasyLock();
 
     public void Close(string msg)
     {
@@ -86,6 +65,27 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     }
 
     /// <inheritdoc/>
+    public Task ConnectAsync(int timeout, CancellationToken token) => throw new NotImplementedException();
+
+    public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
+    {
+        if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
+            this.SetAdapter(singleStreamDataHandlingAdapter);
+    }
+
+    /// <inheritdoc/>
+    public Task SetupAsync(TouchSocketConfig config)
+    {
+        return EasyTask.CompletedTask;
+    }
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $"{IP}:{Port}:{Id}";
+    }
+
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (DisposedValue) return;
@@ -93,13 +93,18 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
         base.Dispose(disposing);
     }
 
-    protected override async Task OnTcpReceived(ReceivedDataEventArgs e)
+    /// <inheritdoc/>
+    protected override async Task OnTcpClosed(ClosedEventArgs e)
     {
-        if (this.ChannelReceived != null)
-        {
-            await this.ChannelReceived.Invoke(this, e).ConfigureAwait(false);
-        }
-        await base.OnTcpReceived(e);
+        Logger?.Debug($"{ToString()} Closed{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
+        await base.OnTcpClosed(e).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnTcpClosing(ClosingEventArgs e)
+    {
+        Logger?.Debug($"{ToString()} Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
+        await base.OnTcpClosing(e).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -119,17 +124,12 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
         await base.OnTcpConnecting(e).ConfigureAwait(false);
     }
 
-    /// <inheritdoc/>
-    protected override async Task OnTcpClosing(ClosingEventArgs e)
+    protected override async Task OnTcpReceived(ReceivedDataEventArgs e)
     {
-        Logger?.Debug($"{ToString()} Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
-        await base.OnTcpClosing(e).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    protected override async Task OnTcpClosed(ClosedEventArgs e)
-    {
-        Logger?.Debug($"{ToString()} Closed{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
-        await base.OnTcpClosed(e).ConfigureAwait(false);
+        if (this.ChannelReceived != null)
+        {
+            await this.ChannelReceived.Invoke(this, e).ConfigureAwait(false);
+        }
+        await base.OnTcpReceived(e);
     }
 }

@@ -20,25 +20,25 @@ namespace ThingsGateway.Gateway.Application;
 public class VariablePageInput : BasePageInput
 {
     /// <inheritdoc/>
-    public string Name { get; set; }
+    public long? BusinessDeviceId { get; set; }
 
     /// <inheritdoc/>
     public long? DeviceId { get; set; }
 
     /// <inheritdoc/>
-    public string RegisterAddress { get; set; }
+    public string Name { get; set; }
 
     /// <inheritdoc/>
-    public long? BusinessDeviceId { get; set; }
+    public string RegisterAddress { get; set; }
 }
 
 public class VariableSearchInput : ITableSearchModel
 {
     /// <inheritdoc/>
-    public string Name { get; set; }
+    public long? DeviceId { get; set; }
 
     /// <inheritdoc/>
-    public long? DeviceId { get; set; }
+    public string Name { get; set; }
 
     /// <inheritdoc/>
     public string RegisterAddress { get; set; }

@@ -18,12 +18,12 @@ public interface IDtuClient
     public string DtuId { get; set; }
 
     /// <summary>
-    /// 心跳时间
-    /// </summary>
-    public int HeartbeatTime { get; set; }
-
-    /// <summary>
     /// 心跳内容
     /// </summary>
     public string HeartbeatHexString { get; set; }
+
+    /// <summary>
+    /// 心跳时间
+    /// </summary>
+    public int HeartbeatTime { get; set; }
 }

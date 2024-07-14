@@ -16,8 +16,8 @@ namespace ThingsGateway.Plugin.OpcUa;
 
 public class ApplicationMessageDlg : IApplicationMessageDlg
 {
-    private string message = string.Empty;
     private ILog _log;
+    private string message = string.Empty;
 
     public ApplicationMessageDlg(ILog log)
     {

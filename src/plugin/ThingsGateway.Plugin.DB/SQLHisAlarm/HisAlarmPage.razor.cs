@@ -12,8 +12,6 @@ using BootstrapBlazor.Components;
 
 using Microsoft.AspNetCore.Components;
 
-using ThingsGateway.Gateway.Application;
-
 namespace ThingsGateway.Plugin.SqlHisAlarm;
 
 /// <summary>
@@ -24,6 +22,7 @@ public partial class HisAlarmPage : IDriverUIBase
     [Parameter, EditorRequired]
     public object Driver { get; set; }
 
+    public SqlHisAlarm QuestDBProducer => (SqlHisAlarm)Driver;
     private HistoryAlarmPageInput CustomerSearchModel { get; set; } = new();
 
     private async Task<QueryData<HistoryAlarm>> OnQueryAsync(QueryPageOptions options)
@@ -31,6 +30,4 @@ public partial class HisAlarmPage : IDriverUIBase
         var query = await QuestDBProducer.QueryData(options);
         return query;
     }
-
-    public SqlHisAlarm QuestDBProducer => (SqlHisAlarm)Driver;
 }

@@ -22,10 +22,10 @@ public class ModbusMaster : CollectBase
     private ThingsGateway.Foundation.Modbus.ModbusMaster _plc;
 
     /// <inheritdoc/>
-    public override Type DriverDebugUIType => typeof(ThingsGateway.Debug.ModbusMaster);
+    public override CollectPropertyBase CollectProperties => _driverPropertys;
 
     /// <inheritdoc/>
-    public override CollectPropertyBase CollectProperties => _driverPropertys;
+    public override Type DriverDebugUIType => typeof(ThingsGateway.Debug.ModbusMaster);
 
     /// <inheritdoc/>
     public override Type DriverUIType
@@ -41,13 +41,6 @@ public class ModbusMaster : CollectBase
 
     /// <inheritdoc/>
     public override IProtocol Protocol => _plc;
-
-    protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
-    {
-        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
-        if (CurrentDevice.Channel.ChannelType == ChannelTypeEnum.TcpService)
-            await Task.Delay(6000).ConfigureAwait(false);//等待6秒连接
-    }
 
     /// <inheritdoc/>
     public override void Init(IChannel? channel = null)
@@ -68,6 +61,13 @@ public class ModbusMaster : CollectBase
             ModbusType = _driverPropertys.ModbusType,
             HeartbeatHexString = _driverPropertys.HeartbeatHexString,
         };
+    }
+
+    protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
+    {
+        await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
+        if (CurrentDevice.Channel.ChannelType == ChannelTypeEnum.TcpService)
+            await Task.Delay(6000).ConfigureAwait(false);//等待6秒连接
     }
 
     /// <inheritdoc/>

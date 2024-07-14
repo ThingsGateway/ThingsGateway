@@ -27,14 +27,14 @@ public class CsvDb<T> where T : new()
 {
     #region 属性
 
-    /// <summary>文件名</summary>
-    public String? FileName { get; set; }
+    /// <summary>实体比较器</summary>
+    public IEqualityComparer<T> Comparer { get; set; }
 
     /// <summary>文件编码，默认utf8</summary>
     public Encoding Encoding { get; set; } = Encoding.UTF8;
 
-    /// <summary>实体比较器</summary>
-    public IEqualityComparer<T> Comparer { get; set; }
+    /// <summary>文件名</summary>
+    public String? FileName { get; set; }
 
     #endregion 属性
 
@@ -51,35 +51,6 @@ public class CsvDb<T> where T : new()
 
     #region 方法
 
-    /// <summary>强行写入数据</summary>
-    /// <param name="models">要写入的数据</param>
-    /// <param name="append">是否附加在尾部</param>
-    public void Write(IEnumerable<T> models, Boolean append)
-    {
-        var file = GetFile();
-        file.EnsureDirectory(true);
-
-        using var fs = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
-        if (append) fs.Position = fs.Length;
-
-        using var csv = new CsvFile(fs, true) { Encoding = Encoding };
-
-        var pis = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-        // 首次写入文件头。需要正确处理协变逆变问题，兼容.NET2.0
-        if (fs.Position == 0) csv.WriteLine(pis.Select(e => e.Name as Object));
-
-        // 写入数据
-        foreach (var item in models)
-        {
-            if (item != null)
-                csv.WriteLine(pis.Select(e => item.GetValue(e)));
-        }
-
-        csv.TryDispose();
-        fs.SetLength(fs.Position);
-    }
-
     /// <summary>尾部插入数据，性能极好</summary>
     /// <param name="model"></param>
     public void Add(T model) => Add(new[] { model });
@@ -88,94 +59,8 @@ public class CsvDb<T> where T : new()
     /// <param name="models"></param>
     public void Add(IEnumerable<T> models) => Write(models, true);
 
-    /// <summary>删除数据，性能很差，全部读取剔除后保存</summary>
-    /// <param name="model"></param>
-    /// <returns></returns>
-    public Int32 Remove(T model) => Remove(new[] { model });
-
-    /// <summary>删除数据，性能很差，全部读取剔除后保存</summary>
-    /// <param name="models"></param>
-    /// <returns></returns>
-    public Int32 Remove(IEnumerable<T> models)
-    {
-        if (models == null || !models.Any()) return 0;
-        if (Comparer == null) throw new ArgumentNullException(nameof(Comparer));
-
-        return Remove(x => models.Any(y => Comparer.Equals(x, y)));
-    }
-
-    /// <summary>删除满足条件的数据，性能很差，全部读取剔除后保存</summary>
-    /// <param name="predicate"></param>
-    /// <returns></returns>
-    public Int32 Remove(Func<T, Boolean> predicate)
-    {
-        if (predicate == null) throw new ArgumentNullException(nameof(predicate));
-
-        lock (this)
-        {
-            var list = FindAll();
-            if (list.Count == 0) return 0;
-
-            var count = list.Count;
-            list = list.Where(x => !predicate(x)).ToList();
-
-            // 删除文件，重新写回去
-            if (list.Count < count)
-            {
-                // 如果没有了数据，只写头部
-                Write(list, false);
-            }
-
-            return count - list.Count;
-        }
-    }
-
     /// <summary>清空数据。只写头部</summary>
     public void Clear() => Write(Array.Empty<T>(), false);
-
-    /// <summary>更新指定数据行，性能很差，全部读取替换后保存</summary>
-    /// <param name="model"></param>
-    /// <returns></returns>
-    public Boolean Update(T model) => Set(model, false);
-
-    /// <summary>设置（添加或更新）指定数据行，性能很差，全部读取替换后保存</summary>
-    /// <param name="model"></param>
-    /// <returns></returns>
-    public Boolean Set(T model) => Set(model, true);
-
-    private Boolean Set(T model, Boolean add)
-    {
-        if (Comparer == null) throw new ArgumentNullException(nameof(Comparer));
-
-        lock (this)
-        {
-            var list = FindAll();
-            if (list.Count == 0) return false;
-
-            // 找到目标数据行，并替换
-            var flag = false;
-            for (var i = 0; i < list.Count; i++)
-            {
-                if (Comparer.Equals(model, list[i]))
-                {
-                    list[i] = model;
-                    flag = true;
-                    break;
-                }
-            }
-            if (!flag)
-            {
-                if (!add) return false;
-
-                list.Add(model);
-            }
-
-            // 重新写回去
-            Write(list, false);
-
-            return true;
-        }
-    }
 
     /// <summary>查找指定数据行</summary>
     /// <param name="model"></param>
@@ -273,6 +158,121 @@ public class CsvDb<T> where T : new()
 
             // 除了头部以外的所有数据行
             return lines.Length - 1;
+        }
+    }
+
+    /// <summary>删除数据，性能很差，全部读取剔除后保存</summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    public Int32 Remove(T model) => Remove(new[] { model });
+
+    /// <summary>删除数据，性能很差，全部读取剔除后保存</summary>
+    /// <param name="models"></param>
+    /// <returns></returns>
+    public Int32 Remove(IEnumerable<T> models)
+    {
+        if (models == null || !models.Any()) return 0;
+        if (Comparer == null) throw new ArgumentNullException(nameof(Comparer));
+
+        return Remove(x => models.Any(y => Comparer.Equals(x, y)));
+    }
+
+    /// <summary>删除满足条件的数据，性能很差，全部读取剔除后保存</summary>
+    /// <param name="predicate"></param>
+    /// <returns></returns>
+    public Int32 Remove(Func<T, Boolean> predicate)
+    {
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate));
+
+        lock (this)
+        {
+            var list = FindAll();
+            if (list.Count == 0) return 0;
+
+            var count = list.Count;
+            list = list.Where(x => !predicate(x)).ToList();
+
+            // 删除文件，重新写回去
+            if (list.Count < count)
+            {
+                // 如果没有了数据，只写头部
+                Write(list, false);
+            }
+
+            return count - list.Count;
+        }
+    }
+
+    /// <summary>设置（添加或更新）指定数据行，性能很差，全部读取替换后保存</summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    public Boolean Set(T model) => Set(model, true);
+
+    /// <summary>更新指定数据行，性能很差，全部读取替换后保存</summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    public Boolean Update(T model) => Set(model, false);
+
+    /// <summary>强行写入数据</summary>
+    /// <param name="models">要写入的数据</param>
+    /// <param name="append">是否附加在尾部</param>
+    public void Write(IEnumerable<T> models, Boolean append)
+    {
+        var file = GetFile();
+        file.EnsureDirectory(true);
+
+        using var fs = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+        if (append) fs.Position = fs.Length;
+
+        using var csv = new CsvFile(fs, true) { Encoding = Encoding };
+
+        var pis = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        // 首次写入文件头。需要正确处理协变逆变问题，兼容.NET2.0
+        if (fs.Position == 0) csv.WriteLine(pis.Select(e => e.Name as Object));
+
+        // 写入数据
+        foreach (var item in models)
+        {
+            if (item != null)
+                csv.WriteLine(pis.Select(e => item.GetValue(e)));
+        }
+
+        csv.TryDispose();
+        fs.SetLength(fs.Position);
+    }
+
+    private Boolean Set(T model, Boolean add)
+    {
+        if (Comparer == null) throw new ArgumentNullException(nameof(Comparer));
+
+        lock (this)
+        {
+            var list = FindAll();
+            if (list.Count == 0) return false;
+
+            // 找到目标数据行，并替换
+            var flag = false;
+            for (var i = 0; i < list.Count; i++)
+            {
+                if (Comparer.Equals(model, list[i]))
+                {
+                    list[i] = model;
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag)
+            {
+                if (!add) return false;
+
+                list.Add(model);
+            }
+
+            // 重新写回去
+            Write(list, false);
+
+            return true;
         }
     }
 

@@ -27,8 +27,8 @@ public partial class OpcUaMaster : IDisposable
     private ThingsGateway.Foundation.OpcUa.OpcUaMaster _plc;
     private string LogPath;
     private string RegisterAddress;
-    private string WriteValue;
     private bool ShowSubvariable;
+    private string WriteValue;
 
     /// <inheritdoc/>
     ~OpcUaMaster()
@@ -37,6 +37,9 @@ public partial class OpcUaMaster : IDisposable
     }
 
     private AdapterDebugComponent AdapterDebugComponent { get; set; }
+
+    [Inject]
+    private DialogService DialogService { get; set; }
 
     [Inject]
     private IStringLocalizer<OpcUaProperty> OpcUaPropertyLocalizer { get; set; }
@@ -61,6 +64,19 @@ public partial class OpcUaMaster : IDisposable
         _plc.LogEvent = (a, b, c, d) => LogMessage.Log((LogLevel)a, b, c, d);
         _plc.DataChangedHandler += (a) => LogMessage.Trace(a.ToJsonString());
         base.OnInitialized();
+    }
+
+    private async Task Add()
+    {
+        try
+        {
+            if (_plc.Connected)
+                await _plc.AddSubscriptionAsync(Guid.NewGuid().ToString(), [RegisterAddress]);
+        }
+        catch (Exception ex)
+        {
+            LogMessage?.LogWarning(ex);
+        }
     }
 
     private async Task Connect()
@@ -96,19 +112,6 @@ public partial class OpcUaMaster : IDisposable
         return _plc;
     }
 
-    private async Task Add()
-    {
-        try
-        {
-            if (_plc.Connected)
-                await _plc.AddSubscriptionAsync(Guid.NewGuid().ToString(), [RegisterAddress]);
-        }
-        catch (Exception ex)
-        {
-            LogMessage?.LogWarning(ex);
-        }
-    }
-
     private async Task ReadAsync()
     {
         if (_plc.Connected)
@@ -131,9 +134,6 @@ public partial class OpcUaMaster : IDisposable
         if (_plc.Connected)
             _plc.RemoveSubscription("");
     }
-
-    [Inject]
-    private DialogService DialogService { get; set; }
 
     private async Task ShowImport()
     {

@@ -19,21 +19,21 @@ public partial class SysResourceEdit
     public SysResource? Model { get; set; }
 
     [Parameter]
-    [NotNull]
-    public IEnumerable<SelectedItem>? ParementMenus { get; set; }
-
-    [Parameter]
     [EditorRequired]
     [NotNull]
     public long ModuleId { get; set; }
 
-    [Inject]
+    [Parameter]
     [NotNull]
-    private IStringLocalizer<MenuIconList> Localizer { get; set; }
+    public IEnumerable<SelectedItem>? ParementMenus { get; set; }
 
     [Inject]
     [NotNull]
     private DialogService DialogService { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IStringLocalizer<MenuIconList> Localizer { get; set; }
 
     private Task OnToggleIconDialog() => DialogService.Show(new DialogOption()
     {

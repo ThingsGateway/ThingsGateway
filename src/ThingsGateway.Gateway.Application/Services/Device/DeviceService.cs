@@ -36,9 +36,9 @@ namespace ThingsGateway.Gateway.Application;
 
 public class DeviceService : BaseService<Device>, IDeviceService
 {
+    protected readonly IChannelService _channelService;
     protected readonly IFileService _fileService;
     protected readonly IImportExportService _importExportService;
-    protected readonly IChannelService _channelService;
     protected readonly IPluginService _pluginService;
     private readonly IDispatchService<Device> _dispatchService;
 
@@ -53,23 +53,6 @@ public class DeviceService : BaseService<Device>, IDeviceService
         _pluginService = App.RootServices.GetRequiredService<IPluginService>();
         _importExportService = importExportService;
         _dispatchService = dispatchService;
-    }
-
-    /// <summary>
-    /// 保存设备
-    /// </summary>
-    /// <param name="input">设备</param>
-    /// <param name="type">保存类型</param>
-    [OperDesc("SaveDevice", localizerType: typeof(Device))]
-    public async Task<bool> SaveDeviceAsync(Device input, ItemChangedType type)
-    {
-        CheckInput(input);
-        if (await base.SaveAsync(input, type))
-        {
-            DeleteDeviceFromCache();
-            return true;
-        }
-        return false;
     }
 
     /// <inheritdoc/>
@@ -91,30 +74,6 @@ public class DeviceService : BaseService<Device>, IDeviceService
         else
         {
             return true;
-        }
-    }
-
-    [OperDesc("DeleteDevice", isRecordPar: false, localizerType: typeof(Device))]
-    public async Task<bool> DeleteDeviceAsync(IEnumerable<long> ids)
-    {
-        var variableService = App.RootServices.GetRequiredService<IVariableService>();
-
-        using var db = GetDB();
-        //事务
-        var result = await db.UseTranAsync(async () =>
-        {
-            await db.Deleteable<Device>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync();
-            await variableService.DeleteByDeviceIdAsync(ids, db);
-        });
-        if (result.IsSuccess)//如果成功了
-        {
-            DeleteDeviceFromCache();
-            return true;
-        }
-        else
-        {
-            //写日志
-            throw new(result.ErrorMessage, result.ErrorException);
         }
     }
 
@@ -163,17 +122,35 @@ public class DeviceService : BaseService<Device>, IDeviceService
         }
     }
 
+    [OperDesc("DeleteDevice", isRecordPar: false, localizerType: typeof(Device))]
+    public async Task<bool> DeleteDeviceAsync(IEnumerable<long> ids)
+    {
+        var variableService = App.RootServices.GetRequiredService<IVariableService>();
+
+        using var db = GetDB();
+        //事务
+        var result = await db.UseTranAsync(async () =>
+        {
+            await db.Deleteable<Device>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync();
+            await variableService.DeleteByDeviceIdAsync(ids, db);
+        });
+        if (result.IsSuccess)//如果成功了
+        {
+            DeleteDeviceFromCache();
+            return true;
+        }
+        else
+        {
+            //写日志
+            throw new(result.ErrorMessage, result.ErrorException);
+        }
+    }
+
     /// <inheritdoc />
     public void DeleteDeviceFromCache()
     {
         App.CacheService.Remove(ThingsGatewayCacheConst.Cache_Device);//删除设备缓存
         _dispatchService.Dispatch(new());
-    }
-
-    public Device? GetDeviceById(long id)
-    {
-        var data = GetAll();
-        return data?.FirstOrDefault(x => x.Id == id);
     }
 
     /// <summary>
@@ -193,25 +170,38 @@ public class DeviceService : BaseService<Device>, IDeviceService
         return devices;
     }
 
-    public long? GetIdByName(string name)
+    public async Task<List<DeviceRunTime>> GetBusinessDeviceRuntimeAsync(long? devId = null)
     {
-        var data = GetAll();
-        return data?.FirstOrDefault(x => x.Name == name)?.Id;
-    }
+        await Task.CompletedTask;
+        if (devId == null)
+        {
+            var devices = GetAll().Where(a => a.Enable && a.PluginType == PluginTypeEnum.Business);
+            var channels = _channelService.GetAll().Where(a => a.Enable);
+            devices = devices.Where(a => channels.Select(a => a.Id).Contains(a.ChannelId));
 
-    public string? GetNameById(long id)
-    {
-        var data = GetAll();
-        return data?.FirstOrDefault(x => x.Id == id)?.Name;
-    }
-
-    /// <summary>
-    /// 报表查询
-    /// </summary>
-    /// <param name="option">查询条件</param>
-    public Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType)
-    {
-        return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)).Where(a => a.PluginType == pluginType));
+            var runtime = devices.Adapt<List<DeviceRunTime>>();
+            runtime.ParallelForEach(device =>
+            {
+                device.Channel = channels.FirstOrDefault(a => a.Id == device.ChannelId);
+            });
+            return runtime;
+        }
+        else
+        {
+            var device = GetAll().FirstOrDefault(a => a.Enable && a.PluginType == PluginTypeEnum.Business && a.Id == devId);
+            if (device == null)
+            {
+                return new List<DeviceRunTime>() { };
+            }
+            var channels = _channelService.GetAll().Where(a => a.Enable);
+            if (!channels.Select(a => a.Id).Contains(device.ChannelId))
+            {
+                return new List<DeviceRunTime>() { };
+            }
+            var runtime = device.Adapt<DeviceRunTime>();
+            runtime.Channel = channels.FirstOrDefault(a => a.Id == runtime.ChannelId);
+            return new List<DeviceRunTime>() { runtime };
+        }
     }
 
     public async Task<List<CollectDeviceRunTime>> GetCollectDeviceRuntimeAsync(long? devId = null)
@@ -269,38 +259,48 @@ public class DeviceService : BaseService<Device>, IDeviceService
         }
     }
 
-    public async Task<List<DeviceRunTime>> GetBusinessDeviceRuntimeAsync(long? devId = null)
+    public Device? GetDeviceById(long id)
     {
-        await Task.CompletedTask;
-        if (devId == null)
-        {
-            var devices = GetAll().Where(a => a.Enable && a.PluginType == PluginTypeEnum.Business);
-            var channels = _channelService.GetAll().Where(a => a.Enable);
-            devices = devices.Where(a => channels.Select(a => a.Id).Contains(a.ChannelId));
+        var data = GetAll();
+        return data?.FirstOrDefault(x => x.Id == id);
+    }
 
-            var runtime = devices.Adapt<List<DeviceRunTime>>();
-            runtime.ParallelForEach(device =>
-            {
-                device.Channel = channels.FirstOrDefault(a => a.Id == device.ChannelId);
-            });
-            return runtime;
-        }
-        else
+    public long? GetIdByName(string name)
+    {
+        var data = GetAll();
+        return data?.FirstOrDefault(x => x.Name == name)?.Id;
+    }
+
+    public string? GetNameById(long id)
+    {
+        var data = GetAll();
+        return data?.FirstOrDefault(x => x.Id == id)?.Name;
+    }
+
+    /// <summary>
+    /// 报表查询
+    /// </summary>
+    /// <param name="option">查询条件</param>
+    public Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType)
+    {
+        return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)).Where(a => a.PluginType == pluginType));
+    }
+
+    /// <summary>
+    /// 保存设备
+    /// </summary>
+    /// <param name="input">设备</param>
+    /// <param name="type">保存类型</param>
+    [OperDesc("SaveDevice", localizerType: typeof(Device))]
+    public async Task<bool> SaveDeviceAsync(Device input, ItemChangedType type)
+    {
+        CheckInput(input);
+        if (await base.SaveAsync(input, type))
         {
-            var device = GetAll().FirstOrDefault(a => a.Enable && a.PluginType == PluginTypeEnum.Business && a.Id == devId);
-            if (device == null)
-            {
-                return new List<DeviceRunTime>() { };
-            }
-            var channels = _channelService.GetAll().Where(a => a.Enable);
-            if (!channels.Select(a => a.Id).Contains(device.ChannelId))
-            {
-                return new List<DeviceRunTime>() { };
-            }
-            var runtime = device.Adapt<DeviceRunTime>();
-            runtime.Channel = channels.FirstOrDefault(a => a.Id == runtime.ChannelId);
-            return new List<DeviceRunTime>() { runtime };
+            DeleteDeviceFromCache();
+            return true;
         }
+        return false;
     }
 
     private void CheckInput(Device input)
@@ -351,14 +351,6 @@ public class DeviceService : BaseService<Device>, IDeviceService
         //导出
         var data = await PageAsync(options, pluginType);
         return await ExportDeviceAsync(data.Items, pluginType);
-    }
-
-    private async Task<FileStreamResult> ExportDeviceAsync(IEnumerable<Device>? data, PluginTypeEnum pluginType)
-    {
-        string fileName;
-        Dictionary<string, object> sheets;
-        ExportCore(data, pluginType, out fileName, out sheets);
-        return await _importExportService.ExportAsync<Device>(sheets, fileName, false);
     }
 
     /// <summary>
@@ -522,6 +514,14 @@ public class DeviceService : BaseService<Device>, IDeviceService
 
             sheets.Add(item.Key, item.Value);
         }
+    }
+
+    private async Task<FileStreamResult> ExportDeviceAsync(IEnumerable<Device>? data, PluginTypeEnum pluginType)
+    {
+        string fileName;
+        Dictionary<string, object> sheets;
+        ExportCore(data, pluginType, out fileName, out sheets);
+        return await _importExportService.ExportAsync<Device>(sheets, fileName, false);
     }
 
     #endregion 导出
@@ -873,13 +873,13 @@ public class DeviceService : BaseService<Device>, IDeviceService
 public class DevicePageInput : BasePageInput
 {
     /// <inheritdoc/>
+    public long? ChannelId { get; set; }
+
+    /// <inheritdoc/>
     public string? Name { get; set; }
 
     /// <inheritdoc/>
     public string? PluginName { get; set; }
-
-    /// <inheritdoc/>
-    public long? ChannelId { get; set; }
 
     /// <inheritdoc/>
     public PluginTypeEnum PluginType { get; set; }

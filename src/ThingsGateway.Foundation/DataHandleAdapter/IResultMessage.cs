@@ -16,24 +16,24 @@ namespace ThingsGateway.Foundation;
 public interface IResultMessage : IOperResult, IRequestInfo
 {
     /// <summary>
-    /// 解析的字节信息
-    /// </summary>
-    byte[] Content { get; set; }
-
-    /// <summary>
-    /// 等待标识，对于并发协议，必须从协议中例如固定头部获取标识字段
-    /// </summary>
-    int Sign { get; set; }
-
-    /// <summary>
     /// 数据体长度
     /// </summary>
     int BodyLength { get; set; }
 
     /// <summary>
+    /// 解析的字节信息
+    /// </summary>
+    byte[] Content { get; set; }
+
+    /// <summary>
     /// 消息头的指令长度,不固定时返回0
     /// </summary>
     int HeaderLength { get; }
+
+    /// <summary>
+    /// 等待标识，对于并发协议，必须从协议中例如固定头部获取标识字段
+    /// </summary>
+    int Sign { get; set; }
 
     /// <summary>
     /// 当收到数据，由框架封送有效载荷数据。

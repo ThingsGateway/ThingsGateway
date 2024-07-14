@@ -20,19 +20,19 @@ public partial class DeviceEditComponent
 {
     private IEnumerable<IEditorItem> PluginPropertyEditorItems;
 
+    [Parameter]
+    public bool BatchEditEnable { get; set; }
+
     [NotNull]
     public IEnumerable<SelectedItem> Channels { get; set; }
+
+    [Parameter]
+    public Dictionary<long, string> DeviceDict { get; set; } = new();
 
     [Parameter]
     [EditorRequired]
     [NotNull]
     public Device? Model { get; set; }
-
-    [Parameter]
-    public bool BatchEditEnable { get; set; }
-
-    [Parameter]
-    public bool ValidateEnable { get; set; }
 
     [Parameter]
     public Func<Task> OnValidSubmit { get; set; }
@@ -52,16 +52,38 @@ public partial class DeviceEditComponent
     [NotNull]
     public Func<VirtualizeQueryOption, Device, Task<QueryData<SelectedItem>>> RedundantDevicesQuery { get; set; }
 
+    [Parameter]
+    public bool ValidateEnable { get; set; }
+
     [Inject]
-    [NotNull]
-    private IPluginService PluginService { get; set; }
+    private IStringLocalizer<Channel> ChannelLocalizer { get; set; }
 
     [Inject]
     [NotNull]
     private IChannelService ChannelService { get; set; }
 
+    [CascadingParameter]
+    private Func<Task>? OnCloseAsync { get; set; }
+
     [Inject]
-    private IStringLocalizer<Channel> ChannelLocalizer { get; set; }
+    [NotNull]
+    private IPluginService PluginService { get; set; }
+
+    public async Task ValidSubmit(EditContext editContext)
+    {
+        try
+        {
+            if (OnValidSubmit != null)
+                await OnValidSubmit.Invoke();
+            if (OnCloseAsync != null)
+                await OnCloseAsync();
+            await ToastService.Default();
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(ex.Message);
+        }
+    }
 
     protected override void OnParametersSet()
     {
@@ -112,33 +134,11 @@ public partial class DeviceEditComponent
         return Task.CompletedTask;
     }
 
-    [Parameter]
-    public Dictionary<long, string> DeviceDict { get; set; } = new();
-
     private async Task<QueryData<SelectedItem>> OnRedundantDevicesQuery(VirtualizeQueryOption option)
     {
         if (RedundantDevicesQuery != null)
             return await RedundantDevicesQuery.Invoke(option, Model);
         else
             return new();
-    }
-
-    [CascadingParameter]
-    private Func<Task>? OnCloseAsync { get; set; }
-
-    public async Task ValidSubmit(EditContext editContext)
-    {
-        try
-        {
-            if (OnValidSubmit != null)
-                await OnValidSubmit.Invoke();
-            if (OnCloseAsync != null)
-                await OnCloseAsync();
-            await ToastService.Default();
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(ex.Message);
-        }
     }
 }

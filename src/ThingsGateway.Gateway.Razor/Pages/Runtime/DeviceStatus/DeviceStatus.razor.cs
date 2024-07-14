@@ -17,12 +17,41 @@ public partial class DeviceStatus
     private DriverBase? _driverBaseItem { get; set; }
     private Device DeviceInput { get; set; } = new();
 
+    private async Task DeleteCacheAsync(DeviceRunTime deviceRunTime)
+    {
+        await DeviceHostedService.RestartChannelThreadAsync(deviceRunTime.Id, false, true);
+        await DeviceQuery.InvokeAsync();
+    }
+
+    private async Task DeviceRedundantThreadAsync(long deviceId)
+    {
+        await DeviceHostedService.DeviceRedundantThreadAsync(deviceId);
+        await DeviceQuery.InvokeAsync();
+    }
+
     private void DriverBaseOnClick(DriverBase item)
     {
         if (_driverBaseItem != item)
         {
             _driverBaseItem = item;
         }
+    }
+
+    private void PasueThread(long devId, bool? isStart)
+    {
+        DeviceHostedService.PasueThread(devId, isStart == true);
+    }
+
+    private async Task RestartAsync(long deviceId)
+    {
+        await DeviceHostedService.RestartChannelThreadAsync(deviceId, true);
+        await DeviceQuery.InvokeAsync();
+        _driverBaseItem = null;
+    }
+
+    private void SetLogEnable()
+    {
+        _driverBaseItem.ChannelThread.LogEnable = !_driverBaseItem.ChannelThread.LogEnable;
     }
 
     private async Task ShowDriverUI()
@@ -40,34 +69,5 @@ public partial class DeviceStatus
             {nameof(IDriverUIBase.Driver),_driverBaseItem},
         })
         });
-    }
-
-    private async Task DeviceRedundantThreadAsync(long deviceId)
-    {
-        await DeviceHostedService.DeviceRedundantThreadAsync(deviceId);
-        await DeviceQuery.InvokeAsync();
-    }
-
-    private async Task DeleteCacheAsync(DeviceRunTime deviceRunTime)
-    {
-        await DeviceHostedService.RestartChannelThreadAsync(deviceRunTime.Id, false, true);
-        await DeviceQuery.InvokeAsync();
-    }
-
-    private void SetLogEnable()
-    {
-        _driverBaseItem.ChannelThread.LogEnable = !_driverBaseItem.ChannelThread.LogEnable;
-    }
-
-    private void PasueThread(long devId, bool? isStart)
-    {
-        DeviceHostedService.PasueThread(devId, isStart == true);
-    }
-
-    private async Task RestartAsync(long deviceId)
-    {
-        await DeviceHostedService.RestartChannelThreadAsync(deviceId, true);
-        await DeviceQuery.InvokeAsync();
-        _driverBaseItem = null;
     }
 }

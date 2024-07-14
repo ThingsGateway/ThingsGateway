@@ -25,6 +25,59 @@ public static class StringExtension
     /// <param name="value"></param>
     /// <param name="objResult"></param>
     /// <returns></returns>
+    public static bool GetTypeStringValue(this Type propertyType, object value, out string? objResult)
+    {
+        if (propertyType == typeof(bool))
+            objResult = value.ToString();
+        else if (propertyType == typeof(char))
+            objResult = value.ToString();
+        else if (propertyType == typeof(byte))
+            objResult = value.ToString();
+        else if (propertyType == typeof(sbyte))
+            objResult = value.ToString();
+        else if (propertyType == typeof(short))
+            objResult = value.ToString();
+        else if (propertyType == typeof(ushort))
+            objResult = value.ToString();
+        else if (propertyType == typeof(int))
+            objResult = value.ToString();
+        else if (propertyType == typeof(uint))
+            objResult = value.ToString();
+        else if (propertyType == typeof(long))
+            objResult = value.ToString();
+        else if (propertyType == typeof(ulong))
+            objResult = value.ToString();
+        else if (propertyType == typeof(float))
+            objResult = value.ToString();
+        else if (propertyType == typeof(double))
+            objResult = value.ToString();
+        else if (propertyType == typeof(decimal))
+            objResult = value.ToString();
+        else if (propertyType == typeof(DateTime))
+            objResult = value.ToString();
+        else if (propertyType == typeof(DateTimeOffset))
+            objResult = value.ToString();
+        else if (propertyType == typeof(string))
+            objResult = value.ToString();
+        else if (propertyType == typeof(IPAddress))
+            objResult = value.ToString();
+        else if (propertyType.IsEnum)
+            objResult = value.ToString();
+        else
+        {
+            objResult = null;
+            return false;
+        }
+        return true;
+    }
+
+    /// <summary>
+    /// 根据<see cref="Type"/> 数据类型转化返回值类型，如果不成功，返回false
+    /// </summary>
+    /// <param name="propertyType"></param>
+    /// <param name="value"></param>
+    /// <param name="objResult"></param>
+    /// <returns></returns>
     public static bool GetTypeValue(this Type propertyType, string value, out object? objResult)
     {
         if (value == null)
@@ -106,59 +159,6 @@ public static class StringExtension
             objResult = IPAddress.Parse(value);
         else if (propertyType.IsEnum)
             objResult = Enum.Parse(propertyType, value);
-        else
-        {
-            objResult = null;
-            return false;
-        }
-        return true;
-    }
-
-    /// <summary>
-    /// 根据<see cref="Type"/> 数据类型转化返回值类型，如果不成功，返回false
-    /// </summary>
-    /// <param name="propertyType"></param>
-    /// <param name="value"></param>
-    /// <param name="objResult"></param>
-    /// <returns></returns>
-    public static bool GetTypeStringValue(this Type propertyType, object value, out string? objResult)
-    {
-        if (propertyType == typeof(bool))
-            objResult = value.ToString();
-        else if (propertyType == typeof(char))
-            objResult = value.ToString();
-        else if (propertyType == typeof(byte))
-            objResult = value.ToString();
-        else if (propertyType == typeof(sbyte))
-            objResult = value.ToString();
-        else if (propertyType == typeof(short))
-            objResult = value.ToString();
-        else if (propertyType == typeof(ushort))
-            objResult = value.ToString();
-        else if (propertyType == typeof(int))
-            objResult = value.ToString();
-        else if (propertyType == typeof(uint))
-            objResult = value.ToString();
-        else if (propertyType == typeof(long))
-            objResult = value.ToString();
-        else if (propertyType == typeof(ulong))
-            objResult = value.ToString();
-        else if (propertyType == typeof(float))
-            objResult = value.ToString();
-        else if (propertyType == typeof(double))
-            objResult = value.ToString();
-        else if (propertyType == typeof(decimal))
-            objResult = value.ToString();
-        else if (propertyType == typeof(DateTime))
-            objResult = value.ToString();
-        else if (propertyType == typeof(DateTimeOffset))
-            objResult = value.ToString();
-        else if (propertyType == typeof(string))
-            objResult = value.ToString();
-        else if (propertyType == typeof(IPAddress))
-            objResult = value.ToString();
-        else if (propertyType.IsEnum)
-            objResult = value.ToString();
         else
         {
             objResult = null;

@@ -14,11 +14,11 @@ namespace ThingsGateway.Admin.Razor;
 
 public partial class SysDictPage
 {
+    private SysDict? SearchModel { get; set; } = new();
+
     [Inject]
     [NotNull]
     private ISysDictService? SysDictService { get; set; }
-
-    private SysDict? SearchModel { get; set; } = new();
 
     #region 查询
 

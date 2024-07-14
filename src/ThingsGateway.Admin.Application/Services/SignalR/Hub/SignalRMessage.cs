@@ -18,12 +18,12 @@ namespace ThingsGateway.Admin.Application;
 public class SignalRMessage
 {
     /// <summary>
-    /// 消息等级
-    /// </summary>
-    public LogLevel LogLevel { get; set; }
-
-    /// <summary>
     /// 消息内容
     /// </summary>
     public string Data { get; set; }
+
+    /// <summary>
+    /// 消息等级
+    /// </summary>
+    public LogLevel LogLevel { get; set; }
 }

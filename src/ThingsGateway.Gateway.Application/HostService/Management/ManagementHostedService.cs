@@ -26,59 +26,25 @@ using TouchSocket.Sockets;
 
 namespace ThingsGateway.Gateway.Application;
 
-public class ManagementOptions
-{
-    /// <summary>
-    /// 获取或设置远程 URI，用于通信。
-    /// </summary>
-    public string PrimaryUri { get; set; }
-
-    /// <summary>
-    /// 获取或设置用于验证的令牌。
-    /// </summary>
-    public string VerifyToken { get; set; }
-
-    /// <summary>
-    /// 获取或设置心跳间隔。
-    /// </summary>
-    public int HeartbeatInterval { get; set; }
-
-    /// <summary>
-    /// 获取或设置允许的最大错误计数。
-    /// </summary>
-    public int MaxErrorCount { get; set; }
-
-    /// <summary>
-    /// 获取或设置冗余选项。
-    /// </summary>
-    public Redundancy Redundancy { get; set; }
-}
-
-public class Redundancy
-{
-    /// <summary>
-    /// 获取或设置是否启用冗余。
-    /// </summary>
-    public bool Enable { get; set; }
-
-    /// <summary>
-    /// 获取或设置是否为主设备。
-    /// </summary>
-    public bool IsPrimary { get; set; }
-
-    /// <summary>
-    /// 获取或设置是否为启动业务的设备。
-    /// </summary>
-    public bool IsStartBusinessDevice { get; set; }
-
-    /// <summary>
-    /// 获取或设置冗余数据同步间隔(ms)。
-    /// </summary>
-    public int SyncInterval { get; set; }
-}
-
 public class ManagementHostedService : BackgroundService
 {
+    internal ManagementOptions Options;
+
+    /// <summary>
+    /// 是否启动业务设备
+    /// </summary>
+    internal volatile bool StartBusinessDeviceEnable = true;
+
+    /// <summary>
+    /// 是否启动采集
+    /// </summary>
+    internal volatile bool StartCollectDeviceEnable = false;
+
+    /// <summary>
+    /// 启动锁
+    /// </summary>
+    internal EasyLock StartLock = new(true);
+
     private readonly ILogger _logger;
     private readonly IStringLocalizer<ManagementHostedService> Localizer;
 
@@ -90,27 +56,6 @@ public class ManagementHostedService : BackgroundService
     }
 
     #region worker服务
-
-    /// <summary>
-    /// 是否启动采集
-    /// </summary>
-    internal volatile bool StartCollectDeviceEnable = false;
-
-    private void StartAsync()
-    {
-        _ = HostedServiceUtil.CollectDeviceHostedService.StartAsync();
-    }
-
-    private void StopAsync()
-    {
-        //停止采集
-        _ = HostedServiceUtil.CollectDeviceHostedService.StopAsync(!StartBusinessDeviceEnable);
-    }
-
-    /// <summary>
-    /// 是否启动业务设备
-    /// </summary>
-    internal volatile bool StartBusinessDeviceEnable = true;
 
     /// <inheritdoc/>
     public override async Task StartAsync(CancellationToken cancellationToken)
@@ -125,13 +70,6 @@ public class ManagementHostedService : BackgroundService
         _logger?.LogInformation(Localizer["Stop"]);
         return base.StopAsync(cancellationToken);
     }
-
-    internal ManagementOptions Options;
-
-    /// <summary>
-    /// 启动锁
-    /// </summary>
-    internal EasyLock StartLock = new(true);
 
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -378,13 +316,34 @@ public class ManagementHostedService : BackgroundService
         }
     }
 
-    #endregion worker服务
-
-    #region
-
-    private void LogOut(TouchSocket.Core.LogLevel logLevel, object source, string message, Exception exception)
+    private TcpDmtpClient GetTcpDmtpClient(ManagementOptions options)
     {
-        _logger?.Log_Out(logLevel, source, message, exception);
+        var tcpDmtpClient = new TcpDmtpClient();
+        var config = new TouchSocketConfig()
+               .SetRemoteIPHost(options.PrimaryUri)
+               .SetAdapterOption(new AdapterOption() { MaxPackageSize = 1024 * 1024 * 1024 })
+               .SetDmtpOption(new DmtpOption() { VerifyToken = options.VerifyToken })
+               .ConfigureContainer(a =>
+               {
+                   a.AddEasyLogger(LogOut);
+                   a.AddRpcStore(store =>
+                   {
+                       store.RegisterServer<ReverseCallbackServer>();
+                   });
+               })
+               .ConfigurePlugins(a =>
+               {
+                   a.UseDmtpFileTransfer();//必须添加文件传输插件
+
+                   //a.Add<FilePlugin>();
+                   a.UseDmtpHeartbeat()//使用Dmtp心跳
+                   .SetTick(TimeSpan.FromMilliseconds(options.HeartbeatInterval))
+                   .SetMaxFailCount(options.MaxErrorCount);
+                   a.UseDmtpRpc();
+               });
+
+        tcpDmtpClient.Setup(config);
+        return tcpDmtpClient;
     }
 
     private TcpDmtpService GetTcpDmtpService(ManagementOptions options)
@@ -417,48 +376,88 @@ public class ManagementHostedService : BackgroundService
         return tcpDmtpService;
     }
 
-    private TcpDmtpClient GetTcpDmtpClient(ManagementOptions options)
+    private void LogOut(TouchSocket.Core.LogLevel logLevel, object source, string message, Exception exception)
     {
-        var tcpDmtpClient = new TcpDmtpClient();
-        var config = new TouchSocketConfig()
-               .SetRemoteIPHost(options.PrimaryUri)
-               .SetAdapterOption(new AdapterOption() { MaxPackageSize = 1024 * 1024 * 1024 })
-               .SetDmtpOption(new DmtpOption() { VerifyToken = options.VerifyToken })
-               .ConfigureContainer(a =>
-               {
-                   a.AddEasyLogger(LogOut);
-                   a.AddRpcStore(store =>
-                   {
-                       store.RegisterServer<ReverseCallbackServer>();
-                   });
-               })
-               .ConfigurePlugins(a =>
-               {
-                   a.UseDmtpFileTransfer();//必须添加文件传输插件
-
-                   //a.Add<FilePlugin>();
-                   a.UseDmtpHeartbeat()//使用Dmtp心跳
-                   .SetTick(TimeSpan.FromMilliseconds(options.HeartbeatInterval))
-                   .SetMaxFailCount(options.MaxErrorCount);
-                   a.UseDmtpRpc();
-               });
-
-        tcpDmtpClient.Setup(config);
-        return tcpDmtpClient;
+        _logger?.Log_Out(logLevel, source, message, exception);
     }
 
+    private void StartAsync()
+    {
+        _ = HostedServiceUtil.CollectDeviceHostedService.StartAsync();
+    }
+
+    private void StopAsync()
+    {
+        //停止采集
+        _ = HostedServiceUtil.CollectDeviceHostedService.StopAsync(!StartBusinessDeviceEnable);
+    }
+
+    #endregion worker服务
+
+    #region
     #endregion
+}
+
+public class ManagementOptions
+{
+    /// <summary>
+    /// 获取或设置心跳间隔。
+    /// </summary>
+    public int HeartbeatInterval { get; set; }
+
+    /// <summary>
+    /// 获取或设置允许的最大错误计数。
+    /// </summary>
+    public int MaxErrorCount { get; set; }
+
+    /// <summary>
+    /// 获取或设置远程 URI，用于通信。
+    /// </summary>
+    public string PrimaryUri { get; set; }
+
+    /// <summary>
+    /// 获取或设置冗余选项。
+    /// </summary>
+    public Redundancy Redundancy { get; set; }
+
+    /// <summary>
+    /// 获取或设置用于验证的令牌。
+    /// </summary>
+    public string VerifyToken { get; set; }
+}
+
+public class Redundancy
+{
+    /// <summary>
+    /// 获取或设置是否启用冗余。
+    /// </summary>
+    public bool Enable { get; set; }
+
+    /// <summary>
+    /// 获取或设置是否为主设备。
+    /// </summary>
+    public bool IsPrimary { get; set; }
+
+    /// <summary>
+    /// 获取或设置是否为启动业务的设备。
+    /// </summary>
+    public bool IsStartBusinessDevice { get; set; }
+
+    /// <summary>
+    /// 获取或设置冗余数据同步间隔(ms)。
+    /// </summary>
+    public int SyncInterval { get; set; }
 }
 
 internal class GatewayState
 {
     /// <summary>
-    /// 是否启动
-    /// </summary>
-    public bool IsStart { get; set; }
-
-    /// <summary>
     /// 是否主站
     /// </summary>
     public bool IsPrimary { get; set; }
+
+    /// <summary>
+    /// 是否启动
+    /// </summary>
+    public bool IsStart { get; set; }
 }

@@ -23,20 +23,6 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public abstract class DeviceHostedService : BackgroundService
 {
-    protected IDispatchService<DeviceRunTime> dispatchService;
-
-    public DeviceHostedService()
-    {
-        DeviceService = App.RootServices.GetRequiredService<IDeviceService>();
-        ChannelService = App.RootServices.GetRequiredService<IChannelService>();
-        PluginService = App.RootServices.GetRequiredService<IPluginService>();
-        Localizer = App.CreateLocalizerByType(typeof(DeviceHostedService))!;
-        dispatchService = App.RootServices.GetService<IDispatchService<DeviceRunTime>>();
-    }
-
-    private IStringLocalizer Localizer { get; }
-    protected ILogger _logger;
-
     /// <summary>
     /// 全部重启锁
     /// </summary>
@@ -47,9 +33,21 @@ public abstract class DeviceHostedService : BackgroundService
     /// </summary>
     protected readonly EasyLock singleRestartLock = new();
 
+    protected ILogger _logger;
     protected IChannelService ChannelService;
     protected IDeviceService DeviceService;
+    protected IDispatchService<DeviceRunTime> dispatchService;
+
     protected IPluginService PluginService;
+
+    public DeviceHostedService()
+    {
+        DeviceService = App.RootServices.GetRequiredService<IDeviceService>();
+        ChannelService = App.RootServices.GetRequiredService<IChannelService>();
+        PluginService = App.RootServices.GetRequiredService<IPluginService>();
+        Localizer = App.CreateLocalizerByType(typeof(DeviceHostedService))!;
+        dispatchService = App.RootServices.GetService<IDispatchService<DeviceRunTime>>();
+    }
 
     /// <summary>
     /// 插件列表
@@ -60,6 +58,8 @@ public abstract class DeviceHostedService : BackgroundService
     /// 设备子线程列表
     /// </summary>
     protected ConcurrentList<ChannelThread> ChannelThreads { get; set; } = new();
+
+    private IStringLocalizer Localizer { get; }
 
     #region 暂停设备
 
@@ -80,6 +80,30 @@ public abstract class DeviceHostedService : BackgroundService
     #endregion 暂停设备
 
     #region protected
+
+    /// <summary>
+    /// 在删除所有通道线程之前执行的操作
+    /// </summary>
+    /// <returns>异步任务</returns>
+    protected async Task BeforeRemoveAllChannelThreadAsync()
+    {
+        // 遍历通道线程列表，并在每个通道线程上执行 BeforeStopThread 方法
+        ChannelThreads.ParallelForEach((channelThread) =>
+        {
+            try
+            {
+                channelThread.BeforeStopThread();
+            }
+            catch (Exception ex)
+            {
+                // 记录执行 BeforeStopThread 方法时的异常信息
+                _logger?.LogError(ex, channelThread.ToString());
+            }
+        });
+
+        // 等待一小段时间，以确保 BeforeStopThread 方法有足够的时间执行
+        await Task.Delay(100).ConfigureAwait(false);
+    }
 
     /// <summary>
     /// 根据设备生成或获取通道线程管理器
@@ -173,30 +197,6 @@ public abstract class DeviceHostedService : BackgroundService
     }
 
     /// <summary>
-    /// 在删除所有通道线程之前执行的操作
-    /// </summary>
-    /// <returns>异步任务</returns>
-    protected async Task BeforeRemoveAllChannelThreadAsync()
-    {
-        // 遍历通道线程列表，并在每个通道线程上执行 BeforeStopThread 方法
-        ChannelThreads.ParallelForEach((channelThread) =>
-        {
-            try
-            {
-                channelThread.BeforeStopThread();
-            }
-            catch (Exception ex)
-            {
-                // 记录执行 BeforeStopThread 方法时的异常信息
-                _logger?.LogError(ex, channelThread.ToString());
-            }
-        });
-
-        // 等待一小段时间，以确保 BeforeStopThread 方法有足够的时间执行
-        await Task.Delay(100).ConfigureAwait(false);
-    }
-
-    /// <summary>
     /// 启动所有通道线程
     /// </summary>
     /// <returns>异步任务</returns>
@@ -244,15 +244,75 @@ public abstract class DeviceHostedService : BackgroundService
 
     #region 单个重启
 
-    private void SetRedundantDevice(DeviceRunTime? dev, Device? newDev)
+    /// <summary>
+    /// 更新设备线程,切换为冗余通道
+    /// </summary>
+    public async Task DeviceRedundantThreadAsync(long deviceId)
     {
-        dev.DevicePropertys = newDev.DevicePropertys;
-        dev.Description = newDev.Description;
-        dev.ChannelId = newDev.ChannelId;
-        dev.Enable = newDev.Enable;
-        dev.IntervalTime = newDev.IntervalTime;
-        dev.Name = newDev.Name;
-        dev.PluginName = newDev.PluginName;
+        try
+        {
+            await singleRestartLock.WaitAsync().ConfigureAwait(false);
+
+            if (!_stoppingToken.IsCancellationRequested)
+            {
+                var channelThread = ChannelThreads.FirstOrDefault(it => it.Has(deviceId))
+                    ?? throw new(Localizer["UpadteDeviceIdNotFound", deviceId]);
+                //这里先停止采集，操作会使线程取消，需要重新恢复线程
+                var dev = channelThread.GetDriver(deviceId).CurrentDevice;
+                await channelThread.RemoveDriverAsync(deviceId).ConfigureAwait(false);
+
+                if (dev.RedundantEnable)
+                {
+                    if (dev.RedundantType == RedundantTypeEnum.Standby)
+                    {
+                        var newDev = DeviceService.GetDeviceById(deviceId);
+                        if (dev == null)
+                        {
+                            _logger.LogWarning(Localizer["UpadteDeviceIdNotFound", deviceId]);
+                        }
+                        else
+                        {
+                            //冗余切换时，改变全部属性，但不改变变量信息
+                            SetRedundantDevice(dev, newDev);
+                            dev.RedundantType = RedundantTypeEnum.Primary;
+                            _logger?.LogInformation(Localizer["DeviceSwtichMain", dev.Name]);
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            var newDev = DeviceService.GetDeviceById(dev.RedundantDeviceId ?? 0);
+                            if (newDev == null)
+                            {
+                                _logger.LogWarning(Localizer["UpadteDeviceIdNotFound", deviceId]);
+                            }
+                            else
+                            {
+                                SetRedundantDevice(dev, newDev);
+                                dev.RedundantType = RedundantTypeEnum.Standby;
+                                _logger?.LogInformation(Localizer["DeviceSwtichBackup", dev.Name]);
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+
+                //初始化
+                DriverBase newDriverBase = dev.CreateDriver(PluginService);
+                var newChannelThread = GetChannelThread(newDriverBase);
+                if (newChannelThread != null)
+                {
+                    await StartChannelThreadAsync(newChannelThread).ConfigureAwait(false);
+                }
+            }
+        }
+        finally
+        {
+            singleRestartLock.Release();
+        }
     }
 
     /// <summary>
@@ -383,75 +443,15 @@ public abstract class DeviceHostedService : BackgroundService
         });
     }
 
-    /// <summary>
-    /// 更新设备线程,切换为冗余通道
-    /// </summary>
-    public async Task DeviceRedundantThreadAsync(long deviceId)
+    private void SetRedundantDevice(DeviceRunTime? dev, Device? newDev)
     {
-        try
-        {
-            await singleRestartLock.WaitAsync().ConfigureAwait(false);
-
-            if (!_stoppingToken.IsCancellationRequested)
-            {
-                var channelThread = ChannelThreads.FirstOrDefault(it => it.Has(deviceId))
-                    ?? throw new(Localizer["UpadteDeviceIdNotFound", deviceId]);
-                //这里先停止采集，操作会使线程取消，需要重新恢复线程
-                var dev = channelThread.GetDriver(deviceId).CurrentDevice;
-                await channelThread.RemoveDriverAsync(deviceId).ConfigureAwait(false);
-
-                if (dev.RedundantEnable)
-                {
-                    if (dev.RedundantType == RedundantTypeEnum.Standby)
-                    {
-                        var newDev = DeviceService.GetDeviceById(deviceId);
-                        if (dev == null)
-                        {
-                            _logger.LogWarning(Localizer["UpadteDeviceIdNotFound", deviceId]);
-                        }
-                        else
-                        {
-                            //冗余切换时，改变全部属性，但不改变变量信息
-                            SetRedundantDevice(dev, newDev);
-                            dev.RedundantType = RedundantTypeEnum.Primary;
-                            _logger?.LogInformation(Localizer["DeviceSwtichMain", dev.Name]);
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            var newDev = DeviceService.GetDeviceById(dev.RedundantDeviceId ?? 0);
-                            if (newDev == null)
-                            {
-                                _logger.LogWarning(Localizer["UpadteDeviceIdNotFound", deviceId]);
-                            }
-                            else
-                            {
-                                SetRedundantDevice(dev, newDev);
-                                dev.RedundantType = RedundantTypeEnum.Standby;
-                                _logger?.LogInformation(Localizer["DeviceSwtichBackup", dev.Name]);
-                            }
-                        }
-                        catch
-                        {
-                        }
-                    }
-                }
-
-                //初始化
-                DriverBase newDriverBase = dev.CreateDriver(PluginService);
-                var newChannelThread = GetChannelThread(newDriverBase);
-                if (newChannelThread != null)
-                {
-                    await StartChannelThreadAsync(newChannelThread).ConfigureAwait(false);
-                }
-            }
-        }
-        finally
-        {
-            singleRestartLock.Release();
-        }
+        dev.DevicePropertys = newDev.DevicePropertys;
+        dev.Description = newDev.Description;
+        dev.ChannelId = newDev.ChannelId;
+        dev.Enable = newDev.Enable;
+        dev.IntervalTime = newDev.IntervalTime;
+        dev.Name = newDev.Name;
+        dev.PluginName = newDev.PluginName;
     }
 
     #endregion 单个重启
@@ -468,18 +468,6 @@ public abstract class DeviceHostedService : BackgroundService
         var driverPlugin = PluginService.GetDriver(pluginName);
         driverPlugin?.SafeDispose();
         return driverPlugin?.DriverDebugUIType;
-    }
-
-    /// <summary>
-    /// GetDriverUI
-    /// </summary>
-    /// <param name="pluginName"></param>
-    /// <returns></returns>
-    public Type GetDriverUI(string pluginName)
-    {
-        var driverPlugin = PluginService.GetDriver(pluginName);
-        driverPlugin?.SafeDispose();
-        return driverPlugin?.DriverUIType;
     }
 
     /// <summary>
@@ -501,9 +489,26 @@ public abstract class DeviceHostedService : BackgroundService
         }
     }
 
+    /// <summary>
+    /// GetDriverUI
+    /// </summary>
+    /// <param name="pluginName"></param>
+    /// <returns></returns>
+    public Type GetDriverUI(string pluginName)
+    {
+        var driverPlugin = PluginService.GetDriver(pluginName);
+        driverPlugin?.SafeDispose();
+        return driverPlugin?.DriverUIType;
+    }
+
     #endregion 设备信息获取
 
     #region worker服务
+
+    /// <summary>
+    /// 线程检查时间，10分钟
+    /// </summary>
+    public const int CheckIntervalTime = 600;
 
     protected EasyLock _easyLock = new(false);
 
@@ -513,27 +518,24 @@ public abstract class DeviceHostedService : BackgroundService
     protected CancellationToken _stoppingToken;
 
     /// <summary>
-    /// 线程检查时间，10分钟
+    /// 已执行CreatThreads
     /// </summary>
-    public const int CheckIntervalTime = 600;
-
-    public event RestartEventHandler Stoping;
-
-    public event RestartEventHandler Stoped;
-
-    public event RestartEventHandler Started;
-
-    public event RestartEventHandler Starting;
+    protected volatile bool started = false;
 
     /// <summary>
     /// 已执行ProtectedStarted
     /// </summary>
     private volatile bool otherstarted = false;
 
-    /// <summary>
-    /// 已执行CreatThreads
-    /// </summary>
-    protected volatile bool started = false;
+    public event RestartEventHandler Started;
+
+    public event RestartEventHandler Starting;
+
+    public event RestartEventHandler Stoped;
+
+    public event RestartEventHandler Stoping;
+
+    protected abstract Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId);
 
     protected virtual async Task ProtectedStarted()
     {
@@ -575,8 +577,6 @@ public abstract class DeviceHostedService : BackgroundService
         if (Stoping != null)
             await Stoping.Invoke().ConfigureAwait(false);
     }
-
-    protected abstract Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId);
 
     protected virtual async Task WhileExecuteAsync(CancellationToken stoppingToken)
     {
@@ -641,6 +641,34 @@ public abstract class DeviceHostedService : BackgroundService
 
     private EasyLock publicRestartLock = new();
 
+    /// <summary>
+    /// 初始化，如果没有找到设备会创建
+    /// </summary>
+    public async Task CreatThreadsAsync()
+    {
+        try
+        {
+            await restartLock.WaitAsync().ConfigureAwait(false);
+            await singleRestartLock.WaitAsync().ConfigureAwait(false);
+            if (!started)
+            {
+                ChannelThreads.Clear();
+                await CreatAllChannelThreadsAsync().ConfigureAwait(false);
+                await ProtectedStarting().ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "CreatThreads");
+        }
+        finally
+        {
+            started = true;
+            singleRestartLock.Release();
+            restartLock.Release();
+        }
+    }
+
     public async Task RestartAsync(bool removeDevice = true)
     {
         try
@@ -680,34 +708,6 @@ public abstract class DeviceHostedService : BackgroundService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Start");
-        }
-        finally
-        {
-            started = true;
-            singleRestartLock.Release();
-            restartLock.Release();
-        }
-    }
-
-    /// <summary>
-    /// 初始化，如果没有找到设备会创建
-    /// </summary>
-    public async Task CreatThreadsAsync()
-    {
-        try
-        {
-            await restartLock.WaitAsync().ConfigureAwait(false);
-            await singleRestartLock.WaitAsync().ConfigureAwait(false);
-            if (!started)
-            {
-                ChannelThreads.Clear();
-                await CreatAllChannelThreadsAsync().ConfigureAwait(false);
-                await ProtectedStarting().ConfigureAwait(false);
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "CreatThreads");
         }
         finally
         {

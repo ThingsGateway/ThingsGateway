@@ -30,22 +30,16 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
     private ConnectionFactory _connectionFactory;
     private IModel _model;
 
-    protected override void VariableChange(VariableRunTime variableRunTime, VariableData variable)
+    protected override void AlarmChange(AlarmVariable alarmVariable)
     {
-        AddQueueVarModel(new(variable));
-        base.VariableChange(variableRunTime, variable);
+        AddQueueAlarmModel(new(alarmVariable));
+        base.AlarmChange(alarmVariable);
     }
 
     protected override void DeviceChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
     {
         AddQueueDevModel(new(deviceData));
         base.DeviceChange(deviceRunTime, deviceData);
-    }
-
-    protected override void AlarmChange(AlarmVariable alarmVariable)
-    {
-        AddQueueAlarmModel(new(alarmVariable));
-        base.AlarmChange(alarmVariable);
     }
 
     protected override ValueTask<OperResult> UpdateAlarmModel(IEnumerable<CacheDBItem<AlarmVariable>> item, CancellationToken cancellationToken)
@@ -63,13 +57,13 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    #region private
-
-    private ValueTask<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
+    protected override void VariableChange(VariableRunTime variableRunTime, VariableData variable)
     {
-        List<TopicJson> topicJsonList = GetAlarms(item);
-        return Update(topicJsonList, cancellationToken);
+        AddQueueVarModel(new(variable));
+        base.VariableChange(variableRunTime, variable);
     }
+
+    #region private
 
     private ValueTask<OperResult> Update(List<TopicJson> topicJsonList, CancellationToken cancellationToken)
     {
@@ -91,6 +85,12 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
         }
         OperResult operResult = OperResult.Success;
         return ValueTask.FromResult(operResult);
+    }
+
+    private ValueTask<OperResult> UpdateAlarmModel(IEnumerable<AlarmVariable> item, CancellationToken cancellationToken)
+    {
+        List<TopicJson> topicJsonList = GetAlarms(item);
+        return Update(topicJsonList, cancellationToken);
     }
 
     private ValueTask<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)

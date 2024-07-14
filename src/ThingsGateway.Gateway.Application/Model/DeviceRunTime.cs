@@ -29,6 +29,11 @@ public class DeviceRunTime : Device
     private string? _lastErrorMessage;
 
     /// <summary>
+    /// 设备活跃时间
+    /// </summary>
+    public DateTime? ActiveTime { get; internal set; } = DateTime.UnixEpoch.ToLocalTime();
+
+    /// <summary>
     /// 通道表
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore]
@@ -40,11 +45,6 @@ public class DeviceRunTime : Device
     /// 通道名称
     /// </summary>
     public string? ChannelName => Channel?.Name;
-
-    /// <summary>
-    /// 设备活跃时间
-    /// </summary>
-    public DateTime? ActiveTime { get; internal set; } = DateTime.UnixEpoch.ToLocalTime();
 
     /// <summary>
     /// 设备状态
@@ -72,13 +72,6 @@ public class DeviceRunTime : Device
     /// 设备变量数量
     /// </summary>
     public int DeviceVariableCount { get => VariableRunTimes == null ? 0 : VariableRunTimes.Count; }
-
-    /// <summary>
-    /// 设备变量
-    /// </summary>
-    [System.Text.Json.Serialization.JsonIgnore]
-    [Newtonsoft.Json.JsonIgnore]
-    public IReadOnlyDictionary<string, VariableRunTime>? VariableRunTimes { get; set; }
 
     /// <summary>
     /// 距上次成功时的读取失败次数,超过3次设备更新为离线，等于0时设备更新为在线
@@ -133,6 +126,13 @@ public class DeviceRunTime : Device
     /// 冗余状态
     /// </summary>
     public RedundantTypeEnum? RedundantType { get; set; } = RedundantTypeEnum.Primary;
+
+    /// <summary>
+    /// 设备变量
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    public IReadOnlyDictionary<string, VariableRunTime>? VariableRunTimes { get; set; }
 
     /// <summary>
     /// 传入设备的状态信息

@@ -12,6 +12,6 @@ namespace ThingsGateway.Foundation;
 
 public struct AdapterResult
 {
-    public FilterResult FilterResult { get; set; }
     public byte[] Content { get; set; }
+    public FilterResult FilterResult { get; set; }
 }

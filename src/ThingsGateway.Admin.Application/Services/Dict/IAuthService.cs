@@ -18,10 +18,49 @@ namespace ThingsGateway.Admin.Application;
 public interface ISysDictService
 {
     /// <summary>
+    /// 删除业务配置
+    /// </summary>
+    /// <param name="ids">待删除配置项的ID列表</param>
+    /// <returns>是否成功删除</returns>
+    Task<bool> DeleteDictAsync(IEnumerable<long> ids);
+
+    /// <summary>
+    /// 修改登录策略
+    /// </summary>
+    /// <param name="input">登录策略</param>
+    Task EditLoginPolicyAsync(LoginPolicy input);
+
+    /// <summary>
+    /// 修改页面策略
+    /// </summary>
+    /// <param name="input">页面策略</param>
+    Task EditPagePolicyAsync(PagePolicy input);
+
+    /// <summary>
+    /// 修改密码策略
+    /// </summary>
+    /// <param name="input">密码策略</param>
+    Task EditPasswordPolicyAsync(PasswordPolicy input);
+
+    /// <summary>
+    /// 修改网站设置
+    /// </summary>
+    /// <param name="input">网站设置</param>
+    Task EditWebsitePolicyAsync(WebsitePolicy input);
+
+    /// <summary>
     /// 获取系统配置
     /// </summary>
     /// <returns>系统配置信息</returns>
     Task<AppConfig> GetAppConfigAsync();
+
+    /// <summary>
+    /// 根据分类和名称获取系统字典项
+    /// </summary>
+    /// <param name="category">分类</param>
+    /// <param name="name">名称</param>
+    /// <returns>系统字典项</returns>
+    Task<SysDict> GetByKeyAsync(string category, string name);
 
     /// <summary>
     /// 从缓存/数据库获取系统配置列表
@@ -37,49 +76,10 @@ public interface ISysDictService
     Task<QueryData<SysDict>> PageAsync(QueryPageOptions option);
 
     /// <summary>
-    /// 根据分类和名称获取系统字典项
-    /// </summary>
-    /// <param name="category">分类</param>
-    /// <param name="name">名称</param>
-    /// <returns>系统字典项</returns>
-    Task<SysDict> GetByKeyAsync(string category, string name);
-
-    /// <summary>
     /// 修改业务配置
     /// </summary>
     /// <param name="input">配置项</param>
     /// <param name="type">保存类型</param>
     /// <returns>是否成功保存</returns>
     Task<bool> SaveDictAsync(SysDict input, ItemChangedType type);
-
-    /// <summary>
-    /// 删除业务配置
-    /// </summary>
-    /// <param name="ids">待删除配置项的ID列表</param>
-    /// <returns>是否成功删除</returns>
-    Task<bool> DeleteDictAsync(IEnumerable<long> ids);
-
-    /// <summary>
-    /// 修改登录策略
-    /// </summary>
-    /// <param name="input">登录策略</param>
-    Task EditLoginPolicyAsync(LoginPolicy input);
-
-    /// <summary>
-    /// 修改密码策略
-    /// </summary>
-    /// <param name="input">密码策略</param>
-    Task EditPasswordPolicyAsync(PasswordPolicy input);
-
-    /// <summary>
-    /// 修改页面策略
-    /// </summary>
-    /// <param name="input">页面策略</param>
-    Task EditPagePolicyAsync(PagePolicy input);
-
-    /// <summary>
-    /// 修改网站设置
-    /// </summary>
-    /// <param name="input">网站设置</param>
-    Task EditWebsitePolicyAsync(WebsitePolicy input);
 }

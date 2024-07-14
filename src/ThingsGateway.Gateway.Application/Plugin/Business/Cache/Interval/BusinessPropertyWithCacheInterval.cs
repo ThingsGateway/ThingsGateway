@@ -15,6 +15,12 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class BusinessPropertyWithCacheInterval : BusinessPropertyWithCache
 {
+    /// <summary>
+    /// 间隔上传时间
+    /// </summary>
+    [DynamicProperty]
+    public virtual int BusinessInterval { get; set; } = 1000;
+
     [DynamicProperty]
     public virtual bool IsAllVariable { get; set; } = false;
 
@@ -23,10 +29,4 @@ public class BusinessPropertyWithCacheInterval : BusinessPropertyWithCache
     /// </summary>
     [DynamicProperty]
     public virtual bool IsInterval { get; set; } = false;
-
-    /// <summary>
-    /// 间隔上传时间
-    /// </summary>
-    [DynamicProperty]
-    public virtual int BusinessInterval { get; set; } = 1000;
 }

@@ -38,6 +38,13 @@ public partial class ModbusMaster : ComponentBase, IDisposable
         GC.SuppressFinalize(this);
     }
 
+    private void OnConfimClick(ChannelData channelData)
+    {
+        ChannelData = channelData;
+        _plc = new ThingsGateway.Foundation.Modbus.ModbusMaster(channelData.Channel);
+        LogPath = channelData.Id.GetDebugLogPath();
+    }
+
     private async Task OnConnectClick(ChannelData channelData)
     {
         if (ChannelData?.Channel != null)
@@ -52,13 +59,6 @@ public partial class ModbusMaster : ComponentBase, IDisposable
             }
         }
         await InvokeAsync(StateHasChanged);
-    }
-
-    private void OnConfimClick(ChannelData channelData)
-    {
-        ChannelData = channelData;
-        _plc = new ThingsGateway.Foundation.Modbus.ModbusMaster(channelData.Channel);
-        LogPath = channelData.Id.GetDebugLogPath();
     }
 
     private async Task OnDisConnectClick()

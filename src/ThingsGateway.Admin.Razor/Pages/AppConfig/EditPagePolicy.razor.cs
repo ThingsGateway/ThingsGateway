@@ -22,9 +22,9 @@ public partial class EditPagePolicy
 
     [Parameter]
     [EditorRequired]
-    public IEnumerable<SelectedItem> SelectedItems { get; set; }
+    public Func<EditContext, Task> OnSave { [return: NotNull] get; set; }
 
     [Parameter]
     [EditorRequired]
-    public Func<EditContext, Task> OnSave { [return: NotNull] get; set; }
+    public IEnumerable<SelectedItem> SelectedItems { get; set; }
 }

@@ -14,7 +14,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 using MQTTnet.AspNetCore;
-using MQTTnet.Server;
 
 using ThingsGateway.Foundation;
 
@@ -27,21 +26,11 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// </summary>
 public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableData, DeviceData, AlarmVariable>
 {
-    private readonly MqttClientVariableProperty _variablePropertys = new();
     private readonly MqttServerProperty _driverPropertys = new();
-
+    private readonly MqttClientVariableProperty _variablePropertys = new();
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
     protected override BusinessPropertyWithCacheIntervalScript _businessPropertyWithCacheIntervalScript => _driverPropertys;
-
-    /// <inheritdoc/>
-    public override bool IsConnected() => _mqttServer?.IsStarted == true;
-
-    /// <inheritdoc/>
-    public override string ToString()
-    {
-        return $" {nameof(MqttServer)} IP:{_driverPropertys.IP} Port:{_driverPropertys.Port} WebSocket:{_driverPropertys.WebSocketPort}";
-    }
 
     public override void Init(IChannel? channel = null)
     {
@@ -65,6 +54,35 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         _mqttServer = _webHost.Services.GetRequiredService<MqttHostedServer>();
 
         #endregion 初始化
+    }
+
+    /// <inheritdoc/>
+    public override bool IsConnected() => _mqttServer?.IsStarted == true;
+
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        return $" {nameof(MqttServer)} IP:{_driverPropertys.IP} Port:{_driverPropertys.Port} WebSocket:{_driverPropertys.WebSocketPort}";
+    }
+
+    /// <inheritdoc/>
+    protected override async void Dispose(bool disposing)
+    {
+        if (_mqttServer != null)
+        {
+            _mqttServer.ClientDisconnectedAsync -= MqttServer_ClientDisconnectedAsync;
+            _mqttServer.ValidatingConnectionAsync -= MqttServer_ValidatingConnectionAsync;
+            _mqttServer.InterceptingPublishAsync -= MqttServer_InterceptingPublishAsync;
+            _mqttServer.LoadingRetainedMessageAsync -= MqttServer_LoadingRetainedMessageAsync;
+            _mqttServer?.SafeDispose();
+        }
+        if (_webHost != null)
+        {
+            await _webHost?.StopAsync();
+            _webHost?.SafeDispose();
+        }
+
+        base.Dispose(disposing);
     }
 
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
@@ -100,25 +118,5 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         await Update(cancellationToken).ConfigureAwait(false);
 
         await Delay(cancellationToken).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    protected override async void Dispose(bool disposing)
-    {
-        if (_mqttServer != null)
-        {
-            _mqttServer.ClientDisconnectedAsync -= MqttServer_ClientDisconnectedAsync;
-            _mqttServer.ValidatingConnectionAsync -= MqttServer_ValidatingConnectionAsync;
-            _mqttServer.InterceptingPublishAsync -= MqttServer_InterceptingPublishAsync;
-            _mqttServer.LoadingRetainedMessageAsync -= MqttServer_LoadingRetainedMessageAsync;
-            _mqttServer?.SafeDispose();
-        }
-        if (_webHost != null)
-        {
-            await _webHost?.StopAsync();
-            _webHost?.SafeDispose();
-        }
-
-        base.Dispose(disposing);
     }
 }

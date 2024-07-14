@@ -23,6 +23,19 @@ namespace ThingsGateway.Admin.Application;
 public class CultureController : Controller
 {
     /// <summary>
+    /// 重置文化方法
+    /// </summary>
+    /// <param name="redirectUri"></param>
+    /// <returns></returns>
+    [HttpGet]
+    public IActionResult ResetCulture(string redirectUri)
+    {
+        HttpContext.Response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
+
+        return LocalRedirect(redirectUri);
+    }
+
+    /// <summary>
     /// 设置文化方法
     /// </summary>
     /// <param name="culture"></param>
@@ -52,19 +65,6 @@ public class CultureController : Controller
             //CultureInfo.CurrentCulture = cultureInfo;
             //CultureInfo.CurrentUICulture = cultureInfo;
         }
-
-        return LocalRedirect(redirectUri);
-    }
-
-    /// <summary>
-    /// 重置文化方法
-    /// </summary>
-    /// <param name="redirectUri"></param>
-    /// <returns></returns>
-    [HttpGet]
-    public IActionResult ResetCulture(string redirectUri)
-    {
-        HttpContext.Response.Cookies.Delete(CookieRequestCultureProvider.DefaultCookieName);
 
         return LocalRedirect(redirectUri);
     }

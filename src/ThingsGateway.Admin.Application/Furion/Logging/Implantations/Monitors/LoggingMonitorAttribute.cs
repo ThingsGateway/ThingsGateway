@@ -56,11 +56,6 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IOr
     private const int FilterOrder = -2000;
 
     /// <summary>
-    /// 排序属性
-    /// </summary>
-    public int Order => FilterOrder;
-
-    /// <summary>
     /// 构造函数
     /// </summary>
     public LoggingMonitorAttribute()
@@ -78,26 +73,9 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IOr
     }
 
     /// <summary>
-    /// 日志标题
+    /// 序列化属性命名规则（返回值）
     /// </summary>
-    public string Title { get; set; } = "Logging Monitor";
-
-    /// <summary>
-    /// 是否记录返回值
-    /// </summary>
-    /// <remarks>bool 类型，默认输出</remarks>
-    public object WithReturnValue { get; set; } = null;
-
-    /// <summary>
-    /// 设置返回值阈值
-    /// </summary>
-    /// <remarks>配置返回值字符串阈值，超过这个阈值将截断，默认全量输出</remarks>
-    public object ReturnValueThreshold { get; set; } = null;
-
-    /// <summary>
-    /// 配置 Json 输出行为
-    /// </summary>
-    public object JsonBehavior { get; set; } = null;
+    public object ContractResolver { get; set; } = null;
 
     /// <summary>
     /// 配置序列化忽略的属性名称
@@ -108,6 +86,11 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IOr
     /// 配置序列化忽略的属性类型
     /// </summary>
     public Type[] IgnorePropertyTypes { get; set; }
+
+    /// <summary>
+    /// 配置 Json 输出行为
+    /// </summary>
+    public object JsonBehavior { get; set; } = null;
 
     /// <summary>
     /// JSON 输出格式化
@@ -122,9 +105,26 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IOr
     public object LongTypeConverter { get; set; } = null;
 
     /// <summary>
-    /// 序列化属性命名规则（返回值）
+    /// 排序属性
     /// </summary>
-    public object ContractResolver { get; set; } = null;
+    public int Order => FilterOrder;
+
+    /// <summary>
+    /// 设置返回值阈值
+    /// </summary>
+    /// <remarks>配置返回值字符串阈值，超过这个阈值将截断，默认全量输出</remarks>
+    public object ReturnValueThreshold { get; set; } = null;
+
+    /// <summary>
+    /// 日志标题
+    /// </summary>
+    public string Title { get; set; } = "Logging Monitor";
+
+    /// <summary>
+    /// 是否记录返回值
+    /// </summary>
+    /// <remarks>bool 类型，默认输出</remarks>
+    public object WithReturnValue { get; set; } = null;
 
     /// <summary>
     /// 配置信息
@@ -160,6 +160,66 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IOr
     public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
     {
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 处理泛型类型转字符串打印问题
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    private static string HandleGenericType(Type type)
+    {
+        if (type == null) return string.Empty;
+
+        var typeName = type.FullName ?? (!string.IsNullOrEmpty(type.Namespace) ? type.Namespace + "." : string.Empty) + type.Name;
+
+        // 处理泛型类型问题
+        if (type.IsConstructedGenericType)
+        {
+            var prefix = type.GetGenericArguments()
+                .Select(genericArg => HandleGenericType(genericArg))
+                .Aggregate((previous, current) => previous + ", " + current);
+
+            typeName = typeName.Split('`').First() + "<" + prefix + ">";
+        }
+
+        return typeName;
+    }
+
+    /// <summary>
+    /// 检查是否开启 JSON 格式化
+    /// </summary>
+    /// <param name="monitorMethod"></param>
+    /// <returns></returns>
+    private bool CheckIsSetJsonIndented(LoggingMonitorMethod monitorMethod)
+    {
+        return JsonIndented == null
+            ? (monitorMethod?.JsonIndented ?? Settings.JsonIndented)
+            : Convert.ToBoolean(JsonIndented);
+    }
+
+    /// <summary>
+    /// 检查是否开启 long 转 string
+    /// </summary>
+    /// <param name="monitorMethod"></param>
+    /// <returns></returns>
+    private bool CheckIsSetLongTypeConverter(LoggingMonitorMethod monitorMethod)
+    {
+        return LongTypeConverter == null
+            ? (monitorMethod?.LongTypeConverter ?? Settings.LongTypeConverter)
+            : Convert.ToBoolean(LongTypeConverter);
+    }
+
+    /// <summary>
+    /// 检查是否开启启用返回值
+    /// </summary>
+    /// <param name="monitorMethod"></param>
+    /// <returns></returns>
+    private bool CheckIsSetWithReturnValue(LoggingMonitorMethod monitorMethod)
+    {
+        return WithReturnValue == null
+            ? (monitorMethod?.WithReturnValue ?? Settings.WithReturnValue)
+            : Convert.ToBoolean(WithReturnValue);
     }
 
     /// <summary>
@@ -201,26 +261,51 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IOr
     }
 
     /// <summary>
-    /// 生成请求头日志模板
+    /// 生成异常信息日志模板
     /// </summary>
     /// <param name="writer"></param>
-    /// <param name="headers"></param>
+    /// <param name="exception"></param>
+    /// <param name="isValidationException">是否是验证异常</param>
     /// <returns></returns>
-    private void GenerateRequestHeadersTemplate(Utf8JsonWriter writer, IHeaderDictionary headers)
+    private void GenerateExcetpionInfomationTemplate(Utf8JsonWriter writer, Exception exception, bool isValidationException)
     {
-        if (!headers.Any()) return;
-
-        // 遍历请求头列表
-        writer.WritePropertyName("requestHeaders");
-        writer.WriteStartArray();
-        foreach (var (key, value) in headers)
+        if (exception == null)
         {
+            writer.WritePropertyName("exception");
+            writer.WriteNullValue();
+
+            writer.WritePropertyName("validation");
+            writer.WriteNullValue();
+            return;
+        }
+
+        // 处理不是验证异常情况
+        if (!isValidationException)
+        {
+            var exceptionTypeName = HandleGenericType(exception.GetType());
+
+            writer.WritePropertyName("exception");
             writer.WriteStartObject();
-            writer.WriteString("key", key);
-            writer.WriteString("value", value);
+            writer.WriteString("type", exceptionTypeName);
+            writer.WriteString("message", exception.Message);
+            writer.WriteString("stackTrace", exception.StackTrace.ToString());
+            writer.WriteEndObject();
+
+            writer.WritePropertyName("validation");
+            writer.WriteNullValue();
+        }
+        else
+        {
+            var friendlyException = exception as UserFriendlyException;
+
+            writer.WritePropertyName("exception");
+            writer.WriteNullValue();
+
+            writer.WritePropertyName("validation");
+            writer.WriteStartObject();
+            writer.WriteString("message", friendlyException.Message);
             writer.WriteEndObject();
         }
-        writer.WriteEndArray();
     }
 
     /// <summary>
@@ -344,6 +429,29 @@ writeEndObject: writer.WriteEndObject();
     }
 
     /// <summary>
+    /// 生成请求头日志模板
+    /// </summary>
+    /// <param name="writer"></param>
+    /// <param name="headers"></param>
+    /// <returns></returns>
+    private void GenerateRequestHeadersTemplate(Utf8JsonWriter writer, IHeaderDictionary headers)
+    {
+        if (!headers.Any()) return;
+
+        // 遍历请求头列表
+        writer.WritePropertyName("requestHeaders");
+        writer.WriteStartArray();
+        foreach (var (key, value) in headers)
+        {
+            writer.WriteStartObject();
+            writer.WriteString("key", key);
+            writer.WriteString("value", value);
+            writer.WriteEndObject();
+        }
+        writer.WriteEndArray();
+    }
+
+    /// <summary>
     /// 生成返回值信息日志模板
     /// </summary>
     /// <param name="writer"></param>
@@ -416,165 +524,6 @@ writeEndObject: writer.WriteEndObject();
     }
 
     /// <summary>
-    /// 生成异常信息日志模板
-    /// </summary>
-    /// <param name="writer"></param>
-    /// <param name="exception"></param>
-    /// <param name="isValidationException">是否是验证异常</param>
-    /// <returns></returns>
-    private void GenerateExcetpionInfomationTemplate(Utf8JsonWriter writer, Exception exception, bool isValidationException)
-    {
-        if (exception == null)
-        {
-            writer.WritePropertyName("exception");
-            writer.WriteNullValue();
-
-            writer.WritePropertyName("validation");
-            writer.WriteNullValue();
-            return;
-        }
-
-        // 处理不是验证异常情况
-        if (!isValidationException)
-        {
-            var exceptionTypeName = HandleGenericType(exception.GetType());
-
-            writer.WritePropertyName("exception");
-            writer.WriteStartObject();
-            writer.WriteString("type", exceptionTypeName);
-            writer.WriteString("message", exception.Message);
-            writer.WriteString("stackTrace", exception.StackTrace.ToString());
-            writer.WriteEndObject();
-
-            writer.WritePropertyName("validation");
-            writer.WriteNullValue();
-        }
-        else
-        {
-            var friendlyException = exception as UserFriendlyException;
-
-            writer.WritePropertyName("exception");
-            writer.WriteNullValue();
-
-            writer.WritePropertyName("validation");
-            writer.WriteStartObject();
-            writer.WriteString("message", friendlyException.Message);
-            writer.WriteEndObject();
-        }
-    }
-
-    /// <summary>
-    /// 序列化对象
-    /// </summary>
-    /// <param name="obj"></param>
-    /// <param name="monitorMethod"></param>
-    /// <param name="succeed"></param>
-    /// <returns></returns>
-    private string TrySerializeObject(object obj, LoggingMonitorMethod monitorMethod, out bool succeed)
-    {
-        // 排除 IQueryable<> 泛型
-        if (obj != null && obj.GetType().HasImplementedRawGeneric(typeof(IQueryable<>)))
-        {
-            succeed = true;
-            return "{}";
-        }
-
-        try
-        {
-            var contractResolver = GetContractResolver(ContractResolver, monitorMethod);
-
-            // 序列化默认配置
-            var jsonSerializerSettings = new JsonSerializerSettings()
-            {
-                // 解决属性忽略问题
-                ContractResolver = contractResolver == ContractResolverTypes.CamelCase
-                ? new CamelCasePropertyNamesContractResolverWithIgnoreProperties(GetIgnorePropertyNames(monitorMethod), GetIgnorePropertyTypes(monitorMethod))
-                : new DefaultContractResolverWithIgnoreProperties(GetIgnorePropertyNames(monitorMethod), GetIgnorePropertyTypes(monitorMethod)),
-
-                // 解决循环引用问题
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-
-                // 解决 DateTimeOffset 序列化/反序列化问题
-                MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
-                DateParseHandling = DateParseHandling.None,
-            };
-
-            if (CheckIsSetLongTypeConverter(monitorMethod))
-            {
-                // 解决 long 精度问题
-                jsonSerializerSettings.Converters.AddLongTypeConverters();
-            }
-
-            // 解决 JsonElement 序列化问题
-            jsonSerializerSettings.Converters.Add(new JsonElementConverter());
-
-            // 解决 DateTimeOffset 序列化/反序列化问题
-            if (obj is DateTimeOffset)
-            {
-                jsonSerializerSettings.Converters.Add(new IsoDateTimeConverter { DateTimeStyles = Globalization.DateTimeStyles.AssumeUniversal });
-            }
-
-            var result = Newtonsoft.Json.JsonConvert.SerializeObject(obj, jsonSerializerSettings);
-
-            succeed = true;
-            return result;
-        }
-        catch
-        {
-            succeed = true;
-            return "{}";
-        }
-    }
-
-    /// <summary>
-    /// 检查是否开启启用返回值
-    /// </summary>
-    /// <param name="monitorMethod"></param>
-    /// <returns></returns>
-    private bool CheckIsSetWithReturnValue(LoggingMonitorMethod monitorMethod)
-    {
-        return WithReturnValue == null
-            ? (monitorMethod?.WithReturnValue ?? Settings.WithReturnValue)
-            : Convert.ToBoolean(WithReturnValue);
-    }
-
-    /// <summary>
-    /// 检查是否开启 JSON 格式化
-    /// </summary>
-    /// <param name="monitorMethod"></param>
-    /// <returns></returns>
-    private bool CheckIsSetJsonIndented(LoggingMonitorMethod monitorMethod)
-    {
-        return JsonIndented == null
-            ? (monitorMethod?.JsonIndented ?? Settings.JsonIndented)
-            : Convert.ToBoolean(JsonIndented);
-    }
-
-    /// <summary>
-    /// 检查是否开启 long 转 string
-    /// </summary>
-    /// <param name="monitorMethod"></param>
-    /// <returns></returns>
-    private bool CheckIsSetLongTypeConverter(LoggingMonitorMethod monitorMethod)
-    {
-        return LongTypeConverter == null
-            ? (monitorMethod?.LongTypeConverter ?? Settings.LongTypeConverter)
-            : Convert.ToBoolean(LongTypeConverter);
-    }
-
-    /// <summary>
-    /// 获取返回值阈值
-    /// </summary>
-    /// <param name="monitorMethod"></param>
-    /// <returns></returns>
-    private int GetReturnValueThreshold(LoggingMonitorMethod monitorMethod)
-    {
-        return ReturnValueThreshold == null
-            ? (monitorMethod?.ReturnValueThreshold ?? Settings.ReturnValueThreshold)
-            : Convert.ToInt32(ReturnValueThreshold);
-    }
-
-    /// <summary>
     /// 获取 序列化属性命名规则
     /// </summary>
     /// <param name="contractResolver"></param>
@@ -616,27 +565,15 @@ writeEndObject: writer.WriteEndObject();
     }
 
     /// <summary>
-    /// 处理泛型类型转字符串打印问题
+    /// 获取返回值阈值
     /// </summary>
-    /// <param name="type"></param>
+    /// <param name="monitorMethod"></param>
     /// <returns></returns>
-    private static string HandleGenericType(Type type)
+    private int GetReturnValueThreshold(LoggingMonitorMethod monitorMethod)
     {
-        if (type == null) return string.Empty;
-
-        var typeName = type.FullName ?? (!string.IsNullOrEmpty(type.Namespace) ? type.Namespace + "." : string.Empty) + type.Name;
-
-        // 处理泛型类型问题
-        if (type.IsConstructedGenericType)
-        {
-            var prefix = type.GetGenericArguments()
-                .Select(genericArg => HandleGenericType(genericArg))
-                .Aggregate((previous, current) => previous + ", " + current);
-
-            typeName = typeName.Split('`').First() + "<" + prefix + ">";
-        }
-
-        return typeName;
+        return ReturnValueThreshold == null
+            ? (monitorMethod?.ReturnValueThreshold ?? Settings.ReturnValueThreshold)
+            : Convert.ToInt32(ReturnValueThreshold);
     }
 
     private async Task MonitorAsync(MethodInfo actionMethod, IDictionary<string, object> parameterValues, FilterContext context, ActionExecutionDelegate next)
@@ -916,6 +853,69 @@ writeEndObject: writer.WriteEndObject();
                 // 读取配置的日志级别并写入
                 logger.Log(Settings.BahLogLevel, finalMessage);
             }
+        }
+    }
+
+    /// <summary>
+    /// 序列化对象
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="monitorMethod"></param>
+    /// <param name="succeed"></param>
+    /// <returns></returns>
+    private string TrySerializeObject(object obj, LoggingMonitorMethod monitorMethod, out bool succeed)
+    {
+        // 排除 IQueryable<> 泛型
+        if (obj != null && obj.GetType().HasImplementedRawGeneric(typeof(IQueryable<>)))
+        {
+            succeed = true;
+            return "{}";
+        }
+
+        try
+        {
+            var contractResolver = GetContractResolver(ContractResolver, monitorMethod);
+
+            // 序列化默认配置
+            var jsonSerializerSettings = new JsonSerializerSettings()
+            {
+                // 解决属性忽略问题
+                ContractResolver = contractResolver == ContractResolverTypes.CamelCase
+                ? new CamelCasePropertyNamesContractResolverWithIgnoreProperties(GetIgnorePropertyNames(monitorMethod), GetIgnorePropertyTypes(monitorMethod))
+                : new DefaultContractResolverWithIgnoreProperties(GetIgnorePropertyNames(monitorMethod), GetIgnorePropertyTypes(monitorMethod)),
+
+                // 解决循环引用问题
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+
+                // 解决 DateTimeOffset 序列化/反序列化问题
+                MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+                DateParseHandling = DateParseHandling.None,
+            };
+
+            if (CheckIsSetLongTypeConverter(monitorMethod))
+            {
+                // 解决 long 精度问题
+                jsonSerializerSettings.Converters.AddLongTypeConverters();
+            }
+
+            // 解决 JsonElement 序列化问题
+            jsonSerializerSettings.Converters.Add(new JsonElementConverter());
+
+            // 解决 DateTimeOffset 序列化/反序列化问题
+            if (obj is DateTimeOffset)
+            {
+                jsonSerializerSettings.Converters.Add(new IsoDateTimeConverter { DateTimeStyles = Globalization.DateTimeStyles.AssumeUniversal });
+            }
+
+            var result = Newtonsoft.Json.JsonConvert.SerializeObject(obj, jsonSerializerSettings);
+
+            succeed = true;
+            return result;
+        }
+        catch
+        {
+            succeed = true;
+            return "{}";
         }
     }
 }

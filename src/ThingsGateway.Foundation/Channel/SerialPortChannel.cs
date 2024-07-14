@@ -15,25 +15,12 @@ namespace ThingsGateway.Foundation;
 /// <inheritdoc cref="SerialPortClient"/>
 public class SerialPortChannel : SerialPortClient, IClientChannel
 {
+    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
+
     public SerialPortChannel()
     {
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
-
-    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
-
-    /// <inheritdoc/>
-    public EasyLock WaitLock { get; } = new EasyLock();
-
-    public DataHandlingAdapter ReadOnlyDataHandlingAdapter => ProtectedDataHandlingAdapter;
-
-    /// <summary>
-    /// 等待池
-    /// </summary>
-    public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
-
-    /// <inheritdoc/>
-    public ConcurrentList<IProtocol> Collects { get; } = new();
 
     /// <summary>
     /// 接收到数据
@@ -44,30 +31,41 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     public ChannelTypeEnum ChannelType => ChannelTypeEnum.SerialPort;
 
     /// <inheritdoc/>
-    public ChannelEventHandler Started { get; set; }
+    public ConcurrentList<IProtocol> Collects { get; } = new();
+
+    public DataHandlingAdapter ReadOnlyDataHandlingAdapter => ProtectedDataHandlingAdapter;
 
     /// <inheritdoc/>
-    public ChannelEventHandler Stoped { get; set; }
+    public ChannelEventHandler Started { get; set; }
 
     /// <inheritdoc/>
     public ChannelEventHandler Starting { get; set; }
 
-    public override string ToString()
-    {
-        if (ProtectedMainSerialPort != null)
-            return $"{ProtectedMainSerialPort.PortName}[{ProtectedMainSerialPort.BaudRate},{ProtectedMainSerialPort.DataBits},{ProtectedMainSerialPort.StopBits},{ProtectedMainSerialPort.Parity}]";
-        return base.ToString();
-    }
+    /// <inheritdoc/>
+    public ChannelEventHandler Stoped { get; set; }
 
-    public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
-    {
-        if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
-            this.SetAdapter(singleStreamDataHandlingAdapter);
-    }
+    /// <summary>
+    /// 等待池
+    /// </summary>
+    public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
+
+    /// <inheritdoc/>
+    public EasyLock WaitLock { get; } = new EasyLock();
 
     public void Close(string msg)
     {
         this.CloseAsync(msg).ConfigureAwait(false);
+    }
+
+    public override async Task CloseAsync(string msg)
+    {
+        if (this.Online)
+        {
+            await base.CloseAsync(msg).ConfigureAwait(false);
+            Logger?.Debug($"{ToString()}  Closed{msg}");
+            if (Stoped != null)
+                await Stoped.Invoke(this).ConfigureAwait(false);
+        }
     }
 
     public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
@@ -98,15 +96,33 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
         }
     }
 
-    public override async Task CloseAsync(string msg)
+    public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
     {
-        if (this.Online)
-        {
-            await base.CloseAsync(msg).ConfigureAwait(false);
-            Logger?.Debug($"{ToString()}  Closed{msg}");
-            if (Stoped != null)
-                await Stoped.Invoke(this).ConfigureAwait(false);
-        }
+        if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
+            this.SetAdapter(singleStreamDataHandlingAdapter);
+    }
+
+    public override string ToString()
+    {
+        if (ProtectedMainSerialPort != null)
+            return $"{ProtectedMainSerialPort.PortName}[{ProtectedMainSerialPort.BaudRate},{ProtectedMainSerialPort.DataBits},{ProtectedMainSerialPort.StopBits},{ProtectedMainSerialPort.Parity}]";
+        return base.ToString();
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnSerialClosing(ClosingEventArgs e)
+    {
+        Logger?.Debug($"{ToString()} Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
+        await base.OnSerialClosing(e).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    protected override async Task OnSerialConnecting(ConnectingEventArgs e)
+    {
+        Logger?.Debug($"{ToString()}  Connecting{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
+        if (Starting != null)
+            await Starting.Invoke(this).ConfigureAwait(false);
+        await base.OnSerialConnecting(e).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -121,21 +137,5 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
             }
         }
         await base.OnSerialReceived(e).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    protected override async Task OnSerialConnecting(ConnectingEventArgs e)
-    {
-        Logger?.Debug($"{ToString()}  Connecting{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
-        if (Starting != null)
-            await Starting.Invoke(this).ConfigureAwait(false);
-        await base.OnSerialConnecting(e).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
-    protected override async Task OnSerialClosing(ClosingEventArgs e)
-    {
-        Logger?.Debug($"{ToString()} Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
-        await base.OnSerialClosing(e).ConfigureAwait(false);
     }
 }

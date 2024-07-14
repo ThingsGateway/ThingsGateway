@@ -17,15 +17,16 @@ namespace ThingsGateway.Gateway.Razor;
 
 public partial class SavePlugin
 {
-    [CascadingParameter]
-    private Func<Task>? OnCloseAsync { get; set; }
+    private ButtonUpload<IBrowserFile> ButtonUpload;
 
     [Parameter]
     [NotNull]
     public Func<PluginAddInput, Task>? OnSavePlugin { get; set; }
 
     private PluginAddInput Model { get; set; } = new();
-    private ButtonUpload<IBrowserFile> ButtonUpload;
+
+    [CascadingParameter]
+    private Func<Task>? OnCloseAsync { get; set; }
 
     private async Task OnSave(EditContext editContext)
     {

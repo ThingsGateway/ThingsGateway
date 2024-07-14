@@ -13,10 +13,10 @@ namespace ThingsGateway.Foundation;
 /// <inheritdoc/>
 public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcpService<TClient> where TClient : TcpSessionClientChannel, new()
 {
+    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
+
     /// <inheritdoc/>
     public ConcurrentList<IProtocol> Collects { get; } = new();
-
-    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
 
     /// <summary>
     /// 停止时是否发送ShutDown
@@ -83,11 +83,6 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
         }
     }
 
-    public override string ToString()
-    {
-        return Monitors.FirstOrDefault()?.Option?.IpHost.ToString();
-    }
-
     /// <inheritdoc/>
     public override async Task StopAsync()
     {
@@ -105,18 +100,9 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
         }
     }
 
-    /// <inheritdoc/>
-    protected override Task OnTcpConnected(TClient socketClient, ConnectedEventArgs e)
+    public override string ToString()
     {
-        Logger?.Debug($"{socketClient}  Connected");
-        return base.OnTcpConnected(socketClient, e);
-    }
-
-    /// <inheritdoc/>
-    protected override Task OnTcpConnecting(TClient socketClient, ConnectingEventArgs e)
-    {
-        Logger?.Debug($"{socketClient}  Connecting");
-        return base.OnTcpConnecting(socketClient, e);
+        return Monitors.FirstOrDefault()?.Option?.IpHost.ToString();
     }
 
     protected override Task OnTcpClosed(TClient socketClient, ClosedEventArgs e)
@@ -129,6 +115,20 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
     {
         Logger?.Debug($"{socketClient} Closing");
         return base.OnTcpClosing(socketClient, e);
+    }
+
+    /// <inheritdoc/>
+    protected override Task OnTcpConnected(TClient socketClient, ConnectedEventArgs e)
+    {
+        Logger?.Debug($"{socketClient}  Connected");
+        return base.OnTcpConnected(socketClient, e);
+    }
+
+    /// <inheritdoc/>
+    protected override Task OnTcpConnecting(TClient socketClient, ConnectingEventArgs e)
+    {
+        Logger?.Debug($"{socketClient}  Connecting");
+        return base.OnTcpConnecting(socketClient, e);
     }
 }
 
@@ -143,19 +143,34 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
     public ChannelReceivedEventHandler ChannelReceived { get; set; }
 
     /// <inheritdoc/>
-    public ChannelEventHandler Started { get; set; }
+    public ChannelTypeEnum ChannelType => ChannelTypeEnum.TcpService;
 
     /// <inheritdoc/>
-    public ChannelEventHandler Stoped { get; set; }
+    public bool Online => ServerState == ServerState.Running;
+
+    /// <inheritdoc/>
+    public ChannelEventHandler Started { get; set; }
 
     /// <inheritdoc/>
     public ChannelEventHandler Starting { get; set; }
 
     /// <inheritdoc/>
-    public ChannelTypeEnum ChannelType => ChannelTypeEnum.TcpService;
+    public ChannelEventHandler Stoped { get; set; }
 
-    /// <inheritdoc/>
-    public bool Online => ServerState == ServerState.Running;
+    public void Close(string msg)
+    {
+        this.CloseAsync(msg).ConfigureAwait(false);
+    }
+
+    public Task CloseAsync(string msg)
+    {
+        return this.StopAsync();
+    }
+
+    public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
+    {
+        this.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
+    }
 
     /// <inheritdoc/>
     public Task ConnectAsync(int timeout = 3000, CancellationToken token = default)
@@ -166,19 +181,17 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
         return this.StartAsync();
     }
 
-    public Task CloseAsync(string msg)
+    protected override TcpSessionClientChannel NewClient()
     {
-        return this.StopAsync();
+        return new TcpSessionClientChannel();
     }
 
-    public void Close(string msg)
+    /// <inheritdoc/>
+    protected override async Task OnTcpClosed(TcpSessionClientChannel socketClient, ClosedEventArgs e)
     {
-        this.CloseAsync(msg).ConfigureAwait(false);
-    }
-
-    public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
-    {
-        this.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
+        if (Stoped != null)
+            await Stoped.Invoke(socketClient).ConfigureAwait(false);
+        await base.OnTcpClosed(socketClient, e).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -198,14 +211,6 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
     }
 
     /// <inheritdoc/>
-    protected override async Task OnTcpClosed(TcpSessionClientChannel socketClient, ClosedEventArgs e)
-    {
-        if (Stoped != null)
-            await Stoped.Invoke(socketClient).ConfigureAwait(false);
-        await base.OnTcpClosed(socketClient, e).ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
     protected override async Task OnTcpReceived(TcpSessionClientChannel socketClient, ReceivedDataEventArgs e)
     {
         if (this.ChannelReceived != null)
@@ -217,10 +222,5 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
             }
         }
         await base.OnTcpReceived(socketClient, e).ConfigureAwait(false);
-    }
-
-    protected override TcpSessionClientChannel NewClient()
-    {
-        return new TcpSessionClientChannel();
     }
 }

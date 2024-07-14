@@ -13,4 +13,3 @@ global using Microsoft.Extensions.DependencyInjection;
 global using ThingsGateway.Admin.Application;
 global using ThingsGateway.Core;
 global using ThingsGateway.Foundation;
-global using ThingsGateway.Sql;

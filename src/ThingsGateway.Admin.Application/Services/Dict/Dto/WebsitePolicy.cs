@@ -15,13 +15,13 @@ namespace ThingsGateway.Admin.Application;
 public class WebsitePolicy
 {
     /// <summary>
-    /// 是否开放
-    /// </summary>
-    public bool WebStatus { get; set; }
-
-    /// <summary>
     /// 关闭提示
     /// </summary>
     [Required]
     public string CloseTip { get; set; }
+
+    /// <summary>
+    /// 是否开放
+    /// </summary>
+    public bool WebStatus { get; set; }
 }

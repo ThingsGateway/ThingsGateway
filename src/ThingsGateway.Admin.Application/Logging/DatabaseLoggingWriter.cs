@@ -28,6 +28,13 @@ namespace ThingsGateway.Admin.Application;
 public class DatabaseLoggingWriter : IDatabaseLoggingWriter
 {
     /// <summary>
+    /// 日志消息队列（线程安全）
+    /// </summary>
+    private readonly ConcurrentQueue<SysOperateLog> _operateLogMessageQueue = new();
+
+    private SqlSugarClient SqlSugarClient;
+
+    /// <summary>
     /// 此方法只会写入经由MVCFilter捕捉的方法日志，对于BlazorServer的内部操作，由<see cref="OperDescAttribute"/>执行
     /// </summary>
     /// <param name="logMsg"></param>
@@ -147,13 +154,6 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
         }
         return false;
     }
-
-    private SqlSugarClient SqlSugarClient;
-
-    /// <summary>
-    /// 日志消息队列（线程安全）
-    /// </summary>
-    private readonly ConcurrentQueue<SysOperateLog> _operateLogMessageQueue = new();
 
     /// <summary>
     /// 创建访问日志

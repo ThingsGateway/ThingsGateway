@@ -31,6 +31,11 @@ public class OpcUaMaster : IDisposable
     #region 属性，变量等
 
     /// <summary>
+    /// Raised after the client status change
+    /// </summary>
+    public LogEventHandler LogEvent;
+
+    /// <summary>
     /// 当前配置
     /// </summary>
     public OpcUaProperty OpcUaProperty;
@@ -60,12 +65,11 @@ public class OpcUaMaster : IDisposable
     private readonly ApplicationInstance m_application = new();
 
     private readonly ApplicationConfiguration m_configuration;
-    private SessionReconnectHandler m_reConnectHandler;
-    private EventHandler m_ReconnectComplete;
-    private EventHandler m_ReconnectStarting;
-    private EventHandler<KeepAliveEventArgs> m_KeepAliveComplete;
     private EventHandler<bool> m_ConnectComplete;
-
+    private EventHandler<KeepAliveEventArgs> m_KeepAliveComplete;
+    private EventHandler m_ReconnectComplete;
+    private SessionReconnectHandler m_reConnectHandler;
+    private EventHandler m_ReconnectStarting;
     private ISession m_session;
 
     private ComplexTypeSystem typeSystem;
@@ -163,6 +167,15 @@ public class OpcUaMaster : IDisposable
     }
 
     /// <summary>
+    /// Raised after successfully connecting to or disconnecing from a server.
+    /// </summary>
+    public event EventHandler<bool> ConnectComplete
+    {
+        add { m_ConnectComplete += value; }
+        remove { m_ConnectComplete -= value; }
+    }
+
+    /// <summary>
     /// 订阅
     /// </summary>
     public event DataChangedEventHandler DataChangedHandler;
@@ -177,15 +190,6 @@ public class OpcUaMaster : IDisposable
     }
 
     /// <summary>
-    /// Raised when a reconnect operation starts.
-    /// </summary>
-    public event EventHandler ReconnectStarting
-    {
-        add { m_ReconnectStarting += value; }
-        remove { m_ReconnectStarting -= value; }
-    }
-
-    /// <summary>
     /// Raised when a reconnect operation completes.
     /// </summary>
     public event EventHandler ReconnectComplete
@@ -195,18 +199,13 @@ public class OpcUaMaster : IDisposable
     }
 
     /// <summary>
-    /// Raised after successfully connecting to or disconnecing from a server.
+    /// Raised when a reconnect operation starts.
     /// </summary>
-    public event EventHandler<bool> ConnectComplete
+    public event EventHandler ReconnectStarting
     {
-        add { m_ConnectComplete += value; }
-        remove { m_ConnectComplete -= value; }
+        add { m_ReconnectStarting += value; }
+        remove { m_ReconnectStarting -= value; }
     }
-
-    /// <summary>
-    /// Raised after the client status change
-    /// </summary>
-    public LogEventHandler LogEvent;
 
     /// <summary>
     /// 配置信息
@@ -310,42 +309,6 @@ public class OpcUaMaster : IDisposable
     }
 
     /// <summary>
-    /// 移除所有的订阅消息
-    /// </summary>
-    public void RemoveAllSubscription()
-    {
-        lock (dic_subscriptions)
-        {
-            foreach (var item in dic_subscriptions)
-            {
-                item.Value.Delete(true);
-                m_session.RemoveSubscription(item.Value);
-                try { item.Value.Dispose(); } catch { }
-            }
-            dic_subscriptions.Clear();
-        }
-    }
-
-    /// <summary>
-    /// 移除订阅消息
-    /// </summary>
-    /// <param name="subscriptionName">组名称</param>
-    public void RemoveSubscription(string subscriptionName)
-    {
-        lock (dic_subscriptions)
-        {
-            if (dic_subscriptions.ContainsKey(subscriptionName))
-            {
-                // remove
-                dic_subscriptions[subscriptionName].Delete(true);
-                m_session.RemoveSubscription(dic_subscriptions[subscriptionName]);
-                try { dic_subscriptions[subscriptionName].Dispose(); } catch { }
-                dic_subscriptions.RemoveWhere(a => a.Key == subscriptionName);
-            }
-        }
-    }
-
-    /// <summary>
     /// 浏览一个节点的引用
     /// </summary>
     /// <param name="tag">节点值</param>
@@ -411,6 +374,42 @@ public class OpcUaMaster : IDisposable
     }
 
     /// <summary>
+    /// 连接到服务器
+    /// </summary>
+    public async Task ConnectAsync(CancellationToken cancellationToken)
+    {
+        await ConnectAsync(OpcUaProperty.OpcUrl, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// 断开连接。
+    /// </summary>
+    public void Disconnect()
+    {
+        PrivateDisconnect();
+        // disconnect any existing session.
+        if (m_session != null)
+        {
+            m_session = null;
+        }
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        Disconnect();
+    }
+
+    /// <summary>
+    /// 获取变量说明
+    /// </summary>
+    /// <returns></returns>
+    public string GetAddressDescription()
+    {
+        return "ItemId";
+    }
+
+    /// <summary>
     /// 读取历史数据
     /// </summary>
     /// <param name="tag">节点的索引</param>
@@ -463,102 +462,12 @@ public class OpcUaMaster : IDisposable
     }
 
     /// <summary>
-    /// 连接到服务器
-    /// </summary>
-    public async Task ConnectAsync(CancellationToken cancellationToken)
-    {
-        await ConnectAsync(OpcUaProperty.OpcUrl, cancellationToken).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// 断开连接。
-    /// </summary>
-    public void Disconnect()
-    {
-        PrivateDisconnect();
-        // disconnect any existing session.
-        if (m_session != null)
-        {
-            m_session = null;
-        }
-    }
-
-    /// <summary>
-    /// 获取变量说明
-    /// </summary>
-    /// <returns></returns>
-    public string GetAddressDescription()
-    {
-        return "ItemId";
-    }
-
-    /// <summary>
     /// 从服务器读取值
     /// </summary>
     public async Task<List<(string, DataValue, JToken)>> ReadJTokenValueAsync(string[] tags, CancellationToken cancellationToken = default)
     {
         var result = await ReadJTokenValueAsync(tags.Select(a => new NodeId(a)).ToArray(), cancellationToken).ConfigureAwait(false);
         return result;
-    }
-
-    /// <summary>
-    /// 异步写opc标签
-    /// </summary>
-    public async Task<Dictionary<string, Tuple<bool, string>>> WriteNodeAsync(Dictionary<string, JToken> writeInfoLists, CancellationToken cancellationToken = default)
-    {
-        Dictionary<string, Tuple<bool, string>> results = new();
-        try
-        {
-            WriteValueCollection valuesToWrite = new();
-            foreach (var item in writeInfoLists)
-            {
-                WriteValue valueToWrite = new()
-                {
-                    NodeId = new NodeId(item.Key),
-                    AttributeId = Attributes.Value,
-                };
-                var variableNode = await ReadNodeAsync(item.Key, false, cancellationToken).ConfigureAwait(false);
-                var dataValue = JsonUtils.Decode(
-                    m_session.MessageContext,
-                    variableNode.DataType,
-                    TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable),
-                    item.Value.CalculateActualValueRank(),
-                    item.Value
-                    );
-                valueToWrite.Value = dataValue;
-
-                valuesToWrite.Add(valueToWrite);
-            }
-
-            var result = await m_session.WriteAsync(
-     requestHeader: null,
-     nodesToWrite: valuesToWrite, cancellationToken).ConfigureAwait(false);
-
-            ClientBase.ValidateResponse(result.Results, valuesToWrite);
-            ClientBase.ValidateDiagnosticInfos(result.DiagnosticInfos, valuesToWrite);
-
-            var keys = writeInfoLists.Keys.ToList();
-            for (int i = 0; i < keys.Count; i++)
-            {
-                if (!StatusCode.IsGood(result.Results[i]))
-                    results.Add(keys[i], Tuple.Create(false, result.Results[i].ToString()));
-                else
-                {
-                    results.Add(keys[i], Tuple.Create(true, "Success"));
-                }
-            }
-
-            return results;
-        }
-        catch (Exception ex)
-        {
-            var keys = writeInfoLists.Keys.ToList();
-            foreach (var item in keys)
-            {
-                results.Add(item, Tuple.Create(false, ex.Message));
-            }
-            return results;
-        }
     }
 
     /// <summary>
@@ -786,10 +695,100 @@ public class OpcUaMaster : IDisposable
         return nodeAttribute.ToArray();
     }
 
-    /// <inheritdoc/>
-    public void Dispose()
+    /// <summary>
+    /// 移除所有的订阅消息
+    /// </summary>
+    public void RemoveAllSubscription()
     {
-        Disconnect();
+        lock (dic_subscriptions)
+        {
+            foreach (var item in dic_subscriptions)
+            {
+                item.Value.Delete(true);
+                m_session.RemoveSubscription(item.Value);
+                try { item.Value.Dispose(); } catch { }
+            }
+            dic_subscriptions.Clear();
+        }
+    }
+
+    /// <summary>
+    /// 移除订阅消息
+    /// </summary>
+    /// <param name="subscriptionName">组名称</param>
+    public void RemoveSubscription(string subscriptionName)
+    {
+        lock (dic_subscriptions)
+        {
+            if (dic_subscriptions.ContainsKey(subscriptionName))
+            {
+                // remove
+                dic_subscriptions[subscriptionName].Delete(true);
+                m_session.RemoveSubscription(dic_subscriptions[subscriptionName]);
+                try { dic_subscriptions[subscriptionName].Dispose(); } catch { }
+                dic_subscriptions.RemoveWhere(a => a.Key == subscriptionName);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 异步写opc标签
+    /// </summary>
+    public async Task<Dictionary<string, Tuple<bool, string>>> WriteNodeAsync(Dictionary<string, JToken> writeInfoLists, CancellationToken cancellationToken = default)
+    {
+        Dictionary<string, Tuple<bool, string>> results = new();
+        try
+        {
+            WriteValueCollection valuesToWrite = new();
+            foreach (var item in writeInfoLists)
+            {
+                WriteValue valueToWrite = new()
+                {
+                    NodeId = new NodeId(item.Key),
+                    AttributeId = Attributes.Value,
+                };
+                var variableNode = await ReadNodeAsync(item.Key, false, cancellationToken).ConfigureAwait(false);
+                var dataValue = JsonUtils.Decode(
+                    m_session.MessageContext,
+                    variableNode.DataType,
+                    TypeInfo.GetBuiltInType(variableNode.DataType, m_session.SystemContext.TypeTable),
+                    item.Value.CalculateActualValueRank(),
+                    item.Value
+                    );
+                valueToWrite.Value = dataValue;
+
+                valuesToWrite.Add(valueToWrite);
+            }
+
+            var result = await m_session.WriteAsync(
+     requestHeader: null,
+     nodesToWrite: valuesToWrite, cancellationToken).ConfigureAwait(false);
+
+            ClientBase.ValidateResponse(result.Results, valuesToWrite);
+            ClientBase.ValidateDiagnosticInfos(result.DiagnosticInfos, valuesToWrite);
+
+            var keys = writeInfoLists.Keys.ToList();
+            for (int i = 0; i < keys.Count; i++)
+            {
+                if (!StatusCode.IsGood(result.Results[i]))
+                    results.Add(keys[i], Tuple.Create(false, result.Results[i].ToString()));
+                else
+                {
+                    results.Add(keys[i], Tuple.Create(true, "Success"));
+                }
+            }
+
+            return results;
+        }
+        catch (Exception ex)
+        {
+            var keys = writeInfoLists.Keys.ToList();
+            foreach (var item in keys)
+            {
+                results.Add(item, Tuple.Create(false, ex.Message));
+            }
+            return results;
+        }
     }
 
     private void Callback(MonitoredItem monitoreditem, MonitoredItemNotificationEventArgs monitoredItemNotificationEventArgs)
@@ -959,6 +958,24 @@ public class OpcUaMaster : IDisposable
     /// <summary>
     /// 从服务器或缓存读取节点
     /// </summary>
+    private VariableNode ReadNode(string nodeIdStr, bool isOnlyServer = true)
+    {
+        if (!isOnlyServer)
+        {
+            if (_variableDicts.TryGetValue(nodeIdStr, out var value))
+            {
+                return value;
+            }
+        }
+        NodeId nodeToRead = new(nodeIdStr);
+        var node = (VariableNode)m_session.ReadNode(nodeToRead, NodeClass.Variable, false);
+        _variableDicts.AddOrUpdate(nodeIdStr, node);
+        return node;
+    }
+
+    /// <summary>
+    /// 从服务器或缓存读取节点
+    /// </summary>
     private async Task<VariableNode> ReadNodeAsync(string nodeIdStr, bool isOnlyServer = true, CancellationToken cancellationToken = default)
     {
         if (!isOnlyServer)
@@ -972,24 +989,6 @@ public class OpcUaMaster : IDisposable
         var node = (VariableNode)await m_session.ReadNodeAsync(nodeToRead, NodeClass.Variable, false, cancellationToken).ConfigureAwait(false);
         if (OpcUaProperty.LoadType)
             await typeSystem.LoadType(node.DataType).ConfigureAwait(false);
-        _variableDicts.AddOrUpdate(nodeIdStr, node);
-        return node;
-    }
-
-    /// <summary>
-    /// 从服务器或缓存读取节点
-    /// </summary>
-    private VariableNode ReadNode(string nodeIdStr, bool isOnlyServer = true)
-    {
-        if (!isOnlyServer)
-        {
-            if (_variableDicts.TryGetValue(nodeIdStr, out var value))
-            {
-                return value;
-            }
-        }
-        NodeId nodeToRead = new(nodeIdStr);
-        var node = (VariableNode)m_session.ReadNode(nodeToRead, NodeClass.Variable, false);
         _variableDicts.AddOrUpdate(nodeIdStr, node);
         return node;
     }
@@ -1034,6 +1033,26 @@ public class OpcUaMaster : IDisposable
             eventArgs.Accept = true;
         else
             throw new Exception(string.Format("Verification certificate failed with error code: {0}: {1}", eventArgs.Error.Code, eventArgs.Error.AdditionalInfo));
+    }
+
+    /// <summary>
+    /// Raises the connect complete event on the main GUI thread.
+    /// </summary>
+    private void DoConnectComplete(bool state)
+    {
+        m_ConnectComplete?.Invoke(this, state);
+    }
+
+    /// <summary>
+    /// Report the client status
+    /// </summary>
+    /// <param name="logLevel">Whether the status represents an error. </param>
+    /// <param name="exception">exception</param>
+    /// <param name="status">The status message.</param>
+    /// <param name="args">Arguments used to format the status message.</param>
+    private void Log(byte logLevel, Exception exception, string status, params object[] args)
+    {
+        LogEvent?.Invoke(logLevel, this, string.Format(status, args), exception);
     }
 
     private async Task<Dictionary<string, List<OPCNodeAttribute>>> ReadNoteAttributeAsync(BrowseDescriptionCollection nodesToBrowse, ReadValueIdCollection nodesToRead, CancellationToken cancellationToken)
@@ -1149,18 +1168,6 @@ public class OpcUaMaster : IDisposable
         }
     }
 
-    /// <summary>
-    /// Report the client status
-    /// </summary>
-    /// <param name="logLevel">Whether the status represents an error. </param>
-    /// <param name="exception">exception</param>
-    /// <param name="status">The status message.</param>
-    /// <param name="args">Arguments used to format the status message.</param>
-    private void Log(byte logLevel, Exception exception, string status, params object[] args)
-    {
-        LogEvent?.Invoke(logLevel, this, string.Format(status, args), exception);
-    }
-
     private void Session_KeepAlive(ISession session, KeepAliveEventArgs e)
     {
         lock (checkLock)
@@ -1196,14 +1203,6 @@ public class OpcUaMaster : IDisposable
             // raise any additional notifications.
             m_KeepAliveComplete?.Invoke(this, e);
         }
-    }
-
-    /// <summary>
-    /// Raises the connect complete event on the main GUI thread.
-    /// </summary>
-    private void DoConnectComplete(bool state)
-    {
-        m_ConnectComplete?.Invoke(this, state);
     }
 
     #endregion 私有方法

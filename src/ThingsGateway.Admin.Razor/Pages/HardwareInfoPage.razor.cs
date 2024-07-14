@@ -17,21 +17,20 @@ namespace ThingsGateway.Admin.Razor;
 
 public partial class HardwareInfoPage : IDisposable
 {
+    public bool Disposed { get; set; }
     private HardwareInfoService HardwareInfoService { get; set; }
+
+    public void Dispose()
+    {
+        Disposed = true;
+        GC.SuppressFinalize(this);
+    }
 
     protected override void OnInitialized()
     {
         HardwareInfoService = (HardwareInfoService)App.RootServices.GetServices<IHostedService>().FirstOrDefault(it => it is HardwareInfoService)!;
         _ = RunTimerAsync();
         base.OnInitialized();
-    }
-
-    public bool Disposed { get; set; }
-
-    public void Dispose()
-    {
-        Disposed = true;
-        GC.SuppressFinalize(this);
     }
 
     private async Task RunTimerAsync()
@@ -55,13 +54,14 @@ public partial class HardwareInfoPage : IDisposable
 
     #region 曲线
 
-    private bool chartInit { get; set; }
-    private Chart LineChart { get; set; }
     private ChartDataSource? ChartDataSource { get; set; }
+    private bool chartInit { get; set; }
 
     [Inject]
     [NotNull]
     private IStringLocalizer<HisHardwareInfo> HisHardwareInfoLocalizer { get; set; }
+
+    private Chart LineChart { get; set; }
 
     private async Task<ChartDataSource> OnInit()
     {

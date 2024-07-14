@@ -15,11 +15,6 @@ namespace ThingsGateway.Foundation.Modbus;
 /// </summary>
 public class ModbusRtuSend : ISendMessage
 {
-    public int Sign { get; set; }
-
-    public int MaxLength => 300;
-
-    public ModbusAddress ModbusAddress { get; }
     private bool Read;
 
     public ModbusRtuSend(ModbusAddress modbusAddress, ushort sign, bool read)
@@ -28,6 +23,10 @@ public class ModbusRtuSend : ISendMessage
         ModbusAddress = modbusAddress;
         Read = read;
     }
+
+    public int MaxLength => 300;
+    public ModbusAddress ModbusAddress { get; }
+    public int Sign { get; set; }
 
     public void Build<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock
     {

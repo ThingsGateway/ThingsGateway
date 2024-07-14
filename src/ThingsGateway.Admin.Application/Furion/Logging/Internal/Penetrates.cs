@@ -13,8 +13,6 @@ using Microsoft.Extensions.Logging;
 
 using System.Text;
 
-using ThingsGateway.Admin.Application;
-
 namespace ThingsGateway.Logging;
 
 /// <summary>
@@ -98,6 +96,25 @@ internal static class Penetrates
     }
 
     /// <summary>
+    /// 获取日志级别短名称
+    /// </summary>
+    /// <param name="logLevel">日志级别</param>
+    /// <returns></returns>
+    internal static string GetLogLevelString(LogLevel logLevel)
+    {
+        return logLevel switch
+        {
+            LogLevel.Trace => "trce",
+            LogLevel.Debug => "dbug",
+            LogLevel.Information => "info",
+            LogLevel.Warning => "warn",
+            LogLevel.Error => "fail",
+            LogLevel.Critical => "crit",
+            _ => throw new ArgumentOutOfRangeException(nameof(logLevel)),
+        };
+    }
+
+    /// <summary>
     /// 输出标准日志消息
     /// </summary>
     /// <param name="logMsg"></param>
@@ -163,38 +180,6 @@ internal static class Penetrates
     }
 
     /// <summary>
-    /// 将日志内容进行对齐
-    /// </summary>
-    /// <param name="message"></param>
-    /// <returns></returns>
-    private static string PadLeftAlign(string message)
-    {
-        var newMessage = string.Join(Environment.NewLine, message.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.None)
-                    .Select(line => string.Empty.PadLeft(6, ' ') + line));
-
-        return newMessage;
-    }
-
-    /// <summary>
-    /// 获取日志级别短名称
-    /// </summary>
-    /// <param name="logLevel">日志级别</param>
-    /// <returns></returns>
-    internal static string GetLogLevelString(LogLevel logLevel)
-    {
-        return logLevel switch
-        {
-            LogLevel.Trace => "trce",
-            LogLevel.Debug => "dbug",
-            LogLevel.Information => "info",
-            LogLevel.Warning => "warn",
-            LogLevel.Error => "fail",
-            LogLevel.Critical => "crit",
-            _ => throw new ArgumentOutOfRangeException(nameof(logLevel)),
-        };
-    }
-
-    /// <summary>
     /// 设置日志上下文
     /// </summary>
     /// <param name="scopeProvider"></param>
@@ -245,6 +230,27 @@ internal static class Penetrates
     }
 
     /// <summary>
+    /// 输出控制台背景颜色 UniCode 码
+    /// </summary>
+    /// <param name="color"></param>
+    /// <returns></returns>
+    private static string GetBackgroundColorEscapeCode(ConsoleColor color)
+    {
+        return color switch
+        {
+            ConsoleColor.Black => "\u001b[40m",
+            ConsoleColor.Red => "\u001b[41m",
+            ConsoleColor.Green => "\u001b[42m",
+            ConsoleColor.Yellow => "\u001b[43m",
+            ConsoleColor.Blue => "\u001b[44m",
+            ConsoleColor.Magenta => "\u001b[45m",
+            ConsoleColor.Cyan => "\u001b[46m",
+            ConsoleColor.White => "\u001b[47m",
+            _ => "\u001b[49m",
+        };
+    }
+
+    /// <summary>
     /// 输出控制台字体颜色 UniCode 码
     /// </summary>
     /// <param name="color"></param>
@@ -273,27 +279,6 @@ internal static class Penetrates
     }
 
     /// <summary>
-    /// 输出控制台背景颜色 UniCode 码
-    /// </summary>
-    /// <param name="color"></param>
-    /// <returns></returns>
-    private static string GetBackgroundColorEscapeCode(ConsoleColor color)
-    {
-        return color switch
-        {
-            ConsoleColor.Black => "\u001b[40m",
-            ConsoleColor.Red => "\u001b[41m",
-            ConsoleColor.Green => "\u001b[42m",
-            ConsoleColor.Yellow => "\u001b[43m",
-            ConsoleColor.Blue => "\u001b[44m",
-            ConsoleColor.Magenta => "\u001b[45m",
-            ConsoleColor.Cyan => "\u001b[46m",
-            ConsoleColor.White => "\u001b[47m",
-            _ => "\u001b[49m",
-        };
-    }
-
-    /// <summary>
     /// 获取控制台日志级别对应的颜色
     /// </summary>
     /// <param name="logLevel"></param>
@@ -316,5 +301,18 @@ internal static class Penetrates
             LogLevel.Trace => new ConsoleColors(ConsoleColor.Gray, ConsoleColor.Black),
             _ => new ConsoleColors(null, background: null),
         };
+    }
+
+    /// <summary>
+    /// 将日志内容进行对齐
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    private static string PadLeftAlign(string message)
+    {
+        var newMessage = string.Join(Environment.NewLine, message.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.None)
+                    .Select(line => string.Empty.PadLeft(6, ' ') + line));
+
+        return newMessage;
     }
 }

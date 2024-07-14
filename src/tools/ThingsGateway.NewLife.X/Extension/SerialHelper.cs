@@ -23,6 +23,21 @@ public static class SerialHelper
 {
     private static readonly ConcurrentDictionary<PropertyInfo, String> _cache = new();
 
+    /// <summary>依据 Json/Xml 字典生成实体模型类</summary>
+    /// <param name="dic"></param>
+    /// <param name="className"></param>
+    /// <returns></returns>
+    public static String? BuildModelClass(this IDictionary<String, Object?> dic, String className = "Model")
+    {
+        if (dic == null || dic.Count == 0) return null;
+
+        var sb = new StringBuilder();
+
+        BuildModel(sb, dic, className, null);
+
+        return sb.ToString();
+    }
+
     /// <summary>获取序列化名称</summary>
     /// <param name="pi"></param>
     /// <returns></returns>
@@ -45,21 +60,6 @@ public static class SerialHelper
         _cache.TryAdd(pi, name);
 
         return name;
-    }
-
-    /// <summary>依据 Json/Xml 字典生成实体模型类</summary>
-    /// <param name="dic"></param>
-    /// <param name="className"></param>
-    /// <returns></returns>
-    public static String? BuildModelClass(this IDictionary<String, Object?> dic, String className = "Model")
-    {
-        if (dic == null || dic.Count == 0) return null;
-
-        var sb = new StringBuilder();
-
-        BuildModel(sb, dic, className, null);
-
-        return sb.ToString();
     }
 
     private static void BuildModel(StringBuilder sb, IDictionary<String, Object?> dic, String className, String? prefix)

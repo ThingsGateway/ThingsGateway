@@ -12,8 +12,6 @@ using BootstrapBlazor.Components;
 
 using SqlSugar;
 
-using ThingsGateway.Sql;
-
 namespace ThingsGateway.Admin.Application;
 
 /// <summary>
@@ -31,53 +29,11 @@ public class SysOperateLog
     public LogCateGoryEnum Category { get; set; }
 
     /// <summary>
-    /// 日志名称
-    ///</summary>
-    [SugarColumn(ColumnDescription = "日志名称", Length = 200)]
-    [AutoGenerateColumn(Order = 2, Filterable = true, Sortable = true)]
-    public string Name { get; set; }
-
-    /// <summary>
     /// 类名称
     ///</summary>
     [SugarColumn(ColumnDescription = "类名称", Length = 200)]
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
     public string ClassName { get; set; }
-
-    /// <summary>
-    /// 方法名称
-    ///</summary>
-    [SugarColumn(ColumnDescription = "方法名称", Length = 200)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string MethodName { get; set; }
-
-    /// <summary>
-    /// 请求参数
-    ///</summary>
-    [SugarColumn(ColumnDescription = "请求参数", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
-    [AutoGenerateColumn(ShowTips = true, Filterable = true, Sortable = true)]
-    public string? ParamJson { get; set; }
-
-    /// <summary>
-    /// 请求方式
-    ///</summary>
-    [SugarColumn(ColumnDescription = "请求方式", Length = 200, IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? ReqMethod { get; set; }
-
-    /// <summary>
-    /// 请求地址
-    ///</summary>
-    [SugarColumn(ColumnDescription = "请求地址", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public string? ReqUrl { get; set; }
-
-    /// <summary>
-    /// 返回结果
-    ///</summary>
-    [SugarColumn(ColumnDescription = "返回结果", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
-    [AutoGenerateColumn(ShowTips = true, Filterable = true, Sortable = true)]
-    public string? ResultJson { get; set; }
 
     /// <summary>
     /// 具体消息
@@ -92,6 +48,20 @@ public class SysOperateLog
     [SugarColumn(ColumnDescription = "执行状态", Length = 200)]
     [AutoGenerateColumn(Filterable = true, Sortable = true)]
     public bool ExeStatus { get; set; }
+
+    /// <summary>
+    /// 方法名称
+    ///</summary>
+    [SugarColumn(ColumnDescription = "方法名称", Length = 200)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public string MethodName { get; set; }
+
+    /// <summary>
+    /// 日志名称
+    ///</summary>
+    [SugarColumn(ColumnDescription = "日志名称", Length = 200)]
+    [AutoGenerateColumn(Order = 2, Filterable = true, Sortable = true)]
+    public string Name { get; set; }
 
     /// <summary>
     /// 操作账号
@@ -127,6 +97,34 @@ public class SysOperateLog
     [SugarColumn(ColumnDescription = "操作时间")]
     [AutoGenerateColumn(Visible = true, DefaultSort = true, Sortable = true, DefaultSortOrder = SortOrder.Desc)]
     public DateTime OpTime { get; set; }
+
+    /// <summary>
+    /// 请求参数
+    ///</summary>
+    [SugarColumn(ColumnDescription = "请求参数", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
+    [AutoGenerateColumn(ShowTips = true, Filterable = true, Sortable = true)]
+    public string? ParamJson { get; set; }
+
+    /// <summary>
+    /// 请求方式
+    ///</summary>
+    [SugarColumn(ColumnDescription = "请求方式", Length = 200, IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public string? ReqMethod { get; set; }
+
+    /// <summary>
+    /// 请求地址
+    ///</summary>
+    [SugarColumn(ColumnDescription = "请求地址", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public string? ReqUrl { get; set; }
+
+    /// <summary>
+    /// 返回结果
+    ///</summary>
+    [SugarColumn(ColumnDescription = "返回结果", ColumnDataType = StaticConfig.CodeFirst_BigString, IsNullable = true)]
+    [AutoGenerateColumn(ShowTips = true, Filterable = true, Sortable = true)]
+    public string? ResultJson { get; set; }
 
     /// <summary>
     /// 验证Id

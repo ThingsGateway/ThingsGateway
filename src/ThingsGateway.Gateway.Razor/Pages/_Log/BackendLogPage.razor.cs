@@ -21,8 +21,8 @@ public partial class BackendLogPage
 
     #region 曲线
 
-    private Chart LineChart { get; set; }
     private ChartDataSource? ChartDataSource { get; set; }
+    private Chart LineChart { get; set; }
 
     private async Task<ChartDataSource> OnInit()
     {

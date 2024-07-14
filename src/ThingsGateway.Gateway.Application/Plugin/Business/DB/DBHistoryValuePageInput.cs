@@ -13,14 +13,14 @@ namespace ThingsGateway.Gateway.Application;
 public class DBHistoryValuePageInput : BasePageInput
 {
     /// <summary>
-    /// 开始时间
-    /// </summary>
-    public virtual DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
-
-    /// <summary>
     /// 结束时间
     /// </summary>
     public virtual DateTime? EndTime { get; set; } = DateTime.Now.AddDays(1);
+
+    /// <summary>
+    /// 开始时间
+    /// </summary>
+    public virtual DateTime? StartTime { get; set; } = DateTime.Now.AddDays(-1);
 
     /// <summary>
     /// 变量名称

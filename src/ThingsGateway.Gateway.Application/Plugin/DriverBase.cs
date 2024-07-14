@@ -34,69 +34,6 @@ public abstract class DriverBase : DisposableObject
         Localizer = App.CreateLocalizerByType(typeof(DriverBase))!;
     }
 
-    public List<IEditorItem> PluginPropertyEditorItems
-    {
-        get
-        {
-            if (CurrentDevice?.PluginName?.IsNullOrWhiteSpace() == true)
-            {
-                var result = PluginService.GetDriverPropertyTypes(CurrentDevice.PluginName, this);
-                return result.EditorItems.ToList();
-            }
-            else
-            {
-                var editorItems = PluginServiceUtil.GetEditorItems(DriverProperties?.GetType());
-                return editorItems.ToList();
-            }
-        }
-    }
-
-    public override string ToString()
-    {
-        return Protocol?.ToString() ?? base.ToString();
-    }
-
-    #region 任务管理器传入
-
-    /// <summary>
-    /// 底层驱动配置
-    /// </summary>
-    public TouchSocketConfig FoundataionConfig => ChannelThread.FoundataionConfig;
-
-    /// <summary>
-    /// 写入锁
-    /// </summary>
-    protected internal EasyLock WriteLock => ChannelThread.WriteLock;
-
-    /// <summary>
-    /// 日志路径
-    /// </summary>
-    public string LogPath => ChannelThread.LogPath;
-
-    /// <summary>
-    /// 任务管理器
-    /// </summary>
-    public ChannelThread ChannelThread { get; internal set; }
-
-    /// <summary>
-    /// 日志
-    /// </summary>
-    public ILogger Logger => ChannelThread.Logger;
-
-    /// <summary>
-    /// 底层日志，需由线程管理器传入
-    /// </summary>
-    public LoggerGroup LogMessage => ChannelThread.LogMessage;
-
-    /// <summary>
-    /// 当前插件目录
-    /// </summary>
-    public string Directory { get; internal set; }
-
-    #endregion 任务管理器传入
-
-    private IStringLocalizer Localizer { get; }
-
     /// <summary>
     /// 当前设备
     /// </summary>
@@ -118,19 +55,14 @@ public abstract class DriverBase : DisposableObject
     public virtual Type DriverDebugUIType { get; }
 
     /// <summary>
-    /// 插件UI Type，继承<see cref="IDriverUIBase"/>如果不存在，返回null
-    /// </summary>
-    public virtual Type DriverUIType { get; }
-
-    /// <summary>
     /// 插件配置项
     /// </summary>
     public abstract object DriverProperties { get; }
 
     /// <summary>
-    /// 是否初始化成功
+    /// 插件UI Type，继承<see cref="IDriverUIBase"/>如果不存在，返回null
     /// </summary>
-    public bool IsInitSuccess { get; internal set; } = true;
+    public virtual Type DriverUIType { get; }
 
     /// <summary>
     /// 是否执行了BeforStart方法
@@ -138,19 +70,36 @@ public abstract class DriverBase : DisposableObject
     public bool IsBeforStarted { get; protected set; } = false;
 
     /// <summary>
-    /// 是否继续运行
-    /// </summary>
-    public bool KeepRun => CurrentDevice?.KeepRun == true;
-
-    /// <summary>
     /// 是否采集插件
     /// </summary>
     public virtual bool IsCollectDevice => CurrentDevice.PluginType == PluginTypeEnum.Collect;
 
     /// <summary>
-    /// 全局插件服务
+    /// 是否初始化成功
     /// </summary>
-    protected IPluginService PluginService { get; private set; }
+    public bool IsInitSuccess { get; internal set; } = true;
+
+    /// <summary>
+    /// 是否继续运行
+    /// </summary>
+    public bool KeepRun => CurrentDevice?.KeepRun == true;
+
+    public List<IEditorItem> PluginPropertyEditorItems
+    {
+        get
+        {
+            if (CurrentDevice?.PluginName?.IsNullOrWhiteSpace() == true)
+            {
+                var result = PluginService.GetDriverPropertyTypes(CurrentDevice.PluginName, this);
+                return result.EditorItems.ToList();
+            }
+            else
+            {
+                var editorItems = PluginServiceUtil.GetEditorItems(DriverProperties?.GetType());
+                return editorItems.ToList();
+            }
+        }
+    }
 
     /// <summary>
     /// 底层驱动，有可能为null
@@ -163,6 +112,13 @@ public abstract class DriverBase : DisposableObject
     public IRpcService RpcService { get; }
 
     /// <summary>
+    /// 全局插件服务
+    /// </summary>
+    protected IPluginService PluginService { get; private set; }
+
+    private IStringLocalizer Localizer { get; }
+
+    /// <summary>
     /// 配置底层的通道插件,通常在使用前都执行一次获取新的插件管理器
     /// </summary>
     public virtual void ConfigurePlugins()
@@ -172,6 +128,73 @@ public abstract class DriverBase : DisposableObject
             FoundataionConfig.ConfigurePlugins(Protocol.ConfigurePlugins());
         }
     }
+
+    /// <summary>
+    /// 是否连接成功，注意非通用设备需重写
+    /// </summary>
+    public virtual bool IsConnected()
+    {
+        return Protocol?.OnLine == true;
+    }
+
+    /// <summary>
+    /// 暂停
+    /// </summary>
+    /// <param name="keepRun">是否继续</param>
+    public virtual void PasueThread(bool keepRun)
+    {
+        lock (this)
+        {
+            if (CurrentDevice == null) return;
+            var str = keepRun == false ? "DeviceTaskPause" : "DeviceTaskContinue";
+            Logger?.LogInformation(Localizer["str", DeviceName]);
+            this.CurrentDevice.KeepRun = keepRun;
+        }
+    }
+
+    public override string ToString()
+    {
+        return Protocol?.ToString() ?? base.ToString();
+    }
+
+    #region 任务管理器传入
+
+    /// <summary>
+    /// 任务管理器
+    /// </summary>
+    public ChannelThread ChannelThread { get; internal set; }
+
+    /// <summary>
+    /// 当前插件目录
+    /// </summary>
+    public string Directory { get; internal set; }
+
+    /// <summary>
+    /// 底层驱动配置
+    /// </summary>
+    public TouchSocketConfig FoundataionConfig => ChannelThread.FoundataionConfig;
+
+    /// <summary>
+    /// 日志
+    /// </summary>
+    public ILogger Logger => ChannelThread.Logger;
+
+    /// <summary>
+    /// 底层日志，需由线程管理器传入
+    /// </summary>
+    public LoggerGroup LogMessage => ChannelThread.LogMessage;
+
+    /// <summary>
+    /// 日志路径
+    /// </summary>
+    public string LogPath => ChannelThread.LogPath;
+
+    /// <summary>
+    /// 写入锁
+    /// </summary>
+    protected internal EasyLock WriteLock => ChannelThread.WriteLock;
+
+    #endregion 任务管理器传入
 
     #region 插件生命周期
 
@@ -381,30 +404,21 @@ public abstract class DriverBase : DisposableObject
 
     #endregion 插件生命周期
 
-    /// <summary>
-    /// 是否连接成功，注意非通用设备需重写
-    /// </summary>
-    public virtual bool IsConnected()
-    {
-        return Protocol?.OnLine == true;
-    }
-
-    /// <summary>
-    /// 暂停
-    /// </summary>
-    /// <param name="keepRun">是否继续</param>
-    public virtual void PasueThread(bool keepRun)
-    {
-        lock (this)
-        {
-            if (CurrentDevice == null) return;
-            var str = keepRun == false ? "DeviceTaskPause" : "DeviceTaskContinue";
-            Logger?.LogInformation(Localizer["str", DeviceName]);
-            this.CurrentDevice.KeepRun = keepRun;
-        }
-    }
-
     #region 插件重写
+
+    /// <summary>
+    /// 初始化，在开始前执行，异常时会标识重启
+    /// </summary>
+    /// <param name="client"></param>
+    public abstract void Init(IChannel? channel = null);
+
+    /// <summary>
+    /// 获取设备变量打包列表/特殊方法列表
+    /// </summary>
+    /// <param name="collectVariableRunTimes"></param>
+    public virtual void LoadSourceRead(IEnumerable<VariableRunTime> collectVariableRunTimes)
+    {
+    }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
@@ -428,20 +442,6 @@ public abstract class DriverBase : DisposableObject
     /// 间隔执行
     /// </summary>
     protected abstract ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken);
-
-    /// <summary>
-    /// 获取设备变量打包列表/特殊方法列表
-    /// </summary>
-    /// <param name="collectVariableRunTimes"></param>
-    public virtual void LoadSourceRead(IEnumerable<VariableRunTime> collectVariableRunTimes)
-    {
-    }
-
-    /// <summary>
-    /// 初始化，在开始前执行，异常时会标识重启
-    /// </summary>
-    /// <param name="client"></param>
-    public abstract void Init(IChannel? channel = null);
 
     #endregion 插件重写
 }
