@@ -8,7 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
@@ -23,9 +22,9 @@ using ThingsGateway.Core;
 namespace ThingsGateway;
 
 /// <summary>
-/// App静态类
+/// NetCoreApp静态类
 /// </summary>
-public static class App
+public class NetCoreApp
 {
     /// <summary>
     /// 直接引用程序集
@@ -44,7 +43,7 @@ public static class App
 
     private static IStringLocalizerFactory? stringLocalizerFactory;
 
-    static App()
+    static NetCoreApp()
     {
         Assemblies = GetAssemblies().ToList();
         EffectiveTypes = Assemblies!.SelectMany(a =>
@@ -56,32 +55,27 @@ public static class App
     /// <summary>
     /// 当前缓存服务
     /// </summary>
-    public static ICacheService CacheService { get; internal set; }
+    public static ICacheService CacheService { get; set; }
 
     /// <summary>
     /// 系统配置
     /// </summary>
-    public static IConfiguration? Configuration { get; internal set; }
+    public static IConfiguration? Configuration { get; set; }
 
     /// <summary>
     /// 当前程序文件夹
     /// </summary>
-    public static string? ContentRootPath { get; internal set; }
-
-    /// <summary>
-    /// 获取请求上下文
-    /// </summary>
-    public static HttpContext? HttpContext => RootServices?.GetService<IHttpContextAccessor>()?.HttpContext;
+    public static string? ContentRootPath { get; set; }
 
     /// <summary>
     /// 是否开发环境
     /// </summary>
-    public static bool IsDevelopment { get; internal set; } = false;
+    public static bool IsDevelopment { get; set; } = false;
 
     /// <summary>
     /// 系统根服务
     /// </summary>
-    public static IServiceProvider? RootServices { get; internal set; }
+    public static IServiceProvider? RootServices { get; set; }
 
     /// <summary>
     /// 本地化服务工厂
@@ -99,15 +93,11 @@ public static class App
         }
     }
 
-    /// <summary>
-    /// 获取请求上下文用户
-    /// </summary>
-    public static ClaimsPrincipal? User => HttpContext?.User;
 
     /// <summary>
-    /// 系统 wwwroot 文件夹路径 Server Side 模式下 Upload 使用
+    /// 系统 wwwroot 文件夹路径
     /// </summary>
-    public static string? WebRootPath { get; internal set; }
+    public static string? WebRootPath { get; set; }
 
     /// <summary>
     /// 根据类型创建本地化服务
@@ -128,14 +118,7 @@ public static class App
         return Environment.CurrentManagedThreadId;
     }
 
-    /// <summary>
-    /// 获取当前请求 TraceId
-    /// </summary>
-    /// <returns></returns>
-    public static string GetTraceId()
-    {
-        return Activity.Current?.Id ?? (RootServices == null ? default : HttpContext?.TraceIdentifier);
-    }
+
 
     /// <summary>
     /// 获取应用有效程序集
@@ -198,24 +181,4 @@ public static class App
             return scanAssemblies;
         }
     }
-}
-
-/// <summary>
-/// 解决单文件发布程序集扫描问题
-/// </summary>
-public interface ISingleFilePublish
-{
-    /// <summary>
-    /// 包含程序集数组
-    /// </summary>
-    /// <remarks>配置单文件发布扫描程序集</remarks>
-    /// <returns></returns>
-    Assembly[] IncludeAssemblies();
-
-    /// <summary>
-    /// 包含程序集名称数组
-    /// </summary>
-    /// <remarks>配置单文件发布扫描程序集名称</remarks>
-    /// <returns></returns>
-    string[] IncludeAssemblyNames();
 }

@@ -34,22 +34,6 @@ public class Startup : AppStartup
     public void ConfigureAdminApp(IServiceCollection services)
     {
 
-        //检查ConfigId
-        var configIdGroup = DbContext.DbConfigs.GroupBy(it => it.ConfigId);
-        foreach (var configId in configIdGroup)
-        {
-            if (configId.Count() > 1) throw new($"Sqlsugar connect configId: {configId.Key} Duplicate!");
-        }
-
-        //遍历配置
-        DbContext.DbConfigs?.ForEach(it =>
-        {
-            var connection = DbContext.Db.GetConnection(it.ConfigId);//获取数据库连接对象
-            connection.DbMaintenance.CreateDatabase();//创建数据库,如果存在则不创建
-        });
-
-        var fullName = Assembly.GetExecutingAssembly().FullName;//获取程序集全名
-        CodeFirstUtils.CodeFirst(fullName!);//CodeFirst
 
         #region 控制台美化
 
@@ -156,6 +140,11 @@ public class Startup : AppStartup
 
         #endregion api日志
 
+
+        services.AddSingleton<IFileService, FileService>();
+        services.AddSingleton<IImportExportService, ImportExportService>();
+        services.AddSingleton<ISugarAopService, WebSugarAopService>();
+
         services.AddSingleton<IVerificatInfoService, VerificatInfoService>();
         services.AddSingleton<IAuthService, AuthService>();
         services.AddSingleton<ISysDictService, SysDictService>();
@@ -175,8 +164,30 @@ public class Startup : AppStartup
 
     public void UseAdminCore(IApplicationBuilder app)
     {
+
+
+        //检查ConfigId
+        var configIdGroup = DbContext.DbConfigs.GroupBy(it => it.ConfigId);
+        foreach (var configId in configIdGroup)
+        {
+            if (configId.Count() > 1) throw new($"Sqlsugar connect configId: {configId.Key} Duplicate!");
+        }
+
+        //遍历配置
+        DbContext.DbConfigs?.ForEach(it =>
+        {
+            var connection = DbContext.Db.GetConnection(it.ConfigId);//获取数据库连接对象
+            connection.DbMaintenance.CreateDatabase();//创建数据库,如果存在则不创建
+        });
+
+        var fullName = Assembly.GetExecutingAssembly().FullName;//获取程序集全名
+        CodeFirstUtils.CodeFirst(fullName!);//CodeFirst
+
+
         //删除在线用户统计
         var verificatInfoService = app.ApplicationServices.GetService<IVerificatInfoService>();
         verificatInfoService.RemoveAllClientId();
+
+
     }
 }

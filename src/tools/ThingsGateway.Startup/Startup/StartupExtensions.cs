@@ -10,12 +10,9 @@
 
 // 版权归百小僧及百签科技（广东）有限公司所有。
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileSystemGlobbing;
-using Microsoft.Extensions.Hosting;
 
 using System.Collections.Concurrent;
 using System.Reflection;
@@ -24,7 +21,7 @@ using ThingsGateway.Core;
 
 namespace ThingsGateway;
 
-public static class StartupExtensions
+public static class StartupWithoutWebExtensions
 {
     /// <summary>
     /// 排除的配置文件前缀
@@ -45,13 +42,6 @@ public static class StartupExtensions
 
     private static ConcurrentBag<AppStartup> AppStartups = new();
 
-    /// <summary>
-    /// 反射获取所有AppStartup的继承类
-    /// </summary>
-    public static void ConfigureServices(this WebApplicationBuilder builder)
-    {
-        AddStartups(builder);
-    }
 
     /// <summary>
     /// 非web应用 反射获取所有AppStartup的继承类
@@ -59,14 +49,6 @@ public static class StartupExtensions
     public static void ConfigureServicesWithoutWeb(this IServiceCollection services)
     {
         AddStartups(services);
-    }
-
-    /// <summary>
-    /// ConfigureServices获取的全部实例中，执行名称为第一个参数是<see cref="IApplicationBuilder"/>的方法
-    /// </summary>
-    public static void UseServices(this IApplicationBuilder builder)
-    {
-        UseStartups(AppStartups, builder);
     }
 
     /// <summary>
@@ -81,8 +63,8 @@ public static class StartupExtensions
     /// 加载自定义 .json 配置文件
     /// </summary>
     /// <param name="configurationBuilder"></param>
-    /// <param name="hostEnvironment"></param>
-    private static void AddJsonFiles(IConfigurationBuilder configurationBuilder, IHostEnvironment? hostEnvironment)
+    /// <param name="environmentName"></param>
+    public static void AddJsonFiles(IConfigurationBuilder configurationBuilder, string? environmentName = null)
     {
         // 获取根配置
         var configuration = configurationBuilder is ConfigurationManager
@@ -107,7 +89,7 @@ public static class StartupExtensions
         if (!jsonFiles.Any()) return;
 
         // 获取环境变量名，如果没找到，则读取 NETCORE_ENVIRONMENT 环境变量信息识别（用于非 Web 环境）
-        var envName = hostEnvironment?.EnvironmentName ?? Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT") ?? "Production";
+        var envName = environmentName ?? Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT") ?? "Production";
 
         // 读取忽略的配置文件
         var ignoreConfigurationFiles = (configuration.GetSection("IgnoreConfigurationFiles")
@@ -115,7 +97,7 @@ public static class StartupExtensions
             ?? Array.Empty<string>());
 
         // 处理控制台应用程序
-        var _excludeJsonPrefixs = hostEnvironment == default ? excludeJsonPrefixs.Where(u => !u.Equals("appsettings")) : excludeJsonPrefixs;
+        var _excludeJsonPrefixs = environmentName == null ? excludeJsonPrefixs.Where(u => !u.Equals("appsettings")) : excludeJsonPrefixs;
 
         // 将所有文件进行分组
         var jsonFilesGroups = SplitConfigFileNameToGroups(jsonFiles)
@@ -140,46 +122,6 @@ public static class StartupExtensions
     }
 
     /// <summary>
-    /// 添加 Startup 自动扫描
-    /// </summary>
-    private static void AddStartups(WebApplicationBuilder builder)
-    {
-        App.Configuration = builder.Configuration;
-        AddJsonFiles(builder.Configuration, builder.Environment);
-
-        if (builder.Environment is IWebHostEnvironment webHostEnvironment)
-            App.WebRootPath = webHostEnvironment.WebRootPath;
-        App.ContentRootPath = builder.Environment.ContentRootPath;
-        App.IsDevelopment = builder.Environment.IsDevelopment();
-
-        // 扫描所有继承 AppStartup 的类
-        var startups = App.EffectiveTypes
-            .Where(u => typeof(AppStartup).IsAssignableFrom(u) && u.IsClass && !u.IsAbstract && !u.IsGenericType)
-            .OrderByDescending(u => GetStartupOrder(u));
-
-        // 注册自定义 startup
-        foreach (var type in startups)
-        {
-            var startup = Activator.CreateInstance(type) as AppStartup;
-            AppStartups.Add(startup!);
-
-            // 获取所有符合依赖注入格式的方法，如返回值void，且第一个参数是 IServiceCollection 类型
-            var serviceMethods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .Where(u => u.ReturnType == typeof(void)
-                    && u.GetParameters().Length > 0
-                    && u.GetParameters().First().ParameterType == typeof(IServiceCollection));
-
-            if (!serviceMethods.Any()) continue;
-
-            // 自动安装属性调用
-            foreach (var method in serviceMethods)
-            {
-                method.Invoke(startup, new[] { builder.Services });
-            }
-        }
-    }
-
-    /// <summary>
     /// 非web应用 添加 Startup 自动扫描
     /// </summary>
     private static void AddStartups(IServiceCollection services)
@@ -192,14 +134,14 @@ public static class StartupExtensions
 
         // 构建配置
         var configuration = configBuilder.Build();
-        App.Configuration = configuration;
+        NetCoreApp.Configuration = configuration;
 
-        App.ContentRootPath = AppContext.BaseDirectory; ;
-        App.WebRootPath = Path.Combine(AppContext.BaseDirectory, "wwwroot");
-        App.IsDevelopment = false;//非web应用默认
+        NetCoreApp.ContentRootPath = AppContext.BaseDirectory; ;
+        NetCoreApp.WebRootPath = Path.Combine(AppContext.BaseDirectory, "wwwroot");
+        NetCoreApp.IsDevelopment = false;//非web应用默认
 
         // 扫描所有继承 AppStartup 的类
-        var startups = App.EffectiveTypes
+        var startups = NetCoreApp.EffectiveTypes
             .Where(u => typeof(AppStartup).IsAssignableFrom(u) && u.IsClass && !u.IsAbstract && !u.IsGenericType)
             .OrderByDescending(u => GetStartupOrder(u));
 
@@ -230,30 +172,11 @@ public static class StartupExtensions
     /// </summary>
     /// <param name="type">排序类型</param>
     /// <returns>int</returns>
-    private static int GetStartupOrder(Type type)
+    public static int GetStartupOrder(Type type)
     {
         return !type.IsDefined(typeof(AppStartupAttribute), true) ? 0 : type.GetCustomAttribute<AppStartupAttribute>(true)!.Order;
     }
 
-    /// <summary>
-    /// 解析方法参数实例
-    /// </summary>
-    private static object[] ResolveMethodParameterInstances(IApplicationBuilder app, MethodInfo method)
-    {
-        // 获取方法所有参数
-        var parameters = method.GetParameters();
-        var parameterInstances = new object[parameters.Length];
-        parameterInstances[0] = app;
-
-        // 解析服务
-        for (var i = 1; i < parameters.Length; i++)
-        {
-            var parameter = parameters[i];
-            parameterInstances[i] = app.ApplicationServices.GetRequiredService(parameter.ParameterType);
-        }
-
-        return parameterInstances;
-    }
 
     /// <summary>
     /// 解析方法参数实例
@@ -299,42 +222,10 @@ public static class StartupExtensions
     /// <summary>
     /// 批量将自定义 AppStartup 添加到 Startup.cs 的 Configure 中
     /// </summary>
-    /// <param name="startups"></param>
-    /// <param name="app"></param>
-    private static void UseStartups(IEnumerable<AppStartup> startups, IApplicationBuilder app)
-    {
-        App.RootServices = app.ApplicationServices;
-        App.CacheService = app.ApplicationServices.GetRequiredService<ICacheService>();
-
-        // 遍历所有
-        foreach (var startup in startups)
-        {
-            var type = startup.GetType();
-
-            // 获取所有符合依赖注入格式的方法，如返回值 void，且第一个参数是 IApplicationBuilder 类型
-            var configureMethods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .Where(u => u.ReturnType == typeof(void)
-                    && u.GetParameters().Length > 0
-                    && u.GetParameters().First().ParameterType == typeof(IApplicationBuilder));
-
-            if (!configureMethods.Any()) continue;
-
-            // 自动安装属性调用
-            foreach (var method in configureMethods)
-            {
-                method.Invoke(startup, ResolveMethodParameterInstances(app, method));
-            }
-        }
-        AppStartups.Clear();
-    }
-
-    /// <summary>
-    /// 批量将自定义 AppStartup 添加到 Startup.cs 的 Configure 中
-    /// </summary>
     private static void UseStartups(IEnumerable<AppStartup> startups, IServiceProvider service)
     {
-        App.RootServices = service;
-        App.CacheService = service.GetRequiredService<ICacheService>();
+        NetCoreApp.RootServices = service;
+        NetCoreApp.CacheService = service.GetRequiredService<ICacheService>();
 
         // 遍历所有
         foreach (var startup in startups)

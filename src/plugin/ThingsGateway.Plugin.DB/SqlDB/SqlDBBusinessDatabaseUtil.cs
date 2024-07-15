@@ -10,6 +10,8 @@
 
 using Mapster;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using SqlSugar;
 
 using System.ComponentModel.DataAnnotations;
@@ -56,7 +58,7 @@ public static class SqlDBBusinessDatabaseUtil
                 MaxParameterNameLength = 30
             };
         }
-        DbContext.AopSetting(sqlSugarClient);//aop配置
+        App.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
         return sqlSugarClient;
     }
 }

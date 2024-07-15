@@ -49,7 +49,7 @@ public static class ObjectExtensions
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
     /// <returns></returns>
-    internal static T ChangeType<T>(this object obj)
+    public static T ChangeType<T>(this object obj)
     {
         return (T)ChangeType(obj, typeof(T))!;
     }
@@ -60,7 +60,7 @@ public static class ObjectExtensions
     /// <param name="obj">待转换的对象</param>
     /// <param name="type">目标类型</param>
     /// <returns>转换后的对象</returns>
-    internal static object? ChangeType(this object? obj, Type type)
+    public static object? ChangeType(this object? obj, Type type)
     {
         if (type == null) return obj;
         if (obj == null) return obj;
@@ -133,7 +133,7 @@ public static class ObjectExtensions
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    internal static IEnumerable<Type> GetAncestorTypes(this Type type)
+    public static IEnumerable<Type> GetAncestorTypes(this Type type)
     {
         var ancestorTypes = new List<Type>();
         while (type != null && type != typeof(object))
@@ -159,7 +159,7 @@ public static class ObjectExtensions
     /// <param name="method"></param>
     /// <param name="inherit"></param>
     /// <returns></returns>
-    internal static TAttribute GetFoundAttribute<TAttribute>(this MethodInfo method, bool inherit)
+    public static TAttribute GetFoundAttribute<TAttribute>(this MethodInfo method, bool inherit)
         where TAttribute : Attribute
     {
         // 获取方法所在类型
@@ -184,7 +184,7 @@ public static class ObjectExtensions
     /// </summary>
     /// <param name="method"></param>
     /// <returns></returns>
-    internal static Type GetRealReturnType(this MethodInfo method)
+    public static Type GetRealReturnType(this MethodInfo method)
     {
         // 判断是否是异步方法
         var isAsyncMethod = method.IsAsync();
@@ -201,7 +201,7 @@ public static class ObjectExtensions
     /// <param name="type">类类型</param>
     /// <param name="inherit">是否继承查找</param>
     /// <returns>特性对象</returns>
-    internal static TAttribute GetTypeAttribute<TAttribute>(this Type type, bool inherit = false)
+    public static TAttribute GetTypeAttribute<TAttribute>(this Type type, bool inherit = false)
         where TAttribute : Attribute
     {
         // 空检查
@@ -218,7 +218,7 @@ public static class ObjectExtensions
     /// </summary>
     /// <param name="obj">对象</param>
     /// <returns></returns>
-    internal static bool IsAnonymous(this object obj)
+    public static bool IsAnonymous(this object obj)
     {
         var type = obj is Type t ? t : obj.GetType();
 
@@ -233,7 +233,7 @@ public static class ObjectExtensions
     /// </summary>
     /// <param name="method">方法</param>
     /// <returns></returns>
-    internal static bool IsAsync(this MethodInfo method)
+    public static bool IsAsync(this MethodInfo method)
     {
         return method.GetCustomAttribute<AsyncMethodBuilderAttribute>() != null
             || method.ReturnType.ToString().StartsWith(typeof(Task).FullName!);
@@ -245,7 +245,7 @@ public static class ObjectExtensions
     /// <typeparam name="T">元素类型</typeparam>
     /// <param name="collection">集合对象</param>
     /// <returns><see cref="bool"/> 实例，true 表示空集合，false 表示非空集合</returns>
-    internal static bool IsEmpty<T>(this IEnumerable<T> collection)
+    public static bool IsEmpty<T>(this IEnumerable<T> collection)
     {
         return collection == null || !collection.Any();
     }
@@ -255,7 +255,7 @@ public static class ObjectExtensions
     /// </summary>
     /// <param name="type">类型</param>
     /// <returns></returns>
-    internal static bool IsRichPrimitive(this Type? type)
+    public static bool IsRichPrimitive(this Type? type)
     {
         if (type == null) return false;
 
@@ -278,7 +278,7 @@ public static class ObjectExtensions
     /// </summary>
     /// <param name="type">类型</param>
     /// <returns></returns>
-    internal static bool IsValueTuple(this Type type)
+    public static bool IsValueTuple(this Type type)
     {
         return type.Namespace == "System" && type.Name.Contains("ValueTuple`");
     }
@@ -288,7 +288,7 @@ public static class ObjectExtensions
     /// </summary>
     /// <param name="jsonElement"></param>
     /// <returns></returns>
-    internal static object ToObject(this JsonElement jsonElement)
+    public static object ToObject(this JsonElement jsonElement)
     {
         switch (jsonElement.ValueKind)
         {

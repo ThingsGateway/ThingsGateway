@@ -10,6 +10,8 @@
 
 using Mapster;
 
+using Microsoft.AspNetCore.Builder;
+
 using System.Reflection;
 
 namespace ThingsGateway.Gateway.Application;
@@ -21,9 +23,6 @@ public class Startup : AppStartup
     {
         //底层多语言配置
         //Foundation.LocalizerUtil.SetLocalizerFactory((a) => App.CreateLocalizerByType(a));
-
-        var fullName = Assembly.GetExecutingAssembly().FullName;//获取程序集全名
-        CodeFirstUtils.CodeFirst(fullName!);//CodeFirst
 
         TypeAdapterConfig.GlobalSettings.Scan(App.Assemblies.ToArray());
         // 配置默认全局映射（支持覆盖）
@@ -56,5 +55,14 @@ public class Startup : AppStartup
         services.AddHostedService<BusinessDeviceHostedService>();
         services.AddHostedService<AlarmHostedService>();
         services.AddHostedService<ManagementHostedService>();
+    }
+
+    public void UseAdminCore(IApplicationBuilder app)
+    {
+
+
+        var fullName = Assembly.GetExecutingAssembly().FullName;//获取程序集全名
+        CodeFirstUtils.CodeFirst(fullName!);//CodeFirst
+
     }
 }

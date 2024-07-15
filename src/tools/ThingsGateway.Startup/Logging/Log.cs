@@ -27,7 +27,7 @@ public static class Log
     /// <returns></returns>
     public static ILogger CreateLogger<T>()
     {
-        return App.RootServices!.GetRequiredService<ILogger<T>>();
+        return NetCoreApp.RootServices!.GetRequiredService<ILogger<T>>();
     }
 
     /// <summary>

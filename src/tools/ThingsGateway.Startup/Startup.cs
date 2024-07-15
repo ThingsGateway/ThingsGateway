@@ -36,8 +36,8 @@ public class Startup : AppStartup
         });
 
         services.AddSingleton(typeof(IDataService<>), typeof(BaseService<>));
-        services.AddSingleton<IFileService, FileService>();
-        services.AddSingleton<IImportExportService, ImportExportService>();
+        services.AddSingleton<ISugarAopService,SugarAopService>();
+
     }
 
     public void UseService(IServiceProvider serviceProvider)

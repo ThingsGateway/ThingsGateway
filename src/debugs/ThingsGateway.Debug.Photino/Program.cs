@@ -41,7 +41,7 @@ internal class Program
         builder.Services.ConfigureServicesWithoutWeb();
 
         // 添加配置服务
-        builder.Services.AddSingleton<IConfiguration>(App.Configuration);
+        builder.Services.AddSingleton<IConfiguration>(NetCoreApp.Configuration);
 
         // 增加中文编码支持网页源码显示汉字
         builder.Services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));

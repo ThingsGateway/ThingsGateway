@@ -67,9 +67,6 @@ public static class LoggerFormatter
         // 输出是否使用 UTC 时间戳
         writer.WriteBoolean("useUtcTimestamp", logMsg.UseUtcTimestamp);
 
-        // 输出请求 TraceId
-        writer.WriteString("traceId", logMsg.TraceId);
-
         // 输出异常信息
         writer.WritePropertyName("exception");
         if (logMsg.Exception == null) writer.WriteNullValue();

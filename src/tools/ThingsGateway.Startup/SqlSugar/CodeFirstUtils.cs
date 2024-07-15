@@ -40,7 +40,7 @@ public static class CodeFirstUtils
     private static void InitSeedData(string assemblyName)
     {
         // 获取所有种子配置-初始化数据
-        var seedDataTypes = App.EffectiveTypes
+        var seedDataTypes = NetCoreApp.EffectiveTypes
     .Where(u => !u.IsInterface && !u.IsAbstract && u.IsClass
     && u.GetInterfaces().Any(i => i.HasImplementedRawGeneric(typeof(ISqlSugarEntitySeedData<>))) && u.Assembly.FullName == assemblyName);
         if (!seedDataTypes.Any()) return;
@@ -87,7 +87,7 @@ public static class CodeFirstUtils
     private static void InitTable(string assemblyName)
     {
         // 获取所有实体表-初始化表结构
-        var entityTypes = App.EffectiveTypes.Where(u =>
+        var entityTypes = NetCoreApp.EffectiveTypes.Where(u =>
             !u.IsInterface && !u.IsAbstract && u.IsClass && u.IsDefined(typeof(SugarTable), false) && u.Assembly.FullName == assemblyName);
         if (!entityTypes.Any()) return;//没有就退出
         foreach (var entityType in entityTypes)

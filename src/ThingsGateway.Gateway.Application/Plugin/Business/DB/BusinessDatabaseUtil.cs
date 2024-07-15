@@ -45,7 +45,7 @@ public static class BusinessDatabaseUtil
             ConfigureExternalServices = configureExternalServices,
         }
         );
-        DbContext.AopSetting(sqlSugarClient);//aop配置
+        App.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
         return sqlSugarClient;
     }
 

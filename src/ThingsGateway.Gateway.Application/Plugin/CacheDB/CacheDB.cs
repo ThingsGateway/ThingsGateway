@@ -61,13 +61,13 @@ public class CacheDB : DisposeBase
 
     private SqlSugarClient GetConnection(CacheDBOption options)
     {
-        SqlSugarClient db = new SqlSugarClient(new ConnectionConfig()
+        SqlSugarClient sqlSugarClient = new SqlSugarClient(new ConnectionConfig()
         {
             ConnectionString = options.DataSource,
             DbType = DbType.Sqlite,
             IsAutoCloseConnection = true,
         });
-        DbContext.AopSetting(db, App.IsDevelopment);
-        return db;
+        App.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
+        return sqlSugarClient;
     }
 }

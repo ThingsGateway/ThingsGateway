@@ -11,7 +11,6 @@
 // 版权归百小僧及百签科技（广东）有限公司所有。
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 using System.Collections.Concurrent;
@@ -172,10 +171,9 @@ public sealed class DatabaseLoggerProvider : ILoggerProvider, ISupportExternalSc
     /// <remarks></remarks>
     private async Task ProcessQueueAsync()
     {
-        var lifetime = _serviceScope.ServiceProvider.GetService<IHostApplicationLifetime>();
         try
         {
-            foreach (var logMsg in _logMessageQueue.GetConsumingEnumerable(lifetime.ApplicationStopping))
+            foreach (var logMsg in _logMessageQueue.GetConsumingEnumerable())
             {
                 try
                 {

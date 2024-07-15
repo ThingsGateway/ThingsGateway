@@ -65,11 +65,11 @@ public static class LocalizerExtensions
     public static string GetMethodDisplayName(this Type modelType, string methodName)
     {
         var cacheKey = $"{nameof(GetMethodDisplayName)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}-{modelType.TypeHandle.Value}-{methodName}";
-        var displayName = App.CacheService.GetOrCreate(cacheKey, entry =>
+        var displayName = NetCoreApp.CacheService.GetOrCreate(cacheKey, entry =>
         {
             string? dn = null;
             // 显示名称为空时通过资源文件查找 methodName 项
-            var localizer = modelType.Assembly.IsDynamic ? null : App.CreateLocalizerByType(modelType);
+            var localizer = modelType.Assembly.IsDynamic ? null : NetCoreApp.CreateLocalizerByType(modelType);
             var stringLocalizer = localizer?[methodName];
             if (stringLocalizer is { ResourceNotFound: false })
             {
@@ -111,11 +111,11 @@ public static class LocalizerExtensions
     public static string GetPropertyDisplayName(this Type modelType, string fieldName)
     {
         var cacheKey = $"{nameof(GetPropertyDisplayName)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}-{modelType.TypeHandle.Value}-{fieldName}";
-        var displayName = App.CacheService.GetOrCreate(cacheKey, entry =>
+        var displayName = NetCoreApp.CacheService.GetOrCreate(cacheKey, entry =>
         {
             string? dn = null;
             // 显示名称为空时通过资源文件查找 FieldName 项
-            var localizer = modelType.Assembly.IsDynamic ? null : App.CreateLocalizerByType(modelType);
+            var localizer = modelType.Assembly.IsDynamic ? null : NetCoreApp.CreateLocalizerByType(modelType);
             var stringLocalizer = localizer?[fieldName];
             if (stringLocalizer is { ResourceNotFound: false })
             {
@@ -159,11 +159,11 @@ public static class LocalizerExtensions
     {
         string fieldName = modelType.Name;
         var cacheKey = $"{nameof(GetTypeDisplayName)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}-{modelType.TypeHandle.Value}";
-        var displayName = App.CacheService.GetOrCreate(cacheKey, entry =>
+        var displayName = NetCoreApp.CacheService.GetOrCreate(cacheKey, entry =>
         {
             string? dn = null;
             // 显示名称为空时通过资源文件查找 FieldName 项
-            var localizer = modelType.Assembly.IsDynamic ? null : App.CreateLocalizerByType(modelType);
+            var localizer = modelType.Assembly.IsDynamic ? null : NetCoreApp.CreateLocalizerByType(modelType);
             var stringLocalizer = localizer?[fieldName];
             if (stringLocalizer is { ResourceNotFound: false })
             {
@@ -252,7 +252,7 @@ public static class LocalizerExtensions
     private static bool TryGetProperty(Type modelType, string fieldName, [NotNullWhen(true)] out PropertyInfo? propertyInfo)
     {
         var cacheKey = $"{nameof(TryGetProperty)}-{modelType.FullName}-{modelType.TypeHandle.Value}-{fieldName}";
-        propertyInfo = App.CacheService.GetOrCreate(cacheKey, entry =>
+        propertyInfo = NetCoreApp.CacheService.GetOrCreate(cacheKey, entry =>
         {
             IEnumerable<PropertyInfo>? props;
 
@@ -309,7 +309,7 @@ public static class LocalizerExtensions
                 //// 通过设置 ErrorMessage 检索
                 //if (!context.ObjectType.Assembly.IsDynamic && !find
                 //    && !string.IsNullOrEmpty(rule.ErrorMessage)
-                //    && App.CreateLocalizerByType(context.ObjectType).TryGetLocalizerString(rule.ErrorMessage, out var msg))
+                //    && NetCoreApp.CreateLocalizerByType(context.ObjectType).TryGetLocalizerString(rule.ErrorMessage, out var msg))
                 //{
                 //    rule.ErrorMessage = msg;
                 //    find = true;
@@ -317,7 +317,7 @@ public static class LocalizerExtensions
 
                 //// 通过 Attribute 检索
                 //if (!rule.GetType().Assembly.IsDynamic && !find
-                //    && App.CreateLocalizerByType(rule.GetType()).TryGetLocalizerString(nameof(rule.ErrorMessage), out msg))
+                //    && NetCoreApp.CreateLocalizerByType(rule.GetType()).TryGetLocalizerString(nameof(rule.ErrorMessage), out msg))
                 //{
                 //    rule.ErrorMessage = msg;
                 //    find = true;
@@ -325,7 +325,7 @@ public static class LocalizerExtensions
 
                 // 通过 字段.规则名称 检索
                 if (!context.ObjectType.Assembly.IsDynamic && !find
-                    && App.CreateLocalizerByType(context.ObjectType).TryGetLocalizerString($"{memberName}.{ruleName.ToString()}", out var msg))
+                    && NetCoreApp.CreateLocalizerByType(context.ObjectType).TryGetLocalizerString($"{memberName}.{ruleName.ToString()}", out var msg))
                 {
                     rule.ErrorMessage = msg;
                     find = true;

@@ -2,17 +2,9 @@
   <Import Project="$(SolutionDir)Version.props" />
   <Import Project="$(SolutionDir)PackNuget.props" />
 
-  
-  <ItemGroup>
-    <Content Remove="Locales\*.json" />
-    <EmbeddedResource Include="Locales\*.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
 
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
     <PackageReference Include="SqlSugarCore" Version="5.1.4.162" />
     <PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
     <PackageReference Include="Mapster" Version="7.4.0" />

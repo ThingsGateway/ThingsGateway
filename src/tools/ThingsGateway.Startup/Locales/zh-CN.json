@@ -1,8 +1,0 @@
-﻿{
-  "ThingsGateway.FileService": {
-    "FileNullError": "文件不能为空",
-    "FileLengthError": "文件大小不允许超过 {0} M",
-    "FileTypeError": "不支持 {0} 格式"
-  }
-
-}

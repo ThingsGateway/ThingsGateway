@@ -1,4 +1,9 @@
 ﻿{
+  "ThingsGateway.FileService": {
+    "FileNullError": "File cannot be empty",
+    "FileLengthError": "File size cannot exceed {0} M",
+    "FileTypeError": "Not supported format {0}"
+  },
   "ThingsGateway.Admin.Application.APPInfo": {
     "Environment": "HostEnvironment",
     "FrameworkDescription": ".NETFramework",
@@ -133,9 +138,9 @@
     "CanotEditAdmin": "Cannot edit super admin role",
     "ApiRoleCanotGrantResource": "API role is not allowed to grant resources",
     "CategoryError": "Role belongs to category {0} error",
-    "NameDup": "Duplicate role name {0}",
+    "NameDup": "Duplicate role name {0}"
 
-    
+
   },
 
   "ThingsGateway.Admin.Application.SysUser": {

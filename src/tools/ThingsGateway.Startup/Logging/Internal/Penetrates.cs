@@ -38,7 +38,7 @@ internal static class Penetrates
         if (string.IsNullOrWhiteSpace(key)) return new FileLoggerProvider("application.log", new FileLoggerOptions());
 
         // 加载配置文件中指定节点
-        var fileLoggerSettings = App.Configuration!.GetSection(key).Get<FileLoggerSettings>()
+        var fileLoggerSettings = NetCoreApp.Configuration!.GetSection(key).Get<FileLoggerSettings>()
             ?? new FileLoggerSettings();
 
         // 创建文件日志记录器配置选项
@@ -74,7 +74,7 @@ internal static class Penetrates
         if (string.IsNullOrWhiteSpace(key)) return new DatabaseLoggerProvider(new DatabaseLoggerOptions());
 
         // 加载配置文件中指定节点
-        var databaseLoggerSettings = App.Configuration!.GetSection(key).Get<DatabaseLoggerSettings>()
+        var databaseLoggerSettings = NetCoreApp.Configuration!.GetSection(key).Get<DatabaseLoggerSettings>()
             ?? new DatabaseLoggerSettings();
 
         // 创建数据库日志记录器配置选项
@@ -154,13 +154,7 @@ internal static class Penetrates
         formatString.Append(']');
         formatString.Append(' ');
         formatString.Append($"#{logMsg.ThreadId}");
-        if (withTraceId && !string.IsNullOrWhiteSpace(logMsg.TraceId))
-        {
-            formatString.Append(' ');
-            _ = AppendWithColor(formatString, $"'{logMsg.TraceId}'", disableConsoleColor
-                ? new ConsoleColors(null, null)
-                : new ConsoleColors(ConsoleColor.Gray, ConsoleColor.Black));
-        }
+
         formatString.AppendLine();
 
         // 对日志内容进行缩进对齐处理
