@@ -7,12 +7,22 @@
     <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj" />
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
   </ItemGroup>
+  
   <ItemGroup>
     <Content Remove="Locales\*.json" />
     <EmbeddedResource Include="Locales\*.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>contentFiles/any/wwwroot</PackagePath>
+    </Content>
+  </ItemGroup>
+  
 </Project>
 
 
