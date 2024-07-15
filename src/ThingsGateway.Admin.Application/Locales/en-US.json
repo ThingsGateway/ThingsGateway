@@ -32,61 +32,8 @@
     "LoginAsync": "Login",
     "LogoutAsync": "Logout"
   },
-  //oops
-  "ThingsGateway.Admin.Application.Oops": {
-    //auth
-    "UserNull": "User {0} does not exist",
-    "PasswordError": "Too many password errors, please try again in {0} minutes",
-    "AuthErrorMax": "Account password error, will be locked for {1} minutes after exceeding {0} times, error count {2}",
-    "UserDisable": "Account {0} has been disabled",
-    "MustDesc": "Password needs to be encrypted with DESC before passing",
-    //dict
-    "DictDup": "Duplicate configuration exists, category {0}, name {0}",
-    "DemoCanotUpdateWebsitePolicy": "DEMO environment does not allow modifying website settings",
-    //file
-    "FileNullError": "File cannot be empty",
-    "FileLengthError": "File size cannot exceed {0} M",
-    "FileTypeError": "Not supported format {0}",
 
-    //resource
-    "ResourceDup": "Duplicate name {0} exists",
-    "ResourceParentChoiceSelf": "Parent cannot choose itself",
-    "ResourceParentNull": "Parent does not exist {0}",
-    "NotFoundResource": "System exception, menu not found",
-    "ModuleIdDiff": "Module is inconsistent with parent menu",
-    "CanotDeleteSystemResource": "Cannot delete system resource {0}",
-    "ResourceMenuHrefNotNull": "Menu href cannot null",
-    //role
-    "CanotDeleteAdmin": "Cannot delete built-in super admin role",
-    "CanotEditAdmin": "Cannot edit super admin role",
-    "ApiRoleCanotGrantResource": "API role is not allowed to grant resources",
-    "CategoryError": "Role belongs to category {0} error",
-    "NameDup": "Duplicate role name {0}",
-
-    //user
-    "CheckSelf": "Prohibit {0} yourself",
-    "CanotDeleteAdminUser": "Cannot delete built-in super admin user",
-    "CanotEditAdminUser": "Cannot edit super admin user",
-    "CanotGrantAdmin": "Cannot assign roles to super admins",
-    "EmailDup": "Duplicate email {0} exists",
-    "AccountDup": "Duplicate account {0} exists",
-    "CanotDeleteSelf": "Cannot delete yourself",
-    "EmailError": "Email format error {0}",
-    "PhoneError": "Phone number format error {0}",
-    "UserNoModule": "This account has not been assigned a module. Please contact the administrator",
-
-    //usercenter
-    "DemoCanotUpdatePassword": "DEMO environment does not allow password modification",
-    "OldPasswordError": "Incorrect old password",
-    "ConfirmPasswordDiff": "Passwords entered twice are inconsistent",
-    "PasswordLengthLess": "Password length cannot be less than {0}",
-    "PasswordMustNum ": "Password must contain numbers",
-    "PasswordMustLow": "Password must contain lowercase letters",
-    "PasswordMustUpp": "Password must contain uppercase letters",
-    "PasswordMustSpecial": "Password must contain special characters"
-  },
   //oper
-
   "ThingsGateway.Admin.Application.OperDescAttribute": {
     //dict
     "SaveDict": "Modify dictionary",
@@ -145,7 +92,13 @@
     "GetHardwareInfoFail": "Get Hardwareinfo Fail"
   },
   "ThingsGateway.Admin.Application.AuthService": {
-    "SingleLoginWarn": "Your account is logged in elsewhere"
+    "SingleLoginWarn": "Your account is logged in elsewhere",
+    "UserNull": "User {0} does not exist",
+    "MustDesc": "Password needs to be encrypted with DESC before passing",
+    "PasswordError": "Too many password errors, please try again in {0} minutes",
+    "UserDisable": "Account {0} has been disabled",
+    "UserNoModule": "This account has not been assigned a module. Please contact the administrator",
+    "AuthErrorMax": "Account password error, will be locked for {1} minutes after exceeding {0} times, error count {2}"
   },
 
   //dto
@@ -174,7 +127,15 @@
     "Name": "Name",
     "Name.Required": "{0} is required",
     "Category": "Category",
-    "SortCode": "Sort"
+    "SortCode": "Sort",
+
+    "CanotDeleteAdmin": "Cannot delete built-in super admin role",
+    "CanotEditAdmin": "Cannot edit super admin role",
+    "ApiRoleCanotGrantResource": "API role is not allowed to grant resources",
+    "CategoryError": "Role belongs to category {0} error",
+    "NameDup": "Duplicate role name {0}",
+
+    
   },
 
   "ThingsGateway.Admin.Application.SysUser": {
@@ -200,7 +161,26 @@
     "LatestLoginTime": "LatestLoginTime",
     "LatestLoginDevice": "LatestLoginDevice",
     "LatestLoginAddress": "LatestLoginAddress",
-    "SortCode": "SortCode"
+    "SortCode": "SortCode",
+
+    "CheckSelf": "Prohibit {0} yourself",
+    "CanotDeleteAdminUser": "Cannot delete built-in super admin user",
+    "CanotEditAdminUser": "Cannot edit super admin user",
+    "CanotGrantAdmin": "Cannot assign roles to super admins",
+    "EmailDup": "Duplicate email {0} exists",
+    "AccountDup": "Duplicate account {0} exists",
+    "CanotDeleteSelf": "Cannot delete yourself",
+    "EmailError": "Email format error {0}",
+    "PhoneError": "Phone number format error {0}",
+
+    "DemoCanotUpdatePassword": "DEMO environment does not allow password modification",
+    "OldPasswordError": "Incorrect old password",
+    "ConfirmPasswordDiff": "Passwords entered twice are inconsistent",
+    "PasswordLengthLess": "Password length cannot be less than {0}",
+    "PasswordMustNum ": "Password must contain numbers",
+    "PasswordMustLow": "Password must contain lowercase letters",
+    "PasswordMustUpp": "Password must contain uppercase letters",
+    "PasswordMustSpecial": "Password must contain special characters"
   },
   "ThingsGateway.Admin.Application.VerificatInfo": {
     "Expire": "Expire(min)",
@@ -226,7 +206,9 @@
     "Name": "Name",
     "Code": "Code",
     "Remark": "Remark",
-    "SortCode": "Sort"
+    "SortCode": "Sort",
+    "DemoCanotUpdateWebsitePolicy": "DEMO environment does not allow modifying website settings",
+    "DictDup": "Duplicate configuration exists, category {0}, name {0}"
   },
 
   "ThingsGateway.Admin.Application.SysResource": {
@@ -240,7 +222,15 @@
     "Category": "Category",
     "Target": "Target",
     "NavLinkMatch": "NavLinkMatch",
-    "SortCode": "Sort"
+    "SortCode": "Sort",
+
+    "ResourceDup": "Duplicate name {0} exists",
+    "ResourceParentChoiceSelf": "Parent cannot choose itself",
+    "ResourceParentNull": "Parent does not exist {0}",
+    "NotFoundResource": "System exception, menu not found",
+    "ModuleIdDiff": "Module is inconsistent with parent menu",
+    "CanotDeleteSystemResource": "Cannot delete system resource {0}",
+    "ResourceMenuHrefNotNull": "Menu href cannot null"
   },
 
   "ThingsGateway.Admin.Application.SysOperateLog": {

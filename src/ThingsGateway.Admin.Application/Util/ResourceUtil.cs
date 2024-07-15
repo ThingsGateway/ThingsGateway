@@ -19,6 +19,8 @@ using NewLife;
 using System.Globalization;
 using System.Reflection;
 
+using ThingsGateway.Core.Extension;
+
 namespace ThingsGateway.Admin.Application;
 
 public class ResourceUtil

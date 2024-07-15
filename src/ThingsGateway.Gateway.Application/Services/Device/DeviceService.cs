@@ -282,6 +282,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
     /// 报表查询
     /// </summary>
     /// <param name="option">查询条件</param>
+    /// <param name="pluginType">查询条件</param>
     public Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType)
     {
         return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)).Where(a => a.PluginType == pluginType));

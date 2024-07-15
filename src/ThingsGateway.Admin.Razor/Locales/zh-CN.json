@@ -36,11 +36,6 @@
     "Welcome": "欢迎使用"
   },
 
-  "ThingsGateway.Admin.Razor.UserLogin": {
-    "Account": "登录账号",
-    "Password": "登录密码",
-    "Login": "登录"
-  },
 
   "ThingsGateway.Admin.Razor.MainLayout": {
     "About": "关于",

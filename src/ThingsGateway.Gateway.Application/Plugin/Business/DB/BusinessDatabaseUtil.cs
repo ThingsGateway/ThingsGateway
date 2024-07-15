@@ -52,8 +52,6 @@ public static class BusinessDatabaseUtil
     /// <summary>
     /// 按条件获取DB插件中的全部历史报警(不分页)
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
     public static async Task<OperResult<SqlSugarPagedList<IDBHistoryAlarm>>> GetDBHistoryAlarmPagesAsync(string businessDeviceName, DBHistoryAlarmPageInput input)
     {
         try
@@ -79,8 +77,6 @@ public static class BusinessDatabaseUtil
     /// <summary>
     /// 按条件获取DB插件中的全部历史报警(不分页)
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
     public static async Task<OperResult<List<IDBHistoryAlarm>>> GetDBHistoryAlarmsAsync(string businessDeviceName, DBHistoryAlarmPageInput input)
     {
         try
@@ -106,8 +102,6 @@ public static class BusinessDatabaseUtil
     /// <summary>
     /// 按条件获取DB插件中的全部历史数据(不分页)
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
     public static async Task<OperResult<SqlSugarPagedList<IDBHistoryValue>>> GetDBHistoryValuePagesAsync(string businessDeviceName, DBHistoryValuePageInput input)
     {
         try
@@ -133,8 +127,6 @@ public static class BusinessDatabaseUtil
     /// <summary>
     /// 按条件获取DB插件中的全部历史数据(不分页)
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
     public static async Task<OperResult<List<IDBHistoryValue>>> GetDBHistoryValuesAsync(string businessDeviceName, DBHistoryValuePageInput input)
     {
         try

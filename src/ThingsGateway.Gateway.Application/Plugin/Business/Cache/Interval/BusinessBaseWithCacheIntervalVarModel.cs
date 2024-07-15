@@ -135,9 +135,10 @@ public abstract class BusinessBaseWithCacheIntervalVarModel<T> : BusinessBaseWit
     }
 
     /// <summary>
-    /// 当变量状态变化时发生，通常需要执行<see cref="BusinessBaseWithCacheVarModel{T}.AddQueueVarModel(T)"/>。
+    /// 当变量状态变化时发生，通常需要执行<see cref="BusinessBaseWithCacheVarModel{T}.AddQueueVarModel(CacheDBItem{T})"/>。
     /// </summary>
     /// <param name="variableRunTime">变量运行时对象</param>
+    /// <param name="variable">变量运行时对象</param>
     protected virtual void VariableChange(VariableRunTime variableRunTime, VariableData variable)
     {
     }

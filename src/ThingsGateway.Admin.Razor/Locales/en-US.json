@@ -35,11 +35,7 @@
     "Remark3": "Edge Computing, Efficient Processing",
     "Welcome": "Welcome"
   },
-  "ThingsGateway.Admin.Razor.UserLogin": {
-    "Account": "Username",
-    "Password": "Password",
-    "Login": "Login"
-  },
+
 
   "ThingsGateway.Admin.Razor.MainLayout": {
     "About": "About",

@@ -80,7 +80,8 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
     {
         var sysRoles = await GetAllAsync();//获取所有角色
         var hasSuperAdmin = sysRoles.Any(it => it.Code == RoleConst.SuperAdmin && ids.Contains(it.Id));//判断是否有超级管理员
-        if (hasSuperAdmin) throw Oops.Bah("CanotDeleteAdmin");
+        if (hasSuperAdmin)
+            throw Oops.Bah(Localizer["CanotDeleteAdmin"]);
 
         //数据库是string所以这里转下
         var targetIds = ids.Select(it => it.ToString());
@@ -126,7 +127,7 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
     public async Task<bool> SaveRoleAsync(SysRole input, ItemChangedType type)
     {
         if (input.Code == RoleConst.SuperAdmin)
-            throw Oops.Bah("CanotEditAdmin");
+            throw Oops.Bah(Localizer["CanotEditAdmin"]);
         await CheckInput(input);//检查参数
         if (await base.SaveAsync(input, type))
         {
@@ -166,7 +167,7 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
         if (sysRole != null)
         {
             if (sysRole.Category == RoleCategoryEnum.Api)
-                throw Oops.Bah("ApiRoleCanotGrantResource");
+                throw Oops.Bah(Localizer["ApiRoleCanotGrantResource"]);
             var resources = await _sysResourceService.GetAllAsync();
 
             var menus1 = resources.Where(a => menuIdsExtJsons1.Contains(a.Id));
@@ -375,13 +376,13 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
     {
         //判断分类
         if (sysRole.Category != RoleCategoryEnum.Global && sysRole.Category != RoleCategoryEnum.Api)
-            throw Oops.Bah("CategoryError", sysRole.Category);
+            throw Oops.Bah(Localizer["CategoryError", sysRole.Category]);
 
         var sysRoles = await GetAllAsync();//获取所有
         var repeatName = sysRoles.Any(it => it.Name == sysRole.Name && it.Id != sysRole.Id);//是否有重复角色名称
         if (repeatName)//如果有
         {
-            throw Oops.Bah("NameDup", sysRole.Name);
+            throw Oops.Bah(Localizer["NameDup", sysRole.Name]);
         }
     }
 

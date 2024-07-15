@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="$(SolutionDir)Version.props" />
+  <Import Project="$(SolutionDir)PackNuget.props" />
 
   <ItemGroup>
     <PackageReference Include="SqlSugar.TDengineCore" Version="4.18.0" />

@@ -307,10 +307,10 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
             {
                 var isSuperAdmin = exist.Account == RoleConst.SuperAdmin;//判断是否有超管
                 if (isSuperAdmin && !UserManager.SuperAdmin)
-                    throw Oops.Bah("CanotEditAdminUser");
+                    throw Oops.Bah(Localizer["CanotEditAdminUser"]);
 
                 if (isSuperAdmin && input.Status != exist.Status)
-                    throw Oops.Bah("CanotEditAdminUser");
+                    throw Oops.Bah(Localizer["CanotEditAdminUser"]);
 
                 var sysUser = input;//实体转换
                 using var db = GetDB();
@@ -376,7 +376,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
         {
             var isSuperAdmin = sysUser.Account == RoleConst.SuperAdmin;//判断是否有超管
             if (isSuperAdmin)
-                throw Oops.Bah($"CanotGrantAdmin");
+                throw Oops.Bah(Localizer["CanotGrantAdmin"]);
             CheckSelf(input.Id, Localizer["GrantRole"]);//判断是不是自己
 
             //给用户赋角色
@@ -496,9 +496,9 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
         using var db = GetDB();
         var containsSuperAdmin = await db.Queryable<SysUser>().Where(it => it.Account == RoleConst.SuperAdmin && ids.Contains(it.Id)).AnyAsync();//判断是否有超管
         if (containsSuperAdmin)
-            throw Oops.Bah("CanotDeleteAdminUser");
+            throw Oops.Bah(Localizer["CanotDeleteAdminUser"]);
         if (ids.Contains(UserManager.UserId))
-            throw Oops.Bah($"CanotDeleteSelf");
+            throw Oops.Bah(Localizer["CanotDeleteSelf"]);
 
         //定义删除的关系
         var delRelations = new List<RelationCategoryEnum>
@@ -602,22 +602,22 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
         //判断账号重复,直接从cache拿
         var accountId = await GetIdByAccountAsync(sysUser.Account);
         if (accountId > 0 && accountId != sysUser.Id)
-            throw Oops.Bah("AccountDup", sysUser.Account);
+            throw Oops.Bah(Localizer["AccountDup", sysUser.Account]);
         //如果邮箱不是空
         if (!string.IsNullOrEmpty(sysUser.Email))
         {
             var isMatch = sysUser.Email.MatchEmail();//验证邮箱格式
             if (!isMatch)
-                throw Oops.Bah("EmailError", sysUser.Email);
+                throw Oops.Bah(Localizer["EmailError", sysUser.Email]);
             using var db = GetDB();
             if (await db.Queryable<SysUser>().Where(it => it.Email == sysUser.Email && it.Id != sysUser.Id).AnyAsync())
-                throw Oops.Bah("EmailDup", sysUser.Email);
+                throw Oops.Bah(Localizer["EmailDup", sysUser.Email]);
         }
         //如果手机号不是空
         if (!string.IsNullOrEmpty(sysUser.Phone))
         {
             if (!sysUser.Phone.MatchPhoneNumber())//验证手机格式
-                throw Oops.Bah($"PhoneError", sysUser.Phone);
+                throw Oops.Bah(Localizer["PhoneError", sysUser.Phone]);
             sysUser.Phone = DESCEncryption.Encrypt(sysUser.Phone);
         }
     }
@@ -631,7 +631,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     {
         if (id == UserManager.UserId)//如果是自己
         {
-            throw Oops.Bah("CheckSelf", operate);
+            throw Oops.Bah(Localizer["CheckSelf", operate]);
         }
     }
 

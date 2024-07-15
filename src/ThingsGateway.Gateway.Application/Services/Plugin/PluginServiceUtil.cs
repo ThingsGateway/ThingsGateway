@@ -138,7 +138,7 @@ public static class PluginServiceUtil
     /// <summary>
     /// 插件是否支持平台
     /// </summary>
-    /// <param name="type"></param>
+    /// <param name="model"></param>
     /// <returns></returns>
     public static bool HasDynamicProperty(object model)
     {
@@ -162,8 +162,6 @@ public static class PluginServiceUtil
     /// <summary>
     /// 通过实体赋值到字典中
     /// </summary>
-    /// <param name="model"></param>
-    /// <param name="dict"></param>
     public static ConcurrentDictionary<long, Dictionary<string, string>> SetDict(ConcurrentDictionary<long, ModelValueValidateForm>? models)
     {
         ConcurrentDictionary<long, Dictionary<string, string>> results = new();
@@ -180,7 +178,6 @@ public static class PluginServiceUtil
     /// 通过实体赋值到字典中
     /// </summary>
     /// <param name="model"></param>
-    /// <param name="dict"></param>
     public static Dictionary<string, string> SetDict(object model)
     {
         Type type = model.GetType();

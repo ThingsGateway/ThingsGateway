@@ -128,6 +128,7 @@ public interface IDeviceService
     /// 异步分页查询设备信息。
     /// </summary>
     /// <param name="option">查询条件</param>
+    /// <param name="pluginType">查询条件</param>
     /// <returns>查询结果</returns>
     Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType);
 

@@ -22,16 +22,6 @@
     <Compile Include="..\..\plugin\ThingsGateway.Plugin.OpcUa\Pages\OpcUaMaster.razor.cs" Link="Pages\OpcUaMaster.razor.cs" />
 
     <Compile Include="..\..\ThingsGateway.Admin.Razor\Services\VersionService.cs" Link="Services\VersionService.cs" />
-    <Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\AdapterDebugBase.cs" Link="DebugPages\AdapterDebugBase.cs" />
-    <Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\AdapterDebugComponent.razor.cs" Link="DebugPages\AdapterDebugComponent.razor.cs" />
-    <Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\ChannelDataDebugComponent.razor.cs" Link="DebugPages\ChannelDataDebugComponent.razor.cs" />
-    <Compile Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\LogConsole.razor.cs" Link="DebugPages\LogConsole.razor.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\AdapterDebugComponent.razor" Link="DebugPages\AdapterDebugComponent.razor" />
-    <Content Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\ChannelDataDebugComponent.razor" Link="DebugPages\ChannelDataDebugComponent.razor" />
-    <Content Include="..\..\ThingsGateway.Gateway.Razor\DebugPages\LogConsole.razor" Link="DebugPages\LogConsole.razor" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,8 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ThingsGateway.Startup" Version="*" />
-    <PackageReference Include="ThingsGateway.Razor" Version="*" />
+    <PackageReference Include="ThingsGateway.Foundation.Razor" Version="*" />
     <PackageReference Include="ThingsGateway.Foundation.Modbus" Version="*" />
     <PackageReference Include="ThingsGateway.Foundation.OpcUa" Version="*" />
     <PackageReference Include="ThingsGateway.Foundation.OpcDa" Version="*" />

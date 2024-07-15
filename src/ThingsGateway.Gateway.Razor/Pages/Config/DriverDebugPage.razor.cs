@@ -13,6 +13,7 @@ using Mapster;
 using NewLife.Extension;
 
 using ThingsGateway.Gateway.Application;
+using ThingsGateway.Razor;
 
 namespace ThingsGateway.Gateway.Razor;
 

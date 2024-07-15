@@ -59,7 +59,7 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
             //查找内置菜单
             var system = delSysResources.FirstOrDefault(it => it.Code == ResourceConst.System);
             if (system != null)
-                throw Oops.Bah($"CanotDeleteSystemResource", system.Title);
+                throw Oops.Bah(Localizer["CanotDeleteSystemResource", system.Title]);
 
             //需要删除的资源ID列表
             var resourceIds = delSysResources.SelectMany(it =>
@@ -246,7 +246,7 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
         var menList = await GetAllAsync();
         //判断是否有同级且同名
         if (menList.Any(it => it.ParentId == sysResource.ParentId && it.Title == sysResource.Title && it.Id != sysResource.Id))
-            throw Oops.Bah("ResourceDup", sysResource.Title);
+            throw Oops.Bah(Localizer["ResourceDup", sysResource.Title]);
         if (sysResource.ParentId != 0)
         {
             //获取父级,判断父级ID正不正确
@@ -254,13 +254,13 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
             if (parent != null)
             {
                 if (parent.Module != sysResource.Module)//如果父级的模块和当前模块不一样
-                    throw Oops.Bah("ModuleIdDiff");
+                    throw Oops.Bah(Localizer["ModuleIdDiff"]);
                 if (parent.Id == sysResource.Id)
-                    throw Oops.Bah($"ResourceChoiceSelf");
+                    throw Oops.Bah(Localizer["ResourceChoiceSelf"]);
             }
             else
             {
-                throw Oops.Bah("ResourceParentNull", sysResource.ParentId);
+                throw Oops.Bah(Localizer["ResourceParentNull", sysResource.ParentId]);
             }
         }
 
@@ -269,7 +269,7 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
         {
             var resource = menList.FirstOrDefault(it => it.Id == sysResource.Id);
             if (resource == null)
-                throw Oops.Bah($"NotFoundResource");
+                throw Oops.Bah(Localizer["NotFoundResource"]);
             return resource;
         }
 

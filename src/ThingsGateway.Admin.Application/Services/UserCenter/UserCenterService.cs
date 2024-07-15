@@ -164,27 +164,28 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
         var websiteOptions = App.Configuration?.GetSection(nameof(WebsiteOptions)).Get<WebsiteOptions>()!;
         if (websiteOptions.Demo)
         {
-            throw Oops.Bah("DemoCanotUpdatePassword");
+            throw Oops.Bah(Localizer["DemoCanotUpdatePassword"]);
         }
         if (input.NewPassword != input.ConfirmPassword)
-            throw Oops.Bah("ConfirmPasswordDiff");
+            throw Oops.Bah(Localizer["ConfirmPasswordDiff"]);
 
         //获取用户信息
         var userInfo = await _userService.GetUserByIdAsync(UserManager.UserId);
         var password = input.Password;
-        if (userInfo!.Password != password) throw Oops.Bah("OldPasswordError");
+        if (userInfo!.Password != password)
+            throw Oops.Bah(Localizer["OldPasswordError"]);
 
         var passwordPolicy = (await _configService.GetAppConfigAsync()).PasswordPolicy;
         if (passwordPolicy.PasswordMinLen > input.NewPassword.Length)
-            throw Oops.Bah("PasswordLengthLess", passwordPolicy.PasswordMinLen);
+            throw Oops.Bah(Localizer["PasswordLengthLess", passwordPolicy.PasswordMinLen]);
         if (passwordPolicy.PasswordContainNum && !Regex.IsMatch(input.NewPassword, "[0-9]"))
-            throw Oops.Bah("PasswordMustNum");
+            throw Oops.Bah(Localizer["PasswordMustNum"]);
         if (passwordPolicy.PasswordContainLower && !Regex.IsMatch(input.NewPassword, "[a-z]"))
-            throw Oops.Bah($"PasswordMustLow");
+            throw Oops.Bah(Localizer["PasswordMustLow"]);
         if (passwordPolicy.PasswordContainUpper && !Regex.IsMatch(input.NewPassword, "[A-Z]"))
-            throw Oops.Bah($"PasswordMustUpp");
+            throw Oops.Bah(Localizer["PasswordMustUpp"]);
         if (passwordPolicy.PasswordContainChar && !Regex.IsMatch(input.NewPassword, "[~!@#$%^&*()_+`\\-={}|\\[\\]:\";'<>?,./]"))
-            throw Oops.Bah($"PasswordMustSpecial");
+            throw Oops.Bah(Localizer["PasswordMustSpecial"]);
 
         var newPassword = DESCEncryption.Encrypt(input.NewPassword);
         using var db = GetDB();
@@ -205,13 +206,13 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
         if (!string.IsNullOrEmpty(input.Phone))
         {
             if (!input.Phone.MatchPhoneNumber())//判断是否是手机号格式
-                throw Oops.Bah($"PhoneError", input.Phone);
+                throw Oops.Bah(Localizer["PhoneError", input.Phone]);
         }
         if (!string.IsNullOrEmpty(input.Email))
         {
             var match = input.Email.MatchEmail();
             if (!match)
-                throw Oops.Bah($"EmailError", input.Email);
+                throw Oops.Bah(Localizer["EmailError", input.Email]);
         }
         using var db = GetDB();
 
@@ -246,7 +247,7 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
     /// 通知用户下线
     /// </summary>
     /// <param name="userId">用户ID</param>
-    /// <param name="verificatInfoIds">Token列表</param>
+    /// <param name="clientIds">Token列表</param>
     private async Task UserLoginOut(long userId, List<long> clientIds)
     {
         await NoticeUtil.UserLoginOut(new UserLoginOutEvent

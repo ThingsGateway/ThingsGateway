@@ -1,0 +1,7 @@
+﻿{
+  "ThingsGateway.FileService": {
+    "FileNullError": "File cannot be empty",
+    "FileLengthError": "File size cannot exceed {0} M",
+    "FileTypeError": "Not supported format {0}"
+  }
+}

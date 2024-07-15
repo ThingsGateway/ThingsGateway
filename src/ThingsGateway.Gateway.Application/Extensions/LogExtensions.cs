@@ -10,6 +10,8 @@
 
 using Microsoft.Extensions.Logging;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>

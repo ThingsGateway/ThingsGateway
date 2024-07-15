@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(SolutionDir)Version.props" />
+  <Import Project="$(SolutionDir)PackNuget.props" />
 
   <ItemGroup>
     <PackageReference Include="Rougamo.Fody" Version="3.0.2" />

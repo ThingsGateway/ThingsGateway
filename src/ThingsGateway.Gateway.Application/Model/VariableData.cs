@@ -93,7 +93,7 @@ public class VariableBasicData : VariableData
 
 internal class VariableDataWithValue
 {
-    /// <inheritdoc cref="DeviceRunTime.Name"/>
+    /// <inheritdoc cref="Variable.Name"/>
     public string Name { get; set; }
 
     /// <inheritdoc cref="VariableRunTime.Value"/>

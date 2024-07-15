@@ -67,36 +67,6 @@
     "后台日志": "Backend",
     "RPC日志": "RPC"
   },
-  "ThingsGateway.Debug.AdapterDebugBase": {
-    "WriteSuccess": "Write Successful",
-    "DefaultSend": "Direct Send",
-    "Send": "Send",
-    "DataType": "Data Type",
-    "RegisterAddress": "Register Address",
-    "ArrayLength": "Array Length",
-    "WriteValue": "Write Value",
-    "SendValue": "Send Raw Message"
-  },
-  "ThingsGateway.Debug.AdapterDebugComponent": {
-    "HeaderText": "Channel Log",
-    "WriteSuccess": "Write Successful",
-    "DefaultSend": "Direct Send",
-    "Send": "Send",
-    "DataType": "Data Type",
-    "RegisterAddress": "Register Address",
-    "ArrayLength": "Array Length",
-    "WriteValue": "Write Value",
-    "SendValue": "Send Raw Message",
-    "CommonFunctions": "Common Functions",
-    "SpecialFunctions": "Special Functions",
-    "Read": "Read",
-    "Write": "Write",
-    "MulRead": "Multiple Read"
-  },
-  "ThingsGateway.Debug.ChannelDataEditComponent": {
-    "BasicInformation": "Basic Information",
-    "Connection": "Connection"
-  },
   "ThingsGateway.Gateway.Razor.DriverDebugPage": {
     "PluginUINotNull": "This plugin does not implement a debug page",
     "New": "New"

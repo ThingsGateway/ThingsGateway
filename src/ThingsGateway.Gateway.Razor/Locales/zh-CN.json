@@ -65,36 +65,6 @@
     "后台日志": "后台日志",
     "RPC日志": "RPC日志"
   },
-  "ThingsGateway.Debug.AdapterDebugBase": {
-    "WriteSuccess": "写入成功",
-    "DefaultSend": "直接发送",
-    "Send": "发送",
-    "DataType": "数据类型",
-    "RegisterAddress": "寄存器地址",
-    "ArrayLength": "数组长度",
-    "WriteValue": "写入值",
-    "SendValue": "发送原始报文"
-  },
-  "ThingsGateway.Debug.AdapterDebugComponent": {
-    "HeaderText": "通道日志",
-    "WriteSuccess": "写入成功",
-    "DefaultSend": "直接发送",
-    "Send": "发送",
-    "DataType": "数据类型",
-    "RegisterAddress": "寄存器地址",
-    "ArrayLength": "数组长度",
-    "WriteValue": "写入值",
-    "SendValue": "发送原始报文",
-    "CommonFunctions": "常用功能",
-    "SpecialFunctions": "特殊功能",
-    "Read": "读取",
-    "Write": "写入",
-    "MulRead": "多读"
-  },
-  "ThingsGateway.Debug.ChannelDataEditComponent": {
-    "BasicInformation": "基础信息",
-    "Connection": "连接"
-  },
 
   "ThingsGateway.Gateway.Razor.DriverDebugPage": {
     "PluginUINotNull": "此插件未实现调试页面",

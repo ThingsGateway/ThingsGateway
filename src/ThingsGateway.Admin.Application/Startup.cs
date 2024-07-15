@@ -33,7 +33,6 @@ public class Startup : AppStartup
 {
     public void ConfigureAdminApp(IServiceCollection services)
     {
-        services.AddSingleton<ICacheService, MemoryCacheService>();
 
         //检查ConfigId
         var configIdGroup = DbContext.DbConfigs.GroupBy(it => it.ConfigId);

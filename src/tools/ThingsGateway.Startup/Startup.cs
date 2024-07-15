@@ -18,18 +18,17 @@ using System.Reflection;
 using System.Text;
 
 using ThingsGateway.Core;
-using ThingsGateway.Core.Extension;
-using ThingsGateway.Razor;
 
 using Yitter.IdGenerator;
 
-namespace ThingsGateway.Razor;
+namespace ThingsGateway;
 
 [AppStartup(10000000)]
 public class Startup : AppStartup
 {
     public void ConfigureApp(IServiceCollection services)
     {
+        services.AddSingleton<ICacheService, MemoryCacheService>();
         // 配置雪花Id算法机器码
         YitIdHelper.SetIdGenerator(new IdGeneratorOptions
         {

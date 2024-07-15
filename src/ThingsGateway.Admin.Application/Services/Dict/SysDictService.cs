@@ -149,7 +149,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
         var websiteOptions = App.Configuration?.GetSection(nameof(WebsiteOptions)).Get<WebsiteOptions>()!;
         if (websiteOptions.Demo)
         {
-            throw Oops.Bah("DemoCanotUpdateWebsitePolicy");
+            throw Oops.Bah(Localizer["DemoCanotUpdateWebsitePolicy"]);
         }
 
         using var db = GetDB();
@@ -297,7 +297,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
 
         if (dict != null)
         {
-            throw Oops.Bah("DictDup", input.Category, input.Name);
+            throw Oops.Bah(Localizer["DictDup", input.Category, input.Name]);
         }
         //设置类型为业务
         input.DictType = DictTypeEnum.Define;

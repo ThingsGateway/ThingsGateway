@@ -23,7 +23,6 @@ public class RpcLogService : BaseService<RpcLog>, IRpcLogService
     /// <summary>
     /// 最新十条
     /// </summary>
-    /// <param name="account">操作人</param>
     public async Task<List<RpcLog>> GetNewLog()
     {
         using var db = GetDB();

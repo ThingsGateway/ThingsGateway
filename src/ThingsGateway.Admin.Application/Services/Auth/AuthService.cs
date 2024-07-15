@@ -68,13 +68,14 @@ public class AuthService : IAuthService
             }
             catch (Exception)
             {
-                throw Oops.Bah("MustDesc");
+                throw Oops.Bah(_localizer["MustDesc"]);
             }
         }
 
         BeforeLogin(appConfig, input.Account);//登录前校验
         var userInfo = await _userService.GetUserByAccountAsync(input.Account);//获取用户信息
-        if (userInfo == null) throw Oops.Bah("UserNull", input.Account);//用户不存在
+        if (userInfo == null)
+            throw Oops.Bah(_localizer["UserNull", input.Account]);//用户不存在
         if (userInfo.Password != password)
         {
             LoginError(appConfig.LoginPolicy, input.Account);//登录错误操作
@@ -128,7 +129,7 @@ public class AuthService : IAuthService
         if (errorCountCache >= appConfig.LoginPolicy.ErrorCount)
         {
             App.CacheService.SetExpire(key, TimeSpan.FromMinutes(appConfig.LoginPolicy.ErrorLockTime));//设置缓存
-            throw Oops.Bah("PasswordError", appConfig.LoginPolicy.ErrorLockTime);
+            throw Oops.Bah(_localizer["PasswordError", appConfig.LoginPolicy.ErrorLockTime]);
         }
     }
 
@@ -142,7 +143,8 @@ public class AuthService : IAuthService
     /// <returns>登录输出结果</returns>
     private async Task<LoginOutput> ExecLogin(LoginPolicy loginPolicy, LoginInput input, SysUser sysUser, bool isCookie = true)
     {
-        if (sysUser.Status == false) throw Oops.Bah("UserDisable", sysUser.Account);//账号已停用
+        if (sysUser.Status == false)
+            throw Oops.Bah(_localizer["UserDisable", sysUser.Account]);//账号已停用
 
         var verificatId = YitIdHelper.NextId();
         var expire = loginPolicy.VerificatExpireTime;
@@ -179,7 +181,8 @@ public class AuthService : IAuthService
         }
         else
         {
-            if (!sysUser.ModuleList.Any()) throw Oops.Bah("UserNoModule");//未分配模块
+            if (!sysUser.ModuleList.Any())
+                throw Oops.Bah(_localizer["UserNoModule"]);//未分配模块
 
             #region cookie
 
@@ -241,7 +244,7 @@ public class AuthService : IAuthService
         App.CacheService.Increment(key, 1);// 登录错误次数+1
         App.CacheService.SetExpire(key, TimeSpan.FromMinutes(loginPolicy.ErrorResetTime));//设置过期时间
         var errorCountCache = App.CacheService.Get<int>(key);//获取登录错误次数
-        throw Oops.Bah("AuthErrorMax", loginPolicy.ErrorCount, loginPolicy.ErrorLockTime, errorCountCache);//账号密码错误
+        throw Oops.Bah(_localizer["AuthErrorMax", loginPolicy.ErrorCount, loginPolicy.ErrorLockTime, errorCountCache]);//账号密码错误
     }
 
     /// <summary>

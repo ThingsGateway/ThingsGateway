@@ -23,7 +23,6 @@ public class BackendLogService : BaseService<BackendLog>, IBackendLogService
     /// <summary>
     /// 最新十条
     /// </summary>
-    /// <param name="account">操作人</param>
     public async Task<List<BackendLog>> GetNewLog()
     {
         using var db = GetDB();

@@ -15,6 +15,8 @@ using SqlSugar;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Ports;
 
+using TouchSocket.Sockets;
+
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
@@ -53,7 +55,7 @@ public class Channel : PrimaryIdEntity
     public bool LogEnable { get; set; }
 
     /// <summary>
-    /// 远程地址，可由<see cref="IPHost.IPHost(string)"/>与<see href="IPHost.ToString()"/>相互转化
+    /// 远程地址，可由<see cref="IPHost"/> 与 <see cref="string"/> 相互转化
     /// </summary>
     [SugarColumn(ColumnDescription = "远程地址", Length = 200, IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]

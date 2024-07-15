@@ -27,8 +27,6 @@ public interface IPluginService
     /// <summary>
     /// 获取插件动态注册的方法
     /// </summary>
-    /// <param name="pluginName"></param>
-    /// <returns></returns>
     List<DriverMethodInfo> GetDriverMethodInfos(string pluginName, DriverBase? driverBase = null);
 
     /// <summary>

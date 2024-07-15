@@ -26,7 +26,6 @@ public interface IVariableService
     /// 异步插入变量信息。
     /// </summary>
     /// <param name="input">要保存的设备信息。</param>
-    /// <param name="type">变量变化类型。</param>
     Task AddBatchAsync(List<Variable> input);
 
     /// <summary>

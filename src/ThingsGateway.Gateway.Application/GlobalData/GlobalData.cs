@@ -32,7 +32,6 @@ public delegate void VariableChangeEventHandler(VariableRunTime variableRunTime,
 /// 变量采集事件委托，用于通知变量进行采集时的事件
 /// </summary>
 /// <param name="variableRunTime">变量运行时对象</param>
-/// <param name="variableData">变量数据对象</param>
 public delegate void VariableCollectEventHandler(VariableRunTime variableRunTime);
 
 /// <summary>

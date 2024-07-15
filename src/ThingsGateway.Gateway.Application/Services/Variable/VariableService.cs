@@ -314,8 +314,6 @@ public class VariableService : BaseService<Variable>, IVariableService
     /// <summary>
     /// 导出文件
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
     [OperDesc("ExportVariable", isRecordPar: false, localizerType: typeof(Variable))]
     public async Task<MemoryStream> ExportMemoryStream(IEnumerable<Variable> data, string deviceName = null)
     {
@@ -330,8 +328,6 @@ public class VariableService : BaseService<Variable>, IVariableService
     /// <summary>
     /// 导出文件
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
     [OperDesc("ExportVariable", isRecordPar: false, localizerType: typeof(Variable))]
     public async Task<FileStreamResult> ExportVariableAsync(QueryPageOptions options)
     {

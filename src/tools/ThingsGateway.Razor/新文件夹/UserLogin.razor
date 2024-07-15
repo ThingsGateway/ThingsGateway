@@ -1,0 +1,12 @@
+﻿@namespace ThingsGateway.Razor
+<ValidateForm Model="@Model" class="mt-5" OnValidSubmit="OnLogin">
+    <BootstrapInputGroup>
+        <BootstrapInput TValue="string" name="userName"
+                        @bind-Value="@Model.Account" IsAutoFocus="true" PlaceHolder="@Localizer["Account"]" />
+    </BootstrapInputGroup>
+    <BootstrapInputGroup class="mt-3">
+        <BootstrapPassword name="password" PlaceHolder="@Localizer["Password"]"
+                        @bind-Value="@Model.Password" />
+    </BootstrapInputGroup>
+    <Button ButtonType="@ButtonType.Submit" Class="btn-block mt-3" IsAsync>@Localizer["Login"]</Button>
+</ValidateForm>

@@ -57,6 +57,7 @@ public class VariableMethod
     /// <summary>
     /// 执行方法
     /// </summary>
+    /// <param name="driverBase">主体</param>
     /// <param name="value">以,逗号分割的参数</param>
     /// <param name="cancellationToken">取消令箭</param>
     /// <returns></returns>

@@ -21,16 +21,14 @@ public class Oops
     /// 抛出业务异常信息
     /// </summary>
     /// <param name="errorMessage">异常消息</param>
-    /// <param name="args">String.Format 参数</param>
     /// <returns>异常实例</returns>
-    public static UserFriendlyException Bah(string errorMessage, params object[] args)
+    public static UserFriendlyException Bah(string errorMessage)
     {
         if (errorMessage.IsNullOrWhiteSpace())
         {
             return new UserFriendlyException("unkown error");
         }
-        var localizer = App.CreateLocalizerByType(typeof(Oops))!;
-        var friendlyException = new UserFriendlyException(localizer[errorMessage, args]);
+        var friendlyException = new UserFriendlyException(errorMessage);
         return friendlyException;
     }
 }

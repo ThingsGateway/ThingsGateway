@@ -35,7 +35,7 @@ public class OpenApiLoginInput
 /// <summary>
 /// 登录输入参数
 /// </summary>
-public class LoginInput
+public class LoginInput : ILoginInput
 {
     /// <summary>
     /// 账号

@@ -136,6 +136,7 @@ public class BlazorAppContext : IAsyncDisposable
     /// <summary>
     /// 是否拥有按钮授权
     /// </summary>
+    /// <param name="url"></param>
     /// <param name="code"></param>
     /// <returns></returns>
     public bool IsHasButtonWithRole(string url, string code)

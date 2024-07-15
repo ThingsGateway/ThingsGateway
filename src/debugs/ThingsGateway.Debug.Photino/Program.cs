@@ -52,6 +52,11 @@ internal class Program
 
         app.Services.UseServicesWithoutWeb();
 
+        app.MainWindow.ContextMenuEnabled = false;
+#if !DEBUG
+        app.MainWindow.DevToolsEnabled = false;
+#endif
+        app.MainWindow.GrantBrowserPermissions = true;
         app.MainWindow.SetUseOsDefaultLocation(false);
         app.MainWindow.SetUseOsDefaultSize(false);
         app.MainWindow.SetSize(new System.Drawing.Size(1600, 900));

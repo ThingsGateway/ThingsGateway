@@ -409,7 +409,7 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 初始化，在开始前执行，异常时会标识重启
     /// </summary>
-    /// <param name="client"></param>
+    /// <param name="channel">通道，当通道类型为<see cref="ChannelTypeEnum.Other"/>时，传入null</param>
     public abstract void Init(IChannel? channel = null);
 
     /// <summary>

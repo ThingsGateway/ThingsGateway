@@ -1,4 +1,10 @@
 ﻿{
+  "ThingsGateway.Razor.UserLogin": {
+    "Account": "Username",
+    "Password": "Password",
+    "Login": "Login"
+  },
+
   "ThingsGateway.Razor.ImportExcel": {
     "First": "Step 1",
     "Upload": "Upload File",

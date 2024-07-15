@@ -76,7 +76,7 @@ public class DeviceBasicData : DeviceData
 
 public class DeviceDataWithValue
 {
-    /// <inheritdoc cref="DeviceRunTime.Name"/>
+    /// <inheritdoc cref="Device.Name"/>
     public string Name { get; set; }
 
     /// <inheritdoc cref="DeviceRunTime.ActiveTime"/>

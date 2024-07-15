@@ -526,7 +526,7 @@ public class ChannelThread
     /// <summary>
     /// DoWork
     /// </summary>
-    /// <param name="cancellation">取消标记。</param>
+    /// <param name="stoppingToken">取消标记。</param>
     protected async ValueTask DoWork(CancellationToken stoppingToken)
     {
         if (Channel?.ChannelType == ChannelTypeEnum.TcpService && IsCollectChannel)
