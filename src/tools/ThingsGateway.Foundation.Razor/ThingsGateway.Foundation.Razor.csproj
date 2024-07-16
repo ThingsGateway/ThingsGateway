@@ -4,6 +4,7 @@
   <Import Project="$(SolutionDir)PackNuget.props" />
 
   <ItemGroup>
+    <Content Remove="Locales\*.json" />
     <EmbeddedResource Include="Locales\*.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
