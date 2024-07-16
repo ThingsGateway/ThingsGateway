@@ -21,6 +21,7 @@ using System.Collections.Concurrent;
 using System.Reflection;
 
 using ThingsGateway.Core;
+using ThingsGateway.Core.List;
 
 namespace ThingsGateway;
 
@@ -43,7 +44,7 @@ public static class StartupExtensions
             "staticwebassets.runtime.json"
     ];
 
-    private static ConcurrentBag<AppStartup> AppStartups = new();
+    private static ConcurrentList<AppStartup> AppStartups = new();
 
     /// <summary>
     /// 反射获取所有AppStartup的继承类
