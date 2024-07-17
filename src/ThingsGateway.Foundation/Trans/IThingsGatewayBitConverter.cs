@@ -60,7 +60,10 @@ public interface IThingsGatewayBitConverter
     /// 获取或设置在解析字符串的时候是否将字节按照字单位反转
     /// </summary>
     bool IsStringReverseByteWord { get; set; }
-
+    /// <summary>
+    /// 获取或设置在解析字符串的时候是否变长字符串
+    /// </summary>
+    bool IsVariableStringLength { get; set; }
     DataFormatEnum DataFormat { get; set; }
 
     #region GetBytes

@@ -19,6 +19,10 @@ namespace ThingsGateway.Foundation.Dlt645;
 /// </summary>
 public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
 {
+    public Dlt645_2007BitConverter()
+    {
+    }
+
     public Dlt645_2007BitConverter(EndianType endianType) : base(endianType)
     {
     }

@@ -52,6 +52,7 @@ public static class ThingsGatewayBitConverterExtension
         DataFormatEnum? dataFormat = null;
         Encoding? encoding = null;
         int? length = null;
+        bool? wstring = null;
         int? stringlength = null;
         BcdFormatEnum? bcdFormat = null;
         StringBuilder sb = new();
@@ -62,6 +63,11 @@ public static class ThingsGatewayBitConverterExtension
             {
                 var dataFormatName = str.Substring(5);
                 try { if (Enum.TryParse<DataFormatEnum>(dataFormatName, true, out var dataFormat1)) dataFormat = dataFormat1; } catch { }
+            }
+            else if (str.ToLower().StartsWith("w="))
+            {
+                var wstringName = str.Substring(2);
+                try { if (bool.TryParse(wstringName,  out var wstring1)) wstring = wstring1; } catch { }
             }
             // 解析 encoding
             else if (str.ToLower().StartsWith("encoding="))
@@ -87,6 +93,7 @@ public static class ThingsGatewayBitConverterExtension
                 var bcdName = str.Substring(4);
                 try { if (Enum.TryParse<BcdFormatEnum>(bcdName, true, out var bcdFormat1)) bcdFormat = bcdFormat1; } catch { }
             }
+
             // 处理其他情况，将未识别的部分拼接回去
             else
             {
@@ -101,7 +108,7 @@ public static class ThingsGatewayBitConverterExtension
         registerAddress = sb.ToString();
 
         // 如果没有解析出任何附加信息，则直接返回默认的数据转换器
-        if (bcdFormat == null && length == null && stringlength == null && encoding == null && dataFormat == null)
+        if (bcdFormat == null && length == null && stringlength == null && encoding == null && dataFormat == null&& wstring==null)
         {
             return defaultBitConverter;
         }
@@ -121,6 +128,10 @@ public static class ThingsGatewayBitConverterExtension
         if (length != null)
         {
             converter.ArrayLength = length.Value;
+        }
+        if (wstring != null)
+        {
+            converter.IsVariableStringLength = wstring.Value;
         }
         if (stringlength != null)
         {

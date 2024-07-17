@@ -22,7 +22,7 @@ public partial class SiemensS7Master : ProtocolBase
     public SiemensS7Master(IChannel channel) : base(channel)
     {
         RegisterByteLength = 1;
-        ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
+        ThingsGatewayBitConverter = new S7BitConverter(EndianType.Big);
     }
 
     /// <summary>
@@ -436,9 +436,9 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
     public override async ValueTask<OperResult<string[]>> ReadStringAsync(string address, int length, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         var siemensAddress = SiemensAddress.ParseFrom(address);
-        if (siemensAddress.IsString)
+        bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
+        if (bitConverter.IsVariableStringLength)
         {
-            bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
             if (length > 1)
             {
                 return new OperResult<string[]>(SiemensS7Resource.Localizer["StringLengthReadError"]);
@@ -463,9 +463,9 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
     public override ValueTask<OperResult> WriteAsync(string address, string value, IThingsGatewayBitConverter bitConverter = null, CancellationToken cancellationToken = default)
     {
         var siemensAddress = SiemensAddress.ParseFrom(address);
-        if (siemensAddress.IsString)
+        bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
+        if (bitConverter.IsVariableStringLength)
         {
-            bitConverter ??= ThingsGatewayBitConverter.GetTransByAddress(ref address);
             return SiemensHelper.WriteAsync(this, address, value, bitConverter.Encoding);
         }
         else

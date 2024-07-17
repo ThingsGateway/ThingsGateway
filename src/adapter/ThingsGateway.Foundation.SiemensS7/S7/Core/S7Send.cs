@@ -42,11 +42,6 @@ public class S7Request
     public ushort DbBlock { get; set; }
 
     /// <summary>
-    /// IsString，默认是true，如果是char[],需要填写W=false;
-    /// </summary>
-    public bool IsString { get; set; } = true;
-
-    /// <summary>
     /// Length
     /// </summary>
     public int Length { get; set; }

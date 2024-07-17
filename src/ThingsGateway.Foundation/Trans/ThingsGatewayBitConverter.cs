@@ -68,6 +68,9 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <inheritdoc/>
     public virtual bool IsStringReverseByteWord { get; set; }
 
+    /// <inheritdoc/>
+    public virtual bool IsVariableStringLength { get; set; }
+
     internal TouchSocketBitConverter TouchSocketBitConverter => TouchSocketBitConverter.GetBitConverter(EndianType);
 
     static ThingsGatewayBitConverter()

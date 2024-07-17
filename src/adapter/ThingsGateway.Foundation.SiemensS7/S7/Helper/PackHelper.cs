@@ -66,7 +66,7 @@ internal static class PackHelper
                                 // 根据不同的设备类型和地址类型，调整字符串长度
                                 if (device.SiemensS7Type == SiemensTypeEnum.S200Smart)
                                 {
-                                    if (s7Address.IsString)
+                                    if (it.ThingsGatewayBitConverter.IsVariableStringLength)
                                     {
                                         // 字符串在S200Smart中，第一个字节不属于实际内容
                                         it.Index += 1;
@@ -79,7 +79,7 @@ internal static class PackHelper
                                 }
                                 else
                                 {
-                                    if (s7Address.IsString)
+                                    if (it.ThingsGatewayBitConverter.IsVariableStringLength)
                                     {
                                         // 字符串在S7中，前两个字节不属于实际内容
                                         it.Index += 2;

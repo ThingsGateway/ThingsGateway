@@ -30,7 +30,6 @@ public class SiemensAddress : S7Request
         this.DataCode = siemensAddress.DataCode;
         this.DbBlock = siemensAddress.DbBlock;
         this.Data = siemensAddress.Data;
-        this.IsString = siemensAddress.IsString;
         this.Length = siemensAddress.Length;
     }
 
@@ -39,39 +38,39 @@ public class SiemensAddress : S7Request
     {
         if (DataCode == (byte)S7Area.TM)
         {
-            return $"T{AddressStart}{(IsString ? ";" : ";W=false;")}";
+            return $"T{AddressStart}";
         }
         if (DataCode == (byte)S7Area.CT)
         {
-            return $"C{AddressStart}{(IsString ? ";" : ";W=false;")}";
+            return $"C{AddressStart}";
         }
 
         if (DataCode == (byte)S7Area.AI)
         {
-            return $"AI{GetStringAddress(AddressStart)}{(IsString ? ";" : ";W=false;")}";
+            return $"AI{GetStringAddress(AddressStart)}";
         }
 
         if (DataCode == (byte)S7Area.AQ)
         {
-            return $"AQ{GetStringAddress(AddressStart)}{(IsString ? ";" : ";W=false;")}";
+            return $"AQ{GetStringAddress(AddressStart)}";
         }
 
         if (DataCode == (byte)S7Area.PE)
         {
-            return $"I{GetStringAddress(AddressStart)}{(IsString ? ";" : ";W=false;")}";
+            return $"I{GetStringAddress(AddressStart)}";
         }
 
         if (DataCode == (byte)S7Area.PA)
         {
-            return $"Q{GetStringAddress(AddressStart)}{(IsString ? ";" : ";W=false;")}";
+            return $"Q{GetStringAddress(AddressStart)}";
         }
 
         if (DataCode == (byte)S7Area.MK)
         {
-            return $"M{GetStringAddress(AddressStart)}{(IsString ? ";" : ";W=false;")}";
+            return $"M{GetStringAddress(AddressStart)}";
         }
 
-        return DataCode == (byte)S7Area.DB ? $"DB{DbBlock}.{GetStringAddress(AddressStart)}{(IsString ? ";" : ";W=false;")}" : AddressStart.ToString() + (IsString ? ";" : ";W=false;");
+        return DataCode == (byte)S7Area.DB ? $"DB{DbBlock}.{GetStringAddress(AddressStart)}" : AddressStart.ToString();
     }
 
     private string GetStringAddress(int addressStart)
@@ -139,11 +138,7 @@ public class SiemensAddress : S7Request
         string[] strArr = address.SplitStringBySemicolon();
         for (int index = 0; index < strArr.Length; ++index)
         {
-            if (strArr[index].StartsWith("W="))
-            {
-                s7AddressData.IsString = strArr[index].Substring(2).ToBoolean(true);
-            }
-            else if (!strArr[index].Contains("="))
+            if (!strArr[index].Contains("="))
             {
                 s7AddressData.DbBlock = 0;
 
