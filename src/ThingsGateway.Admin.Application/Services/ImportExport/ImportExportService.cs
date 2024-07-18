@@ -46,26 +46,6 @@ public class ImportExportService : IImportExportService
     /// <returns></returns>
     public async Task<FileStreamResult> ExportAsync<T>(object input, string fileName, bool isDynamicExcelColumn = true) where T : class
     {
-        var config = new OpenXmlConfiguration();
-        if (isDynamicExcelColumn)
-        {
-            var type = typeof(T);
-            var data = type.GetRuntimeProperties();
-            List<DynamicExcelColumn> dynamicExcelColumns = new();
-            int index = 0;
-            foreach (var item in data)
-            {
-                var ignore = item.GetCustomAttribute<IgnoreExcelAttribute>() != null;
-                //描述
-                var desc = type.GetPropertyDisplayName(item.Name);
-                //数据源增加
-                dynamicExcelColumns.Add(new DynamicExcelColumn(item.Name) { Ignore = ignore, Index = index, Name = desc ?? item.Name, Width = 30 });
-                if (!ignore)
-                    index++;
-            }
-            config.DynamicColumns = dynamicExcelColumns.ToArray();
-        }
-        config.TableStyles = TableStyles.None;
 
         if (!fileName.Contains("."))
             fileName += ".xlsx";
@@ -92,11 +72,13 @@ public class ImportExportService : IImportExportService
         var filePath = Path.Combine(path, fileName);
         using (FileStream fs = new(filePath, FileMode.Create))
         {
-            await MiniExcel.SaveAsAsync(fs, input, configuration: config);
+            await fs.ExportExcel<T>(input, isDynamicExcelColumn);
         }
         var result = _fileService.GetFileStreamResult(filePath, fileName);
         return result;
     }
+
+
 
     #endregion 导出
 
