@@ -1,19 +1,20 @@
 ﻿@namespace ThingsGateway.Debug
+@using BootstrapBlazor.Components
 @using Microsoft.AspNetCore.Components.Routing
 @using System.Reflection
 
-
-<Router AppAssembly="@typeof(BlazorApp).Assembly" AdditionalAssemblies="_assemblyList">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-    </Found>
-    <NotFound>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
-
+<BootstrapBlazorRoot>
+    <Router AppAssembly="@typeof(BlazorApp).Assembly" AdditionalAssemblies="_assemblyList">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <p role="alert">Sorry, there's nothing at this address.</p>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</BootstrapBlazorRoot>
 
 @code {
     private List<Assembly> _assemblyList = new();

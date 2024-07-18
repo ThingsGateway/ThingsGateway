@@ -46,9 +46,9 @@ public static class StartupWithoutWebExtensions
     /// <summary>
     /// 非web应用 反射获取所有AppStartup的继承类
     /// </summary>
-    public static void ConfigureServicesWithoutWeb(this IServiceCollection services)
+    public static void ConfigureServicesWithoutWeb(this IServiceCollection services, Stream? jsonConfigStream = default)
     {
-        AddStartups(services);
+        AddStartups(services, jsonConfigStream);
     }
 
     /// <summary>
@@ -124,13 +124,22 @@ public static class StartupWithoutWebExtensions
     /// <summary>
     /// 非web应用 添加 Startup 自动扫描
     /// </summary>
-    private static void AddStartups(IServiceCollection services)
+    private static void AddStartups(IServiceCollection services, Stream? jsonConfigStream)
     {
-        // 创建配置生成器并读取appsettings.json
-        var configBuilder = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
+        var configBuilder = new ConfigurationBuilder();
+        if (jsonConfigStream == null)
+        {
+            // 创建配置生成器并读取appsettings.json
+            configBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: false);
+        }
+
 
         AddJsonFiles(configBuilder, default);
+
+        if (jsonConfigStream != null)
+        {
+            configBuilder.AddJsonStream(jsonConfigStream);
+        }
 
         // 构建配置
         var configuration = configBuilder.Build();

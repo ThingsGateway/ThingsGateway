@@ -761,7 +761,7 @@ writeEndObject: writer.WriteEndObject();
         writer.WriteString(nameof(basicFrameworkVersion), basicFrameworkVersion);
 
         // 获取启动信息
-        var entryAssemblyName = Assembly.GetEntryAssembly().GetName().Name;
+        var entryAssemblyName = Assembly.GetEntryAssembly()?.GetName()?.Name;
         writer.WriteString(nameof(entryAssemblyName), entryAssemblyName);
 
         // 获取进程信息

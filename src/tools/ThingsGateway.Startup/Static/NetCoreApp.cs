@@ -15,7 +15,6 @@ using Microsoft.Extensions.Localization;
 
 using System.Diagnostics;
 using System.Reflection;
-using System.Security.Claims;
 
 using ThingsGateway.Core;
 
@@ -118,8 +117,6 @@ public class NetCoreApp
         return Environment.CurrentManagedThreadId;
     }
 
-
-
     /// <summary>
     /// 获取应用有效程序集
     /// </summary>
@@ -136,7 +133,7 @@ public class NetCoreApp
         var entryAssembly = Assembly.GetEntryAssembly();
 
         // 非独立发布/非单文件发布
-        if (!string.IsNullOrWhiteSpace(entryAssembly.Location))
+        if (!string.IsNullOrWhiteSpace(entryAssembly?.Location))
         {
             var dependencyContext = DependencyContext.Default;
 
@@ -151,34 +148,72 @@ public class NetCoreApp
         }
         else
         {
-            IEnumerable<Assembly> fixedSingleFileAssemblies = new[] { entryAssembly };
-
-            // 扫描实现 ISingleFilePublish 接口的类型
-            var singleFilePublishType = entryAssembly.GetTypes()
-                                                .FirstOrDefault(u => u.IsClass && !u.IsInterface && !u.IsAbstract && typeof(ISingleFilePublish).IsAssignableFrom(u));
-            if (singleFilePublishType != null)
+            if (entryAssembly != null)
             {
-                var singleFilePublish = Activator.CreateInstance(singleFilePublishType) as ISingleFilePublish;
 
-                // 加载用户自定义配置单文件所需程序集
-                var nativeAssemblies = singleFilePublish.IncludeAssemblies();
-                var loadAssemblies = singleFilePublish.IncludeAssemblyNames()
-                                                .Select(u => Reflect.GetAssembly(u));
+                IEnumerable<Assembly> fixedSingleFileAssemblies = new[] { entryAssembly };
 
-                fixedSingleFileAssemblies = fixedSingleFileAssemblies.Concat(nativeAssemblies)
-                                                            .Concat(loadAssemblies);
+                // 扫描实现 ISingleFilePublish 接口的类型
+                var singleFilePublishType = entryAssembly.GetTypes()
+                                                    .FirstOrDefault(u => u.IsClass && !u.IsInterface && !u.IsAbstract && typeof(ISingleFilePublish).IsAssignableFrom(u));
+                if (singleFilePublishType != null)
+                {
+                    var singleFilePublish = Activator.CreateInstance(singleFilePublishType) as ISingleFilePublish;
+
+                    // 加载用户自定义配置单文件所需程序集
+                    var nativeAssemblies = singleFilePublish.IncludeAssemblies();
+                    var loadAssemblies = singleFilePublish.IncludeAssemblyNames()
+                                                    .Select(u => Reflect.GetAssembly(u));
+
+                    fixedSingleFileAssemblies = fixedSingleFileAssemblies.Concat(nativeAssemblies)
+                                                                .Concat(loadAssemblies);
+                }
+
+                // 通过 AppDomain.CurrentDomain 扫描，默认为延迟加载，正常只能扫描到入口程序集（启动层）
+                scanAssemblies = AppDomain.CurrentDomain.GetAssemblies()
+                                        .Where(ass =>
+                                                // 排除 System，Microsoft，netstandard 开头的程序集
+                                                !ass.FullName.StartsWith(nameof(System))
+                                                && !ass.FullName.StartsWith(nameof(Microsoft))
+                                                && !ass.FullName.StartsWith("netstandard"))
+                                        .Concat(fixedSingleFileAssemblies)
+                                        .Distinct();
+                return scanAssemblies;
             }
+            else
+            {
+                //maui
 
-            // 通过 AppDomain.CurrentDomain 扫描，默认为延迟加载，正常只能扫描到 Furion 和 入口程序集（启动层）
-            scanAssemblies = AppDomain.CurrentDomain.GetAssemblies()
-                                    .Where(ass =>
-                                            // 排除 System，Microsoft，netstandard 开头的程序集
-                                            !ass.FullName.StartsWith(nameof(System))
-                                            && !ass.FullName.StartsWith(nameof(Microsoft))
-                                            && !ass.FullName.StartsWith("netstandard"))
-                                    .Concat(fixedSingleFileAssemblies)
-                                    .Distinct();
-            return scanAssemblies;
+                scanAssemblies = AppDomain.CurrentDomain.GetAssemblies()
+                        .Where(ass =>
+                                // 排除 System，Microsoft，netstandard 开头的程序集
+                                !ass.FullName.StartsWith(nameof(System))
+                                && !ass.FullName.StartsWith(nameof(Microsoft))
+                                && !ass.FullName.StartsWith("netstandard"));
+                // 扫描实现 ISingleFilePublish 接口的类型
+                IEnumerable<Assembly> fixedSingleFileAssemblies = new List<Assembly>();
+                var singleFilePublishType = scanAssemblies.SelectMany(a=>a.GetTypes())
+                                                    .FirstOrDefault(u => u.IsClass && !u.IsInterface && !u.IsAbstract && typeof(ISingleFilePublish).IsAssignableFrom(u));
+                if (singleFilePublishType != null)
+                {
+                    var singleFilePublish = Activator.CreateInstance(singleFilePublishType) as ISingleFilePublish;
+
+                    // 加载用户自定义配置单文件所需程序集
+                    var nativeAssemblies = singleFilePublish.IncludeAssemblies();
+                    var loadAssemblies = singleFilePublish.IncludeAssemblyNames()
+                                                    .Select(u => Reflect.GetAssembly(u));
+
+                    fixedSingleFileAssemblies = fixedSingleFileAssemblies.Concat(nativeAssemblies)
+                                                                .Concat(loadAssemblies);
+                }
+
+                // 通过 AppDomain.CurrentDomain 扫描，默认为延迟加载，正常只能扫描到入口程序集（启动层）
+
+                scanAssemblies= scanAssemblies.Concat(fixedSingleFileAssemblies)
+                                        .Distinct().ToList();
+                return scanAssemblies;
+
+            }
         }
     }
 }

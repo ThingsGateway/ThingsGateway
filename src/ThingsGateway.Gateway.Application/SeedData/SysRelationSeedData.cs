@@ -18,6 +18,6 @@ public class SysRelationSeedData : ISqlSugarEntitySeedData<SysRelation>
     /// <inheritdoc/>
     public IEnumerable<SysRelation> SeedData()
     {
-        return SeedDataUtil.GetSeedData<SysRelation>("seed_gateway_relation.json");
+        return SeedDataUtil.GetSeedData<SysRelation>(PathExtensions.CombinePathWithOs("SeedData", "Json", "seed_gateway_relation.json"));
     }
 }

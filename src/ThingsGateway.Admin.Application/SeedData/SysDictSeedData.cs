@@ -18,6 +18,6 @@ public class SysDictSeedData : ISqlSugarEntitySeedData<SysDict>
     /// <inheritdoc/>
     public IEnumerable<SysDict> SeedData()
     {
-        return SeedDataUtil.GetSeedData<SysDict>("seed_sys_dict.json");
+        return SeedDataUtil.GetSeedData<SysDict>(PathExtensions.CombinePathWithOs("SeedData", "Json", "seed_sys_dict.json"));
     }
 }

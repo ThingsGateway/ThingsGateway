@@ -30,6 +30,6 @@ public class SysUserSeedData : ISqlSugarEntitySeedData<SysUser>
                   IsDelete=false,
                   SortCode=0
             }
-        }.Concat(SeedDataUtil.GetSeedData<SysUser>("seed_sys_user.json"));
+        }.Concat(SeedDataUtil.GetSeedData<SysUser>(PathExtensions.CombinePathWithOs("SeedData", "Json", "seed_sys_user.json")));
     }
 }

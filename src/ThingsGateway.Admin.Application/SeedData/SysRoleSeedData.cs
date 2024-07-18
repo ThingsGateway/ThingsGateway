@@ -18,6 +18,6 @@ public class SysRoleSeedData : ISqlSugarEntitySeedData<SysRole>
     /// <inheritdoc/>
     public IEnumerable<SysRole> SeedData()
     {
-        return SeedDataUtil.GetSeedData<SysRole>("seed_sys_role.json");
+        return SeedDataUtil.GetSeedData<SysRole>(PathExtensions.CombinePathWithOs("SeedData", "Json", "seed_sys_role.json"));
     }
 }

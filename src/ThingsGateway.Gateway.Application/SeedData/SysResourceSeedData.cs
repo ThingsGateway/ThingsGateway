@@ -18,6 +18,6 @@ public class SysResourceSeedData : ISqlSugarEntitySeedData<SysResource>
     /// <inheritdoc/>
     public IEnumerable<SysResource> SeedData()
     {
-        return SeedDataUtil.GetSeedData<SysResource>("seed_gateway_resource.json").Concat(SeedDataUtil.GetSeedData<SysResource>("seed_gateway_resourcebutton.json"));
+        return SeedDataUtil.GetSeedData<SysResource>(PathExtensions.CombinePathWithOs("SeedData", "Json", "seed_gateway_resource.json")).Concat(SeedDataUtil.GetSeedData<SysResource>(PathExtensions.CombinePathWithOs("SeedData", "Json", "seed_gateway_resourcebutton.json")));
     }
 }

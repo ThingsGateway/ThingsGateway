@@ -15,6 +15,7 @@ using CSScriptLib;
 using NewLife.Caching;
 
 using System.Reflection;
+using System.Text;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -95,18 +96,32 @@ public static class CSharpScriptEngineExtension
                         source = $"return {source}";//只判断简单脚本中可省略return字符串
                     }
 
+                    var src = source.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    StringBuilder _using = new StringBuilder();
+                    StringBuilder _body = new StringBuilder();
+                    src.ToList().ForEach(l =>
+                    {
+                        if (l.StartsWith("using "))
+                        {
+                            _using.AppendLine(l);
+                        }
+                        else
+                        {
+                            _body.AppendLine(l);
+                        }
+
+                    });
+
                     // 动态加载并执行代码
                     runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<T>(
                        $@"
         using System;
         using System.Linq;
         using System.Collections.Generic;
-        using Newtonsoft.Json;
-        using Newtonsoft.Json.Linq;
-        using ThingsGateway.Core.Json.Extension;
         using ThingsGateway.Gateway.Application;
         using ThingsGateway.Gateway.Application.Extensions;
-         {source};
+        {_using}    
+        {_body}    
     ");
                     GC.Collect();
                     Instance.Set(field, runScript);
