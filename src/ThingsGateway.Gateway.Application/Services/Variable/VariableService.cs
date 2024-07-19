@@ -380,18 +380,21 @@ public class VariableService : BaseService<Variable>, IVariableService
             ;
 
         #endregion 列名称
-
+        var varName = nameof(Variable.Name);
         data.ParallelForEach((variable, state, index) =>
         {
             Dictionary<string, object> varExport = new();
             deviceDicts.TryGetValue(variable.DeviceId.Value, out var device);
-
             //设备实体没有包含设备名称，手动插入
             varExport.TryAdd(ExportString.DeviceName, device?.Name ?? deviceName);
             foreach (var item in propertyInfos)
             {
                 //描述
                 var desc = type.GetPropertyDisplayName(item.Name);
+                if (item.Name == varName)
+                {
+                    varName = desc;
+                }
                 //数据源增加
                 varExport.TryAdd(desc ?? item.Name, item.GetValue(variable)?.ToString());
             }
@@ -456,8 +459,20 @@ public class VariableService : BaseService<Variable>, IVariableService
                     }
                     else
                     {
-                        if (driverInfo.Count > 0)
-                            devicePropertys.TryAdd(pluginName.Item2, new() { driverInfo });
+                        lock (devicePropertys)
+                        {
+                            if (devicePropertys.ContainsKey(pluginName.Item2))
+                            {
+                                if (driverInfo.Count > 0)
+                                    devicePropertys[pluginName.Item2].Add(driverInfo);
+                            }
+                            else
+                            {
+                                if (driverInfo.Count > 0)
+                                    devicePropertys.TryAdd(pluginName.Item2, new() { driverInfo });
+                            }
+
+                        }
                     }
                 }
             }
@@ -465,12 +480,17 @@ public class VariableService : BaseService<Variable>, IVariableService
             #endregion 插件sheet
         });
 
+
+
+        variableExports = new(variableExports.OrderBy(a => a[ExportString.DeviceName]).ThenBy(a => a[varName]));
+
         //添加设备页
         sheets.Add(ExportString.VariableName, variableExports);
 
         //HASH
-        foreach (var item in devicePropertys)
+        foreach (var item in devicePropertys.Keys)
         {
+            devicePropertys[item] = new(devicePropertys[item].OrderBy(a => a[ExportString.DeviceName]).ThenBy(a => a[ExportString.VariableName]));
             //HashSet<string> allKeys = item.Value.SelectMany(a => a.Keys).ToHashSet();
 
             //foreach (var dict in item.Value)
@@ -484,8 +504,7 @@ public class VariableService : BaseService<Variable>, IVariableService
             //        }
             //    }
             //}
-
-            sheets.Add(item.Key, item.Value);
+            sheets.Add(item, devicePropertys[item]);
         }
 
         return sheets;
