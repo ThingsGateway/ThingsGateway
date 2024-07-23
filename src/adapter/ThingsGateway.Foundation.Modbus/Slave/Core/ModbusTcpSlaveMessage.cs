@@ -30,11 +30,18 @@ public class ModbusTcpSlaveMessage : MessageBase, IResultMessage
         var pos = byteBlock.Position - HeaderLength;
         this.Bytes = byteBlock.AsSegment(pos, HeaderLength + BodyLength);
 
-        if (Request.FunctionCode == 15 || Request.FunctionCode == 16)
+
+        if (Request.FunctionCode == 15)
+        {
+            byteBlock.Position += 1;
+            Request.Data = byteBlock.AsSegmentTake(Request.Length).AsSpan().ByteToBoolArray(Request.Length).Select(a => a ? (byte)0xff : (byte)0).ToArray();
+        }
+        else if (Request.FunctionCode == 16)
         {
             byteBlock.Position += 1;
             Request.Data = byteBlock.AsSegmentTake(Request.Length);
         }
+
         this.OperCode = 0;
         return FilterResult.Success;
     }
@@ -56,17 +63,22 @@ public class ModbusTcpSlaveMessage : MessageBase, IResultMessage
         }
         else if (Request.FunctionCode == 1 || Request.FunctionCode == 2)
         {
-            Request.Length = (ushort)Math.Ceiling(byteBlock.ReadUInt16(EndianType.Big) / 8.0);
+            Request.Length = (ushort)(byteBlock.ReadUInt16(EndianType.Big));
             return true;
         }
-        else if (Request.FunctionCode == 5 || Request.FunctionCode == 6)
+        else if (Request.FunctionCode == 5)
+        {
+            Request.Data = byteBlock.AsSegmentTake(1);
+            return true;
+        }
+        else if (Request.FunctionCode == 6)
         {
             Request.Data = byteBlock.AsSegmentTake(2);
             return true;
         }
         else if (Request.FunctionCode == 15)
         {
-            Request.Length = (ushort)Math.Ceiling(byteBlock.ReadUInt16(EndianType.Big) / 8.0);
+            Request.Length = (ushort)(byteBlock.ReadUInt16(EndianType.Big));
             return true;
         }
         else if (Request.FunctionCode == 16)

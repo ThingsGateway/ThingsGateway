@@ -8,6 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.Buffers;
 using System.Collections.Concurrent;
 
 using TouchSocket.Sockets;
@@ -251,7 +252,6 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                             return OperResult.CreateSuccessResult(ModbusServer02ByteBlock.Memory.Slice(mAddress.StartAddress, len));
 
                         case 3:
-
                             return OperResult.CreateSuccessResult(ModbusServer03ByteBlock.Memory.Slice(mAddress.StartAddress * this.RegisterByteLength, len));
 
                         case 4:
@@ -261,17 +261,12 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
             }
             else
             {
-                if (mAddress.FunctionCode == 0x05)
-                {
-                    var data = ModbusServer01ByteBlock.Memory.Slice(mAddress.StartAddress, 1);
-                    mAddress.Data = new ReadOnlyMemory<byte>([data.Span[0].SetBit(mAddress.StartAddress % 8, mAddress.Data.Span[0] == 0xff)]);
-                }
                 using (new WriteLock(this._lockSlim))
                 {
                     switch (mAddress.FunctionCode)
                     {
                         case 2:
-                            ModbusServer02ByteBlock.Position = mAddress.StartAddress;
+                            ModbusServer02ByteBlock.Position = mAddress.StartAddress ;
                             ModbusServer02ByteBlock.Write(mAddress.Data.Span);
                             return new();
 
@@ -344,16 +339,9 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
         {
             await EasyValueTask.CompletedTask;
             var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
-            if (value.Length > 1 && mAddress.FunctionCode == 1)
+            if ( mAddress.IsBitFunction)
             {
-                mAddress.WriteFunctionCode = 15;
-                mAddress.Data = value.BoolArrayToByte();
-                ModbusRequest(mAddress, false, cancellationToken);
-                return OperResult.Success;
-            }
-            else if (mAddress.BitIndex == null)
-            {
-                mAddress.Data = value[0] ? new byte[2] { 255, 0 } : [0, 0];
+                mAddress.Data =new ReadOnlyMemory<byte>( value.Select(a=>a?(byte)0xff: (byte)0).ToArray());
                 ModbusRequest(mAddress, false, cancellationToken);
                 return OperResult.Success;
             }
@@ -425,10 +413,12 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                     if (modbusRtu)
                     {
                         valueByteBlock.Write(Bytes.Slice(0, 2).Span);
-                        if (modbusRequest.FunctionCode == 1 || modbusRequest.FunctionCode == 2)
+                        if (modbusRequest.IsBitFunction)
                         {
-                            valueByteBlock.WriteByte((byte)modbusRequest.Length);
-                            valueByteBlock.Write(data.Content.Span);
+                            var bitdata = data.Content.ToArray().Select(m => m > 0).ToArray().BoolArrayToByte();
+                            ReadOnlyMemory<byte> bitwritedata = bitdata.Length == (int)Math.Ceiling(modbusRequest.Length / 8.0) ? new ReadOnlyMemory<byte>(bitdata) : new ReadOnlyMemory<byte>(bitdata).Slice(0, (int)Math.Ceiling(modbusRequest.Length / 8.0));
+                            valueByteBlock.WriteByte((byte)bitwritedata.Length);
+                            valueByteBlock.Write(bitwritedata.Span);
                         }
                         else
                         {
@@ -441,10 +431,12 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                     else
                     {
                         valueByteBlock.Write(Bytes.Slice(0, 8).Span);
-                        if (modbusRequest.FunctionCode == 1 || modbusRequest.FunctionCode == 2)
+                        if (modbusRequest.IsBitFunction)
                         {
-                            valueByteBlock.WriteByte((byte)modbusRequest.Length);
-                            valueByteBlock.Write(data.Content.Span);
+                            var bitdata = data.Content.ToArray().Select(m => m > 0).ToArray().BoolArrayToByte();
+                            ReadOnlyMemory<byte> bitwritedata = bitdata.Length == (int)Math.Ceiling(modbusRequest.Length / 8.0) ? new ReadOnlyMemory<byte>(bitdata) : new ReadOnlyMemory<byte>(bitdata).Slice(0, (int)Math.Ceiling(modbusRequest.Length / 8.0));
+                            valueByteBlock.WriteByte((byte)bitwritedata.Length);
+                            valueByteBlock.Write(bitwritedata.Span);
                         }
                         else
                         {
@@ -467,7 +459,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
         }
         else//写入
         {
-            if (modbusRequest.FunctionCode == 5)
+            if (modbusRequest.FunctionCode == 5|| modbusRequest.FunctionCode == 15)
             {
                 //写入继电器
                 if (this.WriteData != null)
@@ -507,7 +499,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                     }
                 }
             }
-            else
+            else if (modbusRequest.FunctionCode == 6 || modbusRequest.FunctionCode == 16)
             {
                 //写入寄存器
                 if (this.WriteData != null)

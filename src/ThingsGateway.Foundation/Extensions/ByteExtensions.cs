@@ -125,6 +125,34 @@ public static class ByteExtensions
 
         return boolArray;
     }
+    /// <summary>
+    /// 从字节数组中提取位数组，length 代表位数
+    /// </summary>
+    /// <param name="inBytes">原始的字节数组</param>
+    /// <param name="length">想要转换的位数，如果超出字节数组长度 * 8，则自动缩小为数组最大长度</param>
+    /// <returns>转换后的布尔数组</returns>
+    public static bool[] ByteToBoolArray(this Span<byte> inBytes, int length)
+    {
+        // 计算字节数组能够提供的最大位数
+        int maxBitLength = inBytes.Length * 8;
+
+        // 如果指定长度超出最大位数，则将长度缩小为最大位数
+        if (length > maxBitLength)
+        {
+            length = maxBitLength;
+        }
+
+        // 创建对应长度的布尔数组
+        bool[] boolArray = new bool[length];
+
+        // 从字节数组中提取位信息并转换为布尔值存储到布尔数组中
+        for (int index = 0; index < length; ++index)
+        {
+            boolArray[index] = inBytes[index / 8].BoolOnByteIndex(index % 8);
+        }
+
+        return boolArray;
+    }
 
     /// <summary>
     /// 获取异或校验
