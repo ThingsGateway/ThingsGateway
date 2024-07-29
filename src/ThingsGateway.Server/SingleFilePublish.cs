@@ -26,7 +26,6 @@ public class SingleFilePublish : ISingleFilePublish
     /// <returns></returns>
     public Assembly[] IncludeAssemblies()
     {
-        // 需要 Furion 框架扫描哪些程序集就写上去即可
         return Array.Empty<Assembly>();
     }
 

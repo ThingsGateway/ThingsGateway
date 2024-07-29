@@ -82,7 +82,7 @@ public class Program
                 });
         }
 
-        builder.Services.AddCors();
+        builder.Services.AddCorsAccessor();
 
         builder.WebHost.UseWebRoot("wwwroot");
         //builder.WebHost.UseStaticWebAssets();
@@ -193,15 +193,7 @@ public class Program
 
         app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
 
-        app.UseStaticFiles();
-        var cors = app.Configuration["AllowOrigins"]?.Split(',', StringSplitOptions.RemoveEmptyEntries);
-        if (cors?.Length > 0)
-        {
-            app.UseCors(builder => builder.WithOrigins()
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials());
-        }
+        app.UseCorsAccessor();
 
         app.UseAuthentication();
         app.UseAuthorization();
