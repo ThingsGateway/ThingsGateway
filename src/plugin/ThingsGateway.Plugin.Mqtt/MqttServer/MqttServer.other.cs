@@ -237,7 +237,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
             return;
         }
 
-        var _userService = App.RootServices.GetRequiredService<ISysUserService>();
+        var _userService = NetCoreApp.RootServices.GetRequiredService<ISysUserService>();
         var userInfo = await _userService.GetUserByAccountAsync(arg.UserName).ConfigureAwait(false);//获取用户信息
         if (userInfo == null)
         {

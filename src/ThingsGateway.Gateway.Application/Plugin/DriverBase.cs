@@ -29,9 +29,9 @@ public abstract class DriverBase : DisposableObject
     /// <inheritdoc cref="DriverBase"/>
     public DriverBase()
     {
-        PluginService = App.RootServices.GetRequiredService<IPluginService>();
-        RpcService = App.RootServices.GetRequiredService<IRpcService>();
-        Localizer = App.CreateLocalizerByType(typeof(DriverBase))!;
+        PluginService = NetCoreApp.RootServices.GetRequiredService<IPluginService>();
+        RpcService = NetCoreApp.RootServices.GetRequiredService<IRpcService>();
+        Localizer = NetCoreApp.CreateLocalizerByType(typeof(DriverBase))!;
     }
 
     /// <summary>

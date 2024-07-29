@@ -67,7 +67,7 @@ public class CacheDB : DisposeBase
             DbType = DbType.Sqlite,
             IsAutoCloseConnection = true,
         });
-        App.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
+        NetCoreApp.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
         return sqlSugarClient;
     }
 }

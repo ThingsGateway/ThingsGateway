@@ -49,16 +49,16 @@ public class ChannelThread
 
     static ChannelThread()
     {
-        var minCycleInterval = App.Configuration.GetSection("ChannelThread:MinCycleInterval").Get<int?>() ?? 10;
+        var minCycleInterval = NetCoreApp.Configuration.GetSection("ChannelThread:MinCycleInterval").Get<int?>() ?? 10;
         MinCycleInterval = minCycleInterval < 10 ? 10 : minCycleInterval;
 
-        var maxCycleInterval = App.Configuration.GetSection("ChannelThread:MaxCycleInterval").Get<int?>() ?? 100;
+        var maxCycleInterval = NetCoreApp.Configuration.GetSection("ChannelThread:MaxCycleInterval").Get<int?>() ?? 100;
         MaxCycleInterval = maxCycleInterval < 100 ? 100 : maxCycleInterval;
 
-        var maxCount = App.Configuration.GetSection("ChannelThread:MaxCount").Get<int?>() ?? 1000;
+        var maxCount = NetCoreApp.Configuration.GetSection("ChannelThread:MaxCount").Get<int?>() ?? 1000;
         MaxCount = maxCount < 10 ? 10 : maxCount;
 
-        var maxVariableCount = App.Configuration.GetSection("ChannelThread:MaxVariableCount").Get<int?>() ?? 1000000;
+        var maxVariableCount = NetCoreApp.Configuration.GetSection("ChannelThread:MaxVariableCount").Get<int?>() ?? 1000000;
         MaxVariableCount = maxVariableCount < 1000 ? 1000 : maxVariableCount;
 
         CycleInterval = MaxCycleInterval;
@@ -69,10 +69,11 @@ public class ChannelThread
     private static async Task SetCycleInterval()
     {
         var db = DbContext.Db.GetConnectionScopeWithAttr<SysOperateLog>().CopyNew();
-        var appLifetime = App.RootServices!.GetService<IHostApplicationLifetime>()!;
+        var appLifetime = NetCoreApp.RootServices!.GetService<IHostApplicationLifetime>()!;
+
         var hardwareInfoService = HostedServiceUtil.GetHostedService<HardwareInfoService>();
         List<float> cpus = new();
-        while (!(appLifetime.ApplicationStopping.IsCancellationRequested || appLifetime.ApplicationStopped.IsCancellationRequested))
+        while (!((appLifetime?.ApplicationStopping ?? default).IsCancellationRequested || (appLifetime?.ApplicationStopped ?? default).IsCancellationRequested))
         {
             try
             {
@@ -113,9 +114,9 @@ public class ChannelThread
     /// <param name="getChannel">获取通道的方法</param>
     public ChannelThread(Channel channel, Func<TouchSocketConfig, IChannel> getChannel)
     {
-        Localizer = App.CreateLocalizerByType(typeof(ChannelThread))!;
+        Localizer = NetCoreApp.CreateLocalizerByType(typeof(ChannelThread))!;
         // 初始化日志记录器，使用通道名称作为日志记录器的名称
-        Logger = App.RootServices.GetService<ILoggerFactory>().CreateLogger($"Channel[{channel.Name}]");
+        Logger = NetCoreApp.RootServices.GetService<ILoggerFactory>().CreateLogger($"Channel[{channel.Name}]");
 
         // 设置通道信息
         ChannelTable = channel;

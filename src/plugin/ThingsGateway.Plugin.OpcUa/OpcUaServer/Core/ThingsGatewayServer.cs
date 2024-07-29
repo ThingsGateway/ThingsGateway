@@ -251,7 +251,7 @@ public partial class ThingsGatewayServer : StandardServer
             throw ServiceResultException.Create(StatusCodes.BadIdentityTokenRejected,
                 "Security cancellationToken is not a valid username cancellationToken. An empty password is not accepted.");
         }
-        var sysUserService = App.RootServices.GetService<ISysUserService>();
+        var sysUserService = NetCoreApp.RootServices.GetService<ISysUserService>();
         var userInfo = sysUserService.GetUserByAccountAsync(userName).ConfigureAwait(true).GetAwaiter().GetResult();//获取用户信息
         if (userInfo == null)
         {

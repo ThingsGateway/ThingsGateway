@@ -28,13 +28,11 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class RpcService : IRpcService
 {
-    private readonly IHostApplicationLifetime _appLifetime;
     private readonly ConcurrentQueue<RpcLog> _logQueues = new();
 
     /// <inheritdoc cref="RpcService"/>
-    public RpcService(IHostApplicationLifetime appLifetime, IStringLocalizer<RpcService> localizer)
+    public RpcService(IStringLocalizer<RpcService> localizer)
     {
-        _appLifetime = appLifetime;
         Localizer = localizer;
         Task.Factory.StartNew(RpcLogInsertAsync, TaskCreationOptions.LongRunning);
     }
@@ -238,16 +236,16 @@ public class RpcService : IRpcService
     private async Task RpcLogInsertAsync()
     {
         var db = DbContext.Db.GetConnectionScopeWithAttr<RpcLog>().CopyNew(); // 创建一个新的数据库上下文实例
-
+        var appLifetime = NetCoreApp.RootServices!.GetService<IHostApplicationLifetime>()!;
         // 在应用程序未停止的情况下循环执行日志插入操作
-        while (!(_appLifetime.ApplicationStopping.IsCancellationRequested || _appLifetime.ApplicationStopped.IsCancellationRequested))
+        while (!((appLifetime?.ApplicationStopping ?? default).IsCancellationRequested || (appLifetime?.ApplicationStopped ?? default).IsCancellationRequested))
         {
             try
             {
                 var data = _logQueues.ToListWithDequeue(); // 从日志队列中获取数据
 
                 // 将数据插入到数据库中
-                await db.InsertableWithAttr(data).ExecuteCommandAsync(_appLifetime.ApplicationStopping);
+                await db.InsertableWithAttr(data).ExecuteCommandAsync(appLifetime.ApplicationStopping);
             }
             catch (Exception ex)
             {

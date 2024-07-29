@@ -41,7 +41,7 @@ public class DoTask
     public Func<CancellationToken, ValueTask> DoWork { get; }
 
     public bool IsStoped => PrivateTask == null;
-    private IStringLocalizer Localizer { get; } = App.CreateLocalizerByType(typeof(DoTask))!;
+    private IStringLocalizer Localizer { get; } = NetCoreApp.CreateLocalizerByType(typeof(DoTask))!;
     private ILogger Logger { get; }
     private Task PrivateTask { get; set; }
     private string TaskName { get; }

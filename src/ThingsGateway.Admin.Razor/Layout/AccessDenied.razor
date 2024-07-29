@@ -1,8 +1,7 @@
 ﻿@page "/Account/AccessDenied"
 @layout BaseLayout
 @namespace ThingsGateway.Admin.Razor
-@using Microsoft.AspNetCore.Authentication.Cookies
-@using Microsoft.AspNetCore.WebUtilities
+@using BootstrapBlazor.Components
 @using ThingsGateway.Admin.Application;
 @using ThingsGateway.Core.Extension;
 @using ThingsGateway.Razor
@@ -13,17 +12,14 @@
     <h5>@Localizer["401"]</h5>
     <div>
 
-    <Button class="mx-2" Color="Color.Primary" OnClick=@(()=>
-            {
-            NavigationManager.NavigateTo(QueryHelpers.AddQueryString(CookieAuthenticationDefaults.LoginPath, new Dictionary<string, string?>
-            {
-            ["ReturnUrl"] = ReturnUrl
-            })
-        );
-            }
-            )>
-        @Localizer["Login"]
-    </Button>
+        <Button class="mx-2" Color="Color.Primary" OnClick=@(()=>
+                {
+                var url = AppService.GetReturnUrl(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                NavigationManager.NavigateTo(url);
+                }
+                )>
+            @Localizer["Login"]
+        </Button>
         <Button class="mx-2" Color="Color.Primary" OnClick=@(()=>NavigationManager.NavigateTo("/"))>@Localizer["Home"]</Button>
     </div>
 </div>

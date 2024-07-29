@@ -136,26 +136,6 @@
     "EventType": "EventType"
   },
 
-  "ThingsGateway.Gateway.Application.ConfigInfoControler": {
-    "ConfigInfoControler": "Get configuration information",
-    "GetChannelList": "Get channel information",
-    "GetCollectDeviceList": "Get device information",
-    "GetVariableList": "Get variable information"
-  },
-  "ThingsGateway.Gateway.Application.ControlControler": {
-    "ControlControler": "Device control",
-    "PasueCollectThread": "Control collection thread start/stop",
-    "PasueBusinessThread": "Control business thread start/stop",
-    "RestartCollectDeviceThread": "Restart collection thread",
-    "RestartBusinessDeviceThread": "Restart business thread",
-    "WriteDeviceMethods": "Write variables"
-  },
-  "ThingsGateway.Gateway.Application.RuntimeInfoControler": {
-    "RuntimeInfoControler": "Get runtime information",
-    "GetCollectDeviceList": "Get device information",
-    "GetVariableList": "Get variable information",
-    "GetRealAlarmList": "Get real-time alarm information"
-  },
   "ThingsGateway.Gateway.Application.DeviceHostedService": {
     "ChannelNotNull": "Device {0} - Channel {1} cannot be null",
     "ChannelNotEnable": "Device {0} - Channel {1} is not enabled",

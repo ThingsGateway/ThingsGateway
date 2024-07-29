@@ -21,7 +21,7 @@ public static class FileExtensions
     /// <param name="pPath">存储的第一层目录</param>
     /// <param name="file"></param>
     /// <returns>文件全路径</returns>
-    public static async Task<string> StorageLocal(this IBrowserFile file, string pPath)
+    public static async Task<string> StorageLocal(this IBrowserFile file, string pPath="imports")
     {
         string uploadFileFolder = NetCoreApp.WebRootPath!;//赋值路径
         var now = YitIdHelper.NextId();

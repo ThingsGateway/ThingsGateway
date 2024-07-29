@@ -10,8 +10,6 @@
 
 using BootstrapBlazor.Components;
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -96,76 +94,28 @@ public class Startup : AppStartup
 
         #endregion 控制台美化
 
-        #region api日志
+        services.AddSingleton<ISignalrNoticeService, SignalrNoticeService>();
+        services.AddSingleton<ISysHub, SysHub>();
 
-        //Monitor日志配置
-        services.AddMonitorLogging(options =>
-        {
-            options.JsonIndented = true;// 是否美化 JSON
-            options.GlobalEnabled = false;//全局启用
-            options.ConfigureLogger((logger, logContext, context) =>
-            {
-                var httpContext = context.HttpContext;//获取httpContext
-                                                      //获取头
-                var userAgent = httpContext.Request.Headers["User-Agent"];
-                if (string.IsNullOrEmpty(userAgent)) userAgent = "Other";//如果没有这个头就指定一个
-
-                var parser = Parser.GetDefault();
-                //获取客户端信息
-                var client = parser.Parse(userAgent);
-                // 获取控制器/操作描述器
-                var controllerActionDescriptor = context.ActionDescriptor as ControllerActionDescriptor;
-                //操作名称默认是控制器名加方法名,自定义操作名称要在action上加Description特性
-                var option = $"{controllerActionDescriptor.ControllerName}/{controllerActionDescriptor.ActionName}";
-
-                var desc = App.CreateLocalizerByType(controllerActionDescriptor.ControllerTypeInfo.AsType())[controllerActionDescriptor.MethodInfo.Name];
-                //获取特性
-                option = desc.Value;//则将操作名称赋值为控制器上写的title
-
-                logContext.Set(LoggingConst.CateGory, option);//传操作名称
-                logContext.Set(LoggingConst.Operation, option);//传操作名称
-                logContext.Set(LoggingConst.Client, client);//客户端信息
-                logContext.Set(LoggingConst.Path, httpContext.Request.Path.Value);//请求地址
-                logContext.Set(LoggingConst.Method, httpContext.Request.Method);//请求方法
-            });
-        });
-        //日志写入数据库配置
-        services.AddDatabaseLogging<DatabaseLoggingWriter>(options =>
-        {
-            options.WriteFilter = (logMsg) =>
-            {
-                return logMsg.LogName == "System.Logging.LoggingMonitor";//只写入LoggingMonitor日志
-            };
-        });
-
-        #endregion api日志
-
-
-        services.AddSingleton<IFileService, FileService>();
-        services.AddSingleton<IImportExportService, ImportExportService>();
-        services.AddSingleton<ISugarAopService, WebSugarAopService>();
+        services.AddSingleton(typeof(IEventService<>), typeof(EventService<>));
 
         services.AddSingleton<IVerificatInfoService, VerificatInfoService>();
-        services.AddSingleton<IAuthService, AuthService>();
+        services.AddSingleton<IUserCenterService, UserCenterService>();
+        services.AddSingleton<ISugarAopService, WebSugarAopService>();
         services.AddSingleton<ISysDictService, SysDictService>();
         services.AddSingleton<ISysOperateLogService, SysOperateLogService>();
         services.AddSingleton<IRelationService, RelationService>();
         services.AddSingleton<ISysResourceService, SysResourceService>();
         services.AddSingleton<ISysRoleService, SysRoleService>();
-        services.AddSingleton<ISignalrNoticeService, SignalrNoticeService>();
         services.AddSingleton<ISysUserService, SysUserService>();
-        services.AddSingleton<IUserCenterService, UserCenterService>();
         services.AddSingleton<ISessionService, SessionService>();
-        services.AddSingleton<IUnifyResultProvider, UnifyResultProvider>();
 
         services.AddHostedService<AdminTaskService>();
         services.AddHostedService<HardwareInfoService>();
     }
 
-    public void UseAdminCore(IApplicationBuilder app)
+    public void UseAdminCore(IServiceProvider serviceProvider)
     {
-
-
         //检查ConfigId
         var configIdGroup = DbContext.DbConfigs.GroupBy(it => it.ConfigId);
         foreach (var configId in configIdGroup)
@@ -185,7 +135,7 @@ public class Startup : AppStartup
 
 
         //删除在线用户统计
-        var verificatInfoService = app.ApplicationServices.GetService<IVerificatInfoService>();
+        var verificatInfoService = NetCoreApp.RootServices.GetService<IVerificatInfoService>();
         verificatInfoService.RemoveAllClientId();
 
 

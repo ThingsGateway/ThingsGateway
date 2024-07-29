@@ -14,7 +14,7 @@ public partial class NotFound404
 {
     [Inject]
     [NotNull]
-    private IStringLocalizer<AccessDenied>? Localizer { get; set; }
+    private IStringLocalizer<NotFound404>? Localizer { get; set; }
 
     [Inject]
     [NotNull]

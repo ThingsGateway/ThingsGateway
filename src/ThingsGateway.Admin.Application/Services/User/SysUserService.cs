@@ -73,7 +73,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     public async Task<SysUser?> GetUserByIdAsync(long userId)
     {
         //先从Cache拿
-        var sysUser = App.CacheService.HashGetOne<SysUser>(CacheConst.Cache_SysUser, userId.ToString());
+        var sysUser = NetCoreApp.CacheService.HashGetOne<SysUser>(CacheConst.Cache_SysUser, userId.ToString());
         sysUser ??= await GetUserFromDb(userId);//从数据库拿用户信息
         return sysUser;
     }
@@ -86,7 +86,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     public async Task<long> GetIdByAccountAsync(string account)
     {
         //先从Cache拿
-        var userId = App.CacheService.HashGetOne<long>(CacheConst.Cache_SysUserAccount, account);
+        var userId = NetCoreApp.CacheService.HashGetOne<long>(CacheConst.Cache_SysUserAccount, account);
         if (userId == 0)
         {
             //单查获取用户账号对应ID
@@ -95,7 +95,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
             if (userId != 0)
             {
                 //插入Cache
-                App.CacheService.HashAdd(CacheConst.Cache_SysUserAccount, account, userId);
+                NetCoreApp.CacheService.HashAdd(CacheConst.Cache_SysUserAccount, account, userId);
             }
         }
         return userId;
@@ -552,15 +552,15 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     public void DeleteUserFromCache(IEnumerable<long> ids)
     {
         var userIds = ids.Select(it => it.ToString()).ToArray();//id转string列表
-        var sysUsers = App.CacheService.HashGet<SysUser>(CacheConst.Cache_SysUser, userIds);//获取用户列表
+        var sysUsers = NetCoreApp.CacheService.HashGet<SysUser>(CacheConst.Cache_SysUser, userIds);//获取用户列表
         if (sysUsers.Any())
         {
             var accounts = sysUsers.Where(it => it != null).Select(it => it.Account);//账号集合
             var phones = sysUsers.Select(it => it.Phone);//手机号集合
             //删除用户信息
-            App.CacheService.HashDel<SysUser>(CacheConst.Cache_SysUser, userIds);
+            NetCoreApp.CacheService.HashDel<SysUser>(CacheConst.Cache_SysUser, userIds);
             //删除账号
-            App.CacheService.HashDel<long>(CacheConst.Cache_SysUserAccount, accounts.ToArray());
+            NetCoreApp.CacheService.HashDel<long>(CacheConst.Cache_SysUserAccount, accounts.ToArray());
         }
     }
 
@@ -677,8 +677,8 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
             }
 
             //插入Cache
-            App.CacheService.HashAdd(CacheConst.Cache_SysUserAccount, sysUser.Account, sysUser.Id);
-            App.CacheService.HashAdd(CacheConst.Cache_SysUser, sysUser.Id.ToString(), sysUser);
+            NetCoreApp.CacheService.HashAdd(CacheConst.Cache_SysUserAccount, sysUser.Account, sysUser.Id);
+            NetCoreApp.CacheService.HashAdd(CacheConst.Cache_SysUser, sysUser.Id.ToString(), sysUser);
 
             return sysUser;
         }

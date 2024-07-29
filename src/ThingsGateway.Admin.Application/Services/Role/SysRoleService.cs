@@ -36,12 +36,12 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
     public async Task<List<SysRole>> GetAllAsync()
     {
         var key = CacheConst.Cache_SysRole;
-        var sysRoles = App.CacheService.Get<List<SysRole>>(key);
+        var sysRoles = NetCoreApp.CacheService.Get<List<SysRole>>(key);
         if (sysRoles == null)
         {
             using var db = GetDB();
             sysRoles = await db.Queryable<SysRole>().ToListAsync();
-            App.CacheService.Set(key, sysRoles);
+            NetCoreApp.CacheService.Set(key, sysRoles);
         }
         return sysRoles;
     }
@@ -361,7 +361,7 @@ public class SysRoleService : BaseService<SysRole>, ISysRoleService
     /// </summary>
     public void RefreshCache()
     {
-        App.CacheService.Remove(CacheConst.Cache_SysRole);//删除KEY
+        NetCoreApp.CacheService.Remove(CacheConst.Cache_SysRole);//删除KEY
     }
 
     #endregion 授权

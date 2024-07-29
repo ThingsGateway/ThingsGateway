@@ -32,11 +32,13 @@ public class OperDescAttribute : MoAttribute
     /// 日志消息队列（线程安全）
     /// </summary>
     private static readonly ConcurrentQueue<SysOperateLog> _logMessageQueue = new();
+    private static readonly IAppService AppService;
 
     static OperDescAttribute()
     {
         // 创建长时间运行的后台任务，并将日志消息队列中数据写入存储中
         Task.Factory.StartNew(ProcessQueue, TaskCreationOptions.LongRunning);
+        AppService = NetCoreApp.RootServices.GetService<IAppService>();
     }
 
     public OperDescAttribute(string description, bool isRecordPar = true, object localizerType = null)
@@ -89,8 +91,8 @@ public class OperDescAttribute : MoAttribute
     private static async Task ProcessQueue()
     {
         var db = DbContext.Db.GetConnectionScopeWithAttr<SysOperateLog>().CopyNew();
-        var appLifetime = App.RootServices!.GetService<IHostApplicationLifetime>()!;
-        while (!(appLifetime.ApplicationStopping.IsCancellationRequested || appLifetime.ApplicationStopped.IsCancellationRequested))
+        var appLifetime = NetCoreApp.RootServices!.GetService<IHostApplicationLifetime>()!;
+        while (!((appLifetime?.ApplicationStopping ?? default).IsCancellationRequested || (appLifetime?.ApplicationStopped ?? default).IsCancellationRequested))
         {
             try
             {
@@ -98,7 +100,7 @@ public class OperDescAttribute : MoAttribute
                 {
                     await db.InsertableWithAttr(_logMessageQueue.ToListWithDequeue()).ExecuteCommandAsync();//入库
                 }
-                await Task.Delay(3000, appLifetime.ApplicationStopping).ConfigureAwait(false);
+                await Task.Delay(3000, appLifetime?.ApplicationStopping ?? default).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -109,13 +111,8 @@ public class OperDescAttribute : MoAttribute
 
     private SysOperateLog GetOperLog(Type? localizerType, MethodContext context)
     {
-        var str = App.HttpContext?.Request?.Headers?.UserAgent;
         var methodBase = context.Method;
-        ClientInfo? clientInfo = null;
-        if (str.HasValue)
-        {
-            clientInfo = Parser.GetDefault().Parse(str);
-        }
+        ClientInfo? clientInfo = AppService.ClientInfo;
         string? paramJson = null;
         if (IsRecordPar)
         {
@@ -134,10 +131,10 @@ public class OperDescAttribute : MoAttribute
         //操作日志表实体
         var log = new SysOperateLog
         {
-            Name = (localizerType == null ? App.CreateLocalizerByType(typeof(OperDescAttribute)) : App.CreateLocalizerByType(localizerType))![Description],
+            Name = (localizerType == null ? NetCoreApp.CreateLocalizerByType(typeof(OperDescAttribute)) : NetCoreApp.CreateLocalizerByType(localizerType))![Description],
             Category = LogCateGoryEnum.Operate,
             ExeStatus = true,
-            OpIp = App.HttpContext?.Connection?.RemoteIpAddress?.MapToIPv4()?.ToString(),
+            OpIp = AppService?.RemoteIpAddress?.MapToIPv4()?.ToString(),
             OpBrowser = clientInfo?.UA?.Family + clientInfo?.UA?.Major,
             OpOs = clientInfo?.OS?.Family + clientInfo?.OS?.Major,
             OpTime = DateTime.Now,

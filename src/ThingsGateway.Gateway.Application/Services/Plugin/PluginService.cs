@@ -68,7 +68,7 @@ public class PluginService : IPluginService
         //创建插件文件夹
         Directory.CreateDirectory(AppContext.BaseDirectory.CombinePathWithOs(PluginService.DirName));
         //主程序上下文驱动类字典
-        _defaultDriverBaseDict = new(App.EffectiveTypes
+        _defaultDriverBaseDict = new(NetCoreApp.EffectiveTypes
             .Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(BusinessBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract)
             .ToDictionary(a => a.Name));
     }
@@ -190,7 +190,7 @@ public class PluginService : IPluginService
             if (!pluginName.IsNullOrEmpty())
             {
                 // 尝试从缓存中获取指定插件的属性信息
-                var data = App.CacheService.HashGetAll<List<DriverMethodInfo>>(cacheKey);
+                var data = NetCoreApp.CacheService.HashGetAll<List<DriverMethodInfo>>(cacheKey);
                 // 如果缓存中存在指定插件的属性信息，则直接返回
                 if (data?.ContainsKey(pluginName) == true)
                 {
@@ -220,7 +220,7 @@ public class PluginService : IPluginService
 
                 // 将方法信息转换为字典形式，并添加到缓存中
                 var result = dependencyPropertyWithInfos.ToList();
-                App.CacheService.HashAdd(cacheKey, pluginName, result);
+                NetCoreApp.CacheService.HashAdd(cacheKey, pluginName, result);
 
                 // 如果是通过方法内部创建的驱动对象，则在方法执行完成后释放该驱动对象
                 if (dispose)
@@ -251,7 +251,7 @@ public class PluginService : IPluginService
             if (!pluginName.IsNullOrEmpty())
             {
                 // 从缓存中获取属性类型数据
-                var data = App.CacheService.HashGetAll<List<IEditorItem>>(cacheKey);
+                var data = NetCoreApp.CacheService.HashGetAll<List<IEditorItem>>(cacheKey);
                 // 如果缓存中存在数据
                 if (data?.ContainsKey(pluginName) == true)
                 {
@@ -269,7 +269,7 @@ public class PluginService : IPluginService
             {
                 var editorItems = driverBase.PluginPropertyEditorItems;
                 // 将结果存入缓存中，键为插件名称
-                App.CacheService.HashAdd(cacheKey, pluginName, editorItems);
+                NetCoreApp.CacheService.HashAdd(cacheKey, pluginName, editorItems);
                 // 如果 dispose 参数为 true，则释放 driverBase 对象
                 if (dispose)
                     driverBase.SafeDispose();
@@ -311,7 +311,7 @@ public class PluginService : IPluginService
             var dispose = businessBase == null;
             businessBase ??= (BusinessBase)this.GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
 
-            var data = App.CacheService.HashGetAll<List<IEditorItem>>(cacheKey);
+            var data = NetCoreApp.CacheService.HashGetAll<List<IEditorItem>>(cacheKey);
             if (data?.ContainsKey(pluginName) == true)
             {
                 return (data[pluginName], businessBase.VariablePropertys);
@@ -324,7 +324,7 @@ public class PluginService : IPluginService
             {
                 var editorItems = businessBase.PluginVariablePropertyEditorItems;
                 // 将结果存入缓存中，键为插件名称
-                App.CacheService.HashAdd(cacheKey, pluginName, editorItems);
+                NetCoreApp.CacheService.HashAdd(cacheKey, pluginName, editorItems);
                 // 如果 dispose 参数为 true，则释放 driverBase 对象
                 if (dispose)
                     businessBase.SafeDispose();
@@ -499,13 +499,13 @@ public class PluginService : IPluginService
     {
         lock (this)
         {
-            App.CacheService.Remove(_cacheKeyGetPluginOutputs);
-            App.CacheService.DelByPattern($"{nameof(PluginService)}_");
+            NetCoreApp.CacheService.Remove(_cacheKeyGetPluginOutputs);
+            NetCoreApp.CacheService.DelByPattern($"{nameof(PluginService)}_");
 
             // 获取私有字段
             FieldInfo fieldInfo = typeof(ResourceManagerStringLocalizerFactory).GetField("_localizerCache", BindingFlags.Instance | BindingFlags.NonPublic);
             // 获取字段的值
-            var dictionary = (ConcurrentDictionary<string, ResourceManagerStringLocalizer>)fieldInfo.GetValue(App.StringLocalizerFactory);
+            var dictionary = (ConcurrentDictionary<string, ResourceManagerStringLocalizer>)fieldInfo.GetValue(NetCoreApp.StringLocalizerFactory);
             foreach (var item in _assemblyLoadContextDict)
             {
                 // 移除特定键
@@ -614,13 +614,13 @@ public class PluginService : IPluginService
             _locker.Wait();
 
             // 从缓存中获取插件列表数据
-            var data = App.CacheService.Get<List<PluginOutput>>(_cacheKeyGetPluginOutputs);
+            var data = NetCoreApp.CacheService.Get<List<PluginOutput>>(_cacheKeyGetPluginOutputs);
 
             // 如果缓存中没有数据，则调用 GetPluginOutputs 方法获取数据，并将其存入缓存
             if (data == null)
             {
                 var pluginOutputs = GetPluginOutputs();
-                App.CacheService.Set(_cacheKeyGetPluginOutputs, pluginOutputs);
+                NetCoreApp.CacheService.Set(_cacheKeyGetPluginOutputs, pluginOutputs);
                 return pluginOutputs;
             }
 

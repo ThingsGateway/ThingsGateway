@@ -13,7 +13,6 @@ using BootstrapBlazor.Components;
 using Mapster;
 
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Mvc;
 
 using MiniExcelLibs;
 
@@ -39,25 +38,19 @@ public class VariableService : BaseService<Variable>, IVariableService
 {
     protected readonly IChannelService _channelService;
     protected readonly IDeviceService _deviceService;
-    protected readonly IFileService _fileService;
-    protected readonly IImportExportService _importExportService;
     protected readonly IPluginService _pluginService;
     private readonly IDispatchService<bool> _allDispatchService;
     private readonly IDispatchService<Variable> _dispatchService;
 
     /// <inheritdoc cref="IVariableService"/>
     public VariableService(
-    IFileService fileService,
-    IImportExportService importExportService,
    IDispatchService<Variable> dispatchService,
    IDispatchService<bool> allDispatchService
         )
     {
-        _fileService = fileService;
-        _channelService = App.RootServices.GetRequiredService<IChannelService>();
-        _pluginService = App.RootServices.GetRequiredService<IPluginService>();
-        _deviceService = App.RootServices.GetRequiredService<IDeviceService>();
-        _importExportService = importExportService;
+        _channelService = NetCoreApp.RootServices.GetRequiredService<IChannelService>();
+        _pluginService = NetCoreApp.RootServices.GetRequiredService<IPluginService>();
+        _deviceService = NetCoreApp.RootServices.GetRequiredService<IDeviceService>();
         _dispatchService = dispatchService;
         _allDispatchService = allDispatchService;
     }
@@ -329,17 +322,11 @@ public class VariableService : BaseService<Variable>, IVariableService
     /// 导出文件
     /// </summary>
     [OperDesc("ExportVariable", isRecordPar: false, localizerType: typeof(Variable))]
-    public async Task<FileStreamResult> ExportVariableAsync(QueryPageOptions options)
+    public async Task<Dictionary<string, object>> ExportVariableAsync(QueryPageOptions options)
     {
         var data = (await QueryAsync(options));
-        return await Export(data.Items);
-    }
-
-    private async Task<FileStreamResult> Export(IEnumerable<Variable> data)
-    {
-        var fileName = "Variable";
-        Dictionary<string, object> sheets = ExportCore(data);
-        return await _importExportService.ExportAsync<Variable>(sheets, fileName, false);
+        Dictionary<string, object> sheets = ExportCore(data.Items);
+        return sheets;
     }
 
     private Dictionary<string, object> ExportCore(IEnumerable<Variable> data, string deviceName = null)
@@ -539,7 +526,7 @@ public class VariableService : BaseService<Variable>, IVariableService
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile)
     {
         // 上传文件并获取文件路径
-        var path = await _importExportService.UploadFileAsync(browserFile);
+        var path = await browserFile.StorageLocal();
 
         try
         {

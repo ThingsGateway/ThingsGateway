@@ -260,9 +260,9 @@ public partial class OpcUaImportVariable
                 await ToastService.Warning(OpcUaPropertyLocalizer["NoVariablesAvailable"], OpcUaPropertyLocalizer["NoVariablesAvailable"]);
                 return;
             }
-            await App.RootServices.GetRequiredService<IChannelService>().SaveChannelAsync(data.Item1, ItemChangedType.Add);
-            await App.RootServices.GetRequiredService<IDeviceService>().SaveDeviceAsync(data.Item2, ItemChangedType.Add);
-            await App.RootServices.GetRequiredService<IVariableService>().AddBatchAsync(data.Item3.ToList());
+            await NetCoreApp.RootServices.GetRequiredService<IChannelService>().SaveChannelAsync(data.Item1, ItemChangedType.Add);
+            await NetCoreApp.RootServices.GetRequiredService<IDeviceService>().SaveDeviceAsync(data.Item2, ItemChangedType.Add);
+            await NetCoreApp.RootServices.GetRequiredService<IVariableService>().AddBatchAsync(data.Item3.ToList());
             await ToastService.Default();
         }
         catch (Exception ex)
@@ -375,7 +375,7 @@ public partial class OpcUaImportVariable
     /// <returns></returns>
     public async Task DownChannelExportAsync(Channel data)
     {
-        using var memoryStream = await App.RootServices.GetRequiredService<IChannelService>().ExportMemoryStream(new List<Channel>() { data });
+        using var memoryStream = await NetCoreApp.RootServices.GetRequiredService<IChannelService>().ExportMemoryStream(new List<Channel>() { data });
         await DownloadService.DownloadFromStreamAsync($"channel{DateTime.Now.ToFileDateTimeFormat()}.xlsx", memoryStream);
     }
 
@@ -385,7 +385,7 @@ public partial class OpcUaImportVariable
     /// <returns></returns>
     public async Task DownDeviceExportAsync(Device data, string channelName)
     {
-        using var memoryStream = await App.RootServices.GetRequiredService<IDeviceService>().ExportMemoryStream(new List<Device>() { data }, PluginTypeEnum.Collect, channelName);
+        using var memoryStream = await NetCoreApp.RootServices.GetRequiredService<IDeviceService>().ExportMemoryStream(new List<Device>() { data }, PluginTypeEnum.Collect, channelName);
         await DownloadService.DownloadFromStreamAsync($"device{DateTime.Now.ToFileDateTimeFormat()}.xlsx", memoryStream);
     }
 
@@ -395,7 +395,7 @@ public partial class OpcUaImportVariable
     /// <returns></returns>
     public async Task DownDeviceVariableExportAsync(List<Variable> data, string devName)
     {
-        using var memoryStream = await App.RootServices.GetRequiredService<IVariableService>().ExportMemoryStream(data, devName);
+        using var memoryStream = await NetCoreApp.RootServices.GetRequiredService<IVariableService>().ExportMemoryStream(data, devName);
         await DownloadService.DownloadFromStreamAsync($"variable{DateTime.Now.ToFileDateTimeFormat()}.xlsx", memoryStream);
     }
 

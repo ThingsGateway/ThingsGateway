@@ -173,26 +173,6 @@
     "EventType": "事件类型"
   },
 
-  "ThingsGateway.Gateway.Application.ConfigInfoControler": {
-    "ConfigInfoControler": "获取配置信息",
-    "GetChannelList": "获取通道信息",
-    "GetCollectDeviceList": "获取设备信息",
-    "GetVariableList": "获取变量信息"
-  },
-  "ThingsGateway.Gateway.Application.ControlControler": {
-    "ControlControler": "设备控制",
-    "PasueCollectThread": "控制采集线程启停",
-    "PasueBusinessThread": "控制业务线程启停",
-    "RestartCollectDeviceThread": "重启采集线程",
-    "RestartBusinessDeviceThread": "重启业务线程",
-    "WriteDeviceMethods": "写入变量"
-  },
-  "ThingsGateway.Gateway.Application.RuntimeInfoControler": {
-    "RuntimeInfoControler": "获取运行态信息",
-    "GetCollectDeviceList": "获取设备信息",
-    "GetVariableList": "获取变量信息",
-    "GetRealAlarmList": "获取实时报警信息"
-  },
   "ThingsGateway.Gateway.Application.DeviceHostedService": {
     "ChannelNotNull": "设备 {0} -通道 {1} 不能为空",
     "ChannelNotEnable": "设备 {0} -通道 {1} 未启用",

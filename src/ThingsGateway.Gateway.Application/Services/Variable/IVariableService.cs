@@ -11,7 +11,6 @@
 using BootstrapBlazor.Components;
 
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Mvc;
 
 using SqlSugar;
 
@@ -66,7 +65,7 @@ public interface IVariableService
     /// 异步导出变量数据到文件流中。
     /// </summary>
     /// <param name="options">查询分页选项。</param>
-    Task<FileStreamResult> ExportVariableAsync(QueryPageOptions options);
+    Task<Dictionary<string, object>> ExportVariableAsync(QueryPageOptions options);
 
     /// <summary>
     /// 异步获取变量的运行时信息。

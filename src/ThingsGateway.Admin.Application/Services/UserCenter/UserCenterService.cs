@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 
 using System.Text.RegularExpressions;
 
+using ThingsGateway.Core;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Core.Json.Extension;
 
@@ -161,7 +162,7 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
     [OperDesc("UpdatePassword", isRecordPar: false)]
     public async Task UpdatePasswordAsync(UpdatePasswordInput input)
     {
-        var websiteOptions = App.Configuration?.GetSection(nameof(WebsiteOptions)).Get<WebsiteOptions>()!;
+        var websiteOptions = NetCoreApp.Configuration?.GetSection(nameof(WebsiteOptions)).Get<WebsiteOptions>()!;
         if (websiteOptions.Demo)
         {
             throw Oops.Bah(Localizer["DemoCanotUpdatePassword"]);

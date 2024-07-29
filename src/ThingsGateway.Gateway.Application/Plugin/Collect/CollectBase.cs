@@ -127,7 +127,7 @@ public abstract class CollectBase : DriverBase
 
     internal override void Init(DeviceRunTime device)
     {
-        Localizer = App.CreateLocalizerByType(typeof(CollectBase))!;
+        Localizer = NetCoreApp.CreateLocalizerByType(typeof(CollectBase))!;
         // 调用基类的初始化方法
         base.Init(device);
 

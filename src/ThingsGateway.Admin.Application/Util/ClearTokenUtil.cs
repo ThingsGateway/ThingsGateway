@@ -24,7 +24,7 @@ public class ClearTokenUtil
     public static async Task DeleteUserCacheByRoleIds(IEnumerable<long> roleIds)
     {
         // 解析角色服务
-        RelationService ??= App.RootServices!.GetRequiredService<IRelationService>();
+        RelationService ??= NetCoreApp.RootServices!.GetRequiredService<IRelationService>();
         //获取用户和角色关系
         var relations = await RelationService.GetRelationListByTargetIdListAndCategoryAsync(roleIds.Select(it => it.ToString()), RelationCategoryEnum.UserHasRole).ConfigureAwait(false);
         if (relations.Any())
@@ -32,7 +32,7 @@ public class ClearTokenUtil
             var userIds = relations.Select(it => it.ObjectId);//用户ID列表
 
             // 解析用户服务
-            SysUserService ??= App.RootServices!.GetRequiredService<ISysUserService>();
+            SysUserService ??= NetCoreApp.RootServices!.GetRequiredService<ISysUserService>();
             SysUserService.DeleteUserFromCache(userIds);
         }
     }
@@ -43,7 +43,7 @@ public class ClearTokenUtil
     public async Task DeleteUserTokenByModuleId(long moduleId)
     {
         // 解析关系服务
-        RelationService ??= App.RootServices!.GetRequiredService<IRelationService>();
+        RelationService ??= NetCoreApp.RootServices!.GetRequiredService<IRelationService>();
         var roleModuleRelations =
             await RelationService.GetRelationListByTargetIdAndCategoryAsync(moduleId.ToString(), RelationCategoryEnum.RoleHasModule).ConfigureAwait(false);//角色模块关系
         var userModuleRelations =
@@ -55,15 +55,15 @@ public class ClearTokenUtil
         userIds.AddRange(userRoleRelations.Select(it => it.ObjectId));//添加用户ID列表
 
         // 解析用户服务
-        SysUserService ??= App.RootServices!.GetRequiredService<ISysUserService>();
+        SysUserService ??= NetCoreApp.RootServices!.GetRequiredService<ISysUserService>();
         //从cache中删除用户信息
         SysUserService.DeleteUserFromCache(userIds);
 
-        VerificatInfoService ??= App.RootServices!.GetRequiredService<IVerificatInfoService>();//获取服务
+        VerificatInfoService ??= NetCoreApp.RootServices!.GetRequiredService<IVerificatInfoService>();//获取服务
 
         var verificatInfoIds = userIds.SelectMany(a => VerificatInfoService.GetListByUserId(a)).ToList();
         //从cache中删除用户token
         VerificatInfoService.Delete(verificatInfoIds.Select(a => a.Id).ToList());
-        await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { ClientIds = verificatInfoIds.SelectMany(a => a.ClientIds).ToList(), Message = App.CreateLocalizerByType(typeof(SysUser))["ExitVerificat"] }).ConfigureAwait(false);
+        await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { ClientIds = verificatInfoIds.SelectMany(a => a.ClientIds).ToList(), Message = NetCoreApp.CreateLocalizerByType(typeof(SysUser))["ExitVerificat"] }).ConfigureAwait(false);
     }
 }

@@ -27,8 +27,8 @@ internal class AdminTaskService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         //实现 删除过期日志 功能，不需要精确的时间
-        var daysAgo = App.Configuration.GetSection("LogJob:DaysAgo").Get<int?>() ?? 1;
-        var verificatInfoService = App.RootServices.GetService<IVerificatInfoService>();
+        var daysAgo = NetCoreApp.Configuration.GetSection("LogJob:DaysAgo").Get<int?>() ?? 1;
+        var verificatInfoService = NetCoreApp.RootServices.GetService<IVerificatInfoService>();
 
         while (!stoppingToken.IsCancellationRequested)
         {

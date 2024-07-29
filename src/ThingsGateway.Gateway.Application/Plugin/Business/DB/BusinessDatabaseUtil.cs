@@ -45,7 +45,7 @@ public static class BusinessDatabaseUtil
             ConfigureExternalServices = configureExternalServices,
         }
         );
-        App.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
+        NetCoreApp.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
         return sqlSugarClient;
     }
 

@@ -1,0 +1,27 @@
+﻿@using ThingsGateway.Admin.Application
+
+
+    <Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="NetCoreApp.RazorAssemblies">
+    <Found Context="routeData">
+        @{
+#if Admin
+}
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Admin.Razor.MainLayout)" />
+                @{
+#else
+}
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Gateway.Razor.MainLayout)" />
+                @{
+#endif
+}
+
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(Razor.BaseLayout)">
+        <ThingsGateway.Admin.Razor.NotFound404></ThingsGateway.Admin.Razor.NotFound404>
+            </LayoutView>
+        </NotFound>
+</Router>
+
+
+

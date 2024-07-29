@@ -10,8 +10,6 @@
 
 using BootstrapBlazor.Components;
 
-using Microsoft.AspNetCore.Mvc;
-
 using NewLife.Extension;
 
 using SqlSugar;
@@ -22,12 +20,6 @@ namespace ThingsGateway.Admin.Application;
 
 public class SysOperateLogService : BaseService<SysOperateLog>, ISysOperateLogService
 {
-    private readonly IImportExportService _importExportService;
-
-    public SysOperateLogService(IImportExportService importExportService)
-    {
-        _importExportService = importExportService;
-    }
 
     #region 查询
 
@@ -100,40 +92,6 @@ public class SysOperateLogService : BaseService<SysOperateLog>, ISysOperateLogSe
 
     #endregion 删除
 
-    #region 导出
 
-    /// <summary>
-    /// 导出日志
-    /// </summary>
-    /// <param name="input">IDataReader，为空时导出全部</param>
-    /// <returns>文件流</returns>
-    [OperDesc("ExportOperLog", isRecordPar: false)]
-    public async Task<FileStreamResult> ExportFileAsync(IDataReader? input = null)
-    {
-        if (input != null)
-        {
-            return await _importExportService.ExportAsync<SysOperateLog>(input, "OperateLog");
-        }
-        using var db = GetDB();
-        var query = db.Queryable<SysOperateLog>().ExportIgnoreColumns();
-        var sqlObj = query.ToSql();
-        using IDataReader? dataReader = await db.Ado.GetDataReaderAsync(sqlObj.Key, sqlObj.Value);
-        return await _importExportService.ExportAsync<SysOperateLog>(dataReader, "OperateLog");
-    }
 
-    /// <summary>
-    /// 导出日志
-    /// </summary>
-    /// <param name="input">查询条件</param>
-    /// <returns>文件流</returns>
-    public async Task<FileStreamResult> ExportFileAsync(QueryPageOptions input)
-    {
-        using var db = GetDB();
-        var query = db.GetQuery<SysOperateLog>(input).ExportIgnoreColumns();
-        var sqlObj = query.ToSql();
-        using IDataReader? dataReader = await db.Ado.GetDataReaderAsync(sqlObj.Key, sqlObj.Value);
-        return await ExportFileAsync(dataReader);
-    }
-
-    #endregion 导出
 }

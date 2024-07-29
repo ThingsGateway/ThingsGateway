@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.Data;
+
 using ThingsGateway.Foundation.Extension.String;
 
 using TouchSocket.Core;
@@ -164,7 +166,11 @@ public partial class SiemensS7Master : ProtocolBase
         else
         {
             var sAddress = sAddresss[0];
-            if (sAddress.Length > 1 && isBit)
+            if (sAddresss.Length > 1 && isBit)
+            {
+                return new OperResult<byte[]>("Only supports single write");
+            }
+            else if (sAddresss.Length <= 1 && isBit)
             {
                 //读取，再写入
                 var byteBlock = new ValueByteBlock(2048);
@@ -197,24 +203,63 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
                     byteBlock.SafeDispose();
                 }
             }
-            else if (sAddresss.Length > 1) return new OperResult<byte[]>("Only supports single write");
             else
             {
-                try
+                //多写
+                HashSet<List<SiemensAddress>> siemensAddresses = new();
+                ushort dataLen = 0;
+                ushort itemLen = 1;
+                List<SiemensAddress> addresses = new();
+                foreach (var item in sAddresss)
                 {
-                    var addressLen = sAddress.Length == 0 ? 1 : sAddress.Length;
+                     siemensAddresses.Add(addresses);
+                    dataLen = (ushort)(dataLen + item.Data.Length + 4);
+                    ushort telegramLen = (ushort)(itemLen * 12 + 19 + dataLen);
+                    if (telegramLen < PduLength)
+                    {
+                        addresses.Add(item);
+                        itemLen++;
+                    }
+                    else
+                    {
+                        addresses = new();
+                        itemLen = 1;
+                        dataLen = 0;
+                        dataLen = (ushort)(dataLen + item.Data.Length + 4);
+                        telegramLen = (ushort)(itemLen * 12 + 19 + dataLen);
+                        if (telegramLen < PduLength)
+                        {
+                            addresses.Add(item);
+                            itemLen++;
+                        }
+                        else
+                        {
+                            return new OperResult<byte[]>("Write length exceeds limit");
+                        }
+                    }
 
-                    if (addressLen > PduLength)
-                        return new OperResult<byte[]>("Write length exceeds limit");
-
-                    var result = await this.SendThenReturnAsync(
-    new S7Send([sAddress], read, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return result;
                 }
-                catch (Exception ex)
+
+                foreach (var item in siemensAddresses)
                 {
-                    return new OperResult<byte[]>(ex);
+
+                    try
+                    {
+                        var result = await this.SendThenReturnAsync(
+        new S7Send(item.ToArray(), read, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
+                        if(!result.IsSuccess)
+                        {
+                            return result;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        return new OperResult<byte[]>(ex);
+                    }
+
                 }
+                return new();
+
             }
         }
     }

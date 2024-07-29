@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Options;
 
 using SqlSugar;
@@ -120,17 +118,20 @@ public partial class MainLayout : IDisposable
     [Inject]
     private AjaxService AjaxService { get; set; }
 
+    [Inject]
+    private IAppService AppService { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IAuthRazorService? AuthRazorService { get; set; }
+
     private async Task LogoutAsync()
     {
-        var ajaxOption = new AjaxOption
+
+        try
         {
-            Url = "/api/auth/logout",
-            Method = "POST",
-        };
-        using var str = await AjaxService.InvokeAsync(ajaxOption);
-        if (str != null)
-        {
-            var ret = str.RootElement.GetRawText().FromSystemTextJsonString<UnifyResult<object>>();
+
+            var ret = await AuthRazorService.LoginOutAsync();
             if (ret.Code != 200)
             {
                 await ToastService.Error(Localizer["LoginErrorh1"], $"{ret.Msg}");
@@ -139,14 +140,11 @@ public partial class MainLayout : IDisposable
             {
                 await ToastService.Information(Localizer["LoginSuccessh1"], Localizer["LoginSuccessc1"]);
                 await Task.Delay(1000);
-                var url = QueryHelpers.AddQueryString(CookieAuthenticationDefaults.LoginPath, new Dictionary<string, string?>
-                {
-                    ["ReturnUrl"] = NavigationManager.ToBaseRelativePath(NavigationManager.Uri)
-                });
+                var url = AppService.GetReturnUrl(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
                 await AjaxService.Goto(url);
             }
         }
-        else
+        catch
         {
             await ToastService.Error(Localizer["LoginErrorh2"], Localizer["LoginErrorc2"]);
         }

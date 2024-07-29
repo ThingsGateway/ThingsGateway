@@ -9,10 +9,14 @@
 //------------------------------------------------------------------------------
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Localization;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
+using ThingsGateway.Logging;
+
+using UAParser;
 
 namespace ThingsGateway.Server;
 
@@ -85,4 +89,7 @@ public class Startup : AppStartup
 
         return services;
     }
+
+
+
 }

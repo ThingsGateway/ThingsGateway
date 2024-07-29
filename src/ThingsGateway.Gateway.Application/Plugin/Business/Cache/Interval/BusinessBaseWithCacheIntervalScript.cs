@@ -30,7 +30,7 @@ public abstract partial class BusinessBaseWithCacheIntervalScript<VarModel, DevM
         var cacheKey = $"{nameof(BusinessBaseWithCacheIntervalScript<VarModel, DevModel, AlarmModel>)}-{CultureInfo.CurrentUICulture.Name}-Match-{input}";
 
         // 尝试从缓存中获取匹配结果，如果缓存中不存在则创建新的匹配结果
-        var strings = App.CacheService.GetOrCreate(cacheKey, entry =>
+        var strings = NetCoreApp.CacheService.GetOrCreate(cacheKey, entry =>
         {
             List<string> strings = new List<string>();
 

@@ -27,7 +27,7 @@ internal class AdminTaskService : BackgroundService
 
     public Task DeleteLocalDB(CancellationToken stoppingToken)
     {
-        var deviceService = App.RootServices.GetService<IDeviceService>();
+        var deviceService = NetCoreApp.RootServices.GetService<IDeviceService>();
         var data = deviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).Select(a => a.Id);
         var dir = CacheDBUtil.GetFileBasePath();
         string[] dirs = Directory.GetDirectories(dir);
@@ -58,7 +58,7 @@ internal class AdminTaskService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         //实现 删除过期日志 功能，不需要精确的时间
-        var daysAgo = App.Configuration.GetSection("LogJob:DaysAgo").Get<int?>() ?? 30;
+        var daysAgo = NetCoreApp.Configuration.GetSection("LogJob:DaysAgo").Get<int?>() ?? 30;
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -95,7 +95,7 @@ internal class AdminTaskService : BackgroundService
     private Task DeleteTextLog(CancellationToken stoppingToken)
     {
         //网关调试日志以通道id命名
-        var channelService = App.RootServices.GetService<IChannelService>();
+        var channelService = NetCoreApp.RootServices.GetService<IChannelService>();
         var channelIds = channelService.GetAll().Select(a => a.Id.ToString());
 
         var baseDir = LoggerExtensions.GetLogBasePath();

@@ -13,7 +13,7 @@
 
             <Layout SideWidth="0" IsPage="true" IsFullSide="true" IsFixedHeader="true"
                     ShowGotoTop="true" ShowCollapseBar="true" Menus="@MenuService.MenuItems"
-                    AdditionalAssemblies=App.RazorAssemblies AllowDragTab=true
+                    AdditionalAssemblies=NetCoreApp.RazorAssemblies AllowDragTab=true
                     UseTabSet="false" TabDefaultUrl="/">
                 <Header>
 
@@ -72,7 +72,7 @@
                 </Side>
                 <Main>
                     <Tab ClickTabToNavigation="true" ShowExtendButtons="true" ShowClose="true" AllowDrag=true
-                         AdditionalAssemblies="@App.RazorAssemblies" Menus="@MenuService.MenuItems"
+                         AdditionalAssemblies="@NetCoreApp.RazorAssemblies" Menus="@MenuService.MenuItems"
                          DefaultUrl=@("/") Body=@(Body!)>
                     </Tab>
 

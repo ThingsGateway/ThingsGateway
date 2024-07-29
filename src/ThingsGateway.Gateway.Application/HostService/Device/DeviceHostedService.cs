@@ -42,11 +42,11 @@ public abstract class DeviceHostedService : BackgroundService
 
     public DeviceHostedService()
     {
-        DeviceService = App.RootServices.GetRequiredService<IDeviceService>();
-        ChannelService = App.RootServices.GetRequiredService<IChannelService>();
-        PluginService = App.RootServices.GetRequiredService<IPluginService>();
-        Localizer = App.CreateLocalizerByType(typeof(DeviceHostedService))!;
-        dispatchService = App.RootServices.GetService<IDispatchService<DeviceRunTime>>();
+        DeviceService = NetCoreApp.RootServices.GetRequiredService<IDeviceService>();
+        ChannelService = NetCoreApp.RootServices.GetRequiredService<IChannelService>();
+        PluginService = NetCoreApp.RootServices.GetRequiredService<IPluginService>();
+        Localizer = NetCoreApp.CreateLocalizerByType(typeof(DeviceHostedService))!;
+        dispatchService = NetCoreApp.RootServices.GetService<IDispatchService<DeviceRunTime>>();
     }
 
     /// <summary>

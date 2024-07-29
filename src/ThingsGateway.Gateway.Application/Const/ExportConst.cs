@@ -17,22 +17,22 @@ public class ExportString
     /// <summary>
     /// 通道名称
     /// </summary>
-    public static string ChannelName = (Localizer ?? App.CreateLocalizerByType(typeof(ExportString)))["ChannelName"];
+    public static string ChannelName = (Localizer ?? NetCoreApp.CreateLocalizerByType(typeof(ExportString)))["ChannelName"];
 
     /// <summary>
     /// 设备名称
     /// </summary>
-    public static string DeviceName = (Localizer ?? App.CreateLocalizerByType(typeof(ExportString)))["DeviceName"];
+    public static string DeviceName = (Localizer ?? NetCoreApp.CreateLocalizerByType(typeof(ExportString)))["DeviceName"];
 
     /// <summary>
     /// 冗余设备名称
     /// </summary>
-    public static string RedundantDeviceName = (Localizer ?? App.CreateLocalizerByType(typeof(ExportString)))["RedundantDeviceName"];
+    public static string RedundantDeviceName = (Localizer ?? NetCoreApp.CreateLocalizerByType(typeof(ExportString)))["RedundantDeviceName"];
 
     /// <summary>
     /// 变量表名称
     /// </summary>
-    public static string VariableName = (Localizer ?? App.CreateLocalizerByType(typeof(ExportString)))["VariableName"];
+    public static string VariableName = (Localizer ?? NetCoreApp.CreateLocalizerByType(typeof(ExportString)))["VariableName"];
 
     public static IStringLocalizer Localizer { get; private set; }
 }

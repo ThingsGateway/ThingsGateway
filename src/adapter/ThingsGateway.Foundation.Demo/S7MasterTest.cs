@@ -21,17 +21,33 @@ internal class S7MasterTest
         using SiemensS7Master siemensS7Master = GetMaster();
         //modbusMaster.HeartbeatHexString = "ccccdddd";//心跳
         await siemensS7Master.ConnectAsync();
+
+        var addresss = new SiemensAddress[]
+        {
+            SiemensAddress.ParseFrom("M200"),
+            SiemensAddress.ParseFrom("M210"),
+            SiemensAddress.ParseFrom("M220"),
+
+        };
+        addresss[0].Data = new byte[] { 0x01, 0x02, 0x03, 0x04 };
+        addresss[0].Length = addresss[0].Data.Length;
+        addresss[1].Data = new byte[] { 0x01, 0x02, 0x03, 0x04 };
+        addresss[1].Length = addresss[0].Data.Length;
+        addresss[2].Data = new byte[] { 0x01, 0x02, 0x03, 0x04 };
+        addresss[2].Length = addresss[0].Data.Length;
+        var result = await siemensS7Master.S7RequestAsync(addresss, false, false);
+
         S7Variable s7Variable = new S7Variable(siemensS7Master, 200);
 
         Console.ReadLine();
-        Console.WriteLine("批量读取");
-        await s7Variable.MultiReadAsync();
-        Console.WriteLine("写入");
-        await s7Variable.WriteData2Async(1, default);
-        Console.WriteLine("批量读取");
-        await s7Variable.MultiReadAsync();
+        //Console.WriteLine("批量读取");
+        //await s7Variable.MultiReadAsync();
+        //Console.WriteLine("写入");
+        //await s7Variable.WriteData2Async(1, default);
+        //Console.WriteLine("批量读取");
+        //await s7Variable.MultiReadAsync();
 
-        Console.WriteLine(s7Variable.ToJsonString());
+        //Console.WriteLine(s7Variable.ToJsonString());
         //执行连读
         Console.ReadLine();
     }

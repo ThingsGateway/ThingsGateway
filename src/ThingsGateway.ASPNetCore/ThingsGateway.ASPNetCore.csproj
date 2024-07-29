@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <Import Project="$(SolutionDir)Version.props" />
+  <Import Project="$(SolutionDir)PackNuget.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;</TargetFrameworks>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
+
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
+    
+  </ItemGroup>
+
+
+  <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
+    <DefineConstants>Admin</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(SolutionName)' != 'ThingsGateway - Admin'">
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Locales\*.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>
+
+
+

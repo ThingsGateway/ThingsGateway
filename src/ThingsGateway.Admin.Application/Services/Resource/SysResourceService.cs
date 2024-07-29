@@ -100,12 +100,12 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
     /// <returns>全部资源列表</returns>
     public async Task<List<SysResource>> GetAllAsync()
     {
-        var sysResources = App.CacheService.Get<List<SysResource>>(CacheKey);
+        var sysResources = NetCoreApp.CacheService.Get<List<SysResource>>(CacheKey);
         if (sysResources == null)
         {
             using var db = GetDB();
             sysResources = await db.Queryable<SysResource>().ToListAsync();
-            App.CacheService.Set(CacheKey, sysResources);
+            NetCoreApp.CacheService.Set(CacheKey, sysResources);
         }
         return sysResources;
     }
@@ -215,9 +215,9 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
     /// </summary>
     public void RefreshCache()
     {
-        App.CacheService.Remove(CacheKey);
+        NetCoreApp.CacheService.Remove(CacheKey);
         //删除超级管理员的缓存
-        App.RootServices.GetRequiredService<ISysUserService>().DeleteUserFromCache(RoleConst.SuperAdminId);
+        NetCoreApp.RootServices.GetRequiredService<ISysUserService>().DeleteUserFromCache(RoleConst.SuperAdminId);
     }
 
     #endregion 缓存

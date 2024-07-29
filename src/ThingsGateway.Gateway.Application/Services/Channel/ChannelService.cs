@@ -13,7 +13,6 @@ using BootstrapBlazor.Components;
 using Mapster;
 
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Mvc;
 
 using MiniExcelLibs;
 
@@ -38,19 +37,13 @@ namespace ThingsGateway.Gateway.Application;
 
 public class ChannelService : BaseService<Channel>, IChannelService
 {
-    protected readonly IFileService _fileService;
-    protected readonly IImportExportService _importExportService;
     private readonly IDispatchService<Channel> _dispatchService;
 
     /// <inheritdoc cref="IChannelService"/>
     public ChannelService(
-    IFileService fileService,
-    IImportExportService importExportService,
     IDispatchService<Channel>? dispatchService
         )
     {
-        _fileService = fileService;
-        _importExportService = importExportService;
         _dispatchService = dispatchService;
     }
 
@@ -79,7 +72,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
     [OperDesc("ClearChannel", localizerType: typeof(Channel))]
     public async Task ClearChannelAsync()
     {
-        var deviceService = App.RootServices.GetRequiredService<IDeviceService>();
+        var deviceService = NetCoreApp.RootServices.GetRequiredService<IDeviceService>();
         using var db = GetDB();
         //事务
         var result = await db.UseTranAsync(async () =>
@@ -102,7 +95,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
     [OperDesc("DeleteChannel", localizerType: typeof(Channel))]
     public async Task<bool> DeleteChannelAsync(IEnumerable<long> ids)
     {
-        var deviceService = App.RootServices.GetRequiredService<IDeviceService>();
+        var deviceService = NetCoreApp.RootServices.GetRequiredService<IDeviceService>();
         using var db = GetDB();
         //事务
         var result = await db.UseTranAsync(async () =>
@@ -125,7 +118,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
     /// <inheritdoc />
     public void DeleteChannelFromCache()
     {
-        App.CacheService.Remove(ThingsGatewayCacheConst.Cache_Channel);//删除通道缓存
+        NetCoreApp.CacheService.Remove(ThingsGatewayCacheConst.Cache_Channel);//删除通道缓存
         _dispatchService.Dispatch(new());
     }
 
@@ -136,12 +129,12 @@ public class ChannelService : BaseService<Channel>, IChannelService
     public List<Channel> GetAll()
     {
         var key = ThingsGatewayCacheConst.Cache_Channel;
-        var channels = App.CacheService.Get<List<Channel>>(key);
+        var channels = NetCoreApp.CacheService.Get<List<Channel>>(key);
         if (channels == null)
         {
             using var db = GetDB();
             channels = db.Queryable<Channel>().ToList();
-            App.CacheService.Set(key, channels);
+            NetCoreApp.CacheService.Set(key, channels);
         }
         return channels;
     }
@@ -258,23 +251,10 @@ public class ChannelService : BaseService<Channel>, IChannelService
 
     /// <inheritdoc/>
     [OperDesc("ExportChannel", isRecordPar: false, localizerType: typeof(Channel))]
-    public async Task<FileStreamResult> ExportChannelAsync(IDataReader? input = null)
-    {
-        if (input != null)
-        {
-            return await _importExportService.ExportAsync<Channel>(input, "Channel");
-        }
-        //导出
-        var data = (GetAll())?.OrderBy(a => a.ChannelType);
-        return await ExportChannel(data);
-    }
-
-    /// <inheritdoc/>
-    [OperDesc("ExportChannel", isRecordPar: false, localizerType: typeof(Channel))]
-    public async Task<FileStreamResult> ExportChannelAsync(QueryPageOptions options)
+    public async Task<Dictionary<string, object>> ExportChannelAsync(QueryPageOptions options)
     {
         var data = await PageAsync(options);
-        return await ExportChannel(data.Items);
+        return  ExportChannelCore(data.Items);
     }
 
     /// <inheritdoc/>
@@ -338,12 +318,6 @@ public class ChannelService : BaseService<Channel>, IChannelService
         return sheets;
     }
 
-    private async Task<FileStreamResult> ExportChannel(IEnumerable<Channel>? data)
-    {
-        Dictionary<string, object> sheets = ExportChannelCore(data);
-
-        return await _importExportService.ExportAsync<Channel>(sheets, "Channel", false);
-    }
 
     #endregion 导出
 
@@ -374,7 +348,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
     /// <inheritdoc/>
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile)
     {
-        var path = await _importExportService.UploadFileAsync(browserFile);
+        var path = await browserFile.StorageLocal();
         try
         {
             var sheetNames = MiniExcel.GetSheetNames(path);

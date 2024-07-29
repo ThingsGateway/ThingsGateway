@@ -8,15 +8,23 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Mapster;
 
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Localization;
 
 using NewLife.Extension;
+
+using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core;
 using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Razor;
 
 namespace ThingsGateway.Admin.Razor;
 
@@ -33,6 +41,9 @@ public partial class Login
     [Inject]
     [NotNull]
     private AjaxService? AjaxService { get; set; }
+    [Inject]
+    [NotNull]
+    private IAuthRazorService? AuthRazorService { get; set; }
 
     [Inject]
     [NotNull]
@@ -62,16 +73,11 @@ public partial class Login
         model.Password = DESCEncryption.Encrypt(model.Password);
         model.Device = authDeviceTypeEnum;
 
-        var ajaxOption = new AjaxOption
+        try
         {
-            Url = "/api/auth/login",
-            Method = "POST",
-            Data = model,
-        };
-        using var str = await AjaxService.InvokeAsync(ajaxOption);
-        if (str != null)
-        {
-            var ret = str.RootElement.GetRawText().FromSystemTextJsonString<UnifyResult<LoginOutput>>();
+
+            var ret = await AuthRazorService.LoginAsync(model);
+
             if (ret.Code != 200)
             {
                 await ToastService.Error(Localizer["LoginErrorh1"], $"{ret.Msg}");
@@ -91,11 +97,13 @@ public partial class Login
                 }
             }
         }
-        else
+        catch
         {
             await ToastService.Error(Localizer["LoginErrorh2"], Localizer["LoginErrorc2"]);
         }
     }
+
+
 
     private Task OnChanged(BreakPoint breakPoint)
     {

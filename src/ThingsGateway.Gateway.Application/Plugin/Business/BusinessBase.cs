@@ -61,7 +61,7 @@ public abstract class BusinessBase : DriverBase
     /// <param name="device">设备运行时实例。</param>
     internal override void Init(DeviceRunTime device)
     {
-        BusinessBaseLocalizer = App.CreateLocalizerByType(typeof(BusinessBase))!;
+        BusinessBaseLocalizer = NetCoreApp.CreateLocalizerByType(typeof(BusinessBase))!;
         base.Init(device); // 调用基类的初始化方法
 
         // 获取与当前设备相关的变量

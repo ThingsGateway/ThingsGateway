@@ -49,7 +49,7 @@ public class ComponentDefault : ComponentBase
 
     protected override void OnInitialized()
     {
-        Localizer = App.CreateLocalizerByType(this.GetType());
+        Localizer = NetCoreApp.CreateLocalizerByType(this.GetType());
         base.OnInitialized();
     }
 }

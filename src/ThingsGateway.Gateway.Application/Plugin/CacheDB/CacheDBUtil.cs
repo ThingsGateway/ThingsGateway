@@ -65,7 +65,7 @@ public class CacheDBUtil
 
     public static string GetFileBasePath()
     {
-        var dir = Path.Combine(App.ContentRootPath!, "businessCache");
+        var dir = Path.Combine(NetCoreApp.ContentRootPath!, "businessCache");
         //创建文件夹
         Directory.CreateDirectory(dir);
         return dir;

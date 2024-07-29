@@ -148,26 +148,29 @@ internal class S7Message : MessageBase, IResultMessage
         }
         else
         {
+            int itemLen = Request.Length;
             if (byteBlock[pos + 13] + byteBlock[pos + 14] > 0) // 如果错误代码不为0
             {
                 this.OperCode = 999;
                 this.ErrorMessage = SiemensS7Resource.Localizer["ReturnError", byteBlock[pos + 13].ToString("X2"), byteBlock[pos + 14].ToString("X2")];
                 return FilterResult.Success;
             }
-
             if (byteBlock.Length < pos + 18)
             {
                 this.OperCode = 999;
                 this.ErrorMessage = SiemensS7Resource.Localizer["DataLengthError"];
                 return FilterResult.Success;
             }
-            if (byteBlock[pos + 17] != byte.MaxValue)
+            for (int i = 0; i < itemLen; i++)
             {
-                this.OperCode = 999;
-                this.ErrorMessage = SiemensS7Resource.Localizer["ValidateDataError", byteBlock[pos + 17], SiemensHelper.GetCpuError(byteBlock[pos + 17])];
-                return FilterResult.Success;
+                if (byteBlock[pos + 17 + i] != byte.MaxValue)
+                {
+                    this.OperCode = 999;
+                    this.ErrorMessage = SiemensS7Resource.Localizer["ValidateDataError", byteBlock[pos + 17 + i], SiemensHelper.GetCpuError(byteBlock[pos + 17 + i])];
+                    return FilterResult.Success;
+                }
             }
-            else
+
             {
                 this.OperCode = 0;
                 return FilterResult.Success;

@@ -44,11 +44,14 @@ public partial class GrantApiComponent
     [Inject]
     [NotNull]
     private ISysUserService? SysUserService { get; set; }
+    [Inject]
+    [NotNull]
+    private IApiPermissionService? ApiPermissionService { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        var items = (ResourceUtil.ApiPermissionTreeSelector());
+        var items = (ApiPermissionService.ApiPermissionTreeSelector());
         Items = ResourceUtil.BuildTreeItemList(items, Value, RenderTreeItem);
     }
 

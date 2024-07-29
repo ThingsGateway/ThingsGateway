@@ -63,6 +63,8 @@ public class Program
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             builder.Host.UseSystemd();
 
+        builder.ConfigureServices();
+
         // 增加中文编码支持网页源码显示汉字
         builder.Services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
 
@@ -87,9 +89,6 @@ public class Program
         builder.WebHost.UseWebRoot("wwwroot");
         //builder.WebHost.UseStaticWebAssets();
 
-        builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>();//用户ID提供器
-        builder.Services.AddSignalR();//注册SignalR
-
         builder.Services.AddControllers();
         // 添加全局数据验证
 
@@ -110,7 +109,6 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(a => a.ConfigureSecurities());
 
-        builder.ConfigureServices();
 
         builder.Services
             .AddRazorComponents(options =>
@@ -203,10 +201,8 @@ public class Program
         app.MapDefaultControllerRoute();
 
         app.MapRazorComponents<BlazorApp>()
-            .AddAdditionalAssemblies(App.RazorAssemblies.ToArray())
+            .AddAdditionalAssemblies(App.RazorAssemblies.Distinct().Where(a => a != typeof(Program).Assembly).ToArray())
             .AddInteractiveServerRenderMode();
-
-        app.MapHub<SysHub>(HubConst.SysHubUrl);
 
         app.Run();
 

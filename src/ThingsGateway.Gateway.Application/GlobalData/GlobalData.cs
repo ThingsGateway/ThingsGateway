@@ -82,7 +82,7 @@ public static class GlobalData
         {
             if (rpcService == null)
             {
-                rpcService = App.RootServices.GetRequiredService<IRpcService>();
+                rpcService = NetCoreApp.RootServices.GetRequiredService<IRpcService>();
             }
             return rpcService;
         }

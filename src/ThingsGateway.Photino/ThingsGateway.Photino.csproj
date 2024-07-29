@@ -1,0 +1,97 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <Import Project="$(SolutionDir)Version.props" />
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+    <SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
+    <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
+    <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
+    <TargetFrameworks>net8.0;</TargetFrameworks>
+
+    <!--动态适用GC-->
+    <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
+    <!--使用自托管线程池-->
+    <!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
+
+    <!--使用工作站GC-->
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+
+    <!--<PlatformTarget>x86</PlatformTarget>-->
+  </PropertyGroup>
+
+  <!--<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    　　<AllowedReferenceRelatedFileExtensions>
+      　　　　--><!-- 阻止默认的 XML 和 PDB 文件复制到 RELEASE 的输出目录. 只有*.allowedextension 扩展名的文件可以被包含, 当然这个扩展的文件并不存在.--><!--
+      　　　　.allowedextension
+    </AllowedReferenceRelatedFileExtensions>
+  </PropertyGroup>-->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+
+    <Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;set targetFWS=net8.0&#xD;&#xA;for %25%25f in (%25targetFWS%25) do (&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Photino\bin\$(Configuration)\%25%25f\Plugins&quot;&#xD;&#xA;    set &quot;dir1=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\%25%25f\Plugins&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    if not exist &quot;!dir1!&quot; md &quot;!dir1!&quot;&#xD;&#xA;xcopy  &quot;!dir1!&quot; &quot;!dir!&quot;  /E /I /H /K /Y&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" Condition="'$(OS)'=='Windows_NT'" />
+  </Target>
+  
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Photino.NET" Version="3.0.14" />
+    <PackageReference Include="Photino.Blazor" Version="3.0.11" />
+
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
+    <DefineConstants>Admin</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(SolutionName)' != 'ThingsGateway - Admin'">
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Update="wwwroot\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="pm2-windows.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="pm2-linux.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="WindowsServiceDelete.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(SolutionDir)..\README.md" Pack="true" PackagePath="\" />
+    <None Include="$(SolutionDir)..\LICENSE" Pack="true" PackagePath="\" />
+    <None Include="$(SolutionDir)..\icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\favicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\favicon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\index.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

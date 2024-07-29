@@ -31,15 +31,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.ASPNetCore\ThingsGateway.ASPNetCore.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
     <ProjectReference Include="$(SolutionDir)\pro\ThingsGateway.Gateway.ProRazor\ThingsGateway.Gateway.ProRazor.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(SolutionName)' != 'ThingsGateway - Admin'">
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,9 +46,8 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
-    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.7" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.7" />
   </ItemGroup>
 
   <!--安装服务守护-->

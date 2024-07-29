@@ -1,0 +1,64 @@
+﻿{
+
+  "ThingsGateway.Gateway.Application.ConfigInfoControler": {
+    "ConfigInfoControler": "获取配置信息",
+    "GetChannelList": "获取通道信息",
+    "GetCollectDeviceList": "获取设备信息",
+    "GetVariableList": "获取变量信息"
+  },
+  "ThingsGateway.Gateway.Application.ControlControler": {
+    "ControlControler": "设备控制",
+    "PasueCollectThread": "控制采集线程启停",
+    "PasueBusinessThread": "控制业务线程启停",
+    "RestartCollectDeviceThread": "重启采集线程",
+    "RestartBusinessDeviceThread": "重启业务线程",
+    "WriteDeviceMethods": "写入变量"
+  },
+  "ThingsGateway.Gateway.Application.RuntimeInfoControler": {
+    "RuntimeInfoControler": "获取运行态信息",
+    "GetCollectDeviceList": "获取设备信息",
+    "GetVariableList": "获取变量信息",
+    "GetRealAlarmList": "获取实时报警信息"
+  },
+
+
+  "ThingsGateway.FileService": {
+    "FileNullError": "文件不能为空",
+    "FileLengthError": "文件大小不允许超过 {0} M",
+    "FileTypeError": "不支持 {0} 格式"
+  },
+
+  //controller
+  "ThingsGateway.Admin.Application.AuthController": {
+    //auth
+    "AuthController": "登录API",
+    "LoginAsync": "登录",
+    "LogoutAsync": "注销"
+  },
+  "ThingsGateway.Admin.Application.TestController": {
+    //auth
+    "TestController": "测试API",
+    "Test": "测试"
+  },
+  "ThingsGateway.Admin.Application.OpenApiAuthController": {
+    //auth
+    "OpenApiAuthController": "登录API",
+    "LoginAsync": "登录",
+    "LogoutAsync": "注销"
+  },
+
+  "ThingsGateway.UnifyResultProvider": {
+    "TokenOver": "登录已过期，请重新登录",
+    "NoPermission": "禁止访问，没有权限"
+  },
+
+  "ThingsGateway.Admin.Application.AuthService": {
+    "SingleLoginWarn": "您的账号已在别处登录",
+    "UserNull": "用户 {0} 不存在",
+    "PasswordError": "密码错误次数过多，请 {0} 分钟后再试",
+    "AuthErrorMax": "账号密码错误，超过 {0} 次后将锁定 {1} 分钟，错误次数 {2} ",
+    "UserDisable": "账号 {0} 已停用",
+    "MustDesc": "密码需要DESC加密后传入"
+  }
+
+}

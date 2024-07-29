@@ -11,12 +11,19 @@
 
 using SqlSugar;
 
+using ThingsGateway.Admin.Application;
+
 using Yitter.IdGenerator;
 
 namespace ThingsGateway;
 
 public class WebSugarAopService : ISugarAopService
 {
+    private IAppService _appService;
+    public WebSugarAopService(IAppService appService)
+    {
+        _appService = appService;
+    }
     /// <summary>
     /// Aop设置
     /// </summary>
@@ -83,7 +90,7 @@ public class WebSugarAopService : ISugarAopService
                 if (entityInfo.PropertyName == nameof(BaseEntity.CreateTime))
                     entityInfo.SetValue(DateTime.Now);
 
-                if (App.User != null)
+                if (_appService.User != null)
                 {
                     //创建人
                     if (entityInfo.PropertyName == nameof(BaseEntity.CreateUserId))
@@ -99,7 +106,7 @@ public class WebSugarAopService : ISugarAopService
                 if (entityInfo.PropertyName == nameof(BaseEntity.UpdateTime))
                     entityInfo.SetValue(DateTime.Now);
                 //更新人
-                if (App.User != null)
+                if (_appService.User != null)
                 {
                     if (entityInfo.PropertyName == nameof(BaseEntity.UpdateUserId))
                         entityInfo.SetValue(UserManager.UserId);

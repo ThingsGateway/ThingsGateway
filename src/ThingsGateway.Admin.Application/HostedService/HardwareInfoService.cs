@@ -82,7 +82,7 @@ public class HardwareInfoService : BackgroundService
         string currentPath = Directory.GetCurrentDirectory();
         DriveInfo drive = new(Path.GetPathRoot(currentPath));
 
-        HardwareInfoConfig = App.Configuration.GetSection(nameof(HardwareInfoConfig)).Get<HardwareInfoConfig?>() ?? new HardwareInfoConfig();
+        HardwareInfoConfig = NetCoreApp.Configuration.GetSection(nameof(HardwareInfoConfig)).Get<HardwareInfoConfig?>() ?? new HardwareInfoConfig();
         HardwareInfoConfig.DaysAgo = Math.Min(Math.Max(HardwareInfoConfig.DaysAgo, 1), 7);
         HardwareInfoConfig.RealInterval = 30;
         HardwareInfoConfig.Enable = true;
@@ -90,7 +90,7 @@ public class HardwareInfoService : BackgroundService
         APPInfo.DriveInfo = drive;
         APPInfo.OsArchitecture = Environment.OSVersion.Platform.ToString() + " " + RuntimeInformation.OSArchitecture.ToString(); // 系统架构
         APPInfo.FrameworkDescription = RuntimeInformation.FrameworkDescription; // NET框架
-        APPInfo.Environment = App.IsDevelopment ? "Development" : "Production";
+        APPInfo.Environment = NetCoreApp.IsDevelopment ? "Development" : "Production";
         APPInfo.UUID = DESCEncryption.Encrypt(APPInfo.MachineInfo.UUID + APPInfo.MachineInfo.Guid + APPInfo.MachineInfo.DiskID);
 
         APPInfo.UpdateTime = TimerX.Now.ToDefaultDateTimeFormat();
@@ -136,7 +136,7 @@ public class HardwareInfoService : BackgroundService
             catch (Exception ex)
             {
                 if (!error)
-                    _logger.LogWarning(ex, App.CreateLocalizerByType(this.GetType())["GetHardwareInfoFail"]);
+                    _logger.LogWarning(ex, NetCoreApp.CreateLocalizerByType(this.GetType())["GetHardwareInfoFail"]);
                 error = true;
             }
         }

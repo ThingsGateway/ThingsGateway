@@ -22,12 +22,12 @@ public class RelationService : BaseService<SysRelation>, IRelationService
     public async Task<List<SysRelation>> GetRelationByCategoryAsync(RelationCategoryEnum category)
     {
         var key = $"{CacheConst.Cache_SysRelation}{category}";
-        var sysRelations = App.CacheService.Get<List<SysRelation>>(key);
+        var sysRelations = NetCoreApp.CacheService.Get<List<SysRelation>>(key);
         if (sysRelations == null)
         {
             using var db = GetDB();
             sysRelations = await db.Queryable<SysRelation>().Where(it => it.Category == category).ToListAsync();
-            App.CacheService.Set(key, sysRelations ?? new());//赋值空集合
+            NetCoreApp.CacheService.Set(key, sysRelations ?? new());//赋值空集合
         }
 
         return sysRelations;
@@ -196,7 +196,7 @@ public class RelationService : BaseService<SysRelation>, IRelationService
     public void RefreshCache(RelationCategoryEnum category)
     {
         var key = $"{CacheConst.Cache_SysRelation}{category}";
-        App.CacheService.Remove(key);
+        NetCoreApp.CacheService.Remove(key);
     }
 
     #endregion 缓存

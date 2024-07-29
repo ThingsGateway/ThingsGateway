@@ -10,7 +10,7 @@
 
 using BootstrapBlazor.Components;
 
-using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace ThingsGateway.Admin.Application;
 
@@ -24,13 +24,6 @@ public interface ISysOperateLogService
     /// </summary>
     /// <param name="category">日志分类</param>
     Task DeleteAsync(LogCateGoryEnum category);
-
-    /// <summary>
-    /// 导出操作日志文件
-    /// </summary>
-    /// <param name="input">查询条件</param>
-    /// <returns>文件流</returns>
-    Task<FileStreamResult> ExportFileAsync(QueryPageOptions input);
 
     /// <summary>
     /// 获取最新的十条日志

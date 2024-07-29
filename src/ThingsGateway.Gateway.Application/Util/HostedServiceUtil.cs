@@ -77,7 +77,7 @@ public static class HostedServiceUtil
     /// </summary>
     public static T GetHostedService<T>() where T : class, IHostedService
     {
-        var hostedService = App.RootServices.GetServices<IHostedService>().FirstOrDefault(it => it is T) as T;
+        var hostedService = NetCoreApp.RootServices.GetServices<IHostedService>().FirstOrDefault(it => it is T) as T;
         return hostedService;
     }
 }

@@ -8,6 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
 using Swashbuckle.AspNetCore.SwaggerGen;

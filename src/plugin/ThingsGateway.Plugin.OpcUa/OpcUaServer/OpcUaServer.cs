@@ -82,7 +82,7 @@ public partial class OpcUaServer : BusinessBase
         {
             VariableValueChange(a.Value, a.Value.Adapt<VariableData>());
         });
-        Localizer = App.CreateLocalizerByType(typeof(OpcUaServer))!;
+        Localizer = NetCoreApp.CreateLocalizerByType(typeof(OpcUaServer))!;
     }
 
     /// <inheritdoc/>

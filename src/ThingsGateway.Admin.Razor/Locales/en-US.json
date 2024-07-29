@@ -1,4 +1,25 @@
 ﻿{
+
+  "ThingsGateway.Admin.Razor.NotFound404": {
+    "404": "Sorry, the page you are looking for does not exist.",
+    "401": "Sorry, you do not have permission to access this page.",
+    "Home": "Back to Home",
+    "Login": "Login"
+  },
+
+  "ThingsGateway.Admin.Razor.Login": {
+    "LoginErrorh1": "Login Error",
+    "LoginSuccessh1": "Login Success",
+    "LoginSuccessc1": "Redirecting to the page",
+    "LoginErrorh2": "Login Failed",
+    "LoginErrorc2": "Please contact the administrator!",
+    "Remark1": "Edge Collection Gateway",
+    "Remark2": "Data Aggregation, Multi-path Forwarding",
+    "Remark3": "Edge Computing, Efficient Processing",
+    "Welcome": "Welcome"
+  },
+
+
   "ThingsGateway.Admin.Razor.HardwareInfoPage": {
     "SystemInfo": "System Information",
     "HardwareInfo": "Hardware Resources",
@@ -18,23 +39,6 @@
     "OSVersion": "OS Version"
   },
 
-  "ThingsGateway.Admin.Razor.AccessDenied": {
-    "404": "Sorry, the page you are looking for does not exist.",
-    "401": "Sorry, you do not have permission to access this page.",
-    "Home": "Back to Home",
-    "Login": "Login"
-  },
-  "ThingsGateway.Admin.Razor.Login": {
-    "LoginErrorh1": "Login Error",
-    "LoginSuccessh1": "Login Success",
-    "LoginSuccessc1": "Redirecting to the page",
-    "LoginErrorh2": "Login Failed",
-    "LoginErrorc2": "Please contact the administrator!",
-    "Remark1": "Edge Collection Gateway",
-    "Remark2": "Data Aggregation, Multi-path Forwarding",
-    "Remark3": "Edge Computing, Efficient Processing",
-    "Welcome": "Welcome"
-  },
 
 
   "ThingsGateway.Admin.Razor.MainLayout": {

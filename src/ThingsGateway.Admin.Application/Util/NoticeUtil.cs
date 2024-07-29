@@ -23,7 +23,7 @@ public class NoticeUtil
     /// <returns></returns>
     public static async Task UserLoginOut(UserLoginOutEvent userLoginOutEvent)
     {
-        NoticeService ??= App.RootServices!.GetRequiredService<ISignalrNoticeService>();//获取服务
+        NoticeService ??= NetCoreApp.RootServices!.GetRequiredService<ISignalrNoticeService>();//获取服务
         //遍历verificat列表获取客户端ID列表
         await NoticeService.UserLoginOut(userLoginOutEvent?.ClientIds, userLoginOutEvent!.Message).ConfigureAwait(false);//发送消息
     }

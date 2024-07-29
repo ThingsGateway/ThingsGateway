@@ -28,7 +28,7 @@ public partial class HardwareInfoPage : IDisposable
 
     protected override void OnInitialized()
     {
-        HardwareInfoService = (HardwareInfoService)App.RootServices.GetServices<IHostedService>().FirstOrDefault(it => it is HardwareInfoService)!;
+        HardwareInfoService = (HardwareInfoService)NetCoreApp.RootServices.GetServices<IHostedService>().FirstOrDefault(it => it is HardwareInfoService)!;
         _ = RunTimerAsync();
         base.OnInitialized();
     }

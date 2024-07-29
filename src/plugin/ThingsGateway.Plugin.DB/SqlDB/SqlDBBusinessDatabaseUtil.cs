@@ -58,7 +58,7 @@ public static class SqlDBBusinessDatabaseUtil
                 MaxParameterNameLength = 30
             };
         }
-        App.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
+        NetCoreApp.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
         return sqlSugarClient;
     }
 }

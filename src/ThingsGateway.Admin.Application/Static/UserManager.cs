@@ -8,30 +8,39 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using Microsoft.Extensions.DependencyInjection;
+
+using ThingsGateway.Admin.Application;
+
 namespace ThingsGateway;
 
 /// <summary>
 /// 当前登录用户信息
 /// </summary>
-public class UserManager
+public static class UserManager
 {
+    private static readonly IAppService _appService;
+    static UserManager()
+    {
+        _appService = NetCoreApp.RootServices.GetService<IAppService>();
+    }
     /// <summary>
     /// 是否超级管理员
     /// </summary>
-    public static bool SuperAdmin => (App.User?.FindFirst(ClaimConst.SuperAdmin)?.Value).ToBoolean(false);
+    public static bool SuperAdmin => (_appService.User?.FindFirst(ClaimConst.SuperAdmin)?.Value).ToBoolean(false);
 
     /// <summary>
     /// 当前用户账号
     /// </summary>
-    public static string UserAccount => App.User?.FindFirst(ClaimConst.Account)?.Value;
+    public static string UserAccount => _appService.User?.FindFirst(ClaimConst.Account)?.Value;
 
     /// <summary>
     /// 当前用户Id
     /// </summary>
-    public static long UserId => (App.User?.FindFirst(ClaimConst.UserId)?.Value).ToLong();
+    public static long UserId => (_appService.User?.FindFirst(ClaimConst.UserId)?.Value).ToLong();
 
     /// <summary>
     /// 当前验证Id
     /// </summary>
-    public static long VerificatId => (App.User?.FindFirst(ClaimConst.VerificatId)?.Value).ToLong();
+    public static long VerificatId => (_appService.User?.FindFirst(ClaimConst.VerificatId)?.Value).ToLong();
 }

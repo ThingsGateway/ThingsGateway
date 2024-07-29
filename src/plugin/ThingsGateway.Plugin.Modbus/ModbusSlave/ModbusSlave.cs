@@ -102,7 +102,7 @@ public class ModbusSlave : BusinessBase
         a => a.Value
         );
         _plc.WriteData += OnWriteData;
-        Localizer = App.CreateLocalizerByType(typeof(ModbusSlave))!;
+        Localizer = NetCoreApp.CreateLocalizerByType(typeof(ModbusSlave))!;
     }
 
     /// <inheritdoc/>

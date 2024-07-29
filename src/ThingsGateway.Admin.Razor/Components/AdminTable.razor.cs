@@ -81,7 +81,7 @@ public partial class AdminTable<TItem> where TItem : class, new()
 
     /// <inheritdoc cref="Table{TItem}.ExportButtonText"/>
     [Parameter]
-    public string? ExportButtonText { get; set; } = App.CreateLocalizerByType(typeof(ThingsGateway.Razor._Imports))["ExportButtonText"];
+    public string? ExportButtonText { get; set; } = NetCoreApp.CreateLocalizerByType(typeof(ThingsGateway.Razor._Imports))["ExportButtonText"];
 
     /// <inheritdoc cref="Table{TItem}.ExtendButtonColumnWidth"/>
     [Parameter]

@@ -8,6 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+
+using System.Diagnostics.CodeAnalysis;
+
+using ThingsGateway.Admin.Application;
+
 namespace ThingsGateway.Admin.Razor;
 
 public partial class AccessDenied
@@ -18,7 +25,11 @@ public partial class AccessDenied
 
     [Inject]
     [NotNull]
-    private IStringLocalizer<AccessDenied>? Localizer { get; set; }
+    private IAppService? AppService { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IStringLocalizer<NotFound404>? Localizer { get; set; }
 
     [Inject]
     [NotNull]

@@ -146,7 +146,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
     [OperDesc("EditWebsitePolicy")]
     public async Task EditWebsitePolicyAsync(WebsitePolicy input)
     {
-        var websiteOptions = App.Configuration?.GetSection(nameof(WebsiteOptions)).Get<WebsiteOptions>()!;
+        var websiteOptions = NetCoreApp.Configuration?.GetSection(nameof(WebsiteOptions)).Get<WebsiteOptions>()!;
         if (websiteOptions.Demo)
         {
             throw Oops.Bah(Localizer["DemoCanotUpdateWebsitePolicy"]);
@@ -184,7 +184,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
     public async Task<AppConfig> GetAppConfigAsync()
     {
         var key = $"{CacheConst.Cache_SysDict}{DictTypeEnum.System}{nameof(AppConfig)}";//系统配置key
-        var appConfig = App.CacheService.Get<AppConfig>(key);
+        var appConfig = NetCoreApp.CacheService.Get<AppConfig>(key);
         if (appConfig == null)
         {
             List<SysDict> sysDicts = await GetSystemConfigAsync();
@@ -211,7 +211,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
             //网站设置
             appConfig.WebsitePolicy.WebStatus = sysDicts.FirstOrDefault(a => a.Category == nameof(WebsitePolicy) && a.Name == nameof(WebsitePolicy.WebStatus))?.Code.ToBoolean() ?? true;
             appConfig.WebsitePolicy.CloseTip = sysDicts.FirstOrDefault(a => a.Category == nameof(WebsitePolicy) && a.Name == nameof(WebsitePolicy.CloseTip))?.Code ?? "";
-            App.CacheService.Set(key, appConfig);
+            NetCoreApp.CacheService.Set(key, appConfig);
         }
 
         return appConfig;
@@ -227,12 +227,12 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
     {
         var key = CacheConst.Cache_SysDict + DictTypeEnum.Define;
         var field = $"{category}:sysdict:{name}";
-        var sysDict = App.CacheService.HashGetOne<SysDict>(key, field);
+        var sysDict = NetCoreApp.CacheService.HashGetOne<SysDict>(key, field);
         if (sysDict == null)
         {
             using var db = GetDB();
             sysDict = await db.Queryable<SysDict>().FirstAsync(a => a.DictType == DictTypeEnum.System && a.Category == category && a.Name == a.Name);
-            App.CacheService.HashAdd(key, field, sysDict);
+            NetCoreApp.CacheService.HashAdd(key, field, sysDict);
         }
         return sysDict;
     }
@@ -244,12 +244,12 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
     public async Task<List<SysDict>> GetSystemConfigAsync()
     {
         var key = $"{CacheConst.Cache_SysDict}{DictTypeEnum.System}";//系统配置key
-        var sysDicts = App.CacheService.Get<List<SysDict>>(key);
+        var sysDicts = NetCoreApp.CacheService.Get<List<SysDict>>(key);
         if (sysDicts == null)
         {
             using var db = GetDB();
             sysDicts = await db.Queryable<SysDict>().Where(a => a.DictType == DictTypeEnum.System).ToListAsync();
-            App.CacheService.Set(key, sysDicts);
+            NetCoreApp.CacheService.Set(key, sysDicts);
         }
 
         return sysDicts;
@@ -310,9 +310,9 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
     /// <returns></returns>
     private void RefreshCache(DictTypeEnum define)
     {
-        App.CacheService.Remove($"{CacheConst.Cache_SysDict}{define}");
+        NetCoreApp.CacheService.Remove($"{CacheConst.Cache_SysDict}{define}");
         if (define == DictTypeEnum.System)
-            App.CacheService.Remove($"{CacheConst.Cache_SysDict}{define}{nameof(AppConfig)}");
+            NetCoreApp.CacheService.Remove($"{CacheConst.Cache_SysDict}{define}{nameof(AppConfig)}");
     }
 
     #endregion 方法

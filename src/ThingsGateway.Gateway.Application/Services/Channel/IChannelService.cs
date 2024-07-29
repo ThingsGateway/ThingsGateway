@@ -11,7 +11,6 @@
 using BootstrapBlazor.Components;
 
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Mvc;
 
 using System.Data;
 
@@ -52,15 +51,8 @@ public interface IChannelService
     /// <summary>
     /// 导出通道为文件流结果
     /// </summary>
-    /// <param name="input">数据读取器</param>
     /// <returns>文件流结果</returns>
-    Task<FileStreamResult> ExportChannelAsync(IDataReader? input = null);
-
-    /// <summary>
-    /// 导出通道为文件流结果
-    /// </summary>
-    /// <returns>文件流结果</returns>
-    Task<FileStreamResult> ExportChannelAsync(QueryPageOptions options);
+    Task<Dictionary<string, object>> ExportChannelAsync(QueryPageOptions options);
 
     /// <summary>
     /// 导出通道为内存流

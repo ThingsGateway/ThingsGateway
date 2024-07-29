@@ -26,7 +26,7 @@ public class VerificatInfoService : BaseService<VerificatInfo>, IVerificatInfoSe
     public VerificatInfo GetOne(long id)
     {
         //先从Cache拿
-        var verificatInfo = App.CacheService.HashGetOne<VerificatInfo>(CacheConst.Cache_Token, id.ToString());
+        var verificatInfo = NetCoreApp.CacheService.HashGetOne<VerificatInfo>(CacheConst.Cache_Token, id.ToString());
         verificatInfo ??= GetFromDb(id);
         if (verificatInfo != null)
             if (verificatInfo.VerificatTimeout.AddSeconds(30) < DateTime.Now)
@@ -48,7 +48,7 @@ public class VerificatInfoService : BaseService<VerificatInfo>, IVerificatInfoSe
 
     private void SetCahce(VerificatInfo verificatInfo)
     {
-        App.CacheService.HashAdd<VerificatInfo>(CacheConst.Cache_Token, verificatInfo.Id.ToString(), verificatInfo);
+        NetCoreApp.CacheService.HashAdd<VerificatInfo>(CacheConst.Cache_Token, verificatInfo.Id.ToString(), verificatInfo);
     }
 
     public List<VerificatInfo>? GetListByUserId(long userId)
@@ -176,12 +176,12 @@ public class VerificatInfoService : BaseService<VerificatInfo>, IVerificatInfoSe
 
     private void RemoveCache()
     {
-        App.CacheService.Remove(CacheConst.Cache_Token);
+        NetCoreApp.CacheService.Remove(CacheConst.Cache_Token);
     }
 
     private void RemoveCache(long id)
     {
-        App.CacheService.HashDel<VerificatInfo>(CacheConst.Cache_Token, id.ToString());
+        NetCoreApp.CacheService.HashDel<VerificatInfo>(CacheConst.Cache_Token, id.ToString());
     }
 }
 

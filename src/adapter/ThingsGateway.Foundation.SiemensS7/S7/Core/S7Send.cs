@@ -89,7 +89,7 @@ internal class S7Send : ISendMessage
         }
         else
         {
-            GetWriteByteCommand(ref byteBlock, SiemensAddress[0]);
+            GetWriteByteCommand(ref byteBlock, SiemensAddress);
         }
     }
 
@@ -100,7 +100,7 @@ internal class S7Send : ISendMessage
         ushort parameterLen = (ushort)(len * 12 + 2);
         //TPKT
         valueByteBlock.WriteByte(3);//版本
-        valueByteBlock.WriteByte(0);
+        valueByteBlock.WriteByte(0);//保留
         valueByteBlock.WriteUInt16(telegramLen, EndianType.Big);//长度，item.len*12+19
         //COTP信息
         valueByteBlock.WriteByte(2);//长度
@@ -113,9 +113,9 @@ internal class S7Send : ISendMessage
         valueByteBlock.WriteUInt16(0x01, EndianType.Big);//数据引用
         valueByteBlock.WriteUInt16(parameterLen, EndianType.Big);//参数长度，item.len*12+2
         valueByteBlock.WriteUInt16(0x00, EndianType.Big);//数据长度，data.len+4 ,写入时填写，读取时为0
+        //par
         valueByteBlock.WriteByte(0x04);//功能码，4 Read Var, 5 Write Var
         valueByteBlock.WriteByte(len);//Item数量
-
         //通信项构建
         for (int index = 0; index < len; index++)
         {
@@ -140,17 +140,15 @@ internal class S7Send : ISendMessage
         }
     }
 
-    internal void GetWriteByteCommand<TByteBlock>(ref TByteBlock valueByteBlock, SiemensAddress address) where TByteBlock : IByteBlock
+    internal void GetWriteByteCommand<TByteBlock>(ref TByteBlock valueByteBlock, SiemensAddress[] addresss) where TByteBlock : IByteBlock
     {
-        var data = address.Data;
-        byte len = (byte)address.Length;
-        bool isBit = (IsBit && len == 1);
-        ushort telegramLen = (ushort)(16 + 19 + len);
-        ushort parameterLen = 12 + 2;
+
+        byte itemLen = (byte)addresss.Length;
+        ushort parameterLen = (ushort)(itemLen * 12 + 2);
         //TPKT
         valueByteBlock.WriteByte(3);//版本
         valueByteBlock.WriteByte(0);
-        valueByteBlock.WriteUInt16(telegramLen, EndianType.Big);//长度，item.len*12+19
+        valueByteBlock.WriteUInt16(0, EndianType.Big);//长度，item.len*12+19
         //COTP信息
         valueByteBlock.WriteByte(2);//长度
         valueByteBlock.WriteByte(0xf0);//pdu类型
@@ -161,26 +159,51 @@ internal class S7Send : ISendMessage
         valueByteBlock.WriteUInt16(0x00, EndianType.Big);//冗余识别
         valueByteBlock.WriteUInt16(0x01, EndianType.Big);//数据引用
         valueByteBlock.WriteUInt16(parameterLen, EndianType.Big);//参数长度，item.len*12+2
-        valueByteBlock.WriteUInt16((ushort)(4 + len), EndianType.Big);//数据长度，data.len+4 ,写入时填写，读取时为0
+        valueByteBlock.WriteUInt16(0, EndianType.Big);//数据长度，data.len+4 ,写入时填写，读取时为0
+
+        //par
         valueByteBlock.WriteByte(0x05);//功能码，4 Read Var, 5 Write Var
-        valueByteBlock.WriteByte(1);//Item数量
-
+        valueByteBlock.WriteByte(itemLen);//Item数量
         //写入Item与读取大致相同
-        valueByteBlock.WriteByte(0x12);//Var 规范
-        valueByteBlock.WriteByte(0x0a);//剩余的字节长度
-        valueByteBlock.WriteByte(0x10);//Syntax ID
-        valueByteBlock.WriteByte(isBit ? (byte)S7WordLength.Bit : (byte)S7WordLength.Byte);//数据类型
-        valueByteBlock.WriteUInt16((ushort)len, EndianType.Big);//长度
-        valueByteBlock.WriteUInt16(address.DbBlock, EndianType.Big);//DB编号
-        valueByteBlock.WriteByte(address.DataCode);//数据块类型
-        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256 / 256));//数据块偏移量
-        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256));//数据块偏移量
-        valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) % 256));//数据块偏移量
 
-        //后面跟的是写入的数据信息
-        valueByteBlock.WriteByte(0);
-        valueByteBlock.WriteByte((byte)(isBit ? 3 : 4));//Bit:3;Byte:4;Counter或者Timer:9
-        valueByteBlock.WriteUInt16((ushort)(isBit ? len : len * 8), EndianType.Big);
-        valueByteBlock.Write(data);
+
+
+        foreach (var address in addresss)
+        {
+            var data = address.Data;
+            byte len = (byte)address.Length;
+            bool isBit = (IsBit && len == 1);
+            valueByteBlock.WriteByte(0x12);//Var 规范
+            valueByteBlock.WriteByte(0x0a);//剩余的字节长度
+            valueByteBlock.WriteByte(0x10);//Syntax ID
+            valueByteBlock.WriteByte(isBit ? (byte)S7WordLength.Bit : (byte)S7WordLength.Byte);//数据类型
+            valueByteBlock.WriteUInt16((ushort)len, EndianType.Big);//长度
+            valueByteBlock.WriteUInt16(address.DbBlock, EndianType.Big);//DB编号
+            valueByteBlock.WriteByte(address.DataCode);//数据块类型
+            valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256 / 256));//数据块偏移量
+            valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256));//数据块偏移量
+            valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) % 256));//数据块偏移量
+        }
+        ushort dataLen = 0;
+        //data
+        foreach (var address in addresss)
+        {
+            var data = address.Data;
+            byte len = (byte)address.Length;
+            bool isBit = (IsBit && len == 1);
+            //后面跟的是写入的数据信息
+            valueByteBlock.WriteByte(0);
+            valueByteBlock.WriteByte((byte)(isBit ? 3 : 4));//Bit:3;Byte:4;Counter或者Timer:9
+            valueByteBlock.WriteUInt16((ushort)(isBit ? len : len * 8), EndianType.Big);
+            valueByteBlock.Write(data);
+
+            dataLen = (ushort)(dataLen +data.Length+4);
+        }
+        ushort telegramLen = (ushort)(itemLen * 12 + 19 + dataLen);
+        valueByteBlock.Position = 2;
+        valueByteBlock.WriteUInt16(telegramLen, EndianType.Big);//长度
+        valueByteBlock.Position = 15;
+        valueByteBlock.WriteUInt16(dataLen, EndianType.Big);//长度
+        valueByteBlock.SeekToEnd();
     }
 }

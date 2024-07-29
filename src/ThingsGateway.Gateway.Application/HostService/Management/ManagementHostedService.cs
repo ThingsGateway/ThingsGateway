@@ -76,7 +76,7 @@ public class ManagementHostedService : BackgroundService
     {
         await Task.Yield();
         await Task.Delay(1000).ConfigureAwait(false);
-        Options = App.Configuration.GetSection(nameof(ManagementOptions)).Get<ManagementOptions?>() ?? new();
+        Options = NetCoreApp.Configuration.GetSection(nameof(ManagementOptions)).Get<ManagementOptions?>() ?? new();
         StartBusinessDeviceEnable = Options?.Redundancy?.Enable == true ? Options?.Redundancy?.IsStartBusinessDevice == true : true;
         Options.Redundancy.SyncInterval = Math.Max(Options.Redundancy.SyncInterval, 1000);
         if (Options?.Redundancy?.Enable == true)
