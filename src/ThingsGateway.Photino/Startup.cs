@@ -83,10 +83,9 @@ public class Startup : AppStartup
     public void UseAdminCore(IServiceProvider serviceProvider)
     {
       var  _hostedServiceExecutor = serviceProvider.GetRequiredService<HostedServiceExecutor>();
-      var _applicationLifetime = serviceProvider.GetService<IHostApplicationLifetime>();
 
         // Fire IHostedService.Start
-         _hostedServiceExecutor.StartAsync(_applicationLifetime?.ApplicationStopping??default).ConfigureAwait(false).GetAwaiter().GetResult();
+         _hostedServiceExecutor.StartAsync(Program.CancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
 
     }
 

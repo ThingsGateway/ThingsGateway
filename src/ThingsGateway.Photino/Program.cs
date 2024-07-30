@@ -10,6 +10,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 using Photino.Blazor;
 
@@ -23,10 +24,15 @@ using ThingsGateway.Debug;
 using ThingsGateway.Photino;
 using ThingsGateway.Razor;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Server;
 
 internal class Program
 {
+    internal static CancellationTokenSource CancellationTokenSource = new();
+    internal static CancellationToken CancellationToken = CancellationTokenSource.Token;
+
     [STAThread]
     private static void Main(string[] args)
     {
@@ -74,5 +80,10 @@ internal class Program
         {
         };
         app.Run();
+        CancellationTokenSource.Cancel();
+        CancellationTokenSource.SafeDispose();
+        var  _hostedServiceExecutor = app.Services.GetRequiredService<HostedServiceExecutor>();
+        _hostedServiceExecutor.StopAsync(default).ConfigureAwait(false).GetAwaiter().GetResult();
+
     }
 }
