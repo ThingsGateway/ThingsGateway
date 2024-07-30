@@ -11,7 +11,7 @@
 
         <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
             <FieldItems>
-                <EditorItem TValue="string" TModel="Device">
+                <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Description">
                     <EditTemplate Context="value">
                         <div class="col-12">
                             <h6>@Localizer["BasicInformation"]</h6>
@@ -22,7 +22,7 @@
                 <EditorItem @bind-Field="@context.Enable" />
                 <EditorItem @bind-Field="@context.Description" />
 
-                <EditorItem TValue="string" TModel="Device">
+                <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Description">
                     <EditTemplate Context="value">
                         <div class="col-12">
                             <h6>@Localizer["Connection"]</h6>
@@ -34,7 +34,6 @@
                     <EditTemplate Context="value">
                         <div class="col-12  col-md-6 ">
                             <BootstrapInputGroup>
-                                <BootstrapInputGroupLabel DisplayText=@value.GetType().GetPropertyDisplayName(nameof(value.ChannelId)) />
                                 <Select IsVirtualize @bind-Value="@value.ChannelId" Items="@Channels" ShowSearch="true" ShowLabel="true" IsPopover />
                                 <Button class="text-end" Icon="fa-solid fa-plus" OnClick="AddChannel"></Button>
                             </BootstrapInputGroup>
@@ -52,7 +51,7 @@
                 </EditorItem>
                 <EditorItem @bind-Field="@context.IntervalTime" />
 
-                <EditorItem TValue="string" TModel="Device">
+                <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Description">
                     <EditTemplate Context="value">
                         <div class="col-12">
                             <h6>@Localizer["Redundant"]</h6>
@@ -89,7 +88,7 @@
                 <div class="col-12  col-md-6" />
                 <div class="col-12  col-md-6" />
 
-                <EditorItem TValue="string" TModel="Device">
+                <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Description">
                     <EditTemplate Context="value">
                         <div class="col-12">
                             <h6>@Localizer["Remark"]</h6>
@@ -119,7 +118,7 @@ else
         <TabItem Text=@Localizer["DeviceInformation"]>
             <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
                 <FieldItems>
-                    <EditorItem TValue="string" TModel="Device">
+                    <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Description">
                         <EditTemplate Context="value">
                             <div class="col-12">
                                 <h6>@Localizer["BasicInformation"]</h6>
@@ -130,7 +129,7 @@ else
                     <EditorItem @bind-Field="@context.Enable" />
                     <EditorItem @bind-Field="@context.Description" />
 
-                    <EditorItem TValue="string" TModel="Device">
+                    <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Description">
                         <EditTemplate Context="value">
                             <div class="col-12">
                                 <h6>@Localizer["Connection"]</h6>
@@ -142,7 +141,6 @@ else
                         <EditTemplate Context="value">
                             <div class="col-12  col-md-6 ">
                                 <BootstrapInputGroup>
-                                    <BootstrapInputGroupLabel DisplayText=@value.GetType().GetPropertyDisplayName(nameof(value.ChannelId)) />
                                     <Select IsVirtualize @bind-Value="@value.ChannelId" Items="@Channels" ShowSearch="true" ShowLabel="true" IsPopover />
                                     <Button class="text-end" Icon="fa-solid fa-plus" OnClick="AddChannel"></Button>
                                 </BootstrapInputGroup>
@@ -160,7 +158,7 @@ else
                     </EditorItem>
                     <EditorItem @bind-Field="@context.IntervalTime" />
 
-                    <EditorItem TValue="string" TModel="Device">
+                    <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Description">
                         <EditTemplate Context="value">
                             <div class="col-12">
                                 <h6>@Localizer["Redundant"]</h6>
@@ -196,7 +194,7 @@ else
                     <div class="col-12  col-md-6" />
                     <div class="col-12  col-md-6" />
 
-                    <EditorItem TValue="string" TModel="Device">
+                    <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Description">
                         <EditTemplate Context="value">
                             <div class="col-12">
                                 <h6>@Localizer["Remark"]</h6>

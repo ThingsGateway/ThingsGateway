@@ -19,7 +19,6 @@
     {
         <div class="col-12  col-md-6">
             <BootstrapInputGroup>
-                <label class="form-label">@Model.GetType().GetPropertyDisplayName(nameof(Model.Icon))</label>
                 <i class="text-info d-flex  align-items-center me-2  @Model.Icon" style="flex: 0 0 auto;"></i>
                 <BootstrapInput @bind-Value="Model.Icon"> </BootstrapInput>
                 <Button class="text-end" Icon="fa-solid fa-xmark" Color="Color.Secondary" OnClick="@(()=>Model.Icon=null)"></Button>
