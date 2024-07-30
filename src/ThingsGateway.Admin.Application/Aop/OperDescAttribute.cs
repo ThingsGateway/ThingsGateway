@@ -96,9 +96,10 @@ public class OperDescAttribute : MoAttribute
         {
             try
             {
-                if (_logMessageQueue.Count > 0)
+                var data = _logMessageQueue.ToListWithDequeue(); // 从日志队列中获取数据
+                if (data.Count > 0)
                 {
-                    await db.InsertableWithAttr(_logMessageQueue.ToListWithDequeue()).ExecuteCommandAsync();//入库
+                    await db.InsertableWithAttr(data).ExecuteCommandAsync();//入库
                 }
                 await Task.Delay(3000, appLifetime?.ApplicationStopping ?? default).ConfigureAwait(false);
             }

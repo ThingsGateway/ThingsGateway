@@ -19,7 +19,9 @@ using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
 using ThingsGateway.Admin.Application;
+using ThingsGateway.Debug;
 using ThingsGateway.Photino;
+using ThingsGateway.Razor;
 
 namespace ThingsGateway.Server;
 
@@ -51,6 +53,8 @@ internal class Program
         builder.Services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
 
         builder.RootComponents.Add<Routes>("#app");
+
+        builder.Services.AddScoped<IPlatformService, PhotinoPlatformService>();
 
         var app = builder.Build();
 

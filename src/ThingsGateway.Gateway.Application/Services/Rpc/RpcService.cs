@@ -243,9 +243,11 @@ public class RpcService : IRpcService
             try
             {
                 var data = _logQueues.ToListWithDequeue(); // 从日志队列中获取数据
-
-                // 将数据插入到数据库中
-                await db.InsertableWithAttr(data).ExecuteCommandAsync(appLifetime.ApplicationStopping);
+                if(data.Count>0)
+                {
+                    // 将数据插入到数据库中
+                    await db.InsertableWithAttr(data).ExecuteCommandAsync(appLifetime.ApplicationStopping);
+                }
             }
             catch (Exception ex)
             {

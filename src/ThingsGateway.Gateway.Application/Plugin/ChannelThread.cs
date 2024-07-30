@@ -93,7 +93,7 @@ public class ChannelThread
                         CycleInterval = Math.Min(CycleInterval, MinCycleInterval);
                     }
                 }
-                await Task.Delay(hardwareInfoService.HardwareInfoConfig.RealInterval * 1000, appLifetime.ApplicationStopping).ConfigureAwait(false);
+                await Task.Delay(hardwareInfoService.HardwareInfoConfig.RealInterval * 1000, appLifetime?.ApplicationStopping ?? default).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
