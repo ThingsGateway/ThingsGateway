@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using ThingsGateway.Foundation.Extension.Generic;
+
 using TouchSocket.Core;
 
 namespace ThingsGateway.Foundation.SiemensS7;
@@ -46,6 +48,9 @@ public class S7Request
     /// </summary>
     public int Length { get; set; }
 
+
+    public int BitLength { get; set; }
+    public bool IsBit { get; set; }
     #endregion Request
 }
 
@@ -56,7 +61,6 @@ internal class S7Send : ISendMessage
 {
     internal bool Handshake;
     internal byte[] HandshakeBytes;
-    internal bool IsBit;
     internal bool Read;
     internal SiemensAddress[] SiemensAddress;
 
@@ -66,11 +70,10 @@ internal class S7Send : ISendMessage
         Handshake = true;
     }
 
-    public S7Send(SiemensAddress[] siemensAddress, bool read, bool isBit)
+    public S7Send(SiemensAddress[] siemensAddress, bool read)
     {
         SiemensAddress = siemensAddress;
         Read = read;
-        IsBit = isBit;
     }
 
     public int MaxLength => 2048;
@@ -110,7 +113,7 @@ internal class S7Send : ISendMessage
         valueByteBlock.WriteByte(0x32);//协议id
         valueByteBlock.WriteByte(0x01);//请求
         valueByteBlock.WriteUInt16(0x00, EndianType.Big);//冗余识别
-        valueByteBlock.WriteUInt16(0x01, EndianType.Big);//数据引用
+        valueByteBlock.WriteUInt16((ushort)this.Sign, EndianType.Big);//数据ID标识
         valueByteBlock.WriteUInt16(parameterLen, EndianType.Big);//参数长度，item.len*12+2
         valueByteBlock.WriteUInt16(0x00, EndianType.Big);//数据长度，data.len+4 ,写入时填写，读取时为0
         //par
@@ -157,7 +160,7 @@ internal class S7Send : ISendMessage
         valueByteBlock.WriteByte(0x32);//协议id
         valueByteBlock.WriteByte(0x01);//请求
         valueByteBlock.WriteUInt16(0x00, EndianType.Big);//冗余识别
-        valueByteBlock.WriteUInt16(0x01, EndianType.Big);//数据引用
+        valueByteBlock.WriteUInt16((ushort)this.Sign, EndianType.Big);//数据ID标识
         valueByteBlock.WriteUInt16(parameterLen, EndianType.Big);//参数长度，item.len*12+2
         valueByteBlock.WriteUInt16(0, EndianType.Big);//数据长度，data.len+4 ,写入时填写，读取时为0
 
@@ -172,7 +175,7 @@ internal class S7Send : ISendMessage
         {
             var data = address.Data;
             byte len = (byte)address.Length;
-            bool isBit = (IsBit && len == 1);
+            bool isBit = (address.IsBit && len == 1);
             valueByteBlock.WriteByte(0x12);//Var 规范
             valueByteBlock.WriteByte(0x0a);//剩余的字节长度
             valueByteBlock.WriteByte(0x10);//Syntax ID
@@ -190,14 +193,15 @@ internal class S7Send : ISendMessage
         {
             var data = address.Data;
             byte len = (byte)address.Length;
-            bool isBit = (IsBit && len == 1);
+            bool isBit = (address.IsBit && len == 1);
+            data = data.ArrayExpandToLengthEven();
             //后面跟的是写入的数据信息
             valueByteBlock.WriteByte(0);
-            valueByteBlock.WriteByte((byte)(isBit ? 3 : 4));//Bit:3;Byte:4;Counter或者Timer:9
-            valueByteBlock.WriteUInt16((ushort)(isBit ? len : len * 8), EndianType.Big);
+            valueByteBlock.WriteByte((byte)(isBit ? address.DataCode == (byte)S7WordLength.Counter ? 9 : 3 : 4));//Bit:3;Byte:4;Counter或者Timer:9
+            valueByteBlock.WriteUInt16((ushort)(isBit ? (byte)address.BitLength : len * 8), EndianType.Big);
             valueByteBlock.Write(data);
 
-            dataLen = (ushort)(dataLen +data.Length+4);
+            dataLen = (ushort)(dataLen + data.Length + 4);
         }
         ushort telegramLen = (ushort)(itemLen * 12 + 19 + dataLen);
         valueByteBlock.Position = 2;

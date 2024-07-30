@@ -24,14 +24,17 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public ProtocolBase(IChannel channel)
     {
         if (channel == null) throw new ArgumentNullException(nameof(channel));
-        channel.Collects.Add(this);
-        Channel = channel;
-        Logger = channel.Logger;
-        Channel.Starting += ChannelStarting;
-        Channel.Stoped += ChannelStoped;
-        Channel.Started += ChannelStarted;
-        Channel.ChannelReceived += ChannelReceived;
-        Channel.Config.ConfigurePlugins(ConfigurePlugins());
+        lock (channel)
+        {
+            channel.Collects.Add(this);
+            Channel = channel;
+            Logger = channel.Logger;
+            Channel.Starting += ChannelStarting;
+            Channel.Stoped += ChannelStoped;
+            Channel.Started += ChannelStarted;
+            Channel.ChannelReceived += ChannelReceived;
+            Channel.Config.ConfigurePlugins(ConfigurePlugins());
+        }
     }
 
     /// <inheritdoc/>

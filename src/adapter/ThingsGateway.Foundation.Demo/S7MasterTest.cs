@@ -8,6 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using ThingsGateway.Foundation.Json.Extension;
 using ThingsGateway.Foundation.SiemensS7;
 
 using TouchSocket.Core;
@@ -35,7 +36,8 @@ internal class S7MasterTest
         addresss[1].Length = addresss[0].Data.Length;
         addresss[2].Data = new byte[] { 0x01, 0x02, 0x03, 0x04 };
         addresss[2].Length = addresss[0].Data.Length;
-        var result = await siemensS7Master.S7RequestAsync(addresss, false, false);
+        var result = await siemensS7Master.S7WriteAsync(addresss);
+        Console.WriteLine(result.ToJsonNetString());
 
         S7Variable s7Variable = new S7Variable(siemensS7Master, 200);
 

@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 using System.Data;
+using System.Net;
 
 using ThingsGateway.Foundation.Extension.String;
 
@@ -23,8 +24,18 @@ public partial class SiemensS7Master : ProtocolBase
     /// <inheritdoc/>
     public SiemensS7Master(IChannel channel) : base(channel)
     {
-        RegisterByteLength = 1;
-        ThingsGatewayBitConverter = new S7BitConverter(EndianType.Big);
+        lock (channel)
+        {
+            RegisterByteLength = 1;
+            ThingsGatewayBitConverter = new S7BitConverter(EndianType.Big);
+
+            if (channel.Collects.Count(a => a.GetType() == typeof(SiemensS7Master)) > 1)
+            {
+                Channel.Starting -= ChannelStarting;
+                Channel.Stoped -= ChannelStoped;
+                Channel.Started -= ChannelStarted;
+            }
+        }
     }
 
     /// <summary>
@@ -117,9 +128,8 @@ public partial class SiemensS7Master : ProtocolBase
     /// <summary>
     /// 此方法并不会智能分组以最大化效率，减少传输次数，因为返回值是byte[]，所以一切都按地址数组的顺序执行，最后合并数组
     /// </summary>
-    public async ValueTask<OperResult<byte[]>> S7RequestAsync(SiemensAddress[] sAddresss, bool read, bool isBit, int bitLength = 0, CancellationToken cancellationToken = default)
+    public async ValueTask<OperResult<byte[]>> S7ReadAsync(SiemensAddress[] sAddresss, CancellationToken cancellationToken = default)
     {
-        if (read)
         {
             var byteBlock = new ValueByteBlock(2048);
             try
@@ -135,7 +145,7 @@ public partial class SiemensS7Master : ProtocolBase
                         sAddress.Length = len;
 
                         var result = await this.SendThenReturnAsync(
-        new S7Send([sAddress], read, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
+        new S7Send([sAddress], true), cancellationToken: cancellationToken).ConfigureAwait(false);
                         if (!result.IsSuccess) return result;
 
                         byteBlock.Write(result.Content);
@@ -163,14 +173,27 @@ public partial class SiemensS7Master : ProtocolBase
                 byteBlock.SafeDispose();
             }
         }
-        else
+    }
+    /// <summary>
+    /// 此方法并不会智能分组以最大化效率，减少传输次数，因为返回值是byte[]，所以一切都按地址数组的顺序执行，最后合并数组
+    /// </summary>
+    public async ValueTask<Dictionary<SiemensAddress, OperResult>> S7WriteAsync(SiemensAddress[] sAddresss, CancellationToken cancellationToken = default)
+    {
+
+
+        var dictOperResult = new Dictionary<SiemensAddress, OperResult>();
+
+        void SetFailOperResult(OperResult operResult)
+        {
+            foreach (var item in sAddresss)
+            {
+                dictOperResult.TryAdd(item, operResult);
+            }
+        }
+
         {
             var sAddress = sAddresss[0];
-            if (sAddresss.Length > 1 && isBit)
-            {
-                return new OperResult<byte[]>("Only supports single write");
-            }
-            else if (sAddresss.Length <= 1 && isBit)
+            if (sAddresss.Length <= 1 && sAddress.IsBit)
             {
                 //读取，再写入
                 var byteBlock = new ValueByteBlock(2048);
@@ -179,24 +202,36 @@ public partial class SiemensS7Master : ProtocolBase
                     var addressLen = sAddress.Length == 0 ? 1 : sAddress.Length;
 
                     if (addressLen > PduLength)
-                        return new OperResult<byte[]>("Write length exceeds limit");
+                    {
+                        SetFailOperResult(new OperResult("Write length exceeds limit"));
+                        return dictOperResult;
+                    }
 
                     var result = await this.SendThenReturnAsync(
-    new S7Send([sAddress], true, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
+    new S7Send([sAddress], true), cancellationToken: cancellationToken).ConfigureAwait(false);
 
-                    if (!result.IsSuccess) return result;
-                    var vaue = sAddress.Data.ByteToBoolArray(bitLength);
-                    for (int i = sAddress.BitCode; i < vaue.Length + sAddress.BitCode; i++)
+                    if (!result.IsSuccess)
                     {
-                        result.Content[i / 8] = result.Content[i / 8].SetBit((i % 8), vaue[i - sAddress.BitCode]);
+                        SetFailOperResult(result);
+                        return dictOperResult;
+                    }
+
+                    var value = sAddress.Data.ByteToBoolArray(sAddress.BitLength);
+                    for (int i = sAddress.BitCode; i < value.Length + sAddress.BitCode; i++)
+                    {
+                        result.Content[i / 8] = result.Content[i / 8].SetBit((i % 8), value[i - sAddress.BitCode]);
                     }
                     sAddress.Data = result.Content;
-                    return await this.SendThenReturnAsync(
-new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
+                    var wresult = await this.SendThenReturnAsync(
+new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAwait(false);
+                    dictOperResult.TryAdd(sAddress, wresult);
+                    return dictOperResult;
+
                 }
                 catch (Exception ex)
                 {
-                    return new OperResult<byte[]>(ex);
+                    SetFailOperResult(new OperResult(ex));
+                    return dictOperResult;
                 }
                 finally
                 {
@@ -212,7 +247,7 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
                 List<SiemensAddress> addresses = new();
                 foreach (var item in sAddresss)
                 {
-                     siemensAddresses.Add(addresses);
+                    siemensAddresses.Add(addresses);
                     dataLen = (ushort)(dataLen + item.Data.Length + 4);
                     ushort telegramLen = (ushort)(itemLen * 12 + 19 + dataLen);
                     if (telegramLen < PduLength)
@@ -234,7 +269,8 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
                         }
                         else
                         {
-                            return new OperResult<byte[]>("Write length exceeds limit");
+                            SetFailOperResult(new OperResult("Write length exceeds limit"));
+                            return dictOperResult;
                         }
                     }
 
@@ -246,24 +282,25 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
                     try
                     {
                         var result = await this.SendThenReturnAsync(
-        new S7Send(item.ToArray(), read, isBit), cancellationToken: cancellationToken).ConfigureAwait(false);
-                        if(!result.IsSuccess)
+        new S7Send(item.ToArray(), false), cancellationToken: cancellationToken).ConfigureAwait(false);
+                        foreach (var i1 in item)
                         {
-                            return result;
+                            dictOperResult.TryAdd(i1, result);
                         }
                     }
                     catch (Exception ex)
                     {
-                        return new OperResult<byte[]>(ex);
+
+                        SetFailOperResult(new OperResult(ex));
+                        return dictOperResult;
                     }
 
                 }
-                return new();
+                return dictOperResult;
 
             }
         }
     }
-
     #region 读写
 
     /// <inheritdoc/>
@@ -272,7 +309,7 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
         try
         {
             var sAddress = SiemensAddress.ParseFrom(address, length);
-            return S7RequestAsync([sAddress], true, false, 0, cancellationToken);
+            return S7ReadAsync([sAddress], cancellationToken);
         }
         catch (Exception ex)
         {
@@ -288,7 +325,7 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
             var sAddress = SiemensAddress.ParseFrom(address);
             sAddress.Data = value;
             sAddress.Length = value.Length;
-            return await S7RequestAsync([sAddress], false, false, 0, cancellationToken);
+            return (await S7WriteAsync([sAddress], cancellationToken)).FirstOrDefault().Value;
         }
         catch (Exception ex)
         {
@@ -299,16 +336,14 @@ new S7Send([sAddress], false, isBit), cancellationToken: cancellationToken).Conf
     /// <inheritdoc/>
     public override async ValueTask<OperResult> WriteAsync(string address, bool[] value, CancellationToken cancellationToken = default)
     {
-        //if (value.Length > 1)
-        //{
-        //    return new OperResult(SiemensS7Resource.Localizer["MulWriteError"]);
-        //}
         try
         {
             var sAddress = SiemensAddress.ParseFrom(address);
             sAddress.Data = value.BoolArrayToByte();
             sAddress.Length = sAddress.Data.Length;
-            return await S7RequestAsync([sAddress], false, true, value.Length, cancellationToken);
+            sAddress.BitLength = value.Length;
+            sAddress.IsBit = true;
+            return (await S7WriteAsync([sAddress], cancellationToken)).FirstOrDefault().Value;
         }
         catch (Exception ex)
         {

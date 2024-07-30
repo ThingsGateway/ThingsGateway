@@ -8,6 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using Newtonsoft.Json.Linq;
+
+using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+
+using ThingsGateway.Foundation.SiemensS7;
 using ThingsGateway.Gateway.Application;
 
 using TouchSocket.Core;
@@ -52,6 +59,127 @@ public class SiemensS7Master : CollectBase
             Rack = _driverPropertys.Rack,
             Slot = _driverPropertys.Slot,
         };
+    }
+
+    /// <summary>
+    /// 获取jtoken值代表的字节数组，不包含字符串
+    /// </summary>
+    /// <param name="dataType"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    public byte[] GetBytes(DataTypeEnum dataType, JToken value)
+    {
+        //排除字符串
+        if (value is JArray jArray)
+        {
+            return dataType switch
+            {
+                DataTypeEnum.Boolean => jArray.ToObject<Boolean[]>().BoolArrayToByte(),
+                DataTypeEnum.Byte => jArray.ToObject<Byte[]>(),
+                DataTypeEnum.Int16 => _plc.ThingsGatewayBitConverter.GetBytes(jArray.ToObject<Int16[]>()),
+                DataTypeEnum.UInt16 => _plc.ThingsGatewayBitConverter.GetBytes(jArray.ToObject<UInt16[]>()),
+                DataTypeEnum.Int32 => _plc.ThingsGatewayBitConverter.GetBytes(jArray.ToObject<Int32[]>()),
+                DataTypeEnum.UInt32 => _plc.ThingsGatewayBitConverter.GetBytes(jArray.ToObject<UInt32[]>()),
+                DataTypeEnum.Int64 => _plc.ThingsGatewayBitConverter.GetBytes(jArray.ToObject<Int64[]>()),
+                DataTypeEnum.UInt64 => _plc.ThingsGatewayBitConverter.GetBytes(jArray.ToObject<UInt64[]>()),
+                DataTypeEnum.Single => _plc.ThingsGatewayBitConverter.GetBytes(jArray.ToObject<Single[]>()),
+                DataTypeEnum.Double => _plc.ThingsGatewayBitConverter.GetBytes(jArray.ToObject<Double[]>()),
+                _ => throw new(DefaultResource.Localizer["DataTypeNotSupported", dataType]),
+            };
+        }
+        else
+        {
+            return dataType switch
+            {
+                DataTypeEnum.Boolean => _plc.ThingsGatewayBitConverter.GetBytes(value.ToObject<Boolean>()),
+                DataTypeEnum.Byte => [value.ToObject<Byte>()],
+                DataTypeEnum.Int16 => _plc.ThingsGatewayBitConverter.GetBytes(value.ToObject<Int16>()),
+                DataTypeEnum.UInt16 => _plc.ThingsGatewayBitConverter.GetBytes(value.ToObject<UInt16>()),
+                DataTypeEnum.Int32 => _plc.ThingsGatewayBitConverter.GetBytes(value.ToObject<Int32>()),
+                DataTypeEnum.UInt32 => _plc.ThingsGatewayBitConverter.GetBytes(value.ToObject<UInt32>()),
+                DataTypeEnum.Int64 => _plc.ThingsGatewayBitConverter.GetBytes(value.ToObject<Int64>()),
+                DataTypeEnum.UInt64 => _plc.ThingsGatewayBitConverter.GetBytes(value.ToObject<UInt64>()),
+                DataTypeEnum.Single => _plc.ThingsGatewayBitConverter.GetBytes(value.ToObject<Single>()),
+                DataTypeEnum.Double => _plc.ThingsGatewayBitConverter.GetBytes(value.ToObject<Double>()),
+                _ => throw new(DefaultResource.Localizer["DataTypeNotSupported", dataType]),
+            };
+        }
+    }
+
+
+    protected override async ValueTask<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
+    {
+        try
+        {
+            // 如果是单线程模式，则等待写入锁
+            if (IsSingleThread)
+                await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            // 检查协议是否为空，如果为空则抛出异常
+            if (Protocol == null)
+                throw new NotSupportedException();
+
+            // 创建用于存储操作结果的并发字典
+            ConcurrentDictionary<string, OperResult> operResults = new();
+
+            //转换
+            Dictionary<VariableRunTime, SiemensAddress> addresses = new();
+            var w1 = writeInfoLists.Where(a => a.Key.DataType != DataTypeEnum.String);
+            var w2 = writeInfoLists.Where(a => a.Key.DataType == DataTypeEnum.String);
+            foreach (var item in w1)
+            {
+                SiemensAddress siemensAddress = SiemensAddress.ParseFrom(item.Key.RegisterAddress);
+                siemensAddress.Data = GetBytes(item.Key.DataType, item.Value);
+                siemensAddress.Length = siemensAddress.Data.Length;
+                siemensAddress.BitLength = 1;
+                siemensAddress.IsBit = item.Key.DataType == DataTypeEnum.Boolean;
+                if (item.Key.DataType == DataTypeEnum.Boolean)
+                {
+                    if (item.Value is JArray jArray)
+                    {
+                        siemensAddress.BitLength = jArray.ToObject<Boolean[]>().Length;
+                    }
+                }
+                addresses.Add(item.Key, siemensAddress);
+            }
+
+            var result = await _plc.S7WriteAsync(addresses.Select(a => a.Value).ToArray(), cancellationToken).ConfigureAwait(false);
+            foreach (var writeInfo in addresses)
+            {
+                if (result.TryGetValue(writeInfo.Value, out var r1))
+                {
+                    operResults.TryAdd(writeInfo.Key.Name, r1);
+                }
+            }
+
+            // 使用并发方式遍历写入信息列表，并进行异步写入操作
+            await w2.ParallelForEachAsync(async (writeInfo, cancellationToken) =>
+            {
+                try
+                {
+                    // 调用协议的写入方法，将写入信息中的数据写入到对应的寄存器地址，并获取操作结果
+                    var result = await Protocol.WriteAsync(writeInfo.Key.RegisterAddress, writeInfo.Value, writeInfo.Key.DataType, cancellationToken).ConfigureAwait(false);
+
+                    // 将操作结果添加到结果字典中，使用变量名称作为键
+                    operResults.TryAdd(writeInfo.Key.Name, result);
+                }
+                catch (Exception ex)
+                {
+                    operResults.TryAdd(writeInfo.Key.Name, new(ex));
+                }
+            }, CollectProperties.ConcurrentCount, cancellationToken).ConfigureAwait(false);
+
+
+            // 返回包含操作结果的字典
+            return new Dictionary<string, OperResult>(operResults);
+        }
+        finally
+        {
+            // 如果是单线程模式，则释放写入锁
+            if (IsSingleThread)
+                WriteLock.Release();
+        }
+
     }
 
     /// <summary>

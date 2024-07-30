@@ -31,6 +31,9 @@ public class SiemensAddress : S7Request
         this.DbBlock = siemensAddress.DbBlock;
         this.Data = siemensAddress.Data;
         this.Length = siemensAddress.Length;
+
+        BitLength=siemensAddress.BitLength;
+        IsBit= siemensAddress.IsBit;
     }
 
     /// <inheritdoc />
