@@ -219,6 +219,6 @@ public class SiemensS7Master : CollectBase
         {
             return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, _plc.OnLine ? _plc.PduLength : _driverPropertys.MaxPack, CurrentDevice.IntervalTime);
         }
-        finally { _plc.Channel.Close(); }
+        finally {  }
     }
 }
