@@ -55,7 +55,6 @@ public class Startup : AppStartup
             return appContext;
         });
         services.AddAuthorizationCore();
-        services.AddCascadingAuthenticationState();
         services.AddSingleton<IAuthorizationHandler, BlazorAuthorizationHandler>();
         services.AddSingleton<AuthenticationStateProvider, BlazorAuthenticationStateProvider>();
         return services;

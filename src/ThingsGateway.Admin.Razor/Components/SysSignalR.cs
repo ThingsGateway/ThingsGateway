@@ -11,6 +11,8 @@
 
 using ThingsGateway.Admin.Application;
 
+using Yitter.IdGenerator;
+
 namespace ThingsGateway.Admin.Razor;
 
 public partial class SysSignalR : ComponentBase, IDisposable
@@ -31,10 +33,13 @@ public partial class SysSignalR : ComponentBase, IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
-        NewMessage.UnSubscribe(VerificatId);
-        LoginOut.UnSubscribe(VerificatId);
+        SysHub.UpdateVerificat(ClientId, VerificatId, isConnect: false);
+        var clientId = ClientId.ToString();
+        NewMessage.UnSubscribe(clientId);
+        LoginOut.UnSubscribe(clientId);
     }
-    private string VerificatId;
+    private long VerificatId;
+    private long ClientId;
     /// <inheritdoc/>
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -42,21 +47,24 @@ public partial class SysSignalR : ComponentBase, IDisposable
         {
             try
             {
-
-                VerificatId = UserManager.VerificatId.ToString();
-                LoginOut.Subscribe(VerificatId, async (message) =>
+                ClientId = YitIdHelper.NextId();
+                VerificatId = UserManager.VerificatId;
+                var clientId = ClientId.ToString();
+                LoginOut.Subscribe(clientId, async (message) =>
                 {
                     await InvokeAsync(async () => await ToastService.Warning(message));
                     await Task.Delay(2000);
                     NavigationManager.NavigateTo(NavigationManager.Uri, true);
                 });
-                NewMessage.Subscribe(VerificatId, async (message) =>
+                NewMessage.Subscribe(clientId, async (message) =>
                 {
                     if ((byte)message.LogLevel <= 2)
                         await InvokeAsync(async () => await ToastService.Information(message.Data));
                     else
                         await InvokeAsync(async () => await ToastService.Warning(message.Data));
                 });
+
+                SysHub.UpdateVerificat(ClientId, VerificatId, isConnect: true);
             }
             catch (OperationCanceledException)
             {

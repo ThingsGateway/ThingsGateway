@@ -14,8 +14,6 @@ using NetTaste;
 
 using ThingsGateway.Core.Json.Extension;
 
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
 namespace ThingsGateway.Admin.Application;
 
 

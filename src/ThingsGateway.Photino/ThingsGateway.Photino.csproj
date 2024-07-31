@@ -7,7 +7,7 @@
     <SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
     <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
     <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
-    <TargetFrameworks>net8.0;</TargetFrameworks>
+    <TargetFrameworks>net6.0;</TargetFrameworks>
 
     <!--动态适用GC-->
     <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
