@@ -10,12 +10,12 @@
 
 	<ItemGroup>
 		<PackageReference Include="BenchmarkDotNet" Version="0.13.12" />
-		<PackageReference Include="HslCommunication" Version="12.0.2" />
+		<PackageReference Include="HslCommunication" Version="12.0.3" />
 		<PackageReference Include="NModbus" Version="3.0.81" />
 		<PackageReference Include="NModbus.Serial" Version="3.0.81" />
 		<PackageReference Include="S7netplus" Version="0.20.0" />
-		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="6.0.3.65" />
-		<PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="6.0.3.65" />
+		<PackageReference Include="ThingsGateway.Foundation.Modbus" Version="*" />
+		<PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="*" />
 	</ItemGroup>
 
 </Project>

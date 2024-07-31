@@ -12,6 +12,10 @@ namespace ThingsGateway.Razor;
 
 public interface IPlatformService
 {
+    Task OnChannelExport(QueryPageOptions options);
+    Task OnDeviceExport(QueryPageOptions options, bool collect);
+    Task OnVariableExport(QueryPageOptions options);
+
     /// <summary>
     /// OnLogExport
     /// </summary>

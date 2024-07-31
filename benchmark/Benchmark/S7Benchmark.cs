@@ -119,6 +119,8 @@ public class S7Benchmark : IDisposable
 
     public void Dispose()
     {
+        plc.SafeDispose();
+        siemensS7Net.SafeDispose();
         siemensS7.Channel.SafeDispose();
         siemensS7.SafeDispose();
     }

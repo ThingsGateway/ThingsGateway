@@ -196,19 +196,13 @@ public partial class VariablePage : IDisposable
     #region 导出
 
     [Inject]
-    private IJSRuntime JSRuntime { get; set; }
-
-    [Inject]
     [NotNull]
-    private ITableExport? TableExport { get; set; }
+    private IPlatformService? PlatformService { get; set; }
 
     private async Task ExcelExportAsync(ITableExportContext<Variable> tableExportContext)
     {
-        await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
-        string url = "api/gatewayExport/variable";
-        string fileName = DateTime.Now.ToFileDateTimeFormat();
-        var dtoObject = tableExportContext.BuildQueryPageOptions();
-        await ajaxJS.InvokeVoidAsync("blazor_downloadFile", url, fileName, dtoObject);
+        await PlatformService.OnVariableExport(tableExportContext.BuildQueryPageOptions());
+
         // 返回 true 时自动弹出提示框
         await ToastService.Default();
     }

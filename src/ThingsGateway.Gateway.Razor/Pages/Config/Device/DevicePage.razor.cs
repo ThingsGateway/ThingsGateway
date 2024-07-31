@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Mapster;
 
 using Microsoft.AspNetCore.Components.Forms;
@@ -235,19 +237,12 @@ public abstract partial class DevicePage : IDisposable
     #region 导出
 
     [Inject]
-    private IJSRuntime JSRuntime { get; set; }
-
-    [Inject]
     [NotNull]
-    private ITableExport? TableExport { get; set; }
+    private IPlatformService? PlatformService { get; set; }
 
     private async Task ExcelExportAsync(ITableExportContext<Device> tableExportContext)
     {
-        await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
-        string url = PluginType == PluginTypeEnum.Collect ? "api/gatewayExport/collectdevice" : "api/gatewayExport/businessdevice";
-        string fileName = DateTime.Now.ToFileDateTimeFormat();
-        var dtoObject = tableExportContext.BuildQueryPageOptions();
-        await ajaxJS.InvokeVoidAsync("blazor_downloadFile", url, fileName, dtoObject);
+        await PlatformService.OnDeviceExport(tableExportContext.BuildQueryPageOptions(),PluginType==PluginTypeEnum.Collect);
 
         // 返回 true 时自动弹出提示框
         await ToastService.Default();

@@ -8,16 +8,33 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using ThingsGateway.Razor;
 
 namespace ThingsGateway.Debug;
 
 public class PhotinoPlatformService : IPlatformService
 {
+    public Task OnChannelExport(QueryPageOptions options)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task OnDeviceExport(QueryPageOptions options, bool collect)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task OnLogExport(string logPath)
     {
         OpenFolder(logPath);
         return Task.CompletedTask;
+    }
+
+    public Task OnVariableExport(QueryPageOptions options)
+    {
+        throw new NotImplementedException();
     }
 
     private void OpenFolder(string path)
