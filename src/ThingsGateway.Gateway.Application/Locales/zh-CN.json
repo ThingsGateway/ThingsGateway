@@ -39,7 +39,7 @@
 
     "SaveDevice": "添加/修改设备",
     "CopyDevice": "复制设备",
-    "DeleteDevice": "复制设备",
+    "DeleteDevice": "删除设备",
     "ClearDevice": "清空设备",
     "ExportDevice": "导出设备",
     "ImportDevice": "导入设备",
@@ -83,7 +83,7 @@
 
     "SaveDevice": "添加/修改设备",
     "CopyDevice": "复制设备",
-    "DeleteDevice": "复制设备",
+    "DeleteDevice": "删除设备",
     "ClearDevice": "清空设备",
     "ExportDevice": "导出设备",
     "ImportDevice": "导入设备",
@@ -314,7 +314,7 @@
 
     "SaveDevice": "添加/修改设备",
     "CopyDevice": "复制设备",
-    "DeleteDevice": "复制设备",
+    "DeleteDevice": "删除设备",
     "ClearDevice": "清空设备",
     "ExportDevice": "导出设备",
     "ImportDevice": "导入设备",

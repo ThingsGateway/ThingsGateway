@@ -66,7 +66,7 @@ public interface ISysDictService
     /// 从缓存/数据库获取系统配置列表
     /// </summary>
     /// <returns>系统配置列表</returns>
-    Task<List<SysDict>> GetSystemConfigAsync(DictTypeEnum dictType);
+    Task<List<SysDict>> GetSystemConfigAsync(DictTypeEnum dictType = DictTypeEnum.System);
 
     /// <summary>
     /// 表格查询

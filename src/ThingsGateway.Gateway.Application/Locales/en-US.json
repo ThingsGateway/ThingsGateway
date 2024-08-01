@@ -265,7 +265,7 @@
     "RedundantDeviceNotNull": "When enabling redundancy, you must select a redundant device",
     "SaveDevice": "Add/Modify Device",
     "CopyDevice": "Copy Device",
-    "DeleteDevice": "Copy Device",
+    "DeleteDevice": "Delete Device",
     "ClearDevice": "Clear Device",
     "ExportDevice": "Export Device",
     "ImportDevice": "Import Device",
