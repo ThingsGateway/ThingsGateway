@@ -178,7 +178,7 @@
     "Remark": "Remark",
     "SortCode": "Sort",
     "DemoCanotUpdateWebsitePolicy": "DEMO environment does not allow modifying website settings",
-    "DictDup": "Duplicate configuration exists, category {0}, name {0}"
+    "DictDup": "Duplicate configuration exists, category {0}, name {1}"
   },
 
   "ThingsGateway.Admin.Application.SysResource": {

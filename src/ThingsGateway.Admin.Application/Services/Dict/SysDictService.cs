@@ -231,7 +231,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
         if (sysDict == null)
         {
             using var db = GetDB();
-            sysDict = await db.Queryable<SysDict>().FirstAsync(a => a.DictType == DictTypeEnum.System && a.Category == category && a.Name == a.Name);
+            sysDict = await db.Queryable<SysDict>().FirstAsync(a => a.DictType == DictTypeEnum.Define && a.Category == category && a.Name == name);
             NetCoreApp.CacheService.HashAdd(key, field, sysDict);
         }
         return sysDict;

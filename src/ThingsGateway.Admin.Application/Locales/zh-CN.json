@@ -173,7 +173,7 @@
     "Code": "代码",
     "Remark": "备注",
     "SortCode": "排序",
-    "DictDup": "存在重复的配置 分类 {0} 名称 {0}",
+    "DictDup": "存在重复的配置 分类 {0} 名称 {1}",
     "DemoCanotUpdateWebsitePolicy": "DEMO环境不允许修改网站设置"
   },
 
