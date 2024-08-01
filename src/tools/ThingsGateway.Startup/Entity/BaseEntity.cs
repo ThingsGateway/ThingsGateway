@@ -28,7 +28,7 @@ public abstract class PrimaryIdEntity : IPrimaryIdEntity
     /// </summary>
     [SugarColumn(ColumnDescription = "Id", IsPrimaryKey = true)]
     [IgnoreExcel]
-    [AutoGenerateColumn(Visible = false, Sortable = true, DefaultSort = true, DefaultSortOrder = SortOrder.Asc)]
+    [AutoGenerateColumn(Visible = false, IsVisibleWhenEdit =false, IsVisibleWhenAdd = false, Sortable = true, DefaultSort = true, DefaultSortOrder = SortOrder.Asc)]
     public virtual long Id { get; set; }
 }
 

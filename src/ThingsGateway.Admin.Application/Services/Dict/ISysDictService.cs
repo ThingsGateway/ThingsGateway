@@ -62,11 +62,18 @@ public interface ISysDictService
     /// <returns>系统字典项</returns>
     Task<SysDict> GetByKeyAsync(string category, string name);
 
+
+    /// <summary>
+    /// 从缓存/数据库获取自定义配置列表
+    /// </summary>
+    /// <returns>自定义配置列表</returns
+    Task<IDictionary<string, SysDict>> GetDefineConfigAsync();
+
     /// <summary>
     /// 从缓存/数据库获取系统配置列表
     /// </summary>
     /// <returns>系统配置列表</returns>
-    Task<List<SysDict>> GetSystemConfigAsync(DictTypeEnum dictType = DictTypeEnum.System);
+    Task<List<SysDict>> GetSystemConfigAsync();
 
     /// <summary>
     /// 表格查询

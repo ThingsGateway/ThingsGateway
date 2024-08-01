@@ -241,19 +241,40 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
     /// 从缓存/数据库获取系统配置列表
     /// </summary>
     /// <returns></returns>
-    public async Task<List<SysDict>> GetSystemConfigAsync(DictTypeEnum dictType = DictTypeEnum.System)
+    public async Task<IDictionary<string,SysDict>> GetDefineConfigAsync()
     {
-        var key = $"{CacheConst.Cache_SysDict}{dictType}";//系统配置key
-        var sysDicts = NetCoreApp.CacheService.Get<List<SysDict>>(key);
+        var key = $"{CacheConst.Cache_SysDict}{DictTypeEnum.Define}";//系统配置key
+        var sysDicts = NetCoreApp.CacheService.HashGetAll<SysDict>(key);
         if (sysDicts == null)
         {
             using var db = GetDB();
-            sysDicts = await db.Queryable<SysDict>().Where(a => a.DictType == dictType).ToListAsync();
+            sysDicts = (await db.Queryable<SysDict>().Where(a => a.DictType == DictTypeEnum.Define).ToListAsync()).ToDictionary(a=>
+            $"{a.Category}:sysdict:{a.Name}",a=>a);
             NetCoreApp.CacheService.Set(key, sysDicts);
         }
 
         return sysDicts;
     }
+
+
+    /// <summary>
+    /// 从缓存/数据库获取系统配置列表
+    /// </summary>
+    /// <returns></returns>
+    public async Task<List<SysDict>> GetSystemConfigAsync()
+    {
+        var key = $"{CacheConst.Cache_SysDict}{DictTypeEnum.System}";//系统配置key
+        var sysDicts = NetCoreApp.CacheService.Get<List<SysDict>>(key);
+        if (sysDicts == null)
+        {
+            using var db = GetDB();
+            sysDicts = await db.Queryable<SysDict>().Where(a => a.DictType == DictTypeEnum.System).ToListAsync();
+            NetCoreApp.CacheService.Set(key, sysDicts);
+        }
+
+        return sysDicts;
+    }
+
 
     /// <summary>
     /// 表格查询
@@ -291,6 +312,10 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
     /// <param name="input">配置项</param>
     private async Task CheckInput(SysDict input)
     {
+
+        //设置类型为业务
+        input.DictType = DictTypeEnum.Define;
+
         var dict = await GetByKeyAsync(input.Category, input.Name);//获取全部字典
 
         //判断是否从存在重复
@@ -299,8 +324,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
         {
             throw Oops.Bah(Localizer["DictDup", input.Category, input.Name]);
         }
-        //设置类型为业务
-        input.DictType = DictTypeEnum.Define;
+
     }
 
     /// <summary>
