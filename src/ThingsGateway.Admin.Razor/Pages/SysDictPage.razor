@@ -10,7 +10,7 @@
                   AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true SearchModel=SearchModel 
                   ShowExtendButtons=true
                 OnQueryAsync="OnQueryAsync" IsPagination=true
-                OnSaveAsync="SysDictService.SaveDictAsync" OnDeleteAsync="@(a=>SysDictService.DeleteDictAsync(a.Select(a=>a.Id)))">
+                OnSaveAsync="SaveDictAsync" OnDeleteAsync="@(a=>DeleteDictAsync(a.Select(a=>a.Id)))">
 
 </AdminTable>
 </div>

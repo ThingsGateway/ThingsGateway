@@ -31,4 +31,34 @@ public partial class SysDictPage
     }
 
     #endregion 查询
+
+    #region 修改
+
+    private async Task<bool> DeleteDictAsync(IEnumerable<long> ids)
+    {
+        try
+        {
+            return await SysDictService.DeleteDictAsync(ids);
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(null, $"{ex.Message}");
+            return false;
+        }
+    }
+
+    private async Task<bool> SaveDictAsync(SysDict input, ItemChangedType type)
+    {
+        try
+        {
+            return await SysDictService.SaveDictAsync(input, type);
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warning(null, $"{ex.Message}");
+            return false;
+        }
+    }
+
+    #endregion 修改
 }

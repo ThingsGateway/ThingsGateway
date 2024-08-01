@@ -241,15 +241,15 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
     /// 从缓存/数据库获取系统配置列表
     /// </summary>
     /// <returns></returns>
-    public async Task<IDictionary<string,SysDict>> GetDefineConfigAsync()
+    public async Task<IDictionary<string, SysDict>> GetDefineConfigAsync()
     {
         var key = $"{CacheConst.Cache_SysDict}{DictTypeEnum.Define}";//系统配置key
         var sysDicts = NetCoreApp.CacheService.HashGetAll<SysDict>(key);
-        if (sysDicts == null)
+        if (sysDicts.Count == 0)
         {
             using var db = GetDB();
-            sysDicts = (await db.Queryable<SysDict>().Where(a => a.DictType == DictTypeEnum.Define).ToListAsync()).ToDictionary(a=>
-            $"{a.Category}:sysdict:{a.Name}",a=>a);
+            sysDicts = (await db.Queryable<SysDict>().Where(a => a.DictType == DictTypeEnum.Define).ToListAsync()).ToDictionary(a =>
+            $"{a.Category}:sysdict:{a.Name}", a => a);
             NetCoreApp.CacheService.Set(key, sysDicts);
         }
 
