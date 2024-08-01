@@ -320,7 +320,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
 
         //判断是否从存在重复
 
-        if (dict != null)
+        if (dict != null && dict.Id != input.Id)
         {
             throw Oops.Bah(Localizer["DictDup", input.Category, input.Name]);
         }
