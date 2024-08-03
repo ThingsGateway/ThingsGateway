@@ -217,7 +217,7 @@ public abstract class DriverBase : DisposableObject
                     {
                         if (IsCollectDevice)
                         {
-                            //lock (GlobalData.CollectDevices)
+                            lock (GlobalData.CollectDevices)
                             {
                                 GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == DeviceId);
 
@@ -226,7 +226,7 @@ public abstract class DriverBase : DisposableObject
                         }
                         else
                         {
-                            //lock (GlobalData.BusinessDevices)
+                            lock (GlobalData.BusinessDevices)
                             {
                                 GlobalData.BusinessDevices.RemoveWhere(it => it.Value.Id == DeviceId);
                             }

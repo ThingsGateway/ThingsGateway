@@ -493,7 +493,7 @@ public class ChannelThread
                 if (IsCollectChannel)
                 {
                     // 锁定采集设备集合，并移除与DriverBases关联的设备
-                    //lock (GlobalData.CollectDevices)
+                    lock (GlobalData.CollectDevices)
                     {
                         GlobalData.CollectDevices.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.Id));
                         GlobalData.Variables.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.DeviceId));
@@ -502,7 +502,7 @@ public class ChannelThread
                 else
                 {
                     // 锁定业务设备集合，并移除与DriverBases关联的设备
-                    //lock (GlobalData.BusinessDevices)
+                    lock (GlobalData.BusinessDevices)
                     {
                         GlobalData.BusinessDevices.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.Id));
                     }

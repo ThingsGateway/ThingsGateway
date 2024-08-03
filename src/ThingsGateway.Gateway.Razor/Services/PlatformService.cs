@@ -46,28 +46,4 @@ public class PlatformService : IPlatformService
     }
 
 
-
-    public async Task OnChannelExport(QueryPageOptions dtoObject)
-    {
-        await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
-        string url = "api/gatewayExport/channel";
-        string fileName = DateTime.Now.ToFileDateTimeFormat();
-        await ajaxJS.InvokeVoidAsync("blazor_downloadFile", url, fileName, dtoObject);
-    }
-
-    public async Task OnDeviceExport(QueryPageOptions dtoObject, bool collect)
-    {
-        await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
-        string url = collect ? "api/gatewayExport/collectdevice" : "api/gatewayExport/businessdevice";
-        string fileName = DateTime.Now.ToFileDateTimeFormat();
-        await ajaxJS.InvokeVoidAsync("blazor_downloadFile", url, fileName, dtoObject);
-    }
-
-    public async Task OnVariableExport(QueryPageOptions dtoObject)
-    {
-        await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
-        string url = "api/gatewayExport/variable";
-        string fileName = DateTime.Now.ToFileDateTimeFormat();
-        await ajaxJS.InvokeVoidAsync("blazor_downloadFile", url, fileName, dtoObject);
-    }
 }

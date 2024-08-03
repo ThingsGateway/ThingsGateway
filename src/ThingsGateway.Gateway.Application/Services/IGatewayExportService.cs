@@ -8,14 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Razor;
+using BootstrapBlazor.Components;
 
-public interface IPlatformService
+namespace ThingsGateway.Gateway.Application;
+
+public interface IGatewayExportService
 {
-    /// <summary>
-    /// OnLogExport
-    /// </summary>
-    /// <param name="logPath">日志文件夹路径</param>
-    /// <returns></returns>
-    public Task OnLogExport(string logPath);
+    Task OnChannelExport(QueryPageOptions options);
+    Task OnDeviceExport(QueryPageOptions options, bool collect);
+    Task OnVariableExport(QueryPageOptions options);
 }

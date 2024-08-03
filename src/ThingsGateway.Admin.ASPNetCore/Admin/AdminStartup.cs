@@ -22,7 +22,7 @@ using UAParser;
 namespace ThingsGateway.Server;
 
 [AppStartup(-99999)]
-public class Startup : AppStartup
+public class AdminStartup : AppStartup
 {
     public void ConfigBlazorServer(IServiceCollection services)
     {

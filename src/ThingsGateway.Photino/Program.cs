@@ -24,8 +24,6 @@ using ThingsGateway.Debug;
 using ThingsGateway.Photino;
 using ThingsGateway.Razor;
 
-using TouchSocket.Core;
-
 namespace ThingsGateway.Server;
 
 internal class Program
@@ -60,7 +58,6 @@ internal class Program
 
         builder.RootComponents.Add<Routes>("#app");
 
-        builder.Services.AddScoped<IPlatformService, PhotinoPlatformService>();
 
         var app = builder.Build();
 
@@ -81,7 +78,7 @@ internal class Program
         };
         app.Run();
         CancellationTokenSource.Cancel();
-        CancellationTokenSource.SafeDispose();
+        CancellationTokenSource.Dispose();
         var  _hostedServiceExecutor = app.Services.GetRequiredService<HostedServiceExecutor>();
         _hostedServiceExecutor.StopAsync(default).ConfigureAwait(false).GetAwaiter().GetResult();
 

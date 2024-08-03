@@ -647,7 +647,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
                                 {
                                     // 如果找不到对应的通道信息，则添加错误信息到导入预览结果并返回
                                     importPreviewOutput.HasError = true;
-                                    importPreviewOutput.Results.Add((row++, false, "ChannelError"));
+                                    importPreviewOutput.Results.Add((row++, false,Localizer["ChannelError"]));
                                     return;
                                 }
                             }
@@ -655,7 +655,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
                             {
                                 // 如果未提供通道信息，则添加错误信息到导入预览结果并返回
                                 importPreviewOutput.HasError = true;
-                                importPreviewOutput.Results.Add((row++, false, "ChannelError"));
+                                importPreviewOutput.Results.Add((row++, false, Localizer["ChannelError"]));
                                 return;
                             }
 

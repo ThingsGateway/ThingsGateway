@@ -14,15 +14,6 @@
     
   </ItemGroup>
 
-
-  <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
-    <DefineConstants>Admin</DefineConstants>
-  </PropertyGroup>
-
-  <ItemGroup Condition="'$(SolutionName)' != 'ThingsGateway - Admin'">
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
-  </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Include="Locales\*.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

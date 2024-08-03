@@ -25,8 +25,6 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
-using TouchSocket.Core;
-
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace ThingsGateway.Admin.Application;
@@ -405,7 +403,7 @@ public class JWTEncryption
         var tokenHandler = new JsonWebTokenHandler();
         try
         {
-            var tokenValidationResult = tokenHandler.ValidateTokenAsync(accessToken, tokenValidationParameters).GetFalseAwaitResult();
+            var tokenValidationResult = tokenHandler.ValidateTokenAsync(accessToken, tokenValidationParameters).ConfigureAwait(false).GetAwaiter().GetResult();
             if (!tokenValidationResult.IsValid) return (false, null, tokenValidationResult);
 
             var jsonWebToken = tokenValidationResult.SecurityToken as JsonWebToken;

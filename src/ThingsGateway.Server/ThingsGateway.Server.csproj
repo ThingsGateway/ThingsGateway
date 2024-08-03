@@ -30,10 +30,14 @@
     <DefineConstants>Admin</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.ASPNetCore\ThingsGateway.ASPNetCore.csproj" />
+  <ItemGroup Condition="'$(SolutionName)'!='ThingsGateway - Admin'">
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.ASPNetCore\ThingsGateway.Gateway.ASPNetCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.ASPNetCore\ThingsGateway.Admin.ASPNetCore.csproj" />
+  </ItemGroup>
+  
   <ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
     <ProjectReference Include="$(SolutionDir)\pro\ThingsGateway.Gateway.ProRazor\ThingsGateway.Gateway.ProRazor.csproj" />
   </ItemGroup>
@@ -46,7 +50,7 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.7" />
   </ItemGroup>
 

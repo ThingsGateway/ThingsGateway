@@ -22,7 +22,6 @@ using ThingsGateway.Gateway.Application;
 
 namespace ThingsGateway.Gateway.Razor;
 
-#if !Admin
 
 [Route("/")]
 [Route("/index")]
@@ -201,4 +200,3 @@ public partial class Index : IDisposable
     }
 }
 
-#endif

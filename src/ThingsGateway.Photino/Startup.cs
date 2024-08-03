@@ -18,13 +18,15 @@ using System.Threading;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
+using ThingsGateway.Debug;
 using ThingsGateway.Logging;
+using ThingsGateway.Razor;
 
 using UAParser;
 
 namespace ThingsGateway.Server;
 
-[AppStartup(-99999)]
+[AppStartup(-999999)]
 public class Startup : AppStartup
 {
     public void ConfigBlazorServer(IServiceCollection services)
@@ -72,10 +74,17 @@ public class Startup : AppStartup
         services.AddSingleton<NetCoreAppService>(a=> appService);
 
         services.AddSingleton<IApiPermissionService, ApiPermissionService>();
-
+        
         services.AddSingleton<ISignalrNoticeService, SignalrNoticeService>();
         services.AddSingleton<IAuthService, AuthService>();
         services.AddSingleton<HostedServiceExecutor>();
+
+        services.AddScoped<IPlatformService, PhotinoPlatformService>();
+
+#if !Admin
+        services.AddScoped<ThingsGateway.Gateway.Application.IGatewayExportService, ThingsGateway.Gateway.Razor.GatewayExportService>();
+#endif
+
 
     }
 

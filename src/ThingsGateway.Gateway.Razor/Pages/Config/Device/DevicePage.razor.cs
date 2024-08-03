@@ -238,11 +238,11 @@ public abstract partial class DevicePage : IDisposable
 
     [Inject]
     [NotNull]
-    private IPlatformService? PlatformService { get; set; }
+    private IGatewayExportService? GatewayExportService { get; set; }
 
     private async Task ExcelExportAsync(ITableExportContext<Device> tableExportContext)
     {
-        await PlatformService.OnDeviceExport(tableExportContext.BuildQueryPageOptions(),PluginType==PluginTypeEnum.Collect);
+        await GatewayExportService.OnDeviceExport(tableExportContext.BuildQueryPageOptions(),PluginType==PluginTypeEnum.Collect);
 
         // 返回 true 时自动弹出提示框
         await ToastService.Default();
