@@ -41,7 +41,7 @@
     <AdminTable TItem="SQLRealValue" AutoGenerateColumns="true" ShowDefaultButtons=false
                 AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
                 ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
-                ShowExportButton="true"
+                ShowExportButton="true" IsAutoQueryFirstRender=false
                 OnQueryAsync="OnQueryRealAsync" IsPagination=true CustomerSearchModel="@_searchReal">
         <CustomerSearchTemplate>
             @if (context is SqlDBPageInput model)
