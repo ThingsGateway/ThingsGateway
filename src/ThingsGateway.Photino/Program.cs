@@ -10,19 +10,15 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 using Photino.Blazor;
 
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
 using ThingsGateway.Admin.Application;
-using ThingsGateway.Debug;
 using ThingsGateway.Photino;
-using ThingsGateway.Razor;
 
 namespace ThingsGateway.Server;
 
@@ -79,7 +75,7 @@ internal class Program
         app.Run();
         CancellationTokenSource.Cancel();
         CancellationTokenSource.Dispose();
-        var  _hostedServiceExecutor = app.Services.GetRequiredService<HostedServiceExecutor>();
+        var _hostedServiceExecutor = app.Services.GetRequiredService<HostedServiceExecutor>();
         _hostedServiceExecutor.StopAsync(default).ConfigureAwait(false).GetAwaiter().GetResult();
 
     }

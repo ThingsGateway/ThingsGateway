@@ -12,7 +12,7 @@
             <TabItem Text=@Localizer["VariableInformation"]>
                 <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
                     <FieldItems>
-                        <EditorItem TValue="string" TModel="Variable">
+                        <EditorItem @bind-Field="@context.Description">
                             <EditTemplate Context="value">
                                 <div class="col-12">
                                     <h6>@Localizer["BasicInformation"]</h6>
@@ -26,7 +26,7 @@
                         <EditorItem @bind-Field="@context.Enable" />
                         <EditorItem @bind-Field="@context.RpcWriteEnable" />
 
-                        <EditorItem TValue="string" TModel="Variable">
+                        <EditorItem @bind-Field="@context.Description">
                             <EditTemplate Context="value">
                                 <div class="col-12">
                                     <h6>@Localizer["Connection"]</h6>
@@ -61,7 +61,7 @@
 
 
 
-                        <EditorItem TValue="string" TModel="Variable">
+                        <EditorItem @bind-Field="@context.Description">
                             <EditTemplate Context="value">
                                 <div class="col-12">
                                     <h6>@Localizer["Remark"]</h6>
@@ -125,7 +125,7 @@ else
         <TabItem Text=@Localizer["VariableInformation"]>
             <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
                 <FieldItems>
-                    <EditorItem TValue="string" TModel="Variable">
+                    <EditorItem @bind-Field="@context.Description">
                         <EditTemplate Context="value">
                             <div class="col-12">
                                 <h6>@Localizer["BasicInformation"]</h6>
@@ -139,7 +139,7 @@ else
                     <EditorItem @bind-Field="@context.Enable" />
                     <EditorItem @bind-Field="@context.RpcWriteEnable" />
 
-                    <EditorItem TValue="string" TModel="Variable">
+                    <EditorItem @bind-Field="@context.Description">
                         <EditTemplate Context="value">
                             <div class="col-12">
                                 <h6>@Localizer["Connection"]</h6>
@@ -174,7 +174,7 @@ else
 
 
 
-                    <EditorItem TValue="string" TModel="Variable">
+                    <EditorItem @bind-Field="@context.Description">
                         <EditTemplate Context="value">
                             <div class="col-12">
                                 <h6>@Localizer["Remark"]</h6>

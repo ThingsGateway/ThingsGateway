@@ -10,14 +10,6 @@
 		<TargetFrameworks>net6.0</TargetFrameworks>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<Content Include="favicon.ico">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-		</Content>
-	</ItemGroup>
-
 
 	<ItemGroup>
 		<PackageReference Include="Photino.NET" Version="3.0.14" />
@@ -50,4 +42,7 @@
     <None Include="$(SolutionDir)..\LICENSE" Pack="true" PackagePath="\" />
     <None Include="$(SolutionDir)..\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
+
+
+
 </Project>
