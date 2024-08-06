@@ -44,7 +44,7 @@ A cross-platform, high-performance edge data collection gateway based on net8, c
 ﻿
 ## Demo
 ﻿
-[ThingsGateway Demo Address](http://47.119.161.158:5000/)
+[Demo](http://47.119.161.158:5000/)
 ﻿
 Account: **SuperAdmin**
 ﻿
