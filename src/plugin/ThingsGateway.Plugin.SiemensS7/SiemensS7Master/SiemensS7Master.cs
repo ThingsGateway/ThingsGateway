@@ -11,14 +11,11 @@
 using Newtonsoft.Json.Linq;
 
 using System.Collections.Concurrent;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
 
 using ThingsGateway.Foundation.SiemensS7;
 using ThingsGateway.Gateway.Application;
 
 using TouchSocket.Core;
-using TouchSocket.Sockets;
 
 namespace ThingsGateway.Plugin.SiemensS7;
 
@@ -142,13 +139,16 @@ public class SiemensS7Master : CollectBase
                 }
                 addresses.Add(item.Key, siemensAddress);
             }
-
-            var result = await _plc.S7WriteAsync(addresses.Select(a => a.Value).ToArray(), cancellationToken).ConfigureAwait(false);
-            foreach (var writeInfo in addresses)
+            if (addresses.Count > 0)
             {
-                if (result.TryGetValue(writeInfo.Value, out var r1))
+
+                var result = await _plc.S7WriteAsync(addresses.Select(a => a.Value).ToArray(), cancellationToken).ConfigureAwait(false);
+                foreach (var writeInfo in addresses)
                 {
-                    operResults.TryAdd(writeInfo.Key.Name, r1);
+                    if (result.TryGetValue(writeInfo.Value, out var r1))
+                    {
+                        operResults.TryAdd(writeInfo.Key.Name, r1);
+                    }
                 }
             }
 
@@ -219,6 +219,6 @@ public class SiemensS7Master : CollectBase
         {
             return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, _plc.OnLine ? _plc.PduLength : _driverPropertys.MaxPack, CurrentDevice.IntervalTime);
         }
-        finally {  }
+        finally { }
     }
 }
