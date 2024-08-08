@@ -88,6 +88,7 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
                     LogMessage?.LogWarning(ex);
                     success = false;
                 }
+                await Task.Delay(10000, cancellationToken).ConfigureAwait(false);
             }
         }
         else

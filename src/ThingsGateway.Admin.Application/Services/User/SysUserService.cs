@@ -127,7 +127,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
         Dictionary<string, List<string>> buttonCodeList = new();
         foreach (var item in button)
         {
-            var href = allResources.FirstOrDefault(b => b.Id == item.ParentId)?.Href;
+            var href = allResources.FirstOrDefault(b => b.Id == item.ParentId)?.Href ?? string.Empty;
             if (buttonCodeList.TryGetValue(href, out var buttonCode))
             {
                 buttonCode.Add(item.Title);

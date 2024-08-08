@@ -133,7 +133,7 @@ public class OpcUaMaster : CollectBase
 
                 connectFirstFailLoged = true;
                 CurrentDevice.SetDeviceStatus(TimerX.Now, 999, ex.Message);
-                await Task.Delay(3000);
+                await Task.Delay(10000, cancellationToken).ConfigureAwait(false);
             }
         }
         else

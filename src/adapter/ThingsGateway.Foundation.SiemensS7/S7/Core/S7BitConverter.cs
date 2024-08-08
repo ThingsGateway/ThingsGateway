@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System.Text;
-
 using TouchSocket.Core;
 
 namespace ThingsGateway.Foundation.SiemensS7;

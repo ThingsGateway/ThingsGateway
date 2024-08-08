@@ -143,7 +143,16 @@ public class BlazorAppContext : IAsyncDisposable
     {
         if (UserManager.SuperAdmin)
             return true;
-        var data = CurrentUser?.ButtonCodeList?.TryGetValue(url.StartsWith("/") ? url : $"/{url}", out var titles) == true && titles.Contains(code);
-        return data;
+        url ??= string.Empty;
+        if (!url.IsNullOrWhiteSpace())
+        {
+            var data = CurrentUser?.ButtonCodeList?.TryGetValue(url.StartsWith("/") ? url : $"/{url}", out var titles) == true && titles.Contains(code);
+            return data;
+        }
+        else
+        {
+            var data = CurrentUser?.ButtonCodeList?.TryGetValue(url, out var titles) == true && titles.Contains(code);
+            return data;
+        }
     }
 }

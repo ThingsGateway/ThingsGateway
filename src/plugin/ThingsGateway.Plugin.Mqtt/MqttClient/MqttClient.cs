@@ -105,7 +105,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                     LogMessage.LogWarning(clientResult.Exception, clientResult.ErrorMessage);
                 success = clientResult.IsSuccess;
             }
-            await Delay(cancellationToken).ConfigureAwait(false);
+            await Task.Delay(10000, cancellationToken).ConfigureAwait(false);
             //return;
         }
 

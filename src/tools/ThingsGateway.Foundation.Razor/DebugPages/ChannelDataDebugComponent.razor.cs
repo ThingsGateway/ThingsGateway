@@ -96,11 +96,11 @@ public partial class ChannelDataDebugComponent : ComponentBase
 
     private async Task DisconnectClick()
     {
-        if (Model != null)
+        if (Model?.Channel != null)
         {
             try
             {
-                Model.Channel.Close(DefaultResource.Localizer["ProactivelyDisconnect", nameof(DisconnectClick)]);
+                await Model.Channel.CloseAsync(DefaultResource.Localizer["ProactivelyDisconnect", nameof(DisconnectClick)]);
                 if (OnDisConnectClick.HasDelegate)
                     await OnDisConnectClick.InvokeAsync();
             }

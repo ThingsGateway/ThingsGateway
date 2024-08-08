@@ -1,6 +1,15 @@
 ﻿{
   "RECORDS": [
     {
+      "Id": "61000010000001",
+      "ParentId": 0,
+      "Module": "6",
+      "Title": "快捷按钮",
+      "Code": "System",
+      "Category": "2",
+      "IsDelete": "0"
+    },
+    {
       "Id": "61000012001001",
       "ParentId": "61000012001",
       "Module": "6",

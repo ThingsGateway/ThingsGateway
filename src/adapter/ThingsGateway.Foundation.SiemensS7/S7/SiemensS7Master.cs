@@ -8,9 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System.Data;
-using System.Net;
-
 using ThingsGateway.Foundation.Extension.String;
 
 using TouchSocket.Core;
@@ -117,7 +114,7 @@ public partial class SiemensS7Master : ProtocolBase
     {
         try
         {
-            this.Channel.Connect();
+            Channel.Connect();
         }
         catch
         {
@@ -144,7 +141,7 @@ public partial class SiemensS7Master : ProtocolBase
                         int len = Math.Min(addressLen - num, PduLength);
                         sAddress.Length = len;
 
-                        var result = await this.SendThenReturnAsync(
+                        var result = await SendThenReturnAsync(
         new S7Send([sAddress], true), cancellationToken: cancellationToken).ConfigureAwait(false);
                         if (!result.IsSuccess) return result;
 
@@ -207,7 +204,7 @@ public partial class SiemensS7Master : ProtocolBase
                         return dictOperResult;
                     }
 
-                    var result = await this.SendThenReturnAsync(
+                    var result = await SendThenReturnAsync(
     new S7Send([sAddress], true), cancellationToken: cancellationToken).ConfigureAwait(false);
 
                     if (!result.IsSuccess)
@@ -222,7 +219,7 @@ public partial class SiemensS7Master : ProtocolBase
                         result.Content[i / 8] = result.Content[i / 8].SetBit((i % 8), value[i - sAddress.BitCode]);
                     }
                     sAddress.Data = result.Content;
-                    var wresult = await this.SendThenReturnAsync(
+                    var wresult = await SendThenReturnAsync(
 new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAwait(false);
                     dictOperResult.TryAdd(sAddress, wresult);
                     return dictOperResult;
@@ -281,7 +278,7 @@ new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAw
 
                     try
                     {
-                        var result = await this.SendThenReturnAsync(
+                        var result = await SendThenReturnAsync(
         new S7Send(item.ToArray(), false), cancellationToken: cancellationToken).ConfigureAwait(false);
                         foreach (var i1 in item)
                         {
@@ -424,14 +421,14 @@ new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAw
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError1", channel.ToString(), result2.ErrorMessage]);
-                    channel.Close();
+                    await channel.CloseAsync();
                     return;
                 }
             }
             catch (Exception ex)
             {
                 Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError1", channel.ToString(), ex.Message]);
-                channel.Close();
+                await channel.CloseAsync();
                 return;
             }
             try
@@ -440,7 +437,7 @@ new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAw
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError2", channel.ToString(), result2.ErrorMessage]);
-                    channel.Close();
+                    await channel.CloseAsync();
                     return;
                 }
                 PduLength = ThingsGatewayBitConverter.ToUInt16(result2.Content, 0) - 28;
@@ -450,13 +447,13 @@ new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAw
             catch (Exception ex)
             {
                 Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError2", channel.ToString(), ex.Message]);
-                channel.Close();
+                await channel.CloseAsync();
                 return;
             }
         }
         catch (Exception ex)
         {
-            channel.Close();
+            await channel.CloseAsync();
             Logger.Exception(ex);
         }
         finally
@@ -475,7 +472,7 @@ new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAw
     /// <returns></returns>
     public async ValueTask<OperResult<System.DateTime>> ReadDateAsync(string address, CancellationToken cancellationToken)
     {
-        return (await this.ReadAsync(address, 2, cancellationToken).ConfigureAwait(false)).
+        return (await ReadAsync(address, 2, cancellationToken).ConfigureAwait(false)).
              Then(m => OperResult.CreateSuccessResult(S7DateTime.SpecMinimumDateTime.AddDays(
                  ThingsGatewayBitConverter.ToUInt16(m, 0)))
              );

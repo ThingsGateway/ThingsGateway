@@ -61,7 +61,8 @@ public partial class SiemensS7Master : IDisposable
 
     private async Task OnDisConnectClick()
     {
-        _plc?.Close();
+        if (_plc != null)
+    await _plc?.CloseAsync();
         await InvokeAsync(StateHasChanged);
     }
 }

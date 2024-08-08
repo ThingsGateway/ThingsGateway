@@ -127,7 +127,7 @@ public class ModbusSlave : BusinessBase
             CurrentDevice.SetDeviceStatus(TimerX.Now, 999);
             try
             {
-                Protocol.Channel.Close();
+                await Protocol.Channel.CloseAsync().ConfigureAwait(false);
                 await Protocol.Channel.ConnectAsync(3000, cancellationToken).ConfigureAwait(false);
                 success = true;
             }
@@ -136,6 +136,7 @@ public class ModbusSlave : BusinessBase
                 if (success)
                     LogMessage.LogWarning(ex, Localizer["CanStartService"]);
                 success = false;
+                await Task.Delay(10000, cancellationToken).ConfigureAwait(false);
             }
         }
         var list = _modbusVariableDict.ToListWithDequeue();

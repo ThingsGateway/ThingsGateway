@@ -73,11 +73,14 @@
 
                 </Main>
                 <NotAuthorized>
-                    <Redirect Url="/Account/Login"/>
+                    <Redirect Url="/Account/Login" />
                 </NotAuthorized>
             </Layout>
 
-            <QuickActions></QuickActions>
+            @if (AppContext.IsHasButtonWithRole(string.Empty, "快捷按钮"))
+            {
+                <QuickActions></QuickActions>
+            }
         </div>
 
     </CascadingValue>

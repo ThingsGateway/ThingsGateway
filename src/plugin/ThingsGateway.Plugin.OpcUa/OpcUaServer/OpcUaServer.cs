@@ -129,6 +129,7 @@ public partial class OpcUaServer : BusinessBase
                     if (success)
                         LogMessage.LogWarning(ex, Localizer["CanStartService"]);
                     success = false;
+                    await Task.Delay(10000, cancellationToken).ConfigureAwait(false);
                 }
             }
 

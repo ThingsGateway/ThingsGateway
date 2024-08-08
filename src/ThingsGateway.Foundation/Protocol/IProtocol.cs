@@ -427,7 +427,7 @@ public interface IProtocol : IDisposable
     /// </summary>
     /// <param name="msg"></param>
     /// <returns></returns>
-    Task Close(string msg = null);
+    Task CloseAsync(string msg = null);
 
     /// <summary>
     /// 配置IPluginManager

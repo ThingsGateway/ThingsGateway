@@ -214,7 +214,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public Task Close(string msg = default)
+    public Task CloseAsync(string msg = default)
     {
         return Channel.CloseAsync(msg);
     }
