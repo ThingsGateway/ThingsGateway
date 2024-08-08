@@ -320,6 +320,14 @@ public partial class AdminTable<TItem> where TItem : class, new()
     [Parameter]
     public RenderFragment? TableToolbarTemplate { get; set; }
 
+    /// <inheritdoc cref="Table{TItem}.TableExtensionToolbarBeforeTemplate"/>
+    [Parameter]
+    public RenderFragment? TableExtensionToolbarBeforeTemplate { get; set; }
+
+    /// <inheritdoc cref="Table{TItem}.TableExtensionToolbarTemplate"/>
+    [Parameter]
+    public RenderFragment? TableExtensionToolbarTemplate { get; set; }
+
     /// <inheritdoc cref="Table{TItem}.TreeNodeConverter"/>
     [Parameter]
     public Func<IEnumerable<TItem>, Task<IEnumerable<TableTreeNode<TItem>>>>? TreeNodeConverter { get; set; }
