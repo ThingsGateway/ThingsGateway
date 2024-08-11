@@ -35,6 +35,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="DockerPush.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.ASPNetCore\ThingsGateway.Admin.ASPNetCore.csproj" />
   </ItemGroup>
   

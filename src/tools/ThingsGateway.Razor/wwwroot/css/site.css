@@ -58,10 +58,10 @@
     border: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
 }
 
-.card-header, [data-bs-theme="light"] {
+/*.card-header, [data-bs-theme="light"] {
     --bs-card-cap-bg: #343a40;
     --bs-card-cap-color: #f0f3fe;
-}
+}*/
 
 .dropdown-menu {
     --bs-dropdown-link-active-bg: var(--bs-blue) !important;
