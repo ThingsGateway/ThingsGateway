@@ -3,7 +3,7 @@
 
 
 
-  "ThingsGateway.FileService": {
+  "ThingsGateway.Admin.Application.FileService": {
     "FileNullError": "File cannot be empty",
     "FileLengthError": "File size cannot exceed {0} M",
     "FileTypeError": "Not supported format {0}"
@@ -28,7 +28,7 @@
     "LogoutAsync": "Logout"
   },
 
-  "ThingsGateway.UnifyResultProvider": {
+  "ThingsGateway.Admin.Application.UnifyResultProvider": {
     "TokenOver": "Login has expired, please login again",
     "NoPermission": "Access denied, no permission"
   },

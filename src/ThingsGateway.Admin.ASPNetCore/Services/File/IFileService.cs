@@ -11,7 +11,7 @@
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ThingsGateway;
+namespace ThingsGateway.Admin.Application;
 
 public interface IFileService
 {

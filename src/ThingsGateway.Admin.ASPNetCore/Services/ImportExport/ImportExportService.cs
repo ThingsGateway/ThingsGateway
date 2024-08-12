@@ -14,12 +14,11 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Web;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Core;
 
 using Yitter.IdGenerator;
 
-namespace ThingsGateway;
+namespace ThingsGateway.Admin.Application;
 
 public class ImportExportService : IImportExportService
 {

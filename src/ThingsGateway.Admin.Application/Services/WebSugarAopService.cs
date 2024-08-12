@@ -11,11 +11,9 @@
 
 using SqlSugar;
 
-using ThingsGateway.Admin.Application;
-
 using Yitter.IdGenerator;
 
-namespace ThingsGateway;
+namespace ThingsGateway.Admin.Application;
 
 public class WebSugarAopService : ISugarAopService
 {

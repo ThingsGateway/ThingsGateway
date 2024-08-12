@@ -37,6 +37,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Photino", "Th
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Admin.ASPNetCore", "ThingsGateway.Admin.ASPNetCore\ThingsGateway.Admin.ASPNetCore.csproj", "{4A95869C-1F1D-47C8-9D01-2F9838CBE632}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Admin.NetCore", "ThingsGateway.Admin.NetCore\ThingsGateway.Admin.NetCore.csproj", "{2F637B80-2868-474E-8E1D-E7A1205F979F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{4A95869C-1F1D-47C8-9D01-2F9838CBE632}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A95869C-1F1D-47C8-9D01-2F9838CBE632}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A95869C-1F1D-47C8-9D01-2F9838CBE632}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F637B80-2868-474E-8E1D-E7A1205F979F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F637B80-2868-474E-8E1D-E7A1205F979F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F637B80-2868-474E-8E1D-E7A1205F979F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F637B80-2868-474E-8E1D-E7A1205F979F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,8 +96,8 @@ Global
 		{4A351484-B460-4E8E-B1C4-027041D4F727} = {B1DC0D3F-AAAE-4B01-A35A-E81409D411FB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		RESX_Rules = {"EnabledRules":[]}
-		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
 		RESX_NeutralResourcesLanguage = zh-Hans
+		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
+		RESX_Rules = {"EnabledRules":[]}
 	EndGlobalSection
 EndGlobal

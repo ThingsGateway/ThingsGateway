@@ -3,7 +3,7 @@
 
 
 
-  "ThingsGateway.FileService": {
+  "ThingsGateway.Admin.Application.FileService": {
     "FileNullError": "文件不能为空",
     "FileLengthError": "文件大小不允许超过 {0} M",
     "FileTypeError": "不支持 {0} 格式"
@@ -28,7 +28,7 @@
     "LogoutAsync": "注销"
   },
 
-  "ThingsGateway.UnifyResultProvider": {
+  "ThingsGateway.Admin.Application.UnifyResultProvider": {
     "TokenOver": "登录已过期，请重新登录",
     "NoPermission": "禁止访问，没有权限"
   },

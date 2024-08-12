@@ -10,7 +10,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
-  
+
   <ItemGroup>
     <Compile Include="..\..\plugin\ThingsGateway.Plugin.Dlt645\Pages\Dlt645_2007Master.razor.cs" Link="Pages\Dlt645_2007Master.razor.cs" />
     <Compile Include="..\..\plugin\ThingsGateway.Plugin.SiemensS7\Pages\SiemensS7Master.razor.cs" Link="Pages\SiemensS7Master.razor.cs" />

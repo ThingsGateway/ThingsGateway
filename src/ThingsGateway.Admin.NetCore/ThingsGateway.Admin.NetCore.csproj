@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(SolutionDir)Version.props" />
+  <Import Project="$(SolutionDir)PackNuget.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Application\ThingsGateway.Admin.Application.csproj" />
+    <ProjectReference Include="..\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
+  </ItemGroup>
+
+</Project>

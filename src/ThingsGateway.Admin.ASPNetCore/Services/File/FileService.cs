@@ -15,7 +15,7 @@ using Microsoft.Extensions.Localization;
 using System.Text;
 using System.Web;
 
-namespace ThingsGateway;
+namespace ThingsGateway.Admin.Application;
 
 public class FileService : IFileService
 {

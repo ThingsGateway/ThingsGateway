@@ -14,11 +14,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
 using ThingsGateway.Admin.Application;
+using ThingsGateway.Admin.NetCore;
 using ThingsGateway.Admin.Razor;
-using ThingsGateway.Debug;
 using ThingsGateway.Razor;
 
-namespace ThingsGateway.Server;
+namespace ThingsGateway.Photino;
 
 [AppStartup(-999999)]
 public class Startup : AppStartup

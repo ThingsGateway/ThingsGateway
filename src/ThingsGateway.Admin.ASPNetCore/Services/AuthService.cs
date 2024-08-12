@@ -126,11 +126,11 @@ public class AuthService : IAuthService
     private void BeforeLogin(AppConfig appConfig, string userName)
     {
         var key = CacheConst.Cache_LoginErrorCount + userName;//获取登录错误次数Key值
-        var errorCountCache = App.CacheService.Get<int>(key);//获取登录错误次数
+        var errorCountCache = NetCoreApp.CacheService.Get<int>(key);//获取登录错误次数
 
         if (errorCountCache >= appConfig.LoginPolicy.ErrorCount)
         {
-            App.CacheService.SetExpire(key, TimeSpan.FromMinutes(appConfig.LoginPolicy.ErrorLockTime));//设置缓存
+            NetCoreApp.CacheService.SetExpire(key, TimeSpan.FromMinutes(appConfig.LoginPolicy.ErrorLockTime));//设置缓存
             throw Oops.Bah(_localizer["PasswordError", appConfig.LoginPolicy.ErrorLockTime]);
         }
     }
@@ -243,9 +243,9 @@ public class AuthService : IAuthService
     private void LoginError(LoginPolicy loginPolicy, string userName)
     {
         var key = CacheConst.Cache_LoginErrorCount + userName;//获取登录错误次数Key值
-        App.CacheService.Increment(key, 1);// 登录错误次数+1
-        App.CacheService.SetExpire(key, TimeSpan.FromMinutes(loginPolicy.ErrorResetTime));//设置过期时间
-        var errorCountCache = App.CacheService.Get<int>(key);//获取登录错误次数
+        NetCoreApp.CacheService.Increment(key, 1);// 登录错误次数+1
+        NetCoreApp.CacheService.SetExpire(key, TimeSpan.FromMinutes(loginPolicy.ErrorResetTime));//设置过期时间
+        var errorCountCache = NetCoreApp.CacheService.Get<int>(key);//获取登录错误次数
         throw Oops.Bah(_localizer["AuthErrorMax", loginPolicy.ErrorCount, loginPolicy.ErrorLockTime, errorCountCache]);//账号密码错误
     }
 
@@ -285,7 +285,7 @@ public class AuthService : IAuthService
         #region 登录/密码策略
 
         var key = CacheConst.Cache_LoginErrorCount + sysUser.Account;//获取登录错误次数Key值
-        App.CacheService.Remove(key);//移除登录错误次数
+        NetCoreApp.CacheService.Remove(key);//移除登录错误次数
 
         //获取用户verificat列表
         var userToken = _verificatInfoService.GetOne(loginEvent.VerificatId);
@@ -310,7 +310,7 @@ public class AuthService : IAuthService
             it.LatestLoginIp,
             it.LatestLoginTime,
         }).ExecuteCommandAsync() > 0)
-            App.CacheService.HashAdd(CacheConst.Cache_SysUser, sysUser.Id.ToString(), sysUser);//更新Cache信息
+            NetCoreApp.CacheService.HashAdd(CacheConst.Cache_SysUser, sysUser.Id.ToString(), sysUser);//更新Cache信息
     }
 
     /// <summary>

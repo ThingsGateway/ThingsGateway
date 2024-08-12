@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using ThingsGateway.Core;
 
-namespace ThingsGateway;
+namespace ThingsGateway.Admin.Application;
 
 public interface IImportExportService
 {

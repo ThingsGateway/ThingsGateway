@@ -12,7 +12,7 @@ using SqlSugar;
 
 using System.Reflection;
 
-namespace ThingsGateway.Server;
+namespace ThingsGateway.Photino;
 
 /// <summary>
 /// 解决单文件发布程序集扫描问题
@@ -51,9 +51,11 @@ public class SingleFilePublish : ISingleFilePublish
             "ThingsGateway.Gateway.Application",
             "ThingsGateway.Gateway.Razor"   ,
             "ThingsGateway.Gateway.ASPNetCore"   ,
+            "ThingsGateway.Gateway.NetCore"   ,
             "ThingsGateway.Admin.Razor"   ,
             "ThingsGateway.Admin.Application"   ,
             "ThingsGateway.Admin.ASPNetCore"   ,
+            "ThingsGateway.Admin.NetCore"   ,
             "SqlSugar.TDengineCore",
         ];
     }

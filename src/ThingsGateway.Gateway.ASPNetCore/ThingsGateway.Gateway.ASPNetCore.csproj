@@ -2,17 +2,13 @@
   <Import Project="$(SolutionDir)Version.props" />
   <Import Project="$(SolutionDir)PackNuget.props" />
 
-  <PropertyGroup>
-    <TargetFrameworks>net8.0;</TargetFrameworks>
-  </PropertyGroup>
-  
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
-    <ProjectReference Include="..\ThingsGateway.Admin.ASPNetCore\ThingsGateway.Admin.ASPNetCore.csproj" />
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.ASPNetCore\ThingsGateway.Admin.ASPNetCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

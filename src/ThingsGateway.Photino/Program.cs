@@ -17,10 +17,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
-using ThingsGateway.Admin.Application;
-using ThingsGateway.Photino;
-
-namespace ThingsGateway.Server;
+namespace ThingsGateway.Photino;
 
 internal class Program
 {
