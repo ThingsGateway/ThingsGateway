@@ -15,7 +15,7 @@ namespace ThingsGateway.Razor;
 /// <summary>
 /// FAIconList 组件
 /// </summary>
-[JSModuleAutoLoader("Components/ThemeToggle.razor.js", JSObjectReference = true)]
+[JSModuleAutoLoader("Components/FAIconList.razor.js", JSObjectReference = true)]
 public partial class FAIconList : IAsyncDisposable
 {
     private string? ClassString => CssBuilder.Default("icon-list")

@@ -136,7 +136,6 @@ public class AuthService : IAuthService
     /// <param name="loginPolicy">登录策略</param>
     /// <param name="input">用户登录参数</param>
     /// <param name="sysUser">用户信息</param>
-    /// <param name="isCookie">cookie方式登录</param>
     /// <returns>登录输出结果</returns>
     private async Task<LoginOutput> ExecLogin(LoginPolicy loginPolicy, LoginInput input, SysUser sysUser)
     {
