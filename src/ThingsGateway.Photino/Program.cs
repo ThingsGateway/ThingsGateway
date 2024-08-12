@@ -17,12 +17,12 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
+using ThingsGateway.Admin.NetCore;
+
 namespace ThingsGateway.Photino;
 
 internal class Program
 {
-    internal static CancellationTokenSource CancellationTokenSource = new();
-    internal static CancellationToken CancellationToken = CancellationTokenSource.Token;
 
     [STAThread]
     private static void Main(string[] args)
@@ -69,11 +69,36 @@ internal class Program
         AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
         {
         };
+
+
+        StartHostedService(app.Services);
         app.Run();
-        CancellationTokenSource.Cancel();
-        CancellationTokenSource.Dispose();
-        var _hostedServiceExecutor = app.Services.GetRequiredService<HostedServiceExecutor>();
-        _hostedServiceExecutor.StopAsync(default).ConfigureAwait(false).GetAwaiter().GetResult();
+        StopHostedService(app.Services);
 
     }
+
+    public static void StartHostedService(IServiceProvider serviceProvider)
+    {
+
+        var applicationLifetime = serviceProvider.GetRequiredService<ApplicationLifetime>();
+        var hostedServiceExecutor = serviceProvider.GetRequiredService<HostedServiceExecutor>();
+        // Fire IHostedService.Start
+        hostedServiceExecutor.StartAsync(default).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        applicationLifetime.NotifyStarted();
+
+    }
+
+    public static void StopHostedService(IServiceProvider serviceProvider)
+    {
+
+        var applicationLifetime = serviceProvider.GetRequiredService<ApplicationLifetime>();
+        applicationLifetime.StopApplication();
+
+        var _hostedServiceExecutor = serviceProvider.GetRequiredService<HostedServiceExecutor>();
+        _hostedServiceExecutor.StopAsync(default).ConfigureAwait(false).GetAwaiter().GetResult();
+        applicationLifetime.NotifyStopped();
+
+    }
+
 }

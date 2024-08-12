@@ -11,6 +11,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 
 using ThingsGateway.Admin.Application;
@@ -59,6 +60,10 @@ public class Startup : AppStartup
 
     private void ConfigureAdminApp(IServiceCollection services)
     {
+        services.AddSingleton<IHostApplicationLifetime, ApplicationLifetime>();
+        services.AddSingleton<ApplicationLifetime>();
+
+        services.AddSingleton<IAuthService, AuthService>();
 
         services.AddSingleton<IAuthService, AuthService>();
         services.AddSingleton<IAuthRazorService, AuthRazorService>();
@@ -82,13 +87,6 @@ public class Startup : AppStartup
 
     }
 
-    public void UseAdminCore(IServiceProvider serviceProvider)
-    {
-        var _hostedServiceExecutor = serviceProvider.GetRequiredService<HostedServiceExecutor>();
 
-        // Fire IHostedService.Start
-        _hostedServiceExecutor.StartAsync(Program.CancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
-
-    }
 
 }
