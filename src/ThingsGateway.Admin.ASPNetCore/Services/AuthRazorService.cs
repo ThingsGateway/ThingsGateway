@@ -18,7 +18,7 @@ namespace ThingsGateway.Admin.Application;
 public class AuthRazorService : IAuthRazorService
 {
 
-    private AjaxService AjaxService { get;set; }
+    private AjaxService AjaxService { get; set; }
     public AuthRazorService(AjaxService ajaxService)
     {
         AjaxService = ajaxService;

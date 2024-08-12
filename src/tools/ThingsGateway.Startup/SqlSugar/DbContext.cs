@@ -17,8 +17,6 @@ using SqlSugar;
 
 using ThingsGateway.Core.Extension;
 
-using Yitter.IdGenerator;
-
 namespace ThingsGateway;
 
 /// <summary>

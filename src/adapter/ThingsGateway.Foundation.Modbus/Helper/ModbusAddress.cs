@@ -27,25 +27,25 @@ public class ModbusAddress : ModbusRequest
 
     public ModbusAddress(ModbusRequest modbusAddress)
     {
-        this.StartAddress = modbusAddress.StartAddress;
-        this.Data = modbusAddress.Data;
-        this.FunctionCode = modbusAddress.FunctionCode;
-        this.Length = modbusAddress.Length;
-        this.Station = modbusAddress.Station;
-        this.StartAddress = modbusAddress.StartAddress;
+        StartAddress = modbusAddress.StartAddress;
+        Data = modbusAddress.Data;
+        FunctionCode = modbusAddress.FunctionCode;
+        Length = modbusAddress.Length;
+        Station = modbusAddress.Station;
+        StartAddress = modbusAddress.StartAddress;
     }
 
     public ModbusAddress(ModbusAddress modbusAddress)
     {
-        this.StartAddress = modbusAddress.StartAddress;
-        this.Data = modbusAddress.Data;
-        this.FunctionCode = modbusAddress.FunctionCode;
-        this.Length = modbusAddress.Length;
-        this.BitIndex = modbusAddress.BitIndex;
-        this.SocketId = modbusAddress.SocketId;
-        this.WriteFunctionCode = modbusAddress.WriteFunctionCode;
-        this.Station = modbusAddress.Station;
-        this.StartAddress = modbusAddress.StartAddress;
+        StartAddress = modbusAddress.StartAddress;
+        Data = modbusAddress.Data;
+        FunctionCode = modbusAddress.FunctionCode;
+        Length = modbusAddress.Length;
+        BitIndex = modbusAddress.BitIndex;
+        SocketId = modbusAddress.SocketId;
+        WriteFunctionCode = modbusAddress.WriteFunctionCode;
+        Station = modbusAddress.Station;
+        StartAddress = modbusAddress.StartAddress;
     }
 
     /// <summary>

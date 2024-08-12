@@ -82,7 +82,7 @@ public class CacheDBUtil
         {
             length1 = new FileInfo(fullName).Length;
         }
-        var mb1 = Math.Round((double)length1 / (double)1024 / (double)1024, 2);
+        var mb1 = Math.Round((double)length1 / 1024 / 1024, 2);
         return mb1;
     }
 

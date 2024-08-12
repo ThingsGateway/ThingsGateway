@@ -15,7 +15,6 @@ using SqlSugar;
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
 using ThingsGateway.Core;
-using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Razor;
 
 namespace ThingsGateway.Gateway.Razor;

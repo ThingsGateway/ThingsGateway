@@ -76,7 +76,7 @@ internal partial class SiemensHelper
             {
                 return new OperResult<string>(result1);
             }
-            if (result1.Content[0] == (byte)0 || result1.Content[0] == byte.MaxValue)
+            if (result1.Content[0] == 0 || result1.Content[0] == byte.MaxValue)
             {
                 return new OperResult<string>(SiemensS7Resource.Localizer["NotString"]);
             }

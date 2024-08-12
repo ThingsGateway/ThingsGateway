@@ -8,6 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-global using TouchSocket.Core;
-
 global using ThingsGateway.Foundation;
+
+global using TouchSocket.Core;

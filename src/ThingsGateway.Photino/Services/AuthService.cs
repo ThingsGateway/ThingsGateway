@@ -13,7 +13,6 @@ using Microsoft.Extensions.Localization;
 using SqlSugar;
 
 using System.Security.Claims;
-using System.Security.Principal;
 
 using ThingsGateway.Core;
 

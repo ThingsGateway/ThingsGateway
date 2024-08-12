@@ -54,12 +54,12 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
 
     public void Close(string msg)
     {
-        this.CloseAsync(msg).ConfigureAwait(false);
+        CloseAsync(msg).ConfigureAwait(false);
     }
 
     public override async Task CloseAsync(string msg)
     {
-        if (this.Online)
+        if (Online)
         {
             await base.CloseAsync(msg).ConfigureAwait(false);
             Logger?.Debug($"{ToString()}  Closed{msg}");
@@ -70,19 +70,19 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
 
     public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
     {
-        this.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
+        ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
     }
 
     public new async Task ConnectAsync(int millisecondsTimeout, CancellationToken token)
     {
-        if (!this.Online)
+        if (!Online)
         {
             try
             {
-                await this.m_semaphoreForConnect.WaitAsync(token).ConfigureAwait(false);
-                if (!this.Online)
+                await m_semaphoreForConnect.WaitAsync(token).ConfigureAwait(false);
+                if (!Online)
                 {
-                    await this.SetupAsync(Config.Clone());
+                    await SetupAsync(Config.Clone());
                     await base.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
                     Logger?.Debug($"{ToString()}  Connected");
                     if (Started != null)
@@ -91,7 +91,7 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
             }
             finally
             {
-                this.m_semaphoreForConnect.Release();
+                m_semaphoreForConnect.Release();
             }
         }
     }
@@ -99,7 +99,7 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
     {
         if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
-            this.SetAdapter(singleStreamDataHandlingAdapter);
+            SetAdapter(singleStreamDataHandlingAdapter);
     }
 
     public override string ToString()
@@ -128,9 +128,9 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     /// <inheritdoc/>
     protected override async Task OnSerialReceived(ReceivedDataEventArgs e)
     {
-        if (this.ChannelReceived != null)
+        if (ChannelReceived != null)
         {
-            await this.ChannelReceived.Invoke(this, e).ConfigureAwait(false);
+            await ChannelReceived.Invoke(this, e).ConfigureAwait(false);
             if (e.Handled)
             {
                 return;

@@ -17,7 +17,6 @@ using SqlSugar;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Plugin.SqlDB;
 
 namespace ThingsGateway.Gateway.Application;

@@ -9,16 +9,10 @@
 //------------------------------------------------------------------------------
 
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyModel;
-using Microsoft.Extensions.Localization;
 
 using System.Diagnostics;
-using System.Reflection;
 using System.Security.Claims;
-
-using ThingsGateway.Core;
 
 namespace ThingsGateway;
 

@@ -8,10 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
-using Microsoft.AspNetCore.Components;
-
 namespace ThingsGateway.Razor;
 
 /// <summary>

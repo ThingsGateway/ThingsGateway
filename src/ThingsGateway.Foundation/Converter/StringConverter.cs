@@ -14,8 +14,6 @@ using System.Text;
 
 using ThingsGateway.Foundation.Extension.String;
 
-using TouchSocket.Core;
-
 namespace ThingsGateway.Foundation;
 
 /// <summary>
@@ -38,7 +36,7 @@ public class JsonStringToClassSerializerFormatter<TState> : ISerializerFormatter
     {
         try
         {
-            target = JsonConvert.DeserializeObject(source, targetType, this.JsonSettings)!;
+            target = JsonConvert.DeserializeObject(source, targetType, JsonSettings)!;
             return true;
         }
         catch
@@ -108,8 +106,8 @@ public class ThingsGatewayStringConverter : StringSerializerConverter
     /// </summary>
     public ThingsGatewayStringConverter(params ISerializerFormatter<string, object>[] converters) : base(converters)
     {
-        this.Add(new StringToClassConverter<object>());
-        this.Add(new JsonStringToClassSerializerFormatter<object>());
+        Add(new StringToClassConverter<object>());
+        Add(new JsonStringToClassSerializerFormatter<object>());
     }
 }
 

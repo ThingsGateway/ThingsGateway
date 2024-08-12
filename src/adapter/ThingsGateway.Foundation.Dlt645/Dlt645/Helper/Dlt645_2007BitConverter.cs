@@ -48,31 +48,31 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
     /// <returns></returns>
     public override double ToDouble(byte[] buffer, int offset)
     {
-        return Convert.ToDouble(this.ToString(buffer, offset, buffer.Length));
+        return Convert.ToDouble(ToString(buffer, offset, buffer.Length));
     }
 
     /// <inheritdoc/>
     public override short ToInt16(byte[] buffer, int offset)
     {
-        return Convert.ToInt16(this.ToString(buffer, offset, buffer.Length));
+        return Convert.ToInt16(ToString(buffer, offset, buffer.Length));
     }
 
     /// <inheritdoc/>
     public override int ToInt32(byte[] buffer, int offset)
     {
-        return Convert.ToInt32(this.ToString(buffer, offset, buffer.Length));
+        return Convert.ToInt32(ToString(buffer, offset, buffer.Length));
     }
 
     /// <inheritdoc/>
     public override long ToInt64(byte[] buffer, int offset)
     {
-        return Convert.ToInt64(this.ToString(buffer, offset, buffer.Length));
+        return Convert.ToInt64(ToString(buffer, offset, buffer.Length));
     }
 
     /// <inheritdoc/>
     public override float ToSingle(byte[] buffer, int offset)
     {
-        return Convert.ToSingle(this.ToString(buffer, offset, buffer.Length));
+        return Convert.ToSingle(ToString(buffer, offset, buffer.Length));
     }
 
     /// <inheritdoc/>
@@ -134,18 +134,18 @@ public class Dlt645_2007BitConverter : ThingsGatewayBitConverter
     /// <inheritdoc/>
     public override ushort ToUInt16(byte[] buffer, int offset)
     {
-        return Convert.ToUInt16(this.ToString(buffer, offset, buffer.Length));
+        return Convert.ToUInt16(ToString(buffer, offset, buffer.Length));
     }
 
     /// <inheritdoc/>
     public override uint ToUInt32(byte[] buffer, int offset)
     {
-        return Convert.ToUInt32(this.ToString(buffer, offset, buffer.Length));
+        return Convert.ToUInt32(ToString(buffer, offset, buffer.Length));
     }
 
     /// <inheritdoc/>
     public override ulong ToUInt64(byte[] buffer, int offset)
     {
-        return Convert.ToUInt64(this.ToString(buffer, offset, buffer.Length));
+        return Convert.ToUInt64(ToString(buffer, offset, buffer.Length));
     }
 }

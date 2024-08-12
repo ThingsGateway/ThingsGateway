@@ -55,17 +55,17 @@ public class UdpSessionChannel : UdpSession, IClientChannel
 
     public void Close(string msg)
     {
-        this.CloseAsync(msg).GetFalseAwaitResult();
+        CloseAsync(msg).GetFalseAwaitResult();
     }
 
     public Task CloseAsync(string msg)
     {
-        return this.StopAsync();
+        return StopAsync();
     }
 
     public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
     {
-        this.ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
+        ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
     }
 
     /// <inheritdoc/>
@@ -83,7 +83,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
     {
         if (adapter is UdpDataHandlingAdapter udpDataHandlingAdapter)
-            this.SetAdapter(udpDataHandlingAdapter);
+            SetAdapter(udpDataHandlingAdapter);
     }
 
     /// <inheritdoc/>
@@ -91,14 +91,14 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     {
         try
         {
-            await this.m_semaphoreForConnect.WaitAsync().ConfigureAwait(false);
+            await m_semaphoreForConnect.WaitAsync().ConfigureAwait(false);
 
-            if (this.ServerState != ServerState.Running)
+            if (ServerState != ServerState.Running)
             {
                 await base.StopAsync().ConfigureAwait(false);
-                await this.SetupAsync(Config.Clone());
+                await SetupAsync(Config.Clone());
                 await base.StartAsync().ConfigureAwait(false);
-                if (this.ServerState == ServerState.Running)
+                if (ServerState == ServerState.Running)
                 {
                     Logger.Info($"{Monitor.IPHost}{DefaultResource.Localizer["ServiceStarted"]}");
                 }
@@ -110,7 +110,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
         }
         finally
         {
-            this.m_semaphoreForConnect.Release();
+            m_semaphoreForConnect.Release();
         }
     }
 
@@ -140,9 +140,9 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     /// <inheritdoc/>
     protected override async Task OnUdpReceived(UdpReceivedDataEventArgs e)
     {
-        if (this.ChannelReceived != null)
+        if (ChannelReceived != null)
         {
-            await this.ChannelReceived.Invoke(this, e).ConfigureAwait(false);
+            await ChannelReceived.Invoke(this, e).ConfigureAwait(false);
             if (e.Handled)
             {
                 return;

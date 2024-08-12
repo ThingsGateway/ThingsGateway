@@ -28,7 +28,7 @@ public class ModbusTcpSlaveMessage : MessageBase, IResultMessage
     public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
     {
         var pos = byteBlock.Position - HeaderLength;
-        this.Bytes = byteBlock.AsSegment(pos, HeaderLength + BodyLength);
+        Bytes = byteBlock.AsSegment(pos, HeaderLength + BodyLength);
 
 
         if (Request.FunctionCode == 15)
@@ -42,15 +42,15 @@ public class ModbusTcpSlaveMessage : MessageBase, IResultMessage
             Request.Data = byteBlock.AsSegmentTake(Request.Length);
         }
 
-        this.OperCode = 0;
+        OperCode = 0;
         return FilterResult.Success;
     }
 
     public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
     {
-        this.Sign = byteBlock.ReadUInt16(EndianType.Big);
+        Sign = byteBlock.ReadUInt16(EndianType.Big);
         byteBlock.Position += 2;
-        this.BodyLength = byteBlock.ReadUInt16(EndianType.Big) - 6;
+        BodyLength = byteBlock.ReadUInt16(EndianType.Big) - 6;
         Request.Station = byteBlock.ReadByte();
         Request.FunctionCode = byteBlock.ReadByte();
 
@@ -63,7 +63,7 @@ public class ModbusTcpSlaveMessage : MessageBase, IResultMessage
         }
         else if (Request.FunctionCode == 1 || Request.FunctionCode == 2)
         {
-            Request.Length = (ushort)(byteBlock.ReadUInt16(EndianType.Big));
+            Request.Length = byteBlock.ReadUInt16(EndianType.Big);
             return true;
         }
         else if (Request.FunctionCode == 5)
@@ -78,7 +78,7 @@ public class ModbusTcpSlaveMessage : MessageBase, IResultMessage
         }
         else if (Request.FunctionCode == 15)
         {
-            Request.Length = (ushort)(byteBlock.ReadUInt16(EndianType.Big));
+            Request.Length = byteBlock.ReadUInt16(EndianType.Big);
             return true;
         }
         else if (Request.FunctionCode == 16)

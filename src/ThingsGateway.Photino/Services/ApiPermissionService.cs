@@ -9,20 +9,7 @@
 // ------------------------------------------------------------------------------
 
 
-using BootstrapBlazor.Components;
-
-using Mapster;
-
-using Microsoft.AspNetCore.Components;
-
-using NewLife;
-
-using System.Globalization;
-using System.Reflection;
-
-using ThingsGateway;
 using ThingsGateway.Admin.Application;
-using ThingsGateway.Core.Extension;
 
 public class ApiPermissionService : IApiPermissionService
 {
@@ -32,5 +19,5 @@ public class ApiPermissionService : IApiPermissionService
         return new List<OpenApiPermissionTreeSelector>();
     }
 
-   
+
 }

@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Gateway.Application;
-
 namespace ThingsGateway.Plugin.SqlHisAlarm;
 
 /// <summary>

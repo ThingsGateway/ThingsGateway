@@ -29,18 +29,18 @@ public class ModbusTcpMessage : MessageBase, IResultMessage
 
         if (Response.FunctionCode <= 4)
         {
-            this.OperCode = 0;
-            this.Content = byteBlock.ToArrayTake(BodyLength);
-            Response.Data = this.Content;
+            OperCode = 0;
+            Content = byteBlock.ToArrayTake(BodyLength);
+            Response.Data = Content;
             return FilterResult.Success;
         }
         else if (Response.FunctionCode == 5 || Response.FunctionCode == 6)
         {
             byteBlock.Position = HeaderLength - 1;
             Response.StartAddress = byteBlock.ReadUInt16();
-            this.OperCode = 0;
-            this.Content = byteBlock.ToArrayTake(BodyLength - 1);
-            Response.Data = this.Content;
+            OperCode = 0;
+            Content = byteBlock.ToArrayTake(BodyLength - 1);
+            Response.Data = Content;
             return FilterResult.Success;
         }
         else if (Response.FunctionCode == 15 || Response.FunctionCode == 16)
@@ -48,23 +48,23 @@ public class ModbusTcpMessage : MessageBase, IResultMessage
             byteBlock.Position = HeaderLength - 1;
             Response.StartAddress = byteBlock.ReadUInt16(EndianType.Big);
             Response.Length = byteBlock.ReadUInt16(EndianType.Big);
-            this.OperCode = 0;
-            this.Content = Array.Empty<byte>();
+            OperCode = 0;
+            Content = Array.Empty<byte>();
             return FilterResult.Success;
         }
         else
         {
-            this.OperCode = 999;
-            this.ErrorMessage = ModbusResource.Localizer["ModbusError1"];
+            OperCode = 999;
+            ErrorMessage = ModbusResource.Localizer["ModbusError1"];
         }
         return FilterResult.GoOn;
     }
 
     public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
     {
-        this.Sign = byteBlock.ReadUInt16(EndianType.Big);
+        Sign = byteBlock.ReadUInt16(EndianType.Big);
         byteBlock.Position += 2;
-        this.BodyLength = byteBlock.ReadUInt16(EndianType.Big) - 3;
+        BodyLength = byteBlock.ReadUInt16(EndianType.Big) - 3;
         Response.Station = byteBlock.ReadByte();
         bool error = false;
         var code = byteBlock.ReadByte();
@@ -82,8 +82,8 @@ public class ModbusTcpMessage : MessageBase, IResultMessage
         if (error)
         {
             Response.ErrorCode = byteBlock.ReadByte();
-            this.OperCode = Response.ErrorCode;
-            this.ErrorMessage = ModbusHelper.GetDescriptionByErrorCode(Response.ErrorCode.Value);
+            OperCode = Response.ErrorCode;
+            ErrorMessage = ModbusHelper.GetDescriptionByErrorCode(Response.ErrorCode.Value);
             return true;
         }
         else

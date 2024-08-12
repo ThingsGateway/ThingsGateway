@@ -36,7 +36,7 @@ internal sealed class VariableCodeBuilder
 
     public VariableCodeBuilder(INamedTypeSymbol pluginClass)
     {
-        this.m_pluginClass = pluginClass;
+        m_pluginClass = pluginClass;
     }
 
     public string Prefix { get; set; }
@@ -54,12 +54,12 @@ internal sealed class VariableCodeBuilder
 
     public string GetFileName()
     {
-        return this.m_pluginClass.ToDisplayString() + "Generator";
+        return m_pluginClass.ToDisplayString() + "Generator";
     }
 
     public bool TryToSourceText(out SourceText sourceText)
     {
-        var code = this.ToString();
+        var code = ToString();
         if (string.IsNullOrEmpty(code))
         {
             sourceText = null;
@@ -71,7 +71,7 @@ internal sealed class VariableCodeBuilder
 
     public override string ToString()
     {
-        var propertys = this.FindPropertys().ToList();
+        var propertys = FindPropertys().ToList();
         if (propertys.Count == 0)
         {
             return null;
@@ -82,19 +82,19 @@ internal sealed class VariableCodeBuilder
         codeString.AppendLine("*/");
         codeString.AppendLine("#pragma warning disable");
 
-        foreach (var item in this.Usings)
+        foreach (var item in Usings)
         {
             codeString.AppendLine(item);
         }
 
-        codeString.AppendLine($"namespace {this.m_pluginClass.ContainingNamespace}");
+        codeString.AppendLine($"namespace {m_pluginClass.ContainingNamespace}");
         codeString.AppendLine("{");
         codeString.AppendLine($"[global::System.CodeDom.Compiler.GeneratedCode(\"ThingsGateway.Foundation\",\"{Assembly.GetExecutingAssembly().GetName().Version}\")]");
-        codeString.AppendLine($"partial class {this.m_pluginClass.Name}");
+        codeString.AppendLine($"partial class {m_pluginClass.Name}");
         codeString.AppendLine("{");
         foreach (var item in propertys)
         {
-            this.BuildMethod(codeString, item);
+            BuildMethod(codeString, item);
         }
         codeString.AppendLine("}");
         codeString.AppendLine("}");
@@ -115,7 +115,7 @@ internal sealed class VariableCodeBuilder
 
     private IEnumerable<IPropertySymbol> FindPropertys()
     {
-        return this.m_pluginClass
+        return m_pluginClass
             .GetMembers()
             .OfType<IPropertySymbol>()
             .Where(m =>

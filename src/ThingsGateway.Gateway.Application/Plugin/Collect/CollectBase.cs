@@ -66,7 +66,7 @@ public abstract class CollectBase : DriverBase
                 && string.IsNullOrEmpty(it.OtherMethod)
                 && !string.IsNullOrEmpty(it.RegisterAddress)).ToList();
             // 将打包后的结果存储在当前设备的 VariableSourceReads 属性中
-            currentDevice.VariableSourceReads = this.ProtectedLoadSourceRead(tags);
+            currentDevice.VariableSourceReads = ProtectedLoadSourceRead(tags);
         }
         catch (Exception ex)
         {

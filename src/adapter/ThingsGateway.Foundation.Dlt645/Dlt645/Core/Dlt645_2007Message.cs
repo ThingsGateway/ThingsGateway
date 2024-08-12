@@ -55,8 +55,8 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
             if ((byte)sumCheck != byteBlock[endIndex - 2])
             {
                 //校验错误
-                this.ErrorMessage = DltResource.Localizer["SumError"];
-                this.OperCode = 999;
+                ErrorMessage = DltResource.Localizer["SumError"];
+                OperCode = 999;
                 return FilterResult.Success;
             }
             Response.Station = byteBlock.Span.Slice(HeadCodeIndex + 1, 6).ToArray();
@@ -64,8 +64,8 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
             {
                 if (!Request.Station.SequenceEqual(ReadStation))//读写通讯地址例外
                 {
-                    this.ErrorMessage = DltResource.Localizer["StationNotSame"];
-                    this.OperCode = 999;
+                    ErrorMessage = DltResource.Localizer["StationNotSame"];
+                    OperCode = 999;
                     return FilterResult.Success;
                 }
             }
@@ -75,15 +75,15 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
             {
                 Response.ErrorCode = (byte)(byteBlock[HeadCodeIndex + 10] - 0x33);
                 var error = Dlt645Helper.Get2007ErrorMessage(Response.ErrorCode.Value);
-                this.ErrorMessage = DltResource.Localizer["FunctionError", $"0x{controlCode:X2}", error];
-                this.OperCode = 999;
+                ErrorMessage = DltResource.Localizer["FunctionError", $"0x{controlCode:X2}", error];
+                OperCode = 999;
                 return FilterResult.Success;
             }
             if (controlCode != ((byte)Dlt645_2007Send.ControlCode) + 0x80)//控制码不符合时，返回错误
             {
-                this.ErrorMessage =
+                ErrorMessage =
                      DltResource.Localizer["FunctionNotSame", $"0x{controlCode:X2}", $"0x{(byte)Dlt645_2007Send.ControlCode:X2}"];
-                this.OperCode = 999;
+                OperCode = 999;
                 return FilterResult.Success;
             }
             if (Dlt645_2007Send.ControlCode == ControlCode.Read || Dlt645_2007Send.ControlCode == ControlCode.Write)
@@ -92,14 +92,14 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
                 Response.DataId = byteBlock.Span.Slice(HeadCodeIndex + 10, 4).ToArray().BytesAdd(-0x33);
                 if (!Response.DataId.SequenceEqual(Request.DataId))
                 {
-                    this.ErrorMessage = DltResource.Localizer["DataIdNotSame"];
-                    this.OperCode = 999;
+                    ErrorMessage = DltResource.Localizer["DataIdNotSame"];
+                    OperCode = 999;
                     return FilterResult.Success;
                 }
             }
 
-            this.OperCode = 0;
-            this.Content = byteBlock.ToArray(HeadCodeIndex + 10, BodyLength - 2);
+            OperCode = 0;
+            Content = byteBlock.ToArray(HeadCodeIndex + 10, BodyLength - 2);
             return FilterResult.Success;
         }
 

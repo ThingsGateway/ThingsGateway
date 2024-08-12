@@ -11,8 +11,6 @@
 using System.Dynamic; // 引入 System.Dynamic 命名空间
 using System.Reflection;
 
-using ThingsGateway.Foundation;
-
 namespace ThingsGateway.Foundation.Extension.Dynamic;
 
 /// <summary>

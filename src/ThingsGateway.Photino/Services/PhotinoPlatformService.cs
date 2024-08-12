@@ -10,10 +10,6 @@
 
 using BootstrapBlazor.Components;
 
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
-
-using ThingsGateway.Core.Extension;
 using ThingsGateway.Razor;
 
 namespace ThingsGateway.Debug;

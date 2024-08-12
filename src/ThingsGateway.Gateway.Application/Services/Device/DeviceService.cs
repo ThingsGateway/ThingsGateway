@@ -26,7 +26,6 @@ using System.Text;
 
 using ThingsGateway.Extension.Generic;
 using ThingsGateway.Foundation.Extension.Dynamic;
-using ThingsGateway.Gateway.Application.Extensions;
 
 using TouchSocket.Core;
 
@@ -514,7 +513,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
         }
     }
 
- 
+
 
     #endregion 导出
 
@@ -647,7 +646,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
                                 {
                                     // 如果找不到对应的通道信息，则添加错误信息到导入预览结果并返回
                                     importPreviewOutput.HasError = true;
-                                    importPreviewOutput.Results.Add((row++, false,Localizer["ChannelError"]));
+                                    importPreviewOutput.Results.Add((row++, false, Localizer["ChannelError"]));
                                     return;
                                 }
                             }

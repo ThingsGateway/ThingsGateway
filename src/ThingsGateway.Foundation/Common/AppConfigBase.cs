@@ -20,10 +20,6 @@
 //  感谢您的下载和使用
 //------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-
 namespace ThingsGateway.Foundation;
 
 /// <summary>
@@ -45,7 +41,7 @@ public abstract class AppConfigBase
             throw new ArgumentException(nameof(fullPath));
         }
 
-        this.m_fullPath = fullPath;
+        m_fullPath = fullPath;
     }
 
     /// <summary>
@@ -95,12 +91,12 @@ public abstract class AppConfigBase
     {
         try
         {
-            if (!File.Exists(this.m_fullPath))
+            if (!File.Exists(m_fullPath))
             {
-                this.Save(false, out _);
+                Save(false, out _);
             }
-            var obj = SerializeConvert.FromJsonString(File.ReadAllText(this.m_fullPath), this.GetType());
-            var ps = this.GetType().GetProperties();
+            var obj = SerializeConvert.FromJsonString(File.ReadAllText(m_fullPath), GetType());
+            var ps = GetType().GetProperties();
 
             foreach (var item in ps)
             {
@@ -124,14 +120,14 @@ public abstract class AppConfigBase
     /// <returns></returns>
     public bool Save(bool overwrite, out string msg)
     {
-        if (overwrite == false && File.Exists(this.m_fullPath))
+        if (overwrite == false && File.Exists(m_fullPath))
         {
             msg = null;
             return true;
         }
         try
         {
-            File.WriteAllText(this.m_fullPath, SerializeConvert.ToJsonString(this));
+            File.WriteAllText(m_fullPath, SerializeConvert.ToJsonString(this));
             msg = null;
             return true;
         }

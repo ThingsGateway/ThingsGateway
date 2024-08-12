@@ -8,10 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
-using Microsoft.AspNetCore.Components.Rendering;
-
 namespace ThingsGateway.Razor;
 
 public static class DisplayExtensions

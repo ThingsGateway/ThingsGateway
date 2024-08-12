@@ -30,11 +30,11 @@ public class ModbusRtuSlaveMessage : MessageBase, IResultMessage
     {
         var pos = byteBlock.Position - HeaderLength;
         var crcLen = 0;
-        this.Bytes = byteBlock.AsSegment(pos, HeaderLength + BodyLength);
+        Bytes = byteBlock.AsSegment(pos, HeaderLength + BodyLength);
 
         if (Request.FunctionCode == 15)
         {
-            Request.Data = byteBlock.AsSegmentTake(Request.Length).AsSpan().ByteToBoolArray(Request.Length).Select(a=>a?(byte)0xff: (byte)0).ToArray();
+            Request.Data = byteBlock.AsSegmentTake(Request.Length).AsSpan().ByteToBoolArray(Request.Length).Select(a => a ? (byte)0xff : (byte)0).ToArray();
         }
         else if (Request.FunctionCode == 16)
         {
@@ -49,7 +49,7 @@ public class ModbusRtuSlaveMessage : MessageBase, IResultMessage
         var checkCrc = byteBlock.Span.Slice(pos + crcLen, 2).ToArray();
         if (crc.SequenceEqual(checkCrc))
         {
-            this.OperCode = 0;
+            OperCode = 0;
             return FilterResult.Success;
         }
 
@@ -70,7 +70,7 @@ public class ModbusRtuSlaveMessage : MessageBase, IResultMessage
         }
         else if (Request.FunctionCode == 1 || Request.FunctionCode == 2)
         {
-            Request.Length = (ushort)(byteBlock.ReadUInt16(EndianType.Big));
+            Request.Length = byteBlock.ReadUInt16(EndianType.Big);
             BodyLength = 1;
             return true;
         }
@@ -88,7 +88,7 @@ public class ModbusRtuSlaveMessage : MessageBase, IResultMessage
         }
         else if (Request.FunctionCode == 15)
         {
-            Request.Length = (ushort)(byteBlock.ReadUInt16(EndianType.Big));
+            Request.Length = byteBlock.ReadUInt16(EndianType.Big);
             BodyLength = Request.Length + 2;
             return true;
         }

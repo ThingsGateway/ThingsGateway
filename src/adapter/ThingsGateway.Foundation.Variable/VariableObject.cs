@@ -50,8 +50,8 @@ public abstract class VariableObject
     /// </summary>
     public VariableObject(IProtocol protocol, int maxPack)
     {
-        this.Protocol = protocol;
-        this.MaxPack = maxPack;
+        Protocol = protocol;
+        MaxPack = maxPack;
     }
 
     /// <summary>

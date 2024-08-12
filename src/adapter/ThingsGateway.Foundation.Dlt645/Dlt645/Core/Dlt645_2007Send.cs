@@ -151,6 +151,6 @@ internal class Dlt645_2007Send : ISendMessage
         for (int index = Fehead.Length; index < byteBlock.Length; ++index)
             num += byteBlock[index];
         byteBlock.WriteByte((byte)num);//校验码,总加和
-        byteBlock.WriteByte((byte)0x16);//结束符
+        byteBlock.WriteByte(0x16);//结束符
     }
 }

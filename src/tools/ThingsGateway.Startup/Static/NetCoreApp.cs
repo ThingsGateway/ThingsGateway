@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Localization;
 
-using System.Diagnostics;
 using System.Reflection;
 
 using ThingsGateway.Core;
@@ -192,7 +191,7 @@ public class NetCoreApp
                                 && !ass.FullName.StartsWith("netstandard"));
                 // 扫描实现 ISingleFilePublish 接口的类型
                 IEnumerable<Assembly> fixedSingleFileAssemblies = new List<Assembly>();
-                var singleFilePublishType = scanAssemblies.SelectMany(a=>a.GetTypes())
+                var singleFilePublishType = scanAssemblies.SelectMany(a => a.GetTypes())
                                                     .FirstOrDefault(u => u.IsClass && !u.IsInterface && !u.IsAbstract && typeof(ISingleFilePublish).IsAssignableFrom(u));
                 if (singleFilePublishType != null)
                 {
@@ -209,7 +208,7 @@ public class NetCoreApp
 
                 // 通过 AppDomain.CurrentDomain 扫描，默认为延迟加载，正常只能扫描到入口程序集（启动层）
 
-                scanAssemblies= scanAssemblies.Concat(fixedSingleFileAssemblies)
+                scanAssemblies = scanAssemblies.Concat(fixedSingleFileAssemblies)
                                         .Distinct().ToList();
                 return scanAssemblies;
 

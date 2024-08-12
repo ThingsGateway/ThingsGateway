@@ -32,10 +32,10 @@ public class Dlt645_2007Address : Dlt645_2007Request
 
     public Dlt645_2007Address(Dlt645_2007Address dlt645_2007Address)
     {
-        this.SocketId = dlt645_2007Address.SocketId;
-        this.DataId = dlt645_2007Address.DataId;
-        this.Reverse = dlt645_2007Address.Reverse;
-        this.Station = dlt645_2007Address.Station;
+        SocketId = dlt645_2007Address.SocketId;
+        DataId = dlt645_2007Address.DataId;
+        Reverse = dlt645_2007Address.Reverse;
+        Station = dlt645_2007Address.Station;
     }
 
     /// <summary>

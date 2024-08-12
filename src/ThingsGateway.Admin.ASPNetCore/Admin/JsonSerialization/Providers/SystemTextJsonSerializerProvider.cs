@@ -11,7 +11,6 @@
 // 版权归百小僧及百签科技（广东）有限公司所有。
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 using System.Text.Json;
 

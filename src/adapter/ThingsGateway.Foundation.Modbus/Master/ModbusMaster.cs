@@ -153,7 +153,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
             var channelResult = await GetChannelAsync(mAddress.SocketId);
             if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
             var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
-            return await this.SendThenReturnAsync(
+            return await SendThenReturnAsync(
                 GetSendMessage(mAddress, (ushort)sign, read),
               channelResult.Content, waitData, cancellationToken).ConfigureAwait(false);
         }

@@ -38,7 +38,7 @@ public interface IFileService
     /// <param name="pPath">保存路径</param>
     /// <param name="file">文件流</param>
     /// <returns>最终全路径</returns>
-    Task<string> UploadFileAsync( IBrowserFile file, string pPath="imports");
+    Task<string> UploadFileAsync(IBrowserFile file, string pPath = "imports");
 
     /// <summary>
     /// 验证文件信息

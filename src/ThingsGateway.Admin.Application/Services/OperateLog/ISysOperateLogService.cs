@@ -10,8 +10,6 @@
 
 using BootstrapBlazor.Components;
 
-using System.Data;
-
 namespace ThingsGateway.Admin.Application;
 
 /// <summary>

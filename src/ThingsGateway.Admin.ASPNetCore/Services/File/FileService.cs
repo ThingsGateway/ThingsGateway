@@ -15,8 +15,6 @@ using Microsoft.Extensions.Localization;
 using System.Text;
 using System.Web;
 
-using Yitter.IdGenerator;
-
 namespace ThingsGateway;
 
 public class FileService : IFileService
@@ -70,7 +68,7 @@ public class FileService : IFileService
     /// <param name="pPath">保存路径</param>
     /// <param name="file">文件</param>
     /// <returns>最终全路径</returns>
-    public async Task<string> UploadFileAsync(  IBrowserFile file,string pPath= "imports")
+    public async Task<string> UploadFileAsync(IBrowserFile file, string pPath = "imports")
     {
         return await file.StorageLocal(pPath);
     }

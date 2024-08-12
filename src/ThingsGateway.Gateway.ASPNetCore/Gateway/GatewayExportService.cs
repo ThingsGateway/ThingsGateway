@@ -14,7 +14,6 @@ using Microsoft.JSInterop;
 
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.Razor;
 
 namespace ThingsGateway.Gateway.Razor;
 
@@ -29,7 +28,7 @@ public class GatewayExportService : IGatewayExportService
 
     public async Task OnChannelExport(QueryPageOptions dtoObject)
     {
-        await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
+        await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Razor/js/downloadFile.js");
         string url = "api/gatewayExport/channel";
         string fileName = DateTime.Now.ToFileDateTimeFormat();
         await ajaxJS.InvokeVoidAsync("blazor_downloadFile", url, fileName, dtoObject);
@@ -37,7 +36,7 @@ public class GatewayExportService : IGatewayExportService
 
     public async Task OnDeviceExport(QueryPageOptions dtoObject, bool collect)
     {
-        await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
+        await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Razor/js/downloadFile.js");
         string url = collect ? "api/gatewayExport/collectdevice" : "api/gatewayExport/businessdevice";
         string fileName = DateTime.Now.ToFileDateTimeFormat();
         await ajaxJS.InvokeVoidAsync("blazor_downloadFile", url, fileName, dtoObject);
@@ -45,7 +44,7 @@ public class GatewayExportService : IGatewayExportService
 
     public async Task OnVariableExport(QueryPageOptions dtoObject)
     {
-        await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
+        await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Razor/js/downloadFile.js");
         string url = "api/gatewayExport/variable";
         string fileName = DateTime.Now.ToFileDateTimeFormat();
         await ajaxJS.InvokeVoidAsync("blazor_downloadFile", url, fileName, dtoObject);

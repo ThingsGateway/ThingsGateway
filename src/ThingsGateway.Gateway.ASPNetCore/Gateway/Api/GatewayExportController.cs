@@ -12,8 +12,6 @@ using BootstrapBlazor.Components;
 
 using Microsoft.AspNetCore.Mvc;
 
-using ThingsGateway.Admin.Application;
-
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>

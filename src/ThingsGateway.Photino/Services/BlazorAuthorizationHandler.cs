@@ -10,7 +10,6 @@
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
 
 using System.Security.Claims;
 
@@ -142,8 +141,8 @@ public class BlazorAuthorizationHandler : IAuthorizationHandler
             var isSuperAdmin = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.SuperAdmin)?.Value?.ToBoolean();
             if (isSuperAdmin == true) return true;
 
-                //非API请求
-                return true;
+            //非API请求
+            return true;
 
         }
 

@@ -12,8 +12,6 @@
 
 using Newtonsoft.Json;
 
-using ThingsGateway.Core.Extension;
-
 namespace ThingsGateway.JsonSerialization;
 
 /// <summary>

@@ -54,7 +54,7 @@ public class SqlDBDateSplitTableService : DateSplitTableService
         var splitTableAttribute = EntityInfo.Type.GetCustomAttribute<SplitTableAttribute>();
         if (splitTableAttribute != null)
         {
-            var type = (splitTableAttribute as SplitTableAttribute).SplitType;
+            var type = splitTableAttribute.SplitType;
             return GetTableName(db, EntityInfo, type);
         }
         else

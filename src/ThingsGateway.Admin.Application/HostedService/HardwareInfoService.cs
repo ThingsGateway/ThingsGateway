@@ -136,7 +136,7 @@ public class HardwareInfoService : BackgroundService
             catch (Exception ex)
             {
                 if (!error)
-                    _logger.LogWarning(ex, NetCoreApp.CreateLocalizerByType(this.GetType())["GetHardwareInfoFail"]);
+                    _logger.LogWarning(ex, NetCoreApp.CreateLocalizerByType(GetType())["GetHardwareInfoFail"]);
                 error = true;
             }
         }

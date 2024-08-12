@@ -68,7 +68,7 @@ public static class SqlSugarExtensions
             Current = current,
             Size = size,
             Records = records.Cast<TResult>(),
-            Total = (int)totalCount,
+            Total = totalCount,
             Pages = totalPages,
             HasNextPages = current < totalPages,
             HasPrevPages = current - 1 > 0

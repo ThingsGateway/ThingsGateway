@@ -37,7 +37,7 @@ internal class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcp
                  var failedCount = 0;
                  while (true)
                  {
-                     await Task.Delay(this.HeartbeatTime * 1000).ConfigureAwait(false);
+                     await Task.Delay(HeartbeatTime * 1000).ConfigureAwait(false);
                      if (!client.Online)
                      {
                          return;
@@ -50,7 +50,7 @@ internal class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcp
                              await Task.Delay(200);
                          }
 
-                         await tcpClient.SendAsync(this.HeartbeatHexString.HexStringToBytes()).ConfigureAwait(false);
+                         await tcpClient.SendAsync(HeartbeatHexString.HexStringToBytes()).ConfigureAwait(false);
                          failedCount = 0;
                      }
                      catch

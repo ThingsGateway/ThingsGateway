@@ -143,7 +143,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
                 });
             }
         }
-        OnDataChanged?.Invoke(this.Name, this.ServerGroupHandle, itemChanged);
+        OnDataChanged?.Invoke(Name, ServerGroupHandle, itemChanged);
     }
 
     public void OnReadComplete(int dwTransid,
@@ -175,7 +175,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
                 });
             }
         }
-        OnReadCompleted?.Invoke(this.Name, ServerGroupHandle, itemChanged);
+        OnReadCompleted?.Invoke(Name, ServerGroupHandle, itemChanged);
     }
 
     public void OnWriteComplete(int dwTransid,
@@ -198,7 +198,7 @@ internal class OpcGroup : IOPCDataCallback, IDisposable
                 });
             }
         }
-        OnWriteCompleted?.Invoke(this.Name, ServerGroupHandle, itemwrite);
+        OnWriteCompleted?.Invoke(Name, ServerGroupHandle, itemwrite);
     }
 
     internal List<Tuple<OpcItem, int>> AddOpcItem(OpcItem[] items)

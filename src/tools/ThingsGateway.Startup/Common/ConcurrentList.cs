@@ -26,7 +26,7 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="collection"></param>
     public ConcurrentList(IEnumerable<T> collection)
     {
-        this.m_list = new List<T>(collection);
+        m_list = new List<T>(collection);
     }
 
     /// <summary>
@@ -34,7 +34,7 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// </summary>
     public ConcurrentList()
     {
-        this.m_list = new List<T>();
+        m_list = new List<T>();
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="capacity"></param>
     public ConcurrentList(int capacity)
     {
-        this.m_list = new List<T>(capacity);
+        m_list = new List<T>(capacity);
     }
 
     /// <summary>
@@ -53,16 +53,16 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     {
         get
         {
-            lock (((ICollection)this.m_list).SyncRoot)
+            lock (((ICollection)m_list).SyncRoot)
             {
-                return this.m_list.Capacity;
+                return m_list.Capacity;
             }
         }
         set
         {
-            lock (((ICollection)this.m_list).SyncRoot)
+            lock (((ICollection)m_list).SyncRoot)
             {
-                this.m_list.Capacity = value;
+                m_list.Capacity = value;
             }
         }
     }
@@ -74,9 +74,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     {
         get
         {
-            lock (((ICollection)this.m_list).SyncRoot)
+            lock (((ICollection)m_list).SyncRoot)
             {
-                return this.m_list.Count;
+                return m_list.Count;
             }
         }
     }
@@ -95,16 +95,16 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     {
         get
         {
-            lock (((ICollection)this.m_list).SyncRoot)
+            lock (((ICollection)m_list).SyncRoot)
             {
-                return this.m_list[index];
+                return m_list[index];
             }
         }
         set
         {
-            lock (((ICollection)this.m_list).SyncRoot)
+            lock (((ICollection)m_list).SyncRoot)
             {
-                this.m_list[index] = value;
+                m_list[index] = value;
             }
         }
     }
@@ -115,9 +115,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="item"></param>
     public void Add(T item)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.Add(item);
+            m_list.Add(item);
         }
     }
 
@@ -127,9 +127,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="collection"></param>
     public void AddRange(IEnumerable<T> collection)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.AddRange(collection);
+            m_list.AddRange(collection);
         }
     }
 
@@ -140,9 +140,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int BinarySearch(T item)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.BinarySearch(item);
+            return m_list.BinarySearch(item);
         }
     }
 
@@ -154,9 +154,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int BinarySearch(T item, IComparer<T> comparer)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.BinarySearch(item, comparer);
+            return m_list.BinarySearch(item, comparer);
         }
     }
 
@@ -170,9 +170,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int BinarySearch(int index, int count, T item, IComparer<T> comparer)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.BinarySearch(index, count, item, comparer);
+            return m_list.BinarySearch(index, count, item, comparer);
         }
     }
 
@@ -181,9 +181,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// </summary>
     public void Clear()
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.Clear();
+            m_list.Clear();
         }
     }
 
@@ -194,9 +194,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public bool Contains(T item)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.Contains(item);
+            return m_list.Contains(item);
         }
     }
 
@@ -208,9 +208,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public List<TOutput> ConvertAll<TOutput>(Converter<T, TOutput> converter)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.ConvertAll(converter);
+            return m_list.ConvertAll(converter);
         }
     }
 
@@ -221,9 +221,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="arrayIndex"></param>
     public void CopyTo(T[] array, int arrayIndex)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.CopyTo(array, arrayIndex);
+            m_list.CopyTo(array, arrayIndex);
         }
     }
 
@@ -234,9 +234,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public T Find(Predicate<T> match)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.Find(match);
+            return m_list.Find(match);
         }
     }
 
@@ -247,9 +247,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public List<T> FindAll(Predicate<T> match)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.FindAll(match);
+            return m_list.FindAll(match);
         }
     }
 
@@ -262,9 +262,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int FindIndex(int startIndex, int count, Predicate<T> match)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.FindIndex(startIndex, count, match);
+            return m_list.FindIndex(startIndex, count, match);
         }
     }
 
@@ -276,9 +276,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int FindIndex(int startIndex, Predicate<T> match)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.FindIndex(startIndex, match);
+            return m_list.FindIndex(startIndex, match);
         }
     }
 
@@ -289,9 +289,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int FindIndex(Predicate<T> match)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.FindIndex(match);
+            return m_list.FindIndex(match);
         }
     }
 
@@ -302,9 +302,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public T FindLast(Predicate<T> match)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.FindLast(match);
+            return m_list.FindLast(match);
         }
     }
 
@@ -317,9 +317,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int FindLastIndex(int startIndex, int count, Predicate<T> match)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.FindLastIndex(startIndex, count, match);
+            return m_list.FindLastIndex(startIndex, count, match);
         }
     }
 
@@ -331,9 +331,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int FindLastIndex(int startIndex, Predicate<T> match)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.FindLastIndex(startIndex, match);
+            return m_list.FindLastIndex(startIndex, match);
         }
     }
 
@@ -344,9 +344,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int FindLastIndex(Predicate<T> match)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.FindLastIndex(match);
+            return m_list.FindLastIndex(match);
         }
     }
 
@@ -356,9 +356,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="action"></param>
     public void ForEach(Action<T> action)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.ForEach(action);
+            m_list.ForEach(action);
         }
     }
 
@@ -368,9 +368,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public IEnumerator<T> GetEnumerator()
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.ToList().GetEnumerator();
+            return m_list.ToList().GetEnumerator();
         }
     }
 
@@ -380,9 +380,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     IEnumerator IEnumerable.GetEnumerator()
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
     }
 
@@ -394,9 +394,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public List<T> GetRange(int index, int count)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.GetRange(index, count);
+            return m_list.GetRange(index, count);
         }
     }
 
@@ -407,9 +407,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int IndexOf(T item)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.IndexOf(item);
+            return m_list.IndexOf(item);
         }
     }
 
@@ -421,9 +421,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int IndexOf(T item, int index)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.IndexOf(item, index);
+            return m_list.IndexOf(item, index);
         }
     }
 
@@ -436,9 +436,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int IndexOf(T item, int index, int count)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.IndexOf(item, index, count);
+            return m_list.IndexOf(item, index, count);
         }
     }
 
@@ -449,9 +449,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="item"></param>
     public void Insert(int index, T item)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.Insert(index, item);
+            m_list.Insert(index, item);
         }
     }
 
@@ -462,9 +462,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="collection"></param>
     public void InsertRange(int index, IEnumerable<T> collection)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.InsertRange(index, collection);
+            m_list.InsertRange(index, collection);
         }
     }
 
@@ -475,9 +475,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int LastIndexOf(T item)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.IndexOf(item);
+            return m_list.IndexOf(item);
         }
     }
 
@@ -489,9 +489,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int LastIndexOf(T item, int index)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.LastIndexOf(item, index);
+            return m_list.LastIndexOf(item, index);
         }
     }
 
@@ -504,9 +504,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public int LastIndexOf(T item, int index, int count)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.LastIndexOf(item, index, count);
+            return m_list.LastIndexOf(item, index, count);
         }
     }
 
@@ -517,9 +517,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public bool Remove(T item)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.Remove(item);
+            return m_list.Remove(item);
         }
     }
 
@@ -529,9 +529,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="match"></param>
     public void RemoveAll(Predicate<T> match)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.RemoveAll(match);
+            m_list.RemoveAll(match);
         }
     }
 
@@ -541,11 +541,11 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="index"></param>
     public void RemoveAt(int index)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            if (index < this.m_list.Count)
+            if (index < m_list.Count)
             {
-                this.m_list.RemoveAt(index);
+                m_list.RemoveAt(index);
             }
         }
     }
@@ -557,9 +557,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="count"></param>
     public void RemoveRange(int index, int count)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.RemoveRange(index, count);
+            m_list.RemoveRange(index, count);
         }
     }
 
@@ -568,9 +568,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// </summary>
     public void Reverse()
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.Reverse();
+            m_list.Reverse();
         }
     }
 
@@ -581,9 +581,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="count"></param>
     public void Reverse(int index, int count)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.Reverse(index, count);
+            m_list.Reverse(index, count);
         }
     }
 
@@ -592,9 +592,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// </summary>
     public void Sort()
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.Sort();
+            m_list.Sort();
         }
     }
 
@@ -604,9 +604,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="comparison"></param>
     public void Sort(Comparison<T> comparison)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.Sort(comparison);
+            m_list.Sort(comparison);
         }
     }
 
@@ -616,9 +616,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="comparer"></param>
     public void Sort(IComparer<T> comparer)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.Sort(comparer);
+            m_list.Sort(comparer);
         }
     }
 
@@ -630,9 +630,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <param name="comparer"></param>
     public void Sort(int index, int count, IComparer<T> comparer)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.Sort(index, count, comparer);
+            m_list.Sort(index, count, comparer);
         }
     }
 
@@ -642,9 +642,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public T[] ToArray()
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.ToArray();
+            return m_list.ToArray();
         }
     }
 
@@ -653,9 +653,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// </summary>
     public void TrimExcess()
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            this.m_list.TrimExcess();
+            m_list.TrimExcess();
         }
     }
 
@@ -666,9 +666,9 @@ public class ConcurrentList<T> : IList<T>, IReadOnlyList<T>
     /// <returns></returns>
     public bool TrueForAll(Predicate<T> match)
     {
-        lock (((ICollection)this.m_list).SyncRoot)
+        lock (((ICollection)m_list).SyncRoot)
         {
-            return this.m_list.TrueForAll(match);
+            return m_list.TrueForAll(match);
         }
     }
 }

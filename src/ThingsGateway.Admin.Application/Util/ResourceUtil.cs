@@ -10,8 +10,6 @@
 
 using BootstrapBlazor.Components;
 
-using Mapster;
-
 using Microsoft.AspNetCore.Authorization;
 
 using NewLife;

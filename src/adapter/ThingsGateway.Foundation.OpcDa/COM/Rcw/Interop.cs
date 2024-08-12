@@ -11,7 +11,6 @@
 using System.Collections;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Xml;
 
 namespace ThingsGateway.Foundation.OpcDa.Rcw;
 
@@ -24,7 +23,7 @@ public class Interop
     {
         foreach (FieldInfo field in typeof(Property).GetFields(BindingFlags.Static | BindingFlags.Public))
         {
-            PropertyID propertyId = (PropertyID)field.GetValue((object)typeof(PropertyID));
+            PropertyID propertyId = (PropertyID)field.GetValue(typeof(PropertyID));
             if (input == propertyId.Code)
                 return propertyId;
         }
@@ -33,13 +32,13 @@ public class Interop
 
     internal static BrowseElement GetBrowseElement(IntPtr pInput, bool deallocate)
     {
-        BrowseElement browseElement = (BrowseElement)null;
+        BrowseElement browseElement = null;
         if (pInput != IntPtr.Zero)
         {
             OPCBROWSEELEMENT structure = (OPCBROWSEELEMENT)Marshal.PtrToStructure(pInput, typeof(OPCBROWSEELEMENT));
             browseElement = new BrowseElement();
             browseElement.Name = structure.szName;
-            browseElement.ItemPath = (string)null;
+            browseElement.ItemPath = null;
             browseElement.ItemName = structure.szItemID;
             browseElement.IsItem = (structure.dwFlagValue & 2) != 0;
             browseElement.HasChildren = (structure.dwFlagValue & 1) != 0;
@@ -74,7 +73,7 @@ public class Interop
       int count,
       bool deallocate)
     {
-        BrowseElement[] browseElements = (BrowseElement[])null;
+        BrowseElement[] browseElements = null;
         if (pInput != IntPtr.Zero && count > 0)
         {
             browseElements = new BrowseElement[count];
@@ -82,7 +81,7 @@ public class Interop
             for (int index = 0; index < count; ++index)
             {
                 browseElements[index] = Interop.GetBrowseElement(pInput1, deallocate);
-                pInput1 = (IntPtr)(pInput1.ToInt64() + (long)Marshal.SizeOf(typeof(OPCBROWSEELEMENT)));
+                pInput1 = (IntPtr)(pInput1.ToInt64() + Marshal.SizeOf(typeof(OPCBROWSEELEMENT)));
             }
             if (deallocate)
             {
@@ -103,7 +102,7 @@ public class Interop
             for (int index = 0; index < input.Length; ++index)
             {
                 Marshal.StructureToPtr((object)Interop.GetBrowseElement(input[index], propertiesRequested), ptr, false);
-                ptr = (IntPtr)(ptr.ToInt64() + (long)Marshal.SizeOf(typeof(OPCBROWSEELEMENT)));
+                ptr = (IntPtr)(ptr.ToInt64() + Marshal.SizeOf(typeof(OPCBROWSEELEMENT)));
             }
         }
         return browseElements;
@@ -113,7 +112,7 @@ public class Interop
       ref OPCITEMPROPERTIES input,
       bool deallocate)
     {
-        ItemProperty[] itemProperties = (ItemProperty[])null;
+        ItemProperty[] itemProperties = null;
         if (input.dwNumProperties > 0)
         {
             itemProperties = new ItemProperty[input.dwNumProperties];
@@ -130,7 +129,7 @@ public class Interop
                     itemProperties[index].Description = ex.Message;
                     itemProperties[index].ResultID = ResultID.E_FAIL;
                 }
-                pInput = (IntPtr)(pInput.ToInt64() + (long)Marshal.SizeOf(typeof(OPCITEMPROPERTY)));
+                pInput = (IntPtr)(pInput.ToInt64() + Marshal.SizeOf(typeof(OPCITEMPROPERTY)));
             }
             if (deallocate)
             {
@@ -155,7 +154,7 @@ public class Interop
             for (int index = 0; index < input.Length; ++index)
             {
                 Marshal.StructureToPtr((object)Interop.GetItemProperty(input[index]), ptr, false);
-                ptr = (IntPtr)(ptr.ToInt64() + (long)Marshal.SizeOf(typeof(OPCITEMPROPERTY)));
+                ptr = (IntPtr)(ptr.ToInt64() + Marshal.SizeOf(typeof(OPCITEMPROPERTY)));
                 if (input[index].ResultID.Failed())
                     flag = true;
             }
@@ -167,7 +166,7 @@ public class Interop
 
     internal static ItemProperty GetItemProperty(IntPtr pInput, bool deallocate)
     {
-        ItemProperty itemProperty = (ItemProperty)null;
+        ItemProperty itemProperty = null;
         if (pInput != IntPtr.Zero)
         {
             OPCITEMPROPERTY structure = (OPCITEMPROPERTY)Marshal.PtrToStructure(pInput, typeof(OPCITEMPROPERTY));
@@ -176,7 +175,7 @@ public class Interop
                 ID = Interop.GetPropertyID(structure.dwPropertyID),
                 Description = structure.szDescription,
                 DataType = Interop.GetType((VarEnum)structure.vtDataType),
-                ItemPath = (string)null,
+                ItemPath = null,
                 ItemName = structure.szItemID
             };
             itemProperty.Value = Interop.UnmarshalPropertyValue(itemProperty.ID, structure.vValue);
@@ -198,7 +197,7 @@ public class Interop
             itemProperty.szDescription = input.Description;
             itemProperty.vtDataType = (short)Interop.GetType(input.DataType);
             itemProperty.vValue = Interop.MarshalPropertyValue(input.ID, input.Value);
-            itemProperty.wReserved = (short)0;
+            itemProperty.wReserved = 0;
             itemProperty.hrErrorID = Interop.GetResultID(input.ResultID);
             PropertyDescription propertyDescription = PropertyDescription.Find(input.ID);
             if (propertyDescription != null)
@@ -215,7 +214,7 @@ public class Interop
         if (propertyIDs != null)
         {
             foreach (PropertyID propertyId in propertyIDs)
-                arrayList.Add((object)propertyId.Code);
+                arrayList.Add(propertyId.Code);
         }
         return (int[])arrayList.ToArray(typeof(int));
     }
@@ -225,306 +224,306 @@ public class Interop
         switch (input)
         {
             case -2147467262:
-                return new ResultID(ResultID.E_NOTSUPPORTED, (long)input);
+                return new ResultID(ResultID.E_NOTSUPPORTED, input);
 
             case -2147467259:
-                return new ResultID(ResultID.E_FAIL, (long)input);
+                return new ResultID(ResultID.E_FAIL, input);
 
             case -2147352571:
-                return new ResultID(ResultID.Da.E_BADTYPE, (long)input);
+                return new ResultID(ResultID.Da.E_BADTYPE, input);
 
             case -2147352566:
-                return new ResultID(ResultID.Da.E_RANGE, (long)input);
+                return new ResultID(ResultID.Da.E_RANGE, input);
 
             case -2147217401:
-                return new ResultID(ResultID.Hda.W_NOFILTER, (long)input);
+                return new ResultID(ResultID.Hda.W_NOFILTER, input);
 
             case -2147024882:
-                return new ResultID(ResultID.E_OUTOFMEMORY, (long)input);
+                return new ResultID(ResultID.E_OUTOFMEMORY, input);
 
             case -2147024809:
-                return new ResultID(ResultID.E_INVALIDARG, (long)input);
+                return new ResultID(ResultID.E_INVALIDARG, input);
 
             case -1073479679:
-                return new ResultID(ResultID.Da.E_INVALIDHANDLE, (long)input);
+                return new ResultID(ResultID.Da.E_INVALIDHANDLE, input);
 
             case -1073479676:
-                return new ResultID(ResultID.Da.E_BADTYPE, (long)input);
+                return new ResultID(ResultID.Da.E_BADTYPE, input);
 
             case -1073479673:
-                return new ResultID(ResultID.Da.E_UNKNOWN_ITEM_NAME, (long)input);
+                return new ResultID(ResultID.Da.E_UNKNOWN_ITEM_NAME, input);
 
             case -1073479672:
-                return new ResultID(ResultID.Da.E_INVALID_ITEM_NAME, (long)input);
+                return new ResultID(ResultID.Da.E_INVALID_ITEM_NAME, input);
 
             case -1073479671:
-                return new ResultID(ResultID.Da.E_INVALID_FILTER, (long)input);
+                return new ResultID(ResultID.Da.E_INVALID_FILTER, input);
 
             case -1073479670:
-                return new ResultID(ResultID.Da.E_UNKNOWN_ITEM_PATH, (long)input);
+                return new ResultID(ResultID.Da.E_UNKNOWN_ITEM_PATH, input);
 
             case -1073479669:
-                return new ResultID(ResultID.Da.E_RANGE, (long)input);
+                return new ResultID(ResultID.Da.E_RANGE, input);
 
             case -1073479165:
-                return new ResultID(ResultID.Da.E_INVALID_PID, (long)input);
+                return new ResultID(ResultID.Da.E_INVALID_PID, input);
 
             case -1073479164:
-                return new ResultID(ResultID.Ae.E_INVALIDTIME, (long)input);
+                return new ResultID(ResultID.Ae.E_INVALIDTIME, input);
 
             case -1073479163:
-                return new ResultID(ResultID.Ae.E_BUSY, (long)input);
+                return new ResultID(ResultID.Ae.E_BUSY, input);
 
             case -1073479162:
-                return new ResultID(ResultID.Ae.E_NOINFO, (long)input);
+                return new ResultID(ResultID.Ae.E_NOINFO, input);
 
             case -1073478655:
-                return new ResultID(ResultID.Da.E_NO_ITEM_DEADBAND, (long)input);
+                return new ResultID(ResultID.Da.E_NO_ITEM_DEADBAND, input);
 
             case -1073478654:
-                return new ResultID(ResultID.Da.E_NO_ITEM_BUFFERING, (long)input);
+                return new ResultID(ResultID.Da.E_NO_ITEM_BUFFERING, input);
 
             case -1073478653:
-                return new ResultID(ResultID.Da.E_INVALIDCONTINUATIONPOINT, (long)input);
+                return new ResultID(ResultID.Da.E_INVALIDCONTINUATIONPOINT, input);
 
             case -1073478650:
-                return new ResultID(ResultID.Da.E_NO_WRITEQT, (long)input);
+                return new ResultID(ResultID.Da.E_NO_WRITEQT, input);
 
             case -1073478649:
-                return new ResultID(ResultID.Cpx.E_TYPE_CHANGED, (long)input);
+                return new ResultID(ResultID.Cpx.E_TYPE_CHANGED, input);
 
             case -1073478648:
-                return new ResultID(ResultID.Cpx.E_FILTER_DUPLICATE, (long)input);
+                return new ResultID(ResultID.Cpx.E_FILTER_DUPLICATE, input);
 
             case -1073478647:
-                return new ResultID(ResultID.Cpx.E_FILTER_INVALID, (long)input);
+                return new ResultID(ResultID.Cpx.E_FILTER_INVALID, input);
 
             case -1073478646:
-                return new ResultID(ResultID.Cpx.E_FILTER_ERROR, (long)input);
+                return new ResultID(ResultID.Cpx.E_FILTER_ERROR, input);
 
             case -1073477888:
-                return new ResultID(ResultID.Dx.E_PERSISTING, (long)input);
+                return new ResultID(ResultID.Dx.E_PERSISTING, input);
 
             case -1073477887:
-                return new ResultID(ResultID.Dx.E_NOITEMLIST, (long)input);
+                return new ResultID(ResultID.Dx.E_NOITEMLIST, input);
 
             case -1073477886:
-                return new ResultID(ResultID.Dx.E_VERSION_MISMATCH, (long)input);
+                return new ResultID(ResultID.Dx.E_VERSION_MISMATCH, input);
 
             case -1073477885:
-                return new ResultID(ResultID.Dx.E_VERSION_MISMATCH, (long)input);
+                return new ResultID(ResultID.Dx.E_VERSION_MISMATCH, input);
 
             case -1073477884:
-                return new ResultID(ResultID.Dx.E_UNKNOWN_ITEM_PATH, (long)input);
+                return new ResultID(ResultID.Dx.E_UNKNOWN_ITEM_PATH, input);
 
             case -1073477883:
-                return new ResultID(ResultID.Dx.E_UNKNOWN_ITEM_NAME, (long)input);
+                return new ResultID(ResultID.Dx.E_UNKNOWN_ITEM_NAME, input);
 
             case -1073477882:
-                return new ResultID(ResultID.Dx.E_INVALID_ITEM_PATH, (long)input);
+                return new ResultID(ResultID.Dx.E_INVALID_ITEM_PATH, input);
 
             case -1073477881:
-                return new ResultID(ResultID.Dx.E_INVALID_ITEM_NAME, (long)input);
+                return new ResultID(ResultID.Dx.E_INVALID_ITEM_NAME, input);
 
             case -1073477880:
-                return new ResultID(ResultID.Dx.E_INVALID_NAME, (long)input);
+                return new ResultID(ResultID.Dx.E_INVALID_NAME, input);
 
             case -1073477879:
-                return new ResultID(ResultID.Dx.E_DUPLICATE_NAME, (long)input);
+                return new ResultID(ResultID.Dx.E_DUPLICATE_NAME, input);
 
             case -1073477878:
-                return new ResultID(ResultID.Dx.E_INVALID_BROWSE_PATH, (long)input);
+                return new ResultID(ResultID.Dx.E_INVALID_BROWSE_PATH, input);
 
             case -1073477877:
-                return new ResultID(ResultID.Dx.E_INVALID_SERVER_URL, (long)input);
+                return new ResultID(ResultID.Dx.E_INVALID_SERVER_URL, input);
 
             case -1073477876:
-                return new ResultID(ResultID.Dx.E_INVALID_SERVER_TYPE, (long)input);
+                return new ResultID(ResultID.Dx.E_INVALID_SERVER_TYPE, input);
 
             case -1073477875:
-                return new ResultID(ResultID.Dx.E_UNSUPPORTED_SERVER_TYPE, (long)input);
+                return new ResultID(ResultID.Dx.E_UNSUPPORTED_SERVER_TYPE, input);
 
             case -1073477874:
-                return new ResultID(ResultID.Dx.E_CONNECTIONS_EXIST, (long)input);
+                return new ResultID(ResultID.Dx.E_CONNECTIONS_EXIST, input);
 
             case -1073477873:
-                return new ResultID(ResultID.Dx.E_TOO_MANY_CONNECTIONS, (long)input);
+                return new ResultID(ResultID.Dx.E_TOO_MANY_CONNECTIONS, input);
 
             case -1073477872:
-                return new ResultID(ResultID.Dx.E_OVERRIDE_BADTYPE, (long)input);
+                return new ResultID(ResultID.Dx.E_OVERRIDE_BADTYPE, input);
 
             case -1073477871:
-                return new ResultID(ResultID.Dx.E_OVERRIDE_RANGE, (long)input);
+                return new ResultID(ResultID.Dx.E_OVERRIDE_RANGE, input);
 
             case -1073477870:
-                return new ResultID(ResultID.Dx.E_SUBSTITUTE_BADTYPE, (long)input);
+                return new ResultID(ResultID.Dx.E_SUBSTITUTE_BADTYPE, input);
 
             case -1073477869:
-                return new ResultID(ResultID.Dx.E_SUBSTITUTE_RANGE, (long)input);
+                return new ResultID(ResultID.Dx.E_SUBSTITUTE_RANGE, input);
 
             case -1073477868:
-                return new ResultID(ResultID.Dx.E_INVALID_TARGET_ITEM, (long)input);
+                return new ResultID(ResultID.Dx.E_INVALID_TARGET_ITEM, input);
 
             case -1073477867:
-                return new ResultID(ResultID.Dx.E_UNKNOWN_TARGET_ITEM, (long)input);
+                return new ResultID(ResultID.Dx.E_UNKNOWN_TARGET_ITEM, input);
 
             case -1073477866:
-                return new ResultID(ResultID.Dx.E_TARGET_ALREADY_CONNECTED, (long)input);
+                return new ResultID(ResultID.Dx.E_TARGET_ALREADY_CONNECTED, input);
 
             case -1073477865:
-                return new ResultID(ResultID.Dx.E_UNKNOWN_SERVER_NAME, (long)input);
+                return new ResultID(ResultID.Dx.E_UNKNOWN_SERVER_NAME, input);
 
             case -1073477864:
-                return new ResultID(ResultID.Dx.E_UNKNOWN_SOURCE_ITEM, (long)input);
+                return new ResultID(ResultID.Dx.E_UNKNOWN_SOURCE_ITEM, input);
 
             case -1073477863:
-                return new ResultID(ResultID.Dx.E_INVALID_SOURCE_ITEM, (long)input);
+                return new ResultID(ResultID.Dx.E_INVALID_SOURCE_ITEM, input);
 
             case -1073477862:
-                return new ResultID(ResultID.Dx.E_INVALID_QUEUE_SIZE, (long)input);
+                return new ResultID(ResultID.Dx.E_INVALID_QUEUE_SIZE, input);
 
             case -1073477861:
-                return new ResultID(ResultID.Dx.E_INVALID_DEADBAND, (long)input);
+                return new ResultID(ResultID.Dx.E_INVALID_DEADBAND, input);
 
             case -1073477860:
-                return new ResultID(ResultID.Dx.E_INVALID_CONFIG_FILE, (long)input);
+                return new ResultID(ResultID.Dx.E_INVALID_CONFIG_FILE, input);
 
             case -1073477859:
-                return new ResultID(ResultID.Dx.E_PERSIST_FAILED, (long)input);
+                return new ResultID(ResultID.Dx.E_PERSIST_FAILED, input);
 
             case -1073477858:
-                return new ResultID(ResultID.Dx.E_TARGET_FAULT, (long)input);
+                return new ResultID(ResultID.Dx.E_TARGET_FAULT, input);
 
             case -1073477857:
-                return new ResultID(ResultID.Dx.E_TARGET_NO_ACCESSS, (long)input);
+                return new ResultID(ResultID.Dx.E_TARGET_NO_ACCESSS, input);
 
             case -1073477856:
-                return new ResultID(ResultID.Dx.E_SOURCE_SERVER_FAULT, (long)input);
+                return new ResultID(ResultID.Dx.E_SOURCE_SERVER_FAULT, input);
 
             case -1073477855:
-                return new ResultID(ResultID.Dx.E_SOURCE_SERVER_NO_ACCESSS, (long)input);
+                return new ResultID(ResultID.Dx.E_SOURCE_SERVER_NO_ACCESSS, input);
 
             case -1073477854:
-                return new ResultID(ResultID.Dx.E_SUBSCRIPTION_FAULT, (long)input);
+                return new ResultID(ResultID.Dx.E_SUBSCRIPTION_FAULT, input);
 
             case -1073477853:
-                return new ResultID(ResultID.Dx.E_SOURCE_ITEM_BADRIGHTS, (long)input);
+                return new ResultID(ResultID.Dx.E_SOURCE_ITEM_BADRIGHTS, input);
 
             case -1073477852:
-                return new ResultID(ResultID.Dx.E_SOURCE_ITEM_BAD_QUALITY, (long)input);
+                return new ResultID(ResultID.Dx.E_SOURCE_ITEM_BAD_QUALITY, input);
 
             case -1073477851:
-                return new ResultID(ResultID.Dx.E_SOURCE_ITEM_BADTYPE, (long)input);
+                return new ResultID(ResultID.Dx.E_SOURCE_ITEM_BADTYPE, input);
 
             case -1073477850:
-                return new ResultID(ResultID.Dx.E_SOURCE_ITEM_RANGE, (long)input);
+                return new ResultID(ResultID.Dx.E_SOURCE_ITEM_RANGE, input);
 
             case -1073477849:
-                return new ResultID(ResultID.Dx.E_SOURCE_SERVER_NOT_CONNECTED, (long)input);
+                return new ResultID(ResultID.Dx.E_SOURCE_SERVER_NOT_CONNECTED, input);
 
             case -1073477848:
-                return new ResultID(ResultID.Dx.E_SOURCE_SERVER_TIMEOUT, (long)input);
+                return new ResultID(ResultID.Dx.E_SOURCE_SERVER_TIMEOUT, input);
 
             case -1073477847:
-                return new ResultID(ResultID.Dx.E_TARGET_ITEM_DISCONNECTED, (long)input);
+                return new ResultID(ResultID.Dx.E_TARGET_ITEM_DISCONNECTED, input);
 
             case -1073477846:
-                return new ResultID(ResultID.Dx.E_TARGET_NO_WRITES_ATTEMPTED, (long)input);
+                return new ResultID(ResultID.Dx.E_TARGET_NO_WRITES_ATTEMPTED, input);
 
             case -1073477845:
-                return new ResultID(ResultID.Dx.E_TARGET_ITEM_BADTYPE, (long)input);
+                return new ResultID(ResultID.Dx.E_TARGET_ITEM_BADTYPE, input);
 
             case -1073477844:
-                return new ResultID(ResultID.Dx.E_TARGET_ITEM_RANGE, (long)input);
+                return new ResultID(ResultID.Dx.E_TARGET_ITEM_RANGE, input);
 
             case -1073475583:
-                return new ResultID(ResultID.Hda.E_MAXEXCEEDED, (long)input);
+                return new ResultID(ResultID.Hda.E_MAXEXCEEDED, input);
 
             case -1073475580:
-                return new ResultID(ResultID.Hda.E_INVALIDAGGREGATE, (long)input);
+                return new ResultID(ResultID.Hda.E_INVALIDAGGREGATE, input);
 
             case -1073475576:
-                return new ResultID(ResultID.Hda.E_UNKNOWNATTRID, (long)input);
+                return new ResultID(ResultID.Hda.E_UNKNOWNATTRID, input);
 
             case -1073475575:
-                return new ResultID(ResultID.Hda.E_NOT_AVAIL, (long)input);
+                return new ResultID(ResultID.Hda.E_NOT_AVAIL, input);
 
             case -1073475574:
-                return new ResultID(ResultID.Hda.E_INVALIDDATATYPE, (long)input);
+                return new ResultID(ResultID.Hda.E_INVALIDDATATYPE, input);
 
             case -1073475573:
-                return new ResultID(ResultID.Hda.E_DATAEXISTS, (long)input);
+                return new ResultID(ResultID.Hda.E_DATAEXISTS, input);
 
             case -1073475572:
-                return new ResultID(ResultID.Hda.E_INVALIDATTRID, (long)input);
+                return new ResultID(ResultID.Hda.E_INVALIDATTRID, input);
 
             case -1073475571:
-                return new ResultID(ResultID.Hda.E_NODATAEXISTS, (long)input);
+                return new ResultID(ResultID.Hda.E_NODATAEXISTS, input);
 
             case 0:
-                return new ResultID(ResultID.S_OK, (long)input);
+                return new ResultID(ResultID.S_OK, input);
 
             case 262157:
-                return new ResultID(ResultID.Da.S_UNSUPPORTEDRATE, (long)input);
+                return new ResultID(ResultID.Da.S_UNSUPPORTEDRATE, input);
 
             case 262158:
-                return new ResultID(ResultID.Da.S_CLAMP, (long)input);
+                return new ResultID(ResultID.Da.S_CLAMP, input);
 
             case 262656:
-                return new ResultID(ResultID.Ae.S_ALREADYACKED, (long)input);
+                return new ResultID(ResultID.Ae.S_ALREADYACKED, input);
 
             case 262657:
-                return new ResultID(ResultID.Ae.S_INVALIDBUFFERTIME, (long)input);
+                return new ResultID(ResultID.Ae.S_INVALIDBUFFERTIME, input);
 
             case 262658:
-                return new ResultID(ResultID.Ae.S_INVALIDMAXSIZE, (long)input);
+                return new ResultID(ResultID.Ae.S_INVALIDMAXSIZE, input);
 
             case 262659:
-                return new ResultID(ResultID.Ae.S_INVALIDKEEPALIVETIME, (long)input);
+                return new ResultID(ResultID.Ae.S_INVALIDKEEPALIVETIME, input);
 
             case 263172:
-                return new ResultID(ResultID.Da.S_DATAQUEUEOVERFLOW, (long)input);
+                return new ResultID(ResultID.Da.S_DATAQUEUEOVERFLOW, input);
 
             case 263179:
-                return new ResultID(ResultID.Cpx.S_FILTER_NO_DATA, (long)input);
+                return new ResultID(ResultID.Cpx.S_FILTER_NO_DATA, input);
 
             case 264064:
-                return new ResultID(ResultID.Dx.S_TARGET_SUBSTITUTED, (long)input);
+                return new ResultID(ResultID.Dx.S_TARGET_SUBSTITUTED, input);
 
             case 264065:
-                return new ResultID(ResultID.Dx.S_TARGET_OVERRIDEN, (long)input);
+                return new ResultID(ResultID.Dx.S_TARGET_OVERRIDEN, input);
 
             case 264066:
-                return new ResultID(ResultID.Dx.S_CLAMP, (long)input);
+                return new ResultID(ResultID.Dx.S_CLAMP, input);
 
             case 1074008066:
-                return new ResultID(ResultID.Hda.S_NODATA, (long)input);
+                return new ResultID(ResultID.Hda.S_NODATA, input);
 
             case 1074008067:
-                return new ResultID(ResultID.Hda.S_MOREDATA, (long)input);
+                return new ResultID(ResultID.Hda.S_MOREDATA, input);
 
             case 1074008069:
-                return new ResultID(ResultID.Hda.S_CURRENTVALUE, (long)input);
+                return new ResultID(ResultID.Hda.S_CURRENTVALUE, input);
 
             case 1074008070:
-                return new ResultID(ResultID.Hda.S_EXTRADATA, (long)input);
+                return new ResultID(ResultID.Hda.S_EXTRADATA, input);
 
             case 1074008078:
-                return new ResultID(ResultID.Hda.S_INSERTED, (long)input);
+                return new ResultID(ResultID.Hda.S_INSERTED, input);
 
             case 1074008079:
-                return new ResultID(ResultID.Hda.S_REPLACED, (long)input);
+                return new ResultID(ResultID.Hda.S_REPLACED, input);
 
             default:
                 if ((input & 2147418112) == 65536)
-                    return new ResultID(ResultID.E_NETWORK_ERROR, (long)input);
-                return input >= 0 ? new ResultID(ResultID.S_FALSE, (long)input) : new ResultID(ResultID.E_FAIL, (long)input);
+                    return new ResultID(ResultID.E_NETWORK_ERROR, input);
+                return input >= 0 ? new ResultID(ResultID.S_FALSE, input) : new ResultID(ResultID.E_FAIL, input);
         }
     }
 
     internal static int GetResultID(ResultID input)
     {
-        if (input.Name != (XmlQualifiedName)null && input.Name.Namespace == "http://opcfoundation.org/DataAccess/")
+        if (input.Name != null && input.Name.Namespace == "http://opcfoundation.org/DataAccess/")
         {
             if (input == ResultID.S_OK)
                 return 0;
@@ -569,7 +568,7 @@ public class Interop
             if (input == ResultID.Da.S_DATAQUEUEOVERFLOW)
                 return 263172;
         }
-        else if (input.Name != (XmlQualifiedName)null && input.Name.Namespace == "http://opcfoundation.org/ComplexData/")
+        else if (input.Name != null && input.Name.Namespace == "http://opcfoundation.org/ComplexData/")
         {
             if (input == ResultID.Cpx.E_TYPE_CHANGED)
                 return -1073478649;
@@ -582,7 +581,7 @@ public class Interop
             if (input == ResultID.Cpx.S_FILTER_NO_DATA)
                 return 263179;
         }
-        else if (input.Name != (XmlQualifiedName)null && input.Name.Namespace == "http://opcfoundation.org/HistoricalDataAccess/")
+        else if (input.Name != null && input.Name.Namespace == "http://opcfoundation.org/HistoricalDataAccess/")
         {
             if (input == ResultID.Hda.E_MAXEXCEEDED)
                 return -1073475583;
@@ -613,7 +612,7 @@ public class Interop
             if (input == ResultID.Hda.S_REPLACED)
                 return 1074008079;
         }
-        if (input.Name != (XmlQualifiedName)null && input.Name.Namespace == "http://opcfoundation.org/DataExchange/")
+        if (input.Name != null && input.Name.Namespace == "http://opcfoundation.org/DataExchange/")
         {
             if (input == ResultID.Dx.E_PERSISTING)
                 return -1073477888;
@@ -717,7 +716,7 @@ public class Interop
 
     internal static VarEnum GetType(System.Type input)
     {
-        if (input == (System.Type)null)
+        if (input == null)
             return VarEnum.VT_EMPTY;
         if (input == typeof(sbyte))
             return VarEnum.VT_I1;
@@ -791,7 +790,7 @@ public class Interop
         switch (input)
         {
             case VarEnum.VT_EMPTY:
-                return (System.Type)null;
+                return null;
 
             case VarEnum.VT_I2:
                 return typeof(short);
@@ -888,26 +887,26 @@ public class Interop
     internal static object MarshalPropertyValue(PropertyID propertyID, object input)
     {
         if (input == null)
-            return (object)null;
+            return null;
         try
         {
             if (propertyID == Property.DATATYPE)
-                return (object)(short)Interop.GetType((System.Type)input);
+                return (short)Interop.GetType((System.Type)input);
             if (propertyID == Property.ACCESSRIGHTS)
             {
                 switch ((accessRights)input)
                 {
                     case accessRights.readable:
-                        return (object)1;
+                        return 1;
 
                     case accessRights.writable:
-                        return (object)2;
+                        return 2;
 
                     case accessRights.readWritable:
-                        return (object)3;
+                        return 3;
 
                     default:
-                        return (object)null;
+                        return null;
                 }
             }
             else if (propertyID == Property.EUTYPE)
@@ -915,28 +914,28 @@ public class Interop
                 switch ((euType)input)
                 {
                     case euType.noEnum:
-                        return (object)OPCEUTYPE.OPC_NOENUM;
+                        return OPCEUTYPE.OPC_NOENUM;
 
                     case euType.analog:
-                        return (object)OPCEUTYPE.OPC_ANALOG;
+                        return OPCEUTYPE.OPC_ANALOG;
 
                     case euType.enumerated:
-                        return (object)OPCEUTYPE.OPC_ENUMERATED;
+                        return OPCEUTYPE.OPC_ENUMERATED;
 
                     default:
-                        return (object)null;
+                        return null;
                 }
             }
             else
             {
                 if (propertyID == Property.QUALITY)
-                    return (object)((Quality)input).GetCode();
+                    return ((Quality)input).GetCode();
                 if (propertyID == Property.TIMESTAMP)
                 {
                     if (input.GetType() == typeof(DateTime))
                     {
                         DateTime dateTime = (DateTime)input;
-                        return dateTime != DateTime.MinValue ? (object)dateTime.ToLocalTime() : (object)dateTime;
+                        return dateTime != DateTime.MinValue ? dateTime.ToLocalTime() : (object)dateTime;
                     }
                 }
             }
@@ -950,26 +949,26 @@ public class Interop
     internal static object UnmarshalPropertyValue(PropertyID propertyID, object input)
     {
         if (input == null)
-            return (object)null;
+            return null;
         try
         {
             if (propertyID == Property.DATATYPE)
-                return (object)Interop.GetType((VarEnum)System.Convert.ToUInt16(input));
+                return Interop.GetType((VarEnum)System.Convert.ToUInt16(input));
             if (propertyID == Property.ACCESSRIGHTS)
             {
                 switch (System.Convert.ToInt32(input))
                 {
                     case 1:
-                        return (object)accessRights.readable;
+                        return accessRights.readable;
 
                     case 2:
-                        return (object)accessRights.writable;
+                        return accessRights.writable;
 
                     case 3:
-                        return (object)accessRights.readWritable;
+                        return accessRights.readWritable;
 
                     default:
-                        return (object)null;
+                        return null;
                 }
             }
             else if (propertyID == Property.EUTYPE)
@@ -977,28 +976,28 @@ public class Interop
                 switch ((OPCEUTYPE)input)
                 {
                     case OPCEUTYPE.OPC_NOENUM:
-                        return (object)euType.noEnum;
+                        return euType.noEnum;
 
                     case OPCEUTYPE.OPC_ANALOG:
-                        return (object)euType.analog;
+                        return euType.analog;
 
                     case OPCEUTYPE.OPC_ENUMERATED:
-                        return (object)euType.enumerated;
+                        return euType.enumerated;
 
                     default:
-                        return (object)null;
+                        return null;
                 }
             }
             else
             {
                 if (propertyID == Property.QUALITY)
-                    return (object)new Quality(System.Convert.ToInt16(input));
+                    return new Quality(System.Convert.ToInt16(input));
                 if (propertyID == Property.TIMESTAMP)
                 {
                     if (input.GetType() == typeof(DateTime))
                     {
                         DateTime dateTime = (DateTime)input;
-                        return dateTime != DateTime.MinValue ? (object)dateTime.ToLocalTime() : (object)dateTime;
+                        return dateTime != DateTime.MinValue ? dateTime.ToLocalTime() : (object)dateTime;
                     }
                 }
             }

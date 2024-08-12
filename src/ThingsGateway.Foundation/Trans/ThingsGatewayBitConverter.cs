@@ -59,7 +59,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <param name="endianType"></param>
     public ThingsGatewayBitConverter(EndianType endianType)
     {
-        this.EndianType = endianType;
+        EndianType = endianType;
     }
 
     /// <inheritdoc/>
@@ -293,9 +293,9 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 }
                 else
                 {
-                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    ByteTransDataFormat4_Net6(ref buffer[offset]);
                     var v = Unsafe.Read<int>(p);
-                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    ByteTransDataFormat4_Net6(ref buffer[offset]);
                     return v;
                 }
             }
@@ -320,9 +320,9 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 }
                 else
                 {
-                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    ByteTransDataFormat8_Net6(ref buffer[offset]);
                     var v = Unsafe.Read<long>(p);
-                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    ByteTransDataFormat8_Net6(ref buffer[offset]);
                     return v;
                 }
             }
@@ -353,9 +353,9 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 }
                 else
                 {
-                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    ByteTransDataFormat4_Net6(ref buffer[offset]);
                     var v = Unsafe.Read<uint>(p);
-                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    ByteTransDataFormat4_Net6(ref buffer[offset]);
                     return v;
                 }
             }
@@ -380,9 +380,9 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 }
                 else
                 {
-                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    ByteTransDataFormat8_Net6(ref buffer[offset]);
                     var v = Unsafe.Read<ulong>(p);
-                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    ByteTransDataFormat8_Net6(ref buffer[offset]);
                     return v;
                 }
             }
@@ -407,9 +407,9 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 }
                 else
                 {
-                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    ByteTransDataFormat4_Net6(ref buffer[offset]);
                     var v = Unsafe.Read<float>(p);
-                    this.ByteTransDataFormat4_Net6(ref buffer[offset]);
+                    ByteTransDataFormat4_Net6(ref buffer[offset]);
                     return v;
                 }
             }
@@ -433,9 +433,9 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 }
                 else
                 {
-                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    ByteTransDataFormat8_Net6(ref buffer[offset]);
                     var v = Unsafe.Read<double>(p);
-                    this.ByteTransDataFormat8_Net6(ref buffer[offset]);
+                    ByteTransDataFormat8_Net6(ref buffer[offset]);
                     return v;
                 }
             }
@@ -566,7 +566,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         Unsafe.As<byte, decimal>(ref bytes[0]) = value;
         if (DataFormat != DataFormatEnum.DCBA)
         {
-            this.ByteTransDataFormat16_Net6(ref bytes[0]);
+            ByteTransDataFormat16_Net6(ref bytes[0]);
         }
         return bytes;
     }
@@ -601,7 +601,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         var bytes = BitConverter.GetBytes(value);
 
         if (DataFormat != DataFormatEnum.DCBA)
-            bytes = this.ByteTransDataFormat4(bytes, 0);
+            bytes = ByteTransDataFormat4(bytes, 0);
 
         return bytes;
     }
@@ -611,7 +611,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         var bytes = BitConverter.GetBytes(value);
 
         if (DataFormat != DataFormatEnum.DCBA)
-            bytes = this.ByteTransDataFormat4(bytes, 0);
+            bytes = ByteTransDataFormat4(bytes, 0);
 
         return bytes;
     }
@@ -621,7 +621,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         var bytes = BitConverter.GetBytes(value);
 
         if (DataFormat != DataFormatEnum.DCBA)
-            bytes = this.ByteTransDataFormat8(bytes, 0);
+            bytes = ByteTransDataFormat8(bytes, 0);
 
         return bytes;
     }
@@ -631,7 +631,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         var bytes = BitConverter.GetBytes(value);
 
         if (DataFormat != DataFormatEnum.DCBA)
-            bytes = this.ByteTransDataFormat8(bytes, 0);
+            bytes = ByteTransDataFormat8(bytes, 0);
 
         return bytes;
     }
@@ -641,7 +641,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         var bytes = BitConverter.GetBytes(value);
 
         if (DataFormat != DataFormatEnum.DCBA)
-            bytes = this.ByteTransDataFormat4(bytes, 0);
+            bytes = ByteTransDataFormat4(bytes, 0);
 
         return bytes;
     }
@@ -651,7 +651,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         var bytes = BitConverter.GetBytes(value);
 
         if (DataFormat != DataFormatEnum.DCBA)
-            bytes = this.ByteTransDataFormat8(bytes, 0);
+            bytes = ByteTransDataFormat8(bytes, 0);
 
         return bytes;
     }
@@ -673,9 +673,9 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 }
                 else
                 {
-                    this.ByteTransDataFormat16_Net6(ref buffer[offset]);
+                    ByteTransDataFormat16_Net6(ref buffer[offset]);
                     var v = Unsafe.Read<decimal>(p);
-                    this.ByteTransDataFormat16_Net6(ref buffer[offset]);
+                    ByteTransDataFormat16_Net6(ref buffer[offset]);
                     return v;
                 }
             }
@@ -698,7 +698,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
 
     {
         var numArray = new byte[4];
-        switch (this.DataFormat)
+        switch (DataFormat)
         {
             case DataFormatEnum.ABCD:
                 numArray[0] = value[offset + 3];
@@ -739,7 +739,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     private byte[] ByteTransDataFormat8(byte[] value, int offset)
     {
         var numArray = new byte[8];
-        switch (this.DataFormat)
+        switch (DataFormat)
         {
             case DataFormatEnum.ABCD:
                 numArray[0] = value[offset + 7];
@@ -804,7 +804,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 var c = Unsafe.ReadUnaligned<byte>(p + 2);
                 var d = Unsafe.ReadUnaligned<byte>(p + 3);
 
-                switch (this.DataFormat)
+                switch (DataFormat)
                 {
                     case DataFormatEnum.ABCD:
                         Unsafe.WriteUnaligned(p, d);
@@ -850,7 +850,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
                 var g = Unsafe.ReadUnaligned<byte>(p + 6);
                 var h = Unsafe.ReadUnaligned<byte>(p + 7);
 
-                switch (this.DataFormat)
+                switch (DataFormat)
                 {
                     case DataFormatEnum.ABCD:
                         Unsafe.WriteUnaligned(p, h);
@@ -899,7 +899,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         {
             fixed (byte* p = &value)
             {
-                switch (this.DataFormat)
+                switch (DataFormat)
                 {
                     case DataFormatEnum.ABCD:
                         var span = new Span<byte>(p, 16);

@@ -8,13 +8,10 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 
 using ThingsGateway.Admin.Application;
-using ThingsGateway.Admin.Razor;
 using ThingsGateway.Logging;
 
 using UAParser;
@@ -74,8 +71,8 @@ public class AdminStartup : AppStartup
 
 
         services.AddSingleton<IUnifyResultProvider, UnifyResultProvider>();
-        services.AddSingleton<IAuthService, AuthService>(); 
-        services.AddScoped<IAuthRazorService, AuthRazorService>(); 
+        services.AddSingleton<IAuthService, AuthService>();
+        services.AddScoped<IAuthRazorService, AuthRazorService>();
         services.AddSingleton<IAppService, AspNetCoreAppService>();
         services.AddSingleton<IApiPermissionService, ApiPermissionService>();
 

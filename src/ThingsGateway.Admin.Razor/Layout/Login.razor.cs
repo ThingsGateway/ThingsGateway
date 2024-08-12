@@ -8,23 +8,14 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
 using Mapster;
 
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.Extensions.Localization;
 
 using NewLife.Extension;
 
-using System.Diagnostics.CodeAnalysis;
-using System.Text.Json;
-
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core;
-using ThingsGateway.Core.Json.Extension;
-using ThingsGateway.Razor;
 
 namespace ThingsGateway.Admin.Razor;
 

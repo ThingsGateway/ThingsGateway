@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using ThingsGateway.Admin.Application;
-using ThingsGateway.Core;
 using ThingsGateway.Foundation;
 
 namespace ThingsGateway.Gateway.Application;

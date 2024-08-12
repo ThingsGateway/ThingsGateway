@@ -8,11 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.Localization;
-
-using System.Diagnostics.CodeAnalysis;
-
 using ThingsGateway.Admin.Application;
 
 namespace ThingsGateway.Admin.Razor;

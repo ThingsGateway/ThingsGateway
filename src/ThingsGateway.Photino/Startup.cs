@@ -11,18 +11,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
-
-using System.Threading;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
 using ThingsGateway.Debug;
-using ThingsGateway.Logging;
 using ThingsGateway.Razor;
-
-using UAParser;
 
 namespace ThingsGateway.Server;
 
@@ -70,11 +64,11 @@ public class Startup : AppStartup
         services.AddSingleton<IAuthRazorService, AuthRazorService>();
 
         var appService = new NetCoreAppService();
-        services.AddSingleton<IAppService, NetCoreAppService>(a=> appService);
-        services.AddSingleton<NetCoreAppService>(a=> appService);
+        services.AddSingleton<IAppService, NetCoreAppService>(a => appService);
+        services.AddSingleton<NetCoreAppService>(a => appService);
 
         services.AddSingleton<IApiPermissionService, ApiPermissionService>();
-        
+
         services.AddSingleton<ISignalrNoticeService, SignalrNoticeService>();
         services.AddSingleton<IAuthService, AuthService>();
         services.AddSingleton<HostedServiceExecutor>();
@@ -90,10 +84,10 @@ public class Startup : AppStartup
 
     public void UseAdminCore(IServiceProvider serviceProvider)
     {
-      var  _hostedServiceExecutor = serviceProvider.GetRequiredService<HostedServiceExecutor>();
+        var _hostedServiceExecutor = serviceProvider.GetRequiredService<HostedServiceExecutor>();
 
         // Fire IHostedService.Start
-         _hostedServiceExecutor.StartAsync(Program.CancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
+        _hostedServiceExecutor.StartAsync(Program.CancellationToken).ConfigureAwait(false).GetAwaiter().GetResult();
 
     }
 

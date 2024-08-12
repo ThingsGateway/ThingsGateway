@@ -205,7 +205,7 @@ public class OpcDaMaster : IDisposable
     /// <returns></returns>
     public List<BrowseElement> GetBrowseElements(string itemId = null)
     {
-        return this.m_server?.Browse(itemId);
+        return m_server?.Browse(itemId);
     }
 
     /// <summary>
@@ -214,7 +214,7 @@ public class OpcDaMaster : IDisposable
     /// <returns></returns>
     public ServerStatus GetServerStatus()
     {
-        return this.m_server?.GetServerStatus();
+        return m_server?.GetServerStatus();
     }
 
     /// <summary>

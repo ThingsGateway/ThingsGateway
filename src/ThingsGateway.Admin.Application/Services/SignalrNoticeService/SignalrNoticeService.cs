@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
 namespace ThingsGateway.Admin.Application;
 
 public class SignalrNoticeService : ISignalrNoticeService

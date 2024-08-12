@@ -18,8 +18,8 @@ public class VersionService : IAppVersionService
 {
     public VersionService()
     {
-        Version = ((AssemblyInformationalVersionAttribute?)this.GetType().Assembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false).FirstOrDefault())?.InformationalVersion;
-        Version ??= this.GetType().Assembly.GetName().Version?.ToString();
+        Version = ((AssemblyInformationalVersionAttribute?)GetType().Assembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false).FirstOrDefault())?.InformationalVersion;
+        Version ??= GetType().Assembly.GetName().Version?.ToString();
         if (!string.IsNullOrEmpty(Version))
         {
             var index = Version.IndexOf('+');

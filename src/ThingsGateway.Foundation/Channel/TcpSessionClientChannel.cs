@@ -50,7 +50,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
 
     public void Close(string msg)
     {
-        this.CloseAsync(msg).ConfigureAwait(false);
+        CloseAsync(msg).ConfigureAwait(false);
     }
 
     public override Task CloseAsync(string msg)
@@ -70,7 +70,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
     {
         if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
-            this.SetAdapter(singleStreamDataHandlingAdapter);
+            SetAdapter(singleStreamDataHandlingAdapter);
     }
 
     /// <inheritdoc/>
@@ -126,9 +126,9 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
 
     protected override async Task OnTcpReceived(ReceivedDataEventArgs e)
     {
-        if (this.ChannelReceived != null)
+        if (ChannelReceived != null)
         {
-            await this.ChannelReceived.Invoke(this, e).ConfigureAwait(false);
+            await ChannelReceived.Invoke(this, e).ConfigureAwait(false);
         }
         await base.OnTcpReceived(e);
     }

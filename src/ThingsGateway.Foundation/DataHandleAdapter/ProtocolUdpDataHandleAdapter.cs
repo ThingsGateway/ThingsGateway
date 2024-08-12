@@ -90,9 +90,9 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
             {
                 byteBlock.Position = pos;
 
-                if (request.BodyLength > this.MaxPackageSize)
+                if (request.BodyLength > MaxPackageSize)
                 {
-                    this.OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={this.MaxPackageSize}", true, true);
+                    OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={MaxPackageSize}", true, true);
                     return;
                 }
                 if (request.BodyLength + request.HeaderLength > byteBlock.CanReadLength)
@@ -148,7 +148,7 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
             Logger?.Trace($"{ToString()}- Send:{(IsHexData ? memory.Span.ToHexString() : (memory.Span.ToString(Encoding.UTF8)))}");
 
         //发送
-        await this.GoSendAsync(endPoint, memory).ConfigureFalseAwait();
+        await GoSendAsync(endPoint, memory).ConfigureFalseAwait();
     }
 
     /// <inheritdoc/>
@@ -172,7 +172,7 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
             {
                 SetRequest(sendMessage.Sign, requestInfoBuilder);
             }
-            await this.GoSendAsync(endPoint, byteBlock.Memory).ConfigureFalseAwait();
+            await GoSendAsync(endPoint, byteBlock.Memory).ConfigureFalseAwait();
         }
         finally
         {

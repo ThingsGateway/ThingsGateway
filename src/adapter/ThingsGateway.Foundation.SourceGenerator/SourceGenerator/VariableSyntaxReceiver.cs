@@ -46,7 +46,7 @@ internal sealed class VariableSyntaxReceiver : ISyntaxReceiver
     {
         if (syntaxNode is ClassDeclarationSyntax syntax)
         {
-            this.m_classSyntaxList.Add(syntax);
+            m_classSyntaxList.Add(syntax);
         }
     }
 
@@ -64,7 +64,7 @@ internal sealed class VariableSyntaxReceiver : ISyntaxReceiver
         {
             yield break;
         }
-        foreach (var classSyntax in this.m_classSyntaxList)
+        foreach (var classSyntax in m_classSyntaxList)
         {
             var @class = compilation.GetSemanticModel(classSyntax.SyntaxTree).GetDeclaredSymbol(classSyntax);
             if (@class != null && IsVariableObject(@class))

@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
 using ThingsGateway.Razor;
 
 namespace ThingsGateway.Debug;

@@ -11,11 +11,9 @@
 using Mapster;
 
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.JSInterop;
 
 using System.Data;
 
-using ThingsGateway.Core.Extension;
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.Razor;
 

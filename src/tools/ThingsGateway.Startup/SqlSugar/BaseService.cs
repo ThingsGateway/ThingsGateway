@@ -22,7 +22,7 @@ public class BaseService<T> : IDataService<T>, IDisposable where T : class, new(
 {
     public BaseService()
     {
-        this.Localizer = NetCoreApp.CreateLocalizerByType(typeof(T))!;
+        Localizer = NetCoreApp.CreateLocalizerByType(typeof(T))!;
     }
 
     public bool IsDisposed { get; private set; }

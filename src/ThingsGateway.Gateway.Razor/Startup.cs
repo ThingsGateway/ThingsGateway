@@ -10,7 +10,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-using ThingsGateway.Gateway.Application;
 using ThingsGateway.Razor;
 
 namespace ThingsGateway.Gateway.Razor;
@@ -21,6 +20,6 @@ public class Startup : AppStartup
     public void ConfigureAdminApp(IServiceCollection services)
     {
         services.AddScoped<IPlatformService, PlatformService>();
-        
+
     }
 }

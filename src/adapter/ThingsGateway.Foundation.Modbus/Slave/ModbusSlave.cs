@@ -221,25 +221,25 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
     {
         try
         {
-            if (this.MulStation)
+            if (MulStation)
             {
-                this.Init(mAddress);
+                Init(mAddress);
             }
             else
             {
-                if (this.Station != mAddress.Station)
+                if (Station != mAddress.Station)
                 {
-                    return new(ModbusResource.Localizer["StationNotSame", mAddress.Station, this.Station]);
+                    return new(ModbusResource.Localizer["StationNotSame", mAddress.Station, Station]);
                 }
-                this.Init(mAddress);
+                Init(mAddress);
             }
-            var ModbusServer01ByteBlock = this.ModbusServer01ByteBlocks[mAddress.Station];
-            var ModbusServer02ByteBlock = this.ModbusServer02ByteBlocks[mAddress.Station];
-            var ModbusServer03ByteBlock = this.ModbusServer03ByteBlocks[mAddress.Station];
-            var ModbusServer04ByteBlock = this.ModbusServer04ByteBlocks[mAddress.Station];
+            var ModbusServer01ByteBlock = ModbusServer01ByteBlocks[mAddress.Station];
+            var ModbusServer02ByteBlock = ModbusServer02ByteBlocks[mAddress.Station];
+            var ModbusServer03ByteBlock = ModbusServer03ByteBlocks[mAddress.Station];
+            var ModbusServer04ByteBlock = ModbusServer04ByteBlocks[mAddress.Station];
             if (read)
             {
-                using (new ReadLock(this._lockSlim))
+                using (new ReadLock(_lockSlim))
                 {
                     int len = mAddress.Length;
 
@@ -252,21 +252,21 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                             return OperResult.CreateSuccessResult(ModbusServer02ByteBlock.Memory.Slice(mAddress.StartAddress, len));
 
                         case 3:
-                            return OperResult.CreateSuccessResult(ModbusServer03ByteBlock.Memory.Slice(mAddress.StartAddress * this.RegisterByteLength, len));
+                            return OperResult.CreateSuccessResult(ModbusServer03ByteBlock.Memory.Slice(mAddress.StartAddress * RegisterByteLength, len));
 
                         case 4:
-                            return OperResult.CreateSuccessResult(ModbusServer04ByteBlock.Memory.Slice(mAddress.StartAddress * this.RegisterByteLength, len));
+                            return OperResult.CreateSuccessResult(ModbusServer04ByteBlock.Memory.Slice(mAddress.StartAddress * RegisterByteLength, len));
                     }
                 }
             }
             else
             {
-                using (new WriteLock(this._lockSlim))
+                using (new WriteLock(_lockSlim))
                 {
                     switch (mAddress.FunctionCode)
                     {
                         case 2:
-                            ModbusServer02ByteBlock.Position = mAddress.StartAddress ;
+                            ModbusServer02ByteBlock.Position = mAddress.StartAddress;
                             ModbusServer02ByteBlock.Write(mAddress.Data.Span);
                             return new();
 
@@ -285,7 +285,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                         case 3:
                         case 6:
                         case 16:
-                            ModbusServer03ByteBlock.Position = mAddress.StartAddress * this.RegisterByteLength;
+                            ModbusServer03ByteBlock.Position = mAddress.StartAddress * RegisterByteLength;
                             ModbusServer03ByteBlock.Write(mAddress.Data.Span);
                             return new();
                     }
@@ -303,7 +303,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
     /// <inheritdoc/>
     public override ValueTask<OperResult<byte[]>> ReadAsync(string address, int length, CancellationToken cancellationToken = default)
     {
-        ModbusAddress mAddress = ModbusAddress.ParseFrom(address, this.Station);
+        ModbusAddress mAddress = ModbusAddress.ParseFrom(address, Station);
         mAddress.Length = (ushort)(length * RegisterByteLength);
         var result = ModbusRequest(mAddress, true, cancellationToken);
         if (result.IsSuccess)
@@ -339,9 +339,9 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
         {
             await EasyValueTask.CompletedTask;
             var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
-            if ( mAddress.IsBitFunction)
+            if (mAddress.IsBitFunction)
             {
-                mAddress.Data =new ReadOnlyMemory<byte>( value.Select(a=>a?(byte)0xff: (byte)0).ToArray());
+                mAddress.Data = new ReadOnlyMemory<byte>(value.Select(a => a ? (byte)0xff : (byte)0).ToArray());
                 ModbusRequest(mAddress, false, cancellationToken);
                 return OperResult.Success;
             }
@@ -404,7 +404,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
 
         if (modbusRequest.FunctionCode <= 4)
         {
-            var data = this.ModbusRequest(modbusRequest, true);
+            var data = ModbusRequest(modbusRequest, true);
             if (data.IsSuccess)
             {
                 ValueByteBlock valueByteBlock = new(1024);
@@ -459,19 +459,19 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
         }
         else//写入
         {
-            if (modbusRequest.FunctionCode == 5|| modbusRequest.FunctionCode == 15)
+            if (modbusRequest.FunctionCode == 5 || modbusRequest.FunctionCode == 15)
             {
                 //写入继电器
-                if (this.WriteData != null)
+                if (WriteData != null)
                 {
                     var modbusAddress = new ModbusAddress(modbusRequest) { WriteFunctionCode = modbusRequest.FunctionCode, FunctionCode = 1 };
                     // 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
-                    if ((await this.WriteData(modbusAddress, this.ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
+                    if ((await WriteData(modbusAddress, ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
                     {
                         await WriteSuccess(modbusRtu, client, Bytes, e);
-                        if (this.IsWriteMemory)
+                        if (IsWriteMemory)
                         {
-                            var result = this.ModbusRequest(modbusRequest, false);
+                            var result = ModbusRequest(modbusRequest, false);
                             if (result.IsSuccess)
                                 await WriteSuccess(modbusRtu, client, Bytes, e);
                             else
@@ -488,7 +488,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                 else
                 {
                     //写入内存区
-                    var result = this.ModbusRequest(modbusRequest, false);
+                    var result = ModbusRequest(modbusRequest, false);
                     if (result.IsSuccess)
                     {
                         await WriteSuccess(modbusRtu, client, Bytes, e);
@@ -502,14 +502,14 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
             else if (modbusRequest.FunctionCode == 6 || modbusRequest.FunctionCode == 16)
             {
                 //写入寄存器
-                if (this.WriteData != null)
+                if (WriteData != null)
                 {
                     var modbusAddress = new ModbusAddress(modbusRequest) { WriteFunctionCode = modbusRequest.FunctionCode, FunctionCode = 3 };
-                    if ((await this.WriteData(modbusAddress, this.ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
+                    if ((await WriteData(modbusAddress, ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
                     {
-                        if (this.IsWriteMemory)
+                        if (IsWriteMemory)
                         {
-                            var result = this.ModbusRequest(modbusRequest, false);
+                            var result = ModbusRequest(modbusRequest, false);
                             if (result.IsSuccess)
                                 await WriteSuccess(modbusRtu, client, Bytes, e);
                             else
@@ -525,7 +525,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                 }
                 else
                 {
-                    var result = this.ModbusRequest(modbusRequest, false);
+                    var result = ModbusRequest(modbusRequest, false);
                     if (result.IsSuccess)
                     {
                         await WriteSuccess(modbusRtu, client, Bytes, e);
@@ -557,14 +557,14 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
             if (modbusRtu)
             {
                 valueByteBlock.Write(bytes.Slice(0, 2).Span);
-                valueByteBlock.WriteByte((byte)1);
+                valueByteBlock.WriteByte(1);
                 valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Span));
                 valueByteBlock[1] = (byte)(valueByteBlock[1] + 128);
             }
             else
             {
                 valueByteBlock.Write(bytes.Slice(0, 8).Span);
-                valueByteBlock.WriteByte((byte)1);
+                valueByteBlock.WriteByte(1);
                 valueByteBlock[5] = (byte)(valueByteBlock.Length - 6);
                 valueByteBlock[7] = (byte)(valueByteBlock[7] + 128);
             }

@@ -26,8 +26,8 @@ public class ModbusRequest
     /// 功能码
     /// </summary>
     public byte FunctionCode { get; set; }
-  
-    public bool IsBitFunction => FunctionCode==1|| FunctionCode == 2;
+
+    public bool IsBitFunction => FunctionCode == 1 || FunctionCode == 2;
 
     /// <summary>
     /// 读取字节数组长度

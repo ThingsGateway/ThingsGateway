@@ -8,17 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
-using System.Reflection;
-using System.Text;
 
 using ThingsGateway.Admin.Razor;
-using ThingsGateway.Core;
-using ThingsGateway.Core.Extension;
 using ThingsGateway.Razor;
 
 namespace ThingsGateway.Debug;

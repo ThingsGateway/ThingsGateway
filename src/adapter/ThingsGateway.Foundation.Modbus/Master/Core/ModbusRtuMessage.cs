@@ -41,18 +41,18 @@ public class ModbusRtuMessage : MessageBase, IResultMessage
 
         if (Response.FunctionCode <= 4)
         {
-            this.OperCode = 0;
-            this.Content = byteBlock.ToArrayTake(BodyLength - 2);
-            Response.Data = this.Content;
+            OperCode = 0;
+            Content = byteBlock.ToArrayTake(BodyLength - 2);
+            Response.Data = Content;
             crcLen = 3 + Response.Length;
         }
         else if (Response.FunctionCode == 5 || Response.FunctionCode == 6)
         {
             byteBlock.Position = HeaderLength - 1;
             Response.StartAddress = byteBlock.ReadUInt16(EndianType.Big);
-            this.OperCode = 0;
-            this.Content = byteBlock.ToArrayTake(BodyLength - 4);
-            Response.Data = this.Content;
+            OperCode = 0;
+            Content = byteBlock.ToArrayTake(BodyLength - 4);
+            Response.Data = Content;
             crcLen = 6;
         }
         else if (Response.FunctionCode == 15 || Response.FunctionCode == 16)
@@ -60,14 +60,14 @@ public class ModbusRtuMessage : MessageBase, IResultMessage
             byteBlock.Position = HeaderLength - 1;
             Response.StartAddress = byteBlock.ReadUInt16(EndianType.Big);
             Response.Length = byteBlock.ReadUInt16(EndianType.Big);
-            this.OperCode = 0;
-            this.Content = Array.Empty<byte>();
+            OperCode = 0;
+            Content = Array.Empty<byte>();
             crcLen = 6;
         }
         else
         {
-            this.OperCode = 999;
-            this.ErrorMessage = ModbusResource.Localizer["ModbusError1"];
+            OperCode = 999;
+            ErrorMessage = ModbusResource.Localizer["ModbusError1"];
             return FilterResult.GoOn;
         }
         if (crcLen > 0)
@@ -82,16 +82,16 @@ public class ModbusRtuMessage : MessageBase, IResultMessage
                 //站号验证
                 if (Request.Station != Response.Station)
                 {
-                    this.OperCode = 999;
+                    OperCode = 999;
                     Response.ErrorCode = 1;
-                    this.ErrorMessage = ModbusResource.Localizer["StationNotSame", Request.Station, Response.Station];
+                    ErrorMessage = ModbusResource.Localizer["StationNotSame", Request.Station, Response.Station];
                     return FilterResult.GoOn;
                 }
                 if (Response.FunctionCode > 4 ? Request.WriteFunctionCode != Response.FunctionCode : Request.FunctionCode != Response.FunctionCode)
                 {
-                    this.OperCode = 999;
+                    OperCode = 999;
                     Response.ErrorCode = 1;
-                    this.ErrorMessage = ModbusResource.Localizer["FunctionNotSame", Request.FunctionCode, Response.FunctionCode];
+                    ErrorMessage = ModbusResource.Localizer["FunctionNotSame", Request.FunctionCode, Response.FunctionCode];
                     return FilterResult.GoOn;
                 }
                 return FilterResult.Success;
@@ -119,8 +119,8 @@ public class ModbusRtuMessage : MessageBase, IResultMessage
         if (error)
         {
             Response.ErrorCode = byteBlock.ReadByte();
-            this.OperCode = 999;
-            this.ErrorMessage = ModbusHelper.GetDescriptionByErrorCode(Response.ErrorCode.Value);
+            OperCode = 999;
+            ErrorMessage = ModbusHelper.GetDescriptionByErrorCode(Response.ErrorCode.Value);
             BodyLength = 2;
             return true;
         }

@@ -11,8 +11,6 @@
 using ThingsGateway.Foundation.Modbus;
 using ThingsGateway.Gateway.Application;
 
-using TouchSocket.Core;
-
 namespace ThingsGateway.Plugin.Modbus;
 
 /// <summary>

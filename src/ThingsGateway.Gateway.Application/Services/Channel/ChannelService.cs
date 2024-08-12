@@ -26,7 +26,6 @@ using System.Text;
 
 using ThingsGateway.Extension.Generic;
 using ThingsGateway.Foundation.Extension.Dynamic;
-using ThingsGateway.Gateway.Application.Extensions;
 
 using TouchSocket.Core;
 using TouchSocket.SerialPorts;
@@ -254,7 +253,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
     public async Task<Dictionary<string, object>> ExportChannelAsync(QueryPageOptions options)
     {
         var data = await PageAsync(options);
-        return  ExportChannelCore(data.Items);
+        return ExportChannelCore(data.Items);
     }
 
     /// <inheritdoc/>

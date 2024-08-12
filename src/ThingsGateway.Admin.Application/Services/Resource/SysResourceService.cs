@@ -28,7 +28,7 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
 
     public SysResourceService(IRelationService relationService)
     {
-        this._relationService = relationService;
+        _relationService = relationService;
     }
 
     #region 增删改查

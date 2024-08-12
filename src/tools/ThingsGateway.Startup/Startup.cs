@@ -11,11 +11,6 @@
 using BootstrapBlazor.Components;
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
-
-using System.Reflection;
-using System.Text;
 
 using ThingsGateway.Core;
 
@@ -36,7 +31,7 @@ public class Startup : AppStartup
         });
 
         services.AddSingleton(typeof(IDataService<>), typeof(BaseService<>));
-        services.AddSingleton<ISugarAopService,SugarAopService>();
+        services.AddSingleton<ISugarAopService, SugarAopService>();
 
     }
 

@@ -211,8 +211,8 @@ public class LogMessage
 {
     public LogMessage(int level, string message)
     {
-        this.Level = level;
-        this.Message = message;
+        Level = level;
+        Message = message;
     }
 
     public int Level { get; set; }

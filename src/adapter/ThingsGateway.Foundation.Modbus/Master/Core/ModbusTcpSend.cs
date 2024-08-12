@@ -61,7 +61,7 @@ public class ModbusTcpSend : ISendMessage
         byteBlock.WriteUInt16(ProtocolId, EndianType.Big);
         if (f <= 4)
         {
-            byteBlock.WriteUInt16((ushort)6, EndianType.Big);
+            byteBlock.WriteUInt16(6, EndianType.Big);
             byteBlock.WriteByte(ModbusAddress.Station);
             byteBlock.WriteByte((byte)f);
             byteBlock.WriteUInt16(ModbusAddress.StartAddress, EndianType.Big);
@@ -69,7 +69,7 @@ public class ModbusTcpSend : ISendMessage
         }
         else if (f == 5 || f == 6)
         {
-            byteBlock.WriteUInt16((ushort)6, EndianType.Big);
+            byteBlock.WriteUInt16(6, EndianType.Big);
             byteBlock.WriteByte(ModbusAddress.Station);
             byteBlock.WriteByte((byte)f);
             byteBlock.WriteUInt16(ModbusAddress.StartAddress, EndianType.Big);

@@ -8,17 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 
-using ThingsGateway.Admin.Application;
-using ThingsGateway.Admin.Razor;
 using ThingsGateway.Gateway.Razor;
-using ThingsGateway.Logging;
-
-using UAParser;
 
 namespace ThingsGateway.Server;
 

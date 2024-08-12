@@ -67,7 +67,7 @@ public static class ThingsGatewayBitConverterExtension
             else if (str.ToLower().StartsWith("w="))
             {
                 var wstringName = str.Substring(2);
-                try { if (bool.TryParse(wstringName,  out var wstring1)) wstring = wstring1; } catch { }
+                try { if (bool.TryParse(wstringName, out var wstring1)) wstring = wstring1; } catch { }
             }
             // 解析 encoding
             else if (str.ToLower().StartsWith("encoding="))
@@ -108,7 +108,7 @@ public static class ThingsGatewayBitConverterExtension
         registerAddress = sb.ToString();
 
         // 如果没有解析出任何附加信息，则直接返回默认的数据转换器
-        if (bcdFormat == null && length == null && stringlength == null && encoding == null && dataFormat == null&& wstring==null)
+        if (bcdFormat == null && length == null && stringlength == null && encoding == null && dataFormat == null && wstring == null)
         {
             return defaultBitConverter;
         }

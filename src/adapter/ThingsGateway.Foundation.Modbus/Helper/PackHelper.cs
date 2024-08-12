@@ -58,7 +58,7 @@ public class PackHelper
         foreach (var group in deviceVariableRunTimeGroups)
         {
             // 将变量分组转换为字典，键为 ModbusAddress
-            Dictionary<ModbusAddress, IVariable> map = group.ToDictionary((Func<IVariable, ModbusAddress>)(it =>
+            Dictionary<ModbusAddress, IVariable> map = group.ToDictionary(it =>
             {
                 // 计算变量的字节长度
                 var lastLen = (int)it.DataType.GetByteLength();
@@ -88,7 +88,7 @@ public class PackHelper
                 var result = ModbusAddress.ParseFrom(address, station, dtuid, isCache: false);
                 result.Length = (ushort)lastLen;
                 return result;
-            }));
+            });
 
             // 获取所有地址
             var modbusAddressList = map.Keys;

@@ -10,8 +10,6 @@
 
 using System.Reflection;
 
-using ThingsGateway.Foundation;
-
 /// <summary>
 /// VariableObjectHelper
 /// </summary>

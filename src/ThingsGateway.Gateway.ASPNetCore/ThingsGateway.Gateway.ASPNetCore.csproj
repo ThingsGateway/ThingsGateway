@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(SolutionDir)Version.props" />
   <Import Project="$(SolutionDir)PackNuget.props" />
 
@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
+    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
     <ProjectReference Include="..\ThingsGateway.Admin.ASPNetCore\ThingsGateway.Admin.ASPNetCore.csproj" />
   </ItemGroup>
 

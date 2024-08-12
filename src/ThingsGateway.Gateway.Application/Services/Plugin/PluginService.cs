@@ -184,7 +184,7 @@ public class PluginService : IPluginService
             string cacheKey = $"{nameof(PluginService)}_{nameof(GetDriverMethodInfos)}_{CultureInfo.CurrentUICulture.Name}";
             // 如果未提供驱动基类对象，则尝试根据插件名称获取驱动对象
             var dispose = driverBase == null; // 标记是否需要释放驱动对象
-            driverBase ??= this.GetDriver(pluginName); // 如果未提供驱动对象，则根据插件名称获取驱动对象
+            driverBase ??= GetDriver(pluginName); // 如果未提供驱动对象，则根据插件名称获取驱动对象
 
             // 检查插件名称是否为空或null
             if (!pluginName.IsNullOrEmpty())
@@ -246,7 +246,7 @@ public class PluginService : IPluginService
             string cacheKey = $"{nameof(PluginService)}_{nameof(GetDriverPropertyTypes)}_{CultureInfo.CurrentUICulture.Name}";
 
             var dispose = driverBase == null;
-            driverBase ??= this.GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
+            driverBase ??= GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
             // 检查插件名称是否为空或空字符串
             if (!pluginName.IsNullOrEmpty())
             {
@@ -309,7 +309,7 @@ public class PluginService : IPluginService
         {
             string cacheKey = $"{nameof(PluginService)}_{nameof(GetVariablePropertyTypes)}_{CultureInfo.CurrentUICulture.Name}";
             var dispose = businessBase == null;
-            businessBase ??= (BusinessBase)this.GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
+            businessBase ??= (BusinessBase)GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
 
             var data = NetCoreApp.CacheService.HashGetAll<List<IEditorItem>>(cacheKey);
             if (data?.ContainsKey(pluginName) == true)
@@ -644,7 +644,7 @@ public class PluginService : IPluginService
             {
                 if (PluginServiceUtil.IsSupported(item.Value))
                 {
-                    FileInfo fileInfo = new FileInfo(this.GetType().Assembly.Location); //文件信息
+                    FileInfo fileInfo = new FileInfo(GetType().Assembly.Location); //文件信息
                     DateTime lastWriteTime = fileInfo.LastWriteTime;//作为编译时间
                     plugins.Add(
                         new PluginOutput()

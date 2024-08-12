@@ -12,10 +12,8 @@
 using BootstrapBlazor.Components;
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.JSInterop;
 
 using ThingsGateway.Core.Extension;
-using ThingsGateway.Razor;
 
 using ThingsGateway.Gateway.Application;
 namespace ThingsGateway.Gateway.Razor;

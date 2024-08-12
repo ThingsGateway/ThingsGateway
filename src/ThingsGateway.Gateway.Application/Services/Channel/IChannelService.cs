@@ -12,8 +12,6 @@ using BootstrapBlazor.Components;
 
 using Microsoft.AspNetCore.Components.Forms;
 
-using System.Data;
-
 using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Application;

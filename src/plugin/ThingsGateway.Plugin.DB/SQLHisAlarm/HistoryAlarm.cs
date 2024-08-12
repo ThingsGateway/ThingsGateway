@@ -10,8 +10,6 @@
 
 using SqlSugar;
 
-using ThingsGateway.Gateway.Application;
-
 namespace ThingsGateway.Plugin.SqlHisAlarm;
 
 [SugarTable("historyAlarm", TableDescription = "历史报警表")]

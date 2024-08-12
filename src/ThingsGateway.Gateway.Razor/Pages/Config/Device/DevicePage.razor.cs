@@ -8,12 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
 using Mapster;
 
 using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.JSInterop;
 
 using NewLife.Extension;
 
@@ -242,7 +239,7 @@ public abstract partial class DevicePage : IDisposable
 
     private async Task ExcelExportAsync(ITableExportContext<Device> tableExportContext)
     {
-        await GatewayExportService.OnDeviceExport(tableExportContext.BuildQueryPageOptions(),PluginType==PluginTypeEnum.Collect);
+        await GatewayExportService.OnDeviceExport(tableExportContext.BuildQueryPageOptions(), PluginType == PluginTypeEnum.Collect);
 
         // 返回 true 时自动弹出提示框
         await ToastService.Default();

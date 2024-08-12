@@ -55,7 +55,7 @@ namespace ThingsGateway.Foundation
         //Debugger.Launch();
         context.RegisterForPostInitialization(a =>
         {
-            a.AddSource(nameof(this.m_generatorVariableAttribute), this.m_generatorVariableAttribute);
+            a.AddSource(nameof(m_generatorVariableAttribute), m_generatorVariableAttribute);
         });
         context.RegisterForSyntaxNotifications(() => new VariableSyntaxReceiver());
     }

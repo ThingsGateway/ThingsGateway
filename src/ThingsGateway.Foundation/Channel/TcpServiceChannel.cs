@@ -26,7 +26,7 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
     /// <inheritdoc/>
     public override async Task ClearAsync()
     {
-        foreach (var id in this.GetIds())
+        foreach (var id in GetIds())
         {
             if (this.TryGetClient(id, out var client))
             {
@@ -60,14 +60,14 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
     {
         try
         {
-            await this.m_semaphoreForConnect.WaitAsync().ConfigureAwait(false);
+            await m_semaphoreForConnect.WaitAsync().ConfigureAwait(false);
 
-            if (this.ServerState != ServerState.Running)
+            if (ServerState != ServerState.Running)
             {
                 await base.StopAsync().ConfigureAwait(false);
-                await this.SetupAsync(Config.Clone());
+                await SetupAsync(Config.Clone());
                 await base.StartAsync().ConfigureAwait(false);
-                if (this.ServerState == ServerState.Running)
+                if (ServerState == ServerState.Running)
                 {
                     Logger.Info($"{Monitors.FirstOrDefault()?.Option.IpHost}{DefaultResource.Localizer["ServiceStarted"]}");
                 }
@@ -79,7 +79,7 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
         }
         finally
         {
-            this.m_semaphoreForConnect.Release();
+            m_semaphoreForConnect.Release();
         }
     }
 
@@ -159,17 +159,17 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
 
     public void Close(string msg)
     {
-        this.CloseAsync(msg).ConfigureAwait(false);
+        CloseAsync(msg).ConfigureAwait(false);
     }
 
     public Task CloseAsync(string msg)
     {
-        return this.StopAsync();
+        return StopAsync();
     }
 
     public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
     {
-        this.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
+        ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -178,7 +178,7 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
         if (token.IsCancellationRequested)
             return EasyTask.CompletedTask;
 
-        return this.StartAsync();
+        return StartAsync();
     }
 
     protected override TcpSessionClientChannel NewClient()
@@ -213,9 +213,9 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
     /// <inheritdoc/>
     protected override async Task OnTcpReceived(TcpSessionClientChannel socketClient, ReceivedDataEventArgs e)
     {
-        if (this.ChannelReceived != null)
+        if (ChannelReceived != null)
         {
-            await this.ChannelReceived.Invoke(socketClient, e).ConfigureAwait(false);
+            await ChannelReceived.Invoke(socketClient, e).ConfigureAwait(false);
             if (e.Handled)
             {
                 return;

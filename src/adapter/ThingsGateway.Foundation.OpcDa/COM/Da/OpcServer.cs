@@ -124,7 +124,7 @@ internal class OpcServer : IDisposable
             BrowseElement[] browseElements = Interop.GetBrowseElements(ref pElements, count, true);
             string stringUni = Marshal.PtrToStringUni(pContinuationPoint);
             Marshal.FreeCoTaskMem(pContinuationPoint);
-            this.ProcessResults(browseElements, filterId);
+            ProcessResults(browseElements, filterId);
             return browseElements?.ToList();
         }
     }

@@ -25,15 +25,15 @@ public class SiemensAddress : S7Request
 
     public SiemensAddress(SiemensAddress siemensAddress)
     {
-        this.AddressStart = siemensAddress.AddressStart;
-        this.BitCode = siemensAddress.BitCode;
-        this.DataCode = siemensAddress.DataCode;
-        this.DbBlock = siemensAddress.DbBlock;
-        this.Data = siemensAddress.Data;
-        this.Length = siemensAddress.Length;
+        AddressStart = siemensAddress.AddressStart;
+        BitCode = siemensAddress.BitCode;
+        DataCode = siemensAddress.DataCode;
+        DbBlock = siemensAddress.DbBlock;
+        Data = siemensAddress.Data;
+        Length = siemensAddress.Length;
 
-        BitLength=siemensAddress.BitLength;
-        IsBit= siemensAddress.IsBit;
+        BitLength = siemensAddress.BitLength;
+        IsBit = siemensAddress.IsBit;
     }
 
     /// <inheritdoc />

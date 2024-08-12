@@ -13,10 +13,6 @@ using BootstrapBlazor.Components;
 
 using Mapster;
 
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.WebUtilities;
-
 using NewLife;
 
 using System.Globalization;

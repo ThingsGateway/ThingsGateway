@@ -30,7 +30,7 @@ public partial class MemoryCacheService : ICacheService, IDisposable
 
     ~MemoryCacheService()
     {
-        this.Dispose();
+        Dispose();
     }
 
     public void Dispose()

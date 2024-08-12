@@ -148,7 +148,7 @@ public abstract class DriverBase : DisposableObject
             if (CurrentDevice == null) return;
             var str = keepRun == false ? "DeviceTaskPause" : "DeviceTaskContinue";
             Logger?.LogInformation(Localizer["str", DeviceName]);
-            this.CurrentDevice.KeepRun = keepRun;
+            CurrentDevice.KeepRun = keepRun;
         }
     }
 

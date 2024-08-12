@@ -68,11 +68,11 @@ public static class DateExtensions
         TimeSpan timeDifference = endTime - beginTime;
         if (timeDifference.TotalDays >= 1)
         {
-            return $"{(int)timeDifference.TotalDays} d {(int)timeDifference.Hours} H";
+            return $"{(int)timeDifference.TotalDays} d {timeDifference.Hours} H";
         }
         else if (timeDifference.TotalHours >= 1)
         {
-            return $"{(int)timeDifference.TotalHours} H {(int)timeDifference.Minutes} m";
+            return $"{(int)timeDifference.TotalHours} H {timeDifference.Minutes} m";
         }
         else
         {
@@ -91,11 +91,11 @@ public static class DateExtensions
         TimeSpan timeDifference = endTime - beginTime;
         if (timeDifference.TotalDays >= 1)
         {
-            return $"{(int)timeDifference.TotalDays} d {(int)timeDifference.Hours} H";
+            return $"{(int)timeDifference.TotalDays} d {timeDifference.Hours} H";
         }
         else if (timeDifference.TotalHours >= 1)
         {
-            return $"{(int)timeDifference.TotalHours} H {(int)timeDifference.Minutes} m";
+            return $"{(int)timeDifference.TotalHours} H {timeDifference.Minutes} m";
         }
         else
         {

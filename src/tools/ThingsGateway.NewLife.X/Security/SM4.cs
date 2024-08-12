@@ -165,7 +165,7 @@ public class SM4Transform : ICryptoTransform
     private static UInt32 L_ap(UInt32 B) => B ^ RotateLeft(B, 13) ^ RotateLeft(B, 23);
 
 #if NETCOREAPP3_0_OR_GREATER
-    static UInt32 RotateLeft(UInt32 i, Int32 distance) => BitOperations.RotateLeft(i, distance);
+    private static UInt32 RotateLeft(UInt32 i, Int32 distance) => BitOperations.RotateLeft(i, distance);
 #else
 
     private static UInt32 RotateLeft(UInt32 i, Int32 distance) => (i << distance) | (i >> -distance);

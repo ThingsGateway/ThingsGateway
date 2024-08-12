@@ -86,9 +86,9 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
                 if (request.CheckHead(ref byteBlock))
                 {
                     byteBlock.Position = pos;
-                    if (request.BodyLength > this.MaxPackageSize)
+                    if (request.BodyLength > MaxPackageSize)
                     {
-                        this.OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={this.MaxPackageSize}", true, true);
+                        OnError(default, $"Received BodyLength={request.BodyLength}, greater than the set MaxPackageSize={MaxPackageSize}", true, true);
                         return FilterResult.GoOn;
                     }
                     if (request.BodyLength + request.HeaderLength > byteBlock.CanReadLength)
@@ -160,7 +160,7 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
             Logger?.Trace($"{ToString()}- Send:{(IsHexData ? memory.Span.ToHexString() : (memory.Span.ToString(Encoding.UTF8)))}");
 
         //发送
-        await this.GoSendAsync(memory).ConfigureFalseAwait();
+        await GoSendAsync(memory).ConfigureFalseAwait();
     }
 
     /// <inheritdoc/>
@@ -184,7 +184,7 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
             {
                 SetRequest(sendMessage.Sign, requestInfoBuilder);
             }
-            await this.GoSendAsync(byteBlock.Memory).ConfigureFalseAwait();
+            await GoSendAsync(byteBlock.Memory).ConfigureFalseAwait();
         }
         finally
         {

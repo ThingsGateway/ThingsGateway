@@ -273,9 +273,9 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
             }
             var jToken = JToken.FromObject((tag.DataType == DataTypeIds.String ? value?.ToString() : value));
             var dataValue = JsonUtils.DecoderObject(
-               this.Server.MessageContext,
+               Server.MessageContext,
            tag.DataType,
-                TypeInfo.GetBuiltInType(tag.DataType, this.SystemContext.TypeTable),
+                TypeInfo.GetBuiltInType(tag.DataType, SystemContext.TypeTable),
                 jToken.CalculateActualValueRank(),
                 jToken
                 );

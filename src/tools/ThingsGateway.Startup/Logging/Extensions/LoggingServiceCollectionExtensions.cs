@@ -10,10 +10,8 @@
 
 // 版权归百小僧及百签科技（广东）有限公司所有。
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-using ThingsGateway;
 using ThingsGateway.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection;

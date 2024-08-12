@@ -24,11 +24,11 @@ public partial class SysSignalR : ComponentBase, IDisposable
     private ToastService ToastService { get; set; }
 
     [Inject]
-    ISysHub SysHub { get; set; }
+    private ISysHub SysHub { get; set; }
     [Inject]
-    IEventService<SignalRMessage> NewMessage { get; set; }
+    private IEventService<SignalRMessage> NewMessage { get; set; }
     [Inject]
-    IEventService<string> LoginOut { get; set; }
+    private IEventService<string> LoginOut { get; set; }
 
     /// <inheritdoc/>
     public void Dispose()

@@ -16,13 +16,7 @@ using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Text;
 
-using ThingsGateway.Core;
 using ThingsGateway.Core.Extension;
-using ThingsGateway.Logging;
-
-using UAParser;
-
-using Yitter.IdGenerator;
 
 namespace ThingsGateway.Admin.Application;
 

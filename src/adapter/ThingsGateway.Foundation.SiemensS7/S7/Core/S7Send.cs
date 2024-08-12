@@ -113,7 +113,7 @@ internal class S7Send : ISendMessage
         valueByteBlock.WriteByte(0x32);//协议id
         valueByteBlock.WriteByte(0x01);//请求
         valueByteBlock.WriteUInt16(0x00, EndianType.Big);//冗余识别
-        valueByteBlock.WriteUInt16((ushort)this.Sign, EndianType.Big);//数据ID标识
+        valueByteBlock.WriteUInt16((ushort)Sign, EndianType.Big);//数据ID标识
         valueByteBlock.WriteUInt16(parameterLen, EndianType.Big);//参数长度，item.len*12+2
         valueByteBlock.WriteUInt16(0x00, EndianType.Big);//数据长度，data.len+4 ,写入时填写，读取时为0
         //par
@@ -160,7 +160,7 @@ internal class S7Send : ISendMessage
         valueByteBlock.WriteByte(0x32);//协议id
         valueByteBlock.WriteByte(0x01);//请求
         valueByteBlock.WriteUInt16(0x00, EndianType.Big);//冗余识别
-        valueByteBlock.WriteUInt16((ushort)this.Sign, EndianType.Big);//数据ID标识
+        valueByteBlock.WriteUInt16((ushort)Sign, EndianType.Big);//数据ID标识
         valueByteBlock.WriteUInt16(parameterLen, EndianType.Big);//参数长度，item.len*12+2
         valueByteBlock.WriteUInt16(0, EndianType.Big);//数据长度，data.len+4 ,写入时填写，读取时为0
 
@@ -180,7 +180,7 @@ internal class S7Send : ISendMessage
             valueByteBlock.WriteByte(0x0a);//剩余的字节长度
             valueByteBlock.WriteByte(0x10);//Syntax ID
             valueByteBlock.WriteByte(isBit ? (byte)S7WordLength.Bit : (byte)S7WordLength.Byte);//数据类型
-            valueByteBlock.WriteUInt16((ushort)len, EndianType.Big);//长度
+            valueByteBlock.WriteUInt16(len, EndianType.Big);//长度
             valueByteBlock.WriteUInt16(address.DbBlock, EndianType.Big);//DB编号
             valueByteBlock.WriteByte(address.DataCode);//数据块类型
             valueByteBlock.WriteByte((byte)((address.AddressStart + address.BitCode) / 256 / 256));//数据块偏移量
