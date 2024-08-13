@@ -1,29 +1,5 @@
 ﻿{
 
-
-
-
-  //controller
-  "ThingsGateway.Admin.Application.AuthController": {
-    //auth
-    "AuthController": "Login API",
-    "LoginAsync": "Login",
-    "LogoutAsync": "Logout"
-  },
-  "ThingsGateway.Admin.Application.TestController": {
-    //auth
-    "TestController": "Test API",
-    "Test": "Test"
-  },
-  "ThingsGateway.Admin.Application.OpenApiAuthController": {
-    //auth
-    "OpenApiAuthController": "Login API",
-    "LoginAsync": "Login",
-    "LogoutAsync": "Logout"
-  },
-
-
-
   "ThingsGateway.Admin.Application.FileService": {
     "FileNullError": "File cannot be empty",
     "FileLengthError": "File size cannot exceed {0} M",

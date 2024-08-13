@@ -8,12 +8,19 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using CSScriptLib;
+
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
+using ThingsGateway.Gateway.Application;
+using ThingsGateway.Logging;
+
+using UAParser;
 
 namespace ThingsGateway.Server;
 
@@ -22,6 +29,8 @@ public class Startup : AppStartup
 {
     public void ConfigBlazorServer(IServiceCollection services)
     {
+        CSScript.EvaluatorConfig.ReferenceDomainAssemblies = false;
+        services.AddScoped<IGatewayExportService, GatewayExportService>();
         // 增加网站服务
         AddWebSiteServices(services);
     }
@@ -32,6 +41,66 @@ public class Startup : AppStartup
     /// <param name="services"></param>
     private IServiceCollection AddWebSiteServices(IServiceCollection services)
     {
+
+
+        #region api日志
+
+        //Monitor日志配置
+        services.AddMonitorLogging(options =>
+        {
+            options.JsonIndented = true;// 是否美化 JSON
+            options.GlobalEnabled = false;//全局启用
+            options.ConfigureLogger((logger, logContext, context) =>
+            {
+                var httpContext = context.HttpContext;//获取httpContext
+                                                      //获取头
+                var userAgent = httpContext.Request.Headers["User-Agent"];
+                if (string.IsNullOrEmpty(userAgent)) userAgent = "Other";//如果没有这个头就指定一个
+
+                var parser = Parser.GetDefault();
+                //获取客户端信息
+                var client = parser.Parse(userAgent);
+                // 获取控制器/操作描述器
+                var controllerActionDescriptor = context.ActionDescriptor as ControllerActionDescriptor;
+                //操作名称默认是控制器名加方法名,自定义操作名称要在action上加Description特性
+                var option = $"{controllerActionDescriptor.ControllerName}/{controllerActionDescriptor.ActionName}";
+
+                var desc = NetCoreApp.CreateLocalizerByType(controllerActionDescriptor.ControllerTypeInfo.AsType())[controllerActionDescriptor.MethodInfo.Name];
+                //获取特性
+                option = desc.Value;//则将操作名称赋值为控制器上写的title
+
+                logContext.Set(LoggingConst.CateGory, option);//传操作名称
+                logContext.Set(LoggingConst.Operation, option);//传操作名称
+                logContext.Set(LoggingConst.Client, client);//客户端信息
+                logContext.Set(LoggingConst.Path, httpContext.Request.Path.Value);//请求地址
+                logContext.Set(LoggingConst.Method, httpContext.Request.Method);//请求方法
+            });
+        });
+        //日志写入数据库配置
+        services.AddDatabaseLogging<DatabaseLoggingWriter>(options =>
+        {
+            options.WriteFilter = (logMsg) =>
+            {
+                return logMsg.LogName == "System.Logging.LoggingMonitor";//只写入LoggingMonitor日志
+            };
+        });
+
+        #endregion api日志
+
+
+        services.AddSingleton<IUnifyResultProvider, UnifyResultProvider>();
+        services.AddSingleton<IAuthService, AuthService>();
+        services.AddScoped<IAuthRazorService, AuthRazorService>();
+        services.AddSingleton<IAppService, AspNetCoreAppService>();
+        services.AddSingleton<IApiPermissionService, ApiPermissionService>();
+
+        services.AddSingleton<IFileService, FileService>();
+        services.AddSingleton<IImportExportService, ImportExportService>();
+
+        services.AddSingleton<ISignalrNoticeService, SignalrNoticeService>();
+        services.AddSingleton<IAuthService, AuthService>();
+
+
         //已添加AddOptions
         // 增加多语言支持配置信息
         services.AddRequestLocalization<IOptionsMonitor<BootstrapBlazor.Components.BootstrapBlazorOptions>>((localizerOption, blazorOption) =>

@@ -28,6 +28,8 @@ public class GatewayExportService : IGatewayExportService
 
     public async Task OnChannelExport(QueryPageOptions options)
     {
+        options.IsPage = false;
+        options.IsVirtualScroll = false;
         var service = NetCoreApp.RootServices.GetRequiredService<IChannelService>();
         var data = await service.PageAsync(options);
         if (data.Items.Count() > 0)
@@ -39,6 +41,8 @@ public class GatewayExportService : IGatewayExportService
 
     public async Task OnDeviceExport(QueryPageOptions options, bool collect)
     {
+        options.IsPage = false;
+        options.IsVirtualScroll = false;
         var service = NetCoreApp.RootServices.GetRequiredService<IDeviceService>();
         var data = await service.PageAsync(options, collect ? PluginTypeEnum.Collect : PluginTypeEnum.Business);
         if (data.Items.Count() > 0)
@@ -51,6 +55,8 @@ public class GatewayExportService : IGatewayExportService
 
     public async Task OnVariableExport(QueryPageOptions options)
     {
+        options.IsPage = false;
+        options.IsVirtualScroll = false;
         var service = NetCoreApp.RootServices.GetRequiredService<IVariableService>();
         var data = await service.PageAsync(options);
         if (data.Items.Count() > 0)

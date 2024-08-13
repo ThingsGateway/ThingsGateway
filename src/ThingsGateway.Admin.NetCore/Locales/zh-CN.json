@@ -1,29 +1,5 @@
 ﻿{
 
-
-  //controller
-  "ThingsGateway.Admin.Application.AuthController": {
-    //auth
-    "AuthController": "登录API",
-    "LoginAsync": "登录",
-    "LogoutAsync": "注销"
-  },
-  "ThingsGateway.Admin.Application.TestController": {
-    //auth
-    "TestController": "测试API",
-    "Test": "测试"
-  },
-  "ThingsGateway.Admin.Application.OpenApiAuthController": {
-    //auth
-    "OpenApiAuthController": "登录API",
-    "LoginAsync": "登录",
-    "LogoutAsync": "注销"
-  },
-
-
-
-
-
   "ThingsGateway.Admin.Application.FileService": {
     "FileNullError": "文件不能为空",
     "FileLengthError": "文件大小不允许超过 {0} M",

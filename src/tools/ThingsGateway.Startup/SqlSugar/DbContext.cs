@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Mapster;
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -40,7 +38,7 @@ public static class DbContext
         // 配置映射
         DbConfigs = NetCoreApp.Configuration?.GetSection(nameof(SqlSugarOptions)).Get<SqlSugarOptions>()!;
         SugarAopService = NetCoreApp.RootServices.GetService<ISugarAopService>();
-        Db = new(DbConfigs.Adapt<List<ConnectionConfig>>(), db =>
+        Db = new(DbConfigs.Select(a => (ConnectionConfig)a).ToList(), db =>
         {
             DbConfigs.ForEach(it =>
             {

@@ -68,7 +68,6 @@ public class ChannelThread
 
     private static async Task SetCycleInterval()
     {
-        var db = DbContext.Db.GetConnectionScopeWithAttr<SysOperateLog>().CopyNew();
         var appLifetime = NetCoreApp.RootServices!.GetService<IHostApplicationLifetime>()!;
 
         var hardwareInfoService = HostedServiceUtil.GetHostedService<HardwareInfoService>();

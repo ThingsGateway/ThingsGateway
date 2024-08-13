@@ -51,11 +51,9 @@ public class SingleFilePublish : ISingleFilePublish
             "ThingsGateway.Gateway.Application",
             "ThingsGateway.Gateway.Razor"   ,
             "ThingsGateway.Gateway.ASPNetCore"   ,
-            "ThingsGateway.Gateway.NetCore"   ,
             "ThingsGateway.Admin.Razor"   ,
             "ThingsGateway.Admin.Application"   ,
             "ThingsGateway.Admin.ASPNetCore"   ,
-            "ThingsGateway.Admin.NetCore"   ,
             "SqlSugar.TDengineCore",
         ];
     }

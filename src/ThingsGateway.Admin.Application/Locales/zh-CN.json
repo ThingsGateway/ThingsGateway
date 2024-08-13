@@ -137,7 +137,6 @@
     "CanotDeleteSelf": "不可删除自己",
     "EmailError": "邮箱 {0} 格式错误",
     "PhoneError": "手机号码 {0} 格式错误",
-    "UserNoModule": "该账号未分配模块,请联系管理员",
 
     "DemoCanotUpdatePassword": "DEMO环境不允许修改密码",
     "OldPasswordError": "原密码错误",
