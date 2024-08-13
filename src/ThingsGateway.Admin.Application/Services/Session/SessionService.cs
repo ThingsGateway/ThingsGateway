@@ -12,7 +12,7 @@ using BootstrapBlazor.Components;
 
 using Mapster;
 
-using NewLife.Extension;
+using ThingsGateway.NewLife.X.Extension;
 
 using SqlSugar;
 

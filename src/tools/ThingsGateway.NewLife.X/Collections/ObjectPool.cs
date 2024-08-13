@@ -8,12 +8,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Reflection;
-using NewLife.Threading;
+using ThingsGateway.NewLife.X.Reflection;
+using ThingsGateway.NewLife.X.Threading;
 
 using System.Collections.Concurrent;
 
-namespace NewLife.Collections;
+namespace ThingsGateway.NewLife.X.Collections;
 
 /// <summary>资源池。支持空闲释放，主要用于数据库连接池和网络连接池</summary>
 /// <remarks>

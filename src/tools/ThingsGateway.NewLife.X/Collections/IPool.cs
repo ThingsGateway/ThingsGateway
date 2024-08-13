@@ -10,7 +10,7 @@
 
 using System.Text;
 
-namespace NewLife.Collections;
+namespace ThingsGateway.NewLife.X.Collections;
 
 /// <summary>对象池接口</summary>
 /// <remarks>

@@ -11,7 +11,7 @@
 using System.Dynamic;
 using System.Xml.Linq;
 
-namespace NewLife.Reflection;
+namespace ThingsGateway.NewLife.X.Reflection;
 
 /// <summary>动态Xml</summary>
 public class DynamicXml : DynamicObject

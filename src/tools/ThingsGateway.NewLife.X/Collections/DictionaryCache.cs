@@ -8,12 +8,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Threading;
+using ThingsGateway.NewLife.X.Threading;
 
 using System.Collections;
 using System.Collections.Concurrent;
 
-namespace NewLife.Collections;
+namespace ThingsGateway.NewLife.X.Collections;
 
 #pragma warning disable CS8603 // 可能返回 null 引用。
 #pragma warning disable CS8601 // 引用类型赋值可能为 null。

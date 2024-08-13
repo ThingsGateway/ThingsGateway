@@ -15,6 +15,10 @@ using Microsoft.Extensions.Localization;
 
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.OpcUa;
+#if Plugin
+using ThingsGateway.NewLife.X;
+
+#endif
 
 using TouchSocket.Core;
 

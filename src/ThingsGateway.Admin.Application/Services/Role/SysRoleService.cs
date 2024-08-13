@@ -10,9 +10,9 @@
 
 using BootstrapBlazor.Components;
 
-using NewLife.Extension;
-
 using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.X.Extension;
 
 namespace ThingsGateway.Admin.Application;
 

@@ -8,8 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Collections;
-using NewLife.Reflection;
+using ThingsGateway.NewLife.X.Collections;
+using ThingsGateway.NewLife.X.Reflection;
 
 using System.ComponentModel;
 using System.Diagnostics;
@@ -20,11 +20,15 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security;
 
+using ThingsGateway.NewLife.X.IO;
+
 #if NETFRAMEWORK
 
 using System.Management;
 
 using Microsoft.VisualBasic.Devices;
+
+
 
 #endif
 #if NETFRAMEWORK || NET5_0_OR_GREATER
@@ -33,7 +37,7 @@ using Microsoft.Win32;
 
 #endif
 
-namespace NewLife;
+namespace ThingsGateway.NewLife.X;
 
 /// <summary>机器信息</summary>
 /// <remarks>

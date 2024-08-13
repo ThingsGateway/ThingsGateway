@@ -11,7 +11,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace NewLife.Security;
+namespace ThingsGateway.NewLife.X.Security;
 
 /// <summary>抽象语法标记。ASN.1是一种 ISO/ITU-T 标准，描述了一种对数据进行表示、编码、传输和解码的数据格式。</summary>
 public class Asn1

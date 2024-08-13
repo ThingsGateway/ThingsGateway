@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace NewLife.Data;
+namespace ThingsGateway.NewLife.X.Data;
 
 /// <summary>
 /// 时序点，用于时序数据计算

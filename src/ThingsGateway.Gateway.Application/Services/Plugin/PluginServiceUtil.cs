@@ -12,7 +12,7 @@ using BootstrapBlazor.Components;
 
 using CSScripting;
 
-using NewLife.Extension;
+using ThingsGateway.NewLife.X.Extension;
 
 using System.Collections.Concurrent;
 using System.Reflection;

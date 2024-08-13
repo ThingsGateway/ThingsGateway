@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace NewLife.Collections;
+namespace ThingsGateway.NewLife.X.Collections;
 
 /// <summary>
 /// 字典数据源接口。定义该模型类支持输出名值字典，便于序列化传输

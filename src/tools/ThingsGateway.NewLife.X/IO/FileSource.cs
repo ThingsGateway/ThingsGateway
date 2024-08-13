@@ -10,7 +10,7 @@
 
 using System.Reflection;
 
-namespace NewLife.IO;
+namespace ThingsGateway.NewLife.X.IO;
 
 /// <summary>文件资源</summary>
 public static class FileSource

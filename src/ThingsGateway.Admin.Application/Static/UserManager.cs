@@ -10,6 +10,8 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
+using ThingsGateway.NewLife.X;
+
 namespace ThingsGateway.Admin.Application;
 
 /// <summary>

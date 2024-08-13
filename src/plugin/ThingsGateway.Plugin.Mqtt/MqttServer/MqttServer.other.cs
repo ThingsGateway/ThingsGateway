@@ -27,6 +27,7 @@ using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Extension.Collection;
 using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.Json.Extension;
+using ThingsGateway.NewLife.X;
 
 namespace ThingsGateway.Plugin.Mqtt;
 

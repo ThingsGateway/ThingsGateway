@@ -12,7 +12,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 
-namespace System;
+namespace ThingsGateway.NewLife.X;
 
 /// <summary>工具类</summary>
 /// <remarks>

@@ -10,7 +10,7 @@
 
 using Microsoft.AspNetCore.Components.Web;
 
-using NewLife.Extension;
+using ThingsGateway.NewLife.X.Extension;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;

@@ -10,7 +10,7 @@
 
 using System.Net;
 
-namespace System;
+namespace ThingsGateway.NewLife.X;
 
 /// <summary>网络结点扩展</summary>
 public static class EndPointExtensions

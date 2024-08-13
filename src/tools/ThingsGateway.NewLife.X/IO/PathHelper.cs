@@ -10,7 +10,8 @@
 
 using System.IO.Compression;
 
-namespace System.IO;
+
+namespace ThingsGateway.NewLife.X.IO;
 
 /// <summary>路径操作帮助</summary>
 /// <remarks>
@@ -58,7 +59,7 @@ public static class PathHelper
         }
 
         // 环境变量
-        if (dir.IsNullOrEmpty()) dir = NewLife.Runtime.GetEnvironmentVariable("BasePath");
+        if (dir.IsNullOrEmpty()) dir = ThingsGateway.NewLife.X.Runtime.GetEnvironmentVariable("BasePath");
 
         if (!dir.IsNullOrEmpty()) BaseDirectory = dir;
 
@@ -191,7 +192,7 @@ public static class PathHelper
         if (path.StartsWith(@"\\", StringComparison.Ordinal)) return Path.GetFullPath(path);
 
         // 考虑兼容Linux
-        if (!NewLife.Runtime.Mono)
+        if (!ThingsGateway.NewLife.X.Runtime.Mono)
         {
             //if (!Path.IsPathRooted(path))
             //!!! 注意：不能直接依赖于Path.IsPathRooted判断，/和\开头的路径虽然是绝对路径，但是它们不是驱动器级别的绝对路径

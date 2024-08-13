@@ -10,7 +10,7 @@
 
 using Mapster;
 
-using NewLife.Extension;
+using ThingsGateway.NewLife.X.Extension;
 
 using ThingsGateway.Admin.Application;
 

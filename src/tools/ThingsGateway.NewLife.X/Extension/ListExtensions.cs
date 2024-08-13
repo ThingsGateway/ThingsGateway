@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace System.Collections.Generic;
+namespace ThingsGateway.NewLife.X.Collections.Generic;
 
 /// <summary>扩展List，支持遍历中修改元素</summary>
 public static class ListExtensions

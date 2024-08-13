@@ -10,7 +10,7 @@
 
 using System.Reflection;
 
-namespace NewLife.Reflection;
+namespace ThingsGateway.NewLife.X.Reflection;
 
 internal class OrcasNamer
 {

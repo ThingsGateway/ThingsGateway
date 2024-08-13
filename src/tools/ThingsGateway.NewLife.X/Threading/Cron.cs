@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace NewLife.Threading;
+namespace ThingsGateway.NewLife.X.Threading;
 
 /// <summary>轻量级Cron表达式</summary>
 /// <remarks>

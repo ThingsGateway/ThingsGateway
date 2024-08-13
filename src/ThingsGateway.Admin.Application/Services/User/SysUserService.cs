@@ -12,10 +12,10 @@ using BootstrapBlazor.Components;
 
 using Mapster;
 
-using NewLife.Extension;
-
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.X.Extension;
 
 namespace ThingsGateway.Admin.Application;
 

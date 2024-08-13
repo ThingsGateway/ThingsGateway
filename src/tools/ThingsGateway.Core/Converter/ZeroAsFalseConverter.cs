@@ -10,6 +10,8 @@
 
 using Newtonsoft.Json;
 
+using ThingsGateway.NewLife.X;
+
 namespace ThingsGateway.Core;
 
 public class ZeroAsFalseConverter : JsonConverter

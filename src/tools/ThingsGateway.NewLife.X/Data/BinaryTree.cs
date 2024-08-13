@@ -11,7 +11,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace NewLife.Data;
+namespace ThingsGateway.NewLife.X.Data;
 
 #pragma warning disable CS8625 // 无法将 null 字面量转换为非 null 的引用类型。
 #pragma warning disable CS8600 // 将 null 字面量或可能为 null 的值转换为非 null 类型。

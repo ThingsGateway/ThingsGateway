@@ -10,7 +10,7 @@
 
 using Mapster;
 
-using NewLife.Threading;
+using ThingsGateway.NewLife.X.Threading;
 
 using ThingsGateway.Foundation;
 

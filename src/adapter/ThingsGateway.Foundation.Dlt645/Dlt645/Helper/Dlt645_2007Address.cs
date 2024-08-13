@@ -8,11 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Caching;
-
 using System.Text;
 
 using ThingsGateway.Foundation.Extension.String;
+using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.X.Caching;
 
 using TouchSocket.Core;
 

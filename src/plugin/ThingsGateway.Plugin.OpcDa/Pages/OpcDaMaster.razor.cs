@@ -19,6 +19,10 @@ using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.OpcDa;
 using ThingsGateway.Foundation.OpcDa.Da;
 
+#if Plugin
+using ThingsGateway.NewLife.X;
+
+#endif
 using TouchSocket.Core;
 
 namespace ThingsGateway.Debug;

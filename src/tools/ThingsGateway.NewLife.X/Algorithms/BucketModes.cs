@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace NewLife.Algorithms;
+namespace ThingsGateway.NewLife.X.Algorithms;
 
 internal class BucketModes
 {

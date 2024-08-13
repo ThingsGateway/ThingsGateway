@@ -8,13 +8,14 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Collections;
-
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
-namespace NewLife.Reflection;
+using ThingsGateway.NewLife.X.Collections;
+using ThingsGateway.NewLife.X.IO;
+
+namespace ThingsGateway.NewLife.X.Reflection;
 
 /// <summary>程序集辅助类。使用Create创建，保证每个程序集只有一个辅助类</summary>
 public class AssemblyX

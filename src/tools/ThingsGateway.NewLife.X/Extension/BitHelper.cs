@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace NewLife;
+namespace ThingsGateway.NewLife.X;
 
 /// <summary>数据位助手</summary>
 public static class BitHelper

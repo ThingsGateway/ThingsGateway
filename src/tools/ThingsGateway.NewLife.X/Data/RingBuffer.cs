@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace NewLife.Data;
+namespace ThingsGateway.NewLife.X.Data;
 
 /// <summary>环形缓冲区。用于协议组包设计</summary>
 public class RingBuffer

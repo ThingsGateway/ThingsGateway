@@ -10,7 +10,7 @@
 
 using BootstrapBlazor.Components;
 
-using NewLife.Extension;
+using ThingsGateway.NewLife.X.Extension;
 
 using SqlSugar;
 

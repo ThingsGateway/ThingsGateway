@@ -10,10 +10,10 @@
 
 // 版权归百小僧及百签科技（广东）有限公司所有。
 //
-using NewLife.Extension;
-
 using System.Security.Cryptography;
 using System.Text;
+
+using ThingsGateway.NewLife.X.Extension;
 
 namespace ThingsGateway.Core;
 

@@ -13,7 +13,7 @@ using Mapster;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using NewLife.Threading;
+using ThingsGateway.NewLife.X.Threading;
 
 using Opc.Ua;
 using Opc.Ua.Configuration;

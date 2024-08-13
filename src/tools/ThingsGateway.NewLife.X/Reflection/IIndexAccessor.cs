@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace NewLife.Reflection;
+namespace ThingsGateway.NewLife.X.Reflection;
 
 /// <summary>
 /// 索引器接访问口。

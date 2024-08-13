@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Threading;
+using ThingsGateway.NewLife.X.Threading;
 
 using Newtonsoft.Json.Linq;
 

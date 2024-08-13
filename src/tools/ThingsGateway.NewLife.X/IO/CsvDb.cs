@@ -8,13 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Reflection;
-using NewLife.Serialization;
+using ThingsGateway.NewLife.X.Reflection;
+using ThingsGateway.NewLife.X.Serialization;
 
 using System.Reflection;
 using System.Text;
 
-namespace NewLife.IO;
+namespace ThingsGateway.NewLife.X.IO;
 
 /// <summary>Csv文件轻量级数据库</summary>
 /// <remarks>

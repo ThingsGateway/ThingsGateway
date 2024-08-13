@@ -10,8 +10,8 @@
 
 using Mapster;
 
-using NewLife.Extension;
-using NewLife.Threading;
+using ThingsGateway.NewLife.X.Extension;
+using ThingsGateway.NewLife.X.Threading;
 
 using ThingsGateway.Core.Extension;
 

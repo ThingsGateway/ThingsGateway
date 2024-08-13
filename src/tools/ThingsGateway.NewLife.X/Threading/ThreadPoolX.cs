@@ -10,7 +10,7 @@
 
 using System.Diagnostics;
 
-namespace NewLife.Threading;
+namespace ThingsGateway.NewLife.X.Threading;
 
 /// <summary>线程池助手</summary>
 public class ThreadPoolX : DisposeBase

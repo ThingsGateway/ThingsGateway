@@ -10,8 +10,6 @@
 
 using Microsoft.Extensions.Localization;
 
-using NewLife.Threading;
-
 using Newtonsoft.Json.Linq;
 
 using SqlSugar;
@@ -22,6 +20,8 @@ using ThingsGateway.Core.Extension;
 using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Foundation.Modbus;
 using ThingsGateway.Gateway.Application;
+using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.X.Threading;
 
 using TouchSocket.Core;
 using TouchSocket.Sockets;

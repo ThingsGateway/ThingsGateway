@@ -11,7 +11,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 
-namespace NewLife.Collections;
+namespace ThingsGateway.NewLife.X.Collections;
 
 /// <summary>并行哈希集合</summary>
 /// <remarks>

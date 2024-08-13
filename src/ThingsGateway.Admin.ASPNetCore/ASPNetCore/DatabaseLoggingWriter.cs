@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Extension;
-
 using SqlSugar;
 
 using System.Collections.Concurrent;
@@ -17,6 +15,8 @@ using System.Collections.Concurrent;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Logging;
+using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.X.Extension;
 
 using UAParser;
 

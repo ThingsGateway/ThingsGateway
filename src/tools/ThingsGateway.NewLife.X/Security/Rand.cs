@@ -8,13 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Collections;
-using NewLife.Reflection;
+using ThingsGateway.NewLife.X.Collections;
+using ThingsGateway.NewLife.X.Reflection;
 
 using System.Reflection;
 using System.Security.Cryptography;
 
-namespace NewLife.Security;
+namespace ThingsGateway.NewLife.X.Security;
 
 /// <summary>随机数</summary>
 public static class Rand

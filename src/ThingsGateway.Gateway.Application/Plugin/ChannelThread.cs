@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 
 using ThingsGateway.Core.Extension;
+using ThingsGateway.NewLife.X;
 
 using TouchSocket.Core;
 

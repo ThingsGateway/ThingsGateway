@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Caching;
+using ThingsGateway.NewLife.X.Caching;
 
 namespace ThingsGateway.Core;
 

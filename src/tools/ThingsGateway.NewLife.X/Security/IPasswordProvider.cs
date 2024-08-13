@@ -8,9 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Collections;
+using ThingsGateway.NewLife.X.Collections;
 
-namespace NewLife.Security;
+namespace ThingsGateway.NewLife.X.Security;
 
 /// <summary>密码提供者</summary>
 public interface IPasswordProvider

@@ -21,9 +21,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 
-using NewLife;
-using NewLife.Extension;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -40,6 +37,8 @@ using ThingsGateway;
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Logging;
+using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.X.Extension;
 
 namespace System;
 

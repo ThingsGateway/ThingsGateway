@@ -8,15 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Collections;
-
 using System.Collections.Concurrent;
 
 #if NETCOREAPP
 using System.Text.Json;
 #endif
 
-namespace System.Collections.Generic;
+namespace ThingsGateway.NewLife.X.Collections.Generic;
 
 /// <summary>集合扩展</summary>
 public static class CollectionHelper

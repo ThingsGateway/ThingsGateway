@@ -12,7 +12,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
 
-namespace NewLife.Reflection;
+namespace ThingsGateway.NewLife.X.Reflection;
 
 /// <summary>反射工具类</summary>
 /// <remarks>

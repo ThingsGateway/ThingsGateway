@@ -8,13 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Collections;
+using ThingsGateway.NewLife.X.Collections;
 
 using System.Globalization;
 using System.IO.Compression;
 using System.Text;
 
-namespace NewLife;
+namespace ThingsGateway.NewLife.X;
 
 /// <summary>IO工具类</summary>
 /// <remarks>

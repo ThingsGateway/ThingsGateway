@@ -8,12 +8,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Security;
-
 using System.Security.Cryptography;
 using System.Text;
 
-namespace NewLife;
+using ThingsGateway.NewLife.X.Security;
+
+namespace ThingsGateway.NewLife.X;
 
 /// <summary>安全算法</summary>
 /// <remarks>
@@ -309,7 +309,7 @@ public static class SecurityHelper
     /// <param name="data"></param>
     /// <param name="pass"></param>
     /// <returns></returns>
-    public static Byte[] RC4(this Byte[] data, Byte[] pass) => NewLife.Security.RC4.Encrypt(data, pass);
+    public static Byte[] RC4(this Byte[] data, Byte[] pass) => ThingsGateway.NewLife.X.Security.RC4.Encrypt(data, pass);
 
     #endregion RC4
 }

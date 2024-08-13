@@ -8,9 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Data;
+using ThingsGateway.NewLife.X.Data;
 
-namespace NewLife.Algorithms;
+namespace ThingsGateway.NewLife.X.Algorithms;
 
 /// <summary>
 /// 插值算法

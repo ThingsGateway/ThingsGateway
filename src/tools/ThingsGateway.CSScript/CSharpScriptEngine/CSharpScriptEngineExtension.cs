@@ -12,10 +12,10 @@ using CSScripting;
 
 using CSScriptLib;
 
-using NewLife.Caching;
-
 using System.Reflection;
 using System.Text;
+
+using ThingsGateway.NewLife.X.Caching;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -119,9 +119,10 @@ public static class CSharpScriptEngineExtension
         using System.Linq;
         using System.Collections.Generic;
         using ThingsGateway.Gateway.Application;
+        using ThingsGateway.NewLife.X;
         using ThingsGateway.Gateway.Application.Extensions;
-        {_using}    
-        {_body}    
+        {_using}
+        {_body}
     ");
                     GC.Collect();
                     Instance.Set(field, runScript);

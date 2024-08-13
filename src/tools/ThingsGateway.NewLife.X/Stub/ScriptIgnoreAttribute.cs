@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace System.Web.Script.Serialization;
+namespace ThingsGateway.NewLife.X.Web.Script.Serialization;
 
 /// <summary>忽略Json序列化</summary>
 public class ScriptIgnoreAttribute : Attribute

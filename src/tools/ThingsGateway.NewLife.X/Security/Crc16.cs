@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace NewLife.Security;
+namespace ThingsGateway.NewLife.X.Security;
 
 /// <summary>CRC16校验</summary>
 public sealed class Crc16

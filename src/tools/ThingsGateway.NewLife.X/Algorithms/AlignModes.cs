@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace NewLife.Algorithms;
+namespace ThingsGateway.NewLife.X.Algorithms;
 
 /// <summary>
 /// 对齐模型。数据采样时X轴对齐

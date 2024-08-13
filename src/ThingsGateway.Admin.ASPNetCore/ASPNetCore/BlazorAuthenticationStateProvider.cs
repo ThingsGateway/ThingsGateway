@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Http;
 
 using System.Security.Claims;
 
+using ThingsGateway.NewLife.X;
+
 namespace ThingsGateway.Admin.Application;
 
 /// <inheritdoc/>

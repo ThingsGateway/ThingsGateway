@@ -10,7 +10,7 @@
 
 using System.Security.Cryptography;
 
-namespace NewLife.Security;
+namespace ThingsGateway.NewLife.X.Security;
 
 /// <summary>RSA算法</summary>
 /// <remarks>

@@ -10,7 +10,7 @@
 
 using System.Security.Cryptography;
 
-namespace NewLife.Security;
+namespace ThingsGateway.NewLife.X.Security;
 
 /// <summary>Zero填充</summary>
 public sealed class ZerosPaddingTransform : ICryptoTransform

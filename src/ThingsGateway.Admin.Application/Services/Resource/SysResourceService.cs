@@ -12,7 +12,7 @@ using BootstrapBlazor.Components;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using NewLife.Extension;
+using ThingsGateway.NewLife.X.Extension;
 
 using SqlSugar;
 

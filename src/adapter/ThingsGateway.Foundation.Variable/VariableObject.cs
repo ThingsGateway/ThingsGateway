@@ -8,12 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Reflection;
-
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using ThingsGateway.Gateway.Application.Extensions;
+using ThingsGateway.NewLife.X.Reflection;
 
 namespace ThingsGateway.Foundation;
 

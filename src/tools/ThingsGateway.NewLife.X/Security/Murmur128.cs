@@ -11,7 +11,7 @@
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
-namespace NewLife.Security;
+namespace ThingsGateway.NewLife.X.Security;
 
 /// <summary>高性能低碰撞Murmur128哈希算法</summary>
 /// <remarks>

@@ -8,14 +8,14 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Reflection;
-using NewLife.Threading;
+using ThingsGateway.NewLife.X.Reflection;
+using ThingsGateway.NewLife.X.Threading;
 
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
 //#nullable enable
-namespace NewLife.Caching;
+namespace ThingsGateway.NewLife.X.Caching;
 
 /// <summary>默认字典缓存</summary>
 public class MemoryCache : Cache

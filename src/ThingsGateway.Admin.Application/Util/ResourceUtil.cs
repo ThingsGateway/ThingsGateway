@@ -12,7 +12,7 @@ using BootstrapBlazor.Components;
 
 using Microsoft.AspNetCore.Authorization;
 
-using NewLife;
+using ThingsGateway.NewLife.X;
 
 using System.Globalization;
 using System.Reflection;

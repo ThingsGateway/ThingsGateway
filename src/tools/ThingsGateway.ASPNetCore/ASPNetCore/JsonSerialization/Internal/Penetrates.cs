@@ -15,6 +15,8 @@ using Newtonsoft.Json.Linq;
 
 using System.Text.Json;
 
+using ThingsGateway.NewLife.X;
+
 namespace ThingsGateway.JsonSerialization;
 
 /// <summary>

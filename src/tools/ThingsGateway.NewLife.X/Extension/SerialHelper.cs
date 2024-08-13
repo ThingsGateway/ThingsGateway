@@ -8,15 +8,15 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Reflection;
-
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace NewLife.Serialization;
+using ThingsGateway.NewLife.X.Reflection;
+
+namespace ThingsGateway.NewLife.X.Serialization;
 
 /// <summary>序列化助手</summary>
 public static class SerialHelper

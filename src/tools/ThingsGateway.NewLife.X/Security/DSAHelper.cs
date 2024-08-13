@@ -11,7 +11,7 @@
 using System.Security.Cryptography;
 using System.Xml;
 
-namespace NewLife.Security;
+namespace ThingsGateway.NewLife.X.Security;
 
 /// <summary>DSA算法</summary>
 public static class DSAHelper

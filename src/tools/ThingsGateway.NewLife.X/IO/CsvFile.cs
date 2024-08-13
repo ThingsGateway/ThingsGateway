@@ -8,12 +8,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Collections;
+using ThingsGateway.NewLife.X.Collections;
 
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace NewLife.IO;
+namespace ThingsGateway.NewLife.X.IO;
 
 /// <summary>Csv文件</summary>
 /// <remarks>

@@ -13,7 +13,7 @@ using BootstrapBlazor.Components;
 
 using Mapster;
 
-using NewLife;
+using ThingsGateway.NewLife.X;
 
 using System.Globalization;
 using System.Reflection;

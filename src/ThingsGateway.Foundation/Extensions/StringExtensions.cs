@@ -11,6 +11,8 @@
 using System.Globalization;
 using System.Net;
 
+using ThingsGateway.NewLife.X;
+
 namespace ThingsGateway.Foundation.Extension.String;
 
 /// <inheritdoc/>

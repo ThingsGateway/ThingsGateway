@@ -12,7 +12,7 @@
 
 
 
-namespace System.Threading.Tasks;
+namespace ThingsGateway.NewLife.X.Threading.Tasks;
 
 #if NET45
 /// <summary>任务扩展</summary>

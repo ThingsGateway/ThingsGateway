@@ -10,7 +10,7 @@
 
 using System.Collections.Concurrent;
 
-namespace System;
+namespace ThingsGateway.NewLife.X;
 
 /// <summary>并发字典扩展</summary>
 public static class ConcurrentDictionaryExtensions

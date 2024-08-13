@@ -13,7 +13,7 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using NewLife.Extension;
+using ThingsGateway.NewLife.X.Extension;
 
 using SqlSugar;
 

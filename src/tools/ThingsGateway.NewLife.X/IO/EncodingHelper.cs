@@ -12,7 +12,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace NewLife.IO;
+namespace ThingsGateway.NewLife.X.IO;
 
 /// <summary>编码助手</summary>
 public static class EncodingHelper

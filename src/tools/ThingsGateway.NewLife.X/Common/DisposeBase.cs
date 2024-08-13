@@ -15,7 +15,7 @@ using System.Xml.Serialization;
 
 #nullable enable
 
-namespace NewLife;
+namespace ThingsGateway.NewLife.X;
 
 /// <summary>具有是否已释放和释放后事件的接口</summary>
 public interface IDisposable2 : IDisposable

@@ -12,7 +12,7 @@ using Mapster;
 
 using Microsoft.AspNetCore.Components.Forms;
 
-using NewLife.Extension;
+using ThingsGateway.NewLife.X.Extension;
 
 using ThingsGateway.Admin.Application;
 

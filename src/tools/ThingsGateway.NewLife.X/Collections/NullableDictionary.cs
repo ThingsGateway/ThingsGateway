@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace NewLife.Collections;
+namespace ThingsGateway.NewLife.X.Collections;
 
 /// <summary>可空字典。获取数据时如果指定键不存在可返回空而不是抛出异常</summary>
 /// <typeparam name="TKey"></typeparam>

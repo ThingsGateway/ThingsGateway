@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace NewLife.Caching;
+namespace ThingsGateway.NewLife.X.Caching;
 
 /// <summary>分布式锁</summary>
 public class CacheLock : DisposeBase

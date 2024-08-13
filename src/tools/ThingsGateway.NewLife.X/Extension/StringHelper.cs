@@ -8,14 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Collections;
-
-using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
-namespace NewLife.Extension;
+using ThingsGateway.NewLife.X.Collections;
+
+namespace ThingsGateway.NewLife.X.Extension;
 
 /// <summary>字符串助手类</summary>
 /// <remarks>
@@ -932,7 +931,7 @@ public static class StringHelper
 
     #region 文字转语音
 
-    private static NewLife.Extension.SpeakProvider? _provider;
+    private static ThingsGateway.NewLife.X.Extension.SpeakProvider? _provider;
 
     //private static System.Speech.Synthesis.SpeechSynthesizer _provider;
     [MemberNotNull(nameof(_provider))]
@@ -940,7 +939,7 @@ public static class StringHelper
     {
         //_provider = new Speech.Synthesis.SpeechSynthesizer();
         //_provider.SetOutputToDefaultAudioDevice();
-        _provider ??= new NewLife.Extension.SpeakProvider();
+        _provider ??= new ThingsGateway.NewLife.X.Extension.SpeakProvider();
     }
 
     /// <summary>调用语音引擎说出指定话</summary>

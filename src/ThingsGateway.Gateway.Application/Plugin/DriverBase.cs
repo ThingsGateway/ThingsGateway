@@ -13,7 +13,7 @@ using BootstrapBlazor.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using NewLife.Threading;
+using ThingsGateway.NewLife.X.Threading;
 
 using ThingsGateway.Core.Extension;
 

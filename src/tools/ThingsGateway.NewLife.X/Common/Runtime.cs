@@ -12,7 +12,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace NewLife;
+namespace ThingsGateway.NewLife.X;
 
 /// <summary>运行时</summary>
 /// <remarks>

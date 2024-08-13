@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Components;
 using System.Security.Claims;
 
 using ThingsGateway.Admin.Application;
+using ThingsGateway.NewLife.X;
 
 namespace ThingsGateway.Admin.NetCore;
 

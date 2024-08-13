@@ -14,8 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using NewLife;
-using NewLife.Threading;
+using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.X.Threading;
 
 using SqlSugar;
 

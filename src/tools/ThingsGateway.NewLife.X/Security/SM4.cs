@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Security;
+using ThingsGateway.NewLife.X.Security;
 
 using System.Numerics;
 using System.Security.Cryptography;

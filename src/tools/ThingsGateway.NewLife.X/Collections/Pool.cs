@@ -8,11 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Reflection;
+using ThingsGateway.NewLife.X.Reflection;
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace NewLife.Collections;
+namespace ThingsGateway.NewLife.X.Collections;
 
 /// <summary>轻量级对象池。数组无锁实现，高性能</summary>
 /// <remarks>

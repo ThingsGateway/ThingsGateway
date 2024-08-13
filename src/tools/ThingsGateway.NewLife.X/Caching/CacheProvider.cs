@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace NewLife.Caching;
+namespace ThingsGateway.NewLife.X.Caching;
 
 /// <summary>分布式缓存架构服务。提供基础缓存及队列服务</summary>
 public class CacheProvider : ICacheProvider

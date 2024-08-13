@@ -14,6 +14,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Localization;
 
+using ThingsGateway.NewLife.X;
+
 namespace ThingsGateway.Admin.Application;
 
 /// <summary>

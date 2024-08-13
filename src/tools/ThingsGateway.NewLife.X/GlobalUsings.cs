@@ -8,4 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-global using NewLife.Extension;
+global using System;
+global using System.Collections;
+global using System.Collections.Generic;
+
+global using ThingsGateway.NewLife.X;
+global using ThingsGateway.NewLife.X.Extension;

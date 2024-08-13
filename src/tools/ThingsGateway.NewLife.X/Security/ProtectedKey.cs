@@ -10,7 +10,7 @@
 
 using System.Security.Cryptography;
 
-namespace NewLife.Security;
+namespace ThingsGateway.NewLife.X.Security;
 
 /// <summary>数据保护者。保护连接字符串中的密码</summary>
 public class ProtectedKey

@@ -10,7 +10,8 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace NewLife.Caching;
+
+namespace ThingsGateway.NewLife.X.Caching;
 
 /// <summary>缓存</summary>
 public abstract class Cache : DisposeBase, ICache

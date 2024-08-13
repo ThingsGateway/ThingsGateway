@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace NewLife.Caching;
+namespace ThingsGateway.NewLife.X.Caching;
 
 /// <summary>轻量级生产者消费者接口</summary>
 /// <remarks>

@@ -16,7 +16,7 @@ using System.Reflection;
 
 #nullable enable
 
-namespace NewLife.Threading;
+namespace ThingsGateway.NewLife.X.Threading;
 
 /// <summary>不可重入的定时器，支持Cron</summary>
 /// <remarks>

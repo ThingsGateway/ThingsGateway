@@ -8,11 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Caching;
+using ThingsGateway.NewLife.X.Caching;
 
 using System.Collections.Concurrent;
 
-namespace NewLife.Collections;
+namespace ThingsGateway.NewLife.X.Collections;
 
 /// <summary>主动式消息服务</summary>
 /// <typeparam name="T">数据类型</typeparam>

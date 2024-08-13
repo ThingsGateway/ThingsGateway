@@ -10,7 +10,7 @@
 
 using System.Security.Cryptography;
 
-namespace NewLife.Security;
+namespace ThingsGateway.NewLife.X.Security;
 
 /// <summary>PKCS7填充</summary>
 public sealed class PKCS7PaddingTransform : ICryptoTransform

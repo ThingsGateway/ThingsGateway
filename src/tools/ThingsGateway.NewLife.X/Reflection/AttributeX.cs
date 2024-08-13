@@ -8,13 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Reflection;
+using ThingsGateway.NewLife.X.Reflection;
 
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Reflection;
 
-namespace NewLife;
+namespace ThingsGateway.NewLife.X;
 
 /// <summary>特性辅助类</summary>
 public static class AttributeX

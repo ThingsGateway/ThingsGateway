@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife;
+using ThingsGateway.NewLife.X;
 
 namespace ThingsGateway.Razor;
 

@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
+using ThingsGateway.NewLife.X;
+
 using LoggerExtensions = ThingsGateway.Foundation.LoggerExtensions;
 
 namespace ThingsGateway.Gateway.Application;

@@ -13,10 +13,9 @@ using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.Serialization;
-using System.Web.Script.Serialization;
 using System.Xml.Serialization;
 
-namespace NewLife.Reflection;
+namespace ThingsGateway.NewLife.X.Reflection;
 
 /// <summary>反射接口</summary>
 /// <remarks>该接口仅用于扩展，不建议外部使用</remarks>
@@ -379,7 +378,7 @@ public class DefaultReflect : IReflect
         {
             if (pi.GetIndexParameters().Length > 0) continue;
             if (pi.GetCustomAttribute<XmlIgnoreAttribute>() != null) continue;
-            if (pi.GetCustomAttribute<ScriptIgnoreAttribute>() != null) continue;
+            if (pi.GetCustomAttribute<Web.Script.Serialization.ScriptIgnoreAttribute>() != null) continue;
             if (pi.GetCustomAttribute<IgnoreDataMemberAttribute>() != null) continue;
 
             if (!set.Contains(pi.Name))

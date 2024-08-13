@@ -8,11 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Reflection;
+using ThingsGateway.NewLife.X.Reflection;
 
 using System.Reflection;
 
-namespace NewLife.Extension;
+namespace ThingsGateway.NewLife.X.Extension;
 
 internal class SpeakProvider
 {

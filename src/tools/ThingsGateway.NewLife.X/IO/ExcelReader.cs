@@ -12,7 +12,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Xml.Linq;
 
-namespace NewLife.IO;
+namespace ThingsGateway.NewLife.X.IO;
 
 /// <summary>轻量级Excel读取器，仅用于导入数据</summary>
 /// <remarks>

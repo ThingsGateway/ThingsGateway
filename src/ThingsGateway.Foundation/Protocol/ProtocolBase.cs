@@ -12,6 +12,7 @@ using Newtonsoft.Json.Linq;
 
 using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.Extension.String;
+using ThingsGateway.NewLife.X;
 
 namespace ThingsGateway.Foundation;
 

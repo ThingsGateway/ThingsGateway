@@ -8,13 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Reflection;
+using ThingsGateway.NewLife.X.Reflection;
 
 using System.Diagnostics;
 
 #nullable enable
 
-namespace NewLife.Threading;
+namespace ThingsGateway.NewLife.X.Threading;
 
 /// <summary>定时器调度器</summary>
 public class TimerScheduler

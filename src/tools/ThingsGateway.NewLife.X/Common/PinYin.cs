@@ -10,7 +10,8 @@
 
 using System.Text;
 
-namespace NewLife.Common;
+
+namespace ThingsGateway.NewLife.X.Common;
 
 /// <summary>汉字拼音转换类</summary>
 /// <remarks>

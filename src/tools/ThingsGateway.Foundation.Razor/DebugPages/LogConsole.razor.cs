@@ -13,7 +13,7 @@ using BootstrapBlazor.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-using NewLife.Extension;
+using ThingsGateway.NewLife.X.Extension;
 
 using System.Diagnostics;
 using System.Text.RegularExpressions;

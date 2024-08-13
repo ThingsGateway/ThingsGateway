@@ -8,12 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife;
-using NewLife.Extension;
-using NewLife.Threading;
-
 using System.Collections.Concurrent;
 using System.Text;
+
+using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.X.Extension;
+using ThingsGateway.NewLife.X.IO;
+using ThingsGateway.NewLife.X.Threading;
 
 namespace ThingsGateway.Foundation;
 

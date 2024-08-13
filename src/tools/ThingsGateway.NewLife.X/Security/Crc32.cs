@@ -10,7 +10,7 @@
 
 //using System.Security.Cryptography;
 
-namespace NewLife.Security;
+namespace ThingsGateway.NewLife.X.Security;
 
 /// <summary>CRC32校验</summary>
 /// <remarks>

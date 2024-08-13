@@ -8,11 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using NewLife.Reflection;
+using ThingsGateway.NewLife.X.Reflection;
 
 using System.Reflection;
 
-namespace NewLife;
+namespace ThingsGateway.NewLife.X;
 
 /// <summary>弱引用Action</summary>
 /// <remarks>

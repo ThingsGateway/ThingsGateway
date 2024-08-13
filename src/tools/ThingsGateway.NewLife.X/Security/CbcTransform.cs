@@ -10,7 +10,7 @@
 
 using System.Security.Cryptography;
 
-namespace NewLife.Security;
+namespace ThingsGateway.NewLife.X.Security;
 
 /// <summary>CBC块密码模式</summary>
 /// <remarks>

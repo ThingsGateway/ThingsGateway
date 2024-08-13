@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using ThingsGateway.NewLife.X;
+
 namespace ThingsGateway.Admin.Application;
 
 public class RelationService : BaseService<SysRelation>, IRelationService

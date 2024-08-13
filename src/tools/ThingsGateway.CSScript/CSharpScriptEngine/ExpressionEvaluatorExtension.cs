@@ -12,9 +12,9 @@ using CSScripting;
 
 using CSScriptLib;
 
-using NewLife.Caching;
-
 using System.Text;
+
+using ThingsGateway.NewLife.X.Caching;
 
 namespace ThingsGateway.Gateway.Application.Extensions;
 
@@ -106,6 +106,7 @@ public static class ExpressionEvaluatorExtension
         using System;
         using System.Linq;
         using System.Collections.Generic;
+        using ThingsGateway.NewLife.X;
         using ThingsGateway.Gateway.Application.Extensions;
         {_using}
         public class Script:ReadWriteExpressions

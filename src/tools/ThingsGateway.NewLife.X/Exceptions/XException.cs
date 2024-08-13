@@ -10,7 +10,7 @@
 
 using System.ComponentModel;
 
-namespace NewLife;
+namespace ThingsGateway.NewLife.X;
 
 /// <summary>异常事件参数</summary>
 public class ExceptionEventArgs : CancelEventArgs
