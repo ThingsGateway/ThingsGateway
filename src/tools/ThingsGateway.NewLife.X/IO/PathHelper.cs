@@ -11,7 +11,7 @@
 using System.IO.Compression;
 
 
-namespace ThingsGateway.NewLife.X.IO;
+namespace System.IO;
 
 /// <summary>路径操作帮助</summary>
 /// <remarks>

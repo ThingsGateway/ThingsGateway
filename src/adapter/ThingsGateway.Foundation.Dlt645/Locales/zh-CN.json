@@ -4,9 +4,10 @@
     "OperCode": "操作员代码",
     "Password": "写入密码",
     "Station": "通讯地址",
-    "DtuId": "Dtu注册包",
+    "DtuId": "Dtu注册包(UTF8)",
     "CheckClearTime": "连接滑动过期时间",
-    "HeartbeatHexString": "心跳检测",
+    "HeartbeatHexString": "心跳检测(HEX)",
+    "HeartbeatTime": "心跳间隔时间",
 
     "CacheTimeout": "组包缓存时间",
     "SendDelayTime": "发送延时",

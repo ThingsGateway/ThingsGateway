@@ -10,9 +10,9 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.7" />
-    <PackageReference Include="TouchSocket" Version="2.1.0-rc.7" />
-    <PackageReference Include="TouchSocket.SerialPorts" Version="2.1.0-rc.7" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.8" />
+    <PackageReference Include="TouchSocket" Version="2.1.0-rc.10" />
+    <PackageReference Include="TouchSocket.SerialPorts" Version="2.1.0-rc.10" />
     <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.NewLife.X\ThingsGateway.NewLife.X.csproj" />
   </ItemGroup>
 

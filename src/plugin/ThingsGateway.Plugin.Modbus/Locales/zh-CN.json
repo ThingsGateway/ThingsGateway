@@ -3,7 +3,7 @@
     "ModbusType": "协议类型",
     "HeartbeatHexString": "心跳验证(HexString)",
     "Station": "默认站号",
-    "DtuId": "默认DtuId",
+    "DtuId": "Dtu注册包(UTF8)",
     "DataFormat": "解析规则",
     "IsStringReverseByteWord": "字符串反转",
     "CheckClearTime": "客户端连接滑动过期时间",
@@ -33,7 +33,7 @@
     "MulStation": "多站点",
     "MaxClientCount": "最大连接数",
 
-    "DtuId": "Dtu注册包",
+    "DtuId": "Dtu注册包(UTF8)",
     "HeartbeatTime": "心跳间隔时间",
     "HeartbeatHexString": "心跳检测(大写16进制字符串)",
 

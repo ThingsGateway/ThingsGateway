@@ -2,9 +2,10 @@
   "ThingsGateway.Foundation.Modbus.ModbusMaster": {
     "ModbusType": "Modbus类型",
     "Station": "站号",
-    "DtuId": "Dtu注册包",
+    "DtuId": "Dtu注册包(UTF8)",
     "CheckClearTime": "连接滑动过期时间",
-    "HeartbeatHexString": "心跳检测(大写16进制字符串)",
+    "HeartbeatHexString": "心跳检测(HEX)",
+    "HeartbeatTime": "心跳间隔时间",
 
     "CacheTimeout": "组包缓存时间",
     "SendDelayTime": "发送延时",
@@ -21,9 +22,9 @@
     "IsWriteMemory": "立即写入内存",
     "MaxClientCount": "最大连接数量",
 
-    "DtuId": "Dtu注册包",
+    "DtuId": "Dtu注册包(UTF8)",
+    "HeartbeatHexString": "心跳检测(HEX)",
     "HeartbeatTime": "心跳间隔时间",
-    "HeartbeatHexString": "心跳检测(大写16进制字符串)",
 
     "CacheTimeout": "组包缓存时间",
     "SendDelayTime": "发送延时",

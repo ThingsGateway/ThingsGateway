@@ -12,7 +12,7 @@
     <PackageReference Include="BootstrapBlazor" Version="8.8.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.8" />
     <ProjectReference Include="..\ThingsGateway.Core\ThingsGateway.Core.csproj" />
   </ItemGroup>
   
