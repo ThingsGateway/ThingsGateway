@@ -8,11 +8,10 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Caching;
-
 using System.Text;
 
 using ThingsGateway.Foundation.Extension.String;
+using ThingsGateway.NewLife.X.Caching;
 
 namespace ThingsGateway.Foundation.Modbus;
 

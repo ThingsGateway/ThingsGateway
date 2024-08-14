@@ -8,9 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Caching;
-
 using System.Collections.Concurrent;
+
+using ThingsGateway.NewLife.X.Caching;
 
 namespace ThingsGateway.NewLife.X.Collections;
 

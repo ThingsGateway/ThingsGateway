@@ -8,10 +8,59 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Threading;
 
+/* 项目“ThingsGateway.NewLife.X (net6.0)”的未合并的更改
+在此之前:
+using ThingsGateway.NewLife.X.Threading;
+在此之后:
+using ThingsGateway.Collections;
+*/
+
+/* 项目“ThingsGateway.NewLife.X (netstandard2.0)”的未合并的更改
+在此之前:
+using ThingsGateway.NewLife.X.Threading;
+在此之后:
+using ThingsGateway.Collections;
+*/
+
+/* 项目“ThingsGateway.NewLife.X (net462)”的未合并的更改
+在此之前:
+using ThingsGateway.NewLife.X.Threading;
+在此之后:
+using ThingsGateway.Collections;
+*/
+using System.Collections.Concurrent;
+
+/* 项目“ThingsGateway.NewLife.X (net6.0)”的未合并的更改
+在此之前:
 using System.Collections;
 using System.Collections.Concurrent;
+在此之后:
+using System.Collections.Concurrent;
+
+using ThingsGateway.NewLife.Collections.Concurrent;
+*/
+
+/* 项目“ThingsGateway.NewLife.X (netstandard2.0)”的未合并的更改
+在此之前:
+using System.Collections;
+using System.Collections.Concurrent;
+在此之后:
+using System.Collections.Concurrent;
+
+using ThingsGateway.NewLife.Collections.Concurrent;
+*/
+
+/* 项目“ThingsGateway.NewLife.X (net462)”的未合并的更改
+在此之前:
+using System.Collections;
+using System.Collections.Concurrent;
+在此之后:
+using System.Collections.Concurrent;
+
+using ThingsGateway.NewLife.Collections.Concurrent;
+*/
+using ThingsGateway.NewLife.X.Threading;
 
 namespace ThingsGateway.NewLife.X.Collections;
 

@@ -13,7 +13,6 @@ using System.Text;
 
 using ThingsGateway.NewLife.X;
 using ThingsGateway.NewLife.X.Extension;
-using ThingsGateway.NewLife.X.IO;
 using ThingsGateway.NewLife.X.Threading;
 
 namespace ThingsGateway.Foundation;

@@ -36,8 +36,8 @@ public partial class UserLogin
     {
         base.OnInitialized();
 #if DEBUG
-            Model.Account = "SuperAdmin";
-            Model.Password = "111111";
+        Model.Account = "SuperAdmin";
+        Model.Password = "111111";
 #else
         if (WebsiteOption.Value.Demo)
         {

@@ -8,10 +8,10 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Collections;
-
 using System.Text;
 using System.Text.RegularExpressions;
+
+using ThingsGateway.NewLife.X.Collections;
 
 namespace ThingsGateway.NewLife.X.IO;
 

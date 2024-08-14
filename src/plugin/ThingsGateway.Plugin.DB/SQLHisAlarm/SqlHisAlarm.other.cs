@@ -10,9 +10,8 @@
 
 using Mapster;
 
-using ThingsGateway.NewLife.X.Threading;
-
 using ThingsGateway.Foundation;
+using ThingsGateway.NewLife.X.Threading;
 
 using TouchSocket.Core;
 

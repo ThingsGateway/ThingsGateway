@@ -8,9 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Reflection;
-
 using System.Diagnostics.CodeAnalysis;
+
+using ThingsGateway.NewLife.X.Reflection;
 
 namespace ThingsGateway.NewLife.X.Collections;
 

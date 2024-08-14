@@ -10,9 +10,8 @@
 
 using Mapster;
 
-using ThingsGateway.NewLife.X.Extension;
-
 using ThingsGateway.Gateway.Application;
+using ThingsGateway.NewLife.X.Extension;
 using ThingsGateway.Razor;
 
 namespace ThingsGateway.Gateway.Razor;

@@ -12,12 +12,11 @@ using Mapster;
 
 using Microsoft.AspNetCore.Components.Forms;
 
-using ThingsGateway.NewLife.X.Extension;
-
 using System.Data;
 
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Gateway.Application;
+using ThingsGateway.NewLife.X.Extension;
 using ThingsGateway.Razor;
 
 namespace ThingsGateway.Gateway.Razor;

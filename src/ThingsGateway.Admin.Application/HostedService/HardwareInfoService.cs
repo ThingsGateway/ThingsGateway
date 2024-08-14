@@ -14,14 +14,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using ThingsGateway.NewLife.X;
-using ThingsGateway.NewLife.X.Threading;
-
 using SqlSugar;
 
 using System.Runtime.InteropServices;
 
 using ThingsGateway.Core.Extension;
+using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.X.Threading;
 
 namespace ThingsGateway.Admin.Application;
 

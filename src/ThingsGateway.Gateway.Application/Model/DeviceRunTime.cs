@@ -10,10 +10,9 @@
 
 using Mapster;
 
+using ThingsGateway.Core.Extension;
 using ThingsGateway.NewLife.X.Extension;
 using ThingsGateway.NewLife.X.Threading;
-
-using ThingsGateway.Core.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 

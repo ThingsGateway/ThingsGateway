@@ -8,13 +8,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Caching;
-
 using Newtonsoft.Json.Linq;
 
 using System.Text;
 
 using ThingsGateway.Foundation.Extension.String;
+using ThingsGateway.NewLife.X.Caching;
 
 namespace ThingsGateway.Foundation;
 

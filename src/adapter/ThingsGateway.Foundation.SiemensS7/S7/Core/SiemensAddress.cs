@@ -8,9 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Caching;
-
 using ThingsGateway.Foundation.Extension.String;
+using ThingsGateway.NewLife.X.Caching;
 
 namespace ThingsGateway.Foundation.SiemensS7;
 

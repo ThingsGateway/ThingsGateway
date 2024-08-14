@@ -13,7 +13,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 using ThingsGateway.NewLife.X.Collections;
-using ThingsGateway.NewLife.X.IO;
 
 namespace ThingsGateway.NewLife.X.Reflection;
 

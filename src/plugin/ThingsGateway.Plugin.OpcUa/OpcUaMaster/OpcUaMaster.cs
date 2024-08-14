@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Threading;
-
 using Newtonsoft.Json.Linq;
 
 using Opc.Ua;
@@ -17,6 +15,7 @@ using Opc.Ua;
 using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.OpcUa;
 using ThingsGateway.Gateway.Application;
+using ThingsGateway.NewLife.X.Threading;
 
 using TouchSocket.Core;
 

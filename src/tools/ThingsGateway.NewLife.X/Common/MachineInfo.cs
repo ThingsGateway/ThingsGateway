@@ -8,9 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Collections;
-using ThingsGateway.NewLife.X.Reflection;
-
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -20,7 +17,16 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security;
 
+
+/* 项目“ThingsGateway.NewLife.X (netstandard2.0)”的未合并的更改
+在此之前:
 using ThingsGateway.NewLife.X.IO;
+在此之后:
+using ThingsGateway.NewLife.X.Collections;
+using ThingsGateway.NewLife.X.IO;
+*/
+using ThingsGateway.NewLife.X.Collections;
+using ThingsGateway.NewLife.X.Reflection;
 
 #if NETFRAMEWORK
 

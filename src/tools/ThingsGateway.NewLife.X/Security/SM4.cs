@@ -8,10 +8,10 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Security;
-
 using System.Numerics;
 using System.Security.Cryptography;
+
+using ThingsGateway.NewLife.X.Security;
 
 #if NETCOREAPP2_1_OR_GREATER || NETSTANDARD2_1_OR_GREATER
 using System.Buffers.Binary;

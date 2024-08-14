@@ -8,11 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Collections;
-
 using System.Globalization;
 using System.IO.Compression;
 using System.Text;
+
+using ThingsGateway.NewLife.X.Collections;
 
 namespace ThingsGateway.NewLife.X;
 

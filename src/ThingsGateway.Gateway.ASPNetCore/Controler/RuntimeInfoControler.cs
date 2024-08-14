@@ -13,13 +13,11 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using ThingsGateway.NewLife.X.Extension;
-
 using SqlSugar;
 
 using ThingsGateway.Admin.Application;
-
 using ThingsGateway.Core;
+using ThingsGateway.NewLife.X.Extension;
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>

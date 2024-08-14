@@ -8,9 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Reflection;
-
 using System.Reflection;
+
+using ThingsGateway.NewLife.X.Reflection;
 
 namespace ThingsGateway.NewLife.X;
 

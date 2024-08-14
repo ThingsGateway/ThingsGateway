@@ -8,11 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Reflection;
-using ThingsGateway.NewLife.X.Serialization;
-
 using System.Reflection;
 using System.Text;
+
+using ThingsGateway.NewLife.X.Reflection;
+using ThingsGateway.NewLife.X.Serialization;
 
 namespace ThingsGateway.NewLife.X.IO;
 

@@ -8,9 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Reflection;
-
 using System.Diagnostics;
+
+using ThingsGateway.NewLife.X.Reflection;
 
 #nullable enable
 

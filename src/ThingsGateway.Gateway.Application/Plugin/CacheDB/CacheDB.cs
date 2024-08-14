@@ -8,9 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X;
-
 using SqlSugar;
+
+using ThingsGateway.NewLife.X;
 
 namespace ThingsGateway.Gateway.Application;
 

@@ -8,11 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Reflection;
-
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Reflection;
+
+using ThingsGateway.NewLife.X.Reflection;
 
 namespace ThingsGateway.NewLife.X;
 

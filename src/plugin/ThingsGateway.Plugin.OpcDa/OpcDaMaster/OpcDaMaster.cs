@@ -8,13 +8,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Threading;
-
 using Newtonsoft.Json.Linq;
 
 using ThingsGateway.Foundation.OpcDa;
 using ThingsGateway.Foundation.OpcDa.Da;
 using ThingsGateway.Gateway.Application;
+using ThingsGateway.NewLife.X.Threading;
 
 using TouchSocket.Core;
 

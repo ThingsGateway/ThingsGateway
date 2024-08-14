@@ -12,12 +12,11 @@ using BootstrapBlazor.Components;
 
 using Microsoft.AspNetCore.Authorization;
 
-using ThingsGateway.NewLife.X;
-
 using System.Globalization;
 using System.Reflection;
 
 using ThingsGateway.Core.Extension;
+using ThingsGateway.NewLife.X;
 
 namespace ThingsGateway.Admin.Application;
 

@@ -13,9 +13,8 @@ using BootstrapBlazor.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using ThingsGateway.NewLife.X.Threading;
-
 using ThingsGateway.Core.Extension;
+using ThingsGateway.NewLife.X.Threading;
 
 using TouchSocket.Core;
 

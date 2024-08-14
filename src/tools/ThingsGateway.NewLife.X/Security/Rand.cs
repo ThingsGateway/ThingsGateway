@@ -8,11 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Collections;
-using ThingsGateway.NewLife.X.Reflection;
-
 using System.Reflection;
 using System.Security.Cryptography;
+
+using ThingsGateway.NewLife.X.Collections;
+using ThingsGateway.NewLife.X.Reflection;
 
 namespace ThingsGateway.NewLife.X.Security;
 

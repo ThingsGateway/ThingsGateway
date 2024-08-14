@@ -13,13 +13,12 @@ using BootstrapBlazor.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
-using ThingsGateway.NewLife.X.Extension;
-
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Foundation;
+using ThingsGateway.NewLife.X.Extension;
 using ThingsGateway.Razor;
 
 namespace ThingsGateway.Debug;

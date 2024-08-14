@@ -13,8 +13,6 @@ using Mapster;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using ThingsGateway.NewLife.X.Threading;
-
 using Newtonsoft.Json.Linq;
 
 using System.Collections.Concurrent;
@@ -22,6 +20,7 @@ using System.Collections.Concurrent;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Gateway.Application.Extensions;
+using ThingsGateway.NewLife.X.Threading;
 
 using TouchSocket.Core;
 
