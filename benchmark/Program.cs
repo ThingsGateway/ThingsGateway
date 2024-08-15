@@ -20,18 +20,12 @@ namespace BenchmarkConsoleApp
     internal class Program
     {
         private static int ClientCount = 1;
-        public static int TaskNumberOfItems = 1;
+        public static int TaskNumberOfItems = 100;
         public static int NumberOfItems = 100;
 
         private static async Task Main(string[] args)
         {
             Console.WriteLine("开始测试前，请先启动ModbusSlave，建议使用本项目自带的ThingsGateway.Debug.Photino软件开启");
-            //Console.WriteLine("输入客户端数量");
-            //ClientCount = Console.ReadLine().ToInt(1);
-            //Console.WriteLine("输入并发任务数量");
-            //TaskNumberOfItems = Console.ReadLine().ToInt(1);
-            //Console.WriteLine("输入每个任务执行读取次数");
-            //NumberOfItems = Console.ReadLine().ToInt(1);
             Console.WriteLine($"多客户端({ClientCount}),多线程({TaskNumberOfItems})并发读取({NumberOfItems})测试，共{ClientCount * TaskNumberOfItems * NumberOfItems}次");
             var consoleAction = new ConsoleAction();
 

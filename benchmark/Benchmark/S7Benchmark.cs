@@ -12,16 +12,13 @@ using BenchmarkConsoleApp;
 
 using BenchmarkDotNet.Attributes;
 
-using HslCommunication.ModBus;
 using HslCommunication.Profinet.Siemens;
 
 using S7.Net;
 
-using ThingsGateway.Foundation.Modbus;
 using ThingsGateway.Foundation.SiemensS7;
 
 using TouchSocket.Core;
-using TouchSocket.Sockets;
 
 namespace ThingsGateway.Foundation;
 

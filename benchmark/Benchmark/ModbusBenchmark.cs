@@ -14,17 +14,14 @@ using BenchmarkDotNet.Attributes;
 
 using HslCommunication.ModBus;
 
-using NModbus.Device;
-using NModbus.Serial;
+using System.Net.Sockets;
 
 using ThingsGateway.Foundation.Modbus;
 
 using TouchSocket.Core;
-using TouchSocket.SerialPorts;
 
 using IModbusMaster = NModbus.IModbusMaster;
 using ModbusMaster = ThingsGateway.Foundation.Modbus.ModbusMaster;
-using TcpClient = System.Net.Sockets.TcpClient;
 
 namespace ThingsGateway.Foundation;
 
@@ -34,29 +31,32 @@ public class ModbusBenchmark : IDisposable
 {
     private ModbusMaster thingsgatewaymodbus;
     private IModbusMaster nmodbus;
-    private ModbusRtu modbusTcpNet;
+    private ModbusTcpNet modbusTcpNet;
 
     public ModbusBenchmark()
     {
         {
             var clientConfig = new TouchSocket.Core.TouchSocketConfig();
-            var clientChannel = clientConfig.GetSerialPortWithOption(new SerialPortOption() { PortName = "COM1" });
+            var clientChannel = clientConfig.GetTcpClientWithIPHost("127.0.0.1:502");
             thingsgatewaymodbus = new(clientChannel)
             {
                 //modbus协议格式
-                ModbusType = ModbusTypeEnum.ModbusRtu,
+                ModbusType = ModbusTypeEnum.ModbusTcp,
             };
             thingsgatewaymodbus.Channel.Connect();
         }
 
-        var factory = new NModbus.ModbusFactory();
-        var s = new System.IO.Ports.SerialPort("COM7");
-        s.Open();
-        nmodbus = factory.CreateRtuMaster(s);
-        modbusTcpNet = new();
-        modbusTcpNet.SerialPortInni("COM5");
-        modbusTcpNet.Open();
+
+
+
         thingsgatewaymodbus.ReadAsync("40001", 100).GetFalseAwaitResult();
+
+        var factory = new NModbus.ModbusFactory();
+        nmodbus = factory.CreateMaster(new TcpClient("127.0.0.1", 502));
+        modbusTcpNet = new();
+        modbusTcpNet.IpAddress = "127.0.0.1";
+        modbusTcpNet.Port = 502;
+        modbusTcpNet.ConnectServer();
         nmodbus.ReadHoldingRegistersAsync(1, 0, 100).GetFalseAwaitResult();
         modbusTcpNet.ReadAsync("0", 100).GetFalseAwaitResult();
     }
@@ -74,7 +74,7 @@ public class ModbusBenchmark : IDisposable
                     var result = await thingsgatewaymodbus.ReadAsync("40001", 100);
                     if (!result.IsSuccess)
                     {
-                        throw new Exception(result.ToString());
+                        throw new Exception(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ffff") + result.ToString());
                     }
                 }
             }));
