@@ -1,8 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <Import Project="$(SolutionDir)Version.props" />
-  <PropertyGroup>
-    <DefineConstants>DriverDebug</DefineConstants>
-  </PropertyGroup>
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
