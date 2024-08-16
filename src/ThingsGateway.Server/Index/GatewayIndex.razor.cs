@@ -10,10 +10,17 @@
 //------------------------------------------------------------------------------
 
 
+#if !Admin
 
 
+using BootstrapBlazor.Components;
+
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Localization;
+
+using System.Diagnostics.CodeAnalysis;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
@@ -25,7 +32,7 @@ namespace ThingsGateway.Gateway.Razor;
 
 [Route("/")]
 [Route("/index")]
-public partial class Index : IDisposable
+public partial class GatewayIndex : IDisposable
 {
     #region 曲线
 
@@ -155,7 +162,7 @@ public partial class Index : IDisposable
     private IRpcLogService RpcLogService { get; set; }
 
     [Inject]
-    private IStringLocalizer<Index> Localizer { get; set; }
+    private IStringLocalizer<GatewayIndex> Localizer { get; set; }
 
     private IEnumerable<TimelineItem>? SysOperateLogItems { get; set; }
     private IEnumerable<TimelineItem>? BackendLogItems { get; set; }
@@ -200,3 +207,4 @@ public partial class Index : IDisposable
     }
 }
 
+#endif

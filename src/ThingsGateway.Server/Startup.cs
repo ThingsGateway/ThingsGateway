@@ -8,8 +8,10 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using CSScriptLib;
-
+#if !Admin
+    using CSScriptLib;
+    using ThingsGateway.Gateway.Application;
+#endif
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Localization;
@@ -17,7 +19,6 @@ using Microsoft.Extensions.Options;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
-using ThingsGateway.Gateway.Application;
 using ThingsGateway.Logging;
 
 using UAParser;
@@ -29,8 +30,9 @@ public class Startup : AppStartup
 {
     public void ConfigBlazorServer(IServiceCollection services)
     {
-        CSScript.EvaluatorConfig.ReferenceDomainAssemblies = false;
+#if !Admin
         services.AddScoped<IGatewayExportService, GatewayExportService>();
+#endif
         // 增加网站服务
         AddWebSiteServices(services);
     }

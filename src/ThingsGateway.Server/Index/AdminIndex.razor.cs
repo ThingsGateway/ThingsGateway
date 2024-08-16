@@ -13,8 +13,14 @@
 
 #if Admin
 
+using BootstrapBlazor.Components;
+
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Localization;
+
+using System.Diagnostics.CodeAnalysis;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core.Extension;
@@ -23,7 +29,7 @@ namespace ThingsGateway.Admin.Razor;
 
 [Route("/")]
 [Route("/index")]
-public partial class Index : IDisposable
+public partial class AdminIndex : IDisposable
 {
     private HardwareInfoService HardwareInfoService { get; set; }
 
@@ -143,7 +149,7 @@ public partial class Index : IDisposable
     private ISysOperateLogService SysOperateLogService { get; set; }
 
     [Inject]
-    private IStringLocalizer<Index> Localizer { get; set; }
+    private IStringLocalizer<AdminIndex> Localizer { get; set; }
 
     private IEnumerable<TimelineItem>? Items { get; set; }
 

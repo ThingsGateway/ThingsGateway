@@ -102,9 +102,6 @@
     "UpdatePasswordInfo": "Change Password",
     "UpdateWorkbenchInfo": "Update Personal Workbench",
     "WorkbenchInfo": "Personal Workbench"
-  },
-  "ThingsGateway.Admin.Razor.Index": {
-    "Shortcuts": "Shortcuts",
-    "OperLog": "Recent Operations"
   }
+
 }

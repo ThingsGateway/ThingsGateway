@@ -3,7 +3,7 @@
 @using ThingsGateway.Admin.Application
 
 <CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="NetCoreApp.RazorAssemblies">
+    <Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="NetCoreApp.RazorAssemblies.Where(a=>a!=typeof(Routes).Assembly)">
     <Found Context="routeData">
         @{
 #if Admin

@@ -252,6 +252,7 @@
     "ChannelId.Required": "{0} cannot be empty",
     "IntervalTime": "DefaultIntervalTime",
     "IntervalTime.MinValue": "{0} value is too small",
+    "PluginType": "PluginType",
     "PluginName": "PluginName",
     "PluginName.Required": "{0} cannot be empty",
     "Enable": "Enable",

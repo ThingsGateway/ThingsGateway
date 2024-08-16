@@ -8,11 +8,18 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+#if !Admin
+
+using BootstrapBlazor.Components;
+
+using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
+
 using ThingsGateway.Gateway.Application;
 
 namespace ThingsGateway.Gateway.Razor;
 
-public partial class IndexComponent : IDisposable
+public partial class GatewayIndexComponent : IDisposable
 {
     public bool Disposed { get; set; }
 
@@ -158,3 +165,4 @@ public partial class IndexComponent : IDisposable
 
     #endregion 曲线
 }
+#endif

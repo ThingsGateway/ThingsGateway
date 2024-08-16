@@ -2,14 +2,18 @@
 
 
 
+@using BootstrapBlazor.Components
+@using Microsoft.AspNetCore.Authorization
 @using ThingsGateway.Admin.Application
 @attribute [Authorize]
 @attribute [IgnoreRolePermission]
 
 
 @{
+#if !Admin
+}
 
-    <IndexComponent Localizer=Localizer></IndexComponent>
+<GatewayIndexComponent Localizer=Localizer></GatewayIndexComponent>
 
     <div class="row g-2 mx-1 form-inline">
 
@@ -90,4 +94,7 @@
             </Card>
         </div>
     </div>
+
+@{
+#endif
 }

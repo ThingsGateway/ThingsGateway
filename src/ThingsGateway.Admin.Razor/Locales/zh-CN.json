@@ -104,13 +104,6 @@
     "UpdatePasswordInfo": "修改密码",
     "UpdateWorkbenchInfo": "更新个人工作台",
     "WorkbenchInfo": "个人工作台"
-  },
-  "ThingsGateway.Admin.Razor.Index": {
-    "Shortcuts": "快捷方式",
-    "OperLog": "最近操作",
-    "HardwareInfoChart": "硬件信息历史曲线",
-    "DateTime": "时间",
-    "Data": "数据",
-    "HisHardwareInfo": "历史曲线"
   }
+
 }

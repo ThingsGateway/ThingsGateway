@@ -297,6 +297,7 @@
     "IntervalTime": "默认执行间隔",
     "IntervalTime.MinValue": " {0} 值太小",
 
+    "PluginType": "插件类型",
     "PluginName": "插件名称",
     "PluginName.Required": " {0} 不可为空",
     "Enable": "设备使能",

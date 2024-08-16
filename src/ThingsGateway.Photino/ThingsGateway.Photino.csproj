@@ -26,7 +26,7 @@
       　　　　.allowedextension
     </AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>-->
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(SolutionName)'!='ThingsGateway - Admin'">
 
     <Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;set targetFWS=net8.0&#xD;&#xA;for %25%25f in (%25targetFWS%25) do (&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Photino\bin\$(Configuration)\net6.0\Plugins&quot;&#xD;&#xA;    set &quot;dir1=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\%25%25f\Plugins&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    if not exist &quot;!dir1!&quot; md &quot;!dir1!&quot;&#xD;&#xA;xcopy  &quot;!dir1!&quot; &quot;!dir!&quot;  /E /I /H /K /Y&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" Condition="'$(OS)'=='Windows_NT'" />
   </Target>
@@ -41,15 +41,36 @@
   <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
     <DefineConstants>Admin</DefineConstants>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.NetCore\ThingsGateway.Admin.NetCore.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(SolutionName)' != 'ThingsGateway - Admin'">
+
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.NetCore\ThingsGateway.Gateway.NetCore.csproj" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Content Include="..\ThingsGateway.Server\Index\AdminIndex.razor" Link="Index\AdminIndex.razor" />
+    <Content Include="..\ThingsGateway.Server\Index\GatewayIndex.razor" Link="Index\GatewayIndex.razor" />
+    <Compile Include="..\ThingsGateway.Server\Index\AdminIndex.razor.cs" Link="Index\AdminIndex.razor.cs" />
+    <Compile Include="..\ThingsGateway.Server\Index\GatewayIndex.razor.cs" Link="Index\GatewayIndex.razor.cs" />
+    <Content Include="..\ThingsGateway.Server\Index\GatewayIndexComponent.razor" Link="Index\GatewayIndexComponent.razor" />
+    <Compile Include="..\ThingsGateway.Server\Index\GatewayIndexComponent.razor.cs" Link="Index\GatewayIndexComponent.razor.cs" />
+    <None Include="..\ThingsGateway.Server\Index\AdminIndex.razor.css" Link="Index\AdminIndex.razor.css" />
+    <None Include="..\ThingsGateway.Server\Index\GatewayIndex.razor.css" Link="Index\GatewayIndex.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="..\ThingsGateway.Server\Locales\en-US.json" Link="Locales\en-US.json" />
+    <EmbeddedResource Include="..\ThingsGateway.Server\Locales\zh-CN.json" Link="Locales\zh-CN.json" />
+    <EmbeddedResource Include="Locales\*.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   
   <ItemGroup>
@@ -78,6 +99,10 @@
     <None Include="$(SolutionDir)..\README.md" Pack="true" PackagePath="\" />
     <None Include="$(SolutionDir)..\LICENSE" Pack="true" PackagePath="\" />
     <None Include="$(SolutionDir)..\icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Locales\" />
   </ItemGroup>
 
 

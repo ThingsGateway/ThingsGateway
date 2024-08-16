@@ -1,0 +1,37 @@
+﻿{
+  "ThingsGateway.Admin.Razor.AdminIndex": {
+    "CollectDevice": "采集设备",
+    "BusinessDevice": "业务设备",
+    "Variable": "变量",
+    "Alarm": "实时报警",
+    "AlarmCount": "报警数量",
+    "OnLine": "在线",
+    "OffLine": "离线",
+    "Shortcuts": "快捷方式",
+    "OperLog": "最近操作",
+    "BackendLog": "网关后台日志",
+    "RpcLog": "网关RPC日志",
+    "HardwareInfoChart": "硬件信息历史曲线",
+    "DateTime": "时间",
+    "Data": "数据",
+    "HisHardwareInfo": "历史曲线"
+  },
+  "ThingsGateway.Gateway.Razor.GatewayIndex": {
+    "CollectDevice": "采集设备",
+    "BusinessDevice": "业务设备",
+    "Variable": "变量",
+    "Alarm": "实时报警",
+    "AlarmCount": "报警数量",
+    "OnLine": "在线",
+    "OffLine": "离线",
+    "Shortcuts": "快捷方式",
+    "OperLog": "最近操作",
+    "BackendLog": "网关后台日志",
+    "RpcLog": "网关RPC日志",
+    "HardwareInfoChart": "硬件信息历史曲线",
+    "DateTime": "时间",
+    "Data": "数据",
+    "HisHardwareInfo": "历史曲线"
+  }
+
+}

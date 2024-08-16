@@ -1,0 +1,37 @@
+﻿{
+
+  "ThingsGateway.Admin.Razor.AdminIndex": {
+    "CollectDevice": "Collect Device",
+    "BusinessDevice": "Business Device",
+    "Variable": "Variable",
+    "Alarm": "Real-time Alarm",
+    "AlarmCount": "Alarm Count",
+    "OnLine": "Online",
+    "OffLine": "Offline",
+    "Shortcuts": "Shortcuts",
+    "OperLog": "Recent Operations",
+    "BackendLog": "Gateway Backend Log",
+    "RpcLog": "Gateway RPC Log",
+    "HardwareInfoChart": "Hardware Information Historical Chart",
+    "DateTime": "Date Time",
+    "Data": "Data",
+    "HisHardwareInfo": "Historical Chart"
+  },
+  "ThingsGateway.Gateway.Razor.GatewayIndex": {
+    "CollectDevice": "Collect Device",
+    "BusinessDevice": "Business Device",
+    "Variable": "Variable",
+    "Alarm": "Real-time Alarm",
+    "AlarmCount": "Alarm Count",
+    "OnLine": "Online",
+    "OffLine": "Offline",
+    "Shortcuts": "Shortcuts",
+    "OperLog": "Recent Operations",
+    "BackendLog": "Gateway Backend Log",
+    "RpcLog": "Gateway RPC Log",
+    "HardwareInfoChart": "Hardware Information Historical Chart",
+    "DateTime": "Date Time",
+    "Data": "Data",
+    "HisHardwareInfo": "Historical Chart"
+  }
+}
