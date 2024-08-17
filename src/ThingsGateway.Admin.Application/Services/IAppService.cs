@@ -18,12 +18,26 @@ namespace ThingsGateway.Admin.Application;
 
 public interface IAppService
 {
+    /// <summary>
+    /// ClientInfo
+    /// </summary>
     public ClientInfo? ClientInfo { get; }
 
+    /// <summary>
+    /// ClaimsPrincipal
+    /// </summary>
     public ClaimsPrincipal? User { get; }
 
+    /// <summary>
+    /// RemoteIpAddress
+    /// </summary>
     public IPAddress? RemoteIpAddress { get; }
 
+    /// <summary>
+    /// GetReturnUrl
+    /// </summary>
+    /// <param name="returnUrl"></param>
+    /// <returns></returns>
     public string GetReturnUrl(string returnUrl);
 
 

@@ -5,17 +5,8 @@
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="NetCoreApp.RazorAssemblies.Where(a=>a!=typeof(Routes).Assembly)">
     <Found Context="routeData">
-        @{
-#if Admin
-}
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Admin.Razor.MainLayout)" />
-                @{
-#else
-}
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Gateway.Razor.MainLayout)" />
-                @{
-#endif
-}
+
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(Razor.MainLayout)" />
 
     </Found>
     <NotFound>

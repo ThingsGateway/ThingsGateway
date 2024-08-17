@@ -19,6 +19,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 导出文件
 /// </summary>
+[ApiDescriptionSettings(false)]
 [Route("api/gatewayExport")]
 [LoggingMonitor]
 public class GatewayExportController : ControllerBase
@@ -31,9 +32,6 @@ public class GatewayExportController : ControllerBase
     private readonly IImportExportService _importExportService;
 
 
-    /// <summary>
-    /// <inheritdoc cref="GatewayExportController"/>
-    /// </summary>
     public GatewayExportController(
         IChannelService channelService,
         IDeviceService deviceService,

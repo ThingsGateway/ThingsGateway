@@ -11,7 +11,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using System.ComponentModel;
+
 using ThingsGateway.Admin.Application;
+using ThingsGateway.ASPNetCore;
 using ThingsGateway.Foundation;
 
 namespace ThingsGateway.Gateway.Application;
@@ -19,13 +22,13 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 设备控制
 /// </summary>
+[ApiDescriptionSettings("ThingsGateway.OpenApi", Order = 200)]
 [Route("openApi/control")]
 [RolePermission]
 [LoggingMonitor]
 [Authorize(AuthenticationSchemes = "Bearer")]
 public class ControlControler : ControllerBase
 {
-    /// <inheritdoc cref="ControlControler"/>
     public ControlControler(IRpcService rpcService)
     {
         _rpcService = rpcService;
@@ -38,6 +41,7 @@ public class ControlControler : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpPost("pasueBusinessThread")]
+    [DisplayName("控制业务线程启停")]
     public void PasueBusinessThread(long id, bool isStart)
     {
         HostedServiceUtil.BusinessDeviceHostedService.PasueThread(id, isStart);
@@ -48,6 +52,7 @@ public class ControlControler : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpPost("pasueCollectThread")]
+    [DisplayName("控制采集线程启停")]
     public void PasueCollectThread(long id, bool isStart)
     {
         HostedServiceUtil.CollectDeviceHostedService.PasueThread(id, isStart);
@@ -58,6 +63,7 @@ public class ControlControler : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpPost("restartBusinessThread")]
+    [DisplayName("重启业务线程")]
     public async Task RestartBusinessDeviceThread(long id)
     {
         if (id <= 0)
@@ -75,6 +81,7 @@ public class ControlControler : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpPost("restartCollectThread")]
+    [DisplayName("重启采集线程")]
     public async Task RestartCollectDeviceThread(long id)
     {
         if (id <= 0)
@@ -91,6 +98,7 @@ public class ControlControler : ControllerBase
     /// 写入多个变量
     /// </summary>
     [HttpPost("writeVariables")]
+    [DisplayName("写入变量")]
     public async Task<Dictionary<string, OperResult>> WriteDeviceMethods(Dictionary<string, string> objs)
     {
         var result = await _rpcService.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", objs);

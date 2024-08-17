@@ -1,12 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <Import Project="$(SolutionDir)Version.props" />
   <Import Project="$(SolutionDir)PackNuget.props" />
+  
+  <PropertyGroup>
+    <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+  </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="SpecificationDocument\Assets\index.html" />
+    <EmbeddedResource Include="SpecificationDocument\Assets\index.html" />
+  </ItemGroup>
+  
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.Startup\ThingsGateway.Startup.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.32" />
-
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.0" />
   </ItemGroup>
   
 </Project>

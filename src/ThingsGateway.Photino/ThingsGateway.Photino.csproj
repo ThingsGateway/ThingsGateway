@@ -59,7 +59,11 @@
     <Content Include="..\ThingsGateway.Server\Index\GatewayIndex.razor" Link="Index\GatewayIndex.razor" />
     <Compile Include="..\ThingsGateway.Server\Index\AdminIndex.razor.cs" Link="Index\AdminIndex.razor.cs" />
     <Compile Include="..\ThingsGateway.Server\Index\GatewayIndex.razor.cs" Link="Index\GatewayIndex.razor.cs" />
+    <Content Include="..\ThingsGateway.Server\MainLayout.razor" Link="MainLayout.razor" />
+    <Compile Include="..\ThingsGateway.Server\MainLayout.razor.cs" Link="MainLayout.razor.cs" />
+    <Content Include="..\ThingsGateway.Server\MainLayout.razor.css" Link="MainLayout.razor.css" />
     <Content Include="..\ThingsGateway.Server\Index\GatewayIndexComponent.razor" Link="Index\GatewayIndexComponent.razor" />
+
     <Compile Include="..\ThingsGateway.Server\Index\GatewayIndexComponent.razor.cs" Link="Index\GatewayIndexComponent.razor.cs" />
     <None Include="..\ThingsGateway.Server\Index\AdminIndex.razor.css" Link="Index\AdminIndex.razor.css" />
     <None Include="..\ThingsGateway.Server\Index\GatewayIndex.razor.css" Link="Index\GatewayIndex.razor.css" />
@@ -72,7 +76,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
-  
+ 
   <ItemGroup>
     <Content Update="wwwroot\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -84,6 +88,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="favicon.ico" />
+    <Content Include="favicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    
     <None Update="pm2-windows.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

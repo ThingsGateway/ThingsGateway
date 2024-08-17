@@ -65,10 +65,10 @@ public static class ObjectExtensions
         if (type == null) return obj;
         if (obj == null) return obj;
         if (type == typeof(string)) return obj?.ToString();
-        if (type == typeof(Guid) && obj != null) return Guid.Parse(obj.ToString() ?? string.Empty);
+        if (type == typeof(Guid) && obj != null) return Guid.Parse(obj.ToString());
         if (type == typeof(bool) && obj != null && obj is not bool)
         {
-            var objStr = obj.ToString()?.ToLower();
+            var objStr = obj.ToString().ToLower();
             if (objStr == "1" || objStr == "true" || objStr == "yes" || objStr == "on") return true;
             return false;
         }
@@ -79,9 +79,9 @@ public static class ObjectExtensions
         else if ((underlyingType ?? type).IsEnum)
         {
             if (underlyingType != null && string.IsNullOrWhiteSpace(obj.ToString())) return null;
-            else return Enum.Parse(underlyingType ?? type, obj.ToString() ?? string.Empty);
+            else return Enum.Parse(underlyingType ?? type, obj.ToString());
         }
-        // 处理DateTime -> DateTimeOffset 类型
+        // 处理 DateTime -> DateTimeOffset 类型
         else if (obj.GetType().Equals(typeof(DateTime)) && (underlyingType ?? type).Equals(typeof(DateTimeOffset)))
         {
             return ((DateTime)obj).ConvertToDateTimeOffset();
@@ -90,6 +90,16 @@ public static class ObjectExtensions
         else if (obj.GetType().Equals(typeof(DateTimeOffset)) && (underlyingType ?? type).Equals(typeof(DateTime)))
         {
             return ((DateTimeOffset)obj).ConvertToDateTime();
+        }
+        // 处理 DateTime -> DateOnly 类型
+        else if (obj.GetType().Equals(typeof(DateTime)) && (underlyingType ?? type).Equals(typeof(DateOnly)))
+        {
+            return DateOnly.FromDateTime(((DateTime)obj));
+        }
+        // 处理 DateTime -> TimeOnly 类型
+        else if (obj.GetType().Equals(typeof(DateTime)) && (underlyingType ?? type).Equals(typeof(TimeOnly)))
+        {
+            return TimeOnly.FromDateTime(((DateTime)obj));
         }
         else if (typeof(IConvertible).IsAssignableFrom(underlyingType ?? type))
         {
@@ -125,6 +135,7 @@ public static class ObjectExtensions
                 return o;
             }
         }
+
         return obj;
     }
 

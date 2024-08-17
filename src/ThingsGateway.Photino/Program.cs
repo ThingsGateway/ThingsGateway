@@ -63,9 +63,9 @@ internal class Program
         app.MainWindow.GrantBrowserPermissions = true;
         app.MainWindow.SetUseOsDefaultLocation(false);
         app.MainWindow.SetUseOsDefaultSize(false);
-        app.MainWindow.SetSize(new System.Drawing.Size(1600, 900));
+        app.MainWindow.SetSize(new System.Drawing.Size(1920, 1080));
         app.MainWindow.SetTitle("ThingsGateway");
-        app.MainWindow.SetIconFile("wwwroot/favicon.ico");
+        app.MainWindow.SetIconFile("favicon.ico");
         AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
         {
         };

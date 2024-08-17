@@ -12,6 +12,8 @@ using SqlSugar;
 
 using System.Collections.Concurrent;
 
+using ThingsGateway.ASPNetCore;
+using ThingsGateway.Core;
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Logging;

@@ -11,6 +11,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using System.ComponentModel;
+
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core;
 
@@ -19,13 +21,14 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 采集设备
 /// </summary>
+[ApiDescriptionSettings("ThingsGateway.OpenApi", Order = 200)]
+[DisplayName("获取配置信息")]
 [Route("openApi/configInfo")]
 [RolePermission]
 [LoggingMonitor]
 [Authorize(AuthenticationSchemes = "Bearer")]
 public class ConfigInfoControler : ControllerBase
 {
-    /// <inheritdoc cref="ConfigInfoControler"/>
     public ConfigInfoControler(
         IChannelService channelService,
         IVariableService variableService,
@@ -45,6 +48,7 @@ public class ConfigInfoControler : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("channelList")]
+    [DisplayName("获取通道信息")]
     public Task<SqlSugarPagedList<Channel>> GetChannelList([FromQuery] ChannelPageInput input)
     {
         return _channelService.PageAsync(input);
@@ -55,6 +59,7 @@ public class ConfigInfoControler : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("deviceList")]
+    [DisplayName("获取设备信息")]
     public Task<SqlSugarPagedList<Device>> GetCollectDeviceList([FromQuery] DevicePageInput input)
     {
         return _collectDeviceService.PageAsync(input);
@@ -65,6 +70,7 @@ public class ConfigInfoControler : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("variableList")]
+    [DisplayName("获取变量信息")]
     public Task<SqlSugarPagedList<Variable>> GetVariableList([FromQuery] VariablePageInput input)
     {
         return _variableService.PageAsync(input);

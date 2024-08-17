@@ -33,12 +33,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ThingsGateway.Foundation.Razor" Version="*" />
-    <PackageReference Include="ThingsGateway.Foundation.Modbus" Version="*" />
-    <PackageReference Include="ThingsGateway.Foundation.OpcUa" Version="*" />
-    <PackageReference Include="ThingsGateway.Foundation.OpcDa" Version="*" />
-    <PackageReference Include="ThingsGateway.Foundation.SiemensS7" Version="*" />
-    <PackageReference Include="ThingsGateway.Foundation.Dlt645" Version="*" />
+    <ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.Dlt645\ThingsGateway.Foundation.Dlt645.csproj" />
+    <ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.Modbus\ThingsGateway.Foundation.Modbus.csproj" />
+    <ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.OpcDa\ThingsGateway.Foundation.OpcDa.csproj" />
+    <ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.OpcUa\ThingsGateway.Foundation.OpcUa.csproj" />
+    <ProjectReference Include="..\..\adapter\ThingsGateway.Foundation.SiemensS7\ThingsGateway.Foundation.SiemensS7.csproj" />
+    <ProjectReference Include="..\..\tools\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj" />
   </ItemGroup>
 
 

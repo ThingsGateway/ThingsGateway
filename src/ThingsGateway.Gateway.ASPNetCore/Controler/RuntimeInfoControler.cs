@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Mvc;
 
 using SqlSugar;
 
+using System.ComponentModel;
+
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Core;
 using ThingsGateway.NewLife.X.Extension;
@@ -23,6 +25,8 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 采集状态信息
 /// </summary>
+[ApiDescriptionSettings("ThingsGateway.OpenApi", Order = 200)]
+[DisplayName("数据状态")]
 [Route("openApi/runtimeInfo")]
 [RolePermission]
 [LoggingMonitor]
@@ -34,6 +38,7 @@ public class RuntimeInfoControler : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("deviceList")]
+    [DisplayName("获取设备信息")]
     public SqlSugarPagedList<DeviceData> GetCollectDeviceList([FromQuery] DevicePageInput input)
     {
         var data = GlobalData.ReadOnlyCollectDevices.Select(a => a.Value)
@@ -50,6 +55,7 @@ public class RuntimeInfoControler : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("realAlarmList")]
+    [DisplayName("获取实时报警信息")]
     public SqlSugarPagedList<VariableData> GetRealAlarmList([FromQuery] VariablePageInput input)
     {
         var data = GlobalData.ReadOnlyRealAlarmVariables
@@ -64,6 +70,7 @@ public class RuntimeInfoControler : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet("variableList")]
+    [DisplayName("获取变量信息")]
     public SqlSugarPagedList<VariableData> GetVariableList([FromQuery] VariablePageInput input)
     {
         var data = GlobalData.ReadOnlyVariables.Select(a => a.Value)

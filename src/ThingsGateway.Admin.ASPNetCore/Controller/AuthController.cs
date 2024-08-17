@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ThingsGateway.Admin.Application;
 
+[ApiDescriptionSettings(false)]
 [Route("api/auth")]
 [LoggingMonitor]
 public class AuthController : ControllerBase

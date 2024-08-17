@@ -9,8 +9,8 @@
 //------------------------------------------------------------------------------
 
 #if !Admin
-    using CSScriptLib;
-    using ThingsGateway.Gateway.Application;
+using ThingsGateway.Gateway.Application;
+
 #endif
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -22,6 +22,8 @@ using ThingsGateway.Admin.Razor;
 using ThingsGateway.Logging;
 
 using UAParser;
+
+using ThingsGateway.ASPNetCore;
 
 namespace ThingsGateway.Server;
 
@@ -124,11 +126,7 @@ public class Startup : AppStartup
             var userCenterService = a.GetService<IUserCenterService>();
             var userService = a.GetService<ISysUserService>();
             var appContext = new BlazorAppContext(sysResourceService, userCenterService, userService);
-#if Admin
-            appContext.TitleLocalizer = a.GetRequiredService<IStringLocalizer<ThingsGateway.Admin.Razor.MainLayout>>();
-#else
-            appContext.TitleLocalizer = a.GetRequiredService<IStringLocalizer<ThingsGateway.Gateway.Razor.MainLayout>>();
-#endif
+            appContext.TitleLocalizer = a.GetRequiredService<IStringLocalizer<ThingsGateway.Razor.MainLayout>>();
 
             return appContext;
         });

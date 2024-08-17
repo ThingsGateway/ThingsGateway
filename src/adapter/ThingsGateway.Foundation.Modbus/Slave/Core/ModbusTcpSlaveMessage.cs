@@ -25,27 +25,6 @@ public class ModbusTcpSlaveMessage : MessageBase, IResultMessage
 
     public ModbusRequest Request { get; set; } = new();
 
-    public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
-    {
-        var pos = byteBlock.Position - HeaderLength;
-        Bytes = byteBlock.AsSegment(pos, HeaderLength + BodyLength);
-
-
-        if (Request.FunctionCode == 15)
-        {
-            byteBlock.Position += 1;
-            Request.Data = byteBlock.AsSegmentTake(Request.Length).AsSpan().ByteToBoolArray(Request.Length).Select(a => a ? (byte)0xff : (byte)0).ToArray();
-        }
-        else if (Request.FunctionCode == 16)
-        {
-            byteBlock.Position += 1;
-            Request.Data = byteBlock.AsSegmentTake(Request.Length);
-        }
-
-        OperCode = 0;
-        return FilterResult.Success;
-    }
-
     public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
     {
         Sign = byteBlock.ReadUInt16(EndianType.Big);
@@ -88,4 +67,27 @@ public class ModbusTcpSlaveMessage : MessageBase, IResultMessage
         }
         return false;
     }
+
+
+    public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
+    {
+        var pos = byteBlock.Position - HeaderLength;
+        Bytes = byteBlock.AsSegment(pos, HeaderLength + BodyLength);
+
+
+        if (Request.FunctionCode == 15)
+        {
+            byteBlock.Position += 1;
+            Request.Data = byteBlock.AsSegmentTake(Request.Length).AsSpan().ByteToBoolArray(Request.Length).Select(a => a ? (byte)0xff : (byte)0).ToArray();
+        }
+        else if (Request.FunctionCode == 16)
+        {
+            byteBlock.Position += 1;
+            Request.Data = byteBlock.AsSegmentTake(Request.Length);
+        }
+
+        OperCode = 0;
+        return FilterResult.Success;
+    }
+
 }

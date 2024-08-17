@@ -16,6 +16,7 @@ namespace ThingsGateway.Admin.Application;
 /// <summary>
 /// 文件下载
 /// </summary>
+[ApiDescriptionSettings(false)]
 [Route("api/file")]
 public class FileController : ControllerBase
 {

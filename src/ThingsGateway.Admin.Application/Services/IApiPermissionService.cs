@@ -13,7 +13,10 @@ using ThingsGateway.Admin.Application;
 
 public interface IApiPermissionService
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// 获取API树
+    /// </summary>
+    /// <returns></returns>
     public List<OpenApiPermissionTreeSelector> ApiPermissionTreeSelector();
 
 }

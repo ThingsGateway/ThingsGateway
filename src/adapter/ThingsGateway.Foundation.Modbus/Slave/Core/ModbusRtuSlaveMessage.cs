@@ -24,37 +24,7 @@ public class ModbusRtuSlaveMessage : MessageBase, IResultMessage
     public override int HeaderLength => 7;
 
     public ModbusRequest Request { get; set; } = new();
-    //主站发送的报文最低也有8个字节
 
-    public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
-    {
-        var pos = byteBlock.Position - HeaderLength;
-        var crcLen = 0;
-        Bytes = byteBlock.AsSegment(pos, HeaderLength + BodyLength);
-
-        if (Request.FunctionCode == 15)
-        {
-            Request.Data = byteBlock.AsSegmentTake(Request.Length).AsSpan().ByteToBoolArray(Request.Length).Select(a => a ? (byte)0xff : (byte)0).ToArray();
-        }
-        else if (Request.FunctionCode == 16)
-        {
-            Request.Data = byteBlock.AsSegmentTake(Request.Length);
-        }
-
-        crcLen = HeaderLength + BodyLength - 2;
-
-        var crc = CRC16Utils.Crc16Only(byteBlock.Span.Slice(pos, crcLen));
-
-        //Crc
-        var checkCrc = byteBlock.Span.Slice(pos + crcLen, 2).ToArray();
-        if (crc.SequenceEqual(checkCrc))
-        {
-            OperCode = 0;
-            return FilterResult.Success;
-        }
-
-        return FilterResult.GoOn;
-    }
 
     /// <inheritdoc/>
     public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
@@ -100,4 +70,36 @@ public class ModbusRtuSlaveMessage : MessageBase, IResultMessage
         }
         return false;
     }
+
+    public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
+    {
+        var pos = byteBlock.Position - HeaderLength;
+        var crcLen = 0;
+        Bytes = byteBlock.AsSegment(pos, HeaderLength + BodyLength);
+
+        if (Request.FunctionCode == 15)
+        {
+            Request.Data = byteBlock.AsSegmentTake(Request.Length).AsSpan().ByteToBoolArray(Request.Length).Select(a => a ? (byte)0xff : (byte)0).ToArray();
+        }
+        else if (Request.FunctionCode == 16)
+        {
+            Request.Data = byteBlock.AsSegmentTake(Request.Length);
+        }
+
+        crcLen = HeaderLength + BodyLength - 2;
+
+        var crc = CRC16Utils.Crc16Only(byteBlock.Span.Slice(pos, crcLen));
+
+        //Crc
+        var checkCrc = byteBlock.Span.Slice(pos + crcLen, 2).ToArray();
+        if (crc.SequenceEqual(checkCrc))
+        {
+            OperCode = 0;
+            return FilterResult.Success;
+        }
+
+        return FilterResult.GoOn;
+    }
+
+
 }

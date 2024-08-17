@@ -43,12 +43,7 @@ public class Startup : AppStartup
             var userCenterService = a.GetService<IUserCenterService>();
             var userService = a.GetService<ISysUserService>();
             var appContext = new BlazorAppContext(sysResourceService, userCenterService, userService);
-#if Admin
-            appContext.TitleLocalizer = a.GetRequiredService<IStringLocalizer<ThingsGateway.Admin.Razor.MainLayout>>();
-#else
-            appContext.TitleLocalizer = a.GetRequiredService<IStringLocalizer<ThingsGateway.Gateway.Razor.MainLayout>>();
-#endif
-
+            appContext.TitleLocalizer = a.GetRequiredService<IStringLocalizer<ThingsGateway.Razor.MainLayout>>();
             return appContext;
         });
         services.AddAuthorizationCore();

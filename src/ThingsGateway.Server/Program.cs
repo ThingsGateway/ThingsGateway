@@ -19,7 +19,9 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 
-using ThingsGateway.Admin.Application;
+using ThingsGateway.ASPNetCore;
+
+using Console = System.Console;
 
 namespace ThingsGateway.Server;
 
@@ -105,9 +107,7 @@ public class Program
             options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
         });
 
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(a => a.ConfigureSecurities());
+        builder.Services.AddSpecificationDocuments();
 
 
         builder.Services
@@ -147,6 +147,7 @@ public class Program
         var app = builder.Build();
 
         app.UseServices();
+        app.UseSpecificationDocuments();
 
         #region build
 
@@ -168,11 +169,7 @@ public class Program
             app.UseResponseCompression();
             app.UseStaticFiles(new StaticFileOptions { OnPrepareResponse = ctx => ctx.ProcessCache(app.Configuration) });
         }
-        else
-        {
-            app.UseSwagger();
-            app.UseSwaggerUI();
-        }
+
 
         app.UseStaticFiles(new StaticFileOptions
         {

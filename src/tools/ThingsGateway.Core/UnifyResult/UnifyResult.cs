@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Admin.Application;
+namespace ThingsGateway.Core;
 
 /// <summary>
 /// 全局返回结果

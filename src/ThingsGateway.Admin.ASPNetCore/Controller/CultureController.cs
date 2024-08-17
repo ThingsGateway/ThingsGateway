@@ -19,6 +19,7 @@ namespace ThingsGateway.Admin.Application;
 /// <summary>
 /// 文化 Controller
 /// </summary>
+[ApiDescriptionSettings(false)]
 [Route("[controller]/[action]")]
 public class CultureController : Controller
 {

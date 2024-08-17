@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 
 using System.Security.Claims;
 
+using ThingsGateway.ASPNetCore;
 using ThingsGateway.NewLife.X;
 
 namespace ThingsGateway.Admin.Application;

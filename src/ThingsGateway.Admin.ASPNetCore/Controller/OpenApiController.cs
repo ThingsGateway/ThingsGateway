@@ -13,8 +13,16 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
+using System.ComponentModel;
+
 namespace ThingsGateway.Admin.Application;
 
+
+/// <summary>
+/// 登录
+/// </summary>
+[ApiDescriptionSettings("ThingsGateway.OpenApi", Order = 200)]
+[Description("登录")]
 [Route("openapi/auth")]
 [LoggingMonitor]
 public class OpenApiController : ControllerBase
@@ -27,6 +35,7 @@ public class OpenApiController : ControllerBase
     }
 
     [HttpPost("login")]
+    [DisplayName("登录")]
     [AllowAnonymous]
     public async Task<OpenApiLoginOutput> LoginAsync([FromBody] OpenApiLoginInput input)
     {
@@ -39,6 +48,7 @@ public class OpenApiController : ControllerBase
 
     [HttpPost("logout")]
     [Authorize]
+    [DisplayName("登出")]
     [IgnoreRolePermission]
     public async Task LogoutAsync()
     {
