@@ -1,12 +1,12 @@
-﻿@using Microsoft.AspNetCore.Components.Routing
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
 @using ThingsGateway.Admin.Application
-@namespace ThingsGateway.Server
-
+@namespace ThingsGateway.Winform
+<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="NetCoreApp.RazorAssemblies.Where(a=>a!=typeof(Routes).Assembly)">
     <Found Context="routeData">
 
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Razor.MainLayout)" />
-
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(Razor.MainLayout)" />
 
     </Found>
     <NotFound>
@@ -16,5 +16,5 @@
         </NotFound>
 </Router>
 
-
+</CascadingAuthenticationState>
 

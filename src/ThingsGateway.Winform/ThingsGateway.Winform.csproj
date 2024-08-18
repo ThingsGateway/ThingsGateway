@@ -7,7 +7,7 @@
     <SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
     <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
-    <TargetFrameworks>net6.0;</TargetFrameworks>
+    <TargetFrameworks>net8.0-windows;</TargetFrameworks>
 
     <!--动态适用GC-->
     <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
@@ -22,13 +22,12 @@
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(SolutionName)'!='ThingsGateway - Admin'">
 
-    <Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;set targetFWS=net8.0&#xD;&#xA;for %25%25f in (%25targetFWS%25) do (&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Photino\bin\$(Configuration)\net6.0\Plugins&quot;&#xD;&#xA;    set &quot;dir1=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\%25%25f\Plugins&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    if not exist &quot;!dir1!&quot; md &quot;!dir1!&quot;&#xD;&#xA;xcopy  &quot;!dir1!&quot; &quot;!dir!&quot;  /E /I /H /K /Y&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" Condition="'$(OS)'=='Windows_NT'" />
+    <Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;set targetFWS=net8.0&#xD;&#xA;for %25%25f in (%25targetFWS%25) do (&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Winform\bin\$(Configuration)\net6.0\Plugins&quot;&#xD;&#xA;    set &quot;dir1=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\%25%25f\Plugins&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    if not exist &quot;!dir1!&quot; md &quot;!dir1!&quot;&#xD;&#xA;xcopy  &quot;!dir1!&quot; &quot;!dir!&quot;  /E /I /H /K /Y&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" Condition="'$(OS)'=='Windows_NT'" />
   </Target>
 
 
   <ItemGroup>
-    <PackageReference Include="Photino.NET" Version="3.1.14" />
-    <PackageReference Include="Photino.Blazor" Version="3.1.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="8.*" />
 
   </ItemGroup>
 
@@ -70,7 +69,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
- 
+
   <ItemGroup>
     <Content Update="wwwroot\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -86,7 +85,7 @@
     <Content Include="favicon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    
+
     <None Update="pm2-windows.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

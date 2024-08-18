@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <Import Project="$(SolutionDir)Version.props" />
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+    <SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
+    <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <TargetFrameworks>net8.0-windows;</TargetFrameworks>
+
+    <!--动态适用GC-->
+    <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
+    <!--使用自托管线程池-->
+    <!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
+
+    <!--使用工作站GC-->
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+
+    <!--<PlatformTarget>x86</PlatformTarget>-->
+  </PropertyGroup>
+
+  
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="8.*" />
+
+  </ItemGroup>
+
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\ThingsGateway.Debug.Rcl\ThingsGateway.Debug.Rcl.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
+    <DefineConstants>Pro</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
+    <ProjectReference Include="$(SolutionDir)\pro\ThingsGateway.Debug.ProRcl\ThingsGateway.Debug.ProRcl.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Include="$(SolutionDir)..\README.md" Pack="true" PackagePath="\" />
+    <None Include="$(SolutionDir)..\LICENSE" Pack="true" PackagePath="\" />
+    <None Include="$(SolutionDir)..\icon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+ 
+
+</Project>

@@ -11,15 +11,14 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-using Photino.Blazor;
-
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using System.Windows.Forms;
 
 using ThingsGateway.Admin.NetCore;
 
-namespace ThingsGateway.Photino;
+namespace ThingsGateway.Winform;
 
 internal class Program
 {
@@ -39,44 +38,36 @@ internal class Program
 
 #endif
 
-        var builder = PhotinoBlazorAppBuilder.CreateDefault(args);
+        ServiceCollection serviceDescriptors = new();
 
-        builder.Services.ConfigureServicesWithoutWeb();
+        serviceDescriptors.AddWindowsFormsBlazorWebView();
+
+        serviceDescriptors.ConfigureServicesWithoutWeb();
 
         // 添加配置服务
-        builder.Services.AddSingleton<IConfiguration>(NetCoreApp.Configuration);
+        serviceDescriptors.AddSingleton<IConfiguration>(NetCoreApp.Configuration);
 
         // 增加中文编码支持网页源码显示汉字
-        builder.Services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
-
-        builder.RootComponents.Add<Routes>("#app");
+        serviceDescriptors.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
 
 
-        var app = builder.Build();
+        var services = serviceDescriptors.BuildServiceProvider();
 
-        app.Services.UseServicesWithoutWeb();
 
-        app.MainWindow.ContextMenuEnabled = false;
-#if !DEBUG
-        app.MainWindow.DevToolsEnabled = false;
-#endif
-        app.MainWindow.GrantBrowserPermissions = true;
-        app.MainWindow.SetUseOsDefaultLocation(false);
-        app.MainWindow.SetUseOsDefaultSize(false);
-        app.MainWindow.SetSize(new System.Drawing.Size(1920, 1080));
-        app.MainWindow.SetTitle("ThingsGateway");
-        app.MainWindow.SetIconFile("favicon.ico");
+        services.UseServicesWithoutWeb();
+
+
+        StartHostedService(services);
         AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
         {
+            MessageBox.Show(text: error.ExceptionObject.ToString(), caption: "Error");
         };
 
-        app.MainWindow.WindowClosing += (sender, e) =>
-        {
-            StopHostedService(app.Services);
-            return false;
-        };
-        StartHostedService(app.Services);
-        app.Run();
+        Application.SetHighDpiMode(HighDpiMode.SystemAware);
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+        Application.Run(new MainForm(services));
+
         Thread.Sleep(2000);
     }
 
@@ -92,16 +83,5 @@ internal class Program
 
     }
 
-    public static void StopHostedService(IServiceProvider serviceProvider)
-    {
-
-        var applicationLifetime = serviceProvider.GetRequiredService<ApplicationLifetime>();
-        applicationLifetime.StopApplication();
-
-        var _hostedServiceExecutor = serviceProvider.GetRequiredService<HostedServiceExecutor>();
-        _hostedServiceExecutor.StopAsync(default).ConfigureAwait(false).GetAwaiter().GetResult();
-        applicationLifetime.NotifyStopped();
-
-    }
 
 }

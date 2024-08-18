@@ -10,7 +10,7 @@
 
 using Microsoft.Extensions.Hosting;
 
-namespace ThingsGateway.Photino;
+namespace ThingsGateway.Admin.NetCore;
 
 public sealed class HostedServiceExecutor
 {
@@ -37,7 +37,7 @@ public sealed class HostedServiceExecutor
         {
             try
             {
-                await service.StopAsync(token);
+                await service.StopAsync(token).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
