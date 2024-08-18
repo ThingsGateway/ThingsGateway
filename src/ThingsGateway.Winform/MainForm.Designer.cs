@@ -42,7 +42,7 @@ namespace ThingsGateway.Winform
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(2);
             Name = "MainForm";
-            Text = "MainForm";
+            Text = "ThingsGateway";
             ResumeLayout(false);
         }
 
