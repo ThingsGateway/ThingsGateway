@@ -23,4 +23,3 @@ cd %~dp0
 rem 执行文件夹下的 ps1 文件
 powershell.exe -ExecutionPolicy Bypass -File nuget-push.ps1
 
-pause
