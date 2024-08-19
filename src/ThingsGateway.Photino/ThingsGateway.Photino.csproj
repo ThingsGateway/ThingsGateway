@@ -8,6 +8,7 @@
     <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <TargetFrameworks>net6.0;</TargetFrameworks>
+		<!--<PublishAot>true</PublishAot>-->
 
     <!--动态适用GC-->
     <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
@@ -27,6 +28,7 @@
 
 
   <ItemGroup>
+    <PackageReference Include="Photino.Native" Version="3.1.5" />
     <PackageReference Include="Photino.NET" Version="3.1.14" />
     <PackageReference Include="Photino.Blazor" Version="3.1.8" />
 

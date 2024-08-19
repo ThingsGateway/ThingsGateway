@@ -37,6 +37,9 @@
     <Content Include="DockerPush.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="DockerPush_arm64.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -74,10 +77,15 @@
 
   <ItemGroup>
     <None Remove="favicon.ico" />
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\linux_arm64.pubxml" />
+    <_WebToolingArtifacts Remove="Properties\PublishProfiles\linux_x64.pubxml" />
     <Content Include="favicon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Update="Dockerfile">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Dockerfile_arm64">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="pm2-windows.json">
