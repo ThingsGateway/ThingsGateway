@@ -34,9 +34,4 @@ rem 执行发布文件夹下的 ps1 文件
 powershell.exe -ExecutionPolicy Bypass -File DockerPush_arm64.ps1
 
 
-rem 切换文件夹
-cd %~dp0
-
-rem 执行文件夹下的 ps1 文件
-powershell.exe -ExecutionPolicy Bypass -File nuget-push.ps1
 
