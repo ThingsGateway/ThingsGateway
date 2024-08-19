@@ -44,13 +44,6 @@
                         <CultureChooser />
                     </div>
 
-
-                    @* 全屏按钮 *@
-                    <FullScreenButton class="layout-header-bar d-none d-lg-flex px-1" Icon="fa fa-arrows-alt"
-                                      TooltipPlacement=Placement.Bottom TooltipText="@Localizer[nameof(FullScreenButton)]" />
-
-
-
                     <Logout ImageUrl="@(AppContext.CurrentUser.Avatar??$"{WebsiteConst.DefaultResourceUrl}images/defaultUser.svg")" ShowUserName=false DisplayName="@UserManager.UserAccount" UserName="@UserManager.UserAccount">
                         <LinkTemplate>
                             @* 切换模块 *@
