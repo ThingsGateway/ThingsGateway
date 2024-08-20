@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using Opc.Ua;
 
 using ThingsGateway.Foundation.Extension.Generic;
+using ThingsGateway.Foundation.Json.Extension;
 using ThingsGateway.Foundation.OpcUa;
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.NewLife.X.Threading;
@@ -192,10 +193,11 @@ public class OpcUaMaster : CollectBase
     /// <inheritdoc/>
     protected override async ValueTask<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
     {
+        var addresss = deviceVariableSourceRead.VariableRunTimes.Where(a => !a.RegisterAddress.IsNullOrEmpty()).Select(a => a.RegisterAddress!).ToArray();
         try
         {
             await WriteLock.WaitAsync(cancellationToken).ConfigureAwait(false);
-            var result = await _plc.ReadJTokenValueAsync(deviceVariableSourceRead.VariableRunTimes.Where(a => !a.RegisterAddress.IsNullOrEmpty()).Select(a => a.RegisterAddress!).ToArray(), cancellationToken).ConfigureAwait(false);
+            var result = await _plc.ReadJTokenValueAsync(addresss, cancellationToken).ConfigureAwait(false);
             foreach (var data in result)
             {
                 if (!cancellationToken.IsCancellationRequested)
@@ -240,7 +242,7 @@ public class OpcUaMaster : CollectBase
         }
         catch (Exception ex)
         {
-            return new OperResult<byte[]>($"ReadSourceAsync Error：{Environment.NewLine}{ex}");
+            return new OperResult<byte[]>($"ReadSourceAsync {addresss.ToJsonNetString()}：{Environment.NewLine}{ex}");
         }
         finally
         {
