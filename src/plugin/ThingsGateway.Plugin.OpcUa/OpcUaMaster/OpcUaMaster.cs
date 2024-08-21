@@ -215,9 +215,13 @@ public class OpcUaMaster : CollectBase
                         {
                             value = data.Item3;
                         }
-                        var isGood = StatusCode.IsGood(data.Item2.StatusCode);
 
-                        var time = data.Item2.SourceTimestamp;
+                        var isGood = StatusCode.IsGood(data.Item2.StatusCode);
+                        DateTime time = default;
+                        if (_driverProperties.SourceTimestampEnable)
+                        {
+                            time = data.Item2.SourceTimestamp.ToLocalTime();
+                        }
                         if (isGood)
                         {
                             item.SetValue(value, time);
