@@ -121,6 +121,7 @@
     "WriteExpressions": "写入表达式",
     "RpcWriteEnable": "远程写入",
 
+    "AlarmDelay": "报警延时",
     "BoolOpenAlarmEnable": "布尔开报警使能",
     "BoolOpenRestrainExpressions": "布尔开报警约束",
     "BoolOpenAlarmText": "布尔开报警文本",
@@ -398,6 +399,7 @@
     "WriteExpressions": "写入表达式",
     "RpcWriteEnable": "远程写入",
 
+    "AlarmDelay": "报警延时",
     "BoolOpenAlarmEnable": "布尔开报警使能",
     "BoolOpenRestrainExpressions": "布尔开报警约束",
     "BoolOpenAlarmText": "布尔开报警文本",

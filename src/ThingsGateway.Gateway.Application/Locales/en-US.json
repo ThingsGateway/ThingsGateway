@@ -93,6 +93,7 @@
     "WriteExpressions": "WriteExpressions",
     "RpcWriteEnable": "RpcWriteEnable",
 
+    "AlarmDelay": "AlarmDelay",
     "BoolOpenAlarmEnable": "BoolOpenAlarmEnable",
     "BoolOpenRestrainExpressions": "BoolOpenRestrainExpressions",
     "BoolOpenAlarmText": "BoolOpenAlarmText",
@@ -336,6 +337,7 @@
     "ReadExpressions": "ReadExpressions",
     "WriteExpressions": "WriteExpressions",
     "RpcWriteEnable": "RpcWriteEnable",
+    "AlarmDelay": "AlarmDelay",
     "BoolOpenAlarmEnable": "BoolOpenAlarmEnable",
     "BoolOpenRestrainExpressions": "BoolOpenRestrainExpressions",
     "BoolOpenAlarmText": "BoolOpenAlarmText",

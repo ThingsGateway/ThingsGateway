@@ -16,6 +16,11 @@ namespace ThingsGateway.Gateway.Application;
 public enum EventTypeEnum
 {
     /// <summary>
+    /// 准备报警
+    /// </summary>
+    Prepare,
+
+    /// <summary>
     /// 报警产生
     /// </summary>
     Alarm,

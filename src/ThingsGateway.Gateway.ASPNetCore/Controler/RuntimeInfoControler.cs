@@ -58,7 +58,7 @@ public class RuntimeInfoControler : ControllerBase
     [DisplayName("获取实时报警信息")]
     public SqlSugarPagedList<VariableData> GetRealAlarmList([FromQuery] VariablePageInput input)
     {
-        var data = GlobalData.ReadOnlyRealAlarmVariables
+        var data = GlobalData.ReadOnlyRealAlarmVariables.Select(a => a.Value)
             .WhereIF(!input.Name.IsNullOrEmpty(), a => a.Name == input.Name)
             .WhereIF(input.DeviceId != null, a => a.DeviceId == input.DeviceId)
             .ToPagedList(input);

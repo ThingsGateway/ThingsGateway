@@ -69,7 +69,7 @@ public static class GlobalData
     /// <summary>
     /// 实时报警列表
     /// </summary>
-    public static IEnumerable<VariableRunTime> ReadOnlyRealAlarmVariables => HostedServiceUtil.AlarmHostedService.RealAlarmVariables;
+    public static IReadOnlyDictionary<string, VariableRunTime> ReadOnlyRealAlarmVariables => HostedServiceUtil.AlarmHostedService.RealAlarmVariables;
 
     /// <summary>
     /// 只读的变量字典，提供对变量的只读访问

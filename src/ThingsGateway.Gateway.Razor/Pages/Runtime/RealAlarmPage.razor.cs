@@ -20,7 +20,7 @@ public partial class RealAlarmPage
 
     private Task<QueryData<VariableRunTime>> OnQueryAsync(QueryPageOptions options)
     {
-        var data = GlobalData.ReadOnlyRealAlarmVariables.GetQueryData(options);
+        var data = GlobalData.ReadOnlyRealAlarmVariables.Select(a => a.Value).GetQueryData(options);
         return Task.FromResult(data);
     }
 

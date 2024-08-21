@@ -131,6 +131,12 @@ public class Variable : PrimaryIdEntity
     public ConcurrentDictionary<long, Dictionary<string, string>>? VariablePropertys { get; set; }
 
     #region 报警
+    /// <summary>
+    /// 报警延时
+    /// </summary>
+    [SugarColumn(ColumnDescription = "报警延时")]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public int AlarmDelay { get; set; }
 
     /// <summary>
     /// 布尔开报警使能

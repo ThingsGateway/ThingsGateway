@@ -14,11 +14,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using ThingsGateway.Core.Extension;
+using System.Collections.Concurrent;
+
 using ThingsGateway.Gateway.Application.Extensions;
 using ThingsGateway.NewLife.X;
-
-using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -49,7 +48,7 @@ public class AlarmHostedService : BackgroundService
     /// <summary>
     /// 实时报警列表
     /// </summary>
-    internal ConcurrentList<VariableRunTime> RealAlarmVariables { get; } = new();
+    internal ConcurrentDictionary<string, VariableRunTime> RealAlarmVariables { get; } = new();
 
     private IEnumerable<VariableRunTime> _deviceVariables => GlobalData.Variables.Select(a => a.Value).Where(a => a.IsOnline && a.AlarmEnable);
 
@@ -209,6 +208,7 @@ public class AlarmHostedService : BackgroundService
         string ex; // 报警约束表达式
         string text; // 报警文本
         AlarmTypeEnum? alarmEnum; // 报警类型枚举
+        int delay = item.AlarmDelay; // 获取报警延迟时间
 
         // 检查变量的数据类型
         if (item.DataType.GetSystemType() == typeof(bool))
@@ -231,7 +231,7 @@ public class AlarmHostedService : BackgroundService
         if (alarmEnum == null)
         {
             // 如果仍未获取到报警类型，则触发需恢复报警事件（如果存在）
-            AlarmChange(item, null, text, EventTypeEnum.Finish, alarmEnum);
+            AlarmChange(item, null, text, EventTypeEnum.Finish, alarmEnum, delay);
         }
         else
         {
@@ -246,14 +246,14 @@ public class AlarmHostedService : BackgroundService
                     if (result)
                     {
                         // 如果表达式结果为true，则触发报警事件
-                        AlarmChange(item, limit, text, EventTypeEnum.Alarm, alarmEnum);
+                        AlarmChange(item, limit, text, EventTypeEnum.Alarm, alarmEnum, delay);
                     }
                 }
             }
             else
             {
                 // 如果不存在报警约束表达式，则直接触发报警事件
-                AlarmChange(item, limit, text, EventTypeEnum.Alarm, alarmEnum);
+                AlarmChange(item, limit, text, EventTypeEnum.Alarm, alarmEnum, delay);
             }
         }
     }
@@ -266,13 +266,15 @@ public class AlarmHostedService : BackgroundService
     /// <param name="text">报警文本</param>
     /// <param name="eventEnum">报警事件类型枚举</param>
     /// <param name="alarmEnum">报警类型枚举</param>
-    private void AlarmChange(VariableRunTime item, object limit, string text, EventTypeEnum eventEnum, AlarmTypeEnum? alarmEnum)
+    /// <param name="delay">报警延时</param>
+    private void AlarmChange(VariableRunTime item, object limit, string text, EventTypeEnum eventEnum, AlarmTypeEnum? alarmEnum, int delay)
     {
+        bool changed = false;
         if (eventEnum == EventTypeEnum.Finish)
         {
             // 如果是需恢复报警事件
             // 如果实时报警列表中不存在该变量，则直接返回
-            if (!RealAlarmVariables.Any(it => it.Id == item.Id))
+            if (!RealAlarmVariables.ContainsKey(item.Name))
             {
                 return;
             }
@@ -281,8 +283,7 @@ public class AlarmHostedService : BackgroundService
         {
             // 如果是触发报警事件
             // 在实时报警列表中查找该变量
-            var variable = RealAlarmVariables.FirstOrDefault(it => it.Id == item.Id);
-            if (variable != null)
+            if (RealAlarmVariables.TryGetValue(item.Name, out var variable))
             {
                 // 如果变量已经处于相同的报警类型，则直接返回
                 if (item.AlarmType == alarmEnum)
@@ -293,26 +294,88 @@ public class AlarmHostedService : BackgroundService
         // 更新变量的报警信息和事件时间
         if (eventEnum == EventTypeEnum.Alarm)
         {
-            // 如果是触发报警事件
-            item.AlarmType = alarmEnum;
-            item.EventType = eventEnum;
-            item.AlarmLimit = limit.ToString();
-            item.AlarmCode = item.Value.ToString();
-            item.AlarmText = text;
-            item.AlarmTime = DateTime.Now;
-            item.EventTime = DateTime.Now;
+            //添加报警延时策略
+            if (delay > 0)
+            {
+                if (item.EventType != EventTypeEnum.Alarm && item.EventType != EventTypeEnum.Prepare)
+                {
+                    item.EventType = EventTypeEnum.Prepare;//准备报警
+                    item.PrepareEventTime = DateTime.Now;
+                }
+                else
+                {
+                    if (item.EventType == EventTypeEnum.Prepare)
+                    {
+                        if ((DateTime.Now - item.PrepareEventTime!.Value).TotalSeconds > delay)
+                        {
+                            //超过延时时间，触发报警
+                            item.EventType = EventTypeEnum.Alarm;
+                            item.AlarmTime = DateTime.Now;
+                            item.EventTime = DateTime.Now;
+                            item.AlarmType = alarmEnum;
+                            item.AlarmLimit = limit.ToString();
+                            item.AlarmCode = item.Value.ToString();
+                            item.AlarmText = text;
+                            item.PrepareEventTime = null;
+
+                            changed = true;
+                        }
+                    }
+                    else if (item.EventType == EventTypeEnum.Alarm && item.AlarmType != alarmEnum)
+                    {
+                        //报警类型改变，重新计时
+                        if (item.PrepareEventTime == null)
+                            item.PrepareEventTime = DateTime.Now;
+                        if ((DateTime.Now - item.PrepareEventTime!.Value).TotalSeconds > delay)
+                        {
+                            //超过延时时间，触发报警
+                            item.EventType = EventTypeEnum.Alarm;
+                            item.AlarmTime = DateTime.Now;
+                            item.EventTime = DateTime.Now;
+                            item.AlarmType = alarmEnum;
+                            item.AlarmLimit = limit.ToString();
+                            item.AlarmCode = item.Value.ToString();
+                            item.AlarmText = text;
+                            item.PrepareEventTime = null;
+                            changed = true;
+                        }
+
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                // 如果是触发报警事件
+                item.EventType = eventEnum;
+                item.AlarmTime = DateTime.Now;
+                item.EventTime = DateTime.Now;
+                item.AlarmType = alarmEnum;
+                item.AlarmLimit = limit.ToString();
+                item.AlarmCode = item.Value.ToString();
+                item.AlarmText = text;
+                changed = true;
+            }
+
+
         }
         else if (eventEnum == EventTypeEnum.Finish)
         {
             // 如果是需恢复报警事件
             // 获取旧的报警信息
-            var oldAlarm = RealAlarmVariables.FirstOrDefault(it => it.Id == item.Id);
-            item.AlarmType = oldAlarm.AlarmType;
-            item.EventType = eventEnum;
-            item.AlarmLimit = oldAlarm.AlarmLimit;
-            item.AlarmCode = item.Value.ToString();
-            item.AlarmText = text;
-            item.EventTime = DateTime.Now;
+            if (RealAlarmVariables.TryGetValue(item.Name, out var oldAlarm))
+            {
+                item.AlarmType = oldAlarm.AlarmType;
+                item.EventType = eventEnum;
+                item.AlarmLimit = oldAlarm.AlarmLimit;
+                item.AlarmCode = item.Value.ToString();
+                item.AlarmText = text;
+                item.EventTime = DateTime.Now;
+            }
+            changed = true;
         }
         else if (eventEnum == EventTypeEnum.Check)
         {
@@ -323,26 +386,30 @@ public class AlarmHostedService : BackgroundService
             item.AlarmCode = item.Value.ToString();
             item.AlarmText = text;
             item.EventTime = DateTime.Now;
+            changed = true;
         }
 
         // 触发报警变化事件
-        OnAlarmChanged?.Invoke(item.Adapt<AlarmVariable>());
-
-        if (eventEnum == EventTypeEnum.Alarm)
+        if (changed)
         {
-            // 如果是触发报警事件
-            //lock (RealAlarmVariables)
+            if (item.EventType == EventTypeEnum.Alarm)
             {
-                // 从实时报警列表中移除旧的报警信息，并添加新的报警信息
-                RealAlarmVariables.RemoveWhere(it => it.Id == item.Id);
-                RealAlarmVariables.Add(item);
+                // 如果是触发报警事件
+                //lock (RealAlarmVariables)
+                {
+                    // 从实时报警列表中移除旧的报警信息，并添加新的报警信息
+                    RealAlarmVariables.AddOrUpdate(item.Name, a => item, (a, b) => item);
+                }
             }
+            else
+            {
+                // 如果是需恢复报警事件或检查报警事件，则从实时报警列表中移除该变量
+                RealAlarmVariables.TryRemove(item.Name, out _);
+            }
+            OnAlarmChanged?.Invoke(item.Adapt<AlarmVariable>());
         }
-        else
-        {
-            // 如果是需恢复报警事件或检查报警事件，则从实时报警列表中移除该变量
-            RealAlarmVariables.RemoveWhere(it => it.Id == item.Id);
-        }
+
+
     }
 
     #endregion 核心实现

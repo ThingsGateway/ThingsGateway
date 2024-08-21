@@ -82,6 +82,7 @@
             <TabItem Text=@Localizer["AlarmInformation"]>
                 <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
                     <FieldItems>
+
                         <EditorItem @bind-Field="@context.BoolCloseAlarmText" />
                         <EditorItem @bind-Field="@context.BoolCloseRestrainExpressions" />
                         <EditorItem @bind-Field="@context.BoolCloseAlarmEnable" Rows="1" />
@@ -108,6 +109,7 @@
                         <EditorItem @bind-Field="@context.CustomAlarmCode" />
                         <EditorItem @bind-Field="@context.CustomRestrainExpressions" />
                         <EditorItem @bind-Field="@context.CustomAlarmEnable" />
+                        <EditorItem @bind-Field="@context.AlarmDelay" />
                     </FieldItems>
                 </EditorForm>
             </TabItem>
@@ -219,6 +221,7 @@ else
                     <EditorItem @bind-Field="@context.CustomAlarmCode" />
                     <EditorItem @bind-Field="@context.CustomRestrainExpressions" />
                     <EditorItem @bind-Field="@context.CustomAlarmEnable" />
+                    <EditorItem @bind-Field="@context.AlarmDelay" />
                 </FieldItems>
             </EditorForm>
         </TabItem>

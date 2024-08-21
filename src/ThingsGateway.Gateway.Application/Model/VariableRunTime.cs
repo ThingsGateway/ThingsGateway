@@ -320,6 +320,11 @@ public class VariableRunTime : Variable, IVariable
     /// </summary>
     [AutoGenerateColumn(Visible = false)]
     public DateTime? EventTime { get; set; }
+    /// <summary>
+    /// 事件时间
+    /// </summary>
+    [AutoGenerateColumn(Visible = false)]
+    public DateTime? PrepareEventTime { get; set; }
 
     /// <summary>
     /// 事件类型
