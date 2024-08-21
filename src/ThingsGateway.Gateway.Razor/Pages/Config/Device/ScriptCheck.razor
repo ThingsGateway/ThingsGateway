@@ -1,0 +1,22 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+
+<div class="col-12  col-md-12">
+    <Textarea Value=@Script ValueChanged=@ScriptChanged ValueExpression="()=>Script" ShowLabelTooltip="true"
+              rows="10" ShowLabel="true" />
+</div>
+<div class="col-12  col-md-12">
+    <Textarea @bind-Value=@Input ShowLabelTooltip="true"
+              rows="10" ShowLabel="true" />
+</div>
+<div class="col-12  col-md-12">
+    <Textarea @bind-Value=@Output ShowLabelTooltip="true"
+              rows="10" ShowLabel="true" />
+</div>
+<div class="col-12  col-md-12">
+    <Button OnClick="CheckScript" class="  mt-3">
+        @Localizer["Check"]
+    </Button>
+</div>

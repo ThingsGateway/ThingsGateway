@@ -2,20 +2,20 @@
 @typeparam TItem
 
 <Table TItem="TItem" IsBordered="true" IsStriped="true" IsMultipleSelect="IsMultipleSelect" @ref="Instance" TableSize=TableSize SearchTemplate=SearchTemplate
-       IsPagination="IsPagination" PageItemsSource="PageItemsSource" IsFixedHeader="IsFixedHeader" IndentSize=24 RowHeight=RowHeight 
-       IsTree="IsTree" OnTreeExpand="OnTreeExpand!" TreeNodeConverter="TreeNodeConverter!" TreeIcon="fa-solid fa-circle-chevron-right" TreeExpandIcon="fa-solid fa-circle-chevron-right fa-rotate-90" IsAutoQueryFirstRender=IsAutoQueryFirstRender 
+       IsPagination="IsPagination" PageItemsSource="PageItemsSource" IsFixedHeader="IsFixedHeader" IndentSize=24 RowHeight=RowHeight
+       IsTree="IsTree" OnTreeExpand="OnTreeExpand!" TreeNodeConverter="TreeNodeConverter!" TreeIcon="fa-solid fa-circle-chevron-right" TreeExpandIcon="fa-solid fa-circle-chevron-right fa-rotate-90" IsAutoQueryFirstRender=IsAutoQueryFirstRender
        ShowDefaultButtons="ShowDefaultButtons" ShowAdvancedSearch="ShowAdvancedSearch" ShowResetButton=ShowResetButton
        ShowEmpty="ShowEmpty" EmptyText="@EmptyText" EmptyImage="@($"{WebsiteConst.DefaultResourceUrl}images/empty.svg")" SortString="@SortString"
-       OnQueryAsync="OnQueryAsync!" OnDeleteAsync="OnDeleteAsync!" OnSaveAsync="OnSaveAsync!" OnAddAsync="OnAddAsync" EditFooterTemplate=EditFooterTemplate
+       OnQueryAsync="OnQueryAsync!" OnDeleteAsync="OnDeleteAsync!" OnSaveAsync="OnSaveAsync!" OnAddAsync="OnAddAsync" EditFooterTemplate=EditFooterTemplate ScrollingDialogContent=ScrollingDialogContent
        ShowSkeleton="true" ShowLoading="ShowLoading" ShowSearch="ShowSearch" SearchModel=@SearchModel ShowLineNo
-       SearchMode=SearchMode ShowExportPdfButton=ShowExportPdfButton ExportButtonText=@ExportButtonText 
-       ShowExportButton=@ShowExportButton Items=Items ClickToSelect=ClickToSelect ScrollMode=ScrollMode  
+       SearchMode=SearchMode ShowExportPdfButton=ShowExportPdfButton ExportButtonText=@ExportButtonText
+       ShowExportButton=@ShowExportButton Items=Items ClickToSelect=ClickToSelect ScrollMode=ScrollMode
        ShowExportCsvButton=@ShowExportCsvButton SelectedRowsChanged=SelectedRowsChanged ShowCardView=ShowCardView
        FixedExtendButtonsColumn IsAutoRefresh=IsAutoRefresh AutoRefreshInterval=AutoRefreshInterval
        AllowDragColumn=@AllowDragColumn Height=@Height ShowRefresh=ShowRefresh
        AllowResizing=@AllowResizing ExportButtonDropdownTemplate=ExportButtonDropdownTemplate
        ShowToolbar="ShowToolbar" ClientTableName="@ClientTableName"
-       ShowExtendButtons="ShowExtendButtons" 
+       ShowExtendButtons="ShowExtendButtons"
        ShowAddButton=@(ShowAddButton??AuthorizeButton(AdminOperConst.Add))
        ShowDeleteButton=@(ShowDeleteButton??AuthorizeButton(AdminOperConst.Delete))
        ShowEditButton=@(ShowEditButton??AuthorizeButton(AdminOperConst.Edit))

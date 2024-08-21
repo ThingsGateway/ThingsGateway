@@ -91,6 +91,7 @@ public partial class MainLayout : IDisposable
     {
         return DialogService.Show(new DialogOption()
         {
+            IsScrolling = true,
             Title = Localizer["UserCenter"],
             ShowFooter = false,
             Component = BootstrapDynamicComponent.CreateComponent<UserCenterPage>(new Dictionary<string, object?>()

@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
@@ -56,21 +54,15 @@ public class BusinessPropertyWithCacheIntervalScript : BusinessPropertyWithCache
     /// <summary>
     /// 设备实体脚本
     /// </summary>
-    [DynamicProperty]
-    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
     public string? BigTextScriptDeviceModel { get; set; }
 
     /// <summary>
     /// 变量实体脚本
     /// </summary>
-    [DynamicProperty]
-    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
     public string? BigTextScriptVariableModel { get; set; }
 
     /// <summary>
     /// 报警实体脚本
     /// </summary>
-    [DynamicProperty]
-    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
     public string? BigTextScriptAlarmModel { get; set; }
 }

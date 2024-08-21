@@ -94,7 +94,8 @@
     "BasicInformation": "基础信息",
     "Connection": "连接",
     "Redundant": "冗余",
-    "Remark": "备用"
+    "Remark": "备用",
+    "Check": "检查"
   },
   "ThingsGateway.Gateway.Razor.VariableEditComponent": {
     "VariableInformation": "变量信息",

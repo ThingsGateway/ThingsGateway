@@ -87,6 +87,7 @@ public partial class SysUserPage
     {
         var op = new DialogOption()
         {
+            IsScrolling = true,
             Title = OperDescLocalizer["UserGrantRole"],
             ShowFooter = false,
             ShowCloseButton = false,

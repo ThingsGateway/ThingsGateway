@@ -135,11 +135,6 @@ public static class PluginServiceUtil
         return string.IsNullOrEmpty(fileName) ? name : $"{fileName}.{name}";
     }
 
-    /// <summary>
-    /// 插件是否支持平台
-    /// </summary>
-    /// <param name="model"></param>
-    /// <returns></returns>
     public static bool HasDynamicProperty(object model)
     {
         var type = model.GetType();

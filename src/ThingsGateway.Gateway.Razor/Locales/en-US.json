@@ -93,7 +93,8 @@
     "BasicInformation": "Basic Information",
     "Connection": "Connection",
     "Redundant": "Redundant",
-    "Remark": "Remark"
+    "Remark": "Remark",
+    "Check": "Check"
   },
   "ThingsGateway.Gateway.Razor.VariableEditComponent": {
     "VariableInformation": "Variable Information",

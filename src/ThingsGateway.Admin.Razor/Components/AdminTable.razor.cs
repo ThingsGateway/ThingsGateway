@@ -71,6 +71,10 @@ public partial class AdminTable<TItem> where TItem : class, new()
     [Parameter]
     public RenderFragment<TItem> EditFooterTemplate { get; set; }
 
+    /// <inheritdoc cref="Table{TItem}.ScrollingDialogContent"/>
+    [Parameter]
+    public bool ScrollingDialogContent { get; set; } = true;
+
     /// <inheritdoc cref="Table{TItem}.EditTemplate"/>
     [Parameter]
     public RenderFragment<TItem>? EditTemplate { get; set; }

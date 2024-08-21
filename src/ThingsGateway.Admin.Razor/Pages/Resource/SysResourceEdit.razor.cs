@@ -37,6 +37,7 @@ public partial class SysResourceEdit
 
     private Task OnToggleIconDialog() => DialogService.Show(new DialogOption()
     {
+        IsScrolling = true,
         Title = Localizer["ChoiceIcon"],
         ShowFooter = false,
         Component = BootstrapDynamicComponent.CreateComponent<MenuIconList>(new Dictionary<string, object?>()

@@ -20,48 +20,48 @@ namespace BootstrapBlazor.Components;
 [CascadingTypeParameter(nameof(TModel))]
 public partial class EditorFormObject<TModel> : IShowLabel
 {
+    private string? ClassString => CssBuilder.Default("bb-editor form-body")
+        .AddClassFromAttributes(AdditionalAttributes)
+        .Build();
+
     /// <summary>
-    /// 获得/设置 配置编辑项目集合
+    /// 支持每行多少个控件功能
     /// </summary>
-    private readonly List<IEditorItem> _editorItems = [];
+    /// <param name="item"></param>
+    /// <returns></returns>
+    private string? GetCssString(IEditorItem item)
+    {
+        int cols = 0;
+        double mdCols = 6;
+        if (item is AutoGenerateColumnAttribute a && a.Cols > 0 && a.Cols < 13)
+        {
+            cols = a.Cols;
+        }
+        if (ItemsPerRow.HasValue)
+        {
+            mdCols = Math.Min(12, Math.Ceiling(12d / ItemsPerRow.Value));
+        }
+        return CssBuilder.Default("col-12")
+            .AddClass($"col-sm-{cols}", cols > 0) // 指定 Cols
+            .AddClass($"col-sm-6 col-md-{mdCols}", mdCols < 12 && cols == 0 && item.Items == null && item.Rows == 0) // 指定 ItemsPerRow
+            .Build();
+    }
+
+    private string? FormClassString => CssBuilder.Default("row g-3")
+        .AddClass("form-inline", RowType == RowType.Inline)
+        .AddClass("form-inline-end", RowType == RowType.Inline && LabelAlign == Alignment.Right)
+        .AddClass("form-inline-center", RowType == RowType.Inline && LabelAlign == Alignment.Center)
+        .Build();
+
+    private string? FormStyleString => CssBuilder.Default()
+        .AddClass($"--bb-row-label-width: {LabelWidth}px;", LabelWidth.HasValue)
+        .Build();
 
     /// <summary>
-    /// 获得/设置 渲染的编辑项集合
-    /// </summary>
-    [NotNull]
-    private List<IEditorItem>? _formItems = null;
-
-    private bool _inited;
-
-    /// <summary>
-    /// 获得/设置 是否自动生成模型的所有属性 默认为 true 生成所有属性
+    /// 获得/设置 每行显示组件数量 默认为 null
     /// </summary>
     [Parameter]
-    public bool AutoGenerateAllItem { get; set; } = true;
-
-    /// <summary>
-    /// 获得/设置 按钮模板
-    /// </summary>
-    [Parameter]
-    public RenderFragment? Buttons { get; set; }
-
-    /// <summary>
-    /// 获得/设置 自定义列排序规则 默认 null 未设置 使用内部排序机制 1 2 3 0 -3 -2 -1 顺序
-    /// </summary>
-    [Parameter]
-    public Func<IEnumerable<ITableColumn>, IEnumerable<ITableColumn>>? ColumnOrderCallback { get; set; }
-
-    /// <summary>
-    /// 获得/设置 列模板 设置 <see cref="Items"/> 时本参数不生效
-    /// </summary>
-    [Parameter]
-    public RenderFragment<TModel>? FieldItems { get; set; }
-
-    /// <summary>
-    /// 获得/设置 是否显示为 Display 组件 默认为 false
-    /// </summary>
-    [Parameter]
-    public bool IsDisplay { get; set; }
+    public int? ItemsPerRow { get; set; }
 
     /// <summary>
     /// 获得/设置 实体类编辑模式 Add 还是 Update
@@ -70,16 +70,10 @@ public partial class EditorFormObject<TModel> : IShowLabel
     public ItemChangedType ItemChangedType { get; set; }
 
     /// <summary>
-    /// 获得/设置 级联上下文绑定字段信息集合 设置此参数后 <see cref="FieldItems"/> 模板不生效
+    /// 获得/设置 设置行格式 默认 Row 布局
     /// </summary>
     [Parameter]
-    public IEnumerable<IEditorItem>? Items { get; set; }
-
-    /// <summary>
-    /// 获得/设置 每行显示组件数量 默认为 null
-    /// </summary>
-    [Parameter]
-    public int? ItemsPerRow { get; set; }
+    public RowType RowType { get; set; }
 
     /// <summary>
     /// 获得/设置 设置 <see cref="RowType" /> Inline 模式下标签对齐方式 默认 None 等效于 Left 左对齐
@@ -94,24 +88,23 @@ public partial class EditorFormObject<TModel> : IShowLabel
     public int? LabelWidth { get; set; }
 
     /// <summary>
+    /// 获得/设置 列模板 设置 <see cref="Items"/> 时本参数不生效
+    /// </summary>
+    [Parameter]
+    public RenderFragment<TModel>? FieldItems { get; set; }
+
+    /// <summary>
+    /// 获得/设置 按钮模板
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Buttons { get; set; }
+
+    /// <summary>
     /// 获得/设置 绑定模型
     /// </summary>
     [Parameter]
     [NotNull]
     public TModel? Model { get; set; }
-
-    /// <summary>
-    /// 获得/设置 默认占位符文本 默认 null
-    /// </summary>
-    [Parameter]
-    [NotNull]
-    public string? PlaceHolderText { get; set; }
-
-    /// <summary>
-    /// 获得/设置 设置行格式 默认 Row 布局
-    /// </summary>
-    [Parameter]
-    public RowType RowType { get; set; }
 
     /// <summary>
     /// 获得/设置 是否显示前置标签 默认为 null 未设置时默认显示标签
@@ -126,35 +119,10 @@ public partial class EditorFormObject<TModel> : IShowLabel
     public bool? ShowLabelTooltip { get; set; }
 
     /// <summary>
-    /// 获得/设置 未设置 GroupName 编辑项是否放置在顶部 默认 false
+    /// 获得/设置 是否显示为 Display 组件 默认为 false
     /// </summary>
     [Parameter]
-    public bool ShowUnsetGroupItemsOnTop { get; set; }
-
-    /// <summary>
-    /// 获得/设置 级联上下文 EditContext 实例 内置于 EditForm 或者 ValidateForm 时有值
-    /// </summary>
-    [CascadingParameter]
-    private EditContext? CascadedEditContext { get; set; }
-
-    private string? ClassString => CssBuilder.Default("bb-editor form-body")
-                                                                                        .AddClassFromAttributes(AdditionalAttributes)
-        .Build();
-
-    private string? FormClassString => CssBuilder.Default("row g-3")
-            .AddClass("form-inline", RowType == RowType.Inline)
-            .AddClass("form-inline-end", RowType == RowType.Inline && LabelAlign == Alignment.Right)
-            .AddClass("form-inline-center", RowType == RowType.Inline && LabelAlign == Alignment.Center)
-            .Build();
-
-    private string? FormStyleString => CssBuilder.Default()
-            .AddClass($"--bb-row-label-width: {LabelWidth}px;", LabelWidth.HasValue)
-            .Build();
-
-    private IEnumerable<KeyValuePair<string, IOrderedEnumerable<IEditorItem>>> GroupItems => _formItems
-            .Where(i => !string.IsNullOrEmpty(i.GroupName) && i.IsVisible(ItemChangedType, IsSearch.Value))
-            .GroupBy(i => i.GroupOrder).OrderBy(i => i.Key)
-            .Select(i => new KeyValuePair<string, IOrderedEnumerable<IEditorItem>>(i.First().GroupName!, i.OrderBy(x => x.Order)));
+    public bool IsDisplay { get; set; }
 
     /// <summary>
     /// 获得/设置 是否使用 SearchTemplate 默认 false 使用 EditTemplate 模板
@@ -164,21 +132,74 @@ public partial class EditorFormObject<TModel> : IShowLabel
     [NotNull]
     private bool? IsSearch { get; set; }
 
-    [Inject]
-    [NotNull]
-    private IStringLocalizer<EditorForm<TModel>>? Localizer { get; set; }
+    /// <summary>
+    /// 获得/设置 是否自动生成模型的所有属性 默认为 true 生成所有属性
+    /// </summary>
+    [Parameter]
+    public bool AutoGenerateAllItem { get; set; } = true;
 
-    [Inject]
-    [NotNull]
-    private ILookupService? LookupService { get; set; }
+    /// <summary>
+    /// 获得/设置 级联上下文绑定字段信息集合 设置此参数后 <see cref="FieldItems"/> 模板不生效
+    /// </summary>
+    [Parameter]
+    public IEnumerable<IEditorItem>? Items { get; set; }
 
-    private IEnumerable<IEditorItem> UnsetGroupItems => _formItems.Where(i => string.IsNullOrEmpty(i.GroupName) && i.IsVisible(ItemChangedType, IsSearch.Value));
+    /// <summary>
+    /// 获得/设置 自定义列排序规则 默认 null 未设置 使用内部排序机制 1 2 3 0 -3 -2 -1 顺序
+    /// </summary>
+    [Parameter]
+    public Func<IEnumerable<ITableColumn>, IEnumerable<ITableColumn>>? ColumnOrderCallback { get; set; }
+
+    /// <summary>
+    /// 获得/设置 未设置 GroupName 编辑项是否放置在顶部 默认 false
+    /// </summary>
+    [Parameter]
+    public bool ShowUnsetGroupItemsOnTop { get; set; }
+
+    /// <summary>
+    /// 获得/设置 默认占位符文本 默认 null
+    /// </summary>
+    [Parameter]
+    [NotNull]
+    public string? PlaceHolderText { get; set; }
+
+    /// <summary>
+    /// 获得/设置 级联上下文 EditContext 实例 内置于 EditForm 或者 ValidateForm 时有值
+    /// </summary>
+    [CascadingParameter]
+    private EditContext? CascadedEditContext { get; set; }
 
     /// <summary>
     /// 获得 ValidateForm 实例
     /// </summary>
     [CascadingParameter]
     private ValidateForm? ValidateForm { get; set; }
+
+    [Inject]
+    [NotNull]
+    private IStringLocalizer<EditorFormObject<TModel>>? Localizer { get; set; }
+
+    [Inject]
+    [NotNull]
+    private ILookupService? LookupService { get; set; }
+
+    /// <summary>
+    /// 获得/设置 配置编辑项目集合
+    /// </summary>
+    private readonly List<IEditorItem> _editorItems = [];
+
+    /// <summary>
+    /// 获得/设置 渲染的编辑项集合
+    /// </summary>
+    [NotNull]
+    private List<IEditorItem>? _formItems = null;
+
+    private IEnumerable<IEditorItem> UnsetGroupItems => _formItems.Where(i => string.IsNullOrEmpty(i.GroupName) && i.IsVisible(ItemChangedType, IsSearch.Value));
+
+    private IEnumerable<KeyValuePair<string, IOrderedEnumerable<IEditorItem>>> GroupItems => _formItems
+        .Where(i => !string.IsNullOrEmpty(i.GroupName) && i.IsVisible(ItemChangedType, IsSearch.Value))
+        .GroupBy(i => i.GroupOrder).OrderBy(i => i.Key)
+        .Select(i => new KeyValuePair<string, IOrderedEnumerable<IEditorItem>>(i.First().GroupName!, i.OrderBy(x => x.Order)));
 
     /// <summary>
     /// OnInitialized 方法
@@ -216,45 +237,7 @@ public partial class EditorFormObject<TModel> : IShowLabel
         _formItems = null;
     }
 
-    private RenderFragment AutoGenerateTemplate(IEditorItem item) => builder =>
-        {
-            if (IsDisplay || !item.CanWrite(Model.GetType(), ItemChangedType, IsSearch.Value))
-            {
-                builder.CreateDisplayByFieldType(item, Model);
-            }
-            else
-            {
-                item.PlaceHolder ??= PlaceHolderText;
-                builder.CreateComponentByFieldType(this, item, Model, ItemChangedType, IsSearch.Value, LookupService);
-            }
-        };
-
-    /// <summary>
-    /// 支持每行多少个控件功能
-    /// </summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    private string? GetCssString(IEditorItem item)
-    {
-        int cols = 0;
-        double mdCols = 6;
-        if (item is AutoGenerateColumnAttribute a && a.Cols > 0 && a.Cols < 13)
-        {
-            cols = a.Cols;
-        }
-        if (ItemsPerRow.HasValue)
-        {
-            mdCols = Math.Min(12, Math.Ceiling(12d / ItemsPerRow.Value));
-        }
-        return CssBuilder.Default("col-12")
-            .AddClass($"col-sm-{cols}", cols > 0) // 指定 Cols
-            .AddClass($"col-sm-6 col-md-{mdCols}", cols == 0 && item.Items == null && item.Rows == 0) // 指定 ItemsPerRow
-            .Build();
-    }
-
-    private RenderFragment<object>? GetRenderTemplate(IEditorItem item) => IsSearch.Value && item is ITableColumn col
-        ? col.SearchTemplate
-        : item.EditTemplate;
+    private bool _inited;
 
     private Task OnRenderAsync(bool firstRender)
     {
@@ -273,9 +256,9 @@ public partial class EditorFormObject<TModel> : IShowLabel
             _formItems = [];
             if (Items != null)
             {
-                _formItems.AddRange(Items.Where(i => !i.GetIgnore()));
+                _formItems.AddRange(Items.Where(i => !i.GetIgnore() && !string.IsNullOrEmpty(i.GetFieldName())));
             }
-            else
+            //else
             {
                 // 如果 EditorItems 有值表示 用户自定义列
                 if (AutoGenerateAllItem)
@@ -301,13 +284,32 @@ public partial class EditorFormObject<TModel> : IShowLabel
                             }
                         }
                     }
-                    _formItems.AddRange(items);
+                    _formItems.AddRange(items.Where(i => !string.IsNullOrEmpty(i.GetFieldName())));
                 }
                 else
                 {
-                    _formItems.AddRange(_editorItems.Where(i => !i.GetIgnore() && i.IsVisible(ItemChangedType, IsSearch.Value)));
+                    _formItems.AddRange(_editorItems.Where(i => !i.GetIgnore()
+                        && !string.IsNullOrEmpty(i.GetFieldName())
+                        && i.IsVisible(ItemChangedType, IsSearch.Value)));
                 }
             }
         }
     }
+    private RenderFragment AutoGenerateTemplate(IEditorItem item) => builder =>
+    {
+        if (IsDisplay || !item.CanWrite(Model.GetType(), ItemChangedType, IsSearch.Value))
+        {
+            builder.CreateDisplayByFieldType(item, Model);
+        }
+        else
+        {
+            item.PlaceHolder ??= PlaceHolderText;
+            builder.CreateComponentByFieldType(this, item, Model, ItemChangedType, IsSearch.Value, LookupService);
+        }
+    };
+
+
+    private RenderFragment<object>? GetRenderTemplate(IEditorItem item) => IsSearch.Value && item is ITableColumn col
+        ? col.SearchTemplate
+        : item.EditTemplate;
 }
