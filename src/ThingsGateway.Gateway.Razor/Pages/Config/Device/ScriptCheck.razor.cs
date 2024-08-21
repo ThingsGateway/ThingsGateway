@@ -24,10 +24,19 @@ public partial class ScriptCheck
     public string Script { get; set; }
     [Parameter, EditorRequired]
     public EventCallback<string> ScriptChanged { get; set; }
+    private async Task Change(string script)
+    {
 
+        Script = script;
+        if (ScriptChanged.HasDelegate)
+            await ScriptChanged.InvokeAsync(script);
+
+    }
+    private Type type;
     protected override void OnInitialized()
     {
         Input = Data.ToJsonNetString();
+        type = Data.GetType();
         base.OnInitialized();
     }
 
@@ -35,7 +44,7 @@ public partial class ScriptCheck
     {
         try
         {
-            Data = Input.FromJsonNetString<IEnumerable<object>>();
+            Data = (IEnumerable<object>)Newtonsoft.Json.JsonConvert.DeserializeObject(Input, type);
             var value = Data.GetDynamicModel(Script);
             Output = value.ToJsonNetString();
         }
