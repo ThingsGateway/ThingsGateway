@@ -135,7 +135,7 @@ public class OperDescAttribute : MoAttribute
             Name = (localizerType == null ? NetCoreApp.CreateLocalizerByType(typeof(OperDescAttribute)) : NetCoreApp.CreateLocalizerByType(localizerType))![Description],
             Category = LogCateGoryEnum.Operate,
             ExeStatus = true,
-            OpIp = AppService?.RemoteIpAddress?.MapToIPv4()?.ToString(),
+            OpIp = AppService?.RemoteIpAddress?.MapToIPv4()?.ToString() ?? string.Empty,
             OpBrowser = clientInfo?.UA?.Family + clientInfo?.UA?.Major,
             OpOs = clientInfo?.OS?.Family + clientInfo?.OS?.Major,
             OpTime = DateTime.Now,
