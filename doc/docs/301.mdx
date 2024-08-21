@@ -275,12 +275,11 @@ MqttRpc的请求内容与WebApi一致，请求参数为Dictionary<string, string
 
 请求主题在配置属性中设置，查看**Rpc写入Topic**
 
-注意，实际的请求主题为 `{ThingsGateway.Rpc/[自定义GUID或者雪花ID]/[Rpc写入Topic]}`
-
+注意，实际的请求主题为 `{[Rpc写入Topic]/[自定义GUID或者雪花ID]}`
 
 ### 3、Rpc返回主题
 
-`{ThingsGateway.Rpc/[自定义GUID或者雪花ID]/[Rpc写入Topic]/Response}`
+`{Rpc写入Topic/[自定义GUID或者雪花ID]/Response}`
 
 ### 4、图示
 
