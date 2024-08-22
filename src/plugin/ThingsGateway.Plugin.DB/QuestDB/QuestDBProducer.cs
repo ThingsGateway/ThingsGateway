@@ -49,11 +49,12 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
     public override void Init(IChannel? channel = null)
     {
         _config = new TypeAdapterConfig();
+        DateTime utcTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         _config.ForType<VariableRunTime, QuestDBHistoryValue>()
             //.Map(dest => dest.Id, src => YitIdHelper.NextId())
             .Map(dest => dest.Id, src => src.Id)//Id更改为变量Id
             .Map(dest => dest.Value, src => src.Value == null ? string.Empty : src.Value.ToString() ?? string.Empty)
-            .Map(dest => dest.CollectTime, (src) => src.CollectTime < DateTime.MinValue ? DateTime.MinValue.ToUniversalTime() : src.CollectTime!.Value.ToUniversalTime())//注意sqlsugar插入时无时区，直接utc时间
+            .Map(dest => dest.CollectTime, (src) => src.CollectTime < DateTime.MinValue ? utcTime : src.CollectTime!.Value.ToUniversalTime())//注意sqlsugar插入时无时区，直接utc时间
             .Map(dest => dest.CreateTime, (src) => DateTime.UtcNow)
             ;//注意sqlsugar插入时无时区，直接utc时间
 
