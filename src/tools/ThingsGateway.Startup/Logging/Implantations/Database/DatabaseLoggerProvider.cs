@@ -178,7 +178,7 @@ public sealed class DatabaseLoggerProvider : ILoggerProvider, ISupportExternalSc
                 try
                 {
                     // 调用数据库写入器写入数据库方法
-                    await _databaseLoggingWriter.WriteAsync(logMsg, _logMessageQueue.Count == 0);
+                    await _databaseLoggingWriter.WriteAsync(logMsg, _logMessageQueue.Count == 0).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

@@ -50,10 +50,10 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     /// <returns>用户</returns>
     public async Task<SysUser?> GetUserByAccountAsync(string account)
     {
-        var userId = await GetIdByAccountAsync(account);//获取用户ID
+        var userId = await GetIdByAccountAsync(account).ConfigureAwait(false);//获取用户ID
         if (userId > 0)
         {
-            var sysUser = await GetUserByIdAsync(userId);//获取用户信息
+            var sysUser = await GetUserByIdAsync(userId).ConfigureAwait(false);//获取用户信息
             if (sysUser?.Account == account)
                 return sysUser;
             else
@@ -74,7 +74,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     {
         //先从Cache拿
         var sysUser = NetCoreApp.CacheService.HashGetOne<SysUser>(CacheConst.Cache_SysUser, userId.ToString());
-        sysUser ??= await GetUserFromDb(userId);//从数据库拿用户信息
+        sysUser ??= await GetUserFromDb(userId).ConfigureAwait(false);//从数据库拿用户信息
         return sysUser;
     }
 
@@ -91,7 +91,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
         {
             //单查获取用户账号对应ID
             using var db = GetDB();
-            userId = await db.Queryable<SysUser>().Where(it => it.Account == account).Select(it => it.Id).FirstAsync();
+            userId = await db.Queryable<SysUser>().Where(it => it.Account == account).Select(it => it.Id).FirstAsync().ConfigureAwait(false);
             if (userId != 0)
             {
                 //插入Cache
@@ -109,20 +109,20 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     public async Task<Dictionary<string, List<string>>> GetButtonCodeListAsync(long userId)
     {
         //获取用户资源集合
-        var resourceList = await _relationService.GetRelationListByObjectIdAndCategoryAsync(userId, RelationCategoryEnum.UserHasResource);
+        var resourceList = await _relationService.GetRelationListByObjectIdAndCategoryAsync(userId, RelationCategoryEnum.UserHasResource).ConfigureAwait(false);
         if (!resourceList.Any())//如果有表示用户单独授权了不走用户角色
         {
             //获取用户角色关系集合
-            var roleList = await _relationService.GetRelationListByObjectIdAndCategoryAsync(userId, RelationCategoryEnum.UserHasRole);
+            var roleList = await _relationService.GetRelationListByObjectIdAndCategoryAsync(userId, RelationCategoryEnum.UserHasRole).ConfigureAwait(false);
             var roleIdList = roleList.Select(x => x.TargetId.ToLong());//角色ID列表
             if (roleIdList.Any())//如果该用户有角色
             {
                 resourceList = await _relationService.GetRelationListByObjectIdListAndCategoryAsync(roleIdList,
-                    RelationCategoryEnum.RoleHasResource);//获取资源集合
+                    RelationCategoryEnum.RoleHasResource).ConfigureAwait(false);//获取资源集合
             }
         }
         var buttonIdList = resourceList.Select(it => it.ExtJson?.FromSystemTextJsonString<long>());
-        var allResources = await _sysResourceService.GetAllAsync();
+        var allResources = await _sysResourceService.GetAllAsync().ConfigureAwait(false);
         var button = allResources.Where(it => it.Category == ResourceCategoryEnum.Button && buttonIdList.Contains(it.Id));
         Dictionary<string, List<string>> buttonCodeList = new();
         foreach (var item in button)
@@ -153,16 +153,16 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
 
         {
             var sysRelations =
-                await _relationService.GetRelationListByObjectIdAndCategoryAsync(userId, RelationCategoryEnum.UserHasPermission);//根据用户ID获取用户权限
+                await _relationService.GetRelationListByObjectIdAndCategoryAsync(userId, RelationCategoryEnum.UserHasPermission).ConfigureAwait(false);//根据用户ID获取用户权限
             if (!sysRelations.Any())//如果有表示用户单独授权了不走用户角色
             {
                 var roleIdList =
-                    await _relationService.GetRelationListByObjectIdAndCategoryAsync(userId, RelationCategoryEnum.UserHasRole);//根据用户ID获取角色ID
+                    await _relationService.GetRelationListByObjectIdAndCategoryAsync(userId, RelationCategoryEnum.UserHasRole).ConfigureAwait(false);//根据用户ID获取角色ID
                 if (roleIdList.Any())//如果角色ID不为空
                 {
                     //获取角色权限信息
                     sysRelations = await _relationService.GetRelationListByObjectIdListAndCategoryAsync(roleIdList.Select(it => it.TargetId.ToLong()),
-                        RelationCategoryEnum.RoleHasPermission);
+                        RelationCategoryEnum.RoleHasPermission).ConfigureAwait(false);
                 }
             }
             var relationGroup = sysRelations.GroupBy(it => it.TargetId);//根据目标ID,也就是接口名分组，因为存在一个用户多个角色
@@ -179,16 +179,16 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
 
         {
             var apiRelations =
-                await _relationService.GetRelationListByObjectIdAndCategoryAsync(userId, RelationCategoryEnum.UserHasOpenApiPermission);//根据用户ID获取用户权限
+                await _relationService.GetRelationListByObjectIdAndCategoryAsync(userId, RelationCategoryEnum.UserHasOpenApiPermission).ConfigureAwait(false);//根据用户ID获取用户权限
             if (!apiRelations.Any())//如果有表示用户单独授权了不走用户角色
             {
                 var roleIdList =
-                    await _relationService.GetRelationListByObjectIdAndCategoryAsync(userId, RelationCategoryEnum.UserHasRole);//根据用户ID获取角色ID
+                    await _relationService.GetRelationListByObjectIdAndCategoryAsync(userId, RelationCategoryEnum.UserHasRole).ConfigureAwait(false);//根据用户ID获取角色ID
                 if (roleIdList.Any())//如果角色ID不为空
                 {
                     //获取角色权限信息
                     apiRelations = await _relationService.GetRelationListByObjectIdListAndCategoryAsync(roleIdList.Select(it => it.TargetId.ToLong()),
-                        RelationCategoryEnum.RoleHasOpenApiPermission);
+                        RelationCategoryEnum.RoleHasOpenApiPermission).ConfigureAwait(false);
                 }
             }
             var relationGroup = apiRelations.GroupBy(it => it.TargetId);//根据目标ID,也就是接口名分组，因为存在一个用户多个角色
@@ -226,7 +226,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     /// <returns>角色id列表</returns>
     public async Task<IEnumerable<long>> OwnRoleAsync(long id)
     {
-        var relations = await _relationService.GetRelationListByObjectIdAndCategoryAsync(id, RelationCategoryEnum.UserHasRole);
+        var relations = await _relationService.GetRelationListByObjectIdAndCategoryAsync(id, RelationCategoryEnum.UserHasRole).ConfigureAwait(false);
         return relations.Select(it => it.TargetId.ToLong());
     }
 
@@ -236,7 +236,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     /// <param name="id">用户id</param>
     public async Task<GrantResourceData> OwnResourceAsync(long id)
     {
-        return await _roleService.OwnResourceAsync(id, RelationCategoryEnum.UserHasResource);
+        return await _roleService.OwnResourceAsync(id, RelationCategoryEnum.UserHasResource).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -247,7 +247,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     public async Task<List<UserSelectorOutput>> GetUserListByIdListAsync(IEnumerable<long> input)
     {
         using var db = GetDB();
-        var userList = await db.Queryable<SysUser>().Where(it => input.Contains(it.Id)).Select<UserSelectorOutput>().ToListAsync();
+        var userList = await db.Queryable<SysUser>().Where(it => input.Contains(it.Id)).Select<UserSelectorOutput>().ToListAsync().ConfigureAwait(false);
         return userList;
     }
 
@@ -263,7 +263,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     {
         var roleOwnPermission = new GrantPermissionData { Id = id };//定义结果集
         //获取关系列表
-        var relations = await _relationService.GetRelationListByObjectIdAndCategoryAsync(id, RelationCategoryEnum.UserHasOpenApiPermission);
+        var relations = await _relationService.GetRelationListByObjectIdAndCategoryAsync(id, RelationCategoryEnum.UserHasOpenApiPermission).ConfigureAwait(false);
         roleOwnPermission.GrantInfoList = relations.Select(it => it.ExtJson?.FromSystemTextJsonString<RelationRolePermission>()!).Where(a => a != null);
         return roleOwnPermission;
     }
@@ -272,12 +272,12 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     [OperDesc("UserGrantApiPermission")]
     public async Task GrantApiPermissionAsync(GrantPermissionData input)
     {
-        var sysUser = await GetUserByIdAsync(input.Id);//获取用户
+        var sysUser = await GetUserByIdAsync(input.Id).ConfigureAwait(false);//获取用户
         if (sysUser != null)
         {
             await _relationService.SaveRelationBatchAsync(RelationCategoryEnum.UserHasOpenApiPermission, input.Id,
                  input.GrantInfoList.Select(a => (a.ApiUrl, a.ToSystemTextJsonString())),
-                true);//添加到数据库
+                true).ConfigureAwait(false);//添加到数据库
             DeleteUserFromCache(input.Id);
         }
     }
@@ -290,20 +290,20 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     [OperDesc("SaveUser", isRecordPar: false)]
     public async Task<bool> SaveUserAsync(SysUser input, ItemChangedType changedType)
     {
-        await CheckInput(input);//检查参数
+        await CheckInput(input).ConfigureAwait(false);//检查参数
 
         if (changedType == ItemChangedType.Add)
         {
             var sysUser = input.Adapt<SysUser>();
             //获取默认密码
             sysUser.Avatar = input.Avatar;
-            sysUser.Password = await GetDefaultPassWord(true);//设置密码
+            sysUser.Password = await GetDefaultPassWord(true).ConfigureAwait(false);//设置密码
             sysUser.Status = true;//默认状态
-            return await SaveAsync(sysUser, changedType);//添加数据
+            return await SaveAsync(sysUser, changedType).ConfigureAwait(false);//添加数据
         }
         else
         {
-            var exist = await GetUserByIdAsync(input.Id);//获取用户信息
+            var exist = await GetUserByIdAsync(input.Id).ConfigureAwait(false);//获取用户信息
             if (exist != null)
             {
                 var isSuperAdmin = exist.Account == RoleConst.SuperAdmin;//判断是否有超管
@@ -326,7 +326,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
                             it.LatestLoginDevice,
                             it.LatestLoginIp,
                             it.LatestLoginTime
-                        }).ExecuteCommandAsync() > 0;
+                        }).ExecuteCommandAsync().ConfigureAwait(false) > 0;
                 if (result)//修改数据
                 {
                     DeleteUserFromCache(sysUser.Id);//删除用户缓存
@@ -336,7 +336,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
                     //从列表中删除
                     //删除用户verificat缓存
                     _verificatInfoService.Delete(verificatInfoIds.Select(a => a.Id).ToList());
-                    await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { ClientIds = verificatInfoIds.SelectMany(a => a.ClientIds).ToList(), Message = Localizer["ExitVerificat"] });
+                    await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { ClientIds = verificatInfoIds.SelectMany(a => a.ClientIds).ToList(), Message = Localizer["ExitVerificat"] }).ConfigureAwait(false);
                 }
                 return result;
             }
@@ -352,19 +352,19 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     [OperDesc("ResetPassword")]
     public async Task ResetPasswordAsync(long id)
     {
-        var password = await GetDefaultPassWord(true);//获取默认密码,这里不走Aop所以需要加密一下
+        var password = await GetDefaultPassWord(true).ConfigureAwait(false);//获取默认密码,这里不走Aop所以需要加密一下
         using var db = GetDB();
         //重置密码
         if (await db.UpdateSetColumnsTrueAsync<SysUser>(it => new SysUser
         {
             Password = password
-        }, it => it.Id == id))
+        }, it => it.Id == id).ConfigureAwait(false))
         {
             DeleteUserFromCache(id);//从cache删除用户信息
             var verificatInfoIds = _verificatInfoService.GetListByUserId(id);
             //删除用户verificat缓存
             _verificatInfoService.Delete(verificatInfoIds.Select(a => a.Id).ToList());
-            await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { ClientIds = verificatInfoIds.SelectMany(a => a.ClientIds).ToList(), Message = Localizer["ExitVerificat"] });
+            await NoticeUtil.UserLoginOut(new UserLoginOutEvent() { ClientIds = verificatInfoIds.SelectMany(a => a.ClientIds).ToList(), Message = Localizer["ExitVerificat"] }).ConfigureAwait(false);
         }
     }
 
@@ -372,7 +372,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     [OperDesc("UserGrantRole")]
     public async Task GrantRoleAsync(GrantUserOrRoleInput input)
     {
-        var sysUser = await GetUserByIdAsync(input.Id);//获取用户信息
+        var sysUser = await GetUserByIdAsync(input.Id).ConfigureAwait(false);//获取用户信息
         if (sysUser != null)
         {
             var isSuperAdmin = sysUser.Account == RoleConst.SuperAdmin;//判断是否有超管
@@ -381,8 +381,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
             CheckSelf(input.Id, Localizer["GrantRole"]);//判断是不是自己
 
             //给用户赋角色
-            await _relationService.SaveRelationBatchAsync(RelationCategoryEnum.UserHasRole, input.Id,
-                input.GrantInfoList.Select(it => (it.ToString(), string.Empty)), true);
+            await _relationService.SaveRelationBatchAsync(RelationCategoryEnum.UserHasRole, input.Id, input.GrantInfoList.Select(it => (it.ToString(), string.Empty)), true).ConfigureAwait(false);
             DeleteUserFromCache(input.Id);//从cache删除用户信息
         }
     }
@@ -393,10 +392,10 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     {
         var menuIdsExtJsons1 = input.GrantInfoList;//菜单ID拓展信息
         var relationUsers = new List<SysRelation>();//要添加的用户资源和授权关系表
-        var sysUser = await GetUserByIdAsync(input.Id);//获取用户
+        var sysUser = await GetUserByIdAsync(input.Id).ConfigureAwait(false);//获取用户
         if (sysUser != null)
         {
-            var resources = await _sysResourceService.GetAllAsync();
+            var resources = await _sysResourceService.GetAllAsync().ConfigureAwait(false);
 
             var menus1 = resources.Where(a => menuIdsExtJsons1.Contains(a.Id));
             var data = ResourceUtil.GetMyParentResources(resources, menus1);
@@ -467,9 +466,9 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
                     || it.Category == RelationCategoryEnum.UserHasResource
                     || it.Category == RelationCategoryEnum.UserHasModule
 
-                    )).ExecuteCommandAsync();
-                await db.Insertable(relationUsers).ExecuteCommandAsync();//添加新的
-            });
+                    )).ExecuteCommandAsync().ConfigureAwait(false);
+                await db.Insertable(relationUsers).ExecuteCommandAsync().ConfigureAwait(false);//添加新的
+            }).ConfigureAwait(false);
             if (result.IsSuccess)//如果成功了
             {
                 _relationService.RefreshCache(RelationCategoryEnum.UserHasPermission);//刷新关系缓存
@@ -495,7 +494,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     public async Task<bool> DeleteUserAsync(IEnumerable<long> ids)
     {
         using var db = GetDB();
-        var containsSuperAdmin = await db.Queryable<SysUser>().Where(it => it.Account == RoleConst.SuperAdmin && ids.Contains(it.Id)).AnyAsync();//判断是否有超管
+        var containsSuperAdmin = await db.Queryable<SysUser>().Where(it => it.Account == RoleConst.SuperAdmin && ids.Contains(it.Id)).AnyAsync().ConfigureAwait(false);//判断是否有超管
         if (containsSuperAdmin)
             throw Oops.Bah(Localizer["CanotDeleteAdminUser"]);
         if (ids.Contains(UserManager.UserId))
@@ -511,11 +510,11 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
         var result = await db.UseTranAsync(async () =>
         {
             //删除用户
-            await db.Deleteable<SysUser>().In(ids.ToList()).ExecuteCommandHasChangeAsync();//删除
+            await db.Deleteable<SysUser>().In(ids.ToList()).ExecuteCommandHasChangeAsync().ConfigureAwait(false);//删除
 
             //删除关系表用户与资源关系，用户与权限关系,用户与角色关系
-            await db.Deleteable<SysRelation>(it => ids.Contains(it.ObjectId) && delRelations.Contains(it.Category)).ExecuteCommandAsync();
-        });
+            await db.Deleteable<SysRelation>(it => ids.Contains(it.ObjectId) && delRelations.Contains(it.Category)).ExecuteCommandAsync().ConfigureAwait(false);
+        }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
             DeleteUserFromCache(ids);//cache删除用户
@@ -529,7 +528,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
             {
                 var verificatInfoIds = _verificatInfoService.GetListByUserId(id);
                 _verificatInfoService.Delete(verificatInfoIds.Select(a => a.Id).ToList());
-                await UserLoginOut(id, verificatInfoIds.SelectMany(a => a.ClientIds).ToList());
+                await UserLoginOut(id, verificatInfoIds.SelectMany(a => a.ClientIds).ToList()).ConfigureAwait(false);
             }
 
             return true;
@@ -580,7 +579,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
         {
             Message = Localizer["SingleLoginWarn"],
             ClientIds = verificatInfoIds,
-        });//通知用户下线
+        }).ConfigureAwait(false);//通知用户下线
     }
 
     /// <summary>
@@ -590,7 +589,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     private async Task<string> GetDefaultPassWord(bool isEncrypt = false)
     {
         //获取默认密码
-        var appConfig = await _configService.GetAppConfigAsync();
+        var appConfig = await _configService.GetAppConfigAsync().ConfigureAwait(false);
         return isEncrypt ? DESCEncryption.Encrypt(appConfig.PasswordPolicy.DefaultPassword) : appConfig.PasswordPolicy.DefaultPassword;//判断是否需要加密
     }
 
@@ -601,7 +600,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     private async Task CheckInput(SysUser sysUser)
     {
         //判断账号重复,直接从cache拿
-        var accountId = await GetIdByAccountAsync(sysUser.Account);
+        var accountId = await GetIdByAccountAsync(sysUser.Account).ConfigureAwait(false);
         if (accountId > 0 && accountId != sysUser.Id)
             throw Oops.Bah(Localizer["AccountDup", sysUser.Account]);
         //如果邮箱不是空
@@ -611,7 +610,7 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
             if (!isMatch)
                 throw Oops.Bah(Localizer["EmailError", sysUser.Email]);
             using var db = GetDB();
-            if (await db.Queryable<SysUser>().Where(it => it.Email == sysUser.Email && it.Id != sysUser.Id).AnyAsync())
+            if (await db.Queryable<SysUser>().Where(it => it.Email == sysUser.Email && it.Id != sysUser.Id).AnyAsync().ConfigureAwait(false))
                 throw Oops.Bah(Localizer["EmailDup", sysUser.Email]);
         }
         //如果手机号不是空
@@ -644,20 +643,19 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
     private async Task<SysUser?> GetUserFromDb(long userId)
     {
         using var db = GetDB();
-        var sysUser = await db.Queryable<SysUser>()
-            .FirstAsync(u => u.Id == userId);
+        var sysUser = await db.Queryable<SysUser>().FirstAsync(u => u.Id == userId).ConfigureAwait(false);
         if (sysUser != null)
         {
             sysUser.Password = DESCEncryption.Decrypt(sysUser.Password);//解密密码
             sysUser.Phone = DESCEncryption.Decrypt(sysUser.Phone);//解密手机号
             //获取按钮码
-            var buttonCodeList = await GetButtonCodeListAsync(sysUser.Id);
+            var buttonCodeList = await GetButtonCodeListAsync(sysUser.Id).ConfigureAwait(false);
             //获取数据权限
-            var dataScopeList = await GetPermissionListByUserIdAsync(sysUser.Id);
+            var dataScopeList = await GetPermissionListByUserIdAsync(sysUser.Id).ConfigureAwait(false);
             //获取权限码
             var permissionCodeList = dataScopeList.Select(it => it.ApiUrl);
             //获取角色码
-            var roleCodeList = await _roleService.GetRoleListByUserIdAsync(sysUser.Id);
+            var roleCodeList = await _roleService.GetRoleListByUserIdAsync(sysUser.Id).ConfigureAwait(false);
             //权限码赋值
             sysUser.ButtonCodeList = buttonCodeList;
             sysUser.RoleCodeList = roleCodeList.Select(it => it.Code);
@@ -667,13 +665,13 @@ public class SysUserService : BaseService<SysUser>, ISysUserService
 
             if (sysUser.Account == RoleConst.SuperAdmin)
             {
-                var modules = (await _sysResourceService.GetAllAsync()).Where(a => a.Category == ResourceCategoryEnum.Module);
+                var modules = (await _sysResourceService.GetAllAsync().ConfigureAwait(false)).Where(a => a.Category == ResourceCategoryEnum.Module);
                 sysUser.ModuleList = modules;//模块列表赋值给用户
             }
             else
             {
-                var moduleIds = await _relationService.GetUserModuleId(sysUser.RoleIdList, sysUser.Id);//获取模块ID列表
-                var modules = await _sysResourceService.GetMuduleByMuduleIdsAsync(moduleIds);//获取模块列表
+                var moduleIds = await _relationService.GetUserModuleId(sysUser.RoleIdList, sysUser.Id).ConfigureAwait(false);//获取模块ID列表
+                var modules = await _sysResourceService.GetMuduleByMuduleIdsAsync(moduleIds).ConfigureAwait(false);//获取模块列表
                 sysUser.ModuleList = modules;//模块列表赋值给用户
             }
 

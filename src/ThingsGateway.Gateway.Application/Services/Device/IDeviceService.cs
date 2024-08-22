@@ -82,7 +82,7 @@ public interface IDeviceService
     List<Device> GetAll();
 
     /// <summary>
-    /// 异步获取业务设备的运行时信息。
+    /// 获取业务设备的运行时信息。
     /// </summary>
     /// <param name="devId">设备ID（可选）</param>
     /// <returns>业务设备运行时信息</returns>

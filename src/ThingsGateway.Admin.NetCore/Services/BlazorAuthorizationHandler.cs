@@ -45,13 +45,13 @@ public class BlazorAuthorizationHandler : IAuthorizationHandler
         if (isAuthenticated == true)
         {
             _appService.User = context.User;
-            if (await CheckVerificatFromCacheAsync(context))
+            if (await CheckVerificatFromCacheAsync(context).ConfigureAwait(false))
             {
                 // 获取所有未成功验证的需求
                 var pendingRequirements = context.PendingRequirements;
 
                 // 调用子类管道
-                var pipeline = await PipelineAsync(context);
+                var pipeline = await PipelineAsync(context).ConfigureAwait(false);
                 if (pipeline)
                 {
                     // 通过授权验证
@@ -81,10 +81,10 @@ public class BlazorAuthorizationHandler : IAuthorizationHandler
     {
         var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId)?.Value?.ToLong(0) ?? 0;
 
-        var user = await _sysUserService.GetUserByIdAsync(userId);
+        var user = await _sysUserService.GetUserByIdAsync(userId).ConfigureAwait(false);
         if (context.Resource is Microsoft.AspNetCore.Components.RouteData routeData)
         {
-            var roles = await _sysRoleService.GetRoleListByUserIdAsync(userId);
+            var roles = await _sysRoleService.GetRoleListByUserIdAsync(userId).ConfigureAwait(false);
             if (roles.All(a => a.Category != RoleCategoryEnum.Global))
                 return false;
             //这里鉴别用户使能状态
@@ -158,7 +158,7 @@ public class BlazorAuthorizationHandler : IAuthorizationHandler
     {
         var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId)?.Value?.ToLong();
         var verificatId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.VerificatId)?.Value?.ToLong();
-        var expire = (await _sysDictService.GetAppConfigAsync()).LoginPolicy.VerificatExpireTime;
+        var expire = (await _sysDictService.GetAppConfigAsync().ConfigureAwait(false)).LoginPolicy.VerificatExpireTime;
         {
             var verificatInfo = userId != null ? _verificatInfoService.GetOne(verificatId ?? 0) : null;//获取token信息
 

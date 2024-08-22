@@ -21,7 +21,7 @@ internal class S7MasterTest
     {
         using SiemensS7Master siemensS7Master = GetMaster();
         //modbusMaster.HeartbeatHexString = "ccccdddd";//心跳
-        await siemensS7Master.ConnectAsync();
+        await siemensS7Master.ConnectAsync().ConfigureAwait(false);
 
         var addresss = new SiemensAddress[]
         {
@@ -36,18 +36,18 @@ internal class S7MasterTest
         addresss[1].Length = addresss[0].Data.Length;
         addresss[2].Data = new byte[] { 0x01, 0x02, 0x03, 0x04 };
         addresss[2].Length = addresss[0].Data.Length;
-        var result = await siemensS7Master.S7WriteAsync(addresss);
+        var result = await siemensS7Master.S7WriteAsync(addresss).ConfigureAwait(false);
         Console.WriteLine(result.ToJsonNetString());
 
         S7Variable s7Variable = new S7Variable(siemensS7Master, 200);
 
         Console.ReadLine();
         //Console.WriteLine("批量读取");
-        //await s7Variable.MultiReadAsync();
+        //await s7Variable.MultiReadAsync().ConfigureAwait(false);
         //Console.WriteLine("写入");
-        //await s7Variable.WriteData2Async(1, default);
+        //await s7Variable.WriteData2Async(1, default).ConfigureAwait(false);
         //Console.WriteLine("批量读取");
-        //await s7Variable.MultiReadAsync();
+        //await s7Variable.MultiReadAsync().ConfigureAwait(false);
 
         //Console.WriteLine(s7Variable.ToJsonString());
         //执行连读

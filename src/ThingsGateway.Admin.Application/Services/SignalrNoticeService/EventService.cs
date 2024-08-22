@@ -24,7 +24,7 @@ public class EventService<TEntry> : IEventService<TEntry>
 
         if (Cache.TryGetValue(key, out var func))
         {
-            await func(payload);
+            await func(payload).ConfigureAwait(false);
         }
     }
 

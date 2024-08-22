@@ -24,8 +24,11 @@ public partial class SessionPage
 
     private async Task<QueryData<SessionOutput>> OnQueryAsync(QueryPageOptions options)
     {
-        var data = await SessionService.PageAsync(options);
-        return data;
+        return await Task.Run(async () =>
+         {
+             var data = await SessionService.PageAsync(options);
+             return data;
+         });
     }
 
     #endregion 查询
@@ -38,7 +41,7 @@ public partial class SessionPage
         {
             var op = new DialogOption()
             {
-        IsScrolling = true,
+                IsScrolling = true,
                 Title = Localizer[nameof(VerificatInfo)],
                 ShowFooter = false,
                 Size = Size.ExtraLarge

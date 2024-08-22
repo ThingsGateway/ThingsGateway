@@ -64,15 +64,26 @@ public partial class ImportExcel
     {
         try
         {
-            await Import.Invoke(_importPreviews);
-            _importFile = null;
-            if (OnCloseAsync != null)
-                await OnCloseAsync();
-            await ToastService.Default();
+            await Task.Run(async () =>
+            {
+                await Import.Invoke(_importPreviews);
+                _importFile = null;
+
+
+                await InvokeAsync(async () =>
+                {
+                    if (OnCloseAsync != null)
+                        await OnCloseAsync();
+                    await ToastService.Default();
+                });
+            });
         }
         catch (Exception ex)
         {
-            await ToastService.Error(null, ex.Message);
+            await InvokeAsync(async () =>
+            {
+                await ToastService.Error(null, ex.Message);
+            });
         }
     }
 }

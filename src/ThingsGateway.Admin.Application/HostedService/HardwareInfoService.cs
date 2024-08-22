@@ -58,7 +58,7 @@ public class HardwareInfoService : BackgroundService
     public async Task<List<HisHardwareInfo>> GetHisHardwareInfos()
     {
         using var db = DbContext.Db.GetConnectionScopeWithAttr<HisHardwareInfo>().CopyNew();
-        return await db.Queryable<HisHardwareInfo>().ToListAsync();
+        return await db.Queryable<HisHardwareInfo>().ToListAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -119,11 +119,11 @@ public class HardwareInfoService : BackgroundService
                                 CpuUsage = (APPInfo.MachineInfo.CpuRate * 100).ToString("F2"),
                                 Temperature = (APPInfo.MachineInfo.Temperature).ToString("F2"),
                             };
-                            await db.Insertable(his).ExecuteCommandAsync();
+                            await db.Insertable(his).ExecuteCommandAsync().ConfigureAwait(false);
                         }
                         var sevenDaysAgo = TimerX.Now.AddDays(-HardwareInfoConfig.DaysAgo);
                         //删除特定信息
-                        await db.Deleteable<HisHardwareInfo>(a => a.Date <= sevenDaysAgo).ExecuteCommandAsync();
+                        await db.Deleteable<HisHardwareInfo>(a => a.Date <= sevenDaysAgo).ExecuteCommandAsync().ConfigureAwait(false);
                     }
                 }
                 await Task.Delay(HardwareInfoConfig.RealInterval * 1000, stoppingToken).ConfigureAwait(false);

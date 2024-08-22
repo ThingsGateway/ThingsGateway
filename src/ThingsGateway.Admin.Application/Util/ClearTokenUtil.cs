@@ -50,8 +50,7 @@ public class ClearTokenUtil
             await RelationService.GetRelationListByTargetIdAndCategoryAsync(moduleId.ToString(), RelationCategoryEnum.UserHasModule).ConfigureAwait(false);//用户模块关系
         var userIds = userModuleRelations.Select(it => it.ObjectId).ToList();//用户ID列表
         var roleIds = roleModuleRelations.Select(it => it.ObjectId).ToList();//角色ID列表
-        var userRoleRelations = await RelationService.GetRelationListByTargetIdListAndCategoryAsync(roleIds.Select(it => it.ToString()).ToList(),
-            RelationCategoryEnum.UserHasRole).ConfigureAwait(false);//用户角色关系
+        var userRoleRelations = await RelationService.GetRelationListByTargetIdListAndCategoryAsync(roleIds.Select(it => it.ToString()).ToList(), RelationCategoryEnum.UserHasRole).ConfigureAwait(false);//用户角色关系
         userIds.AddRange(userRoleRelations.Select(it => it.ObjectId));//添加用户ID列表
 
         // 解析用户服务

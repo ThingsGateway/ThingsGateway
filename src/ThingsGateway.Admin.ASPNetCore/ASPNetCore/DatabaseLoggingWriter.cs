@@ -151,7 +151,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
         if (flush)
         {
             SqlSugarClient ??= DbContext.Db.GetConnectionScopeWithAttr<SysOperateLog>().CopyNew();
-            await SqlSugarClient.InsertableWithAttr(_operateLogMessageQueue.ToListWithDequeue()).ExecuteCommandAsync();//入库
+            await SqlSugarClient.InsertableWithAttr(_operateLogMessageQueue.ToListWithDequeue()).ExecuteCommandAsync().ConfigureAwait(false);//入库
             return true;
         }
         return false;
@@ -208,7 +208,7 @@ public class DatabaseLoggingWriter : IDatabaseLoggingWriter
         if (flush)
         {
             SqlSugarClient ??= DbContext.Db.GetConnectionScopeWithAttr<SysOperateLog>().CopyNew();
-            await SqlSugarClient.InsertableWithAttr(_operateLogMessageQueue.ToListWithDequeue()).ExecuteCommandAsync();//入库
+            await SqlSugarClient.InsertableWithAttr(_operateLogMessageQueue.ToListWithDequeue()).ExecuteCommandAsync().ConfigureAwait(false);//入库
             return true;
         }
         return false;

@@ -51,7 +51,7 @@ public partial class Dlt645_2007Master : ComponentBase, IDisposable
         {
             try
             {
-                await ChannelData.Channel.ConnectAsync(_plc.ConnectTimeout, default);
+                await ChannelData.Channel.ConnectAsync(_plc.ConnectTimeout, default).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

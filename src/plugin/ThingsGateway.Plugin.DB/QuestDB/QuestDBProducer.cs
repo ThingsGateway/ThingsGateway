@@ -36,13 +36,13 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
 
     public async Task<SqlSugarPagedList<IDBHistoryValue>> GetDBHistoryValuePagesAsync(DBHistoryValuePageInput input)
     {
-        var data = await Query(input).ToPagedListAsync<QuestDBHistoryValue, IDBHistoryValue>(input.Current, input.Size);//分页
+        var data = await Query(input).ToPagedListAsync<QuestDBHistoryValue, IDBHistoryValue>(input.Current, input.Size).ConfigureAwait(false);//分页
         return data;
     }
 
     public async Task<List<IDBHistoryValue>> GetDBHistoryValuesAsync(DBHistoryValuePageInput input)
     {
-        var data = await Query(input).ToListAsync();
+        var data = await Query(input).ToListAsync().ConfigureAwait(false);
         return data.Cast<IDBHistoryValue>().ToList(); ;
     }
 
@@ -105,8 +105,7 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
         {
             RefAsync<int> totalCount = 0;
 
-            var items = await query
-                .ToPageListAsync(option.PageIndex, option.PageItems, totalCount);
+            var items = await query.ToPageListAsync(option.PageIndex, option.PageItems, totalCount).ConfigureAwait(false);
 
             ret.TotalCount = totalCount;
             ret.Items = items;
@@ -115,16 +114,14 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
         {
             RefAsync<int> totalCount = 0;
 
-            var items = await query
-                .ToPageListAsync(option.StartIndex, option.PageItems, totalCount);
+            var items = await query.ToPageListAsync(option.StartIndex, option.PageItems, totalCount).ConfigureAwait(false);
 
             ret.TotalCount = totalCount;
             ret.Items = items;
         }
         else
         {
-            var items = await query
-                .ToListAsync();
+            var items = await query.ToListAsync().ConfigureAwait(false);
             ret.TotalCount = items.Count;
             ret.Items = items;
         }

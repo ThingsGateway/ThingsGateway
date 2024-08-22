@@ -100,6 +100,6 @@ public static class ExportExcelExtensions
             config.DynamicColumns = dynamicExcelColumns.ToArray();
         }
         config.TableStyles = TableStyles.None;
-        await MiniExcel.SaveAsAsync(stream, input, configuration: config);
+        await MiniExcel.SaveAsAsync(stream, input, configuration: config).ConfigureAwait(false);
     }
 }

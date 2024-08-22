@@ -65,8 +65,12 @@ public partial class RpcLogPage
 
     private async Task<QueryData<RpcLog>> OnQueryAsync(QueryPageOptions options)
     {
-        var data = await RpcLogService.PageAsync(options);
-        return data;
+        return await Task.Run(async () =>
+        {
+            var data = await RpcLogService.PageAsync(options);
+            return data;
+        });
+
     }
 
     #endregion 查询

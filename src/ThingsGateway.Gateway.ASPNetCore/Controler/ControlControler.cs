@@ -64,15 +64,15 @@ public class ControlControler : ControllerBase
     /// <returns></returns>
     [HttpPost("restartBusinessThread")]
     [DisplayName("重启业务线程")]
-    public async Task RestartBusinessDeviceThread(long id)
+    public Task RestartBusinessDeviceThread(long id)
     {
         if (id <= 0)
         {
-            await HostedServiceUtil.BusinessDeviceHostedService.RestartAsync();
+            return HostedServiceUtil.BusinessDeviceHostedService.RestartAsync();
         }
         else
         {
-            await HostedServiceUtil.BusinessDeviceHostedService.RestartChannelThreadAsync(id, true);
+            return HostedServiceUtil.BusinessDeviceHostedService.RestartChannelThreadAsync(id, true);
         }
     }
 
@@ -82,15 +82,15 @@ public class ControlControler : ControllerBase
     /// <returns></returns>
     [HttpPost("restartCollectThread")]
     [DisplayName("重启采集线程")]
-    public async Task RestartCollectDeviceThread(long id)
+    public Task RestartCollectDeviceThread(long id)
     {
         if (id <= 0)
         {
-            await HostedServiceUtil.CollectDeviceHostedService.RestartAsync();
+            return HostedServiceUtil.CollectDeviceHostedService.RestartAsync();
         }
         else
         {
-            await HostedServiceUtil.CollectDeviceHostedService.RestartChannelThreadAsync(id, true);
+            return HostedServiceUtil.CollectDeviceHostedService.RestartChannelThreadAsync(id, true);
         }
     }
 
@@ -99,9 +99,9 @@ public class ControlControler : ControllerBase
     /// </summary>
     [HttpPost("writeVariables")]
     [DisplayName("写入变量")]
-    public async Task<Dictionary<string, OperResult>> WriteDeviceMethods(Dictionary<string, string> objs)
+    public Task<Dictionary<string, OperResult>> WriteDeviceMethods(Dictionary<string, string> objs)
     {
-        var result = await _rpcService.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", objs);
-        return result;
+        return _rpcService.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", objs);
+
     }
 }

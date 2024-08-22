@@ -47,7 +47,7 @@ internal class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcp
                      {
                          if (DateTime.UtcNow - tcpClient.LastSentTime.ToUniversalTime() < TimeSpan.FromMilliseconds(200))
                          {
-                             await Task.Delay(200);
+                             await Task.Delay(200).ConfigureAwait(false);
                          }
 
                          await tcpClient.SendAsync(HeartbeatHexString.HexStringToBytes()).ConfigureAwait(false);
@@ -59,13 +59,13 @@ internal class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcp
                      }
                      if (failedCount > 3)
                      {
-                         await client.CloseAsync("The automatic heartbeat has failed more than 3 times and has been disconnected.").ConfigureFalseAwait();
+                         await client.CloseAsync("The automatic heartbeat has failed more than 3 times and has been disconnected.").ConfigureAwait(false);
                      }
                  }
              });
         }
 
-        await e.InvokeNext();
+        await e.InvokeNext().ConfigureAwait(false);
     }
 
     public async Task OnTcpReceiving(ITcpSession client, ByteBlockEventArgs e)

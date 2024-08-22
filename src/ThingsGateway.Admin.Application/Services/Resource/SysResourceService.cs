@@ -45,7 +45,7 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
         if (ids.Any())
         {
             //获取所有菜单和按钮
-            var resourceList = await GetAllAsync();
+            var resourceList = await GetAllAsync().ConfigureAwait(false);
             //找到要删除的菜单
             var delSysResources = resourceList.Where(it => ids.Contains(it.Id));
             //找到要删除的模块
@@ -73,12 +73,12 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
             //事务
             var result = await db.UseTranAsync(async () =>
             {
-                await db.Deleteable<SysResource>().In(deleteIds.ToList()).ExecuteCommandAsync();//删除菜单和按钮
+                await db.Deleteable<SysResource>().In(deleteIds.ToList()).ExecuteCommandAsync().ConfigureAwait(false);//删除菜单和按钮
                 await db.Deleteable<SysRelation>()//关系表删除对应RoleHasResource
-                 .Where(it => it.Category == RelationCategoryEnum.RoleHasResource && resourceIds.Contains(SqlFunc.ToInt64(it.TargetId))).ExecuteCommandAsync();
+                 .Where(it => it.Category == RelationCategoryEnum.RoleHasResource && resourceIds.Contains(SqlFunc.ToInt64(it.TargetId))).ExecuteCommandAsync().ConfigureAwait(false);
                 await db.Deleteable<SysRelation>()//关系表删除对应UserHasResource
-               .Where(it => it.Category == RelationCategoryEnum.UserHasResource && resourceIds.Contains(SqlFunc.ToInt64(it.TargetId))).ExecuteCommandAsync();
-            });
+               .Where(it => it.Category == RelationCategoryEnum.UserHasResource && resourceIds.Contains(SqlFunc.ToInt64(it.TargetId))).ExecuteCommandAsync().ConfigureAwait(false);
+            }).ConfigureAwait(false);
             if (result.IsSuccess)//如果成功了
             {
                 RefreshCache();//资源表菜单刷新缓存
@@ -104,7 +104,7 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
         if (sysResources == null)
         {
             using var db = GetDB();
-            sysResources = await db.Queryable<SysResource>().ToListAsync();
+            sysResources = await db.Queryable<SysResource>().ToListAsync().ConfigureAwait(false);
             NetCoreApp.CacheService.Set(CacheKey, sysResources);
         }
         return sysResources;
@@ -117,7 +117,7 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
     /// <returns>菜单列表</returns>
     public async Task<IEnumerable<SysResource>> GetMenuByMenuIdsAsync(IEnumerable<long> menuIds)
     {
-        var menuList = await GetAllAsync();
+        var menuList = await GetAllAsync().ConfigureAwait(false);
         var menus = menuList.Where(it => it.Category == ResourceCategoryEnum.Menu && menuIds.Contains(it.Id));
         return menus;
     }
@@ -129,7 +129,7 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
     /// <returns>菜单列表</returns>
     public async Task<IEnumerable<SysResource>> GetMuduleByMuduleIdsAsync(IEnumerable<long> moduleIds)
     {
-        var moduleList = await GetAllAsync();
+        var moduleList = await GetAllAsync().ConfigureAwait(false);
         var modules = moduleList.Where(it => it.Category == ResourceCategoryEnum.Module && moduleIds.Contains(it.Id));
         return modules;
     }
@@ -153,12 +153,12 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
     [OperDesc("SaveResource")]
     public async Task<bool> SaveResourceAsync(SysResource input, ItemChangedType type)
     {
-        var resource = await CheckInput(input);//检查参数
+        var resource = await CheckInput(input).ConfigureAwait(false);//检查参数
         using var db = GetDB();
 
         if (type == ItemChangedType.Add)
         {
-            var result = await db.Insertable(input).ExecuteCommandAsync();
+            var result = await db.Insertable(input).ExecuteCommandAsync().ConfigureAwait(false);
             RefreshCache();//刷新缓存
             return result > 0;
         }
@@ -168,8 +168,8 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
             if (resource.Href != input.Href)
             {
                 //获取所有角色和用户的权限关系
-                var rolePermissions = await _relationService.GetRelationByCategoryAsync(RelationCategoryEnum.RoleHasPermission);
-                var userPermissions = await _relationService.GetRelationByCategoryAsync(RelationCategoryEnum.UserHasPermission);
+                var rolePermissions = await _relationService.GetRelationByCategoryAsync(RelationCategoryEnum.RoleHasPermission).ConfigureAwait(false);
+                var userPermissions = await _relationService.GetRelationByCategoryAsync(RelationCategoryEnum.UserHasPermission).ConfigureAwait(false);
                 //找到所有匹配的权限
                 rolePermissions = rolePermissions.Where(it => it.TargetId!.Contains(resource.Href)).ToList();
                 userPermissions = userPermissions.Where(it => it.TargetId!.Contains(resource.Href)).ToList();
@@ -183,12 +183,12 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
             //事务
             var result = await db.UseTranAsync(async () =>
             {
-                await db.Updateable(input).ExecuteCommandAsync();//更新数据
+                await db.Updateable(input).ExecuteCommandAsync().ConfigureAwait(false);//更新数据
                 if (permissions.Count > 0)//如果权限列表大于0就更新
                 {
-                    await db.Updateable(permissions).ExecuteCommandAsync();//更新关系表
+                    await db.Updateable(permissions).ExecuteCommandAsync().ConfigureAwait(false);//更新关系表
                 }
-            });
+            }).ConfigureAwait(false);
             if (result.IsSuccess)//如果成功了
             {
                 RefreshCache();//刷新菜单缓存
@@ -243,7 +243,7 @@ public class SysResourceService : BaseService<SysResource>, ISysResourceService
         //}
 
         //获取所有列表
-        var menList = await GetAllAsync();
+        var menList = await GetAllAsync().ConfigureAwait(false);
         //判断是否有同级且同名
         if (menList.Any(it => it.ParentId == sysResource.ParentId && it.Title == sysResource.Title && it.Id != sysResource.Id))
             throw Oops.Bah(Localizer["ResourceDup", sysResource.Title]);

@@ -28,7 +28,7 @@ public class AuthRazorService : IAuthRazorService
     public async Task<UnifyResult<LoginOutput>> LoginAsync(LoginInput input)
     {
 
-        var ret = await AuthService.LoginAsync(input);
+        var ret = await AuthService.LoginAsync(input).ConfigureAwait(false);
         return new UnifyResult<LoginOutput>
         {
             Code = 200,
@@ -44,7 +44,7 @@ public class AuthRazorService : IAuthRazorService
     /// </summary>
     public async Task<UnifyResult<object>> LoginOutAsync()
     {
-        await AuthService.LoginOutAsync();
+        await AuthService.LoginOutAsync().ConfigureAwait(false);
         return new UnifyResult<object>
         {
             Code = 200,

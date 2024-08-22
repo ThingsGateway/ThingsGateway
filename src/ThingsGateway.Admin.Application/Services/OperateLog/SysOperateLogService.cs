@@ -30,7 +30,7 @@ public class SysOperateLogService : BaseService<SysOperateLog>, ISysOperateLogSe
     public async Task<List<OperateLogIndexOutput>> GetNewLog(string account)
     {
         using var db = GetDB();
-        var data = await db.Queryable<SysOperateLog>().Select(a => new OperateLogIndexOutput { OpTime = a.OpTime, Name = a.Name, OpAccount = a.OpAccount, OpBrowser = a.OpBrowser, OpIp = a.OpIp }).Where(a => a.OpAccount == account).OrderByDescending(a => a.OpTime).Take(10).ToListAsync();
+        var data = await db.Queryable<SysOperateLog>().Select(a => new OperateLogIndexOutput { OpTime = a.OpTime, Name = a.Name, OpAccount = a.OpAccount, OpBrowser = a.OpBrowser, OpIp = a.OpIp }).Where(a => a.OpAccount == account).OrderByDescending(a => a.OpTime).Take(10).ToListAsync().ConfigureAwait(false);
         return data;
     }
 
@@ -70,7 +70,7 @@ public class SysOperateLogService : BaseService<SysOperateLog>, ISysOperateLogSe
             LogoutCount = SqlFunc.AggregateSum(SqlFunc.IIF(x2.Category == LogCateGoryEnum.Logout, 1, 0)), //null的数据要为0所以不能用count
             Date = x1.ColumnName.ToString("yyyy-MM-dd")
         }
-        ).ToListAsync();
+        ).ToListAsync().ConfigureAwait(false);
 
         return list;
     }
@@ -87,7 +87,7 @@ public class SysOperateLogService : BaseService<SysOperateLog>, ISysOperateLogSe
     public async Task DeleteAsync(LogCateGoryEnum category)
     {
         using var db = GetDB();
-        await db.Deleteable<SysOperateLog>(it => it.Category == category).ExecuteCommandAsync();
+        await db.Deleteable<SysOperateLog>(it => it.Category == category).ExecuteCommandAsync().ConfigureAwait(false);
     }
 
     #endregion 删除

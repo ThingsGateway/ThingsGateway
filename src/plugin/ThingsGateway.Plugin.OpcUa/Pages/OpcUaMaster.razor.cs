@@ -163,7 +163,7 @@ public partial class OpcUaMaster : IDisposable
                 {
                         {RegisterAddress, WriteValue.GetJTokenFromString()}
                 }
-                );
+                ).ConfigureAwait(false);
 
             foreach (var item in data)
             {

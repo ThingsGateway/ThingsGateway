@@ -78,8 +78,8 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         }
         if (_webHost != null)
         {
-            await _webHost?.StopAsync();
-            _webHost?.SafeDispose();
+            await _webHost.StopAsync().ConfigureAwait(false);
+            _webHost.SafeDispose();
         }
 
         base.Dispose(disposing);
@@ -91,7 +91,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         {
             try
             {
-                await _webHost.RunAsync();
+                await _webHost.RunAsync().ConfigureAwait(false);
             }
             catch (Exception ex)
             {

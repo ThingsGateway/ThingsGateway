@@ -130,7 +130,7 @@ public static class HttpContextExtensions
     public static async Task<string> ReadBodyContentAsync(this HttpContext httpContext)
     {
         if (httpContext == null) return default;
-        return await httpContext.Request.ReadBodyContentAsync();
+        return await httpContext.Request.ReadBodyContentAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ public static class HttpContextExtensions
         request.Body.Seek(0, SeekOrigin.Begin);
 
         using var reader = new StreamReader(request.Body, Encoding.UTF8, true, 1024, true);
-        var body = await reader.ReadToEndAsync();
+        var body = await reader.ReadToEndAsync().ConfigureAwait(false);
 
         request.Body.Seek(0, SeekOrigin.Begin);
         return body;

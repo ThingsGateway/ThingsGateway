@@ -23,10 +23,13 @@ public partial class PluginPage
 
     private PluginOutput SearchModel { get; set; } = new();
 
-    private Task<QueryData<PluginOutput>> OnQueryAsync(QueryPageOptions options)
+    private async Task<QueryData<PluginOutput>> OnQueryAsync(QueryPageOptions options)
     {
-        var data = PluginService.Page(options);
-        return Task.FromResult(data);
+        return await Task.Run(() =>
+        {
+            var data = PluginService.Page(options);
+            return data;
+        });
     }
 
     #endregion 查询

@@ -61,7 +61,7 @@ public partial class OpcDaImportVariable
     {
         if (firstRender)
         {
-            await Task.Factory.StartNew(async () =>
+            await Task.Run(async () =>
             {
                 Items = BuildTreeItemList(PopulateBranch(), RenderTreeItem).ToList();
                 ShowSkeleton = false;

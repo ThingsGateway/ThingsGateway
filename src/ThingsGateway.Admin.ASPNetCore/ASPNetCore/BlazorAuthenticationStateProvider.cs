@@ -41,9 +41,9 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
         var isAuthenticated = context.User.Identity?.IsAuthenticated;
         if (isAuthenticated == true)
         {
-            if (await CheckVerificatFromCacheAsync(context))
+            if (await CheckVerificatFromCacheAsync(context).ConfigureAwait(false))
             {
-                await AuthorizeHandleAsync(context);
+                await AuthorizeHandleAsync(context).ConfigureAwait(false);
             }
             else
             {
@@ -76,10 +76,10 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
     {
         var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId)?.Value?.ToLong(0) ?? 0;
 
-        var user = await _sysUserService.GetUserByIdAsync(userId);
+        var user = await _sysUserService.GetUserByIdAsync(userId).ConfigureAwait(false);
         if (context.Resource is Microsoft.AspNetCore.Components.RouteData routeData)
         {
-            var roles = await _sysRoleService.GetRoleListByUserIdAsync(userId);
+            var roles = await _sysRoleService.GetRoleListByUserIdAsync(userId).ConfigureAwait(false);
             if (roles.All(a => a.Category != RoleCategoryEnum.Global))
                 return false;
             //这里鉴别用户使能状态
@@ -191,7 +191,7 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
         DefaultHttpContext currentHttpContext = context.GetCurrentHttpContext();
         var userId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.UserId)?.Value?.ToLong();
         var verificatId = context.User.Claims.FirstOrDefault(it => it.Type == ClaimConst.VerificatId)?.Value?.ToLong();
-        var expire = (await _sysDictService.GetAppConfigAsync()).LoginPolicy.VerificatExpireTime;
+        var expire = (await _sysDictService.GetAppConfigAsync().ConfigureAwait(false)).LoginPolicy.VerificatExpireTime;
         if (currentHttpContext == null)
         {
             var verificatInfo = userId != null ? _verificatInfoService.GetOne(verificatId ?? 0) : null;//获取token信息

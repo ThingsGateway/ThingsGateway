@@ -1085,7 +1085,7 @@ public class OpcUaMaster : IDisposable
             null,
             0,
             TimestampsToReturn.Neither,
-            nodesToRead, cancellationToken);
+            nodesToRead, cancellationToken).ConfigureAwait(false);
 
         ClientBase.ValidateResponse(result.Results, nodesToRead);
         ClientBase.ValidateDiagnosticInfos(result.DiagnosticInfos, nodesToRead);

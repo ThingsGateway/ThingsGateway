@@ -30,7 +30,7 @@ public class SignalrNoticeService : ISignalrNoticeService
         {
             foreach (var clientId in clientIds)
             {
-                await SignalRMessageDispatchService.Publish(clientId.ToString(), message);
+                await SignalRMessageDispatchService.Publish(clientId.ToString(), message).ConfigureAwait(false);
             }
         }
     }
@@ -43,7 +43,7 @@ public class SignalrNoticeService : ISignalrNoticeService
         {
             foreach (var clientId in clientIds)
             {
-                await StringDispatchService.Publish(clientId.ToString(), message);
+                await StringDispatchService.Publish(clientId.ToString(), message).ConfigureAwait(false);
             }
         }
     }

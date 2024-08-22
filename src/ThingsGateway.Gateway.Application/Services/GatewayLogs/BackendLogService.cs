@@ -26,7 +26,7 @@ public class BackendLogService : BaseService<BackendLog>, IBackendLogService
     public async Task<List<BackendLog>> GetNewLog()
     {
         using var db = GetDB();
-        var data = await db.Queryable<BackendLog>().OrderByDescending(a => a.LogTime).Take(10).ToListAsync();
+        var data = await db.Queryable<BackendLog>().OrderByDescending(a => a.LogTime).Take(10).ToListAsync().ConfigureAwait(false);
         return data;
     }
 
@@ -50,7 +50,7 @@ public class BackendLogService : BaseService<BackendLog>, IBackendLogService
     public async Task DeleteBackendLogAsync()
     {
         using var db = GetDB();
-        await db.Deleteable<BackendLog>().ExecuteCommandAsync();
+        await db.Deleteable<BackendLog>().ExecuteCommandAsync().ConfigureAwait(false);
     }
 
     #endregion 删除
@@ -84,7 +84,7 @@ public class BackendLogService : BaseService<BackendLog>, IBackendLogService
         }
         )
 
-        .ToListAsync();
+        .ToListAsync().ConfigureAwait(false);
         return list;
     }
 }

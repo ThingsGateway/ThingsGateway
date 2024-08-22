@@ -55,8 +55,8 @@ public partial class TDengineDBProducer : BusinessBaseWithCacheIntervalVarModel<
         {
             var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
             db.Ado.CancellationToken = cancellationToken;
-            var result = await db.Insertable(dbInserts).ExecuteCommandAsync();//不要加分表
-            //var result = await db.Insertable(dbInserts).SplitTable().ExecuteCommandAsync();
+            var result = await db.Insertable(dbInserts).ExecuteCommandAsync().ConfigureAwait(false);//不要加分表
+            //var result = await db.Insertable(dbInserts).SplitTable().ExecuteCommandAsync().ConfigureAwait(false);
             if (result > 0)
             {
                 LogMessage.Trace($"主题：{nameof(TDengineDBHistoryValue)}，数量：{result}");

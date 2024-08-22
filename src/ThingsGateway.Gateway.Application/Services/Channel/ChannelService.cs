@@ -55,7 +55,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
         {
             using var db = GetDB();
 
-            var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync()) > 0;
+            var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
             if (result)
             {
                 DeleteChannelFromCache();
@@ -77,9 +77,9 @@ public class ChannelService : BaseService<Channel>, IChannelService
         var result = await db.UseTranAsync(async () =>
         {
             var data = GetAll();
-            await db.Deleteable<Channel>().ExecuteCommandAsync();
-            await deviceService.DeleteByChannelIdAsync(data.Select(a => a.Id), db);
-        });
+            await db.Deleteable<Channel>().ExecuteCommandAsync().ConfigureAwait(false);
+            await deviceService.DeleteByChannelIdAsync(data.Select(a => a.Id), db).ConfigureAwait(false);
+        }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
             DeleteChannelFromCache();
@@ -99,9 +99,9 @@ public class ChannelService : BaseService<Channel>, IChannelService
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            await db.Deleteable<Channel>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync();
-            await deviceService.DeleteByChannelIdAsync(ids, db);
-        });
+            await db.Deleteable<Channel>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync().ConfigureAwait(false);
+            await deviceService.DeleteByChannelIdAsync(ids, db).ConfigureAwait(false);
+        }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
             DeleteChannelFromCache();
@@ -180,7 +180,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
     {
         //验证
         CheckInput(input);
-        if (await base.SaveAsync(input, type))
+        if (await base.SaveAsync(input, type).ConfigureAwait(false))
         {
             DeleteChannelFromCache();
             return true;
@@ -252,7 +252,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
     [OperDesc("ExportChannel", isRecordPar: false, localizerType: typeof(Channel))]
     public async Task<Dictionary<string, object>> ExportChannelAsync(QueryPageOptions options)
     {
-        var data = await PageAsync(options);
+        var data = await PageAsync(options).ConfigureAwait(false);
         return ExportChannelCore(data.Items);
     }
 
@@ -262,7 +262,7 @@ public class ChannelService : BaseService<Channel>, IChannelService
     {
         Dictionary<string, object> sheets = ExportChannelCore(data);
         var memoryStream = new MemoryStream();
-        await memoryStream.SaveAsAsync(sheets);
+        await memoryStream.SaveAsAsync(sheets).ConfigureAwait(false);
         memoryStream.Seek(0, SeekOrigin.Begin);
 
         return memoryStream;
@@ -339,15 +339,15 @@ public class ChannelService : BaseService<Channel>, IChannelService
         var upData = channels.Where(a => a.IsUp).ToList();
         var insertData = channels.Where(a => !a.IsUp).ToList();
         using var db = GetDB();
-        await db.Fastest<Channel>().PageSize(100000).BulkCopyAsync(insertData);
-        await db.Fastest<Channel>().PageSize(100000).BulkUpdateAsync(upData);
+        await db.Fastest<Channel>().PageSize(100000).BulkCopyAsync(insertData).ConfigureAwait(false);
+        await db.Fastest<Channel>().PageSize(100000).BulkUpdateAsync(upData).ConfigureAwait(false);
         DeleteChannelFromCache();
     }
 
     /// <inheritdoc/>
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile)
     {
-        var path = await browserFile.StorageLocal();
+        var path = await browserFile.StorageLocal().ConfigureAwait(false);
         try
         {
             var sheetNames = MiniExcel.GetSheetNames(path);

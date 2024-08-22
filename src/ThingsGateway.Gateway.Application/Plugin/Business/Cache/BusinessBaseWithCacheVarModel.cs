@@ -151,7 +151,7 @@ public abstract class BusinessBaseWithCacheVarModel<VarModel> : BusinessBase
                     {
                         //循环获取
                         using var cache = LocalDBCacheVarModel();
-                        var varList = await cache.DBProvider.Queryable<CacheDBItem<VarModel>>().Take(_businessPropertyWithCache.SplitSize).ToListAsync();
+                        var varList = await cache.DBProvider.Queryable<CacheDBItem<VarModel>>().Take(_businessPropertyWithCache.SplitSize).ToListAsync().ConfigureAwait(false);
                         if (varList.Any())
                         {
                             try
@@ -162,7 +162,7 @@ public abstract class BusinessBaseWithCacheVarModel<VarModel> : BusinessBase
                                     if (result.IsSuccess)
                                     {
                                         //删除缓存
-                                        await cache.DBProvider.Deleteable<CacheDBItem<VarModel>>(varList).ExecuteCommandAsync();
+                                        await cache.DBProvider.Deleteable<CacheDBItem<VarModel>>(varList).ExecuteCommandAsync().ConfigureAwait(false);
                                     }
                                     else
                                         break;

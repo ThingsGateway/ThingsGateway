@@ -189,7 +189,7 @@ public sealed class FileLoggerProvider : ILoggerProvider, ISupportExternalScope
     {
         foreach (var logMsg in _logMessageQueue.GetConsumingEnumerable())
         {
-            await _fileLoggingWriter.WriteAsync(logMsg, _logMessageQueue.Count == 0);
+            await _fileLoggingWriter.WriteAsync(logMsg, _logMessageQueue.Count == 0).ConfigureAwait(false);
         }
     }
 }

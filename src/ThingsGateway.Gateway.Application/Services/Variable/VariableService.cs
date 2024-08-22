@@ -138,10 +138,10 @@ public class VariableService : BaseService<Variable>, IVariableService
 
         var result = await db.UseTranAsync(async () =>
         {
-            await db.Fastest<Channel>().PageSize(50000).BulkCopyAsync(newChannels);
-            await db.Fastest<Device>().PageSize(50000).BulkCopyAsync(newDevices);
-            await db.Fastest<Variable>().PageSize(50000).BulkCopyAsync(newVariables);
-        });
+            await db.Fastest<Channel>().PageSize(50000).BulkCopyAsync(newChannels).ConfigureAwait(false);
+            await db.Fastest<Device>().PageSize(50000).BulkCopyAsync(newDevices).ConfigureAwait(false);
+            await db.Fastest<Variable>().PageSize(50000).BulkCopyAsync(newVariables).ConfigureAwait(false);
+        }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
             _channelService.DeleteChannelFromCache();//刷新缓存
@@ -165,7 +165,7 @@ public class VariableService : BaseService<Variable>, IVariableService
             CheckInput(item);
         }
         using var db = GetDB();
-        await db.Insertable(input).ExecuteCommandAsync();
+        await db.Insertable(input).ExecuteCommandAsync().ConfigureAwait(false);
         _dispatchService.Dispatch(new());
     }
 
@@ -179,7 +179,7 @@ public class VariableService : BaseService<Variable>, IVariableService
         {
             using var db = GetDB();
 
-            var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync()) > 0;
+            var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
             _dispatchService.Dispatch(new());
             return result;
         }
@@ -194,7 +194,7 @@ public class VariableService : BaseService<Variable>, IVariableService
     public async Task ClearVariableAsync(SqlSugarClient db = null)
     {
         db ??= GetDB();
-        await db.Deleteable<Variable>().ExecuteCommandAsync();
+        await db.Deleteable<Variable>().ExecuteCommandAsync().ConfigureAwait(false);
         _dispatchService.Dispatch(new());
     }
 
@@ -202,7 +202,7 @@ public class VariableService : BaseService<Variable>, IVariableService
     public async Task DeleteByDeviceIdAsync(IEnumerable<long> input, SqlSugarClient db)
     {
         var ids = input.ToList();
-        await db.Deleteable<Variable>().Where(a => ids.Contains(a.DeviceId.Value)).ExecuteCommandAsync();
+        await db.Deleteable<Variable>().Where(a => ids.Contains(a.DeviceId.Value)).ExecuteCommandAsync().ConfigureAwait(false);
         _dispatchService.Dispatch(new());
     }
 
@@ -211,7 +211,7 @@ public class VariableService : BaseService<Variable>, IVariableService
     {
         using var db = GetDB();
         var ids = input.ToList();
-        var result = (await db.Deleteable<Variable>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync()) > 0;
+        var result = (await db.Deleteable<Variable>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
         _dispatchService.Dispatch(new());
         return result;
     }
@@ -223,13 +223,13 @@ public class VariableService : BaseService<Variable>, IVariableService
             using var db = GetDB();
             if (devId == null)
             {
-                var deviceVariables = await db.Queryable<Variable>().Where(a => a.DeviceId > 0 && a.Enable).ToListAsync();
+                var deviceVariables = await db.Queryable<Variable>().Where(a => a.DeviceId > 0 && a.Enable).ToListAsync().ConfigureAwait(false);
                 var runtime = deviceVariables.Adapt<List<VariableRunTime>>();
                 return runtime;
             }
             else
             {
-                var deviceVariables = await db.Queryable<Variable>().Where(a => a.DeviceId == devId && a.Enable).ToListAsync();
+                var deviceVariables = await db.Queryable<Variable>().Where(a => a.DeviceId == devId && a.Enable).ToListAsync().ConfigureAwait(false);
                 var runtime = deviceVariables.Adapt<List<VariableRunTime>>();
                 return runtime;
             }
@@ -258,7 +258,7 @@ public class VariableService : BaseService<Variable>, IVariableService
     public async Task<bool> SaveVariableAsync(Variable input, ItemChangedType type)
     {
         CheckInput(input);
-        if (await base.SaveAsync(input, type))
+        if (await base.SaveAsync(input, type).ConfigureAwait(false))
         {
             _dispatchService.Dispatch(new());
             return true;
@@ -312,7 +312,7 @@ public class VariableService : BaseService<Variable>, IVariableService
         Dictionary<string, object> sheets = ExportCore(data, deviceName);
 
         var memoryStream = new MemoryStream();
-        await memoryStream.SaveAsAsync(sheets);
+        await memoryStream.SaveAsAsync(sheets).ConfigureAwait(false);
         memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
@@ -323,7 +323,7 @@ public class VariableService : BaseService<Variable>, IVariableService
     [OperDesc("ExportVariable", isRecordPar: false, localizerType: typeof(Variable))]
     public async Task<Dictionary<string, object>> ExportVariableAsync(QueryPageOptions options)
     {
-        var data = (await QueryAsync(options));
+        var data = (await QueryAsync(options).ConfigureAwait(false));
         Dictionary<string, object> sheets = ExportCore(data.Items);
         return sheets;
     }
@@ -517,15 +517,15 @@ public class VariableService : BaseService<Variable>, IVariableService
         var upData = variables.Where(a => a.IsUp).ToList();
         var insertData = variables.Where(a => !a.IsUp).ToList();
         using var db = GetDB();
-        await db.Fastest<Variable>().PageSize(100000).BulkCopyAsync(insertData);
-        await db.Fastest<Variable>().PageSize(100000).BulkUpdateAsync(upData);
+        await db.Fastest<Variable>().PageSize(100000).BulkCopyAsync(insertData).ConfigureAwait(false);
+        await db.Fastest<Variable>().PageSize(100000).BulkUpdateAsync(upData).ConfigureAwait(false);
         _dispatchService.Dispatch(new());
     }
 
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile)
     {
         // 上传文件并获取文件路径
-        var path = await browserFile.StorageLocal();
+        var path = await browserFile.StorageLocal().ConfigureAwait(false);
 
         try
         {
@@ -538,7 +538,7 @@ public class VariableService : BaseService<Variable>, IVariableService
             using var db = GetDB();
 
             // 从数据库中获取所有变量，并转换为字典，以变量名称作为键
-            var dbVariables = await db.Queryable<Variable>().Select(it => new { it.Id, it.Name }).ToListAsync();
+            var dbVariables = await db.Queryable<Variable>().Select(it => new { it.Id, it.Name }).ToListAsync().ConfigureAwait(false);
             var dbVariableDicts = dbVariables.ToDictionary(a => a.Name);
 
             // 存储导入检验结果的字典

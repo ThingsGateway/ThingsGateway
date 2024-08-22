@@ -39,7 +39,7 @@ public class CollectDeviceHostedService : DeviceHostedService
         _stoppingToken = stoppingToken.Token;
         stoppingToken.Cancel();
         await StopThreadAsync(true).ConfigureAwait(false);
-        await base.StopAsync(cancellationToken);
+        await base.StopAsync(cancellationToken).ConfigureAwait(false);
     }
 
     #endregion worker服务
@@ -103,8 +103,8 @@ public class CollectDeviceHostedService : DeviceHostedService
     {
         //重启采集线程，会启动其他后台服务
         await HostedServiceUtil.ManagementHostedService.StartLock.WaitAsync().ConfigureAwait(false);
-        //await RestartAsync();
-        await WhileExecuteAsync(stoppingToken);
+        //await RestartAsync().ConfigureAwait(false);
+        await WhileExecuteAsync(stoppingToken).ConfigureAwait(false);
     }
 
     protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId)

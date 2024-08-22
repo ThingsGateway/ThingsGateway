@@ -96,11 +96,11 @@ internal class FileLoggingWriter
         if (_textWriter == null) return;
 
         CheckForNewLogFile();
-        await _textWriter.WriteLineAsync(logMsg.Message);
+        await _textWriter.WriteLineAsync(logMsg.Message).ConfigureAwait(false);
 
         if (flush)
         {
-            await _textWriter.FlushAsync();
+            await _textWriter.FlushAsync().ConfigureAwait(false);
         }
     }
 

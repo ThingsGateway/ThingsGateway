@@ -48,7 +48,7 @@ public class ImportExportService : IImportExportService
         var filePath = Path.Combine(path, fileName);
         using (FileStream fs = new(filePath, FileMode.Create))
         {
-            await fs.ExportExcel<T>(input, isDynamicExcelColumn);
+            await fs.ExportExcel<T>(input, isDynamicExcelColumn).ConfigureAwait(false);
         }
         var result = _fileService.GetFileStreamResult(filePath, fileName);
         return result;
@@ -65,10 +65,10 @@ public class ImportExportService : IImportExportService
     /// </summary>
     /// <param name="file">文件</param>
     /// <returns>保存全路径</returns>
-    public async Task<string> UploadFileAsync(IBrowserFile file)
+    public Task<string> UploadFileAsync(IBrowserFile file)
     {
         _fileService.Verification(file);
-        return await _fileService.UploadFileAsync(file);
+        return _fileService.UploadFileAsync(file);
     }
 
     #endregion 导入

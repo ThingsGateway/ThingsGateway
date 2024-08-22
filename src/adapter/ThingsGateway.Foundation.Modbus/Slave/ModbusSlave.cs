@@ -426,7 +426,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                             valueByteBlock.Write(data.Content.Span);
                         }
                         valueByteBlock.Write(CRC16Utils.Crc16Only(valueByteBlock.Memory.Span));
-                        await ReturnData(client, valueByteBlock.Memory, e);
+                        await ReturnData(client, valueByteBlock.Memory, e).ConfigureAwait(false);
                     }
                     else
                     {
@@ -444,7 +444,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                             valueByteBlock.Write(data.Content.Span);
                         }
                         valueByteBlock[5] = (byte)(valueByteBlock.Length - 6);
-                        await ReturnData(client, valueByteBlock.Memory, e);
+                        await ReturnData(client, valueByteBlock.Memory, e).ConfigureAwait(false);
                     }
                 }
                 finally
@@ -454,7 +454,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
             }
             else
             {
-                await WriteError(modbusRtu, client, Bytes, e);//返回错误码
+                await WriteError(modbusRtu, client, Bytes, e).ConfigureAwait(false);//返回错误码
             }
         }
         else//写入
@@ -468,21 +468,21 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                     // 接收外部写入时，传出变量地址/写入字节组/转换规则/客户端
                     if ((await WriteData(modbusAddress, ThingsGatewayBitConverter, client).ConfigureAwait(false)).IsSuccess)
                     {
-                        await WriteSuccess(modbusRtu, client, Bytes, e);
+                        await WriteSuccess(modbusRtu, client, Bytes, e).ConfigureAwait(false);
                         if (IsWriteMemory)
                         {
                             var result = ModbusRequest(modbusRequest, false);
                             if (result.IsSuccess)
-                                await WriteSuccess(modbusRtu, client, Bytes, e);
+                                await WriteSuccess(modbusRtu, client, Bytes, e).ConfigureAwait(false);
                             else
-                                await WriteError(modbusRtu, client, Bytes, e);
+                                await WriteError(modbusRtu, client, Bytes, e).ConfigureAwait(false);
                         }
                         else
-                            await WriteSuccess(modbusRtu, client, Bytes, e);
+                            await WriteSuccess(modbusRtu, client, Bytes, e).ConfigureAwait(false);
                     }
                     else
                     {
-                        await WriteError(modbusRtu, client, Bytes, e);
+                        await WriteError(modbusRtu, client, Bytes, e).ConfigureAwait(false);
                     }
                 }
                 else
@@ -491,11 +491,11 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                     var result = ModbusRequest(modbusRequest, false);
                     if (result.IsSuccess)
                     {
-                        await WriteSuccess(modbusRtu, client, Bytes, e);
+                        await WriteSuccess(modbusRtu, client, Bytes, e).ConfigureAwait(false);
                     }
                     else
                     {
-                        await WriteError(modbusRtu, client, Bytes, e);
+                        await WriteError(modbusRtu, client, Bytes, e).ConfigureAwait(false);
                     }
                 }
             }
@@ -511,16 +511,16 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                         {
                             var result = ModbusRequest(modbusRequest, false);
                             if (result.IsSuccess)
-                                await WriteSuccess(modbusRtu, client, Bytes, e);
+                                await WriteSuccess(modbusRtu, client, Bytes, e).ConfigureAwait(false);
                             else
-                                await WriteError(modbusRtu, client, Bytes, e);
+                                await WriteError(modbusRtu, client, Bytes, e).ConfigureAwait(false);
                         }
                         else
-                            await WriteSuccess(modbusRtu, client, Bytes, e);
+                            await WriteSuccess(modbusRtu, client, Bytes, e).ConfigureAwait(false);
                     }
                     else
                     {
-                        await WriteError(modbusRtu, client, Bytes, e);
+                        await WriteError(modbusRtu, client, Bytes, e).ConfigureAwait(false);
                     }
                 }
                 else
@@ -528,11 +528,11 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                     var result = ModbusRequest(modbusRequest, false);
                     if (result.IsSuccess)
                     {
-                        await WriteSuccess(modbusRtu, client, Bytes, e);
+                        await WriteSuccess(modbusRtu, client, Bytes, e).ConfigureAwait(false);
                     }
                     else
                     {
-                        await WriteError(modbusRtu, client, Bytes, e);
+                        await WriteError(modbusRtu, client, Bytes, e).ConfigureAwait(false);
                     }
                 }
             }
@@ -544,9 +544,9 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
         if (SendDelayTime > 0)
             await Task.Delay(SendDelayTime).ConfigureAwait(false);
         if (client is IUdpClientSender udpClientSender)
-            await udpClientSender.SendAsync(((UdpReceivedDataEventArgs)e).EndPoint, sendData);
+            await udpClientSender.SendAsync(((UdpReceivedDataEventArgs)e).EndPoint, sendData).ConfigureAwait(false);
         else
-            await client.SendAsync(sendData);
+            await client.SendAsync(sendData).ConfigureAwait(false);
     }
 
     private async Task WriteError(bool modbusRtu, IClientChannel client, ReadOnlyMemory<byte> bytes, ReceivedDataEventArgs e)
@@ -568,7 +568,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                 valueByteBlock[5] = (byte)(valueByteBlock.Length - 6);
                 valueByteBlock[7] = (byte)(valueByteBlock[7] + 128);
             }
-            await ReturnData(client, valueByteBlock.Memory, e);
+            await ReturnData(client, valueByteBlock.Memory, e).ConfigureAwait(false);
         }
         finally
         {
@@ -591,7 +591,7 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
                 valueByteBlock.Write(bytes.Slice(0, 12).Span);
                 valueByteBlock[5] = (byte)(valueByteBlock.Length - 6);
             }
-            await ReturnData(client, valueByteBlock.Memory, e);
+            await ReturnData(client, valueByteBlock.Memory, e).ConfigureAwait(false);
         }
         finally
         {

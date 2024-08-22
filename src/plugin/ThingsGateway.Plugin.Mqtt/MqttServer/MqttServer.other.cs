@@ -223,11 +223,11 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         }
     }
 
-    private async Task MqttServer_LoadingRetainedMessageAsync(LoadingRetainedMessagesEventArgs arg)
+    private Task MqttServer_LoadingRetainedMessageAsync(LoadingRetainedMessagesEventArgs arg)
     {
         List<MqttApplicationMessage> Messages = GetRetainedMessages();
         arg.LoadedRetainedMessages = Messages;
-        await CompletedTask.Instance;
+        return CompletedTask.Instance;
     }
 
     private async Task MqttServer_ValidatingConnectionAsync(ValidatingConnectionEventArgs arg)
@@ -260,7 +260,6 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
             {
                 await _mqttServer.InjectApplicationMessage(
      new InjectedMqttApplicationMessage(item)).ConfigureAwait(false);
-                //await _mqttServer.UpdateRetainedMessageAsync(item);
             }
         });
     }

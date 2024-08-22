@@ -59,8 +59,8 @@ public class GatewayExportController : ControllerBase
     {
         input.IsPage = false;
         input.IsVirtualScroll = false;
-        var sheets = await _deviceService.ExportDeviceAsync(input, PluginTypeEnum.Business);
-        return await _importExportService.ExportAsync<Device>(sheets, "BusinessDevice", false);
+        var sheets = await _deviceService.ExportDeviceAsync(input, PluginTypeEnum.Business).ConfigureAwait(false);
+        return await _importExportService.ExportAsync<Device>(sheets, "BusinessDevice", false).ConfigureAwait(false);
 
     }
 
@@ -74,8 +74,8 @@ public class GatewayExportController : ControllerBase
         input.IsPage = false;
         input.IsVirtualScroll = false;
 
-        var sheets = await _channelService.ExportChannelAsync(input);
-        return await _importExportService.ExportAsync<Channel>(sheets, "Channel", false);
+        var sheets = await _channelService.ExportChannelAsync(input).ConfigureAwait(false);
+        return await _importExportService.ExportAsync<Channel>(sheets, "Channel", false).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -88,8 +88,8 @@ public class GatewayExportController : ControllerBase
         input.IsPage = false;
         input.IsVirtualScroll = false;
 
-        var sheets = await _deviceService.ExportDeviceAsync(input, PluginTypeEnum.Collect);
-        return await _importExportService.ExportAsync<Device>(sheets, "CollectDevice", false);
+        var sheets = await _deviceService.ExportDeviceAsync(input, PluginTypeEnum.Collect).ConfigureAwait(false);
+        return await _importExportService.ExportAsync<Device>(sheets, "CollectDevice", false).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -102,7 +102,7 @@ public class GatewayExportController : ControllerBase
         input.IsPage = false;
         input.IsVirtualScroll = false;
 
-        var sheets = await _variableService.ExportVariableAsync(input);
-        return await _importExportService.ExportAsync<Variable>(sheets, "Variable", false);
+        var sheets = await _variableService.ExportVariableAsync(input).ConfigureAwait(false);
+        return await _importExportService.ExportAsync<Variable>(sheets, "Variable", false).ConfigureAwait(false);
     }
 }

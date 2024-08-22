@@ -55,7 +55,7 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
         relationUserWorkBench.Id = userId;
         {
             //获取个人工作台信息
-            var sysRelations = await _relationService.GetRelationByCategoryAsync(RelationCategoryEnum.UserWorkbenchData);
+            var sysRelations = await _relationService.GetRelationByCategoryAsync(RelationCategoryEnum.UserWorkbenchData).ConfigureAwait(false);
             var sysRelation = sysRelations.FirstOrDefault(it => it.ObjectId == userId);//获取个人工作台
             if (sysRelation != null)
             {
@@ -65,13 +65,13 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
             else
             {
                 //如果没数据去系统配置里取默认的工作台
-                appConfig = await _configService.GetAppConfigAsync();
+                appConfig = await _configService.GetAppConfigAsync().ConfigureAwait(false);
                 relationUserWorkBench.Shortcuts = appConfig.PagePolicy.DefaultShortcuts;//返回工作台信息
             }
         }
         {
             //获取个人主页信息
-            var sysRelations = await _relationService.GetRelationByCategoryAsync(RelationCategoryEnum.UserDefaultRazor);
+            var sysRelations = await _relationService.GetRelationByCategoryAsync(RelationCategoryEnum.UserDefaultRazor).ConfigureAwait(false);
             var sysRelation = sysRelations.FirstOrDefault(it => it.ObjectId == userId);//获取个人主页
             if (sysRelation != null)
             {
@@ -81,7 +81,7 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
             else
             {
                 //如果没数据去系统配置里取默认的主页
-                var devConfig = appConfig ??= await _configService.GetAppConfigAsync();
+                var devConfig = appConfig ??= await _configService.GetAppConfigAsync().ConfigureAwait(false);
                 relationUserWorkBench.Razor = devConfig.PagePolicy.DefaultRazor;//返回主页信息
             }
         }
@@ -98,17 +98,17 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
     {
         var result = new List<SysResource>();
         //获取用户信息
-        var userInfo = await _userService.GetUserByIdAsync(userId);
+        var userInfo = await _userService.GetUserByIdAsync(userId).ConfigureAwait(false);
         if (userInfo != null)
         {
             //获取用户所拥有的资源集合
-            var resourceList = await _relationService.GetRelationListByObjectIdAndCategoryAsync(userInfo.Id, RelationCategoryEnum.UserHasResource);
+            var resourceList = await _relationService.GetRelationListByObjectIdAndCategoryAsync(userInfo.Id, RelationCategoryEnum.UserHasResource).ConfigureAwait(false);
             if (!resourceList.Any())//如果没有就获取角色的
                 //获取角色所拥有的资源集合
                 resourceList = await _relationService.GetRelationListByObjectIdListAndCategoryAsync(userInfo.RoleIdList!,
-                    RelationCategoryEnum.RoleHasResource);
+                    RelationCategoryEnum.RoleHasResource).ConfigureAwait(false);
 
-            var all = await _sysResourceService.GetAllAsync();
+            var all = await _sysResourceService.GetAllAsync().ConfigureAwait(false);
 
             //定义菜单ID列表
             var menuIdList = resourceList.Select(r => r.TargetId.ToLong()).Concat(all.Where(a => a.Module == ResourceConst.SpaId).Select(a => a.Id));
@@ -151,10 +151,10 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
     public async Task SetDefaultModule(long moduleId)
     {
         //获取用户信息
-        var userInfo = await _userService.GetUserByIdAsync(UserManager.UserId);
+        var userInfo = await _userService.GetUserByIdAsync(UserManager.UserId).ConfigureAwait(false);
         userInfo!.DefaultModule = moduleId;
         using var db = GetDB();
-        await db.Updateable(userInfo).UpdateColumns(it => new { it.DefaultModule }).ExecuteCommandAsync();//修改默认模块
+        await db.Updateable(userInfo).UpdateColumns(it => new { it.DefaultModule }).ExecuteCommandAsync().ConfigureAwait(false);//修改默认模块
         _userService.DeleteUserFromCache(UserManager.UserId);//cache删除用户数据
     }
 
@@ -171,12 +171,12 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
             throw Oops.Bah(Localizer["ConfirmPasswordDiff"]);
 
         //获取用户信息
-        var userInfo = await _userService.GetUserByIdAsync(UserManager.UserId);
+        var userInfo = await _userService.GetUserByIdAsync(UserManager.UserId).ConfigureAwait(false);
         var password = input.Password;
         if (userInfo!.Password != password)
             throw Oops.Bah(Localizer["OldPasswordError"]);
 
-        var passwordPolicy = (await _configService.GetAppConfigAsync()).PasswordPolicy;
+        var passwordPolicy = (await _configService.GetAppConfigAsync().ConfigureAwait(false)).PasswordPolicy;
         if (passwordPolicy.PasswordMinLen > input.NewPassword.Length)
             throw Oops.Bah(Localizer["PasswordLengthLess", passwordPolicy.PasswordMinLen]);
         if (passwordPolicy.PasswordContainNum && !Regex.IsMatch(input.NewPassword, "[0-9]"))
@@ -190,14 +190,14 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
 
         var newPassword = DESCEncryption.Encrypt(input.NewPassword);
         using var db = GetDB();
-        await db.UpdateSetColumnsTrueAsync<SysUser>(it => new SysUser() { Password = newPassword }, it => it.Id == userInfo.Id);
+        await db.UpdateSetColumnsTrueAsync<SysUser>(it => new SysUser() { Password = newPassword }, it => it.Id == userInfo.Id).ConfigureAwait(false);
         _userService.DeleteUserFromCache(UserManager.UserId);//cache删除用户数据
 
         //将这些用户踢下线，并永久注销这些用户
         var verificatInfoIds = _verificatInfoService.GetListByUserId(UserManager.UserId);
         //从列表中删除
         _verificatInfoService.Delete(verificatInfoIds.Select(a => a.Id).ToList());
-        await UserLoginOut(UserManager.UserId, verificatInfoIds.SelectMany(a => a.ClientIds).ToList());
+        await UserLoginOut(UserManager.UserId, verificatInfoIds.SelectMany(a => a.ClientIds).ToList()).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -223,7 +223,7 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
             Email = input.Email,
             Phone = input.Phone,
             Avatar = input.Avatar,
-        }, it => it.Id == UserManager.UserId);
+        }, it => it.Id == UserManager.UserId).ConfigureAwait(false);
         if (result)
             _userService.DeleteUserFromCache(UserManager.UserId);//cache删除用户数据
     }
@@ -234,10 +234,10 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
     {
         //关系表保存个人工作台
         await _relationService.SaveRelationAsync(RelationCategoryEnum.UserWorkbenchData, input.Id, null, input.Shortcuts.ToSystemTextJsonString(),
-            true);
+            true).ConfigureAwait(false);
 
         await _relationService.SaveRelationAsync(RelationCategoryEnum.UserDefaultRazor, input.Id, null, input.Razor.ToSystemTextJsonString(),
-            true);
+            true).ConfigureAwait(false);
     }
 
     #endregion 编辑
@@ -255,7 +255,7 @@ public class UserCenterService : BaseService<SysUser>, IUserCenterService
         {
             Message = Localizer["PasswordEdited"],
             ClientIds = clientIds,
-        });//通知用户下线
+        }).ConfigureAwait(false);//通知用户下线
     }
 
     #endregion 方法

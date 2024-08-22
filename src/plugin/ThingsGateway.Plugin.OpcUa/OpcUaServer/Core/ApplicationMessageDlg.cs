@@ -29,9 +29,9 @@ public class ApplicationMessageDlg : IApplicationMessageDlg
         message = text;
     }
 
-    public override async Task<bool> ShowAsync()
+    public override Task<bool> ShowAsync()
     {
         _log.Warning(message);
-        return await Task.FromResult(true);
+        return Task.FromResult(true);
     }
 }

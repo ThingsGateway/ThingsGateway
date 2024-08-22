@@ -26,13 +26,13 @@ public partial class SqlDBPage : IDriverUIBase
 
     private async Task<QueryData<SQLHistoryValue>> OnQueryHisAsync(QueryPageOptions options)
     {
-        var query = await SqlDBProducer.QueryHisData(options);
+        var query = await SqlDBProducer.QueryHisData(options).ConfigureAwait(false);
         return query;
     }
 
     private async Task<QueryData<SQLRealValue>> OnQueryRealAsync(QueryPageOptions options)
     {
-        var query = await SqlDBProducer.QueryRealData(options);
+        var query = await SqlDBProducer.QueryRealData(options).ConfigureAwait(false);
         return query;
     }
 }

@@ -118,7 +118,7 @@ public static class ObjectExtensions
         }
 
         using var fileStream = File.Create(path);
-        await stream.CopyToAsync(fileStream);
+        await stream.CopyToAsync(fileStream).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -130,7 +130,7 @@ public static class ObjectExtensions
     public static async Task CopyToSaveAsync(this byte[] bytes, string path)
     {
         using var stream = new MemoryStream(bytes);
-        await stream.CopyToSaveAsync(path);
+        await stream.CopyToSaveAsync(path).ConfigureAwait(false);
     }
 
     /// <summary>

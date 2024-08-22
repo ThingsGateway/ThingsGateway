@@ -92,8 +92,11 @@ public partial class VariablePage : IDisposable
 
     private async Task<QueryData<Variable>> OnQueryAsync(QueryPageOptions options)
     {
-        var data = await VariableService.PageAsync(options);
-        return data;
+        return await Task.Run(async () =>
+        {
+            var data = await VariableService.PageAsync(options);
+            return data;
+        });
     }
 
     #endregion 查询
@@ -145,24 +148,19 @@ public partial class VariablePage : IDisposable
     {
         try
         {
-            return await VariableService.DeleteVariableAsync(devices.Select(a => a.Id));
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(null, $"{ex.Message}");
-            return false;
-        }
-    }
+            return await Task.Run(async () =>
+            {
+                return await VariableService.DeleteVariableAsync(devices.Select(a => a.Id));
+            });
 
-    private async Task DeleteAllAsync()
-    {
-        try
-        {
-            await VariableService.ClearVariableAsync();
         }
         catch (Exception ex)
         {
-            await ToastService.Warning(null, $"{ex.Message}");
+            await InvokeAsync(async () =>
+            {
+                await ToastService.Warning(null, $"{ex.Message}");
+            });
+            return false;
         }
     }
 
@@ -233,4 +231,60 @@ public partial class VariablePage : IDisposable
     }
 
     #endregion 导出
+
+    #region 清空
+
+    private async Task ClearVariableAsync()
+    {
+        try
+        {
+            await Task.Run(async () =>
+            {
+
+                await VariableService.ClearVariableAsync();
+                await InvokeAsync(async () =>
+                {
+                    await ToastService.Default();
+                    await InvokeAsync(table.QueryAsync);
+                });
+            });
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(async () =>
+            {
+                await ToastService.Warning(null, $"{ex.Message}");
+            });
+        }
+
+    }
+    #endregion
+
+    private async Task InsertTestDataAsync()
+    {
+        try
+        {
+            await Task.Run(async () =>
+             {
+                 await VariableService.InsertTestDataAsync(TestCount);
+                 await InvokeAsync(async () =>
+                {
+                    await ToastService.Default();
+                    await InvokeAsync(table.QueryAsync);
+                    await Change();
+                    StateHasChanged();
+                });
+             });
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(async () =>
+            {
+                await ToastService.Warning(null, $"{ex.Message}");
+            });
+        }
+
+    }
+
+
 }

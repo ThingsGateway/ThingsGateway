@@ -58,10 +58,10 @@ public class ManagementHostedService : BackgroundService
     #region worker服务
 
     /// <inheritdoc/>
-    public override async Task StartAsync(CancellationToken cancellationToken)
+    public override Task StartAsync(CancellationToken cancellationToken)
     {
         _logger?.LogInformation(Localizer["Start"]);
-        await base.StartAsync(cancellationToken);
+        return base.StartAsync(cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -144,7 +144,7 @@ public class ManagementHostedService : BackgroundService
                                     tasks.Add(task);
                                     i++;
                                 }
-                                await Task.WhenAll(tasks);
+                                await Task.WhenAll(tasks).ConfigureAwait(false);
                             }
                         }
                         catch (Exception ex)
@@ -157,7 +157,7 @@ public class ManagementHostedService : BackgroundService
                     {
                         try
                         {
-                            await tcpDmtpClient.TryConnectAsync();
+                            await tcpDmtpClient.TryConnectAsync().ConfigureAwait(false);
 
                             {
                                 // 初始化读取错误计数器
@@ -174,14 +174,14 @@ public class ManagementHostedService : BackgroundService
                                         else
                                         {
                                             readErrorCount++;
-                                            await Task.Delay(Options.Redundancy.SyncInterval);
+                                            await Task.Delay(Options.Redundancy.SyncInterval).ConfigureAwait(false);
                                         }
                                     }
                                     catch
                                     {
                                         // 捕获异常，增加读取错误计数器
                                         readErrorCount++;
-                                        await Task.Delay(Options.Redundancy.SyncInterval);
+                                        await Task.Delay(Options.Redundancy.SyncInterval).ConfigureAwait(false);
                                     }
                                 }
                             }
@@ -210,7 +210,7 @@ public class ManagementHostedService : BackgroundService
                                     {
                                         // 捕获异常，增加读取错误计数器
                                         readErrorCount++;
-                                        await Task.Delay(1000);
+                                        await Task.Delay(1000).ConfigureAwait(false);
                                     }
                                 }
                             }

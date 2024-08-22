@@ -129,8 +129,11 @@ public abstract partial class DevicePage : IDisposable
 
     private async Task<QueryData<Device>> OnQueryAsync(QueryPageOptions options)
     {
-        var data = await DeviceService.PageAsync(options, SearchModel.PluginType);
-        return data;
+        return await Task.Run(async () =>
+        {
+            var data = await DeviceService.PageAsync(options, SearchModel.PluginType);
+            return data;
+        });
     }
 
     #endregion 查询
@@ -182,29 +185,25 @@ public abstract partial class DevicePage : IDisposable
     {
         try
         {
-            var result = await DeviceService.DeleteDeviceAsync(devices.Select(a => a.Id));
-            await Change();
-            return result;
+            return await Task.Run(async () =>
+            {
+                var result = await DeviceService.DeleteDeviceAsync(devices.Select(a => a.Id));
+                await Change();
+                return result;
+            });
+
         }
         catch (Exception ex)
         {
-            await ToastService.Warning(null, $"{ex.Message}");
+            await InvokeAsync(async () =>
+            {
+                await ToastService.Warning(null, $"{ex.Message}");
+            });
             return false;
         }
     }
 
-    private async Task DeleteAllAsync()
-    {
-        try
-        {
-            await DeviceService.ClearDeviceAsync(PluginType);
-            await Change();
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(null, $"{ex.Message}");
-        }
-    }
+
 
     private async Task<bool> Save(Device device, ItemChangedType itemChangedType)
     {
@@ -224,7 +223,10 @@ public abstract partial class DevicePage : IDisposable
         }
         catch (Exception ex)
         {
-            await ToastService.Warning(null, $"{ex.Message}");
+            await InvokeAsync(async () =>
+            {
+                await ToastService.Warning(null, $"{ex.Message}");
+            });
             return false;
         }
     }
@@ -272,4 +274,32 @@ public abstract partial class DevicePage : IDisposable
     }
 
     #endregion 导出
+
+    #region 清空
+
+    private async Task ClearDeviceAsync()
+    {
+        try
+        {
+            await Task.Run(async () =>
+            {
+
+                await DeviceService.ClearDeviceAsync(PluginType);
+                await InvokeAsync(async () =>
+                {
+                    await ToastService.Default();
+                    await InvokeAsync(table.QueryAsync);
+                });
+            });
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(async () =>
+            {
+                await ToastService.Warning(null, $"{ex.Message}");
+            });
+        }
+
+    }
+    #endregion
 }

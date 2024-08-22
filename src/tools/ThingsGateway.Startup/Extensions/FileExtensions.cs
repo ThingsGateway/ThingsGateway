@@ -46,7 +46,7 @@ public static class FileExtensions
         using (var stream = File.Create(Path.Combine(filePath, fileObjectName)))
         {
             using var fs = file.OpenReadStream(1024 * 1024 * 200);
-            await fs.CopyToAsync(stream);
+            await fs.CopyToAsync(stream).ConfigureAwait(false);
         }
         return fileName;
     }

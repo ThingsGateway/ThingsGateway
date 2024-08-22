@@ -26,7 +26,7 @@ public class RpcLogService : BaseService<RpcLog>, IRpcLogService
     public async Task<List<RpcLog>> GetNewLog()
     {
         using var db = GetDB();
-        var data = await db.Queryable<RpcLog>().OrderByDescending(a => a.LogTime).Take(10).ToListAsync();
+        var data = await db.Queryable<RpcLog>().OrderByDescending(a => a.LogTime).Take(10).ToListAsync().ConfigureAwait(false);
         return data;
     }
 
@@ -48,7 +48,7 @@ public class RpcLogService : BaseService<RpcLog>, IRpcLogService
     public async Task DeleteRpcLogAsync()
     {
         using var db = GetDB();
-        await db.Deleteable<RpcLog>().ExecuteCommandAsync();
+        await db.Deleteable<RpcLog>().ExecuteCommandAsync().ConfigureAwait(false);
     }
 
     #endregion 删除
@@ -75,7 +75,7 @@ public class RpcLogService : BaseService<RpcLog>, IRpcLogService
         }
         )
 
-        .ToListAsync();
+        .ToListAsync().ConfigureAwait(false);
         return list;
     }
 }

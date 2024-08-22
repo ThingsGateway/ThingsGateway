@@ -47,7 +47,7 @@
         </div>
     </StepItem>
     <StepItem Text=@Localizer[ "Third"] Title=@Localizer[ "Import"]>
-        <PopConfirmButton IsAsync Color=Color.Warning class="mt-2" OnConfirm="() => SaveDeviceImport()">@Localizer["Import"]</PopConfirmButton>
+        <PopConfirmButton IsAsync Color=Color.Warning class="mt-2" OnConfirm=@(SaveDeviceImport)>@Localizer["Import"]</PopConfirmButton>
     </StepItem>
 </Step>
 @code {

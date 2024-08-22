@@ -52,8 +52,11 @@ public partial class ChannelPage : IDisposable
 
     private async Task<QueryData<Channel>> OnQueryAsync(QueryPageOptions options)
     {
-        var data = await ChannelService.PageAsync(options);
-        return data;
+        return await Task.Run(async () =>
+        {
+            var data = await ChannelService.PageAsync(options);
+            return data;
+        });
     }
 
     #endregion 查询
@@ -94,27 +97,23 @@ public partial class ChannelPage : IDisposable
     {
         try
         {
-            var result = await ChannelService.DeleteChannelAsync(channels.Select(a => a.Id));
-            return result;
+            return await Task.Run(async () =>
+            {
+                var result = await ChannelService.DeleteChannelAsync(channels.Select(a => a.Id));
+                return result;
+            });
+
         }
         catch (Exception ex)
         {
-            await ToastService.Warning(null, $"{ex.Message}");
+            await InvokeAsync(async () =>
+            {
+                await ToastService.Warning(null, $"{ex.Message}");
+            });
             return false;
         }
     }
 
-    private async Task DeleteAllAsync()
-    {
-        try
-        {
-            await ChannelService.ClearChannelAsync();
-        }
-        catch (Exception ex)
-        {
-            await ToastService.Warning(null, $"{ex.Message}");
-        }
-    }
 
     private async Task<bool> Save(Channel channel, ItemChangedType itemChangedType)
     {
@@ -125,7 +124,10 @@ public partial class ChannelPage : IDisposable
         }
         catch (Exception ex)
         {
-            await ToastService.Warning(null, $"{ex.Message}");
+            await InvokeAsync(async () =>
+            {
+                await ToastService.Warning(null, $"{ex.Message}");
+            });
             return false;
         }
     }
@@ -173,4 +175,32 @@ public partial class ChannelPage : IDisposable
     }
 
     #endregion 导出
+
+    #region 清空
+
+    private async Task ClearChannelAsync()
+    {
+        try
+        {
+            await Task.Run(async () =>
+            {
+
+                await ChannelService.ClearChannelAsync();
+                await InvokeAsync(async () =>
+                {
+                    await ToastService.Default();
+                    await InvokeAsync(table.QueryAsync);
+                });
+            });
+        }
+        catch (Exception ex)
+        {
+            await InvokeAsync(async () =>
+            {
+                await ToastService.Warning(null, $"{ex.Message}");
+            });
+        }
+
+    }
+    #endregion
 }

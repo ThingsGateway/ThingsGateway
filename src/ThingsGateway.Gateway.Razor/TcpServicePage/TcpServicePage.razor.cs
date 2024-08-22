@@ -37,7 +37,7 @@ public partial class TcpServicePage : IDriverUIBase
         {
             foreach (var item in tcpSessionClientDtos)
             {
-                await TcpServiceChannel.ClientDispose(item.Id);
+                await TcpServiceChannel.ClientDisposeAsync(item.Id);
             }
             return true;
         }

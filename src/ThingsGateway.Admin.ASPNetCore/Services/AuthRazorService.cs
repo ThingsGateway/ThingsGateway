@@ -35,7 +35,7 @@ public class AuthRazorService : IAuthRazorService
             Method = "POST",
             Data = input,
         };
-        var str = await AjaxService.InvokeAsync(ajaxOption);
+        var str = await AjaxService.InvokeAsync(ajaxOption).ConfigureAwait(false);
         if (str != null)
         {
             var ret = str.RootElement.GetRawText().FromSystemTextJsonString<UnifyResult<LoginOutput>>();
@@ -57,7 +57,7 @@ public class AuthRazorService : IAuthRazorService
             Url = "/api/auth/logout",
             Method = "POST",
         };
-        using var str = await AjaxService.InvokeAsync(ajaxOption);
+        using var str = await AjaxService.InvokeAsync(ajaxOption).ConfigureAwait(false);
         if (str != null)
         {
             var ret = str.RootElement.GetRawText().FromSystemTextJsonString<UnifyResult<object>>();

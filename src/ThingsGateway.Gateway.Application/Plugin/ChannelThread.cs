@@ -555,7 +555,7 @@ public class ChannelThread
                         {
                             while (driverBases.Count < DriverBases.Count)
                             {
-                                await DoWork(driver1, DriverBases.Count, stoppingToken, cancellationTokenSource.Token);
+                                await DoWork(driver1, DriverBases.Count, stoppingToken, cancellationTokenSource.Token).ConfigureAwait(false);
                                 await Task.Delay(MinCycleInterval, stoppingToken).ConfigureAwait(false);
                             }
                             Interlocked.Increment(ref releaseCount);
@@ -570,8 +570,8 @@ public class ChannelThread
                 tasks.Add(task);
             }
 
-            await Task.WhenAll(tasks);
-            await easyLock.WaitAsync(stoppingToken);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+            await easyLock.WaitAsync(stoppingToken).ConfigureAwait(false);
         }
         else
         {
@@ -581,7 +581,7 @@ public class ChannelThread
             await Parallel.ForEachAsync(DriverBases, parallelOptions, (async (driver, stoppingToken) =>
             {
                 await DoWork(driver, DriverBases.Count, stoppingToken, CancellationToken.None).ConfigureAwait(false);
-            }));
+            })).ConfigureAwait(false);
         }
 
         // 如果驱动实例数量大于1，则延迟一段时间后继续执行下一轮循环

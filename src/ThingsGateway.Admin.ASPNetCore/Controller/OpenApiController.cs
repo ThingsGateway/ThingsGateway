@@ -39,7 +39,7 @@ public class OpenApiController : ControllerBase
     [AllowAnonymous]
     public async Task<OpenApiLoginOutput> LoginAsync([FromBody] OpenApiLoginInput input)
     {
-        var output = await _authService.LoginAsync(input.Adapt<LoginInput>(), false);
+        var output = await _authService.LoginAsync(input.Adapt<LoginInput>(), false).ConfigureAwait(false);
 
         var openApiLoginOutput = output.Adapt<OpenApiLoginOutput>();
 
@@ -50,8 +50,8 @@ public class OpenApiController : ControllerBase
     [Authorize]
     [DisplayName("登出")]
     [IgnoreRolePermission]
-    public async Task LogoutAsync()
+    public Task LogoutAsync()
     {
-        await _authService.LoginOutAsync();
+        return _authService.LoginOutAsync();
     }
 }

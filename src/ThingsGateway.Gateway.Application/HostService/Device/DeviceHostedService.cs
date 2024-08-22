@@ -348,7 +348,7 @@ public abstract class DeviceHostedService : BackgroundService
                 if (deleteCache)
                 {
                     Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
-                    await Task.Delay(2000);
+                    await Task.Delay(2000).ConfigureAwait(false);
                     var dir = CacheDBUtil.GetFileBasePath();
                     var dirs = Directory.GetDirectories(dir).FirstOrDefault(a => Path.GetFileName(a) == deviceId.ToString());
                     if (dirs != null)

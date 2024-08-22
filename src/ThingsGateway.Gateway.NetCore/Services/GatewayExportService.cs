@@ -31,11 +31,11 @@ public class GatewayExportService : IGatewayExportService
         options.IsPage = false;
         options.IsVirtualScroll = false;
         var service = NetCoreApp.RootServices.GetRequiredService<IChannelService>();
-        var data = await service.PageAsync(options);
+        var data = await service.PageAsync(options).ConfigureAwait(false);
         if (data.Items.Count() > 0)
         {
-            using var memoryStream = await NetCoreApp.RootServices.GetRequiredService<IChannelService>().ExportMemoryStream(data.Items.ToList());
-            await DownloadService.DownloadFromStreamAsync($"channel{DateTime.Now.ToFileDateTimeFormat()}.xlsx", memoryStream);
+            using var memoryStream = await NetCoreApp.RootServices.GetRequiredService<IChannelService>().ExportMemoryStream(data.Items.ToList()).ConfigureAwait(false);
+            await DownloadService.DownloadFromStreamAsync($"channel{DateTime.Now.ToFileDateTimeFormat()}.xlsx", memoryStream).ConfigureAwait(false);
         }
     }
 
@@ -44,11 +44,11 @@ public class GatewayExportService : IGatewayExportService
         options.IsPage = false;
         options.IsVirtualScroll = false;
         var service = NetCoreApp.RootServices.GetRequiredService<IDeviceService>();
-        var data = await service.PageAsync(options, collect ? PluginTypeEnum.Collect : PluginTypeEnum.Business);
+        var data = await service.PageAsync(options, collect ? PluginTypeEnum.Collect : PluginTypeEnum.Business).ConfigureAwait(false);
         if (data.Items.Count() > 0)
         {
-            using var memoryStream = await NetCoreApp.RootServices.GetRequiredService<IDeviceService>().ExportMemoryStream(data.Items.ToList(), collect ? PluginTypeEnum.Collect : PluginTypeEnum.Business);
-            await DownloadService.DownloadFromStreamAsync($"device{DateTime.Now.ToFileDateTimeFormat()}.xlsx", memoryStream);
+            using var memoryStream = await NetCoreApp.RootServices.GetRequiredService<IDeviceService>().ExportMemoryStream(data.Items.ToList(), collect ? PluginTypeEnum.Collect : PluginTypeEnum.Business).ConfigureAwait(false);
+            await DownloadService.DownloadFromStreamAsync($"device{DateTime.Now.ToFileDateTimeFormat()}.xlsx", memoryStream).ConfigureAwait(false);
         }
     }
 
@@ -58,11 +58,11 @@ public class GatewayExportService : IGatewayExportService
         options.IsPage = false;
         options.IsVirtualScroll = false;
         var service = NetCoreApp.RootServices.GetRequiredService<IVariableService>();
-        var data = await service.PageAsync(options);
+        var data = await service.PageAsync(options).ConfigureAwait(false);
         if (data.Items.Count() > 0)
         {
-            using var memoryStream = await NetCoreApp.RootServices.GetRequiredService<IVariableService>().ExportMemoryStream(data.Items.ToList());
-            await DownloadService.DownloadFromStreamAsync($"variable{DateTime.Now.ToFileDateTimeFormat()}.xlsx", memoryStream);
+            using var memoryStream = await NetCoreApp.RootServices.GetRequiredService<IVariableService>().ExportMemoryStream(data.Items.ToList()).ConfigureAwait(false);
+            await DownloadService.DownloadFromStreamAsync($"variable{DateTime.Now.ToFileDateTimeFormat()}.xlsx", memoryStream).ConfigureAwait(false);
         }
 
     }

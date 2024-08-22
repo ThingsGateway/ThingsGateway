@@ -69,12 +69,7 @@
 
             <TableToolbarPopConfirmButton TItem="Device"
                                           Color=Color.Warning Text="@Localizer["Clear"]" IsShow=@(AuthorizeButton("清空"))
-                                          IsAsync OnConfirm=@(async()=>{await Task.Run(async()=> { await DeviceService.ClearDeviceAsync(PluginType);
-                                          await InvokeAsync(async()=>
-                                          {
-                                          await ToastService.Default(); await InvokeAsync(table.QueryAsync);
-                                          });
-                                          });} ) />
+                                          IsAsync OnConfirm=@(ClearDeviceAsync) />
         </TableToolbarTemplate>
     </AdminTable>
 </div>

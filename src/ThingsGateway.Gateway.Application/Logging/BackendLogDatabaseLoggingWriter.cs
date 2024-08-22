@@ -69,7 +69,7 @@ public class BackendLogDatabaseLoggingWriter : IDatabaseLoggingWriter
                 SqlSugarClient ??= DbContext.Db.GetConnectionScopeWithAttr<BackendLog>().CopyNew();
 
                 // 异步执行入库操作
-                await SqlSugarClient.InsertableWithAttr(_logQueues.ToListWithDequeue()).ExecuteCommandAsync();
+                await SqlSugarClient.InsertableWithAttr(_logQueues.ToListWithDequeue()).ExecuteCommandAsync().ConfigureAwait(false);
 
                 // 延时1秒，避免过于频繁的数据库操作
                 await Task.Delay(1000).ConfigureAwait(false);

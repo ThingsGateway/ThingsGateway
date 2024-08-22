@@ -51,8 +51,7 @@ public class SessionService : BaseService<SysUser>, ISessionService
         {
             RefAsync<int> totalCount = 0;
 
-            var items = await query
-                .ToPageListAsync(option.PageIndex, option.PageItems, totalCount);
+            var items = await query.ToPageListAsync(option.PageIndex, option.PageItems, totalCount).ConfigureAwait(false);
 
             var verificatInfoDicts = _verificatInfoService.GetListByUserIds(items.Select(a => a.Id).ToList()).GroupBy(a => a.UserId).ToDictionary(a => a.Key, a => a.ToList());
 
@@ -79,8 +78,7 @@ public class SessionService : BaseService<SysUser>, ISessionService
         {
             RefAsync<int> totalCount = 0;
 
-            var items = await query
-                .ToPageListAsync(option.StartIndex, option.PageItems, totalCount);
+            var items = await query.ToPageListAsync(option.StartIndex, option.PageItems, totalCount).ConfigureAwait(false);
             var verificatInfoDicts = _verificatInfoService.GetListByUserIds(items.Select(a => a.Id).ToList()).GroupBy(a => a.UserId).ToDictionary(a => a.Key, a => a.ToList());
 
             var r = items.Select((it) =>
@@ -103,8 +101,7 @@ public class SessionService : BaseService<SysUser>, ISessionService
         }
         else
         {
-            var items = await query
-                .ToListAsync();
+            var items = await query.ToListAsync().ConfigureAwait(false);
 
             var verificatInfoDicts = _verificatInfoService.GetListByUserIds(items.Select(a => a.Id).ToList()).GroupBy(a => a.UserId).ToDictionary(a => a.Key, a => a.ToList());
 
@@ -143,7 +140,7 @@ public class SessionService : BaseService<SysUser>, ISessionService
         var verificatInfoIds = _verificatInfoService.GetListByUserId(userId);
         //verificat列表
         _verificatInfoService.Delete(verificatInfoIds.Select(a => a.Id).ToList());
-        await NoticeUserLoginOut(userId, verificatInfoIds.SelectMany(a => a.ClientIds).ToList());
+        await NoticeUserLoginOut(userId, verificatInfoIds.SelectMany(a => a.ClientIds).ToList()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -160,7 +157,7 @@ public class SessionService : BaseService<SysUser>, ISessionService
         {
             var data1 = _verificatInfoService.GetListByIds(data).SelectMany(a => a.ClientIds).ToList();
             _verificatInfoService.Delete(data);//如果还有verificat则更新verificat
-            await NoticeUserLoginOut(userId, data1);
+            await NoticeUserLoginOut(userId, data1).ConfigureAwait(false);
         }
     }
 
@@ -191,7 +188,7 @@ public class SessionService : BaseService<SysUser>, ISessionService
         {
             Message = Localizer["ExitVerificat"],
             ClientIds = clientIds,
-        });//通知用户下线
+        }).ConfigureAwait(false);//通知用户下线
     }
 
     #endregion 方法

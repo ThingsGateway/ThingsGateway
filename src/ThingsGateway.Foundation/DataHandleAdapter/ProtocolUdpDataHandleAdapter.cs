@@ -122,7 +122,7 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
                 else if (result == FilterResult.Success)
                 {
                     byteBlock.Position = request.HeaderLength + request.BodyLength + pos;
-                    await GoReceived(remoteEndPoint, null, request);
+                    await GoReceived(remoteEndPoint, null, request).ConfigureAwait(false);
                 }
                 return;
             }
@@ -148,7 +148,7 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
             Logger?.Trace($"{ToString()}- Send:{(IsHexData ? memory.Span.ToHexString() : (memory.Span.ToString(Encoding.UTF8)))}");
 
         //发送
-        await GoSendAsync(endPoint, memory).ConfigureFalseAwait();
+        await GoSendAsync(endPoint, memory).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -172,7 +172,7 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
             {
                 SetRequest(sendMessage.Sign, requestInfoBuilder);
             }
-            await GoSendAsync(endPoint, byteBlock.Memory).ConfigureFalseAwait();
+            await GoSendAsync(endPoint, byteBlock.Memory).ConfigureAwait(false);
         }
         finally
         {

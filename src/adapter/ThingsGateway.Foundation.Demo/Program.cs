@@ -14,7 +14,7 @@ internal class Program
 {
     private static async Task Main(string[] args)
     {
-        //await ModbusMasterTest.Test();
-        await S7MasterTest.Test();
+        //await ModbusMasterTest.Test().ConfigureAwait(false);
+        await S7MasterTest.Test().ConfigureAwait(false);
     }
 }

@@ -3,7 +3,7 @@
 @using ThingsGateway.Core.Extension
 @inherits ComponentDefault
 
-<AdminTable @ref="table" TItem="VerificatInfo" AutoGenerateColumns="true"  ShowAdvancedSearch=false
+<AdminTable @ref="table" TItem="VerificatInfo" AutoGenerateColumns="true" ShowAdvancedSearch=false
             AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true SearchModel=SearchModel
             ShowExtendButtons=true ShowExtendDeleteButton=false ShowExtendEditButton=false
             ShowDefaultButtons=false ExtendButtonColumnWidth=220
@@ -11,10 +11,27 @@
     <TableToolbarTemplate>
         <TableToolbarButton TItem="VerificatInfo"
                             Color=Color.Warning Text="@Localizer[ nameof(SessionService.ExitVerificat)]"
-                            IsAsync OnClickCallback=@(async(a)=>{if(a.Any()){  await SessionService.ExitVerificat(new ExitVerificatInput(){ Id=UserId, VerificatIds= a.Select(b=> b.Id )});VerificatInfos.RemoveWhere(c=>a.Contains(c)); await InvokeAsync(table.QueryAsync); }}) />
+                            IsAsync OnClickCallback=@(async(a)=>{
+                            await Task.Run(async()=>{
+                            if(a.Any())
+                            {
+                            await SessionService.ExitVerificat(new ExitVerificatInput(){ Id=UserId, VerificatIds= a.Select(b=> b.Id )});
+                            VerificatInfos.RemoveWhere(c=>a.Contains(c));
+                            await InvokeAsync(table.QueryAsync);
+                            }
+                            });
+                            }) />
     </TableToolbarTemplate>
     <RowButtonTemplate>
-        <TableCellPopConfirmButton IsShow=@AuthorizeButton("强退令牌") Size="Size.ExtraSmall" Color=Color.Warning Text="@Localizer[ nameof(SessionService.ExitVerificat)]" OnConfirm="@(async()=>{await SessionService.ExitVerificat(new ExitVerificatInput(){ Id=UserId, VerificatIds=new List<long>(){ context.Id}});VerificatInfos.Remove(context); await InvokeAsync(table.QueryAsync);await ToastService.Default(); })" />
+        <TableCellPopConfirmButton IsAsync IsShow=@AuthorizeButton("强退令牌") Size="Size.ExtraSmall" Color=Color.Warning Text="@Localizer[ nameof(SessionService.ExitVerificat)]" OnConfirm="@(async()=>{
+                            await SessionService.ExitVerificat(new ExitVerificatInput(){ Id=UserId, VerificatIds=new List<long>(){ context.Id}});
+                            VerificatInfos.Remove(context);
+                            await InvokeAsync(async()=>
+                            {
+
+                            await table.QueryAsync();await ToastService.Default();
+                            });
+                            })" />
     </RowButtonTemplate>
 </AdminTable>
 

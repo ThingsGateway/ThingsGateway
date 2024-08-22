@@ -59,7 +59,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
         {
             using var db = GetDB();
 
-            var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync()) > 0;
+            var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
             if (result)
                 DeleteDeviceFromCache();
             return result;
@@ -78,10 +78,10 @@ public class DeviceService : BaseService<Device>, IDeviceService
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            await db.Deleteable<Device>().Where(a => a.PluginType == pluginType).ExecuteCommandAsync();
+            await db.Deleteable<Device>().Where(a => a.PluginType == pluginType).ExecuteCommandAsync().ConfigureAwait(false);
             if (pluginType == PluginTypeEnum.Collect)
-                await variableService.ClearVariableAsync(db);
-        });
+                await variableService.ClearVariableAsync(db).ConfigureAwait(false);
+        }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
             DeleteDeviceFromCache();
@@ -100,10 +100,10 @@ public class DeviceService : BaseService<Device>, IDeviceService
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            var deviceIds = await db.Queryable<Device>().Where(a => ids.Contains(a.ChannelId)).Select(a => a.Id).ToListAsync();
-            await db.Deleteable<Device>().Where(a => deviceIds.Contains(a.Id)).ExecuteCommandAsync();
-            await variableService.DeleteByDeviceIdAsync(deviceIds, db);
-        });
+            var deviceIds = await db.Queryable<Device>().Where(a => ids.Contains(a.ChannelId)).Select(a => a.Id).ToListAsync().ConfigureAwait(false);
+            await db.Deleteable<Device>().Where(a => deviceIds.Contains(a.Id)).ExecuteCommandAsync().ConfigureAwait(false);
+            await variableService.DeleteByDeviceIdAsync(deviceIds, db).ConfigureAwait(false);
+        }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
             DeleteDeviceFromCache();
@@ -124,9 +124,9 @@ public class DeviceService : BaseService<Device>, IDeviceService
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            await db.Deleteable<Device>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync();
-            await variableService.DeleteByDeviceIdAsync(ids, db);
-        });
+            await db.Deleteable<Device>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync().ConfigureAwait(false);
+            await variableService.DeleteByDeviceIdAsync(ids, db).ConfigureAwait(false);
+        }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
             DeleteDeviceFromCache();
@@ -165,7 +165,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
 
     public async Task<List<DeviceRunTime>> GetBusinessDeviceRuntimeAsync(long? devId = null)
     {
-        await Task.CompletedTask;
+        await Task.CompletedTask.ConfigureAwait(false);
         if (devId == null)
         {
             var devices = GetAll().Where(a => a.Enable && a.PluginType == PluginTypeEnum.Business);
@@ -206,7 +206,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
             var channels = _channelService.GetAll().Where(a => a.Enable);
             devices = devices.Where(a => channels.Select(a => a.Id).Contains(a.ChannelId));
             var runtime = devices.Adapt<List<CollectDeviceRunTime>>().ToDictionary(a => a.Id);
-            var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync();
+            var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync().ConfigureAwait(false);
             runtime.Values.ParallelForEach(device =>
             {
                 device.Channel = channels.FirstOrDefault(a => a.Id == device.ChannelId);
@@ -239,7 +239,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
 
             var runtime = device.Adapt<CollectDeviceRunTime>();
             var variableService = NetCoreApp.RootServices.GetRequiredService<IVariableService>();
-            var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync(devId);
+            var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync(devId).ConfigureAwait(false);
             runtime.VariableRunTimes = collectVariableRunTimes.ToDictionary(a => a.Name);
             runtime.Channel = channels.FirstOrDefault(a => a.Id == runtime.ChannelId);
 
@@ -289,7 +289,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
     public async Task<bool> SaveDeviceAsync(Device input, ItemChangedType type)
     {
         CheckInput(input);
-        if (await base.SaveAsync(input, type))
+        if (await base.SaveAsync(input, type).ConfigureAwait(false))
         {
             DeleteDeviceFromCache();
             return true;
@@ -343,7 +343,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
     public async Task<Dictionary<string, object>> ExportDeviceAsync(QueryPageOptions options, PluginTypeEnum pluginType)
     {
         //导出
-        var data = await PageAsync(options, pluginType);
+        var data = await PageAsync(options, pluginType).ConfigureAwait(false);
         string fileName;
         Dictionary<string, object> sheets;
         ExportCore(data.Items, pluginType, out fileName, out sheets);
@@ -360,7 +360,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
         Dictionary<string, object> sheets;
         ExportCore(data, pluginType, out fileName, out sheets, channelName);
         var memoryStream = new MemoryStream();
-        await memoryStream.SaveAsAsync(sheets);
+        await memoryStream.SaveAsAsync(sheets).ConfigureAwait(false);
         memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
@@ -536,14 +536,14 @@ public class DeviceService : BaseService<Device>, IDeviceService
         var upData = collectDevices.Where(a => a.IsUp).ToList();
         var insertData = collectDevices.Where(a => !a.IsUp).ToList();
         using var db = GetDB();
-        await db.Fastest<Device>().PageSize(100000).BulkCopyAsync(insertData);
-        await db.Fastest<Device>().PageSize(100000).BulkUpdateAsync(upData);
+        await db.Fastest<Device>().PageSize(100000).BulkCopyAsync(insertData).ConfigureAwait(false);
+        await db.Fastest<Device>().PageSize(100000).BulkUpdateAsync(upData).ConfigureAwait(false);
         DeleteDeviceFromCache();
     }
 
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile)
     {
-        var path = await browserFile.StorageLocal(); // 上传文件并获取文件路径
+        var path = await browserFile.StorageLocal().ConfigureAwait(false); // 上传文件并获取文件路径
 
         try
         {

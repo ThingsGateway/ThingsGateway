@@ -71,7 +71,7 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
             dAddress.DataId = "999999999999".HexStringToBytes();
             dAddress.SocketId = socketId;
 
-            return await Dlt645SendAsync(dAddress, ControlCode.BroadcastTime, FEHead, cancellationToken: cancellationToken);
+            return await Dlt645SendAsync(dAddress, ControlCode.BroadcastTime, FEHead, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -95,13 +95,11 @@ public class Dlt645_2007Master : ProtocolBase, IDtu
     {
         try
         {
-            var channelResult = await GetChannelAsync(dAddress.SocketId);
+            var channelResult = await GetChannelAsync(dAddress.SocketId).ConfigureAwait(false);
             if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
 
             var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
-            return await SendThenReturnAsync(
-GetSendMessage(dAddress, (ushort)sign, controlCode, feHead, codes, datas),
-channelResult.Content, waitData, cancellationToken).ConfigureAwait(false);
+            return await SendThenReturnAsync(GetSendMessage(dAddress, (ushort)sign, controlCode, feHead, codes, datas), channelResult.Content, waitData, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -114,12 +112,10 @@ channelResult.Content, waitData, cancellationToken).ConfigureAwait(false);
     {
         try
         {
-            var channelResult = await GetChannelAsync(dAddress.SocketId);
+            var channelResult = await GetChannelAsync(dAddress.SocketId).ConfigureAwait(false);
             if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
 
-            await SendAsync(
-GetSendMessage(dAddress, 0, controlCode, feHead, codes, datas),
-channelResult.Content, cancellationToken).ConfigureAwait(false);
+            await SendAsync(GetSendMessage(dAddress, 0, controlCode, feHead, codes, datas), channelResult.Content, cancellationToken).ConfigureAwait(false);
             return OperResult.Success;
         }
         catch (Exception ex)
@@ -146,7 +142,7 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
             dAddress.DataId = str.HexStringToBytes();
             dAddress.SocketId = socketId;
 
-            return await Dlt645RequestAsync(dAddress, ControlCode.Freeze, FEHead, cancellationToken: cancellationToken);
+            return await Dlt645RequestAsync(dAddress, ControlCode.Freeze, FEHead, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -219,7 +215,7 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
             dAddress.SetStation("AAAAAAAAAAAA");
             dAddress.SocketId = socketId;
 
-            var result = await Dlt645RequestAsync(dAddress, ControlCode.ReadStation, FEHead, cancellationToken: cancellationToken);
+            var result = await Dlt645RequestAsync(dAddress, ControlCode.ReadStation, FEHead, cancellationToken: cancellationToken).ConfigureAwait(false);
             if (result.IsSuccess)
             {
                 var buffer = result.Content.SelectMiddle(0, 6).BytesAdd(-0x33);
@@ -265,7 +261,7 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
             var codes = DataTransUtil.SpliceArray(Password.HexStringToBytes(), OperCode.HexStringToBytes());
             string[] strArray = value;
             var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
-            return await Dlt645RequestAsync(dAddress, ControlCode.Write, FEHead, codes, strArray, cancellationToken: cancellationToken);
+            return await Dlt645RequestAsync(dAddress, ControlCode.Write, FEHead, codes, strArray, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -279,7 +275,7 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
         try
         {
             string[] strArray = value.SplitStringBySemicolon();
-            return await WriteAsync(address, value, bitConverter, cancellationToken);
+            return await WriteAsync(address, value, bitConverter, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -301,7 +297,7 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
 
             var codes = DataTransUtil.SpliceArray(Password.HexStringToBytes(), OperCode.HexStringToBytes());
             var dAddress = Dlt645_2007Address.ParseFrom(address, Station, DtuId);
-            return await Dlt645RequestAsync(dAddress, ControlCode.Write, FEHead, codes, cancellationToken: cancellationToken);
+            return await Dlt645RequestAsync(dAddress, ControlCode.Write, FEHead, codes, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -365,7 +361,7 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
             dAddress.SocketId = socketId;
             dAddress.DataId = [baudRateByte];
 
-            return await Dlt645RequestAsync(dAddress, ControlCode.ReadStation, FEHead, cancellationToken: cancellationToken);
+            return await Dlt645RequestAsync(dAddress, ControlCode.ReadStation, FEHead, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -389,7 +385,7 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
             dAddress.Station = "AAAAAAAAAAAA".HexStringToBytes();
             dAddress.DataId = station.HexStringToBytes().Reverse().ToArray();
 
-            return await Dlt645RequestAsync(dAddress, ControlCode.WriteStation, FEHead, cancellationToken: cancellationToken);
+            return await Dlt645RequestAsync(dAddress, ControlCode.WriteStation, FEHead, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -423,7 +419,7 @@ channelResult.Content, cancellationToken).ConfigureAwait(false);
             dAddress.Station = "AAAAAAAAAAAA".HexStringToBytes();
             dAddress.DataId = bytes;
 
-            return await Dlt645RequestAsync(dAddress, ControlCode.WritePassword, FEHead, cancellationToken: cancellationToken);
+            return await Dlt645RequestAsync(dAddress, ControlCode.WritePassword, FEHead, cancellationToken: cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

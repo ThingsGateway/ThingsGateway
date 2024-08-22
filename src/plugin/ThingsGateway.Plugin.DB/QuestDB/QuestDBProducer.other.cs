@@ -36,7 +36,7 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
 
     private async ValueTask<OperResult> UpdateVarModel(IEnumerable<QuestDBHistoryValue> item, CancellationToken cancellationToken)
     {
-        var result = await InserableAsync(item.ToList(), cancellationToken);
+        var result = await InserableAsync(item.ToList(), cancellationToken).ConfigureAwait(false);
         if (success != result.IsSuccess)
         {
             if (!result.IsSuccess)
@@ -55,8 +55,8 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
         {
             var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
             db.Ado.CancellationToken = cancellationToken;
-            var result = await db.Insertable(dbInserts).UseParameter().ExecuteCommandAsync();//不要加分表
-            //var result = await db.Insertable(dbInserts).SplitTable().ExecuteCommandAsync();
+            var result = await db.Insertable(dbInserts).UseParameter().ExecuteCommandAsync().ConfigureAwait(false);//不要加分表
+            //var result = await db.Insertable(dbInserts).SplitTable().ExecuteCommandAsync().ConfigureAwait(false);
             if (result > 0)
             {
                 LogMessage.Trace($"TableName：{nameof(QuestDBHistoryValue)}，Count：{result}");

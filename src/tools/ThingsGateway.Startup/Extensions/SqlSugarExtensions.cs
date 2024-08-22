@@ -151,7 +151,7 @@ public static class SqlSugarExtensions
         int current, int size)
     {
         RefAsync<int> totalCount = 0;
-        var records = await queryable.ToPageListAsync(current, size, totalCount);
+        var records = await queryable.ToPageListAsync(current, size, totalCount).ConfigureAwait(false);
         var totalPages = (int)Math.Ceiling(totalCount / (double)size);
         return new SqlSugarPagedList<TEntity>
         {
@@ -172,7 +172,7 @@ public static class SqlSugarExtensions
         int current, int size)
     {
         RefAsync<int> totalCount = 0;
-        var records = await queryable.ToPageListAsync(current, size, totalCount);
+        var records = await queryable.ToPageListAsync(current, size, totalCount).ConfigureAwait(false);
         var totalPages = (int)Math.Ceiling(totalCount / (double)size);
         return new SqlSugarPagedList<TResult>
         {
@@ -193,7 +193,7 @@ public static class SqlSugarExtensions
         this ISugarQueryable<TEntity> queryable, int pageIndex, int pageSize, Expression<Func<TEntity, TResult>> expression)
     {
         RefAsync<int> totalCount = 0;
-        var items = await queryable.ToPageListAsync(pageIndex, pageSize, totalCount, expression);
+        var items = await queryable.ToPageListAsync(pageIndex, pageSize, totalCount, expression).ConfigureAwait(false);
         var totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
         return new SqlSugarPagedList<TResult>
         {
@@ -209,13 +209,13 @@ public static class SqlSugarExtensions
 
     public static async Task<bool> UpdateRangeAsync<T>(this SqlSugarClient db, List<T> updateObjs) where T : class, new()
     {
-        return await db.Updateable(updateObjs).ExecuteCommandAsync() > 0;
+        return await db.Updateable(updateObjs).ExecuteCommandAsync().ConfigureAwait(false) > 0;
     }
 
     public static async Task<bool> UpdateSetColumnsTrueAsync<T>(this SqlSugarClient db, Expression<Func<T, T>> columns, Expression<Func<T, bool>> whereExpression) where T : class, new()
     {
         return await db.Updateable<T>().SetColumns(columns, appendColumnsByDataFilter: true).Where(whereExpression)
-            .ExecuteCommandAsync() > 0;
+            .ExecuteCommandAsync().ConfigureAwait(false) > 0;
     }
 
     private static IEnumerable<T> Sort<T>(this IEnumerable<T> list, BasePageInput basePageInput)

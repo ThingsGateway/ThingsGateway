@@ -62,12 +62,12 @@ public class BusinessDeviceHostedService : DeviceHostedService
         using var stoppingToken = new CancellationTokenSource();
         _stoppingToken = stoppingToken.Token;
         stoppingToken.Cancel();
-        await base.StopAsync(cancellationToken);
+        await base.StopAsync(cancellationToken).ConfigureAwait(false);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await WhileExecuteAsync(stoppingToken);
+        await WhileExecuteAsync(stoppingToken).ConfigureAwait(false);
     }
 
     #endregion worker服务

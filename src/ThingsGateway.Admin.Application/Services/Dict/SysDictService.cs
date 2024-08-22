@@ -27,7 +27,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
     [OperDesc("DeleteDict")]
     public async Task<bool> DeleteDictAsync(IEnumerable<long> ids)
     {
-        var result = await base.DeleteAsync(ids);
+        var result = await base.DeleteAsync(ids).ConfigureAwait(false);
         if (result)
             RefreshCache(DictTypeEnum.Define);
         return result;
@@ -55,10 +55,9 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            await storageable.AsUpdateable
-          .UpdateColumns(it => new { it.Code }).ExecuteCommandAsync();
-            await storageable.AsInsertable.ExecuteCommandAsync();
-        });
+            await storageable.AsUpdateable.UpdateColumns(it => new { it.Code }).ExecuteCommandAsync().ConfigureAwait(false);
+            await storageable.AsInsertable.ExecuteCommandAsync().ConfigureAwait(false);
+        }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
             RefreshCache(DictTypeEnum.System);//刷新缓存
@@ -88,10 +87,9 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            await storageable.AsUpdateable
-          .UpdateColumns(it => new { it.Code }).ExecuteCommandAsync();
-            await storageable.AsInsertable.ExecuteCommandAsync();
-        });
+            await storageable.AsUpdateable.UpdateColumns(it => new { it.Code }).ExecuteCommandAsync().ConfigureAwait(false);
+            await storageable.AsInsertable.ExecuteCommandAsync().ConfigureAwait(false);
+        }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
             RefreshCache(DictTypeEnum.System);//刷新缓存
@@ -125,10 +123,9 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            await storageable.AsUpdateable
-          .UpdateColumns(it => new { it.Code }).ExecuteCommandAsync();
-            await storageable.AsInsertable.ExecuteCommandAsync();
-        });
+            await storageable.AsUpdateable.UpdateColumns(it => new { it.Code }).ExecuteCommandAsync().ConfigureAwait(false);
+            await storageable.AsInsertable.ExecuteCommandAsync().ConfigureAwait(false);
+        }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
             RefreshCache(DictTypeEnum.System);//刷新缓存
@@ -164,10 +161,9 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            await storageable.AsUpdateable
-          .UpdateColumns(it => new { it.Code }).ExecuteCommandAsync();
-            await storageable.AsInsertable.ExecuteCommandAsync();
-        });
+            await storageable.AsUpdateable.UpdateColumns(it => new { it.Code }).ExecuteCommandAsync().ConfigureAwait(false);
+            await storageable.AsInsertable.ExecuteCommandAsync().ConfigureAwait(false);
+        }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
             RefreshCache(DictTypeEnum.System);//刷新缓存
@@ -187,7 +183,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
         var appConfig = NetCoreApp.CacheService.Get<AppConfig>(key);
         if (appConfig == null)
         {
-            List<SysDict> sysDicts = await GetSystemConfigAsync();
+            List<SysDict> sysDicts = await GetSystemConfigAsync().ConfigureAwait(false);
 
             appConfig = new AppConfig() { LoginPolicy = new(), PasswordPolicy = new(), PagePolicy = new(), WebsitePolicy = new() };
             //登录策略
@@ -231,7 +227,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
         if (sysDict == null)
         {
             using var db = GetDB();
-            sysDict = await db.Queryable<SysDict>().FirstAsync(a => a.DictType == DictTypeEnum.Define && a.Category == category && a.Name == name);
+            sysDict = await db.Queryable<SysDict>().FirstAsync(a => a.DictType == DictTypeEnum.Define && a.Category == category && a.Name == name).ConfigureAwait(false);
             NetCoreApp.CacheService.HashAdd(key, field, sysDict);
         }
         return sysDict;
@@ -248,7 +244,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
         if (sysDicts.Count == 0)
         {
             using var db = GetDB();
-            sysDicts = (await db.Queryable<SysDict>().Where(a => a.DictType == DictTypeEnum.Define).ToListAsync()).ToDictionary(a =>
+            sysDicts = (await db.Queryable<SysDict>().Where(a => a.DictType == DictTypeEnum.Define).ToListAsync().ConfigureAwait(false)).ToDictionary(a =>
             $"{a.Category}:sysdict:{a.Name}", a => a);
             NetCoreApp.CacheService.Set(key, sysDicts);
         }
@@ -268,7 +264,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
         if (sysDicts == null)
         {
             using var db = GetDB();
-            sysDicts = await db.Queryable<SysDict>().Where(a => a.DictType == DictTypeEnum.System).ToListAsync();
+            sysDicts = await db.Queryable<SysDict>().Where(a => a.DictType == DictTypeEnum.System).ToListAsync().ConfigureAwait(false);
             NetCoreApp.CacheService.Set(key, sysDicts);
         }
 
@@ -296,8 +292,8 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
     [OperDesc("SaveDict")]
     public async Task<bool> SaveDictAsync(SysDict input, ItemChangedType type)
     {
-        await CheckInput(input);//检查参数
-        var reuslt = await base.SaveAsync(input, type);
+        await CheckInput(input).ConfigureAwait(false);//检查参数
+        var reuslt = await base.SaveAsync(input, type).ConfigureAwait(false);
         if (reuslt)
             RefreshCache(DictTypeEnum.Define);
 
@@ -316,7 +312,7 @@ public class SysDictService : BaseService<SysDict>, ISysDictService
         //设置类型为业务
         input.DictType = DictTypeEnum.Define;
 
-        var dict = await GetByKeyAsync(input.Category, input.Name);//获取全部字典
+        var dict = await GetByKeyAsync(input.Category, input.Name).ConfigureAwait(false);//获取全部字典
 
         //判断是否从存在重复
 

@@ -25,7 +25,7 @@ public sealed class HostedServiceExecutor
     {
         foreach (var service in _services)
         {
-            await service.StartAsync(token);
+            await service.StartAsync(token).ConfigureAwait(false);
         }
     }
 

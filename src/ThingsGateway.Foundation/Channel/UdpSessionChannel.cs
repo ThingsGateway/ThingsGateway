@@ -74,7 +74,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
         if (token.IsCancellationRequested)
             return;
         if (Starting != null)
-            await Starting.Invoke(this);
+            await Starting.Invoke(this).ConfigureAwait(false);
         await StartAsync().ConfigureAwait(false);
         if (Started != null)
             await Started.Invoke(this).ConfigureAwait(false);
@@ -96,7 +96,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
             if (ServerState != ServerState.Running)
             {
                 await base.StopAsync().ConfigureAwait(false);
-                await SetupAsync(Config.Clone());
+                await SetupAsync(Config.Clone()).ConfigureAwait(false);
                 await base.StartAsync().ConfigureAwait(false);
                 if (ServerState == ServerState.Running)
                 {

@@ -397,7 +397,7 @@ public class PluginService : IPluginService
                 // 获取主程序集文件流
                 using var stream = plugin.MainFile.OpenReadStream(maxFileSize);
                 using MemoryStream mainMemoryStream = new MemoryStream();
-                await stream.CopyToAsync(mainMemoryStream);
+                await stream.CopyToAsync(mainMemoryStream).ConfigureAwait(false);
                 mainMemoryStream.Seek(0, SeekOrigin.Begin);
 
                 // 先加载到内存，如果成功添加后再装载到文件
@@ -408,7 +408,7 @@ public class PluginService : IPluginService
                     // 获取附属文件流
                     using var otherStream = item.OpenReadStream(maxFileSize);
                     MemoryStream memoryStream = new MemoryStream();
-                    await otherStream.CopyToAsync(memoryStream);
+                    await otherStream.CopyToAsync(memoryStream).ConfigureAwait(false);
                     memoryStream.Seek(0, SeekOrigin.Begin);
                     otherFilesStreams.Add((item.Name, memoryStream));
                     try
@@ -442,7 +442,7 @@ public class PluginService : IPluginService
                 mainMemoryStream.Seek(0, SeekOrigin.Begin);
                 Directory.CreateDirectory(fullDir);// 创建插件文件夹
                 using FileStream fs = new(fullPath, FileMode.Create);
-                await mainMemoryStream.CopyToAsync(fs);
+                await mainMemoryStream.CopyToAsync(fs).ConfigureAwait(false);
             }
             finally
             {
@@ -451,8 +451,8 @@ public class PluginService : IPluginService
                 {
                     item.MemoryStream.Seek(0, SeekOrigin.Begin);
                     using FileStream fs1 = new(fullDir.CombinePathWithOs(item.Name), FileMode.Create);
-                    await item.MemoryStream.CopyToAsync(fs1);
-                    await item.MemoryStream.DisposeAsync();
+                    await item.MemoryStream.CopyToAsync(fs1).ConfigureAwait(false);
+                    await item.MemoryStream.DisposeAsync().ConfigureAwait(false);
                 }
                 // 卸载程序集加载上下文并清除缓存
                 assemblyLoadContext.Unload();

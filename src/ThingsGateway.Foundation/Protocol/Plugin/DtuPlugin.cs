@@ -30,13 +30,13 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
                     try
                     {
                         oldClient.TryShutdown();
-                        await oldClient.CloseAsync();
+                        await oldClient.CloseAsync().ConfigureAwait(false);
                     }
                     catch
                     {
                     }
                 }
-                await socket.ResetIdAsync(id);
+                await socket.ResetIdAsync(id).ConfigureAwait(false);
                 client.Logger.Info(DefaultResource.Localizer["DtuConnected", id]);
                 e.Handled = true;
             }
@@ -46,7 +46,7 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
                 try
                 {
                     socket.TryShutdown();
-                    await socket.CloseAsync();
+                    await socket.CloseAsync().ConfigureAwait(false);
                 }
                 catch
                 {
@@ -62,10 +62,10 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
                 {
                     if (DateTime.UtcNow - socket.LastSentTime.ToUniversalTime() < TimeSpan.FromMilliseconds(200))
                     {
-                        await Task.Delay(200);
+                        await Task.Delay(200).ConfigureAwait(false);
                     }
                     //回应心跳包
-                    await socket.SendAsync(e.ByteBlock.AsSegment());
+                    await socket.SendAsync(e.ByteBlock.AsSegment()).ConfigureAwait(false);
                     e.Handled = true;
                     if (socket.Logger.LogLevel <= LogLevel.Trace)
                         socket.Logger?.Trace($"{socket}- Heartbeat");

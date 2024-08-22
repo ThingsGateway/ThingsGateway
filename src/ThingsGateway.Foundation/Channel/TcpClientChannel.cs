@@ -82,7 +82,7 @@ public class TcpClientChannel : TcpClient, IClientChannel
                 await m_semaphoreForConnect.WaitAsync(token).ConfigureAwait(false);
                 if (!Online)
                 {
-                    await SetupAsync(Config.Clone());
+                    await SetupAsync(Config.Clone()).ConfigureAwait(false);
                     await base.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
                     Logger?.Debug($"{ToString()}  Connected");
                     if (Started != null)

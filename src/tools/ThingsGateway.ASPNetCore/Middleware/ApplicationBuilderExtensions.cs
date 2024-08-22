@@ -41,7 +41,7 @@ public static class ApplicationBuilderExtensions
             }
 
             context.Response.Headers.TryAdd("Content-Type", new Microsoft.Extensions.Primitives.StringValues("application/json; charset=utf-8"));
-            await context.Response.WriteAsync(JsonSerializer.Serialize(new { Id = context.TraceIdentifier, Ip = ip }));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new { Id = context.TraceIdentifier, Ip = ip })).ConfigureAwait(false);
         }));
         return builder;
     }

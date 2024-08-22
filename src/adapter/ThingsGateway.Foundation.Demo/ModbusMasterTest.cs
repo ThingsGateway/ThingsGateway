@@ -28,29 +28,29 @@ internal class ModbusMasterTest
         {
             _ = Task.Run(async () =>
             {
-                var result = await modbusMaster.ReadAsync("400001", 100);
+                var result = await modbusMaster.ReadAsync("400001", 100).ConfigureAwait(false);
                 if (!result.IsSuccess)
                 {
                 }
             });
         }
 
-        await Task.Delay(70000);
+        await Task.Delay(70000).ConfigureAwait(false);
         //读取并解析寄存器数据
-        var data = await modbusMaster.ReadInt16Async("40001", 1, cancellationToken: CancellationToken.None);
-        var data1 = await modbusMaster.ReadSingleAsync("40001");
-        var data2 = await modbusMaster.ReadUInt32Async("40001");
-        var data12 = await modbusMaster.WriteAsync("40001", (ushort)1);
+        var data = await modbusMaster.ReadInt16Async("40001", 1, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+        var data1 = await modbusMaster.ReadSingleAsync("40001").ConfigureAwait(false);
+        var data2 = await modbusMaster.ReadUInt32Async("40001").ConfigureAwait(false);
+        var data12 = await modbusMaster.WriteAsync("40001", (ushort)1).ConfigureAwait(false);
 
         //读取字节数组
-        var data3 = await modbusMaster.ReadAsync("40001", 10);
+        var data3 = await modbusMaster.ReadAsync("40001", 10).ConfigureAwait(false);
         if (data3.IsSuccess)
         {
             ValueByteBlock valueByteBlock = new(data3.Content);
             valueByteBlock.ReadFloat(EndianType.LittleSwap);
         }
         //自定义数据格式
-        var data4 = await modbusMaster.ReadSingleAsync("40001;data=ABCD");
+        var data4 = await modbusMaster.ReadSingleAsync("40001;data=ABCD").ConfigureAwait(false);
 
         //自带打包方法
         //1、实现IVariable接口
@@ -76,7 +76,7 @@ internal class ModbusMasterTest
         var deviceVariableSourceReads = modbusMaster.LoadSourceRead<VariableSourceClass>(variableClasses, 100, 1000);
         foreach (var item in deviceVariableSourceReads)
         {
-            var result = await modbusMaster.ReadAsync(item.RegisterAddress, item.Length);
+            var result = await modbusMaster.ReadAsync(item.RegisterAddress, item.Length).ConfigureAwait(false);
             if (result.IsSuccess)
             {
                 try
@@ -111,22 +111,22 @@ internal class ModbusMasterTest
         //构造实体类对象，传入协议对象与连读打包的最大数量
         ModbusVariable modbusVariable = new(modbusMaster, 100);
 
-        await Test(modbusVariable);
+        await Test(modbusVariable).ConfigureAwait(false);
         Console.WriteLine(modbusVariable.ToJsonString());
         Console.ReadLine();
 
         static async Task Test(ModbusVariable modbusVariable)
         {
             //源生成WriteData1与WriteData2方法(Write{属性名称})
-            await modbusVariable.WriteData3Async("123", default);
-            await modbusVariable.WriteData2Async(1, default);
-            await modbusVariable.WriteData1Async([1, 2], default);
+            await modbusVariable.WriteData3Async("123", default).ConfigureAwait(false);
+            await modbusVariable.WriteData2Async(1, default).ConfigureAwait(false);
+            await modbusVariable.WriteData1Async([1, 2], default).ConfigureAwait(false);
 
             //执行连读
-            await modbusVariable.MultiReadAsync();
+            await modbusVariable.MultiReadAsync().ConfigureAwait(false);
             Console.WriteLine(modbusVariable.ToJsonString());
             //执行连读
-            await modbusVariable.MultiReadAsync();
+            await modbusVariable.MultiReadAsync().ConfigureAwait(false);
             Console.WriteLine(modbusVariable.ToJsonString());
         }
     }

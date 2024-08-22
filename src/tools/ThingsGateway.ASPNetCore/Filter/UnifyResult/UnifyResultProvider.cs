@@ -48,11 +48,11 @@ public class UnifyResultProvider : IUnifyResultProvider
         {
             // 处理 401 状态码
             case StatusCodes.Status401Unauthorized:
-                await context.Response.WriteAsJsonAsync(RESTfulResult(statusCode, false, Localizer["TokenOver"]));
+                await context.Response.WriteAsJsonAsync(RESTfulResult(statusCode, false, Localizer["TokenOver"])).ConfigureAwait(false);
                 break;
             // 处理 403 状态码
             case StatusCodes.Status403Forbidden:
-                await context.Response.WriteAsJsonAsync(RESTfulResult(statusCode, false, default, "NoPermission"));
+                await context.Response.WriteAsJsonAsync(RESTfulResult(statusCode, false, default, "NoPermission")).ConfigureAwait(false);
                 break;
 
             default: break;

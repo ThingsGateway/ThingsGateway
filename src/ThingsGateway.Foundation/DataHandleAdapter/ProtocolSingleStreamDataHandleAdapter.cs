@@ -160,7 +160,7 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
             Logger?.Trace($"{ToString()}- Send:{(IsHexData ? memory.Span.ToHexString() : (memory.Span.ToString(Encoding.UTF8)))}");
 
         //发送
-        await GoSendAsync(memory).ConfigureFalseAwait();
+        await GoSendAsync(memory).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -184,7 +184,7 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
             {
                 SetRequest(sendMessage.Sign, requestInfoBuilder);
             }
-            await GoSendAsync(byteBlock.Memory).ConfigureFalseAwait();
+            await GoSendAsync(byteBlock.Memory).ConfigureAwait(false);
         }
         finally
         {

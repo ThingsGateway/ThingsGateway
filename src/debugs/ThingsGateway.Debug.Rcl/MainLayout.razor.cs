@@ -58,10 +58,10 @@ public partial class MainLayout
         base.OnInitialized();
     }
 
-    protected override async Task OnInitializedAsync()
+    protected override Task OnInitializedAsync()
     {
         _versionString = $"v{VersionService.Version}";
-        await base.OnInitializedAsync();
+        return base.OnInitializedAsync();
     }
 
     private async Task ShowAbout()

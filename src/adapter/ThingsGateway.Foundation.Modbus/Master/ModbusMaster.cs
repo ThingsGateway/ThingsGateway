@@ -150,11 +150,10 @@ public partial class ModbusMaster : ProtocolBase, IDtu
     {
         try
         {
-            var channelResult = await GetChannelAsync(mAddress.SocketId);
+            var channelResult = await GetChannelAsync(mAddress.SocketId).ConfigureAwait(false);
             if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
             var waitData = channelResult.Content.WaitHandlePool.GetWaitDataAsync(out var sign);
-            return await SendThenReturnAsync(
-                GetSendMessage(mAddress, (ushort)sign, read),
+            return await SendThenReturnAsync(GetSendMessage(mAddress, (ushort)sign, read),
               channelResult.Content, waitData, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -170,7 +169,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         {
             var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
             mAddress.Length = (ushort)length;
-            return await ModbusRequestAsync(mAddress, true, cancellationToken);
+            return await ModbusRequestAsync(mAddress, true, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -185,7 +184,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
         {
             var mAddress = ModbusAddress.ParseFrom(address, Station, DtuId);
             mAddress.Data = value;
-            return await ModbusRequestAsync(mAddress, false, cancellationToken);
+            return await ModbusRequestAsync(mAddress, false, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -203,19 +202,19 @@ public partial class ModbusMaster : ProtocolBase, IDtu
             {
                 mAddress.WriteFunctionCode = 15;
                 mAddress.Data = value.BoolArrayToByte();
-                return await ModbusRequestAsync(mAddress, false, cancellationToken);
+                return await ModbusRequestAsync(mAddress, false, cancellationToken).ConfigureAwait(false);
             }
             else if (mAddress.BitIndex == null)
             {
                 mAddress.Data = value[0] ? new byte[2] { 255, 0 } : [0, 0];
-                return await ModbusRequestAsync(mAddress, false, cancellationToken);
+                return await ModbusRequestAsync(mAddress, false, cancellationToken).ConfigureAwait(false);
             }
             else
             {
                 if (mAddress.BitIndex < 16)
                 {
                     mAddress.Length = 2;
-                    var readData = await ModbusRequestAsync(mAddress, true, cancellationToken);
+                    var readData = await ModbusRequestAsync(mAddress, true, cancellationToken).ConfigureAwait(false);
                     if (!readData.IsSuccess) return readData;
                     var writeData = ThingsGatewayBitConverter.ToUInt16(readData.Content, 0);
                     for (int i = 0; i < value.Length; i++)
@@ -223,7 +222,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
                         writeData = writeData.SetBit(mAddress.BitIndex.Value + i, value[i]);
                     }
                     mAddress.Data = ThingsGatewayBitConverter.GetBytes(writeData);
-                    return await ModbusRequestAsync(mAddress, false, cancellationToken);
+                    return await ModbusRequestAsync(mAddress, false, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {

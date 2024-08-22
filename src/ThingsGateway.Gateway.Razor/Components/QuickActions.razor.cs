@@ -54,11 +54,12 @@ public partial class QuickActions
         base.OnInitialized();
     }
 
-    private Task OnReloadPlugin()
+    private async Task OnReloadPlugin()
     {
-        PluginService.Remove();
-
-        return Task.CompletedTask;
+        await Task.Run(() =>
+        {
+            PluginService.Remove();
+        });
     }
 
     private async Task OnReloadService()
@@ -67,7 +68,7 @@ public partial class QuickActions
         {
             await Task.Run(async () =>
             {
-                await HostedServiceUtil.CollectDeviceHostedService.RestartAsync();
+                await HostedServiceUtil.CollectDeviceHostedService.RestartAsync().ConfigureAwait(false);
             });
         }
         finally

@@ -144,11 +144,11 @@ public sealed class LoggingMonitorAttribute : Attribute, IAsyncActionFilter, IOr
         // 处理 Blazor Server
         if (actionMethod == null)
         {
-            _ = await next.Invoke();
+            _ = await next.Invoke().ConfigureAwait(false);
             return;
         }
 
-        await MonitorAsync(actionMethod, context.ActionArguments!, context, next);
+        await MonitorAsync(actionMethod, context.ActionArguments!, context, next).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -580,7 +580,7 @@ writeEndObject: writer.WriteEndObject();
         // 排除 WebSocket 请求处理
         if (context.HttpContext.IsWebSocketRequest())
         {
-            _ = await next();
+            _ = await next().ConfigureAwait(false);
             return;
         }
 
@@ -591,7 +591,7 @@ writeEndObject: writer.WriteEndObject();
         if (actionMethod.IsDefined(typeof(SuppressMonitorAttribute), true)
             || actionMethod.DeclaringType.IsDefined(typeof(SuppressMonitorAttribute), true))
         {
-            _ = await next();
+            _ = await next().ConfigureAwait(false);
             return;
         }
 
@@ -604,7 +604,7 @@ writeEndObject: writer.WriteEndObject();
         // 解决局部和全局触发器同时配置触发两次问题
         if (isDefinedScopedAttribute && Settings.FromGlobalFilter == true)
         {
-            _ = await next();
+            _ = await next().ConfigureAwait(false);
             return;
         }
 
@@ -618,7 +618,7 @@ writeEndObject: writer.WriteEndObject();
                     && !Settings.IncludeOfMethods.Contains(methodFullName, StringComparer.OrdinalIgnoreCase))
                 {
                     // 查找是否包含匹配，忽略大小写
-                    _ = await next();
+                    _ = await next().ConfigureAwait(false);
                     return;
                 }
 
@@ -626,7 +626,7 @@ writeEndObject: writer.WriteEndObject();
                 if (Settings.GlobalEnabled
                     && Settings.ExcludeOfMethods.Contains(methodFullName, StringComparer.OrdinalIgnoreCase))
                 {
-                    _ = await next();
+                    _ = await next().ConfigureAwait(false);
                     return;
                 }
             }
@@ -725,7 +725,7 @@ writeEndObject: writer.WriteEndObject();
 
         // 计算接口执行时间
         var timeOperation = Stopwatch.StartNew();
-        var resultContext = await next();
+        var resultContext = await next().ConfigureAwait(false);
         timeOperation.Stop();
         writer.WriteNumber("timeOperationElapsedMilliseconds", timeOperation.ElapsedMilliseconds);
 

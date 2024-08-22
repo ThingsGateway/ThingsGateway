@@ -127,7 +127,7 @@ public class RpcService : IRpcService
             try
             {
                 // 调用设备的写入方法
-                var result = await item.Key.InVokeWriteAsync(item.Value, cancellationToken);
+                var result = await item.Key.InVokeWriteAsync(item.Value, cancellationToken).ConfigureAwait(false);
 
                 // 写入日志
                 foreach (var resultItem in result)
@@ -178,7 +178,7 @@ public class RpcService : IRpcService
                     return new KeyValuePair<string, OperResult>(a.Key.Name, new OperResult(ex));
                 }));
             }
-        }, Environment.ProcessorCount / 2, cancellationToken);
+        }, Environment.ProcessorCount / 2, cancellationToken).ConfigureAwait(false);
 
         // 使用并行方式执行方法
         await WriteMethods.ParallelForEachAsync(async (item, cancellationToken) =>
@@ -186,7 +186,7 @@ public class RpcService : IRpcService
             try
             {
                 // 调用设备的写入方法
-                var result = await item.Key.InvokeMethodAsync(item.Value, cancellationToken);
+                var result = await item.Key.InvokeMethodAsync(item.Value, cancellationToken).ConfigureAwait(false);
 
                 Dictionary<string, string> operateMethods = item.Value.Select(a => a.Key).ToDictionary(a => a.Name, a => a.OtherMethod!);
 
@@ -225,7 +225,7 @@ public class RpcService : IRpcService
                     return new KeyValuePair<string, OperResult>(a.Key.Name, new OperResult(ex));
                 }));
             }
-        }, Environment.ProcessorCount / 2, cancellationToken);
+        }, Environment.ProcessorCount / 2, cancellationToken).ConfigureAwait(false);
         // 返回结果字典
         return new(results);
     }
@@ -246,7 +246,7 @@ public class RpcService : IRpcService
                 if (data.Count > 0)
                 {
                     // 将数据插入到数据库中
-                    await db.InsertableWithAttr(data).ExecuteCommandAsync(appLifetime.ApplicationStopping);
+                    await db.InsertableWithAttr(data).ExecuteCommandAsync(appLifetime.ApplicationStopping).ConfigureAwait(false);
                 }
             }
             catch (Exception ex)
@@ -255,7 +255,7 @@ public class RpcService : IRpcService
             }
             finally
             {
-                await Task.Delay(3000); // 在finally块中等待一段时间后继续下一次循环
+                await Task.Delay(3000).ConfigureAwait(false); // 在finally块中等待一段时间后继续下一次循环
             }
         }
     }

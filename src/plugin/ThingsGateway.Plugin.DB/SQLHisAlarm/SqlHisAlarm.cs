@@ -78,13 +78,13 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
 
     public async Task<SqlSugarPagedList<IDBHistoryAlarm>> GetDBHistoryAlarmPagesAsync(DBHistoryAlarmPageInput input)
     {
-        var data = await Query(input).ToPagedListAsync<HistoryAlarm, IDBHistoryAlarm>(input.Current, input.Size);//分页
+        var data = await Query(input).ToPagedListAsync<HistoryAlarm, IDBHistoryAlarm>(input.Current, input.Size).ConfigureAwait(false);//分页
         return data;
     }
 
     public async Task<List<IDBHistoryAlarm>> GetDBHistoryAlarmsAsync(DBHistoryAlarmPageInput input)
     {
-        var data = await Query(input).ToListAsync();
+        var data = await Query(input).ToListAsync().ConfigureAwait(false);
         return data.Cast<IDBHistoryAlarm>().ToList();
     }
 
@@ -125,8 +125,7 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
         {
             RefAsync<int> totalCount = 0;
 
-            var items = await query
-                .ToPageListAsync(option.PageIndex, option.PageItems, totalCount);
+            var items = await query.ToPageListAsync(option.PageIndex, option.PageItems, totalCount).ConfigureAwait(false);
 
             ret.TotalCount = totalCount;
             ret.Items = items;
@@ -135,16 +134,14 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
         {
             RefAsync<int> totalCount = 0;
 
-            var items = await query
-                .ToPageListAsync(option.StartIndex, option.PageItems, totalCount);
+            var items = await query.ToPageListAsync(option.StartIndex, option.PageItems, totalCount).ConfigureAwait(false);
 
             ret.TotalCount = totalCount;
             ret.Items = items;
         }
         else
         {
-            var items = await query
-                .ToListAsync();
+            var items = await query.ToListAsync().ConfigureAwait(false);
             ret.TotalCount = items.Count;
             ret.Items = items;
         }

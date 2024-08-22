@@ -35,8 +35,8 @@ public class AuthController : ControllerBase
     [HttpPost("logout")]
     [Authorize]
     [IgnoreRolePermission]
-    public async Task LogoutAsync()
+    public Task LogoutAsync()
     {
-        await _authService.LoginOutAsync();
+        return _authService.LoginOutAsync();
     }
 }

@@ -44,7 +44,7 @@ public class BaseService<T> : IDataService<T>, IDisposable where T : class, new(
     public virtual async Task<bool> DeleteAsync(IEnumerable<long> models)
     {
         using var db = GetDB();
-        return await db.Deleteable<T>().In(models.ToList()).ExecuteCommandHasChangeAsync();
+        return await db.Deleteable<T>().In(models.ToList()).ExecuteCommandHasChangeAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -80,8 +80,7 @@ public class BaseService<T> : IDataService<T>, IDisposable where T : class, new(
         {
             RefAsync<int> totalCount = 0;
 
-            var items = await query
-                .ToPageListAsync(option.PageIndex, option.PageItems, totalCount);
+            var items = await query.ToPageListAsync(option.PageIndex, option.PageItems, totalCount).ConfigureAwait(false);
 
             ret.TotalCount = totalCount;
             ret.Items = items;
@@ -90,16 +89,14 @@ public class BaseService<T> : IDataService<T>, IDisposable where T : class, new(
         {
             RefAsync<int> totalCount = 0;
 
-            var items = await query
-                .ToPageListAsync(option.StartIndex, option.PageItems, totalCount);
+            var items = await query.ToPageListAsync(option.StartIndex, option.PageItems, totalCount).ConfigureAwait(false);
 
             ret.TotalCount = totalCount;
             ret.Items = items;
         }
         else
         {
-            var items = await query
-                .ToListAsync();
+            var items = await query.ToListAsync().ConfigureAwait(false);
             ret.TotalCount = items.Count;
             ret.Items = items;
         }
@@ -111,11 +108,11 @@ public class BaseService<T> : IDataService<T>, IDisposable where T : class, new(
         using var db = GetDB();
         if (changedType == ItemChangedType.Add)
         {
-            return (await db.Insertable(model).ExecuteCommandAsync()) > 0;
+            return (await db.Insertable(model).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
         }
         else
         {
-            return (await db.Updateable(model).ExecuteCommandAsync()) > 0;
+            return (await db.Updateable(model).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
         }
     }
 

@@ -60,8 +60,8 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         {
             var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
             db.Ado.CancellationToken = cancellationToken;
-            var result = await db.Fastest<SQLHistoryValue>().PageSize(50000).SplitTable().BulkCopyAsync(dbInserts);
-            //var result = await db.Insertable(dbInserts).SplitTable().ExecuteCommandAsync();
+            var result = await db.Fastest<SQLHistoryValue>().PageSize(50000).SplitTable().BulkCopyAsync(dbInserts).ConfigureAwait(false);
+            //var result = await db.Insertable(dbInserts).SplitTable().ExecuteCommandAsync().ConfigureAwait(false);
             if (result > 0)
             {
                 LogMessage.Trace($"TableName：{nameof(SQLHistoryValue)}，Count：{result}");
@@ -84,7 +84,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
             {
                 if (datas?.Count != 0)
                 {
-                    var result = await db.Storageable(datas).As(_driverPropertys.ReadDBTableName).PageSize(5000).ExecuteSqlBulkCopyAsync();
+                    var result = await db.Storageable(datas).As(_driverPropertys.ReadDBTableName).PageSize(5000).ExecuteSqlBulkCopyAsync().ConfigureAwait(false);
                     if (result > 0)
                         LogMessage.Trace($"TableName：{nameof(SQLRealValue)}{Environment.NewLine} ，Count：{result}");
                     _initRealData = true;
@@ -96,7 +96,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
             {
                 if (datas?.Count != 0)
                 {
-                    var result = await db.Fastest<SQLRealValue>().AS(_driverPropertys.ReadDBTableName).PageSize(100000).BulkUpdateAsync(datas);
+                    var result = await db.Fastest<SQLRealValue>().AS(_driverPropertys.ReadDBTableName).PageSize(100000).BulkUpdateAsync(datas).ConfigureAwait(false);
                     LogMessage.Trace($"TableName：{nameof(SQLRealValue)}{Environment.NewLine} ，Count：{result}");
                     return OperResult.Success;
                 }

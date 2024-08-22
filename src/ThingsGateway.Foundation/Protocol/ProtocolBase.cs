@@ -283,10 +283,10 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     {
         try
         {
-            var channelResult = await GetChannelAsync(socketId);
+            var channelResult = await GetChannelAsync(socketId).ConfigureAwait(false);
             if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
 
-            return await SendAsync(sendMessage, channelResult.Content, cancellationToken);
+            return await SendAsync(sendMessage, channelResult.Content, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -305,7 +305,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             }
             else
             {
-                await Task.Delay(1000);
+                await Task.Delay(1000).ConfigureAwait(false);
                 return (new OperResult<IClientChannel>(DefaultResource.Localizer["DtuNoConnectedWaining", socketId]));
             }
         }
@@ -316,9 +316,9 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     /// <inheritdoc/>
     public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage sendMessage, string socketId, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default)
     {
-        var channelResult = await GetChannelAsync(socketId);
+        var channelResult = await GetChannelAsync(socketId).ConfigureAwait(false);
         if (!channelResult.IsSuccess) return new OperResult<byte[]>(channelResult);
-        return await SendThenReturnAsync(sendMessage, channelResult.Content, waitData, cancellationToken);
+        return await SendThenReturnAsync(sendMessage, channelResult.Content, waitData, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

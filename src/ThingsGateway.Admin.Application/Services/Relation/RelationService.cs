@@ -28,7 +28,7 @@ public class RelationService : BaseService<SysRelation>, IRelationService
         if (sysRelations == null)
         {
             using var db = GetDB();
-            sysRelations = await db.Queryable<SysRelation>().Where(it => it.Category == category).ToListAsync();
+            sysRelations = await db.Queryable<SysRelation>().Where(it => it.Category == category).ToListAsync().ConfigureAwait(false);
             NetCoreApp.CacheService.Set(key, sysRelations ?? new());//赋值空集合
         }
 
@@ -43,7 +43,7 @@ public class RelationService : BaseService<SysRelation>, IRelationService
     /// <returns>关系表</returns>
     public async Task<IEnumerable<SysRelation>> GetRelationListByObjectIdAndCategoryAsync(long objectId, RelationCategoryEnum category)
     {
-        var sysRelations = await GetRelationByCategoryAsync(category);
+        var sysRelations = await GetRelationByCategoryAsync(category).ConfigureAwait(false);
         var result = sysRelations.Where(it => it.ObjectId == objectId);//获取关系集合
         return result;
     }
@@ -56,7 +56,7 @@ public class RelationService : BaseService<SysRelation>, IRelationService
     /// <returns>关系表</returns>
     public async Task<IEnumerable<SysRelation>> GetRelationListByObjectIdListAndCategoryAsync(IEnumerable<long> objectIds, RelationCategoryEnum category)
     {
-        var sysRelations = await GetRelationByCategoryAsync(category);
+        var sysRelations = await GetRelationByCategoryAsync(category).ConfigureAwait(false);
         var result = sysRelations.Where(it => objectIds.Contains(it.ObjectId));//获取关系集合
         return result;
     }
@@ -69,7 +69,7 @@ public class RelationService : BaseService<SysRelation>, IRelationService
     /// <returns>关系表</returns>
     public async Task<IEnumerable<SysRelation>> GetRelationListByTargetIdAndCategoryAsync(string targetId, RelationCategoryEnum category)
     {
-        var sysRelations = await GetRelationByCategoryAsync(category);
+        var sysRelations = await GetRelationByCategoryAsync(category).ConfigureAwait(false);
         var result = sysRelations.Where(it => it.TargetId == targetId);//获取关系集合
         return result;
     }
@@ -82,7 +82,7 @@ public class RelationService : BaseService<SysRelation>, IRelationService
     /// <returns>关系表</returns>
     public async Task<IEnumerable<SysRelation>> GetRelationListByTargetIdListAndCategoryAsync(IEnumerable<string> targetIds, RelationCategoryEnum category)
     {
-        var sysRelations = await GetRelationByCategoryAsync(category);
+        var sysRelations = await GetRelationByCategoryAsync(category).ConfigureAwait(false);
         var result = sysRelations.Where(it => targetIds.Contains(it.TargetId));//获取关系集合
         return result;
     }
@@ -96,12 +96,12 @@ public class RelationService : BaseService<SysRelation>, IRelationService
     public async Task<IEnumerable<long>> GetUserModuleId(IEnumerable<long> roleIdList, long userId)
     {
         IEnumerable<long>? moduleIds = null;
-        var roleRelation = await GetRelationByCategoryAsync(RelationCategoryEnum.RoleHasModule);//获取角色模块关系集合
+        var roleRelation = await GetRelationByCategoryAsync(RelationCategoryEnum.RoleHasModule).ConfigureAwait(false);//获取角色模块关系集合
         if (roleRelation?.Count > 0)
         {
             moduleIds = roleRelation.Where(it => roleIdList.Contains(it.ObjectId)).Select(it => it.TargetId.ToLong());
         }
-        var userRelation = await GetRelationByCategoryAsync(RelationCategoryEnum.UserHasModule);//获取用户模块关系集合
+        var userRelation = await GetRelationByCategoryAsync(RelationCategoryEnum.UserHasModule).ConfigureAwait(false);//获取用户模块关系集合
         var userModuleIds = userRelation.Where(it => it.ObjectId == userId).Select(it => it.TargetId.ToLong());
         if (userModuleIds.Any())
         {
@@ -138,9 +138,9 @@ public class RelationService : BaseService<SysRelation>, IRelationService
         var result = await db.UseTranAsync(async () =>
         {
             if (clear)
-                await db.Deleteable<SysRelation>().Where(it => it.ObjectId == objectId && it.Category == category).ExecuteCommandAsync();//删除老的
-            await db.Insertable(sysRelation).ExecuteCommandAsync();//添加新的
-        });
+                await db.Deleteable<SysRelation>().Where(it => it.ObjectId == objectId && it.Category == category).ExecuteCommandAsync().ConfigureAwait(false);//删除老的
+            await db.Insertable(sysRelation).ExecuteCommandAsync().ConfigureAwait(false);//添加新的
+        }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
             if (refreshCache)
@@ -174,9 +174,9 @@ public class RelationService : BaseService<SysRelation>, IRelationService
         var result = await db.UseTranAsync(async () =>
         {
             if (clear)
-                await db.Deleteable<SysRelation>().Where(it => it.ObjectId == objectId && it.Category == category).ExecuteCommandAsync();//删除老的
-            await db.Insertable(sysRelations.ToList()).ExecuteCommandAsync();//添加新的
-        });
+                await db.Deleteable<SysRelation>().Where(it => it.ObjectId == objectId && it.Category == category).ExecuteCommandAsync().ConfigureAwait(false);//删除老的
+            await db.Insertable(sysRelations.ToList()).ExecuteCommandAsync().ConfigureAwait(false);//添加新的
+        }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
             RefreshCache(category);

@@ -79,8 +79,12 @@ public partial class BackendLogPage
 
     private async Task<QueryData<BackendLog>> OnQueryAsync(QueryPageOptions options)
     {
-        var data = await BackendLogService.PageAsync(options);
-        return data;
+        return await Task.Run(async () =>
+          {
+              var data = await BackendLogService.PageAsync(options);
+              return data;
+          });
+
     }
 
     #endregion 查询

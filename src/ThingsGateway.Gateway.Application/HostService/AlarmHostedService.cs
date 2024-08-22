@@ -506,9 +506,9 @@ public class AlarmHostedService : BackgroundService
         }
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.CompletedTask;
+        return Task.CompletedTask;
         //try
         //{
         //    while (!stoppingToken.IsCancellationRequested)

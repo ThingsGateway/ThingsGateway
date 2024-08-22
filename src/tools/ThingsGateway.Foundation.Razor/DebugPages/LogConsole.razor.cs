@@ -79,7 +79,7 @@ public partial class LogConsole : IDisposable
                 }
                 else
                 {
-                    await Task.Factory.StartNew(async () =>
+                    await Task.Run(async () =>
                     {
                         Stopwatch sw = Stopwatch.StartNew();
                         var result = TextFileReader.LastLog(files.FirstOrDefault().FullName, 0);

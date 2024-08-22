@@ -54,7 +54,7 @@ public class AuthService : IAuthService
     /// <returns>登录输出</returns>
     public async Task<LoginOutput> LoginAsync(LoginInput input, bool isCookie = true)
     {
-        var appConfig = await _configService.GetAppConfigAsync();
+        var appConfig = await _configService.GetAppConfigAsync().ConfigureAwait(false);
 
         //判断是否开启web访问
         if (!appConfig.WebsitePolicy.WebStatus
@@ -76,14 +76,14 @@ public class AuthService : IAuthService
         }
 
         BeforeLogin(appConfig, input.Account);//登录前校验
-        var userInfo = await _userService.GetUserByAccountAsync(input.Account);//获取用户信息
+        var userInfo = await _userService.GetUserByAccountAsync(input.Account).ConfigureAwait(false);//获取用户信息
         if (userInfo == null)
             throw Oops.Bah(_localizer["UserNull", input.Account]);//用户不存在
         if (userInfo.Password != password)
         {
             LoginError(appConfig.LoginPolicy, input.Account);//登录错误操作
         }
-        var result = await ExecLogin(appConfig.LoginPolicy, input, userInfo);// 执行登录
+        var result = await ExecLogin(appConfig.LoginPolicy, input, userInfo).ConfigureAwait(false);// 执行登录
         return result;
     }
 
@@ -96,7 +96,7 @@ public class AuthService : IAuthService
             return;
         var verificatId = UserManager.UserId;
         //获取用户信息
-        var userinfo = await _userService.GetUserByAccountAsync(UserManager.UserAccount);
+        var userinfo = await _userService.GetUserByAccountAsync(UserManager.UserAccount).ConfigureAwait(false);
         if (userinfo != null)
         {
             var loginEvent = new LoginEvent
@@ -174,11 +174,11 @@ public class AuthService : IAuthService
             SysUser = sysUser,
             VerificatId = verificatId
         };
-        await WriteTokenToCache(loginPolicy, logingEvent);//写入verificat到cache
-        await UpdateUser(logingEvent);
+        await WriteTokenToCache(loginPolicy, logingEvent).ConfigureAwait(false);//写入verificat到cache
+        await UpdateUser(logingEvent).ConfigureAwait(false);
         if (sysUser.Account == RoleConst.SuperAdmin)
         {
-            var modules = (await _sysResourceService.GetAllAsync()).Where(a => a.Category == ResourceCategoryEnum.Module);//获取模块列表
+            var modules = (await _sysResourceService.GetAllAsync().ConfigureAwait(false)).Where(a => a.Category == ResourceCategoryEnum.Module);//获取模块列表
             sysUser.ModuleList = modules;//模块列表赋值给用户
         }
         //返回结果
@@ -187,7 +187,7 @@ public class AuthService : IAuthService
             VerificatId = verificatId,
             Account = sysUser.Account,
             Id = sysUser.Id,
-            DefaultRazor = (await _sysResourceService.GetMenuByMenuIdsAsync(new List<long>() { (await _userCenterService.GetLoginWorkbenchAsync(sysUser.Id)).Razor })).FirstOrDefault()?.Href ?? "/",
+            DefaultRazor = (await _sysResourceService.GetMenuByMenuIdsAsync(new List<long>() { (await _userCenterService.GetLoginWorkbenchAsync(sysUser.Id).ConfigureAwait(false)).Razor }).ConfigureAwait(false)).FirstOrDefault()?.Href ?? "/",
             DefaultModule = sysUser.DefaultModule,
             ModuleList = sysUser.ModuleList,
             AccessToken = accessToken,
@@ -230,7 +230,7 @@ public class AuthService : IAuthService
         {
             Message = _localizer["SingleLoginWarn"],
             ClientIds = clientIds,
-        });
+        }).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -269,7 +269,7 @@ public class AuthService : IAuthService
             it.LastLoginTime,
             it.LatestLoginIp,
             it.LatestLoginTime,
-        }).ExecuteCommandAsync() > 0)
+        }).ExecuteCommandAsync().ConfigureAwait(false) > 0)
             NetCoreApp.CacheService.HashAdd(ThingsGateway.Admin.Application.CacheConst.Cache_SysUser, sysUser.Id.ToString(), sysUser);//更新Cache信息
     }
 
@@ -294,7 +294,7 @@ public class AuthService : IAuthService
         //判断是否单用户登录
         if (loginPolicy.SingleOpen)
         {
-            await SingleLogin(loginEvent.SysUser.Id);//单用户登录方法
+            await SingleLogin(loginEvent.SysUser.Id).ConfigureAwait(false);//单用户登录方法
         }
 
         //添加到verificat列表

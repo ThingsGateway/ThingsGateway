@@ -25,9 +25,9 @@ internal partial class ReverseCallbackServer : RpcServer
     }
 
     [DmtpRpc(true)]//使用方法名作为调用键
-    public async Task UpdateGatewayDataAsync(List<DeviceDataWithValue> deviceDatas, List<VariableDataWithValue> variableDatas)
+    public Task UpdateGatewayDataAsync(List<DeviceDataWithValue> deviceDatas, List<VariableDataWithValue> variableDatas)
     {
-        await Task.CompletedTask;
+
         foreach (var deviceData in deviceDatas)
         {
             if (GlobalData.CollectDevices.TryGetValue(deviceData.Name, out var value))
@@ -45,5 +45,6 @@ internal partial class ReverseCallbackServer : RpcServer
                 value.SetErrorMessage(variableData.LastErrorMessage);
             }
         }
+        return Task.CompletedTask;
     }
 }

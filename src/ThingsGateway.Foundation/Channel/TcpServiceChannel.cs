@@ -44,7 +44,7 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
         }
     }
 
-    public async Task ClientDispose(string id)
+    public async Task ClientDisposeAsync(string id)
     {
         if (this.TryGetClient(id, out var client))
         {
@@ -65,7 +65,7 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
             if (ServerState != ServerState.Running)
             {
                 await base.StopAsync().ConfigureAwait(false);
-                await SetupAsync(Config.Clone());
+                await SetupAsync(Config.Clone()).ConfigureAwait(false);
                 await base.StartAsync().ConfigureAwait(false);
                 if (ServerState == ServerState.Running)
                 {
@@ -88,7 +88,7 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
     {
         if (Monitors.Any())
         {
-            await ClearAsync();
+            await ClearAsync().ConfigureAwait(false);
             var iPHost = Monitors.FirstOrDefault()?.Option.IpHost;
             await base.StopAsync().ConfigureAwait(false);
             if (!Monitors.Any())

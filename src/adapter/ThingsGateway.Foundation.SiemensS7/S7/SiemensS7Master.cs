@@ -141,8 +141,7 @@ public partial class SiemensS7Master : ProtocolBase
                         int len = Math.Min(addressLen - num, PduLength);
                         sAddress.Length = len;
 
-                        var result = await SendThenReturnAsync(
-        new S7Send([sAddress], true), cancellationToken: cancellationToken).ConfigureAwait(false);
+                        var result = await SendThenReturnAsync(new S7Send([sAddress], true), cancellationToken: cancellationToken).ConfigureAwait(false);
                         if (!result.IsSuccess) return result;
 
                         byteBlock.Write(result.Content);
@@ -204,8 +203,7 @@ public partial class SiemensS7Master : ProtocolBase
                         return dictOperResult;
                     }
 
-                    var result = await SendThenReturnAsync(
-    new S7Send([sAddress], true), cancellationToken: cancellationToken).ConfigureAwait(false);
+                    var result = await SendThenReturnAsync(new S7Send([sAddress], true), cancellationToken: cancellationToken).ConfigureAwait(false);
 
                     if (!result.IsSuccess)
                     {
@@ -219,8 +217,7 @@ public partial class SiemensS7Master : ProtocolBase
                         result.Content[i / 8] = result.Content[i / 8].SetBit((i % 8), value[i - sAddress.BitCode]);
                     }
                     sAddress.Data = result.Content;
-                    var wresult = await SendThenReturnAsync(
-new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAwait(false);
+                    var wresult = await SendThenReturnAsync(new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAwait(false);
                     dictOperResult.TryAdd(sAddress, wresult);
                     return dictOperResult;
 
@@ -278,8 +275,7 @@ new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAw
 
                     try
                     {
-                        var result = await SendThenReturnAsync(
-        new S7Send(item.ToArray(), false), cancellationToken: cancellationToken).ConfigureAwait(false);
+                        var result = await SendThenReturnAsync(new S7Send(item.ToArray(), false), cancellationToken: cancellationToken).ConfigureAwait(false);
                         foreach (var i1 in item)
                         {
                             dictOperResult.TryAdd(i1, result);
@@ -322,7 +318,7 @@ new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAw
             var sAddress = SiemensAddress.ParseFrom(address);
             sAddress.Data = value;
             sAddress.Length = value.Length;
-            return (await S7WriteAsync([sAddress], cancellationToken)).FirstOrDefault().Value;
+            return (await S7WriteAsync([sAddress], cancellationToken).ConfigureAwait(false)).FirstOrDefault().Value;
         }
         catch (Exception ex)
         {
@@ -340,7 +336,7 @@ new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAw
             sAddress.Length = sAddress.Data.Length;
             sAddress.BitLength = value.Length;
             sAddress.IsBit = true;
-            return (await S7WriteAsync([sAddress], cancellationToken)).FirstOrDefault().Value;
+            return (await S7WriteAsync([sAddress], cancellationToken).ConfigureAwait(false)).FirstOrDefault().Value;
         }
         catch (Exception ex)
         {
@@ -421,14 +417,14 @@ new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAw
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError1", channel.ToString(), result2.ErrorMessage]);
-                    await channel.CloseAsync();
+                    await channel.CloseAsync().ConfigureAwait(false);
                     return;
                 }
             }
             catch (Exception ex)
             {
                 Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError1", channel.ToString(), ex.Message]);
-                await channel.CloseAsync();
+                await channel.CloseAsync().ConfigureAwait(false);
                 return;
             }
             try
@@ -437,7 +433,7 @@ new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAw
                 if (!result2.IsSuccess)
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError2", channel.ToString(), result2.ErrorMessage]);
-                    await channel.CloseAsync();
+                    await channel.CloseAsync().ConfigureAwait(false);
                     return;
                 }
                 PduLength = ThingsGatewayBitConverter.ToUInt16(result2.Content, 0) - 28;
@@ -447,13 +443,13 @@ new S7Send([sAddress], false), cancellationToken: cancellationToken).ConfigureAw
             catch (Exception ex)
             {
                 Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError2", channel.ToString(), ex.Message]);
-                await channel.CloseAsync();
+                await channel.CloseAsync().ConfigureAwait(false);
                 return;
             }
         }
         catch (Exception ex)
         {
-            await channel.CloseAsync();
+            await channel.CloseAsync().ConfigureAwait(false);
             Logger.Exception(ex);
         }
         finally

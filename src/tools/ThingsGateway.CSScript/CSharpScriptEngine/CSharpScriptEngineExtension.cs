@@ -44,7 +44,7 @@ public static class CSharpScriptEngineExtension
         {
             while (true)
             {
-                await Task.Delay(30000);
+                await Task.Delay(30000).ConfigureAwait(false);
                 //检测缓存
                 try
                 {
@@ -69,7 +69,7 @@ public static class CSharpScriptEngineExtension
                     m_waiterLock.Release();
                 }
 
-                await Task.Delay(30000);
+                await Task.Delay(30000).ConfigureAwait(false);
             }
         });
     }

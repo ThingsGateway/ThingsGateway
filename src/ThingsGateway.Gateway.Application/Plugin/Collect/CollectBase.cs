@@ -175,7 +175,7 @@ public abstract class CollectBase : DriverBase
         ReadResultCount readResultCount = new();
         if (cancellationToken.IsCancellationRequested)
             return;
-        if (await TestOnline(cancellationToken))
+        if (await TestOnline(cancellationToken).ConfigureAwait(false))
             return;
 
         if (CollectProperties.ConcurrentCount > 1)
@@ -239,7 +239,7 @@ public abstract class CollectBase : DriverBase
                 return true;
             if (cancellationToken.IsCancellationRequested)
                 return true;
-            if (await TestOnline(cancellationToken))
+            if (await TestOnline(cancellationToken).ConfigureAwait(false))
                 return true;
             // 如果请求更新时间已到，则执行方法调用
             if (readVariableMethods.CheckIfRequestAndUpdateTime(DateTime.Now))
@@ -248,7 +248,7 @@ public abstract class CollectBase : DriverBase
                     return true;
                 if (cancellationToken.IsCancellationRequested)
                     return true;
-                if (await TestOnline(cancellationToken))
+                if (await TestOnline(cancellationToken).ConfigureAwait(false))
                     return true;
                 var readErrorCount = 0;
                 var readResult = await InvokeMethodAsync(readVariableMethods, cancellationToken: cancellationToken).ConfigureAwait(false);
@@ -260,7 +260,7 @@ public abstract class CollectBase : DriverBase
                         return true;
                     if (cancellationToken.IsCancellationRequested)
                         return true;
-                    if (await TestOnline(cancellationToken))
+                    if (await TestOnline(cancellationToken).ConfigureAwait(false))
                         return true;
                     readErrorCount++;
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
@@ -311,7 +311,7 @@ public abstract class CollectBase : DriverBase
                 return true;
             if (cancellationToken.IsCancellationRequested)
                 return true;
-            if (await TestOnline(cancellationToken))
+            if (await TestOnline(cancellationToken).ConfigureAwait(false))
                 return true;
             // 如果请求更新时间已到，则执行变量读取
             if (variableSourceRead.CheckIfRequestAndUpdateTime(DateTime.Now))
@@ -320,7 +320,7 @@ public abstract class CollectBase : DriverBase
                     return true;
                 if (KeepRun != true)
                     return true;
-                if (await TestOnline(cancellationToken))
+                if (await TestOnline(cancellationToken).ConfigureAwait(false))
                     return true;
 
                 var readErrorCount = 0;
@@ -333,7 +333,7 @@ public abstract class CollectBase : DriverBase
                         return true;
                     if (cancellationToken.IsCancellationRequested)
                         return true;
-                    if (await TestOnline(cancellationToken))
+                    if (await TestOnline(cancellationToken).ConfigureAwait(false))
                         return true;
                     readErrorCount++;
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
@@ -391,7 +391,7 @@ public abstract class CollectBase : DriverBase
                     Exception exception = null;
                     try
                     {
-                        await Protocol.Channel.ConnectAsync(Protocol.ConnectTimeout, cancellationToken);
+                        await Protocol.Channel.ConnectAsync(Protocol.ConnectTimeout, cancellationToken).ConfigureAwait(false);
                     }
                     catch (Exception ex)
                     {

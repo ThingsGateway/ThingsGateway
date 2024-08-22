@@ -61,7 +61,7 @@ public class ResultFilter : IAsyncActionFilter
         // 排除 WebSocket 请求处理
         if (context.HttpContext.IsWebSocketRequest())
         {
-            await next();
+            await next().ConfigureAwait(false);
             return;
         }
         var httpContext = context.HttpContext;
@@ -119,7 +119,7 @@ public class ResultFilter : IAsyncActionFilter
         #endregion 验证
 
         // 执行 Action 并获取结果
-        ActionExecutedContext? actionExecutedContext = await next();
+        ActionExecutedContext? actionExecutedContext = await next().ConfigureAwait(false);
 
         #region 异常
 
@@ -161,7 +161,7 @@ public class ResultFilter : IAsyncActionFilter
                     // 如果 Response 已经完成输出，则禁止写入
                     if (httpContext.Response.HasStarted) return;
 
-                    await unifyResult.OnResponseStatusCodes(httpContext, statusCode);
+                    await unifyResult.OnResponseStatusCodes(httpContext, statusCode).ConfigureAwait(false);
                 }
 
                 return;

@@ -130,6 +130,6 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
         {
             await ChannelReceived.Invoke(this, e).ConfigureAwait(false);
         }
-        await base.OnTcpReceived(e);
+        await base.OnTcpReceived(e).ConfigureAwait(false);
     }
 }

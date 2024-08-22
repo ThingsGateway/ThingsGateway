@@ -64,7 +64,7 @@ public partial class OpcUaImportVariable
     {
         if (firstRender)
         {
-            await Task.Factory.StartNew(async () =>
+            await Task.Run(async () =>
             {
                 Items = BuildTreeItemList(await PopulateBranchAsync(ObjectIds.ObjectsFolder), RenderTreeItem).ToList();
                 ShowSkeleton = false;
