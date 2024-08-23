@@ -73,7 +73,7 @@ public partial class AdminTable<TItem> where TItem : class, new()
 
     /// <inheritdoc cref="Table{TItem}.ScrollingDialogContent"/>
     [Parameter]
-    public bool ScrollingDialogContent { get; set; } = true;
+    public bool ScrollingDialogContent { get; set; }
 
     /// <inheritdoc cref="Table{TItem}.EditTemplate"/>
     [Parameter]

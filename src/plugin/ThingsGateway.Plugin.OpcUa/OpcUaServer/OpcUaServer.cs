@@ -131,9 +131,10 @@ public partial class OpcUaServer : BusinessBase
                     await Task.Delay(10000, cancellationToken).ConfigureAwait(false);
                 }
             }
-
+            var data = CollectVariableRunTimes.ToListWithDequeue();
+            data.Reverse();
             ////变化推送
-            var varList = CollectVariableRunTimes.ToListWithDequeue().DistinctBy(a => a.Name).ToList();
+            var varList = data.DistinctBy(a => a.Name).ToList();
 
             if (varList?.Count != 0)
             {

@@ -63,7 +63,6 @@ public static class ObjectExtensions
     public static object? ChangeType(this object? obj, Type type)
     {
         if (type == null) return obj;
-        if (obj == null) return obj;
         if (type == typeof(string)) return obj?.ToString();
         if (type == typeof(Guid) && obj != null) return Guid.Parse(obj.ToString());
         if (type == typeof(bool) && obj != null && obj is not bool)

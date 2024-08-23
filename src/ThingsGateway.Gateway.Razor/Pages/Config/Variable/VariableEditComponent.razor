@@ -265,7 +265,7 @@ else
                                 <BodyTemplate>
                                     <ValidateForm Model="item.Value.Value" Id=@((item.Key+Model.Id).ToString()) @ref=item.Value.ValidateForm>
 
-                                        <EditorFormObject class="p-2" Items=items AutoGenerateAllItem="true" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="item.Value.Value" @key=item.Value.Value.GetType().TypeHandle.Value>
+                                        <EditorFormObject class="p-2" Items=items AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="item.Value.Value" @key=item.Value.Value.GetType().TypeHandle.Value>
 
                                         </EditorFormObject>
                                     </ValidateForm>

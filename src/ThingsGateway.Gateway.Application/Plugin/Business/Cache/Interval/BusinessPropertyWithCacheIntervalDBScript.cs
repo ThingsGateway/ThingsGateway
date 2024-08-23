@@ -8,16 +8,25 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Gateway.Application;
+using BootstrapBlazor.Components;
 
-namespace ThingsGateway.Plugin.OpcUa;
+namespace ThingsGateway.Gateway.Application;
 
+/// <summary>
 /// <inheritdoc/>
-public class OpcUaServerVariableProperty : VariablePropertyBase
+/// </summary>
+public class BusinessPropertyWithCacheIntervalDBScript : BusinessPropertyWithCacheInterval
 {
     /// <summary>
-    /// 数据类型
+    /// 表定义实体脚本
     /// </summary>
-    [DynamicProperty()]
-    public DataTypeEnum DataType { get; set; } = DataTypeEnum.Object;
+    [DynamicProperty]
+    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 3)]
+    public string? BigTextScriptTableModel { get; set; }
+
+    /// <summary>
+    /// 数据脚本
+    /// </summary>
+    [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 3)]
+    public string? BigTextScriptDataModel { get; set; }
 }
