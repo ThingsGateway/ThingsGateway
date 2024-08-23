@@ -103,6 +103,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Winform", "Th
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Debug.Winform", "debugs\ThingsGateway.Debug.Winform\ThingsGateway.Debug.Winform.csproj", "{FCFE5A19-1AA8-4E5F-BDBE-C9A9CA11758C}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Plugin.VariableExpression", "plugin\ThingsGateway.Plugin.VariableExpression\ThingsGateway.Plugin.VariableExpression.csproj", "{4E25CD96-A278-492D-A4E5-DEB5FDB770BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -265,6 +267,10 @@ Global
 		{FCFE5A19-1AA8-4E5F-BDBE-C9A9CA11758C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCFE5A19-1AA8-4E5F-BDBE-C9A9CA11758C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCFE5A19-1AA8-4E5F-BDBE-C9A9CA11758C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E25CD96-A278-492D-A4E5-DEB5FDB770BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E25CD96-A278-492D-A4E5-DEB5FDB770BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E25CD96-A278-492D-A4E5-DEB5FDB770BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E25CD96-A278-492D-A4E5-DEB5FDB770BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -297,10 +303,11 @@ Global
 		{8DAE2A8C-5E7C-4F11-A035-7DDDFA6D4539} = {B1DC0D3F-AAAE-4B01-A35A-E81409D411FB}
 		{E6854FB6-FE05-4DA7-90D3-792EEA1F2DD3} = {B1DC0D3F-AAAE-4B01-A35A-E81409D411FB}
 		{FCFE5A19-1AA8-4E5F-BDBE-C9A9CA11758C} = {0DF0F333-7CEF-4DE7-9108-718EDD5586EE}
+		{4E25CD96-A278-492D-A4E5-DEB5FDB770BF} = {69E6D9A3-4EA0-488A-AD4A-C179197A8189}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
-		RESX_Rules = {"EnabledRules":[]}
 		RESX_NeutralResourcesLanguage = zh-Hans
+		RESX_Rules = {"EnabledRules":[]}
 	EndGlobalSection
 EndGlobal

@@ -30,7 +30,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Photino.Native" Version="3.1.5" />
-    <PackageReference Include="Photino.NET" Version="3.1.14" />
+    <PackageReference Include="Photino.NET" Version="3.1.16" />
     <PackageReference Include="Photino.Blazor" Version="3.1.8" />
 
   </ItemGroup>

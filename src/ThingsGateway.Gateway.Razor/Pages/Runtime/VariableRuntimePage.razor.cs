@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 using ThingsGateway.Core.Extension;
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Foundation.Json.Extension;
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.NewLife.X.Extension;
 using ThingsGateway.Razor;
@@ -63,7 +63,7 @@ public partial class VariableRuntimePage : IDisposable
         var ret = "";
         if (d is TableColumnContext<VariableRunTime, object?> data && data?.Value != null)
         {
-            ret = data.Value.ToSystemTextJsonString();
+            ret = data.Value.ToJsonNetString();
         }
         return Task.FromResult(ret);
     }
