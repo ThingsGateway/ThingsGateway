@@ -15,6 +15,7 @@
 
 using BootstrapBlazor.Components;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +31,8 @@ using ThingsGateway.Gateway.Application;
 namespace ThingsGateway.Gateway.Razor;
 
 
+[Authorize]
+[IgnoreRolePermission]
 [Route("/")]
 [Route("/index")]
 public partial class GatewayIndex : IDisposable

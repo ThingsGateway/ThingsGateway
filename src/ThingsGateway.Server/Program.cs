@@ -65,6 +65,7 @@ public class Program
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             builder.Host.UseSystemd();
 
+        //startup
         builder.ConfigureServices();
 
         // 增加中文编码支持网页源码显示汉字
@@ -107,6 +108,7 @@ public class Program
             options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
         });
 
+        //swagger
         builder.Services.AddSpecificationDocuments();
 
 
@@ -146,10 +148,14 @@ public class Program
 
         var app = builder.Build();
 
-        app.UseServices();
-        app.UseSpecificationDocuments();
 
         #region build
+
+        //startup
+        app.UseServices();
+
+        //swagger
+        app.UseSpecificationDocuments();
 
         app.UseBootstrapBlazor();
 

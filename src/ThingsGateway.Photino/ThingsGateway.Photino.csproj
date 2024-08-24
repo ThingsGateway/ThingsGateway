@@ -8,31 +8,22 @@
     <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <TargetFrameworks>net6.0;</TargetFrameworks>
-		<!--<PublishAot>true</PublishAot>-->
-
-    <!--动态适用GC-->
-    <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
-    <!--使用自托管线程池-->
-    <!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
-
+    <!--<PublishAot>true</PublishAot>-->
     <!--使用工作站GC-->
     <ServerGarbageCollection>false</ServerGarbageCollection>
-
     <!--<PlatformTarget>x86</PlatformTarget>-->
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(SolutionName)'!='ThingsGateway - Admin'">
-
     <Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;set targetFWS=net8.0&#xD;&#xA;for %25%25f in (%25targetFWS%25) do (&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Photino\bin\$(Configuration)\net6.0\Plugins&quot;&#xD;&#xA;    set &quot;dir1=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\%25%25f\Plugins&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    if not exist &quot;!dir1!&quot; md &quot;!dir1!&quot;&#xD;&#xA;xcopy  &quot;!dir1!&quot; &quot;!dir!&quot;  /E /I /H /K /Y&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" Condition="'$(OS)'=='Windows_NT'" />
   </Target>
-
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Photino.Native" Version="3.1.5" />
     <PackageReference Include="Photino.NET" Version="3.1.16" />
     <PackageReference Include="Photino.Blazor" Version="3.1.8" />
-
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.8" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
@@ -45,7 +36,6 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(SolutionName)' != 'ThingsGateway - Admin'">
-
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.NetCore\ThingsGateway.Gateway.NetCore.csproj" />
   </ItemGroup>
@@ -56,59 +46,40 @@
     <Content Include="..\ThingsGateway.Server\Index\GatewayIndex.razor" Link="Index\GatewayIndex.razor" />
     <Compile Include="..\ThingsGateway.Server\Index\AdminIndex.razor.cs" Link="Index\AdminIndex.razor.cs" />
     <Compile Include="..\ThingsGateway.Server\Index\GatewayIndex.razor.cs" Link="Index\GatewayIndex.razor.cs" />
+    <None Include="..\ThingsGateway.Server\Index\AdminIndex.razor.css" Link="Index\AdminIndex.razor.css" />
+    <None Include="..\ThingsGateway.Server\Index\GatewayIndex.razor.css" Link="Index\GatewayIndex.razor.css" />
     <Content Include="..\ThingsGateway.Server\MainLayout.razor" Link="MainLayout.razor" />
     <Compile Include="..\ThingsGateway.Server\MainLayout.razor.cs" Link="MainLayout.razor.cs" />
     <Content Include="..\ThingsGateway.Server\MainLayout.razor.css" Link="MainLayout.razor.css" />
     <Content Include="..\ThingsGateway.Server\Index\GatewayIndexComponent.razor" Link="Index\GatewayIndexComponent.razor" />
-
     <Compile Include="..\ThingsGateway.Server\Index\GatewayIndexComponent.razor.cs" Link="Index\GatewayIndexComponent.razor.cs" />
-    <None Include="..\ThingsGateway.Server\Index\AdminIndex.razor.css" Link="Index\AdminIndex.razor.css" />
-    <None Include="..\ThingsGateway.Server\Index\GatewayIndex.razor.css" Link="Index\GatewayIndex.razor.css" />
-  </ItemGroup>
 
-  <ItemGroup>
+    <Compile Include="..\ThingsGateway.Server\SingleFilePublish.cs" Link="SingleFilePublish.cs" />
+
+
+
+    <None Include="..\ThingsGateway.Server\Directory.Build.targets" Link="Directory.Build.targets" />
+    <Content Include="..\ThingsGateway.Server\wwwroot\favicon.ico" Link="wwwroot\favicon.ico" />
+    <Content Include="..\ThingsGateway.Server\wwwroot\favicon.png" Link="wwwroot\favicon.png" />
+    <Content Include="..\ThingsGateway.Server\appsettings.Development.json" Link="appsettings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\ThingsGateway.Server\appsettings.json" Link="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="favicon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
     <EmbeddedResource Include="..\ThingsGateway.Server\Locales\en-US.json" Link="Locales\en-US.json" />
     <EmbeddedResource Include="..\ThingsGateway.Server\Locales\zh-CN.json" Link="Locales\zh-CN.json" />
     <EmbeddedResource Include="Locales\*.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
-  </ItemGroup>
- 
-  <ItemGroup>
+
     <Content Update="wwwroot\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.8" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="favicon.ico" />
-    <Content Include="favicon.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    
-    <None Update="pm2-windows.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="pm2-linux.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="WindowsServiceDelete.bat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="$(SolutionDir)..\README.md" Pack="true" PackagePath="\" />
-    <None Include="$(SolutionDir)..\LICENSE" Pack="true" PackagePath="\" />
-    <None Include="$(SolutionDir)..\icon.png" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Locales\" />
   </ItemGroup>
 
 

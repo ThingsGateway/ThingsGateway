@@ -19,14 +19,17 @@ using ThingsGateway.Admin.NetCore;
 using ThingsGateway.Admin.Razor;
 using ThingsGateway.Razor;
 
-namespace ThingsGateway.Photino;
+namespace ThingsGateway;
 
 [AppStartup(-999999)]
 public class Startup : AppStartup
 {
     public void ConfigBlazorServer(IServiceCollection services)
     {
-        ConfigureAdminApp(services);
+
+#if !Admin
+        services.AddScoped<ThingsGateway.Gateway.Application.IGatewayExportService, ThingsGateway.Gateway.Razor.GatewayExportService>();
+#endif
         // 增加网站服务
         AddWebSiteServices(services);
     }
@@ -37,24 +40,7 @@ public class Startup : AppStartup
     /// <param name="services"></param>
     private IServiceCollection AddWebSiteServices(IServiceCollection services)
     {
-        services.AddScoped<BlazorAppContext>(a =>
-        {
-            var sysResourceService = a.GetService<ISysResourceService>();
-            var userCenterService = a.GetService<IUserCenterService>();
-            var userService = a.GetService<ISysUserService>();
-            var appContext = new BlazorAppContext(sysResourceService, userCenterService, userService);
-            appContext.TitleLocalizer = a.GetRequiredService<IStringLocalizer<ThingsGateway.Razor.MainLayout>>();
-            return appContext;
-        });
-        services.AddAuthorizationCore();
-        services.AddSingleton<IAuthorizationHandler, BlazorAuthorizationHandler>();
-        services.AddSingleton<AuthenticationStateProvider, BlazorAuthenticationStateProvider>();
-        return services;
-    }
 
-
-    private void ConfigureAdminApp(IServiceCollection services)
-    {
         services.AddSingleton<IHostApplicationLifetime, ApplicationLifetime>();
         services.AddSingleton<ApplicationLifetime>();
 
@@ -75,13 +61,23 @@ public class Startup : AppStartup
 
         services.AddScoped<IPlatformService, PhotinoPlatformService>();
 
-#if !Admin
-        services.AddScoped<ThingsGateway.Gateway.Application.IGatewayExportService, ThingsGateway.Gateway.Razor.GatewayExportService>();
-#endif
 
 
+        services.AddScoped<BlazorAppContext>(a =>
+        {
+            var sysResourceService = a.GetService<ISysResourceService>();
+            var userCenterService = a.GetService<IUserCenterService>();
+            var userService = a.GetService<ISysUserService>();
+            var appContext = new BlazorAppContext(sysResourceService, userCenterService, userService);
+            appContext.TitleLocalizer = a.GetRequiredService<IStringLocalizer<ThingsGateway.Razor.MainLayout>>();
+            return appContext;
+        });
+        services.AddAuthorizationCore();
+        services.AddSingleton<IAuthorizationHandler, BlazorAuthorizationHandler>();
+        services.AddSingleton<AuthenticationStateProvider, BlazorAuthenticationStateProvider>();
+
+
+        return services;
     }
-
-
 
 }

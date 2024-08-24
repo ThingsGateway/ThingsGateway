@@ -17,23 +17,6 @@ namespace ThingsGateway.Foundation;
 /// <inheritdoc/>
 public static class ByteExtensions
 {
-    public static ArraySegment<byte> AsSegmentTake<TByteBlock>(this TByteBlock byteBlock, int len) where TByteBlock : IByteBlock
-    {
-        return new(byteBlock.Memory.Slice(byteBlock.Position, len).ToArray());
-    }
-    public static ArraySegment<byte> AsSegmentTake<TByteBlock>(this TByteBlock byteBlock) where TByteBlock : IByteBlock
-    {
-        return new(byteBlock.Memory.Slice(byteBlock.Position, byteBlock.CanReadLength).ToArray());
-    }
-    public static ArraySegment<byte> AsSegment<TByteBlock>(this TByteBlock byteBlock) where TByteBlock : IByteBlock
-    {
-        return new(byteBlock.Memory.ToArray());
-    }
-    public static ArraySegment<byte> AsSegment<TByteBlock>(this TByteBlock byteBlock, int pos, int len) where TByteBlock : IByteBlock
-    {
-        return new(byteBlock.Memory.Slice(pos, len).ToArray());
-    }
-
     /// <summary>
     /// 获取byte数据类型的第offset位，是否为True<br />
     /// </summary>

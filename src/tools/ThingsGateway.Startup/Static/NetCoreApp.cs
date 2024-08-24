@@ -162,7 +162,17 @@ public class NetCoreApp
                     // 加载用户自定义配置单文件所需程序集
                     var nativeAssemblies = singleFilePublish.IncludeAssemblies();
                     var loadAssemblies = singleFilePublish.IncludeAssemblyNames()
-                                                    .Select(u => Reflect.GetAssembly(u));
+                                                    .Select(u =>
+                                                    {
+                                                        try
+                                                        {
+                                                            return Reflect.GetAssembly(u);
+                                                        }
+                                                        catch
+                                                        {
+                                                            return typeof(NetCoreApp).Assembly;
+                                                        }
+                                                    });
 
                     fixedSingleFileAssemblies = fixedSingleFileAssemblies.Concat(nativeAssemblies)
                                                                 .Concat(loadAssemblies);

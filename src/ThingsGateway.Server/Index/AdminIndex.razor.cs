@@ -15,6 +15,7 @@
 
 using BootstrapBlazor.Components;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,6 +28,9 @@ using ThingsGateway.Core.Extension;
 
 namespace ThingsGateway.Admin.Razor;
 
+
+[Authorize]
+[IgnoreRolePermission]
 [Route("/")]
 [Route("/index")]
 public partial class AdminIndex : IDisposable

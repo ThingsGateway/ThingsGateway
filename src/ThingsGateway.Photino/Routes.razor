@@ -1,7 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Routing
 @using ThingsGateway.Admin.Application
-@namespace ThingsGateway.Photino
+
+@namespace ThingsGateway
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="NetCoreApp.RazorAssemblies.Where(a=>a!=typeof(Routes).Assembly)">
     <Found Context="routeData">
