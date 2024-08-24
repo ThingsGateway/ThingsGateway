@@ -36,7 +36,9 @@
     "实时报警": "RealTimeAlarms",
     "网关日志": "GatewayLogs",
     "后台日志": "Backend",
-    "RPC日志": "RPC"
+    "RPC日志": "RPC",
+    "物联网关": "Gateway",
+    "系统管理": "Admin"
   },
 
   "ThingsGateway.Admin.Razor.AdminIndex": {

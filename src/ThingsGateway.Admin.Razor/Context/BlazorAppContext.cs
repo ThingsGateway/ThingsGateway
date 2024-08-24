@@ -68,6 +68,11 @@ public class BlazorAppContext : IAsyncDisposable
     /// </summary>
     public IEnumerable<SysResource> UserWorkbenchOutputs { get; private set; }
 
+    /// <summary>
+    /// 用户个人快捷方式菜单
+    /// </summary>
+    public IEnumerable<SysResource> AllResource { get; private set; }
+
     private ISysResourceService ResourceService { get; }
     private ISysUserService SysUserService { get; }
     private IUserCenterService UserCenterService { get; }
@@ -94,6 +99,7 @@ public class BlazorAppContext : IAsyncDisposable
                     a.Title = TitleLocalizer[a.Title];
                 });
             }
+            AllResource = sysResources;
             AllMenus = sysResources.Where(a => a.Category == ResourceCategoryEnum.Menu);
             var module = AllMenus.FirstOrDefault(a => a.Href == url)?.Module;
             if (module == ResourceConst.SpaId)

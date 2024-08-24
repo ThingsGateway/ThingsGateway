@@ -67,7 +67,7 @@ public partial class MainLayout : IDisposable
             Title = Localizer["ChoiceModule"],
             BodyTemplate = BootstrapDynamicComponent.CreateComponent<ChoiceModuleComponent>(new Dictionary<string, object?>
             {
-                [nameof(ChoiceModuleComponent.ModuleList)] = AppContext.CurrentUser.ModuleList.ToList(),
+                [nameof(ChoiceModuleComponent.ModuleList)] = AppContext.AllResource.Where(a => AppContext.CurrentUser.ModuleList.Select(b => b.Id).Contains(a.Id)).ToList(),
                 [nameof(ChoiceModuleComponent.Value)] = AppContext.CurrentUser.DefaultModule,
                 [nameof(ChoiceModuleComponent.OnSave)] = new Func<long, Task>(async v =>
                 {
