@@ -48,11 +48,12 @@ public class MemoryVariable : CollectBase
             return new(new OperationCanceledException());
         Interlocked.Increment(ref variableSourceRead.ReadCount);
         OperResult operResult = new();
+        var time = DateTime.Now;
         foreach (var property in variableSourceRead.VariableRunTimes)
         {
             if (property.Value == null)
             {
-                var result = property.SetValue(property.Value.ChangeType(property.DataType.GetSystemType()));
+                var result = property.SetValue(property.Value.ChangeType(property.DataType.GetSystemType()), time);
                 if (!result.IsSuccess)
                 {
                     variableSourceRead.LastErrorMessage = result.ErrorMessage;
@@ -102,6 +103,7 @@ public class MemoryVariable : CollectBase
 
             // 创建用于存储操作结果的并发字典
             ConcurrentDictionary<string, OperResult> operResults = new();
+            var time = DateTime.Now;
 
             // 使用并发方式遍历写入信息列表，并进行异步写入操作
             writeInfoLists.ParallelForEach((writeInfo) =>
@@ -118,7 +120,7 @@ public class MemoryVariable : CollectBase
                        value = writeInfo.Value;
                    }
 
-                   writeInfo.Key.SetValue(value);
+                   writeInfo.Key.SetValue(value, time);
 
                    // 将操作结果添加到结果字典中，使用变量名称作为键
                    operResults.TryAdd(writeInfo.Key.Name, new OperResult());

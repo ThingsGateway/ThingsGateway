@@ -67,8 +67,8 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
         {
             GlobalData.DeviceStatusChangeEvent += DeviceStatusChange;
             GlobalData.VariableValueChangeEvent += VariableValueChange;
-            CollectDevices.ForEach(a => { DeviceStatusChange(a.Value, a.Value.Adapt<DeviceData>()); });
-            CurrentDevice.VariableRunTimes.ForEach(a => { VariableValueChange(a.Value, a.Value.Adapt<VariableData>()); });
+            CollectDevices.ForEach(a => { DeviceStatusChange(a.Value, a.Value.Adapt<DeviceBasicData>()); });
+            CurrentDevice.VariableRunTimes.ForEach(a => { VariableValueChange(a.Value, a.Value.Adapt<VariableBasicData>()); });
         }
     }
 
@@ -77,7 +77,7 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
     /// </summary>
     /// <param name="deviceRunTime">设备运行时对象</param>
     /// <param name="deviceData">设备数据对象</param>
-    protected virtual void DeviceChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
+    protected virtual void DeviceChange(DeviceRunTime deviceRunTime, DeviceBasicData deviceData)
     {
     }
 
@@ -138,7 +138,7 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
                         // 上传所有设备信息
                         foreach (var deviceRuntime in CollectDevices)
                         {
-                            DeviceChange(deviceRuntime.Value, deviceRuntime.Value.Adapt<DeviceData>());
+                            DeviceChange(deviceRuntime.Value, deviceRuntime.Value.Adapt<DeviceBasicData>());
                         }
                     }
                 }
@@ -177,7 +177,7 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
     /// </summary>
     /// <param name="deviceRunTime">设备运行时对象</param>
     /// <param name="deviceData">设备数据对象</param>
-    private void DeviceStatusChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
+    private void DeviceStatusChange(DeviceRunTime deviceRunTime, DeviceBasicData deviceData)
     {
         // 如果当前设备已停止运行，则直接返回，不进行处理
         if (!CurrentDevice.KeepRun)
@@ -197,7 +197,7 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
     /// </summary>
     /// <param name="variableRunTime">变量运行时对象</param>
     /// <param name="variable">变量数据对象</param>
-    private void VariableValueChange(VariableRunTime variableRunTime, VariableData variable)
+    private void VariableValueChange(VariableRunTime variableRunTime, VariableBasicData variable)
     {
         // 如果当前设备已停止运行，则直接返回，不进行处理
         if (!CurrentDevice.KeepRun)

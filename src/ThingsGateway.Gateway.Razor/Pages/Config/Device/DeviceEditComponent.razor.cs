@@ -185,7 +185,7 @@ public partial class DeviceEditComponent
         }
         else if (pname == nameof(BusinessPropertyWithCacheIntervalScript.BigTextScriptVariableModel))
         {
-            data = new List<VariableData>() { new() {
+            data = new List<VariableBasicData>() { new() {
                     Name = "testName",
                     DeviceName = "testDevice",
                     Value = "1",
@@ -214,7 +214,7 @@ public partial class DeviceEditComponent
         }
         else if (pname == nameof(BusinessPropertyWithCacheIntervalScript.BigTextScriptDeviceModel))
         {
-            data = new List<DeviceData>() { new() {
+            data = new List<DeviceBasicData>() { new() {
                     Name = "testDevice",
                     ActiveTime = DateTime.Now,
                     Remark1="1",

@@ -161,7 +161,7 @@ public class VariableRunTime : Variable, IVariable
     /// <param name="value"></param>
     /// <param name="dateTime"></param>
     /// <param name="isOnline"></param>
-    public OperResult SetValue(object? value, DateTime dateTime = default, bool isOnline = true)
+    public OperResult SetValue(object? value, DateTime dateTime, bool isOnline = true)
     {
         IsOnline = isOnline;
         RawValue = value;

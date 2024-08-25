@@ -193,6 +193,7 @@ public class OpcUaMaster : CollectBase
     /// <inheritdoc/>
     protected override async ValueTask<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
     {
+        DateTime time = DateTime.Now;
         var addresss = deviceVariableSourceRead.VariableRunTimes.Where(a => !a.RegisterAddress.IsNullOrEmpty()).Select(a => a.RegisterAddress!).ToArray();
         try
         {
@@ -217,7 +218,6 @@ public class OpcUaMaster : CollectBase
                         }
 
                         var isGood = StatusCode.IsGood(data.Item2.StatusCode);
-                        DateTime time = default;
                         if (_driverProperties.SourceTimestampEnable)
                         {
                             time = data.Item2.SourceTimestamp.ToLocalTime();
@@ -286,6 +286,7 @@ public class OpcUaMaster : CollectBase
 
     private void DataChangedHandler((VariableNode variableNode, DataValue dataValue, JToken jToken) data)
     {
+        DateTime time = DateTime.Now;
         try
         {
             if (!CurrentDevice.KeepRun)
@@ -314,7 +315,6 @@ public class OpcUaMaster : CollectBase
                 value = data.jToken;
             }
             var isGood = StatusCode.IsGood(data.dataValue.StatusCode);
-            DateTime time = default;
             if (_driverProperties.SourceTimestampEnable)
             {
                 time = data.dataValue.SourceTimestamp.ToLocalTime();

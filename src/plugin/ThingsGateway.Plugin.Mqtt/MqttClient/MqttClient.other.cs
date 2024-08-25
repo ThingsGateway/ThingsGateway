@@ -22,13 +22,14 @@ using ThingsGateway.Foundation.Extension.Collection;
 using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.Json.Extension;
 using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.X.Extension;
 
 namespace ThingsGateway.Plugin.Mqtt;
 
 /// <summary>
 /// MqttClient
 /// </summary>
-public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableData, DeviceData, AlarmVariable>
+public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableData, DeviceBasicData, AlarmVariable>
 {
     private IMqttClient _mqttClient;
 
@@ -40,13 +41,16 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
     protected override void AlarmChange(AlarmVariable alarmVariable)
     {
-        AddQueueAlarmModel(new(alarmVariable));
+        if (!_businessPropertyWithCacheIntervalScript.AlarmTopic.IsNullOrWhiteSpace())
+            AddQueueAlarmModel(new(alarmVariable));
         base.AlarmChange(alarmVariable);
     }
 
-    protected override void DeviceChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
+    protected override void DeviceChange(DeviceRunTime deviceRunTime, DeviceBasicData deviceData)
     {
-        AddQueueDevModel(new(deviceData));
+        if (!_businessPropertyWithCacheIntervalScript.DeviceTopic.IsNullOrWhiteSpace())
+            AddQueueDevModel(new(deviceData));
+
         base.DeviceChange(deviceRunTime, deviceData);
     }
 
@@ -55,8 +59,10 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         return UpdateAlarmModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override ValueTask<OperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceData>> item, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult> UpdateDevModel(IEnumerable<CacheDBItem<DeviceBasicData>> item, CancellationToken cancellationToken)
     {
+
+
         return UpdateDevModel(item.Select(a => a.Value), cancellationToken);
     }
 
@@ -65,9 +71,10 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override void VariableChange(VariableRunTime variableRunTime, VariableData variable)
+    protected override void VariableChange(VariableRunTime variableRunTime, VariableBasicData variable)
     {
-        AddQueueVarModel(new(variable));
+        if (!_businessPropertyWithCacheIntervalScript.VariableTopic.IsNullOrWhiteSpace())
+            AddQueueVarModel(new(variable));
         base.VariableChange(variableRunTime, variable);
     }
 
@@ -102,8 +109,43 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         return Update(topicJsonList, cancellationToken);
     }
 
-    private ValueTask<OperResult> UpdateDevModel(IEnumerable<DeviceData> item, CancellationToken cancellationToken)
+    private ValueTask<OperResult> UpdateDevModel(IEnumerable<DeviceBasicData> item, CancellationToken cancellationToken)
     {
+        if (_driverPropertys.RpcWriteTopic == "v1/gateway/rpc")
+        {
+
+            List<TopicJson> topicJsonTBList = new();
+
+            foreach (var deviceBasicData in item)
+            {
+                if (deviceBasicData.DeviceStatus == DeviceStatusEnum.OnLine)
+                {
+                    var topicJson = new TopicJson()
+                    {
+                        Topic = "v1/gateway/connect",
+                        Json = new
+                        {
+                            device = deviceBasicData.Name,
+                        }.ToJsonNetString()
+                    };
+                    topicJsonTBList.Add(topicJson);
+                }
+                else
+                {
+                    var topicJson = new TopicJson()
+                    {
+                        Topic = "v1/gateway/disconnect",
+                        Json = new
+                        {
+                            device = deviceBasicData.Name,
+                        }.ToJsonNetString()
+                    };
+                    topicJsonTBList.Add(topicJson);
+                }
+
+            }
+            return Update(topicJsonTBList, cancellationToken);
+        }
         List<TopicJson> topicJsonList = GetDeviceData(item);
         return Update(topicJsonList, cancellationToken);
     }
@@ -121,7 +163,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         //保留消息
         //分解List，避免超出mqtt字节大小限制
         var varData = CurrentDevice.VariableRunTimes.Select(a => a.Value).Adapt<List<VariableData>>().ChunkBetter(_driverPropertys.SplitSize);
-        var devData = CollectDevices.Select(a => a.Value).Adapt<List<DeviceData>>().ChunkBetter(_driverPropertys.SplitSize);
+        var devData = CollectDevices.Select(a => a.Value).Adapt<List<DeviceBasicData>>().ChunkBetter(_driverPropertys.SplitSize);
         var alramData = GlobalData.ReadOnlyRealAlarmVariables.Select(a => a.Value).Adapt<List<AlarmVariable>>().ChunkBetter(_driverPropertys.SplitSize);
         foreach (var item in varData)
         {
@@ -189,29 +231,75 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
             return;
         }
 
-        if (!_driverPropertys.DeviceRpcEnable || string.IsNullOrEmpty(args.ClientId))
+        if (!_driverPropertys.DeviceRpcEnable)
             return;
-        var t = string.Format(TgMqttRpcClientTopicGenerationStrategy.RpcTopic, _driverPropertys.RpcWriteTopic);
-        if (MqttTopicFilterComparer.Compare(args.ApplicationMessage.Topic, t) != MqttTopicFilterCompareResult.IsMatch)
-            return;
-        var rpcDatas = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonNetString<Dictionary<string, JToken>>();
-        if (rpcDatas == null)
-            return;
-        Dictionary<string, OperResult> mqttRpcResult = await GetResult(args, rpcDatas).ConfigureAwait(false);
-        try
+
+        Dictionary<string, JToken> rpcDatas = null;
+
+        //适配 ThingsBoardRp
+        if (args.ApplicationMessage.Topic == "v1/gateway/rpc")
         {
-            var isConnect = await TryMqttClientAsync(CancellationToken.None).ConfigureAwait(false);
-            if (isConnect.IsSuccess)
+            var thingsBoardRpcData = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonNetString<ThingsBoardRpcData>();
+            if (thingsBoardRpcData == null)
+                return;
+            rpcDatas = thingsBoardRpcData.data.@params.ToDictionary(a => a.Key, a => JToken.Parse(a.Value));
+            if (rpcDatas == null)
+                return;
+
+            Dictionary<string, OperResult> mqttRpcResult = await GetResult(args, rpcDatas).ConfigureAwait(false);
+            try
             {
-                var variableMessage = new MqttApplicationMessageBuilder()
-.WithTopic($"{args.ApplicationMessage.Topic}/Response")
-.WithPayload(mqttRpcResult.ToJsonNetString()).Build();
-                await _mqttClient.PublishAsync(variableMessage).ConfigureAwait(false);
+                var isConnect = await TryMqttClientAsync(CancellationToken.None).ConfigureAwait(false);
+                if (isConnect.IsSuccess)
+                {
+                    ThingsBoardRpcResponseData thingsBoardRpcResponseData = new();
+                    thingsBoardRpcResponseData.device = thingsBoardRpcData.device;
+                    thingsBoardRpcResponseData.id = thingsBoardRpcData.data.id;
+                    thingsBoardRpcResponseData.data.success = mqttRpcResult.All(a => a.Value.IsSuccess);
+                    thingsBoardRpcResponseData.data.message = mqttRpcResult.Select(a => a.Value.ErrorMessage).ToJsonNetString();
+
+                    var variableMessage = new MqttApplicationMessageBuilder()
+.WithTopic($"{args.ApplicationMessage.Topic}")
+.WithPayload(thingsBoardRpcResponseData.ToJsonNetString()).Build();
+                    await _mqttClient.PublishAsync(variableMessage).ConfigureAwait(false);
+
+
+                }
+            }
+            catch
+            {
             }
         }
-        catch
+        else
         {
+            var t = string.Format(TGMqttRpcClientTopicGenerationStrategy.RpcTopic, _driverPropertys.RpcWriteTopic);
+            if (MqttTopicFilterComparer.Compare(args.ApplicationMessage.Topic, t) != MqttTopicFilterCompareResult.IsMatch)
+                return;
+            rpcDatas = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonNetString<Dictionary<string, JToken>>();
+            if (rpcDatas == null)
+                return;
+
+            Dictionary<string, OperResult> mqttRpcResult = await GetResult(args, rpcDatas).ConfigureAwait(false);
+            try
+            {
+                var isConnect = await TryMqttClientAsync(CancellationToken.None).ConfigureAwait(false);
+                if (isConnect.IsSuccess)
+                {
+
+                    var variableMessage = new MqttApplicationMessageBuilder()
+.WithTopic($"{args.ApplicationMessage.Topic}/Response")
+.WithPayload(mqttRpcResult.ToJsonNetString()).Build();
+                    await _mqttClient.PublishAsync(variableMessage).ConfigureAwait(false);
+
+
+                }
+            }
+            catch
+            {
+            }
         }
+
+
     }
 
     private async Task MqttClient_ConnectedAsync(MQTTnet.Client.MqttClientConnectedEventArgs args)

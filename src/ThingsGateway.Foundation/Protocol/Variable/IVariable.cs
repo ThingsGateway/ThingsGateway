@@ -57,5 +57,5 @@ public interface IVariable
     /// <param name="dateTime">采集时间</param>
     /// <param name="isOnline">是否在线</param>
     /// <returns></returns>
-    OperResult SetValue(object? value, DateTime dateTime = default, bool isOnline = true);
+    OperResult SetValue(object? value, DateTime dateTime, bool isOnline = true);
 }

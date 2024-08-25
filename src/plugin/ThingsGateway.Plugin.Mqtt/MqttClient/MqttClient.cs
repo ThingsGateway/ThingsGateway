@@ -19,7 +19,7 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// <summary>
 /// MqttClient,RPC方法适配mqttNet
 /// </summary>
-public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableData, DeviceData, AlarmVariable>
+public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableData, DeviceBasicData, AlarmVariable>
 {
     private readonly MqttClientProperty _driverPropertys = new();
     private readonly MqttClientVariableProperty _variablePropertys = new();
@@ -46,18 +46,35 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
             _mqttClientOptions = mqttClientOptionsBuilder.WithTcpServer(_driverPropertys.IP, _driverPropertys.Port)//服务器
            .Build();
 
-        _mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
-            .WithTopicFilter(
-                f =>
-                {
-                    f.WithTopic(string.Format(TgMqttRpcClientTopicGenerationStrategy.RpcTopic, _driverPropertys.RpcWriteTopic));
-                })
-           .WithTopicFilter(
+        var mqttClientSubscribeOptionsBuilder = mqttFactory.CreateSubscribeOptionsBuilder();
+        if (!_driverPropertys.RpcWriteTopic.IsNullOrWhiteSpace())
+        {
+            if (_driverPropertys.RpcWriteTopic == "v1/gateway/rpc")
+            {
+                mqttClientSubscribeOptionsBuilder = mqttClientSubscribeOptionsBuilder.WithTopicFilter(
+     f =>
+     {
+         f.WithTopic(_driverPropertys.RpcWriteTopic);
+     });
+            }
+            else
+            {
+                mqttClientSubscribeOptionsBuilder = mqttClientSubscribeOptionsBuilder.WithTopicFilter(
+                    f =>
+                    {
+                        f.WithTopic(string.Format(TGMqttRpcClientTopicGenerationStrategy.RpcTopic, _driverPropertys.RpcWriteTopic));
+                    });
+            }
+        }
+        if (!_driverPropertys.RpcQuestTopic.IsNullOrWhiteSpace())
+        {
+            mqttClientSubscribeOptionsBuilder = mqttClientSubscribeOptionsBuilder.WithTopicFilter(
                 f =>
                 {
                     f.WithTopic(_driverPropertys.RpcQuestTopic);
-                })
-            .Build();
+                });
+        }
+        _mqttSubscribeOptions = mqttClientSubscribeOptionsBuilder.Build();
         _mqttClient = mqttFactory.CreateMqttClient();
         _mqttClient.ConnectedAsync += MqttClient_ConnectedAsync;
         _mqttClient.ApplicationMessageReceivedAsync += MqttClient_ApplicationMessageReceivedAsync;

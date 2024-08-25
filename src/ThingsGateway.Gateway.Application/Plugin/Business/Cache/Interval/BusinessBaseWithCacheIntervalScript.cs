@@ -18,7 +18,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 业务插件，额外实现脚本切换实体
 /// </summary>
-public abstract partial class BusinessBaseWithCacheIntervalScript<VarModel, DevModel, AlarmModel> : BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel, AlarmModel>
+public abstract partial class BusinessBaseWithCacheIntervalScript<VarModel, DevModel, AlarmModel> : BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel, AlarmModel> where DevModel : class where VarModel : class where AlarmModel : class
 {
     protected override BusinessPropertyWithCacheInterval _businessPropertyWithCacheInterval => _businessPropertyWithCacheIntervalScript;
 
@@ -58,7 +58,7 @@ public abstract partial class BusinessBaseWithCacheIntervalScript<VarModel, DevM
 
     #region 封装方法
 
-    protected List<TopicJson> GetAlarms(IEnumerable<AlarmVariable> item)
+    protected List<TopicJson> GetAlarms(IEnumerable<AlarmModel> item)
     {
         IEnumerable<dynamic>? data = item.GetDynamicModel(_businessPropertyWithCacheIntervalScript.BigTextScriptAlarmModel);
         List<TopicJson> topicJsonList = new List<TopicJson>();
@@ -122,7 +122,7 @@ public abstract partial class BusinessBaseWithCacheIntervalScript<VarModel, DevM
         return topicJsonList;
     }
 
-    protected List<TopicJson> GetDeviceData(IEnumerable<DeviceData> item)
+    protected List<TopicJson> GetDeviceData(IEnumerable<DevModel> item)
     {
         IEnumerable<dynamic>? data = item.GetDynamicModel(_businessPropertyWithCacheIntervalScript.BigTextScriptDeviceModel);
         List<TopicJson> topicJsonList = new List<TopicJson>();
@@ -187,7 +187,7 @@ public abstract partial class BusinessBaseWithCacheIntervalScript<VarModel, DevM
         return topicJsonList;
     }
 
-    protected List<TopicJson> GetVariable(IEnumerable<VariableData> item)
+    protected List<TopicJson> GetVariable(IEnumerable<VarModel> item)
     {
         IEnumerable<dynamic>? data = item.GetDynamicModel(_businessPropertyWithCacheIntervalScript.BigTextScriptVariableModel);
         List<TopicJson> topicJsonList = new List<TopicJson>();

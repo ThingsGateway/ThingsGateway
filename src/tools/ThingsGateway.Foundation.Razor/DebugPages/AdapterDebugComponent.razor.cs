@@ -80,7 +80,8 @@ public partial class AdapterDebugComponent : AdapterDebugBase
                         if (!result1.IsSuccess)
                         {
                             item.LastErrorMessage = result1.ErrorMessage;
-                            item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+                            var time = DateTime.Now;
+                            item.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
                             Plc.Logger.Warning(result1.ToString());
                         }
                     }
@@ -92,7 +93,8 @@ public partial class AdapterDebugComponent : AdapterDebugBase
                 else
                 {
                     item.LastErrorMessage = result.ErrorMessage;
-                    item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+                    var time = DateTime.Now;
+                    item.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
                     Plc.Logger.Warning(result.ToString());
                 }
             }

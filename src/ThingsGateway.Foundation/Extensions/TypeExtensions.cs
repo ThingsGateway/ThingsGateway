@@ -18,6 +18,7 @@ namespace ThingsGateway.Foundation.TypeExtension;
 /// </summary>
 public static class TypeExtensions
 {
+
     /// <summary>
     /// IsNullable
     /// </summary>

@@ -11,7 +11,6 @@
     "BigTextScriptDeviceModel": "设备上传脚本",
     "BigTextScriptVariableModel": "变量上传脚本",
     "BigTextScriptAlarmModel": "报警上传脚本",
-
     "IsDeviceList": "设备状态列表上传",
     "IsVariableList": "变量列表上传",
     "IsAlarmList": "报警列表上传",

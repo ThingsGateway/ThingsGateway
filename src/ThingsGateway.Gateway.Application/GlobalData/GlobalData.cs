@@ -19,14 +19,14 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 /// <param name="deviceRunTime">设备运行时对象</param>
 /// <param name="deviceData">设备数据对象</param>
-public delegate void DelegateOnDeviceChanged(DeviceRunTime deviceRunTime, DeviceData deviceData);
+public delegate void DelegateOnDeviceChanged(DeviceRunTime deviceRunTime, DeviceBasicData deviceData);
 
 /// <summary>
 /// 变量改变事件委托，用于通知变量值发生变化时的事件
 /// </summary>
 /// <param name="variableRunTime">变量运行时对象</param>
 /// <param name="variableData">变量数据对象</param>
-public delegate void VariableChangeEventHandler(VariableRunTime variableRunTime, VariableData variableData);
+public delegate void VariableChangeEventHandler(VariableRunTime variableRunTime, VariableBasicData variableData);
 
 /// <summary>
 /// 变量采集事件委托，用于通知变量进行采集时的事件
@@ -112,7 +112,7 @@ public static class GlobalData
         if (DeviceStatusChangeEvent != null)
         {
             // 触发设备状态变化事件，并将设备运行时对象转换为设备数据对象进行传递
-            DeviceStatusChangeEvent.Invoke(deviceRunTime, deviceRunTime.Adapt<DeviceData>());
+            DeviceStatusChangeEvent.Invoke(deviceRunTime, deviceRunTime.Adapt<DeviceBasicData>());
         }
     }
 
@@ -138,7 +138,7 @@ public static class GlobalData
         if (VariableValueChangeEvent != null)
         {
             // 触发变量值变化事件，并将变量运行时对象转换为变量数据对象进行传递
-            VariableValueChangeEvent.Invoke(variableRunTime, variableRunTime.Adapt<VariableData>());
+            VariableValueChangeEvent.Invoke(variableRunTime, variableRunTime.Adapt<VariableBasicData>());
         }
     }
 }

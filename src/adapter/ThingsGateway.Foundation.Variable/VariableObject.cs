@@ -120,14 +120,16 @@ public abstract class VariableObject
                     if (!result1.IsSuccess)
                     {
                         item.LastErrorMessage = result1.ErrorMessage;
-                        item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+                        var time = DateTime.Now;
+                        item.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
                         return new OperResult(result1);
                     }
                 }
                 else
                 {
                     item.LastErrorMessage = result.ErrorMessage;
-                    item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+                    var time = DateTime.Now;
+                    item.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
                     return new OperResult(result);
                 }
             }

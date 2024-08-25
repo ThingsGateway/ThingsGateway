@@ -111,6 +111,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
             await _mqttServer.StartAsync().ConfigureAwait(false);
         }
         await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
+
     }
 
     protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)

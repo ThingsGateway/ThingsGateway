@@ -193,6 +193,7 @@ public class OpcDaMaster : CollectBase
 
     private void DataChangedHandler(string name, int serverGroupHandle, List<ItemReadResult> values)
     {
+        DateTime time = DateTime.Now;
         try
         {
             if (!CurrentDevice.KeepRun)
@@ -221,7 +222,6 @@ public class OpcDaMaster : CollectBase
                         return;
                     var value = data.Value;
                     var quality = data.Quality;
-                    DateTime time = default;
                     if (_driverProperties.SourceTimestampEnable)
                     {
                         time = data.TimeStamp.ToLocalTime();

@@ -28,6 +28,7 @@ using ThingsGateway.Foundation.Extension.Collection;
 using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.Json.Extension;
 using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.X.Extension;
 
 namespace ThingsGateway.Plugin.Mqtt;
 
@@ -41,13 +42,15 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
 
     protected override void AlarmChange(AlarmVariable alarmVariable)
     {
-        AddQueueAlarmModel(new(alarmVariable));
+        if (!_businessPropertyWithCacheIntervalScript.AlarmTopic.IsNullOrWhiteSpace())
+            AddQueueAlarmModel(new(alarmVariable));
         base.AlarmChange(alarmVariable);
     }
 
-    protected override void DeviceChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
+    protected override void DeviceChange(DeviceRunTime deviceRunTime, DeviceBasicData deviceData)
     {
-        AddQueueDevModel(new(deviceData));
+        if (!_businessPropertyWithCacheIntervalScript.DeviceTopic.IsNullOrEmpty())
+            AddQueueDevModel(new(deviceData));
         base.DeviceChange(deviceRunTime, deviceData);
     }
 
@@ -66,9 +69,10 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override void VariableChange(VariableRunTime variableRunTime, VariableData variable)
+    protected override void VariableChange(VariableRunTime variableRunTime, VariableBasicData variable)
     {
-        AddQueueVarModel(new(variable));
+        if (!_businessPropertyWithCacheIntervalScript.VariableTopic.IsNullOrEmpty())
+            AddQueueVarModel(new(variable));
         base.VariableChange(variableRunTime, variable);
     }
 
@@ -159,34 +163,44 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         var devData = CollectDevices.Select(a => a.Value).Adapt<List<DeviceData>>().ChunkBetter(_driverPropertys.SplitSize);
         var alramData = GlobalData.ReadOnlyRealAlarmVariables.Select(a => a.Value).Adapt<List<AlarmVariable>>().ChunkBetter(_driverPropertys.SplitSize);
         List<MqttApplicationMessage> Messages = new();
-        foreach (var item in varData)
+
+        if (!_businessPropertyWithCacheIntervalScript.VariableTopic.IsNullOrEmpty())
         {
-            List<TopicJson> topicJsonList = GetVariable(item);
-            foreach (var topicJson in topicJsonList)
+            foreach (var item in varData)
             {
-                Messages.Add(new MqttApplicationMessageBuilder()
-.WithTopic(topicJson.Topic)
-.WithPayload(topicJson.Json).Build());
+                List<TopicJson> topicJsonList = GetVariable(item);
+                foreach (var topicJson in topicJsonList)
+                {
+                    Messages.Add(new MqttApplicationMessageBuilder()
+    .WithTopic(topicJson.Topic)
+    .WithPayload(topicJson.Json).Build());
+                }
             }
         }
-        foreach (var item in devData)
+        if (!_businessPropertyWithCacheIntervalScript.DeviceTopic.IsNullOrEmpty())
         {
-            List<TopicJson> topicJsonList = GetDeviceData(item);
-            foreach (var topicJson in topicJsonList)
+            foreach (var item in devData)
             {
-                Messages.Add(new MqttApplicationMessageBuilder()
-.WithTopic(topicJson.Topic)
-.WithPayload(topicJson.Json).Build());
+                List<TopicJson> topicJsonList = GetDeviceData(item);
+                foreach (var topicJson in topicJsonList)
+                {
+                    Messages.Add(new MqttApplicationMessageBuilder()
+    .WithTopic(topicJson.Topic)
+    .WithPayload(topicJson.Json).Build());
+                }
             }
         }
-        foreach (var item in alramData)
+        if (!_businessPropertyWithCacheIntervalScript.AlarmTopic.IsNullOrEmpty())
         {
-            List<TopicJson> topicJsonList = GetAlarms(item);
-            foreach (var topicJson in topicJsonList)
+            foreach (var item in alramData)
             {
-                Messages.Add(new MqttApplicationMessageBuilder()
-.WithTopic(topicJson.Topic)
-.WithPayload(topicJson.Json).Build());
+                List<TopicJson> topicJsonList = GetAlarms(item);
+                foreach (var topicJson in topicJsonList)
+                {
+                    Messages.Add(new MqttApplicationMessageBuilder()
+    .WithTopic(topicJson.Topic)
+    .WithPayload(topicJson.Json).Build());
+                }
             }
         }
         return Messages;
@@ -202,7 +216,9 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
     {
         if (!_driverPropertys.DeviceRpcEnable || string.IsNullOrEmpty(args.ClientId))
             return;
-        var t = string.Format(TgMqttRpcClientTopicGenerationStrategy.RpcTopic, _driverPropertys.RpcWriteTopic);
+
+        if (_driverPropertys.RpcWriteTopic.IsNullOrWhiteSpace()) return;
+        var t = string.Format(TGMqttRpcClientTopicGenerationStrategy.RpcTopic, _driverPropertys.RpcWriteTopic);
         if (MqttTopicFilterComparer.Compare(args.ApplicationMessage.Topic, t) != MqttTopicFilterCompareResult.IsMatch)
             return;
         var rpcDatas = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonNetString<Dictionary<string, JToken>>();

@@ -370,7 +370,8 @@ public abstract class CollectBase : DriverBase
                         readResultCount.deviceSourceVariableFailedNum++;
                         variableSourceRead.LastErrorMessage = readResult.ErrorMessage;
                         CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, readResult.ErrorMessage);
-                        variableSourceRead.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+                        var time = DateTime.Now;
+                        variableSourceRead.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
                     }
                 }
                 if (delay)
@@ -408,7 +409,8 @@ public abstract class CollectBase : DriverBase
                             }
                             item.LastErrorMessage = exception.Message;
                             CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, exception.Message);
-                            item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+                            var time = DateTime.Now;
+                            item.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
                         }
                         foreach (var item in CurrentDevice.ReadVariableMethods)
                         {
@@ -419,7 +421,8 @@ public abstract class CollectBase : DriverBase
                             }
                             item.LastErrorMessage = exception.Message;
                             CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, exception.Message);
-                            item.Variable.SetValue(null, isOnline: false);
+                            var time = DateTime.Now;
+                            item.Variable.SetValue(null, time, isOnline: false);
                         }
 
                         return true;
@@ -687,17 +690,18 @@ public abstract class CollectBase : DriverBase
                 // 如果方法有返回值，并且是读取操作
                 if (method.HasReturn && isRead)
                 {
+                    var time = DateTime.Now;
                     if (result.IsSuccess == true)
                     {
                         // 将结果序列化并设置到变量中
-                        var variableResult = variableMethod.Variable.SetValue(result.Content);
+                        var variableResult = variableMethod.Variable.SetValue(result.Content, time);
                         if (!variableResult.IsSuccess)
                             variableMethod.LastErrorMessage = result.ErrorMessage;
                     }
                     else
                     {
                         // 如果读取操作失败，则将变量标记为离线
-                        var variableResult = variableMethod.Variable.SetValue(null, isOnline: false);
+                        var variableResult = variableMethod.Variable.SetValue(null, time, isOnline: false);
                         if (!variableResult.IsSuccess)
                             variableMethod.LastErrorMessage = result.ErrorMessage;
                     }

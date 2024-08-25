@@ -295,6 +295,8 @@ public partial class EditorFormObject<TModel> : IShowLabel
             }
         }
     }
+
+
     private RenderFragment AutoGenerateTemplate(IEditorItem item) => builder =>
     {
         if (IsDisplay || !item.CanWrite(Model.GetType(), ItemChangedType, IsSearch.Value))

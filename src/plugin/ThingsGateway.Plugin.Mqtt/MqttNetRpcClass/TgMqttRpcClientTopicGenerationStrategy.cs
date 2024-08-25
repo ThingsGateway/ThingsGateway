@@ -12,7 +12,7 @@ using MQTTnet.Extensions.Rpc;
 
 namespace ThingsGateway.Plugin.Mqtt;
 
-public sealed class TgMqttRpcClientTopicGenerationStrategy : IMqttRpcClientTopicGenerationStrategy
+public sealed class TGMqttRpcClientTopicGenerationStrategy : IMqttRpcClientTopicGenerationStrategy
 {
     public const string RpcTopic = "{0}/+";
 

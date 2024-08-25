@@ -27,6 +27,7 @@ public static class VariableValuePraseExtensions
     /// <returns>解析结果</returns>
     public static OperResult PraseStructContent<T>(this IEnumerable<T> variables, IProtocol protocol, byte[] buffer, bool exWhenAny) where T : IVariable
     {
+        var time = DateTime.Now;
         foreach (var variable in variables)
         {
             IThingsGatewayBitConverter byteConverter = variable.ThingsGatewayBitConverter;
@@ -48,7 +49,7 @@ public static class VariableValuePraseExtensions
         return new();
         OperResult Set(IVariable organizedVariable, object num)
         {
-            return organizedVariable.SetValue(num);
+            return organizedVariable.SetValue(num, time);
         }
     }
 }

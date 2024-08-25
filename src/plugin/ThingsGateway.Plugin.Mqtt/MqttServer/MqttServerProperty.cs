@@ -8,8 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.NewLife.X.Extension;
-
 namespace ThingsGateway.Plugin.Mqtt;
 
 /// <summary>
@@ -47,24 +45,10 @@ public class MqttServerProperty : BusinessPropertyWithCacheIntervalScript
     [DynamicProperty]
     public bool DeviceRpcEnable { get; set; }
 
-    private string rpcwriteTopic = "RpcWrite";
 
     /// <summary>
     /// Rpc写入Topic
     /// </summary>
     [DynamicProperty(Remark = "实际的写入主题为固定通配 {RpcWrite/+} ，其中RpcWrite为该属性填入内容，+通配符是请求GUID值；返回结果主题会在主题后添加Response , 也就是{RpcWrite/+/Response}")]
-    public string RpcWriteTopic
-    {
-        get
-        { return rpcwriteTopic; }
-        set
-        {
-            if (value.IsNullOrWhiteSpace())
-            {
-                throw new ArgumentNullException(nameof(RpcWriteTopic));
-            }
-
-            rpcwriteTopic = value;
-        }
-    }
+    public string RpcWriteTopic { get; set; }
 }

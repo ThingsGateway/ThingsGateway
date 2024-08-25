@@ -85,7 +85,8 @@ internal class ModbusMasterTest
                     if (!result1.IsSuccess)
                     {
                         item.LastErrorMessage = result1.ErrorMessage;
-                        item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+                        var time = DateTime.Now;
+                        item.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
                         modbusMaster.Logger.Warning(result1.ToString());
                     }
                 }
@@ -97,7 +98,8 @@ internal class ModbusMasterTest
             else
             {
                 item.LastErrorMessage = result.ErrorMessage;
-                item.VariableRunTimes.ForEach(a => a.SetValue(null, isOnline: false));
+                var time = DateTime.Now;
+                item.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
                 modbusMaster.Logger.Warning(result.ToString());
             }
         }

@@ -54,8 +54,46 @@ public static class PluginServiceUtil
 
         if (source is ITableColumn source1 && dest is ITableColumn dest1)
         {
-            source1.CopyValue(dest1);
+            CopyValue(dest1, source1);
         }
+    }
+    private static void CopyValue(this ITableColumn dest, ITableColumn source)
+    {
+        if (source.Align.HasValue) dest.Align = source.Align;
+        if (source.TextWrap.HasValue) dest.TextWrap = source.TextWrap;
+        if (!string.IsNullOrEmpty(source.CssClass)) dest.CssClass = source.CssClass;
+        if (source.DefaultSort) dest.DefaultSort = source.DefaultSort;
+        if (source.DefaultSortOrder != SortOrder.Unset) dest.DefaultSortOrder = source.DefaultSortOrder;
+        if (source.Filter != null) dest.Filter = source.Filter;
+        if (source.Filterable.HasValue) dest.Filterable = source.Filterable;
+        if (source.FilterTemplate != null) dest.FilterTemplate = source.FilterTemplate;
+        if (source.Fixed) dest.Fixed = source.Fixed;
+        if (source.FormatString != null) dest.FormatString = source.FormatString;
+        if (source.Formatter != null) dest.Formatter = source.Formatter;
+        if (source.HeaderTemplate != null) dest.HeaderTemplate = source.HeaderTemplate;
+        if (source.OnCellRender != null) dest.OnCellRender = source.OnCellRender;
+        if (source.Searchable.HasValue) dest.Searchable = source.Searchable;
+        if (source.SearchTemplate != null) dest.SearchTemplate = source.SearchTemplate;
+        if (source.ShownWithBreakPoint != BreakPoint.None) dest.ShownWithBreakPoint = source.ShownWithBreakPoint;
+        if (source.ShowTips.HasValue) dest.ShowTips = source.ShowTips = true;
+        if (source.Sortable.HasValue) dest.Sortable = source.Sortable;
+        if (source.Template != null) dest.Template = source.Template;
+        if (source.TextEllipsis.HasValue) dest.TextEllipsis = source.TextEllipsis;
+        if (!source.Visible.HasValue) dest.Visible = source.Visible;
+        if (source.Width != null) dest.Width = source.Width;
+        if (source.ShowCopyColumn.HasValue) dest.ShowCopyColumn = source.ShowCopyColumn;
+        if (source.HeaderTextWrap) dest.HeaderTextWrap = source.HeaderTextWrap;
+        if (!string.IsNullOrEmpty(source.HeaderTextTooltip)) dest.HeaderTextTooltip = source.HeaderTextTooltip;
+        if (source.ShowHeaderTooltip) dest.ShowHeaderTooltip = source.ShowHeaderTooltip;
+        if (source.HeaderTextEllipsis) dest.HeaderTextEllipsis = source.HeaderTextEllipsis;
+        if (source.IsMarkupString) dest.IsMarkupString = source.IsMarkupString;
+        if (source.Visible.HasValue) dest.Visible = source.Visible;
+        if (source.IsVisibleWhenAdd.HasValue) dest.IsVisibleWhenAdd = source.IsVisibleWhenAdd;
+        if (source.IsVisibleWhenEdit.HasValue) dest.IsVisibleWhenEdit = source.IsVisibleWhenEdit;
+        if (source.IsReadonlyWhenAdd.HasValue) dest.IsReadonlyWhenAdd = source.IsReadonlyWhenAdd;
+        if (source.IsReadonlyWhenEdit.HasValue) dest.IsReadonlyWhenEdit = source.IsReadonlyWhenEdit;
+        if (source.GetTooltipTextCallback != null) dest.GetTooltipTextCallback = source.GetTooltipTextCallback;
+        if (source.CustomSearch != null) dest.CustomSearch = source.CustomSearch;
     }
 
     /// <summary>
@@ -74,9 +112,10 @@ public static class PluginServiceUtil
             var classAttribute = prop.GetCustomAttribute<DynamicPropertyAttribute>(false);
             var autoGenerateColumnAttribute = prop.GetCustomAttribute<AutoGenerateColumnAttribute>(true);
             if (classAttribute == null) continue;//删除不需要显示的属性
+
             IEditorItem? tc;
             var displayName = classAttribute.Description ?? BootstrapBlazor.Components.Utility.GetDisplayName(type, prop.Name);
-            tc = new InternalEditorItem(prop.Name, prop.PropertyType, displayName);
+            tc = new InternalTableColumn(prop.Name, prop.PropertyType, displayName);
             if (autoGenerateColumnAttribute != null)
                 CopyValue(tc, autoGenerateColumnAttribute);
             tc.ComponentParameters ??= new Dictionary<string, object>();
@@ -220,42 +259,4 @@ public static class PluginServiceUtil
         }
     }
 
-    private static void CopyValue(this ITableColumn col, ITableColumn dest)
-    {
-        if (col.Align.HasValue) dest.Align = col.Align;
-        if (col.TextWrap.HasValue) dest.TextWrap = col.TextWrap;
-        if (!string.IsNullOrEmpty(col.CssClass)) dest.CssClass = col.CssClass;
-        if (col.DefaultSort) dest.DefaultSort = col.DefaultSort;
-        if (col.DefaultSortOrder != SortOrder.Unset) dest.DefaultSortOrder = col.DefaultSortOrder;
-        if (col.Filter != null) dest.Filter = col.Filter;
-        if (col.Filterable.HasValue) dest.Filterable = col.Filterable;
-        if (col.FilterTemplate != null) dest.FilterTemplate = col.FilterTemplate;
-        if (col.Fixed) dest.Fixed = col.Fixed;
-        if (col.FormatString != null) dest.FormatString = col.FormatString;
-        if (col.Formatter != null) dest.Formatter = col.Formatter;
-        if (col.HeaderTemplate != null) dest.HeaderTemplate = col.HeaderTemplate;
-        if (col.OnCellRender != null) dest.OnCellRender = col.OnCellRender;
-        if (col.Searchable.HasValue) dest.Searchable = col.Searchable;
-        if (col.SearchTemplate != null) dest.SearchTemplate = col.SearchTemplate;
-        if (col.ShownWithBreakPoint != BreakPoint.None) dest.ShownWithBreakPoint = col.ShownWithBreakPoint;
-        if (col.ShowTips.HasValue) dest.ShowTips = col.ShowTips = true;
-        if (col.Sortable.HasValue) dest.Sortable = col.Sortable;
-        if (col.Template != null) dest.Template = col.Template;
-        if (col.TextEllipsis.HasValue) dest.TextEllipsis = col.TextEllipsis;
-        if (!col.Visible.HasValue) dest.Visible = col.Visible;
-        if (col.Width != null) dest.Width = col.Width;
-        if (col.ShowCopyColumn.HasValue) dest.ShowCopyColumn = col.ShowCopyColumn;
-        if (col.HeaderTextWrap) dest.HeaderTextWrap = col.HeaderTextWrap;
-        if (!string.IsNullOrEmpty(col.HeaderTextTooltip)) dest.HeaderTextTooltip = col.HeaderTextTooltip;
-        if (col.ShowHeaderTooltip) dest.ShowHeaderTooltip = col.ShowHeaderTooltip;
-        if (col.HeaderTextEllipsis) dest.HeaderTextEllipsis = col.HeaderTextEllipsis;
-        if (col.IsMarkupString) dest.IsMarkupString = col.IsMarkupString;
-        if (col.Visible.HasValue) dest.Visible = col.Visible;
-        if (col.IsVisibleWhenAdd.HasValue) dest.IsVisibleWhenAdd = col.IsVisibleWhenAdd;
-        if (col.IsVisibleWhenEdit.HasValue) dest.IsVisibleWhenEdit = col.IsVisibleWhenEdit;
-        if (col.IsReadonlyWhenAdd.HasValue) dest.IsReadonlyWhenAdd = col.IsReadonlyWhenAdd;
-        if (col.IsReadonlyWhenEdit.HasValue) dest.IsReadonlyWhenEdit = col.IsReadonlyWhenEdit;
-        if (col.GetTooltipTextCallback != null) dest.GetTooltipTextCallback = col.GetTooltipTextCallback;
-        if (col.CustomSearch != null) dest.CustomSearch = col.CustomSearch;
-    }
 }

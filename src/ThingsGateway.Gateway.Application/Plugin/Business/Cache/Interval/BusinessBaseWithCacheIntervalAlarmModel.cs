@@ -67,8 +67,8 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
             GlobalData.VariableValueChangeEvent += VariableValueChange;
 
             // 触发一次设备状态变化和变量值变化事件
-            CollectDevices.ForEach(a => { DeviceStatusChange(a.Value, a.Value.Adapt<DeviceData>()); });
-            CurrentDevice.VariableRunTimes.ForEach(a => { VariableValueChange(a.Value, a.Value.Adapt<VariableData>()); });
+            CollectDevices.ForEach(a => { DeviceStatusChange(a.Value, a.Value.Adapt<DeviceBasicData>()); });
+            CurrentDevice.VariableRunTimes.ForEach(a => { VariableValueChange(a.Value, a.Value.Adapt<VariableBasicData>()); });
         }
     }
 
@@ -86,7 +86,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     /// </summary>
     /// <param name="deviceRunTime">设备运行时信息</param>
     /// <param name="deviceData">设备数据</param>
-    protected virtual void DeviceChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
+    protected virtual void DeviceChange(DeviceRunTime deviceRunTime, DeviceBasicData deviceData)
     {
         // 在设备状态变化时执行的自定义逻辑
     }
@@ -131,7 +131,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
                         // 间隔推送全部变量
                         foreach (var variableRuntime in CurrentDevice.VariableRunTimes)
                         {
-                            VariableChange(variableRuntime.Value, variableRuntime.Value.Adapt<VariableData>());
+                            VariableChange(variableRuntime.Value, variableRuntime.Value.Adapt<VariableBasicData>());
                         }
                     }
                 }
@@ -146,7 +146,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
                         // 间隔推送全部设备
                         foreach (var deviceRuntime in CollectDevices)
                         {
-                            DeviceChange(deviceRuntime.Value, deviceRuntime.Value.Adapt<DeviceData>());
+                            DeviceChange(deviceRuntime.Value, deviceRuntime.Value.Adapt<DeviceBasicData>());
                         }
                     }
                 }
@@ -175,7 +175,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     /// </summary>
     /// <param name="variableRunTime">变量运行时信息</param>
     /// <param name="variable">变量数据</param>
-    protected virtual void VariableChange(VariableRunTime variableRunTime, VariableData variable)
+    protected virtual void VariableChange(VariableRunTime variableRunTime, VariableBasicData variable)
     {
         // 在变量状态变化时执行的自定义逻辑
     }
@@ -202,7 +202,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     /// </summary>
     /// <param name="deviceRunTime">设备运行时信息</param>
     /// <param name="deviceData">设备数据</param>
-    private void DeviceStatusChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
+    private void DeviceStatusChange(DeviceRunTime deviceRunTime, DeviceBasicData deviceData)
     {
         if (!CurrentDevice.KeepRun)
             return;
@@ -220,7 +220,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     /// </summary>
     /// <param name="variableRunTime">变量运行时信息</param>
     /// <param name="variable">变量数据</param>
-    private void VariableValueChange(VariableRunTime variableRunTime, VariableData variable)
+    private void VariableValueChange(VariableRunTime variableRunTime, VariableBasicData variable)
     {
         if (!CurrentDevice.KeepRun)
             return;

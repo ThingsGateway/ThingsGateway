@@ -66,8 +66,39 @@
             <div style="overflow-y:auto ;overflow-x:hidden ; height:200px;">
 
                 <DeviceStatus3 Item="@Item"></DeviceStatus3>
-                <EditorFormObject class="mt-2" Items="@Item.PluginPropertyEditorItems" Model=@Item.DriverProperties AutoGenerateAllItem=false IsDisplay LabelWidth="80" RowType="RowType.Inline" ItemsPerRow="3" ShowLabelTooltip="true" @key=Item.DriverProperties.GetHashCode()>
+                <EditorFormObject class="mt-2"   Items="@Item.PluginPropertyEditorItems" Model=@Item.DriverProperties AutoGenerateAllItem=false IsDisplay LabelWidth="80" RowType="RowType.Inline" ItemsPerRow="3" ShowLabelTooltip="true" @key=Item.DriverProperties.GetHashCode()>
+                    <FieldItems>
+                        @if (Item.DriverProperties is BusinessPropertyWithCacheIntervalScript businessProperty)
+                        {
+                            <EditorItem FieldExpression=@(()=>context) Field=@(context)>
 
+                                <EditTemplate Context="value">
+                                    <div class="col-12  col-md-12">
+                                        <Textarea @bind-Value=@businessProperty.BigTextScriptDeviceModel ShowLabelTooltip="true"
+                                                  rows="5" ShowLabel="true" />
+                                        <div class="ms-2 d-flex justify-content-center align-items-center">
+                                       
+                                        </div>
+                                    </div>
+                                    <div class="col-12  col-md-12">
+                                        <Textarea @bind-Value=@businessProperty.BigTextScriptVariableModel ShowLabelTooltip="true"
+                                                  rows="5" ShowLabel="true" />
+                                        <div class="ms-2 d-flex justify-content-center align-items-center">
+                                        
+                                        </div>
+                                    </div>
+                                    <div class="col-12  col-md-12">
+                                        <Textarea @bind-Value=@businessProperty.BigTextScriptAlarmModel ShowLabelTooltip="true"
+                                                  rows="5" ShowLabel="true" />
+                                        <div class="ms-2 d-flex justify-content-center align-items-center">
+                                  
+                                        </div>
+                                    </div>
+
+                                </EditTemplate>
+                            </EditorItem>
+                        }
+                    </FieldItems>
                 </EditorFormObject>
             </div>
         </BodyTemplate>

@@ -31,13 +31,15 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
 
     protected override void AlarmChange(AlarmVariable alarmVariable)
     {
-        AddQueueAlarmModel(new(alarmVariable));
+        if (!_businessPropertyWithCacheIntervalScript.AlarmTopic.IsNullOrWhiteSpace())
+            AddQueueAlarmModel(new(alarmVariable));
         base.AlarmChange(alarmVariable);
     }
 
-    protected override void DeviceChange(DeviceRunTime deviceRunTime, DeviceData deviceData)
+    protected override void DeviceChange(DeviceRunTime deviceRunTime, DeviceBasicData deviceData)
     {
-        AddQueueDevModel(new(deviceData));
+        if (!_businessPropertyWithCacheIntervalScript.DeviceTopic.IsNullOrWhiteSpace())
+            AddQueueDevModel(new(deviceData));
         base.DeviceChange(deviceRunTime, deviceData);
     }
 
@@ -56,9 +58,10 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
         return UpdateVarModel(item.Select(a => a.Value), cancellationToken);
     }
 
-    protected override void VariableChange(VariableRunTime variableRunTime, VariableData variable)
+    protected override void VariableChange(VariableRunTime variableRunTime, VariableBasicData variable)
     {
-        AddQueueVarModel(new(variable));
+        if (!_businessPropertyWithCacheIntervalScript.VariableTopic.IsNullOrWhiteSpace())
+            AddQueueVarModel(new(variable));
         base.VariableChange(variableRunTime, variable);
     }
 

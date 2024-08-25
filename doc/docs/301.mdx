@@ -12,7 +12,7 @@ import Highlight from '@site/src/components/Highlight.js';
 
 通过自定义脚本，可快速适配业务模型，比如各大云平台的Iot物模型
 
-脚本的示例请查看**常见问题**
+脚本的示例请查看[**常见问题**](./502.mdx) 
 
 :::
 
@@ -38,7 +38,7 @@ MqttClient通过Tcp/WebSocket的方式，发布内容到Broker(Server)，可以�
 | 连接Id         | 连接Id              |  |
 | 连接超时时间         | 连接超时时间              |  |
 | 允许Rpc写入         | 是否允许写入变量              |  |
-| Rpc写入Topic         | 写入变量的主题              | 实际的写入主题为固定通配 {RpcWrite/+} ，其中RpcWrite为该属性填入内容，+通配符是请求GUID值；返回结果主题会在主题后添加Response , 也就是{RpcWrite/+/Response} |
+| Rpc写入Topic         | 写入变量的主题              | 如果检测适配固定的topic标识，会按默认规则返回，比如``thingsboard``平台为``v1/gateway/rpc`` 。默认规则为：实际的写入主题为固定通配 {RpcWrite/+} ，其中RpcWrite为该属性填入内容，+通配符是请求GUID值；返回结果主题会在主题后添加Response , 也就是{RpcWrite/+/Response}|
 | 数据请求Topic        | 该主题接受到任何消息都会发布全部信息到对应的变量/设备/报警主题中             |  |
 | 设备是否列表         | 设备是否列表上传，false时每个设备实体都会单独发布，注意性能需求，默认为true             |  |
 | 变量是否列表         | 变量是否列表上传，false时每个变量实体都会单独发布，注意性能需求，默认为true             |  |
@@ -256,6 +256,14 @@ public class AlarmVariable
 
 
 ## 四、Rpc
+
+:::tip `提示`
+
+如果检测适配固定的topic标识，会按默认规则返回，比如``thingsboard``平台的rpc主题为``v1/gateway/rpc`` 
+
+下面说明为ThingsGateway默认规则
+
+:::
 
 ### 1、请求内容
 

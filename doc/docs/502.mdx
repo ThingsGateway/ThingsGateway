@@ -7,6 +7,13 @@ import useBaseUrl from "@docusaurus/useBaseUrl";
 import Tag from "@site/src/components/Tag.js";
 import Highlight from '@site/src/components/Highlight.js';
 
+:::tip `提示`
+
+通过自定义脚本，可快速适配业务模型，比如各大云平台的Iot物模型
+
+欢迎大家投稿平台适配案例
+
+:::
 
 ## 一、脚本示例
 
@@ -43,7 +50,110 @@ import Highlight from '@site/src/components/Highlight.js';
 ```
 
 
-## 二、适配阿里云物模型脚本
+## 二、适配 ThingsBoard 脚本
+
+
+对应文档：[ThingsBoard](https://thingsboard.io/docs/reference/gateway-mqtt-api/)
+
+
+
+### 设备属性脚本
+
+```
+using TouchSocket.Core;
+public class ThingsBoardDeviceScript : IDynamicModel
+{
+    public IEnumerable<dynamic> GetList(IEnumerable<object> datas)
+    {
+        Dictionary<string, Dictionary<string, object>>
+dict = new Dictionary<string, Dictionary<string, object>>
+();
+        foreach (var v in datas)
+        {
+            var data = (DeviceBasicData)v;
+            Dictionary<string, object> demoData = new Dictionary<string, object>
+            {
+                { nameof(Device.Description), data.Description },
+                { nameof(DeviceBasicData.ActiveTime), data.ActiveTime },
+                { nameof(DeviceBasicData.DeviceStatus), data.DeviceStatus.ToString() },
+                { nameof(DeviceBasicData.LastErrorMessage), data.LastErrorMessage },
+                { nameof(DeviceBasicData.PluginName), data.PluginName },
+                { nameof(DeviceBasicData.Remark1), data.Remark1 },
+                { nameof(DeviceBasicData.Remark2), data.Remark2 },
+                { nameof(DeviceBasicData.Remark3), data.Remark3 },
+                { nameof(DeviceBasicData.Remark4), data.Remark4 },
+                { nameof(DeviceBasicData.Remark5), data.Remark5 }
+            };
+
+            dict.AddOrUpdate(data.Name, demoData);
+        }
+        return new List<dynamic>() { dict };
+    }
+}
+
+
+```
+
+
+### 变量脚本
+```
+
+using ThingsGateway.Foundation;
+
+using TouchSocket.Core;
+
+public class ThingsBoardVariableScript : IDynamicModel
+{
+    public IEnumerable<dynamic> GetList(IEnumerable<object> datas)
+    {
+        var dict = new Dictionary<string, List<ThingsBoardValue>>();
+        // 对输入列表进行分组，根据 DeviceName 属性分组
+        var groups = datas.Where(a => !string.IsNullOrEmpty(((VariableData)a).DeviceName)).GroupBy(a => ((VariableData)a).DeviceName, a => ((VariableData)a));
+        // 遍历每一个分组
+        foreach (var group in groups)
+        {
+            var data = group.GroupBy(a => a.CollectTime);
+            List<ThingsBoardValue> thingsBoardValues = new();
+            foreach (var item in data)
+            {
+                ThingsBoardValue thingsBoardValue = new();
+                thingsBoardValue.ts = item.Key.DateTimeToUnixTimestamp();
+                foreach (var tag in item)
+                {
+                    thingsBoardValue.values.AddOrUpdate(tag.Name, tag.Value);
+                }
+                thingsBoardValues.Add(thingsBoardValue);
+            }
+
+            dict.AddOrUpdate(group.Key, thingsBoardValues);
+
+        }
+        return new List<dynamic>() { dict };
+    }
+}
+
+public class ThingsBoardValue
+{
+    public long ts { get; set; }
+    public Dictionary<string, object> values { get; set; } = new();
+}
+
+
+```
+### 传输主题
+
+变量Topic 填入 `v1/gateway/telemetry`
+
+设备Topic 填入 `v1/gateway/attributes`
+
+RpcTopic 天然 `v1/gateway/rpc`
+
+变量列表上传 填入 false
+
+设备状态列表上传 填入 false
+
+
+## 三、适配阿里云物模型脚本
 
 
 对应文档：[阿里云设备属性上报](https://help.aliyun.com/zh/iot/user-guide/data-formats?spm=a2c4g.11186623.0.i17#section-jrb-lrl-b2b)

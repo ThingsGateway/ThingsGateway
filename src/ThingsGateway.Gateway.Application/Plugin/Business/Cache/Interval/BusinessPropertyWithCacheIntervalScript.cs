@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
@@ -37,7 +39,7 @@ public class BusinessPropertyWithCacheIntervalScript : BusinessPropertyWithCache
     /// 设备Topic
     /// </summary>
     [DynamicProperty(Remark = "可使用${key}作为匹配项，key必须是上传实体中的属性，比如ThingsGateway/Device/${Name}")]
-    public string DeviceTopic { get; set; } = "ThingsGateway/Device";
+    public string DeviceTopic { get; set; }
 
     /// <summary>
     /// 变量Topic
@@ -49,20 +51,26 @@ public class BusinessPropertyWithCacheIntervalScript : BusinessPropertyWithCache
     /// 报警Topic
     /// </summary>
     [DynamicProperty(Remark = "可使用${key}作为匹配项，key必须是上传实体中的属性，比如ThingsGateway/Alarm/${DeviceName}")]
-    public string AlarmTopic { get; set; } = "ThingsGateway/Alarm";
+    public string AlarmTopic { get; set; }
 
     /// <summary>
     /// 设备实体脚本
     /// </summary>
+    [DynamicProperty]
+    [AutoGenerateColumn(Visible = true, IsVisibleWhenEdit = false, IsVisibleWhenAdd = false)]
     public string? BigTextScriptDeviceModel { get; set; }
 
     /// <summary>
     /// 变量实体脚本
     /// </summary>
+    [DynamicProperty]
+    [AutoGenerateColumn(Visible = true, IsVisibleWhenEdit = false, IsVisibleWhenAdd = false)]
     public string? BigTextScriptVariableModel { get; set; }
 
     /// <summary>
     /// 报警实体脚本
     /// </summary>
+    [DynamicProperty]
+    [AutoGenerateColumn(Visible = true, IsVisibleWhenEdit = false, IsVisibleWhenAdd = false)]
     public string? BigTextScriptAlarmModel { get; set; }
 }
