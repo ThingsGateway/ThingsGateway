@@ -9,8 +9,11 @@
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <TargetFrameworks>net6.0;</TargetFrameworks>
     <!--<PublishAot>true</PublishAot>-->
+
+    <!--动态适用GC-->
+    <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
     <!--使用工作站GC-->
-    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <!--<ServerGarbageCollection>false</ServerGarbageCollection>-->
     <!--<PlatformTarget>x86</PlatformTarget>-->
   </PropertyGroup>
 

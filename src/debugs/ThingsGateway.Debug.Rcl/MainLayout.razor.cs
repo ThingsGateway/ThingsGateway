@@ -70,7 +70,7 @@ public partial class MainLayout
 
         op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Size = Size.Medium,
             ShowFooter = false,
             Title = Localizer["About"],

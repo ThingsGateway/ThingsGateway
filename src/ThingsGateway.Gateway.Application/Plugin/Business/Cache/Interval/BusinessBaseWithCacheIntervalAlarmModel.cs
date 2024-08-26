@@ -198,7 +198,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     }
 
     /// <summary>
-    /// 当设备状态发生变化时触发此事件处理方法。该方法内部会检查是否需要进行设备上传，如果需要，则调用 <see cref="DeviceChange(DeviceRunTime, DeviceData)"/> 方法。
+    /// 当设备状态发生变化时触发此事件处理方法。该方法内部会检查是否需要进行设备上传，如果需要，则调用 <see cref="DeviceChange(DeviceRunTime, DeviceBasicData)"/> 方法。
     /// </summary>
     /// <param name="deviceRunTime">设备运行时信息</param>
     /// <param name="deviceData">设备数据</param>
@@ -216,7 +216,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     }
 
     /// <summary>
-    /// 当变量值发生变化时触发此事件处理方法。该方法内部会检查是否需要进行变量上传，如果需要，则调用 <see cref="VariableChange(VariableRunTime, VariableData)"/> 方法。
+    /// 当变量值发生变化时触发此事件处理方法。该方法内部会检查是否需要进行变量上传，如果需要，则调用 <see cref="VariableChange(VariableRunTime, VariableBasicData)"/> 方法。
     /// </summary>
     /// <param name="variableRunTime">变量运行时信息</param>
     /// <param name="variable">变量数据</param>

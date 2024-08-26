@@ -137,7 +137,7 @@ public abstract class CollectBase : DriverBase
         DeviceMethods = data;
 
         // 使用全局锁确保多线程安全地更新全局数据
-        lock (GlobalData.CollectDevices)
+        //lock (GlobalData.CollectDevices)
         {
             // 从全局设备字典中移除具有相同 Id 的设备
             GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == device.Id);

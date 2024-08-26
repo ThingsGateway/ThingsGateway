@@ -28,4 +28,8 @@ public class SqlHisAlarmProperty : BusinessPropertyWithCache
     [Required]
     [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
     public string BigTextConnectStr { get; set; } = "server=.;uid=sa;pwd=111111;database=test;";
+
+    [DynamicProperty]
+    public string TableName { get; set; } = "historyAlarm";
+
 }

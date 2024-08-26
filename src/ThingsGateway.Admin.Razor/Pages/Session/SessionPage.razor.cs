@@ -41,7 +41,7 @@ public partial class SessionPage
         {
             var op = new DialogOption()
             {
-                IsScrolling = true,
+                IsScrolling = false,
                 Title = Localizer[nameof(VerificatInfo)],
                 ShowFooter = false,
                 Size = Size.ExtraLarge

@@ -99,7 +99,7 @@ public partial class DeviceEditComponent
 
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = ChannelLocalizer["SaveChannel"],
             ShowFooter = false,
             ShowCloseButton = false,
@@ -243,7 +243,7 @@ public partial class DeviceEditComponent
 
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = Localizer["Check"],
             ShowFooter = false,
 

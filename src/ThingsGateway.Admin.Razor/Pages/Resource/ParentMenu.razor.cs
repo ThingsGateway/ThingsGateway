@@ -57,7 +57,7 @@ public partial class ParentMenu
     {
         Option = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Size = Size.ExtraLarge,
             Title = Localizer["ChoiceMenu"],
             BodyTemplate = BootstrapDynamicComponent.CreateComponent<ParentMenuTree>(new Dictionary<string, object?>

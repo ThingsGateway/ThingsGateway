@@ -22,12 +22,12 @@ public partial class HisAlarmPage : IDriverUIBase
     [Parameter, EditorRequired]
     public object Driver { get; set; }
 
-    public SqlHisAlarm QuestDBProducer => (SqlHisAlarm)Driver;
+    public SqlHisAlarm SqlHisAlarmProducer => (SqlHisAlarm)Driver;
     private HistoryAlarmPageInput CustomerSearchModel { get; set; } = new();
 
     private async Task<QueryData<HistoryAlarm>> OnQueryAsync(QueryPageOptions options)
     {
-        var query = await QuestDBProducer.QueryData(options);
+        var query = await SqlHisAlarmProducer.QueryData(options);
         return query;
     }
 }

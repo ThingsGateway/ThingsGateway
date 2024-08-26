@@ -13,7 +13,6 @@ using BootstrapBlazor.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using ThingsGateway.Core.Extension;
 using ThingsGateway.NewLife.X.Threading;
 
 using TouchSocket.Core;
@@ -213,24 +212,24 @@ public abstract class DriverBase : DisposableObject
                     this.SafeDispose();
                     // 根据是否正在采集设备来从全局设备集合或业务设备集合中移除指定设备ID的驱动程序对象
                     //if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
-                    {
-                        if (IsCollectDevice)
-                        {
-                            lock (GlobalData.CollectDevices)
-                            {
-                                GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == DeviceId);
+                    //{
+                    //    if (IsCollectDevice)
+                    //    {
+                    //        lock (GlobalData.CollectDevices)
+                    //        {
+                    //            GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == DeviceId);
 
-                                GlobalData.Variables.RemoveWhere(it => it.Value.DeviceId == DeviceId);
-                            }
-                        }
-                        else
-                        {
-                            lock (GlobalData.BusinessDevices)
-                            {
-                                GlobalData.BusinessDevices.RemoveWhere(it => it.Value.Id == DeviceId);
-                            }
-                        }
-                    }
+                    //            GlobalData.Variables.RemoveWhere(it => it.Value.DeviceId == DeviceId);
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        lock (GlobalData.BusinessDevices)
+                    //        {
+                    //            GlobalData.BusinessDevices.RemoveWhere(it => it.Value.Id == DeviceId);
+                    //        }
+                    //    }
+                    //}
 
                     IsInitSuccess = true;
                     IsBeforStarted = false;

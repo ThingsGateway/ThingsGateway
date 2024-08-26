@@ -61,7 +61,7 @@ public partial class MainLayout : IDisposable
 
         op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Size = Size.ExtraLarge,
             ShowFooter = false,
             Title = Localizer["ChoiceModule"],
@@ -91,7 +91,7 @@ public partial class MainLayout : IDisposable
     {
         return DialogService.Show(new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = Localizer["UserCenter"],
             ShowFooter = false,
             Component = BootstrapDynamicComponent.CreateComponent<UserCenterPage>(new Dictionary<string, object?>()
@@ -213,7 +213,7 @@ public partial class MainLayout : IDisposable
 
         op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Size = Size.Medium,
             ShowFooter = false,
             Title = Localizer["About"],

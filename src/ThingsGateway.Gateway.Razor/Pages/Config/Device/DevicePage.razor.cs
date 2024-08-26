@@ -144,7 +144,7 @@ public abstract partial class DevicePage : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = DefaultLocalizer["BatchEdit"],
             ShowFooter = false,
             ShowCloseButton = false,
@@ -251,7 +251,7 @@ public abstract partial class DevicePage : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = Localizer["ImportExcel"],
             ShowFooter = false,
             ShowCloseButton = false,

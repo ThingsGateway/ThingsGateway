@@ -59,7 +59,7 @@ public partial class PluginPage
     {
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = PluginAddInputLoaclozer["SavePlugin"],
             ShowFooter = false,
             ShowCloseButton = false,

@@ -67,7 +67,7 @@ public partial class ChannelPage : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = DefaultLocalizer["BatchEdit"],
             ShowFooter = false,
             ShowCloseButton = false,
@@ -151,7 +151,7 @@ public partial class ChannelPage : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = Localizer["ImportExcel"],
             ShowFooter = false,
             ShowCloseButton = false,

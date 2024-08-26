@@ -61,9 +61,9 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
 
     protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
-        var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
+        using var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
         db.DbMaintenance.CreateDatabase();
-        db.CodeFirst.InitTables(typeof(HistoryAlarm));
+        db.CodeFirst.As<HistoryAlarm>(_driverPropertys.TableName).InitTables<HistoryAlarm>();
         return base.ProtectedBeforStartAsync(cancellationToken);
     }
 
@@ -91,7 +91,7 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
     internal ISugarQueryable<HistoryAlarm> Query(DBHistoryAlarmPageInput input)
     {
         using var db = BusinessDatabaseUtil.GetDb(_driverPropertys.DbType, _driverPropertys.BigTextConnectStr);
-        var query = db.Queryable<HistoryAlarm>().SplitTable()
+        var query = db.Queryable<HistoryAlarm>().AS(_driverPropertys.TableName)
                              .WhereIF(input.StartTime != null, a => a.EventTime >= input.StartTime)
                            .WhereIF(input.EndTime != null, a => a.EventTime <= input.EndTime)
                            .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
@@ -119,7 +119,7 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
             IsSearch = option.Searches.Any()
         };
 
-        var query = db.GetQuery<HistoryAlarm>(option);
+        var query = db.GetQuery<HistoryAlarm>(option).AS(_driverPropertys.TableName);
 
         if (option.IsPage)
         {

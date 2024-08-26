@@ -63,7 +63,7 @@ public partial class DeviceStatus
         }
         await DialogService.Show(new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = _driverBaseItem.DeviceName,
             Component = BootstrapDynamicComponent.CreateComponent(driver, new Dictionary<string, object?>()
         {

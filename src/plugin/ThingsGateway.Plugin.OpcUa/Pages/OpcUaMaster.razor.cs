@@ -140,7 +140,7 @@ public partial class OpcUaMaster : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = OpcUaPropertyLocalizer["ShowImport"],
             ShowFooter = false,
             ShowCloseButton = false,

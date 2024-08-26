@@ -69,7 +69,7 @@ public partial class SysRolePage
         ids.AddRange(hasResources.Select(a => a.ApiUrl));
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Size = Size.ExtraLarge,
             Title = OperDescLocalizer["RoleGrantApiPermission"],
             ShowCloseButton = false,
@@ -88,7 +88,7 @@ public partial class SysRolePage
         var ids = (await SysRoleService.OwnResourceAsync(id))?.GrantInfoList;
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Size = Size.ExtraLarge,
             Title = OperDescLocalizer["RoleGrantResource"],
             ShowCloseButton = false,
@@ -106,7 +106,7 @@ public partial class SysRolePage
     {
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = OperDescLocalizer["RoleGrantUser"],
             ShowFooter = false,
             ShowCloseButton = false,

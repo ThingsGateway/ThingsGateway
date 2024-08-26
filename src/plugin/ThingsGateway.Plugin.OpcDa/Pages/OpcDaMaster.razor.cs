@@ -141,7 +141,7 @@ public partial class OpcDaMaster : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = OpcDaPropertyLocalizer["ShowImport"],
             ShowFooter = false,
             ShowCloseButton = false,

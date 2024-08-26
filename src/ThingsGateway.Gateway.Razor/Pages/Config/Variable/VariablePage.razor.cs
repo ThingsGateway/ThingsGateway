@@ -107,7 +107,7 @@ public partial class VariablePage : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = DefaultLocalizer["BatchEdit"],
             ShowFooter = false,
             ShowCloseButton = false,
@@ -208,7 +208,7 @@ public partial class VariablePage : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             Title = Localizer["ImportExcel"],
             ShowFooter = false,
             ShowCloseButton = false,

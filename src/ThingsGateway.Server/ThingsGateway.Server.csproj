@@ -14,7 +14,7 @@
     <!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
 
     <!--使用工作站GC-->
-    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <!--<ServerGarbageCollection>false</ServerGarbageCollection>-->
 
     <!--<PlatformTarget>x86</PlatformTarget>-->
   </PropertyGroup>
@@ -66,7 +66,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
   </ItemGroup>
 
   <!--安装服务守护-->

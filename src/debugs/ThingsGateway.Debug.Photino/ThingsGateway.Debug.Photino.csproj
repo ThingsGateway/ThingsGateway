@@ -5,6 +5,14 @@
     <OutputType>WinExe</OutputType>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <TargetFrameworks>net6.0</TargetFrameworks>
+
+    <!--动态适用GC-->
+    <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
+    <!--使用自托管线程池-->
+    <!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
+
+    <!--使用工作站GC-->
+    <!--<ServerGarbageCollection>false</ServerGarbageCollection>-->
   </PropertyGroup>
 
 
