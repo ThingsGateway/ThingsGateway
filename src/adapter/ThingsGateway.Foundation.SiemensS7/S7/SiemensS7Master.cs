@@ -28,9 +28,9 @@ public partial class SiemensS7Master : ProtocolBase
 
             if (channel.Collects.Count(a => a.GetType() == typeof(SiemensS7Master)) > 1)
             {
-                Channel.Starting -= ChannelStarting;
-                Channel.Stoped -= ChannelStoped;
-                Channel.Started -= ChannelStarted;
+                Channel.Starting.Remove(ChannelStarting);
+                Channel.Stoped.Remove(ChannelStoped);
+                Channel.Started.Remove(ChannelStarted);
             }
         }
     }
@@ -349,7 +349,7 @@ public partial class SiemensS7Master : ProtocolBase
     #region 初始握手
 
     /// <inheritdoc/>
-    protected override async Task ChannelStarted(IClientChannel channel)
+    protected override async Task<bool> ChannelStarted(IClientChannel channel)
     {
         try
         {
@@ -418,14 +418,14 @@ public partial class SiemensS7Master : ProtocolBase
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError1", channel.ToString(), result2.ErrorMessage]);
                     await channel.CloseAsync().ConfigureAwait(false);
-                    return;
+                    return true;
                 }
             }
             catch (Exception ex)
             {
                 Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError1", channel.ToString(), ex.Message]);
                 await channel.CloseAsync().ConfigureAwait(false);
-                return;
+                return true;
             }
             try
             {
@@ -434,7 +434,7 @@ public partial class SiemensS7Master : ProtocolBase
                 {
                     Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError2", channel.ToString(), result2.ErrorMessage]);
                     await channel.CloseAsync().ConfigureAwait(false);
-                    return;
+                    return true;
                 }
                 PduLength = ThingsGatewayBitConverter.ToUInt16(result2.Content, 0) - 28;
                 Logger?.LogInformation($"PduLength：{PduLength}");
@@ -444,7 +444,7 @@ public partial class SiemensS7Master : ProtocolBase
             {
                 Logger?.LogWarning(SiemensS7Resource.Localizer["HandshakeError2", channel.ToString(), ex.Message]);
                 await channel.CloseAsync().ConfigureAwait(false);
-                return;
+                return true;
             }
         }
         catch (Exception ex)
@@ -456,6 +456,7 @@ public partial class SiemensS7Master : ProtocolBase
         {
             await base.ChannelStarted(channel).ConfigureAwait(false);
         }
+        return true;
     }
 
     #endregion 初始握手

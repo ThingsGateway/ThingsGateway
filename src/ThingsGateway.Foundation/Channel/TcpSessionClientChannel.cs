@@ -18,10 +18,8 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
 
-    /// <summary>
-    /// 接收到数据
-    /// </summary>
-    public ChannelReceivedEventHandler ChannelReceived { get; set; }
+    /// <inheritdoc/>
+    public ChannelReceivedEventHandler ChannelReceived { get; set; } = new();
 
     /// <inheritdoc/>
     public ChannelTypeEnum ChannelType => ChannelTypeEnum.TcpService;
@@ -32,13 +30,13 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
 
     /// <inheritdoc/>
-    public ChannelEventHandler Started { get; set; }
+    public ChannelEventHandler Started { get; set; } = new();
 
     /// <inheritdoc/>
-    public ChannelEventHandler Starting { get; set; }
+    public ChannelEventHandler Starting { get; set; } = new();
 
     /// <inheritdoc/>
-    public ChannelEventHandler Stoped { get; set; }
+    public ChannelEventHandler Stoped { get; set; } = new();
 
     /// <summary>
     /// 等待池
@@ -97,6 +95,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     protected override async Task OnTcpClosed(ClosedEventArgs e)
     {
         Logger?.Debug($"{ToString()} Closed{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
+        await this.OnChannelEvent(Stoped).ConfigureAwait(false);
         await base.OnTcpClosed(e).ConfigureAwait(false);
     }
 
@@ -111,25 +110,23 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     protected override async Task OnTcpConnected(ConnectedEventArgs e)
     {
         //Logger?.Debug($"{ToString()}{FoundationConst.Connected}");
-        if (Started != null)
-            await Started.Invoke(this).ConfigureAwait(false);
+        await this.OnChannelEvent(Started).ConfigureAwait(false);
+
         await base.OnTcpConnected(e).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     protected override async Task OnTcpConnecting(ConnectingEventArgs e)
     {
-        if (Starting != null)
-            await Starting.Invoke(this).ConfigureAwait(false);
+        await this.OnChannelEvent(Starting).ConfigureAwait(false);
+
         await base.OnTcpConnecting(e).ConfigureAwait(false);
     }
 
     protected override async Task OnTcpReceived(ReceivedDataEventArgs e)
     {
-        if (ChannelReceived != null)
-        {
-            await ChannelReceived.Invoke(this, e).ConfigureAwait(false);
-        }
         await base.OnTcpReceived(e).ConfigureAwait(false);
+        await this.OnChannelReceivedEvent(e, ChannelReceived).ConfigureAwait(false);
+
     }
 }

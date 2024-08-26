@@ -30,10 +30,10 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             channel.Collects.Add(this);
             Channel = channel;
             Logger = channel.Logger;
-            Channel.Starting += ChannelStarting;
-            Channel.Stoped += ChannelStoped;
-            Channel.Started += ChannelStarted;
-            Channel.ChannelReceived += ChannelReceived;
+            Channel.Starting.Add(ChannelStarting);
+            Channel.Stoped.Add(ChannelStoped);
+            Channel.Started.Add(ChannelStarted);
+            Channel.ChannelReceived.Add(ChannelReceived);
             Channel.Config.ConfigurePlugins(ConfigurePlugins());
         }
     }
@@ -103,21 +103,21 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public abstract DataHandlingAdapter GetDataAdapter();
 
     /// <summary>
-    /// 通道连接成功时
+    /// 通道连接成功时，如果通道存在其他设备并且不希望其他设备处理时，返回null
     /// </summary>
     /// <param name="channel"></param>
     /// <returns></returns>
-    protected virtual Task ChannelStarted(IClientChannel channel)
+    protected virtual Task<bool> ChannelStarted(IClientChannel channel)
     {
-        return EasyTask.CompletedTask;
+        return Task.FromResult(false);
     }
 
     /// <summary>
-    /// 通道断开连接后
+    /// 通道断开连接后，如果通道存在其他设备并且不希望其他设备处理时，返回null
     /// </summary>
     /// <param name="channel"></param>
     /// <returns></returns>
-    protected Task ChannelStoped(IClientChannel channel)
+    protected Task<bool> ChannelStoped(IClientChannel channel)
     {
         try
         {
@@ -127,18 +127,18 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         {
         }
 
-        return EasyTask.CompletedTask;
+        return Task.FromResult(false);
     }
 
     /// <summary>
-    /// 通道即将连接成功时,会设置适配器
+    /// 通道即将连接成功时，会设置适配器，如果通道存在其他设备并且不希望其他设备处理时，返回null
     /// </summary>
     /// <param name="channel"></param>
     /// <returns></returns>
-    protected virtual Task ChannelStarting(IClientChannel channel)
+    protected virtual Task<bool> ChannelStarting(IClientChannel channel)
     {
         channel.SetDataHandlingAdapter(GetDataAdapter());
-        return EasyTask.CompletedTask;
+        return Task.FromResult(false);
     }
 
     /// <summary>
@@ -221,18 +221,31 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <summary>
-    /// 接收,非主动发送的情况，重写实现非主从并发通讯协议
+    /// 接收,非主动发送的情况，重写实现非主从并发通讯协议，如果通道存在其他设备并且不希望其他设备处理时，设置<see cref="TouchSocketEventArgs.Handled"/> 为true
     /// </summary>
     /// <param name="client"></param>
     /// <param name="e"></param>
     /// <returns></returns>
     protected virtual Task ChannelReceived(IClientChannel client, ReceivedDataEventArgs e)
     {
+
         if (e.RequestInfo is MessageBase response)
         {
-            if (!client.WaitHandlePool.SetRun(response))
+            try
             {
-                //非主动发送的情况，重写实现非主从并发通讯协议
+                if (!client.WaitHandlePool.SetRun(response))
+                {
+                    //非主动发送的情况，重写实现非主从并发通讯协议
+                }
+                else
+                {
+                    e.Handled = true;
+                    //Logger?.LogTrace($"MessageBase.Sign : {response.Sign}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger?.LogWarning(ex, $"Response {response.Sign}");
             }
         }
 
@@ -409,6 +422,9 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         {
             SetDataAdapter();
             waitData.SetCancellationToken(cancellationToken);
+
+            //Logger?.LogTrace($"Command.Sign : {command.Sign}");
+
             await clientChannel.SendAsync(command).ConfigureAwait(false);
             var waitDataStatus = await waitData.WaitAsync(timeout).ConfigureAwait(false);
             var result = waitDataStatus.Check();
@@ -779,12 +795,10 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         {
             lock (Channel)
             {
-#pragma warning disable CS8601 // 引用类型赋值可能为 null。
-                Channel.Starting -= ChannelStarting;
-                Channel.Stoped -= ChannelStoped;
-                Channel.Started -= ChannelStarted;
-                Channel.ChannelReceived -= ChannelReceived;
-#pragma warning restore CS8601 // 引用类型赋值可能为 null。
+                Channel.Starting.Remove(ChannelStarting);
+                Channel.Stoped.Remove(ChannelStoped);
+                Channel.Started.Remove(ChannelStarted);
+                Channel.ChannelReceived.Remove(ChannelReceived);
                 Channel.Collects.Remove(this);
                 if (Channel.Collects.Count == 0)
                 {

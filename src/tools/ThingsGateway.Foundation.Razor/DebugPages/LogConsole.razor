@@ -19,15 +19,16 @@
         <div style=@($"height:{HeightText};overflow-y:scroll")>
             <Virtualize Items="CurrentMessages??new  List<LogMessage>()" Context="itemMessage" ItemSize="60" OverscanCount=2>
                 <ItemContent>
-                    <Tooltip Placement="Placement.Bottom" Title=@itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 500))>
+              @*       <Tooltip Placement="Placement.Bottom" Title=@itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 500))> *@
                         <div class=@(itemMessage.Level<(byte)Microsoft.Extensions.Logging.LogLevel.Information?"":
                              itemMessage.Level>=(byte)Microsoft.Extensions.Logging.LogLevel.Warning? " red--text ":"green--text ")
-                             style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
+                             style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;"
+                             title=@itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 500))>
 
                             @itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 150))
 
                         </div>
-                    </Tooltip>
+                    @* </Tooltip> *@
                 </ItemContent>
             </Virtualize>
         </div>

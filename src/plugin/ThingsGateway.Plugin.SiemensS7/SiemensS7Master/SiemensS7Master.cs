@@ -214,7 +214,7 @@ public class SiemensS7Master : CollectBase
     /// <inheritdoc/>
     protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRunTime> deviceVariables)
     {
-        try { _plc.Channel.ConnectAsync(_driverPropertys.ConnectTimeout).GetFalseAwaitResult(); } catch { }
+        try { _plc.Channel.ConnectAsync(_driverPropertys.ConnectTimeout).ConfigureAwait(false).GetAwaiter().GetResult(); } catch { }
         try
         {
             return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, _plc.OnLine ? _plc.PduLength : _driverPropertys.MaxPack, CurrentDevice.IntervalTime);

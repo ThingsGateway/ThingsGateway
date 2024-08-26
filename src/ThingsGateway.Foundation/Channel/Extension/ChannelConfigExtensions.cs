@@ -16,6 +16,37 @@ namespace ThingsGateway.Foundation;
 
 public static class ChannelConfigExtensions
 {
+    public static async Task OnChannelReceivedEvent(this IClientChannel @this, ReceivedDataEventArgs e, ChannelReceivedEventHandler funcs)
+    {
+        if (funcs.Count > 0)
+        {
+            foreach (var func in funcs)
+            {
+                await func.Invoke(@this, e).ConfigureAwait(false);
+                if (e.Handled)
+                {
+                    break;
+                }
+            }
+        }
+    }
+
+
+    public static async Task OnChannelEvent(this IClientChannel @this, ChannelEventHandler funcs)
+    {
+        if (funcs.Count > 0)
+        {
+            foreach (var func in funcs)
+            {
+                var handled = await func.Invoke(@this).ConfigureAwait(false);
+                if (handled)
+                {
+                    break;
+                }
+            }
+        }
+    }
+
     /// <summary>
     /// 获取通道
     /// </summary>

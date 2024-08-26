@@ -251,6 +251,7 @@ public abstract class CollectBase : DriverBase
                 if (await TestOnline(cancellationToken).ConfigureAwait(false))
                     return true;
                 var readErrorCount = 0;
+                LogMessage?.Trace(string.Format("{0} - Executing method[{1}]", DeviceName, readVariableMethods.MethodInfo.Name));
                 var readResult = await InvokeMethodAsync(readVariableMethods, cancellationToken: cancellationToken).ConfigureAwait(false);
 
                 // 方法调用失败时重试一定次数
@@ -266,6 +267,7 @@ public abstract class CollectBase : DriverBase
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
                         LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Failed {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult.ErrorMessage));
 
+                    LogMessage?.Trace(string.Format("{0} - Executing method[{1}]", DeviceName, readVariableMethods.MethodInfo.Name));
                     readResult = await InvokeMethodAsync(readVariableMethods, cancellationToken: cancellationToken).ConfigureAwait(false);
                 }
 
@@ -324,6 +326,8 @@ public abstract class CollectBase : DriverBase
                     return true;
 
                 var readErrorCount = 0;
+
+                LogMessage?.Trace(string.Format("{0} - Collecting [{1} - {2}]", DeviceName, variableSourceRead?.RegisterAddress, variableSourceRead?.Length));
                 var readResult = await ReadSourceAsync(variableSourceRead, cancellationToken).ConfigureAwait(false);
 
                 // 读取失败时重试一定次数
@@ -337,7 +341,10 @@ public abstract class CollectBase : DriverBase
                         return true;
                     readErrorCount++;
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
-                        LogMessage?.Trace(string.Format("{0} - Collection[{1} - {2}] data failed {3}", DeviceName, variableSourceRead?.RegisterAddress, variableSourceRead?.Length, readResult.ErrorMessage));
+                        LogMessage?.Trace(string.Format("{0} - Collection[{1} - {2}] failed {3}", DeviceName, variableSourceRead?.RegisterAddress, variableSourceRead?.Length, readResult.ErrorMessage));
+
+
+                    LogMessage?.Trace(string.Format("{0} - Collecting [{1} - {2}]", DeviceName, variableSourceRead?.RegisterAddress, variableSourceRead?.Length));
                     readResult = await ReadSourceAsync(variableSourceRead, cancellationToken).ConfigureAwait(false);
                 }
 
@@ -425,6 +432,7 @@ public abstract class CollectBase : DriverBase
                             item.Variable.SetValue(null, time, isOnline: false);
                         }
 
+                        await Task.Delay(10000).ConfigureAwait(false);
                         return true;
                     }
                 }

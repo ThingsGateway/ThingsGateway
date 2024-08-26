@@ -10,16 +10,14 @@
 
 namespace ThingsGateway.Foundation;
 
-/// <summary>
-/// ChannelEventHandler
-/// </summary>
-public delegate Task ChannelEventHandler(IClientChannel channel);
+
 
 /// <summary>
 /// 通道管理
 /// </summary>
 public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
 {
+
     /// <summary>
     /// 接收到数据
     /// </summary>
@@ -28,7 +26,7 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     /// <summary>
     /// 通道类型
     /// </summary>
-    ChannelTypeEnum ChannelType { get; }
+    public ChannelTypeEnum ChannelType { get; }
 
     /// <summary>
     /// 该通道下的所有设备
@@ -59,7 +57,7 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     /// 关闭客户端。
     /// </summary>
     /// <param name="msg"></param>
-    void Close(string msg);
+    public void Close(string msg);
 
     /// <summary>
     /// 启动
@@ -68,7 +66,7 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     /// <param name="token">可取消令箭</param>
     /// <exception cref="TimeoutException"></exception>
     /// <exception cref="Exception"></exception>
-    void Connect(int millisecondsTimeout = 3000, CancellationToken token = default);
+    public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default);
 
     /// <summary>
     /// 异步连接
@@ -77,12 +75,23 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     /// <param name="token">可取消令箭</param>
     /// <exception cref="TimeoutException"></exception>
     /// <exception cref="Exception"></exception>
-    Task ConnectAsync(int millisecondsTimeout = 3000, CancellationToken token = default);
+    public Task ConnectAsync(int millisecondsTimeout = 3000, CancellationToken token = default);
+}
+public class ChannelReceivedEventHandler : List<Func<IClientChannel, ReceivedDataEventArgs, Task>>
+{
+}
+public class ChannelEventHandler : List<Func<IClientChannel, Task<bool>>>
+{
 }
 
-/// <summary>
-/// 接收数据
-/// </summary>
-/// <param name="client"></param>
-/// <param name="e"></param>
-public delegate Task ChannelReceivedEventHandler(IClientChannel client, ReceivedDataEventArgs e);
+///// <summary>
+///// ChannelEventHandler
+///// </summary>
+//public delegate Task ChannelEventHandler(IClientChannel channel);
+
+///// <summary>
+///// 接收数据
+///// </summary>
+///// <param name="client"></param>
+///// <param name="e"></param>
+//public delegate Task ChannelReceivedEventHandler(IClientChannel client, ReceivedDataEventArgs e);

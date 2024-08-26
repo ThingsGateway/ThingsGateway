@@ -22,10 +22,8 @@ public class TcpClientChannel : TcpClient, IClientChannel
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
 
-    /// <summary>
-    /// 接收到数据
-    /// </summary>
-    public ChannelReceivedEventHandler ChannelReceived { get; set; }
+    /// <inheritdoc/>
+    public ChannelReceivedEventHandler ChannelReceived { get; set; } = new();
 
     /// <inheritdoc/>
     public ChannelTypeEnum ChannelType => ChannelTypeEnum.TcpClient;
@@ -36,13 +34,13 @@ public class TcpClientChannel : TcpClient, IClientChannel
     public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
 
     /// <inheritdoc/>
-    public ChannelEventHandler Started { get; set; }
+    public ChannelEventHandler Started { get; set; } = new();
 
     /// <inheritdoc/>
-    public ChannelEventHandler Starting { get; set; }
+    public ChannelEventHandler Starting { get; set; } = new();
 
     /// <inheritdoc/>
-    public ChannelEventHandler Stoped { get; set; }
+    public ChannelEventHandler Stoped { get; set; } = new();
 
     /// <summary>
     /// 等待池
@@ -54,7 +52,7 @@ public class TcpClientChannel : TcpClient, IClientChannel
 
     public void Close(string msg)
     {
-        CloseAsync(msg).GetFalseAwaitResult();
+        CloseAsync(msg).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     public override async Task CloseAsync(string msg)
@@ -63,14 +61,14 @@ public class TcpClientChannel : TcpClient, IClientChannel
         {
             await base.CloseAsync(msg).ConfigureAwait(false);
             Logger?.Debug($"{ToString()}  Closed{msg}");
-            if (Stoped != null)
-                await Stoped.Invoke(this).ConfigureAwait(false);
+            await this.OnChannelEvent(Stoped).ConfigureAwait(false);
+
         }
     }
 
     public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
     {
-        ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
+        ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     public override async Task ConnectAsync(int millisecondsTimeout, CancellationToken token)
@@ -85,8 +83,8 @@ public class TcpClientChannel : TcpClient, IClientChannel
                     await SetupAsync(Config.Clone()).ConfigureAwait(false);
                     await base.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
                     Logger?.Debug($"{ToString()}  Connected");
-                    if (Started != null)
-                        await Started.Invoke(this).ConfigureAwait(false);
+                    await this.OnChannelEvent(Started).ConfigureAwait(false);
+
                 }
             }
             finally
@@ -120,22 +118,15 @@ public class TcpClientChannel : TcpClient, IClientChannel
     protected override async Task OnTcpConnecting(ConnectingEventArgs e)
     {
         Logger?.Debug($"{ToString()}  Connecting{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
-        if (Starting != null)
-            await Starting.Invoke(this).ConfigureAwait(false);
+        await this.OnChannelEvent(Starting).ConfigureAwait(false);
         await base.OnTcpConnecting(e).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     protected override async Task OnTcpReceived(ReceivedDataEventArgs e)
     {
-        if (ChannelReceived != null)
-        {
-            await ChannelReceived.Invoke(this, e).ConfigureAwait(false);
-            if (e.Handled)
-            {
-                return;
-            }
-        }
         await base.OnTcpReceived(e).ConfigureAwait(false);
+        await this.OnChannelReceivedEvent(e, ChannelReceived).ConfigureAwait(false);
     }
+
 }

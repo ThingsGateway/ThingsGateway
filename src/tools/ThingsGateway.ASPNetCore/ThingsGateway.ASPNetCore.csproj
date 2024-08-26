@@ -14,7 +14,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.Startup\ThingsGateway.Startup.csproj" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
   </ItemGroup>
 
 

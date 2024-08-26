@@ -20,10 +20,8 @@ public class UdpSessionChannel : UdpSession, IClientChannel
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
 
-    /// <summary>
-    /// 当收到数据时
-    /// </summary>
-    public ChannelReceivedEventHandler ChannelReceived { get; set; }
+    /// <inheritdoc/>
+    public ChannelReceivedEventHandler ChannelReceived { get; set; } = new();
 
     /// <inheritdoc/>
     public ChannelTypeEnum ChannelType => ChannelTypeEnum.UdpSession;
@@ -37,13 +35,13 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
 
     /// <inheritdoc/>
-    public ChannelEventHandler Started { get; set; }
+    public ChannelEventHandler Started { get; set; } = new();
 
     /// <inheritdoc/>
-    public ChannelEventHandler Starting { get; set; }
+    public ChannelEventHandler Starting { get; set; } = new();
 
     /// <inheritdoc/>
-    public ChannelEventHandler Stoped { get; set; }
+    public ChannelEventHandler Stoped { get; set; } = new();
 
     /// <summary>
     /// 等待池
@@ -55,7 +53,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
 
     public void Close(string msg)
     {
-        CloseAsync(msg).GetFalseAwaitResult();
+        CloseAsync(msg).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     public Task CloseAsync(string msg)
@@ -65,7 +63,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
 
     public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
     {
-        ConnectAsync(millisecondsTimeout, token).GetFalseAwaitResult();
+        ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     /// <inheritdoc/>
@@ -73,11 +71,9 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     {
         if (token.IsCancellationRequested)
             return;
-        if (Starting != null)
-            await Starting.Invoke(this).ConfigureAwait(false);
+        await this.OnChannelEvent(Starting).ConfigureAwait(false);
         await StartAsync().ConfigureAwait(false);
-        if (Started != null)
-            await Started.Invoke(this).ConfigureAwait(false);
+        await this.OnChannelEvent(Started).ConfigureAwait(false);
     }
 
     public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
@@ -121,15 +117,18 @@ public class UdpSessionChannel : UdpSession, IClientChannel
         {
             await base.StopAsync().ConfigureAwait(false);
             if (Monitor == null)
+            {
+                await this.OnChannelEvent(Stoped).ConfigureAwait(false);
                 Logger.Info($"{DefaultResource.Localizer["ServiceStoped"]}");
+            }
         }
         else
         {
             await base.StopAsync().ConfigureAwait(false);
         }
-        if (Stoped != null)
-            await Stoped.Invoke(this).ConfigureAwait(false);
+
     }
+
 
     /// <inheritdoc/>
     public override string? ToString()
@@ -140,14 +139,8 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     /// <inheritdoc/>
     protected override async Task OnUdpReceived(UdpReceivedDataEventArgs e)
     {
-        if (ChannelReceived != null)
-        {
-            await ChannelReceived.Invoke(this, e).ConfigureAwait(false);
-            if (e.Handled)
-            {
-                return;
-            }
-        }
         await base.OnUdpReceived(e).ConfigureAwait(false);
+        await this.OnChannelReceivedEvent(e, ChannelReceived).ConfigureAwait(false);
+
     }
 }

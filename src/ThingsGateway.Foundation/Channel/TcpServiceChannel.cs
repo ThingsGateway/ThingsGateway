@@ -137,10 +137,8 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
 /// </summary>
 public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>, IChannel
 {
-    /// <summary>
-    /// 处理数据
-    /// </summary>
-    public ChannelReceivedEventHandler ChannelReceived { get; set; }
+    /// <inheritdoc/>
+    public ChannelReceivedEventHandler ChannelReceived { get; set; } = new();
 
     /// <inheritdoc/>
     public ChannelTypeEnum ChannelType => ChannelTypeEnum.TcpService;
@@ -149,17 +147,17 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
     public bool Online => ServerState == ServerState.Running;
 
     /// <inheritdoc/>
-    public ChannelEventHandler Started { get; set; }
+    public ChannelEventHandler Started { get; set; } = new();
 
     /// <inheritdoc/>
-    public ChannelEventHandler Starting { get; set; }
+    public ChannelEventHandler Starting { get; set; } = new();
 
     /// <inheritdoc/>
-    public ChannelEventHandler Stoped { get; set; }
+    public ChannelEventHandler Stoped { get; set; } = new();
 
     public void Close(string msg)
     {
-        CloseAsync(msg).ConfigureAwait(false);
+        CloseAsync(msg).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     public Task CloseAsync(string msg)
@@ -169,7 +167,7 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
 
     public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
     {
-        ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
+        ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     /// <inheritdoc/>
@@ -189,38 +187,29 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
     /// <inheritdoc/>
     protected override async Task OnTcpClosed(TcpSessionClientChannel socketClient, ClosedEventArgs e)
     {
-        if (Stoped != null)
-            await Stoped.Invoke(socketClient).ConfigureAwait(false);
+        await socketClient.OnChannelEvent(Stoped).ConfigureAwait(false);
         await base.OnTcpClosed(socketClient, e).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     protected override async Task OnTcpConnected(TcpSessionClientChannel socketClient, ConnectedEventArgs e)
     {
-        if (Started != null)
-            await Started.Invoke(socketClient).ConfigureAwait(false);
+        await socketClient.OnChannelEvent(Started).ConfigureAwait(false);
         await base.OnTcpConnected(socketClient, e).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     protected override async Task OnTcpConnecting(TcpSessionClientChannel socketClient, ConnectingEventArgs e)
     {
-        if (Starting != null)
-            await Starting.Invoke(socketClient).ConfigureAwait(false);
+        await socketClient.OnChannelEvent(Starting).ConfigureAwait(false);
         await base.OnTcpConnecting(socketClient, e).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
     protected override async Task OnTcpReceived(TcpSessionClientChannel socketClient, ReceivedDataEventArgs e)
     {
-        if (ChannelReceived != null)
-        {
-            await ChannelReceived.Invoke(socketClient, e).ConfigureAwait(false);
-            if (e.Handled)
-            {
-                return;
-            }
-        }
         await base.OnTcpReceived(socketClient, e).ConfigureAwait(false);
+        await socketClient.OnChannelReceivedEvent(e, ChannelReceived).ConfigureAwait(false);
+
     }
 }
