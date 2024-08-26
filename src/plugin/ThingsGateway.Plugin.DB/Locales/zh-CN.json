@@ -83,6 +83,7 @@
   "ThingsGateway.Plugin.SqlHisAlarm.SQLHisAlarmProperty": {
     "DbType": "数据库类型",
     "BigTextConnectStr": "链接字符串",
+    "TableName": "表名称",
 
     "IsInterval": "启用定时上传",
     "BusinessInterval": "定时上传间隔",

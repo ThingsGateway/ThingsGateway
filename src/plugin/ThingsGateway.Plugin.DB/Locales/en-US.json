@@ -83,6 +83,7 @@
   "ThingsGateway.Plugin.SqlHisAlarm.SQLHisAlarmProperty": {
     "DbType": "DbType",
     "BigTextConnectStr": "ConnectString",
+    "TableName": "TableName",
 
     "IsInterval": "IsInterval",
     "BusinessInterval": "BusinessInterval",
