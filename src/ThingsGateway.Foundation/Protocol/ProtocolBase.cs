@@ -261,14 +261,35 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             if (token.IsCancellationRequested)
                 return new(new OperationCanceledException());
 
+
             if (channel == default)
             {
                 if (Channel is not IClientChannel clientChannel) { throw new ArgumentNullException(nameof(channel)); }
-                await clientChannel.SendAsync(sendMessage).ConfigureAwait(false);
+                try
+                {
+                    if (IsSingleThread)
+                        await clientChannel.WaitLock.WaitAsync(token).ConfigureAwait(false);
+                    await clientChannel.SendAsync(sendMessage).ConfigureAwait(false);
+                }
+                finally
+                {
+                    if (IsSingleThread)
+                        clientChannel.WaitLock.Release();
+                }
             }
             else
             {
-                await channel.SendAsync(sendMessage).ConfigureAwait(false);
+                try
+                {
+                    if (IsSingleThread)
+                        await channel.WaitLock.WaitAsync(token).ConfigureAwait(false);
+                    await channel.SendAsync(sendMessage).ConfigureAwait(false);
+                }
+                finally
+                {
+                    if (IsSingleThread)
+                        channel.WaitLock.Release();
+                }
             }
             return OperResult.Success;
         }
