@@ -75,7 +75,7 @@ public abstract class AdapterDebugBase : ComponentBase, IDisposable
                 var data = await Plc.ReadAsync(RegisterAddress, ArrayLength, DataType);
                 if (data.IsSuccess)
                 {
-                    Plc.Logger?.Debug(data.Content.ToJsonNetString());
+                    Plc.Logger?.LogInformation(data.Content.ToJsonNetString());
                 }
                 else
                 {
@@ -99,7 +99,7 @@ public abstract class AdapterDebugBase : ComponentBase, IDisposable
                 var data = await Plc.WriteAsync(RegisterAddress, WriteValue.GetJTokenFromString(), DataType);
                 if (data.IsSuccess)
                 {
-                    Plc.Logger?.Debug($" {WriteValue.GetJTokenFromString()} {Localizer["WriteSuccess"]}");
+                    Plc.Logger?.LogInformation($" {WriteValue.GetJTokenFromString()} {Localizer["WriteSuccess"]}");
                 }
                 else
                 {

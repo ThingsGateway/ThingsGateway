@@ -18,8 +18,9 @@ using System.Text.RegularExpressions;
 
 using ThingsGateway.Core.Extension;
 using ThingsGateway.Foundation;
-using ThingsGateway.NewLife.X.Extension;
 using ThingsGateway.Razor;
+
+using TouchSocket.Core;
 
 namespace ThingsGateway.Debug;
 
@@ -28,6 +29,9 @@ public partial class LogConsole : IDisposable
     private bool IsPause;
 
     public bool Disposed { get; set; }
+
+    [Parameter, EditorRequired]
+    public ILog Logger { get; set; }
 
     [Parameter]
     public string HeaderText { get; set; } = "Log";
@@ -85,7 +89,7 @@ public partial class LogConsole : IDisposable
                         var result = TextFileReader.LastLog(files.FirstOrDefault().FullName, 0);
                         if (result.IsSuccess)
                         {
-                            Messages = result.Content.Select(a => new LogMessage((int)a.LogLevel, $"{a.LogTime} - {a.Message}{(a.ExceptionString.IsNullOrWhiteSpace() ? null : $"{Environment.NewLine}{a.ExceptionString}")}")).ToList();
+                            Messages = result.Content.Where(a => a.LogLevel >= Logger?.LogLevel).Select(a => new LogMessage((int)a.LogLevel, $"{a.LogTime} - {a.Message}{(a.ExceptionString.IsNullOrWhiteSpace() ? null : $"{Environment.NewLine}{a.ExceptionString}")}")).ToList();
                         }
                         else
                         {

@@ -106,7 +106,10 @@
 
     </div>
     <div class="col-12 col-md-7 ">
-        <LogConsole LogPath=@LogPath HeaderText=@HeaderText></LogConsole>
+        @if (Plc!=null)
+        {
+            <LogConsole Logger=@Plc.Logger LogPath=@LogPath HeaderText=@HeaderText></LogConsole>
+        }
     </div>
 </div>
 
