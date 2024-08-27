@@ -44,7 +44,7 @@ public class Dlt645_2007Request
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class Dlt645_2007Send : ISendMessage
+public class Dlt645_2007Send : ISendMessage
 {
     internal ControlCode ControlCode = default;
 

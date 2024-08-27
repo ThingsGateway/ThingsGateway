@@ -15,7 +15,7 @@ namespace ThingsGateway.Foundation.Dlt645;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class Dlt645_2007Response : Dlt645_2007Request
+public class Dlt645_2007Response : Dlt645_2007Request
 {
     /// <summary>
     /// 错误码
@@ -26,7 +26,7 @@ internal class Dlt645_2007Response : Dlt645_2007Request
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class Dlt645_2007Message : MessageBase, IResultMessage
+public class Dlt645_2007Message : MessageBase, IResultMessage
 {
     private readonly byte[] ReadStation = [0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA];
 
@@ -42,10 +42,8 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
 
     public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
     {
-        int sendHeadCodeIndex = Dlt645_2007Send.SendHeadCodeIndex;
-
         var pos = byteBlock.Position - HeaderLength;
-        var endIndex = HeaderLength + BodyLength;
+        var endIndex = HeaderLength + BodyLength + HeadCodeIndex;
         if (byteBlock[endIndex - 1] == 0x16)
         {
             //检查校验码
@@ -60,15 +58,9 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
                 return FilterResult.Success;
             }
             Response.Station = byteBlock.Span.Slice(HeadCodeIndex + 1, 6).ToArray();
-            if (!Response.Station.SequenceEqual(Request.Station))//设备地址不符合时，返回错误
-            {
-                if (!Request.Station.SequenceEqual(ReadStation))//读写通讯地址例外
-                {
-                    ErrorMessage = DltResource.Localizer["StationNotSame"];
-                    OperCode = 999;
-                    return FilterResult.Success;
-                }
-            }
+
+
+
 
             var controlCode = byteBlock[HeadCodeIndex + 8];
             if ((controlCode & 0x40) == 0x40)//控制码bit6为1时，返回错误
@@ -79,22 +71,36 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
                 OperCode = 999;
                 return FilterResult.Success;
             }
-            if (controlCode != ((byte)Dlt645_2007Send.ControlCode) + 0x80)//控制码不符合时，返回错误
+
+
+            if (Dlt645_2007Send != null)
             {
-                ErrorMessage =
-                     DltResource.Localizer["FunctionNotSame", $"0x{controlCode:X2}", $"0x{(byte)Dlt645_2007Send.ControlCode:X2}"];
-                OperCode = 999;
-                return FilterResult.Success;
-            }
-            if (Dlt645_2007Send.ControlCode == ControlCode.Read || Dlt645_2007Send.ControlCode == ControlCode.Write)
-            {
-                //数据标识不符合时，返回错误
-                Response.DataId = byteBlock.Span.Slice(HeadCodeIndex + 10, 4).ToArray().BytesAdd(-0x33);
-                if (!Response.DataId.SequenceEqual(Request.DataId))
+                if (!Response.Station.SequenceEqual(Request.Station))//设备地址不符合时，返回错误
                 {
-                    ErrorMessage = DltResource.Localizer["DataIdNotSame"];
+                    if (!Request.Station.SequenceEqual(ReadStation))//读写通讯地址例外
+                    {
+                        ErrorMessage = DltResource.Localizer["StationNotSame"];
+                        OperCode = 999;
+                        return FilterResult.Success;
+                    }
+                }
+                if (controlCode != ((byte)Dlt645_2007Send.ControlCode) + 0x80)//控制码不符合时，返回错误
+                {
+                    ErrorMessage =
+                         DltResource.Localizer["FunctionNotSame", $"0x{controlCode:X2}", $"0x{(byte)Dlt645_2007Send.ControlCode:X2}"];
                     OperCode = 999;
                     return FilterResult.Success;
+                }
+                if (Dlt645_2007Send.ControlCode == ControlCode.Read || Dlt645_2007Send.ControlCode == ControlCode.Write)
+                {
+                    //数据标识不符合时，返回错误
+                    Response.DataId = byteBlock.Span.Slice(HeadCodeIndex + 10, 4).ToArray().BytesAdd(-0x33);
+                    if (!Response.DataId.SequenceEqual(Request.DataId))
+                    {
+                        ErrorMessage = DltResource.Localizer["DataIdNotSame"];
+                        OperCode = 999;
+                        return FilterResult.Success;
+                    }
                 }
             }
 
@@ -109,35 +115,27 @@ internal class Dlt645_2007Message : MessageBase, IResultMessage
     /// <inheritdoc/>
     public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
     {
-        if (Request != null)
-        {
-            //因为设备可能带有FE前导符开头，这里找到0x68的位置
+        //因为设备可能带有FE前导符开头，这里找到0x68的位置
 
-            if (byteBlock != null)
+        if (byteBlock != null)
+        {
+            for (int index = byteBlock.Position; index < byteBlock.Length; index++)
             {
-                for (int index = byteBlock.Position; index < byteBlock.Length; index++)
+                if (byteBlock[index] == 0x68)
                 {
-                    if (byteBlock[index] == 0x68)
-                    {
-                        HeadCodeIndex = index;
-                        break;
-                    }
+                    HeadCodeIndex = index;
+                    break;
                 }
             }
+        }
 
-            //帧起始符 地址域  帧起始符 控制码 数据域长度共10个字节
-            HeaderLength = HeadCodeIndex - byteBlock.Position + 10;
-            if (byteBlock.CanReadLength < HeaderLength + HeadCodeIndex)
-            {
-                return true;
-            }
+        //帧起始符 地址域  帧起始符 控制码 数据域长度共10个字节
+        HeaderLength = HeadCodeIndex - byteBlock.Position + 10;
+        if (byteBlock.Length > HeadCodeIndex + 9)
             BodyLength = byteBlock[HeadCodeIndex + 9] + 2;
-            return true;
-        }
-        else
-        {
-            return false;//不是主动请求的，可能是心跳DTU包，直接放弃
-        }
+
+        return true;
+
     }
 
     public override void SendInfo(ISendMessage sendMessage)

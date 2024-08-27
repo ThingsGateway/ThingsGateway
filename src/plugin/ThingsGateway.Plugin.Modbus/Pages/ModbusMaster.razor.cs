@@ -55,7 +55,7 @@ public partial class ModbusMaster : ComponentBase, IDisposable
             }
             catch (Exception ex)
             {
-                ChannelData.Channel.Logger.Exception(ex);
+                ChannelData.Channel.Logger?.Exception(ex);
             }
         }
         await InvokeAsync(StateHasChanged);

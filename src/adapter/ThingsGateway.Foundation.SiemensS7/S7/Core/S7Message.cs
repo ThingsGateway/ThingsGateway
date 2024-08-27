@@ -15,7 +15,7 @@ namespace ThingsGateway.Foundation.SiemensS7;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class S7Message : MessageBase, IResultMessage
+public class S7Message : MessageBase, IResultMessage
 {
     /// <summary>
     /// 错误码
@@ -28,44 +28,43 @@ internal class S7Message : MessageBase, IResultMessage
     public SiemensAddress[] Request { get; set; }
     public S7Send? S7Send { get; set; }
 
+
+    public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
+    {
+        byteBlock.Position += 2;
+        BodyLength = byteBlock.ReadUInt16(EndianType.Big) - 4;
+        return true;
+    }
     public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
     {
-        if (S7Send == null)
+        var pos = byteBlock.Position;
+        if (byteBlock[pos + 1] == 0xD0) // 首次握手0XD0连接确认
         {
+            OperCode = 0;
             return FilterResult.Success;
         }
-
-        var pos = byteBlock.Position;
-        if (S7Send.Handshake)
+        else if (byteBlock[pos + 15] == 0xF0) // PDU
         {
-            if (byteBlock[pos + 1] == 0xD0) // 首次握手0XD0连接确认
+            // 其余情况判断错误代码
+            if (byteBlock[pos + 13] + byteBlock[pos + 14] > 0) // 如果错误代码不为0
             {
-                OperCode = 0;
+                OperCode = 999;
+                ErrorMessage = SiemensS7Resource.Localizer["ReturnError", byteBlock[pos + 13].ToString("X2"), byteBlock[pos + 14].ToString("X2")];
                 return FilterResult.Success;
             }
             else
             {
-                // 其余情况判断错误代码
-                if (byteBlock[pos + 13] + byteBlock[pos + 14] > 0) // 如果错误代码不为0
-                {
-                    OperCode = 999;
-                    ErrorMessage = SiemensS7Resource.Localizer["ReturnError", byteBlock[pos + 13].ToString("X2"), byteBlock[pos + 14].ToString("X2")];
-                    return FilterResult.Success;
-                }
-                else
-                {
-                    Content = byteBlock.ToArray(byteBlock.Length - 2, 2);
-                    OperCode = 0;
-                    return FilterResult.Success;
-                }
+                Content = byteBlock.ToArray(byteBlock.Length - 2, 2);
+                OperCode = 0;
+                return FilterResult.Success;
             }
         }
 
         //分bit/byte解析
-        if (S7Send.Read)
+        else if (byteBlock[pos + 15] == 0x04) // Read
         {
-            int length = 0;
-            int itemLen = Request.Length;//驱动只会读取一个项
+            int length = byteBlock[pos + 17];
+            int itemLen = byteBlock[pos + 16];
 
             //添加错误代码校验
             // 其余情况判断错误代码
@@ -77,13 +76,6 @@ internal class S7Message : MessageBase, IResultMessage
             }
             else
             {
-                if (byteBlock[pos + 16] != itemLen)
-                {
-                    OperCode = 999;
-                    ErrorMessage = SiemensS7Resource.Localizer["DataLengthError"];
-                    return FilterResult.Success;
-                }
-
                 if (byteBlock.Length < pos + 18)
                 {
                     OperCode = 999;
@@ -97,12 +89,6 @@ internal class S7Message : MessageBase, IResultMessage
                     return FilterResult.Success;
                 }
 
-                //解析读取字节数组
-                for (int index = 0; index < itemLen; index++)
-                {
-                    var address = Request[index];
-                    length += address.Length;
-                }
                 using ValueByteBlock data = new(length);
                 var dataIndex = pos + 17;
                 for (int index = 0; index < itemLen; index++)
@@ -110,34 +96,36 @@ internal class S7Message : MessageBase, IResultMessage
                     if (byteBlock[dataIndex] != byte.MaxValue)
                     {
                         OperCode = 999;
-                        ErrorMessage = SiemensS7Resource.Localizer["ValidateDataError", byteBlock[pos + 17], SiemensHelper.GetCpuError(byteBlock[pos + 17])];
+                        ErrorMessage = SiemensS7Resource.Localizer["ValidateDataError", byteBlock[dataIndex], SiemensHelper.GetCpuError(byteBlock[dataIndex])];
                         return FilterResult.Success;
                     }
 
-                    var address = Request[index];
                     if (byteBlock[dataIndex + 1] == 4)//Bit:3;Byte:4;Counter或者Timer:9
                     {
-                        data.Write(byteBlock.Span.Slice(dataIndex + 4, address.Length));
-                        dataIndex += address.Length + 3;
+                        byteBlock.Position = dataIndex + 2;
+                        var byteLength = byteBlock.ReadUInt16(EndianType.Big) / 8;
+                        data.Write(byteBlock.Span.Slice(dataIndex + 4, byteLength));
+                        dataIndex += byteLength + 4;
                     }
                     else if (byteBlock[dataIndex + 1] == 9)//Counter或者Timer:9
                     {
-                        int num = (byteBlock[dataIndex + 2] * 256) + byteBlock[dataIndex + 3];
-                        if (num % 3 == 0)
+                        byteBlock.Position = dataIndex + 2;
+                        var byteLength = byteBlock.ReadUInt16(EndianType.Big);
+                        if (byteLength % 3 == 0)
                         {
-                            for (int indexCT = 0; indexCT < num / 3; indexCT++)
+                            for (int indexCT = 0; indexCT < byteLength / 3; indexCT++)
                             {
                                 data.Write(byteBlock.Span.Slice(dataIndex + 5 + (3 * indexCT), 2));
                             }
                         }
                         else
                         {
-                            for (int indexCT = 0; indexCT < num / 5; indexCT++)
+                            for (int indexCT = 0; indexCT < byteLength / 5; indexCT++)
                             {
                                 data.Write(byteBlock.Span.Slice(dataIndex + 7 + (5 * indexCT), 2));
                             }
                         }
-                        dataIndex += num + 4;
+                        dataIndex += byteLength + 4;
                     }
                 }
 
@@ -146,9 +134,9 @@ internal class S7Message : MessageBase, IResultMessage
                 return FilterResult.Success;
             }
         }
-        else
+        else if (byteBlock[pos + 15] == 0x05) // Write
         {
-            int itemLen = Request.Length;
+            int itemLen = byteBlock[pos + 16];
             if (byteBlock[pos + 13] + byteBlock[pos + 14] > 0) // 如果错误代码不为0
             {
                 OperCode = 999;
@@ -176,13 +164,10 @@ internal class S7Message : MessageBase, IResultMessage
                 return FilterResult.Success;
             }
         }
-    }
 
-    public override bool CheckHead<TByteBlock>(ref TByteBlock byteBlock)
-    {
-        byteBlock.Position += 2;
-        BodyLength = byteBlock.ReadUInt16(EndianType.Big) - 4;
-        return true;
+        OperCode = 999;
+        ErrorMessage = "Unsupport function code";
+        return FilterResult.Success;
     }
 
     public override void SendInfo(ISendMessage sendMessage)

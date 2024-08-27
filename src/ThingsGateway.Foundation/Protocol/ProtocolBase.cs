@@ -813,7 +813,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogWarning(ex);
+                        Logger?.LogWarning(ex);
                     }
                 }
                 if (Channel is TcpServiceChannel tcpServiceChannel)

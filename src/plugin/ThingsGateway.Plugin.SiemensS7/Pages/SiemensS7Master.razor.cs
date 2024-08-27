@@ -53,7 +53,7 @@ public partial class SiemensS7Master : IDisposable
             }
             catch (Exception ex)
             {
-                ChannelData.Channel.Logger.Exception(ex);
+                ChannelData.Channel.Logger?.Exception(ex);
             }
         }
         await InvokeAsync(StateHasChanged);

@@ -204,7 +204,7 @@ public class ChannelThread
                 item.CurrentDevice.SetDeviceStatus(lastErrorMessage: arg3);
             }
         }
-        Logger.Log_Out(arg1, arg2, arg3, arg4);
+        Logger?.Log_Out(arg1, arg2, arg3, arg4);
     }
 
     #endregion 日志
@@ -290,7 +290,7 @@ public class ChannelThread
         {
             if (DriverBases[0].IsCollectDevice != driverBase.IsCollectDevice)
             {
-                Logger.LogWarning(Localizer["PluginTypeDiff", driverBase.DeviceName, ChannelTable.Name]);
+                Logger?.LogWarning(Localizer["PluginTypeDiff", driverBase.DeviceName, ChannelTable.Name]);
                 return;
             }
         }

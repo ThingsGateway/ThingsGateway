@@ -69,7 +69,7 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
                 await base.StartAsync().ConfigureAwait(false);
                 if (ServerState == ServerState.Running)
                 {
-                    Logger.Info($"{Monitors.FirstOrDefault()?.Option.IpHost}{DefaultResource.Localizer["ServiceStarted"]}");
+                    Logger?.Info($"{Monitors.FirstOrDefault()?.Option.IpHost}{DefaultResource.Localizer["ServiceStarted"]}");
                 }
             }
             else
@@ -92,7 +92,7 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
             var iPHost = Monitors.FirstOrDefault()?.Option.IpHost;
             await base.StopAsync().ConfigureAwait(false);
             if (!Monitors.Any())
-                Logger.Info($"{iPHost}{DefaultResource.Localizer["ServiceStoped"]}");
+                Logger?.Info($"{iPHost}{DefaultResource.Localizer["ServiceStoped"]}");
         }
         else
         {

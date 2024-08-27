@@ -26,13 +26,16 @@ public class ModbusRtuMessage : MessageBase, IResultMessage
     {
         if (Response.ErrorCode != null)
         {
-            if (Request.Station == Response.Station)
+            if (Request != null)
             {
-                return FilterResult.Success;
-            }
-            else
-            {
-                return FilterResult.GoOn;
+                if (Request.Station == Response.Station)
+                {
+                    return FilterResult.Success;
+                }
+                else
+                {
+                    return FilterResult.GoOn;
+                }
             }
         }
 
@@ -80,19 +83,22 @@ public class ModbusRtuMessage : MessageBase, IResultMessage
             {
                 //验证发送/返回站号与功能码
                 //站号验证
-                if (Request.Station != Response.Station)
+                if (Request != null)
                 {
-                    OperCode = 999;
-                    Response.ErrorCode = 1;
-                    ErrorMessage = ModbusResource.Localizer["StationNotSame", Request.Station, Response.Station];
-                    return FilterResult.GoOn;
-                }
-                if (Response.FunctionCode > 4 ? Request.WriteFunctionCode != Response.FunctionCode : Request.FunctionCode != Response.FunctionCode)
-                {
-                    OperCode = 999;
-                    Response.ErrorCode = 1;
-                    ErrorMessage = ModbusResource.Localizer["FunctionNotSame", Request.FunctionCode, Response.FunctionCode];
-                    return FilterResult.GoOn;
+                    if (Request.Station != Response.Station)
+                    {
+                        OperCode = 999;
+                        Response.ErrorCode = 1;
+                        ErrorMessage = ModbusResource.Localizer["StationNotSame", Request.Station, Response.Station];
+                        return FilterResult.GoOn;
+                    }
+                    if (Response.FunctionCode > 4 ? Request.WriteFunctionCode != Response.FunctionCode : Request.FunctionCode != Response.FunctionCode)
+                    {
+                        OperCode = 999;
+                        Response.ErrorCode = 1;
+                        ErrorMessage = ModbusResource.Localizer["FunctionNotSame", Request.FunctionCode, Response.FunctionCode];
+                        return FilterResult.GoOn;
+                    }
                 }
                 return FilterResult.Success;
             }
@@ -127,10 +133,6 @@ public class ModbusRtuMessage : MessageBase, IResultMessage
         else
         {
             Response.ErrorCode = null;
-            if (Request == null)
-            {
-                return false;
-            }
 
             if (Response.FunctionCode == 5 || Response.FunctionCode == 6)
             {

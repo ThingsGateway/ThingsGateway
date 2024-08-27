@@ -60,7 +60,7 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
 
     protected override FilterResult Filter<TByteBlock>(ref TByteBlock byteBlock, bool beCached, ref TRequest request, ref int tempCapacity)
     {
-        if (Logger.LogLevel <= LogLevel.Trace)
+        if (Logger?.LogLevel <= LogLevel.Trace)
             Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.AsSegmentTake().ToHexString() : byteBlock.ToString(byteBlock.Position))}");
 
         try
@@ -107,8 +107,8 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
                     var result = request.CheckBody(ref byteBlock);
                     if (result == FilterResult.Cache)
                     {
-                        if (Logger.LogLevel <= LogLevel.Trace)
-                            Logger.Trace($"{ToString()}-Received incomplete, cached message, current length:{byteBlock.Length}  {request?.ErrorMessage}");
+                        if (Logger?.LogLevel <= LogLevel.Trace)
+                            Logger?.Trace($"{ToString()}-Received incomplete, cached message, current length:{byteBlock.Length}  {request?.ErrorMessage}");
                         tempCapacity = request.BodyLength + request.HeaderLength;
                         request.OperCode = -1;
                     }
@@ -156,7 +156,7 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
 
     protected override async Task PreviewSendAsync(ReadOnlyMemory<byte> memory)
     {
-        if (Logger.LogLevel <= LogLevel.Trace)
+        if (Logger?.LogLevel <= LogLevel.Trace)
             Logger?.Trace($"{ToString()}- Send:{(IsHexData ? memory.Span.ToHexString() : (memory.Span.ToString(Encoding.UTF8)))}");
 
         //发送
@@ -177,7 +177,7 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
         try
         {
             requestInfoBuilder.Build(ref byteBlock);
-            if (Logger.LogLevel <= LogLevel.Trace)
+            if (Logger?.LogLevel <= LogLevel.Trace)
                 Logger?.Trace($"{ToString()}- Send:{(IsHexData ? byteBlock.Span.ToHexString() : (byteBlock.Span.ToString(Encoding.UTF8)))}");
             //非并发主从协议
             if (IsSingleThread)

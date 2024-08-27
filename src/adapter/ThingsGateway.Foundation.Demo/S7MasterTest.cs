@@ -19,6 +19,7 @@ internal class S7MasterTest
 {
     public static async Task Test()
     {
+
         using SiemensS7Master siemensS7Master = GetMaster();
         //modbusMaster.HeartbeatHexString = "ccccdddd";//心跳
         await siemensS7Master.ConnectAsync().ConfigureAwait(false);
@@ -60,7 +61,7 @@ internal class S7MasterTest
         var clientConfig = new TouchSocketConfig();
         clientConfig.ConfigureContainer(a => a.AddConsoleLogger());
         var clientChannel = clientConfig.GetTcpClientWithIPHost("127.0.0.1:102");
-        //clientChannel.Logger.LogLevel = LogLevel.Trace;
+        //clientChannel.Logger?.LogLevel = LogLevel.Trace;
         SiemensS7Master siemensS7Master = new(clientChannel)
         {
             SiemensS7Type = SiemensTypeEnum.S1500,

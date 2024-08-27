@@ -67,7 +67,7 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
     {
         try
         {
-            if (Logger.LogLevel <= LogLevel.Trace)
+            if (Logger?.LogLevel <= LogLevel.Trace)
                 Logger?.Trace($"{ToString()}- Receive:{(IsHexData ? byteBlock.AsSegmentTake().ToHexString() : byteBlock.ToString(byteBlock.Position))}");
 
             TRequest request = null;
@@ -110,8 +110,8 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
                 var result = request.CheckBody(ref byteBlock);
                 if (result == FilterResult.Cache)
                 {
-                    if (Logger.LogLevel <= LogLevel.Trace)
-                        Logger.Trace($"{ToString()}-Received incomplete, cached message, current length:{byteBlock.Length}  {request?.ErrorMessage}");
+                    if (Logger?.LogLevel <= LogLevel.Trace)
+                        Logger?.Trace($"{ToString()}-Received incomplete, cached message, current length:{byteBlock.Length}  {request?.ErrorMessage}");
                     request.OperCode = -1;
                 }
                 else if (result == FilterResult.GoOn)
@@ -144,7 +144,7 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
     /// <inheritdoc/>
     protected override async Task PreviewSendAsync(EndPoint endPoint, ReadOnlyMemory<byte> memory)
     {
-        if (Logger.LogLevel <= LogLevel.Trace)
+        if (Logger?.LogLevel <= LogLevel.Trace)
             Logger?.Trace($"{ToString()}- Send:{(IsHexData ? memory.Span.ToHexString() : (memory.Span.ToString(Encoding.UTF8)))}");
 
         //发送
@@ -165,7 +165,7 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
         try
         {
             requestInfoBuilder.Build(ref byteBlock);
-            if (Logger.LogLevel <= LogLevel.Trace)
+            if (Logger?.LogLevel <= LogLevel.Trace)
                 Logger?.Trace($"{ToString()}- Send:{(IsHexData ? byteBlock.Span.ToHexString() : (byteBlock.Span.ToString(Encoding.UTF8)))}");
             //非并发主从协议
             if (IsSingleThread)

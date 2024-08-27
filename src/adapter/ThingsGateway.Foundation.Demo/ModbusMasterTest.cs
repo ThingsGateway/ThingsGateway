@@ -18,6 +18,7 @@ internal class ModbusMasterTest
 {
     public static async Task Test()
     {
+
         ModbusMaster modbusMaster = GetMaster();
 
         //查看modbus驱动地址说明
@@ -87,12 +88,12 @@ internal class ModbusMasterTest
                         item.LastErrorMessage = result1.ErrorMessage;
                         var time = DateTime.Now;
                         item.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
-                        modbusMaster.Logger.Warning(result1.ToString());
+                        modbusMaster.Logger?.Warning(result1.ToString());
                     }
                 }
                 catch (Exception ex)
                 {
-                    modbusMaster.Logger.Exception(ex);
+                    modbusMaster.Logger?.Exception(ex);
                 }
             }
             else
@@ -100,7 +101,7 @@ internal class ModbusMasterTest
                 item.LastErrorMessage = result.ErrorMessage;
                 var time = DateTime.Now;
                 item.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
-                modbusMaster.Logger.Warning(result.ToString());
+                modbusMaster.Logger?.Warning(result.ToString());
             }
         }
 

@@ -53,7 +53,7 @@ public partial class ModbusSlave : ComponentBase, IDisposable
         }
         catch (Exception ex)
         {
-            ChannelData.Channel.Logger.Exception(ex);
+            ChannelData.Channel.Logger?.Exception(ex);
         }
         await InvokeAsync(StateHasChanged);
     }

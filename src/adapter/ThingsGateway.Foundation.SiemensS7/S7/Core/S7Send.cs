@@ -57,7 +57,7 @@ public class S7Request
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-internal class S7Send : ISendMessage
+public class S7Send : ISendMessage
 {
     internal bool Handshake;
     internal byte[] HandshakeBytes;

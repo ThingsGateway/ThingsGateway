@@ -450,7 +450,7 @@ public partial class SiemensS7Master : ProtocolBase
         catch (Exception ex)
         {
             await channel.CloseAsync().ConfigureAwait(false);
-            Logger.Exception(ex);
+            Logger?.Exception(ex);
         }
         finally
         {

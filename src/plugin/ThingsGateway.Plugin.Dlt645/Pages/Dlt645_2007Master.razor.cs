@@ -55,7 +55,7 @@ public partial class Dlt645_2007Master : ComponentBase, IDisposable
             }
             catch (Exception ex)
             {
-                ChannelData.Channel.Logger.Exception(ex);
+                ChannelData.Channel.Logger?.Exception(ex);
             }
         }
         await InvokeAsync(StateHasChanged);

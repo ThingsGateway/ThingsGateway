@@ -37,7 +37,7 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
                     }
                 }
                 await socket.ResetIdAsync(id).ConfigureAwait(false);
-                client.Logger.Info(DefaultResource.Localizer["DtuConnected", id]);
+                client.Logger?.Info(DefaultResource.Localizer["DtuConnected", id]);
                 e.Handled = true;
             }
 
@@ -67,7 +67,7 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
                     //回应心跳包
                     await socket.SendAsync(e.ByteBlock.AsSegment()).ConfigureAwait(false);
                     e.Handled = true;
-                    if (socket.Logger.LogLevel <= LogLevel.Trace)
+                    if (socket.Logger?.LogLevel <= LogLevel.Trace)
                         socket.Logger?.Trace($"{socket}- Heartbeat");
                 }
             }

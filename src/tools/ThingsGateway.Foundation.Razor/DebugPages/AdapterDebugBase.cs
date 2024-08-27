@@ -75,16 +75,16 @@ public abstract class AdapterDebugBase : ComponentBase, IDisposable
                 var data = await Plc.ReadAsync(RegisterAddress, ArrayLength, DataType);
                 if (data.IsSuccess)
                 {
-                    Plc.Logger.Debug(data.Content.ToJsonNetString());
+                    Plc.Logger?.Debug(data.Content.ToJsonNetString());
                 }
                 else
                 {
-                    Plc.Logger.Warning(data.ToString());
+                    Plc.Logger?.Warning(data.ToString());
                 }
             }
             catch (Exception ex)
             {
-                Plc.Logger.Exception(ex);
+                Plc.Logger?.Exception(ex);
             }
         }
     }
@@ -99,16 +99,16 @@ public abstract class AdapterDebugBase : ComponentBase, IDisposable
                 var data = await Plc.WriteAsync(RegisterAddress, WriteValue.GetJTokenFromString(), DataType);
                 if (data.IsSuccess)
                 {
-                    Plc.Logger.Debug($" {WriteValue.GetJTokenFromString()} {Localizer["WriteSuccess"]}");
+                    Plc.Logger?.Debug($" {WriteValue.GetJTokenFromString()} {Localizer["WriteSuccess"]}");
                 }
                 else
                 {
-                    Plc.Logger.Warning(data.ToString());
+                    Plc.Logger?.Warning(data.ToString());
                 }
             }
             catch (Exception ex)
             {
-                Plc.Logger.Exception(ex);
+                Plc.Logger?.Exception(ex);
             }
         }
     }
