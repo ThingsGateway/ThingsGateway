@@ -92,5 +92,29 @@
     "CacheFileMaxLength": "CacheFileMaxLength(mb)",
     "SplitSize": "SplitSize",
     "CacheEnable": "CacheEnable"
+  },
+
+  "ThingsGateway.Plugin.SqlHisAlarm.HistoryAlarm": {
+
+    "Name": "Name",
+    "Description": "Description",
+    "DeviceName": "DeviceName",
+    "DataType": "DataType",
+    "RegisterAddress": "RegisterAddress",
+
+    "AlarmCode": "AlarmCode",
+    "AlarmLimit": "AlarmLimit",
+    "AlarmText": "AlarmText",
+    "AlarmTime": "AlarmTime",
+    "AlarmType": "AlarmType",
+    "EventTime": "EventTime",
+    "EventType": "EventType",
+
+    "Remark1": "Remark1",
+    "Remark2": "Remark2",
+    "Remark3": "Remark3",
+    "Remark4": "Remark4",
+    "Remark5": "Remark5"
   }
+
 }

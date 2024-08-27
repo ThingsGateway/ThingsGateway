@@ -92,5 +92,28 @@
     "CacheFileMaxLength": "缓存文件最大长度(mb)",
     "SplitSize": "上传每页条数",
     "CacheEnable": "启用缓存"
+  },
+  "ThingsGateway.Plugin.SqlHisAlarm.HistoryAlarm": {
+
+    "Name": "名称",
+    "Description": "描述",
+    "DeviceName": "采集设备",
+    "DataType": "数据类型",
+    "RegisterAddress": "变量地址",
+
+
+    "AlarmCode": "报警值",
+    "AlarmLimit": "报警限值",
+    "AlarmText": "报警文本",
+    "AlarmTime": "报警时间",
+    "AlarmType": "报警类型",
+    "EventTime": "事件时间",
+    "EventType": "事件类型",
+
+    "Remark1": "备用1",
+    "Remark2": "备用2",
+    "Remark3": "备用3",
+    "Remark4": "备用4",
+    "Remark5": "备用5"
   }
 }

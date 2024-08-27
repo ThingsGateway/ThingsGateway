@@ -150,10 +150,10 @@
     "LLAlarmText": "低低报文本",
     "LLAlarmCode": "低低限值",
 
-    "CustomAlarmEnable": "自定义报使能",
-    "CustomRestrainExpressions": "自定义报约束",
-    "CustomAlarmText": "自定义报文本",
-    "CustomAlarmCode": "自定义限值",
+    "CustomAlarmEnable": "自定义报警使能",
+    "CustomRestrainExpressions": "自定义报警约束",
+    "CustomAlarmText": "自定义报警文本",
+    "CustomAlarmCode": "自定义报警限值",
 
     "Unit": "单位",
     "RegisterAddress": "变量地址",
@@ -428,10 +428,10 @@
     "LLAlarmText": "低低报文本",
     "LLAlarmCode": "低低限值",
 
-    "CustomAlarmEnable": "自定义报使能",
-    "CustomRestrainExpressions": "自定义报约束",
-    "CustomAlarmText": "自定义报文本",
-    "CustomAlarmCode": "自定义限值",
+    "CustomAlarmEnable": "自定义报警使能",
+    "CustomRestrainExpressions": "自定义报警约束",
+    "CustomAlarmText": "自定义报警文本",
+    "CustomAlarmCode": "自定义报警限值",
 
     "Unit": "单位",
     "RegisterAddress": "变量地址",
