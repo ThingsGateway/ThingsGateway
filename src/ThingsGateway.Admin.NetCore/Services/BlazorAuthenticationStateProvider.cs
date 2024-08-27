@@ -40,6 +40,7 @@ public class BlazorAuthenticationStateProvider : AuthenticationStateProvider
     public void UserChanged()
     {
         currentUser = new AuthenticationState(_appService.User);
+        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
     public override Task<AuthenticationState> GetAuthenticationStateAsync()
     {

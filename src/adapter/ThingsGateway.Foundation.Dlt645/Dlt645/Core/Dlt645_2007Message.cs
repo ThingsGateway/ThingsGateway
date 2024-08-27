@@ -43,7 +43,7 @@ public class Dlt645_2007Message : MessageBase, IResultMessage
     public override FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock)
     {
         var pos = byteBlock.Position - HeaderLength;
-        var endIndex = HeaderLength + BodyLength + HeadCodeIndex;
+        var endIndex = HeaderLength + BodyLength + pos;
         if (byteBlock[endIndex - 1] == 0x16)
         {
             //检查校验码
