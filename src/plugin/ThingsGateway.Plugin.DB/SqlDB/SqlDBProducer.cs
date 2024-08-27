@@ -170,6 +170,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
+        db.DbMaintenance.CreateDatabase();
         if (_driverPropertys.IsHisDB)
             db.CodeFirst.InitTables(typeof(SQLHistoryValue));
         if (_driverPropertys.IsReadDB)
