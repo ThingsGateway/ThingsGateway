@@ -142,7 +142,7 @@ public static class StartupWithoutWebExtensions
 
         // 构建配置
         var configuration = configBuilder.Build();
-        NetCoreApp.Configuration = configuration;
+        NetCoreApp.Init(configuration);
 
         NetCoreApp.ContentRootPath = AppContext.BaseDirectory; ;
         NetCoreApp.WebRootPath = Path.Combine(AppContext.BaseDirectory, "wwwroot");

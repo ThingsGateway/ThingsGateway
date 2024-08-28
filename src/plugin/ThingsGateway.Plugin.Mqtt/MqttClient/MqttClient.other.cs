@@ -31,6 +31,8 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// </summary>
 public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableData, DeviceBasicData, AlarmVariable>
 {
+    public const string RpcTopic = "{0}/+";
+    public const string ThingsBoardRpcTopic = "v1/gateway/rpc";
     private IMqttClient _mqttClient;
 
     private MqttClientOptions _mqttClientOptions;
@@ -111,7 +113,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
     private ValueTask<OperResult> UpdateDevModel(IEnumerable<DeviceBasicData> item, CancellationToken cancellationToken)
     {
-        if (_driverPropertys.RpcWriteTopic == "v1/gateway/rpc")
+        if (_driverPropertys.RpcWriteTopic == ThingsBoardRpcTopic)
         {
 
             List<TopicJson> topicJsonTBList = new();
@@ -237,7 +239,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         Dictionary<string, JToken> rpcDatas = null;
 
         //适配 ThingsBoardRp
-        if (args.ApplicationMessage.Topic == "v1/gateway/rpc")
+        if (args.ApplicationMessage.Topic == ThingsBoardRpcTopic)
         {
             var thingsBoardRpcData = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonNetString<ThingsBoardRpcData>();
             if (thingsBoardRpcData == null)
@@ -272,7 +274,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         }
         else
         {
-            var t = string.Format(TGMqttRpcClientTopicGenerationStrategy.RpcTopic, _driverPropertys.RpcWriteTopic);
+            var t = string.Format(RpcTopic, _driverPropertys.RpcWriteTopic);
             if (MqttTopicFilterComparer.Compare(args.ApplicationMessage.Topic, t) != MqttTopicFilterCompareResult.IsMatch)
                 return;
             rpcDatas = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonNetString<Dictionary<string, JToken>>();

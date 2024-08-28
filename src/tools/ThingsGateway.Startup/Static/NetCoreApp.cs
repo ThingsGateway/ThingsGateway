@@ -27,22 +27,23 @@ public class NetCoreApp
     /// <summary>
     /// 直接引用程序集
     /// </summary>
-    public static readonly IEnumerable<Assembly> Assemblies;
+    public static IEnumerable<Assembly> Assemblies { get; private set; }
 
     /// <summary>
     /// 直接引用程序集中的类型
     /// </summary>
-    public static readonly IEnumerable<Type> EffectiveTypes;
+    public static IEnumerable<Type> EffectiveTypes { get; private set; }
 
     /// <summary>
     /// 直接引用程序集中的Route Razor类，不支持单文件
     /// </summary>
-    public static readonly IEnumerable<Assembly> RazorAssemblies;
+    public static IEnumerable<Assembly> RazorAssemblies { get; private set; }
 
     private static IStringLocalizerFactory? stringLocalizerFactory;
 
-    static NetCoreApp()
+    public static void Init(IConfiguration configuration)
     {
+        Configuration = configuration;
         Assemblies = GetAssemblies().ToList();
         EffectiveTypes = Assemblies!.SelectMany(a =>
         a.GetTypes());
@@ -58,7 +59,7 @@ public class NetCoreApp
     /// <summary>
     /// 系统配置
     /// </summary>
-    public static IConfiguration? Configuration { get; set; }
+    public static IConfiguration? Configuration { get; private set; }
 
     /// <summary>
     /// 当前程序文件夹
@@ -143,7 +144,6 @@ public class NetCoreApp
                       (u.Type == "package" && (u.Name.StartsWith(nameof(ThingsGateway)))))
                .Select(u => Reflect.GetAssembly(u.Name));
 
-            return scanAssemblies;
         }
         else
         {
@@ -187,7 +187,6 @@ public class NetCoreApp
                                                 && !ass.FullName.StartsWith("netstandard"))
                                         .Concat(fixedSingleFileAssemblies)
                                         .Distinct();
-                return scanAssemblies;
             }
             else
             {
@@ -220,9 +219,65 @@ public class NetCoreApp
 
                 scanAssemblies = scanAssemblies.Concat(fixedSingleFileAssemblies)
                                         .Distinct().ToList();
-                return scanAssemblies;
 
             }
         }
+
+
+        // 读取外部程序集
+        var externalAssembliePaths = (Configuration.GetSection("ExternalAssemblies")
+                .Get<string[]>()
+            ?? Array.Empty<string>());
+
+        // 加载 appsettings.json 配置的外部程序集
+        if (externalAssembliePaths.Any())
+        {
+            var externalDlls = new List<string>();
+            foreach (var item in externalAssembliePaths)
+            {
+                if (string.IsNullOrWhiteSpace(item)) continue;
+
+                var path = Path.Combine(AppContext.BaseDirectory, item);
+
+                // 若以 .dll 结尾则认为是一个文件
+                if (item.EndsWith(".dll"))
+                {
+                    if (File.Exists(path)) externalDlls.Add(path);
+                }
+                // 否则作为目录查找或拼接 .dll 后缀作为文件名查找
+                else
+                {
+                    // 作为目录查找所有 .dll 文件
+                    if (Directory.Exists(path))
+                    {
+                        externalDlls.AddRange(Directory.EnumerateFiles(path, "*.dll", SearchOption.AllDirectories));
+                    }
+                    // 拼接 .dll 后缀查找
+                    else
+                    {
+                        var pathDll = path + ".dll";
+                        if (File.Exists(pathDll)) externalDlls.Add(pathDll);
+                    }
+                }
+            }
+
+            // 加载外部程序集
+            foreach (var assemblyFileFullPath in externalDlls)
+            {
+                // 根据路径加载程序集
+                var loadedAssembly = Reflect.LoadAssembly(assemblyFileFullPath);
+                if (loadedAssembly == default) continue;
+                var assembly = new[] { loadedAssembly };
+
+                if (scanAssemblies.Any(u => u == loadedAssembly)) continue;
+
+                // 合并程序集
+                scanAssemblies = scanAssemblies.Concat(assembly);
+            }
+        }
+
+
+        return scanAssemblies;
+
     }
 }

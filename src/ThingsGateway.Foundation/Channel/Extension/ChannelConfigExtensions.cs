@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 using ThingsGateway.Foundation.Extension.String;
+using ThingsGateway.NewLife.X;
 
 using TouchSocket.SerialPorts;
 
@@ -154,6 +155,12 @@ public static class ChannelConfigExtensions
 
         //载入配置
         UdpSessionChannel udpSessionChannel = new UdpSessionChannel();
+#if NET6_0_OR_GREATER
+        if (OperatingSystem.IsWindows())
+        {
+            config.UseUdpConnReset();
+        }
+#endif
         udpSessionChannel.Setup(config);
         return udpSessionChannel;
     }

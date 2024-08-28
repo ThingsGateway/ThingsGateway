@@ -37,6 +37,7 @@ namespace ThingsGateway.Plugin.Mqtt;
 /// </summary>
 public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableData, DeviceData, AlarmVariable>
 {
+    public const string RpcTopic = "{0}/+";
     private MQTTnet.Server.MqttServer _mqttServer;
     private IWebHost _webHost { get; set; }
 
@@ -218,7 +219,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
             return;
 
         if (_driverPropertys.RpcWriteTopic.IsNullOrWhiteSpace()) return;
-        var t = string.Format(TGMqttRpcClientTopicGenerationStrategy.RpcTopic, _driverPropertys.RpcWriteTopic);
+        var t = string.Format(RpcTopic, _driverPropertys.RpcWriteTopic);
         if (MqttTopicFilterComparer.Compare(args.ApplicationMessage.Topic, t) != MqttTopicFilterCompareResult.IsMatch)
             return;
         var rpcDatas = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment).FromJsonNetString<Dictionary<string, JToken>>();
@@ -241,8 +242,8 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
 
     private Task MqttServer_LoadingRetainedMessageAsync(LoadingRetainedMessagesEventArgs arg)
     {
-        List<MqttApplicationMessage> Messages = GetRetainedMessages();
-        arg.LoadedRetainedMessages = Messages;
+        //List<MqttApplicationMessage> Messages = GetRetainedMessages();
+        //arg.LoadedRetainedMessages = Messages;
         return CompletedTask.Instance;
     }
 
@@ -267,17 +268,17 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
             return;
         }
         LogMessage?.LogInformation($"{ToString()}-{arg.ClientId}-Client Connected");
-        _ = Task.Run(async () =>
-        {
-            //延时发送
-            await Task.Delay(1000).ConfigureAwait(false);
-            List<MqttApplicationMessage> data = GetRetainedMessages();
-            foreach (var item in data)
-            {
-                await _mqttServer.InjectApplicationMessage(
-     new InjectedMqttApplicationMessage(item)).ConfigureAwait(false);
-            }
-        });
+        //   _ = Task.Run(async () =>
+        //   {
+        //       //延时发送
+        //       await Task.Delay(1000).ConfigureAwait(false);
+        //       List<MqttApplicationMessage> data = GetRetainedMessages();
+        //       foreach (var item in data)
+        //       {
+        //           await _mqttServer.InjectApplicationMessage(
+        //new InjectedMqttApplicationMessage(item)).ConfigureAwait(false);
+        //       }
+        //   });
     }
 
     /// <summary>

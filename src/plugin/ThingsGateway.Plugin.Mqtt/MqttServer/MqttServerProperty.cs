@@ -9,6 +9,473 @@
 //------------------------------------------------------------------------------
 
 namespace ThingsGateway.Plugin.Mqtt;
+public class Prev
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public string penId { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public double x { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public double y { get; set; }
+}
+
+public class AnchorsItem
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public string id { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public double lineLength { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string penId { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public Prev prev { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int prevNextType { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string start { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int x { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int y { get; set; }
+}
+
+public class Where
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public string comparison { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string key { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string type { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int value { get; set; }
+}
+
+public class EventsItem
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public int action { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string name { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public Where where { get; set; }
+}
+
+public class PensItem
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public List<AnchorsItem> anchors { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string animateColor { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string animateCycle { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string animateReverse { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int animateSpan { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string autoPlay { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string autoPolyline { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string borderColor { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int borderWidth { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public Center center { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public List<string> children { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string color { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public List<EventsItem> events { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public double ex { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public double ey { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int fontSize { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public List<string> form { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int globalAlpha { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public double height { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string hiddenText { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string id { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string keepAnimateState { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public double length { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int lineAnimateType { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public double lineHeight { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string lineName { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int lineWidth { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int locked { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string name { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int rotate { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int shadowBlur { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int shadowOffsetX { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public List<string> tags { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string text { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int type { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string value { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string visible { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public double width { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public double x { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public double y { get; set; }
+}
+
+public class Origin
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public double x { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public double y { get; set; }
+}
+
+public class Center
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public int x { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int y { get; set; }
+}
+
+public class Paths
+{
+}
+
+public class HttpsItem
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public string http { get; set; }
+}
+
+public class Root
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public int x { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int y { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public double scale { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public List<PensItem> pens { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public Origin origin { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public Center center { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public Paths paths { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string template { get; set; }
+    /// <summary>
+    /// 手阀
+    /// </summary>
+    public string name { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string shared { get; set; }
+    /// <summary>
+    /// 智慧园区
+    /// </summary>
+    public string @case { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string system { get; set; }
+    /// <summary>
+    /// 物联网
+    /// </summary>
+    public string folder { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int view { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int star { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int favorite { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string ownerId { get; set; }
+    /// <summary>
+    /// 林冠旭
+    /// </summary>
+    public string ownerName { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string editorId { get; set; }
+    /// <summary>
+    /// 乐乐
+    /// </summary>
+    public string editorName { get; set; }
+    /// <summary>
+    /// '处':3 '处理':6 '废':1 '废水':5 '水':2 '理':4
+    /// </summary>
+    public string search_vector { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string createdAt { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string updatedAt { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string autoAlignGrid { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string autoSizeinMobile { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string autoSizeinPc { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string background { get; set; }
+    /// <summary>
+    /// 水利水务
+    /// </summary>
+    public string @class { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string component { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public List<string> dataPoints { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string desc { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public List<string> groups { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string http { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public List<HttpsItem> https { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string localSaveAt { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int locked { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string mqttOptions { get; set; }
+    /// <summary>
+    /// 废水处理
+    /// </summary>
+    public string name1 { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string previewUnScale { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int price { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string src { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string tags { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string type { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string version { get; set; }
+}
 
 /// <summary>
 /// <inheritdoc/>

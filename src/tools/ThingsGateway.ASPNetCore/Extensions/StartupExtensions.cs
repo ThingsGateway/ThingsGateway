@@ -65,7 +65,7 @@ public static class StartupExtensions
     /// </summary>
     private static void AddStartups(WebApplicationBuilder builder)
     {
-        NetCoreApp.Configuration = builder.Configuration;
+        NetCoreApp.Init(builder.Configuration);
         StartupWithoutWebExtensions.AddJsonFiles(builder.Configuration, builder.Environment.EnvironmentName);
 
         if (builder.Environment is IWebHostEnvironment webHostEnvironment)

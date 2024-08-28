@@ -49,7 +49,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         var mqttClientSubscribeOptionsBuilder = mqttFactory.CreateSubscribeOptionsBuilder();
         if (!_driverPropertys.RpcWriteTopic.IsNullOrWhiteSpace())
         {
-            if (_driverPropertys.RpcWriteTopic == "v1/gateway/rpc")
+            if (_driverPropertys.RpcWriteTopic == ThingsBoardRpcTopic)
             {
                 mqttClientSubscribeOptionsBuilder = mqttClientSubscribeOptionsBuilder.WithTopicFilter(
      f =>
@@ -62,7 +62,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                 mqttClientSubscribeOptionsBuilder = mqttClientSubscribeOptionsBuilder.WithTopicFilter(
                     f =>
                     {
-                        f.WithTopic(string.Format(TGMqttRpcClientTopicGenerationStrategy.RpcTopic, _driverPropertys.RpcWriteTopic));
+                        f.WithTopic(string.Format(RpcTopic, _driverPropertys.RpcWriteTopic));
                     });
             }
         }
