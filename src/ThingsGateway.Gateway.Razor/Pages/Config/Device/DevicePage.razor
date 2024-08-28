@@ -17,24 +17,22 @@
                 OnSaveAsync="Save" OnDeleteAsync="Delete">
 
         <TableColumns>
-            <TableColumn @bind-Field="@context.PluginName" Align="Alignment.Center">
+            <TableColumn @bind-Field="@context.PluginName" Align="Alignment.Center" Filterable=true Sortable=true>
                 <Template Context="pluginName">
                     @PluginServiceUtil.GetFileNameAndTypeName(pluginName?.Value).TypeName
                 </Template>
-
             </TableColumn>
 
-            <TableColumn @bind-Field="@context.ChannelId" Align="Alignment.Center">
+            <TableColumn @bind-Field="@context.ChannelId" Align="Alignment.Center" Sortable=true>
                 <Template Context="channelId">
                     @{
                         ChannelDict.TryGetValue(channelId.Value, out var channel);
                     }
                     @channel?.Name
                 </Template>
-
             </TableColumn>
 
-            <TableColumn @bind-Field="@context.RedundantDeviceId" Align="Alignment.Center">
+            <TableColumn @bind-Field="@context.RedundantDeviceId" Align="Alignment.Center" Sortable=true>
                 <Template Context="deviceId">
                     @{
                         string device = null;

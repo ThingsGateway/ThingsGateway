@@ -3,6 +3,7 @@
 @namespace ThingsGateway.Debug
 @using BootstrapBlazor.Components
 @using ThingsGateway.Core.Extension
+@using ThingsGateway.NewLife.X.Extension
 @using ThingsGateway.Razor
 @inject NavigationManager NavigationManager
 
@@ -53,9 +54,13 @@
             </div>
         </Side>
         <Main>
-            <Tab ClickTabToNavigation="true" ShowExtendButtons="true" ShowClose="true" AllowDrag=true
+
+            <Tab ClickTabToNavigation="true" ShowExtendButtons="false" ShowClose="true" AllowDrag=true
                  Menus="@MenuService.MenuItems" AdditionalAssemblies="@_assemblyList"
-                 DefaultUrl=@("/") Body=@(Body!)>
+                 DefaultUrl=@("/") Body=@(Body!) OnCloseTabItemAsync=@((a)=>
+                 {
+                 return Task.FromResult(!(a.Url=="/"||a.Url.IsNullOrEmpty()));
+                 })>
             </Tab>
 
         </Main>

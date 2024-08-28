@@ -46,17 +46,17 @@
 
 
             <TableColumn @bind-Field="@context.DataType" Filterable=true Sortable=true Visible=true />
+            <TableColumn @bind-Field="@context.RegisterAddress" Filterable=true Sortable=true Visible=true />
 
-            <TableColumn @bind-Field="@context.ProtectType" Visible="false" />
-            <TableColumn @bind-Field="@context.IntervalTime" Visible="false" />
-            <TableColumn @bind-Field="@context.RegisterAddress" Visible="false" />
-            <TableColumn @bind-Field="@context.OtherMethod" Visible="false" />
-            <TableColumn @bind-Field="@context.RpcWriteEnable" Visible="false" />
-            <TableColumn @bind-Field="@context.ReadExpressions" Visible="false" />
-            <TableColumn @bind-Field="@context.WriteExpressions" Visible="false" />
-            <TableColumn @bind-Field="@context.Unit" Visible="false" />
+            <TableColumn @bind-Field="@context.ProtectType" Filterable=true Sortable=true Visible="false" />
+            <TableColumn @bind-Field="@context.IntervalTime" Filterable=true Sortable=true Visible="false" />
+            <TableColumn @bind-Field="@context.OtherMethod" Filterable=true Sortable=true Visible="false" />
+            <TableColumn @bind-Field="@context.RpcWriteEnable" Filterable=true Sortable=true Visible="false" />
+            <TableColumn @bind-Field="@context.ReadExpressions" Filterable=true Sortable=true Visible="false" />
+            <TableColumn @bind-Field="@context.WriteExpressions" Filterable=true Sortable=true Visible="false" />
+            <TableColumn @bind-Field="@context.Unit" Filterable=true Sortable=true Visible="false" />
 
-            <TableColumn @bind-Field="@context.Index" Visible="false" />
+            <TableColumn @bind-Field="@context.Index" Filterable=true Sortable=true Visible="false" />
             <TableColumn @bind-Field="@context.Id" Visible="false" DefaultSort=true DefaultSortOrder="SortOrder.Asc" />
             @* <TableColumn Field="@context.AlarmEnable" FieldExpression=@(()=>context.AlarmEnable) Filterable Sortable="false" Visible="false" />
 

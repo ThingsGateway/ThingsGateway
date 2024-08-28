@@ -20,6 +20,6 @@ public class Startup : AppStartup
     public void ConfigureAdminApp(IServiceCollection services)
     {
         services.AddScoped<IPlatformService, PlatformService>();
-
+        services.AddBootstrapBlazorWinBoxService();
     }
 }

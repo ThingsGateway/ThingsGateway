@@ -26,7 +26,7 @@
 
         <TableColumns>
 
-            <TableColumn @bind-Field="@context.DeviceId" Align="Alignment.Center">
+            <TableColumn @bind-Field="@context.DeviceId" Align="Alignment.Center" Sortable=true>
                 <Template Context="deviceId">
                     @{
                         CollectDeviceDict.TryGetValue(deviceId.Value!.Value, out var device);

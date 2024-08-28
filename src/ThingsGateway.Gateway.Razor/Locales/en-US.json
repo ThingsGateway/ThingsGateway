@@ -29,7 +29,8 @@
   },
   "ThingsGateway.Gateway.Razor.DriverDebugPage": {
     "PluginUINotNull": "This plugin does not implement a debug page",
-    "New": "New"
+    "New": "New",
+    "NewWinbox": "NewWinbox"
   },
   "ThingsGateway.Gateway.Razor.Index": {
     "CollectDevice": "Collect Device",

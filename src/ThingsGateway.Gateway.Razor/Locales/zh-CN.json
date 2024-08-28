@@ -28,7 +28,8 @@
 
   "ThingsGateway.Gateway.Razor.DriverDebugPage": {
     "PluginUINotNull": "此插件未实现调试页面",
-    "New": "新建"
+    "New": "新建",
+    "NewWinbox": "新建窗口"
   },
 
   "ThingsGateway.Gateway.Razor.Index": {

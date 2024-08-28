@@ -1,5 +1,9 @@
-{
+﻿{
   "MenuItems": [
+    {
+      "Url": "/",
+      "Text": "首页"
+    },
     {
       "Text": "Modbus",
       "Items": [

@@ -64,7 +64,7 @@ public partial class DriverDebugPage
     }
 
     /// <inheritdoc/>
-    private async Task GetDebugUIAsync(PluginOutput plugin)
+    private async Task<RenderFragment?> GetDebugUIAsync(PluginOutput plugin)
     {
         try
         {
@@ -75,27 +75,64 @@ public partial class DriverDebugPage
                 if (driver == null)
                 {
                     await ToastService.Warning(null, Localizer["PluginUINotNull"]);
-                    return;
+                    return null;
                 }
                 var debugComponent = new ThingsGatewayDynamicComponent(driver);
                 var debugRender = debugComponent.Render();
-                tab.AddTab(new Dictionary<string, object?>
-                {
-                    [nameof(TabItem.Text)] = plugin.Name,
-                    [nameof(TabItem.IsActive)] = true,
-                    [nameof(TabItem.ChildContent)] = debugRender
-                });
+                return debugRender;
             }
+            return null;
         }
         catch (Exception ex)
         {
             await ToastService.Warning(null, ex.Message);
+            return null;
+        }
+    }
+    [Inject]
+    [NotNull]
+    private WinBoxService? WinBoxService { get; set; }
+
+    private async Task NewPluginWinboxRender(ContextMenuItem item, object value)
+    {
+        var pluginOutput = (PluginOutput)value;
+        if (pluginOutput.Children.Count == 0)
+        {
+            var debugRender = await GetDebugUIAsync(pluginOutput);
+            if (debugRender != null)
+            {
+                var option = new WinBoxOption()
+                {
+                    Title = pluginOutput.Name,
+                    ContentTemplate = debugRender,
+                    Width = "1200px",
+                    Height = "900px",
+                    Top = "150px",
+                    Left = "250px",
+                    Background = "var(--bb-primary-color)"
+                };
+                await WinBoxService.Show(option);
+            }
+
         }
     }
 
     private async Task NewPluginRender(ContextMenuItem item, object value)
     {
-        if (((PluginOutput)value).Children.Count == 0)
-            await GetDebugUIAsync(((PluginOutput)value));
+        var pluginOutput = (PluginOutput)value;
+        if (pluginOutput.Children.Count == 0)
+        {
+            var debugRender = await GetDebugUIAsync(pluginOutput);
+            if (debugRender != null)
+            {
+                tab.AddTab(new Dictionary<string, object?>
+                {
+                    [nameof(TabItem.Text)] = pluginOutput.Name,
+                    [nameof(TabItem.IsActive)] = true,
+                    [nameof(TabItem.ChildContent)] = debugRender
+                });
+            }
+        }
+
     }
 }

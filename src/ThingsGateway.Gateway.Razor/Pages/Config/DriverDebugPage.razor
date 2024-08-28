@@ -20,13 +20,14 @@
                 <ContextMenuZone>
                     <TreeView TItem="PluginOutput" Items="PluginTreeViewItems"  ClickToggleNode />
                     <ContextMenu>
-                        <ContextMenuItem Text=@Localizer["New"] OnClick="NewPluginRender"></ContextMenuItem>
+                    <ContextMenuItem Text=@Localizer["New"] OnClick="NewPluginRender"></ContextMenuItem>
+                    <ContextMenuItem Text=@Localizer["NewWinbox"] OnClick="NewPluginWinboxRender"></ContextMenuItem>
                     </ContextMenu>
                 </ContextMenuZone>
         </FirstPaneTemplate>
         <SecondPaneTemplate>
 
-            <Tab ShowClose @ref=tab>
+            <Tab ShowFullScreen ShowClose @ref=tab>
                 
             </Tab>
         </SecondPaneTemplate>

@@ -5,6 +5,7 @@
 @using ThingsGateway.Admin.Application
 @using ThingsGateway.Admin.Razor
 @using ThingsGateway.Core.Extension
+@using ThingsGateway.NewLife.X.Extension
 @using ThingsGateway.Razor
 @using System.Net.Http
 @using System.Net.Http.Json
@@ -82,9 +83,12 @@
                     </div>
                 </Side>
                 <Main>
-                    <Tab ClickTabToNavigation="true" ShowExtendButtons="true" ShowClose="true" AllowDrag=true
+                    <Tab ClickTabToNavigation="true" ShowExtendButtons="false" ShowClose="true" AllowDrag=true
                          AdditionalAssemblies="@NetCoreApp.RazorAssemblies" Menus="@MenuService.MenuItems"
-                         DefaultUrl=@("/") Body=@(Body!)>
+                         DefaultUrl=@("/") Body=@(Body!) OnCloseTabItemAsync=@((a)=>
+                         {
+                           return  Task.FromResult(!(a.Url=="/"||a.Url.IsNullOrEmpty()));
+                         })>
                     </Tab>
 
                 </Main>

@@ -68,7 +68,7 @@ public partial class QuickActions
         {
             await Task.Run(async () =>
             {
-                await HostedServiceUtil.CollectDeviceHostedService.RestartAsync().ConfigureAwait(false);
+                await HostedServiceUtil.CollectDeviceHostedService.RestartAsync();
             });
         }
         finally
