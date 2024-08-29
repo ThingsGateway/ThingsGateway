@@ -3,18 +3,7 @@ id: 404
 title: Linux服务部署
 ---
 
-:::important 特别注意
 
-验证码使用SkiaSharp，如果是在 linux 服务下运行则需要安装 libfontconfig1，如 ubuntu 的安装命令
-```
-apt-get update
-apt-get -y install libfontconfig1
-```
-如果是采用 docker 模式运行，则需要在 dockerfile 中添加如下配置，该命令适用于 debian 和 ubuntu 的 docker
-```
-RUN apt-get update && apt-get -y install libfontconfig1
-```
-:::
 
 ### （一）PM2守护 
 

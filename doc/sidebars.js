@@ -208,6 +208,11 @@ module.exports = {
           type: "doc",
           id: "404",
           label: "linux服务部署"
+        },
+        {
+          type: "doc",
+          id: "405",
+          label: "性能优化"
         }
       ]
     },
