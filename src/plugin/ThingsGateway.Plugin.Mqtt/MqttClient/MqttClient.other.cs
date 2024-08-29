@@ -89,6 +89,8 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         foreach (var topicJson in topicJsonList)
         {
             var result = await MqttUpAsync(topicJson.Topic, topicJson.Json, cancellationToken).ConfigureAwait(false);
+            if (cancellationToken.IsCancellationRequested)
+                return result;
             if (success != result.IsSuccess)
             {
                 if (!result.IsSuccess)

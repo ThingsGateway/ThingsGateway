@@ -107,6 +107,8 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         if (_mqttClient != null)
         {
             var result = await TryMqttClientAsync(cancellationToken).ConfigureAwait(false);
+            if (cancellationToken.IsCancellationRequested)
+                return;
             if (!result.IsSuccess)
             {
                 LogMessage?.LogWarning(result.Exception, $"{ToString()} Connect fail {result.ErrorMessage}");
@@ -119,6 +121,8 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         var clientResult = await TryMqttClientAsync(cancellationToken).ConfigureAwait(false);
         if (!clientResult.IsSuccess)
         {
+            if (cancellationToken.IsCancellationRequested)
+                return;
             if (success != clientResult.IsSuccess)
             {
                 if (!clientResult.IsSuccess)
