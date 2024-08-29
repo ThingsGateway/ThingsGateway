@@ -9,7 +9,6 @@
 //------------------------------------------------------------------------------
 
 using ThingsGateway.Foundation.Extension.String;
-using ThingsGateway.NewLife.X;
 
 using TouchSocket.SerialPorts;
 

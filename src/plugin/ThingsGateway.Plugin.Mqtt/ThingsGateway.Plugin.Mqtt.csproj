@@ -2,13 +2,20 @@
 	<Import Project="$(SolutionDir)Plugin.props" />
   <Import Project="$(SolutionDir)Version.props" />
 
+  <PropertyGroup>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+    <SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
+    <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
+  </PropertyGroup>
+  
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
 
-		<Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;set targetFWS=net8.0&#xD;&#xA;for %25%25f in (%25targetFWS%25) do (&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\%25%25f\Plugins\$(AssemblyName)&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*Mqtt*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" Condition="'$(OS)'=='Windows_NT'"/>
+		<Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*Mqtt*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" Condition="'$(OS)'=='Windows_NT'" />
 	</Target>
 
 	<ItemGroup>
-		<PackageReference Include="MQTTnet.AspNetCore" Version="4.3.6.1152" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="MQTTnet.AspNetCore" Version="4.3.6.1152" />
 	</ItemGroup>
 
 	<PropertyGroup>

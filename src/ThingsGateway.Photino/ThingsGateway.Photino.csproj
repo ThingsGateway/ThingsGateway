@@ -18,7 +18,7 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(SolutionName)'!='ThingsGateway - Admin'">
-    <Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;set targetFWS=net8.0&#xD;&#xA;for %25%25f in (%25targetFWS%25) do (&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Photino\bin\$(Configuration)\net6.0\Plugins&quot;&#xD;&#xA;    set &quot;dir1=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\%25%25f\Plugins&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    if not exist &quot;!dir1!&quot; md &quot;!dir1!&quot;&#xD;&#xA;xcopy  &quot;!dir1!&quot; &quot;!dir!&quot;  /E /I /H /K /Y&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;)&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" Condition="'$(OS)'=='Windows_NT'" />
+    <Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Photino\bin\$(Configuration)\$(TargetFramework)\Plugins&quot;&#xD;&#xA;    set &quot;dir1=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\$(TargetFramework)\Plugins&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    if not exist &quot;!dir1!&quot; md &quot;!dir1!&quot;&#xD;&#xA;xcopy  &quot;!dir1!&quot; &quot;!dir!&quot;  /E /I /H /K /Y&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;)&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" Condition="'$(OS)'=='Windows_NT'" />
   </Target>
 
   <ItemGroup>
@@ -26,7 +26,7 @@
     <PackageReference Include="Photino.Native" Version="3.1.5" />
     <PackageReference Include="Photino.NET" Version="3.1.16" />
     <PackageReference Include="Photino.Blazor" Version="3.1.8" />
-    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="8.0.8" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.8" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(SolutionName)'=='ThingsGateway - Admin'">
