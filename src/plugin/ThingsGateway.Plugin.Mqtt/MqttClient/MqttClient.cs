@@ -74,7 +74,10 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                     f.WithTopic(_driverPropertys.RpcQuestTopic);
                 });
         }
-        _mqttSubscribeOptions = mqttClientSubscribeOptionsBuilder.Build();
+        var mqttClientSubscribeOptions = mqttClientSubscribeOptionsBuilder.Build();
+        if (mqttClientSubscribeOptions.TopicFilters.Count > 0)
+            _mqttSubscribeOptions = mqttClientSubscribeOptions;
+
         _mqttClient = mqttFactory.CreateMqttClient();
         _mqttClient.ConnectedAsync += MqttClient_ConnectedAsync;
         _mqttClient.ApplicationMessageReceivedAsync += MqttClient_ApplicationMessageReceivedAsync;

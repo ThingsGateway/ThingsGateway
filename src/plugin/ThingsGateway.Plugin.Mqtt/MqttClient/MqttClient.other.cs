@@ -307,19 +307,22 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
     private async Task MqttClient_ConnectedAsync(MQTTnet.Client.MqttClientConnectedEventArgs args)
     {
         //连接成功后订阅相关主题
-        var subResult = await _mqttClient.SubscribeAsync(_mqttSubscribeOptions).ConfigureAwait(false);
-        if (subResult.Items.Any(a => a.ResultCode > (MqttClientSubscribeResultCode)10))
+        if (_mqttSubscribeOptions != null)
         {
-            LogMessage?.LogWarning($"Subscribe fail  {subResult.Items
-                .Where(a => a.ResultCode > (MqttClientSubscribeResultCode)10)
-                .Select(a =>
-                new
-                {
-                    Topic = a.TopicFilter.Topic,
-                    ResultCode = a.ResultCode.ToString()
-                }
-                )
-                .ToJsonNetString()}");
+            var subResult = await _mqttClient.SubscribeAsync(_mqttSubscribeOptions).ConfigureAwait(false);
+            if (subResult.Items.Any(a => a.ResultCode > (MqttClientSubscribeResultCode)10))
+            {
+                LogMessage?.LogWarning($"Subscribe fail  {subResult.Items
+                    .Where(a => a.ResultCode > (MqttClientSubscribeResultCode)10)
+                    .Select(a =>
+                    new
+                    {
+                        Topic = a.TopicFilter.Topic,
+                        ResultCode = a.ResultCode.ToString()
+                    }
+                    )
+                    .ToJsonNetString()}");
+            }
         }
     }
 
