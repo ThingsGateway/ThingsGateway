@@ -90,7 +90,10 @@ public class Program
         builder.Services.AddCorsAccessor();
 
         builder.WebHost.UseWebRoot("wwwroot");
-        //builder.WebHost.UseStaticWebAssets();
+
+        builder.WebHost.UseStaticWebAssets();
+
+        builder.Services.AddRazorPages();
 
         builder.Services.AddControllers();
         // 添加全局数据验证
@@ -111,7 +114,7 @@ public class Program
         //swagger
         builder.Services.AddSpecificationDocuments();
 
-
+#if NET8_0_OR_GREATER
         builder.Services
             .AddRazorComponents(options =>
         {
@@ -135,6 +138,29 @@ public class Program
                 options.HandshakeTimeout = TimeSpan.FromSeconds(30);
             });
 
+#else
+
+        builder.Services.AddServerSideBlazor(options =>
+        {
+            options.RootComponents.MaxJSRootComponents = 500;
+            options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(2);
+            options.MaxBufferedUnacknowledgedRenderBatches = 20;
+            options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(10);
+        }).AddHubOptions(options =>
+        {
+            //单个传入集线器消息的最大大小。默认 32 KB
+            options.MaximumReceiveMessageSize = null;
+            //可为客户端上载流缓冲的最大项数。 如果达到此限制，则会阻止处理调用，直到服务器处理流项。
+            options.StreamBufferCapacity = 30;
+            options.ClientTimeoutInterval = TimeSpan.FromMinutes(2);
+            options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+            options.HandshakeTimeout = TimeSpan.FromSeconds(30);
+        });
+
+#endif
+
+        builder.Services.AddHealthChecks();
+
         //Nginx代理的话获取真实IP
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {
@@ -153,6 +179,8 @@ public class Program
 
         //startup
         app.UseServices();
+
+        app.UseStaticFiles();
 
         //swagger
         app.UseSpecificationDocuments();
@@ -195,17 +223,27 @@ public class Program
         app.UseStaticFiles(new StaticFileOptions { ContentTypeProvider = provider });
 
         app.UseCorsAccessor();
+        app.UseRouting();
 
         app.UseAuthentication();
         app.UseAuthorization();
 
+#if NET8_0_OR_GREATER
         app.UseAntiforgery();
+#endif
 
         app.MapDefaultControllerRoute();
 
+#if NET8_0_OR_GREATER
         app.MapRazorComponents<BlazorApp>()
             .AddAdditionalAssemblies(App.RazorAssemblies.Distinct().Where(a => a != typeof(Program).Assembly).ToArray())
             .AddInteractiveServerRenderMode();
+#else
+
+        app.MapBlazorHub();
+        app.MapFallbackToPage("/_Host");
+
+#endif
 
         app.Run();
 

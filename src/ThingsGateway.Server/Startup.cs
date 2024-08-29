@@ -150,7 +150,9 @@ public class Startup : AppStartup
         });
 
         services.AddAuthorization();
+#if NET8_0_OR_GREATER
         services.AddCascadingAuthenticationState();
+#endif
         services.AddScoped<IAuthorizationHandler, BlazorAuthenticationStateProvider>();
 
         return services;
