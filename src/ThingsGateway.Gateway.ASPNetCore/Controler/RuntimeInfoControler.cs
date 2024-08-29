@@ -56,13 +56,14 @@ public class RuntimeInfoControler : ControllerBase
     /// <returns></returns>
     [HttpGet("realAlarmList")]
     [DisplayName("获取实时报警信息")]
-    public SqlSugarPagedList<VariableData> GetRealAlarmList([FromQuery] VariablePageInput input)
+    public SqlSugarPagedList<AlarmVariable> GetRealAlarmList([FromQuery] VariablePageInput input)
     {
         var data = GlobalData.ReadOnlyRealAlarmVariables.Select(a => a.Value)
+            .WhereIF(!input.RegisterAddress.IsNullOrEmpty(), a => a.RegisterAddress == input.RegisterAddress)
             .WhereIF(!input.Name.IsNullOrEmpty(), a => a.Name == input.Name)
             .WhereIF(input.DeviceId != null, a => a.DeviceId == input.DeviceId)
             .ToPagedList(input);
-        return data.Adapt<SqlSugarPagedList<VariableData>>();
+        return data.Adapt<SqlSugarPagedList<AlarmVariable>>();
     }
 
     /// <summary>
