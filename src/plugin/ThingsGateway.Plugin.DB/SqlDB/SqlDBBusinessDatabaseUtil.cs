@@ -50,6 +50,7 @@ public static class SqlDBBusinessDatabaseUtil
             ConfigureExternalServices = configureExternalServices,
         }
         );
+#if NET8_0_OR_GREATER
         if (sqlSugarClient.CurrentConnectionConfig.DbType == DbType.Oracle)
         {
             sqlSugarClient.CurrentConnectionConfig.MoreSettings = new()
@@ -57,6 +58,7 @@ public static class SqlDBBusinessDatabaseUtil
                 MaxParameterNameLength = 30
             };
         }
+#endif
         NetCoreApp.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
         return sqlSugarClient;
     }
