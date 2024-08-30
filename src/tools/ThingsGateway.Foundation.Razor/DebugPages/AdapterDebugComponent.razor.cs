@@ -39,6 +39,9 @@ public partial class AdapterDebugComponent : AdapterDebugBase
     [Parameter, EditorRequired]
     public string LogPath { get; set; }
 
+    [Parameter]
+    public ILog Logger { get; set; }
+
     /// <summary>
     /// 自定义模板
     /// </summary>
