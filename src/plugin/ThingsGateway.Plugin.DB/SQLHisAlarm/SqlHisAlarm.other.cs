@@ -44,7 +44,7 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>
             //.SplitTable()
 
             if (db.CurrentConnectionConfig.DbType == SqlSugar.DbType.QuestDB)
-                result = await db.Insertable(dbInserts).AS(_driverPropertys.TableName).UseParameter().ExecuteCommandAsync().ConfigureAwait(false);//不要加分表
+                result = await db.Insertable(dbInserts).AS(_driverPropertys.TableName).ExecuteCommandAsync().ConfigureAwait(false);//不要加分表
             else
                 result = await db.Fastest<HistoryAlarm>().AS(_driverPropertys.TableName).PageSize(50000).BulkCopyAsync(dbInserts).ConfigureAwait(false);
 
