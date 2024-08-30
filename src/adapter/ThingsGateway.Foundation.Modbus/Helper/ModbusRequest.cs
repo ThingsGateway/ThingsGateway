@@ -30,7 +30,7 @@ public class ModbusRequest
     public bool IsBitFunction => FunctionCode == 1 || FunctionCode == 2;
 
     /// <summary>
-    /// 读取字节数组长度
+    /// 可能表示读取字节数组长度，也可能为请求寄存器数量
     /// </summary>
     public ushort Length { get; set; } = 1;
 

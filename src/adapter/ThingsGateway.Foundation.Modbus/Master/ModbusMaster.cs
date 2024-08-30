@@ -213,7 +213,7 @@ public partial class ModbusMaster : ProtocolBase, IDtu
             {
                 if (mAddress.BitIndex < 16)
                 {
-                    mAddress.Length = 2;
+                    mAddress.Length = 1; //请求寄存器数量
                     var readData = await ModbusRequestAsync(mAddress, true, cancellationToken).ConfigureAwait(false);
                     if (!readData.IsSuccess) return readData;
                     var writeData = ThingsGatewayBitConverter.ToUInt16(readData.Content, 0);

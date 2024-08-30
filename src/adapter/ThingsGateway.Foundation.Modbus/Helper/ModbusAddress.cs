@@ -48,7 +48,7 @@ public class ModbusAddress : ModbusRequest
     }
 
     /// <summary>
-    /// 读取终止
+    /// 读取终止，只用于打包
     /// </summary>
     public int AddressEnd => (ushort)(StartAddress + Math.Max(Math.Ceiling(Length / 2.0), 1));
 
