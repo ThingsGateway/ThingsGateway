@@ -46,7 +46,7 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVarModel<Que
         return data.Cast<IDBHistoryValue>().ToList(); ;
     }
 
-    public override void Init(IChannel? channel = null)
+    protected override void Init(IChannel? channel = null)
     {
         _config = new TypeAdapterConfig();
         DateTime utcTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);

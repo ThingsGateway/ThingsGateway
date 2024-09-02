@@ -23,7 +23,6 @@ public abstract class CollectPropertyBase : DriverPropertyBase
     /// <summary>
     /// 最大并发数量
     /// </summary>
-    [DynamicProperty]
     public virtual int ConcurrentCount { get; set; } = 1;
 
     /// <summary>

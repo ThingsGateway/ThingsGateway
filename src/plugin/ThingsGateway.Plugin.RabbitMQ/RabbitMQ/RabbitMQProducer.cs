@@ -27,7 +27,7 @@ public partial class RabbitMQProducer : BusinessBaseWithCacheIntervalScript<Vari
 
     protected override BusinessPropertyWithCacheIntervalScript _businessPropertyWithCacheIntervalScript => _driverPropertys;
 
-    public override void Init(IChannel? channel = null)
+    protected override void Init(IChannel? channel = null)
     {
         base.Init(channel);
 

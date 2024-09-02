@@ -119,7 +119,7 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 配置底层的通道插件,通常在使用前都执行一次获取新的插件管理器
     /// </summary>
-    public virtual void ConfigurePlugins()
+    internal protected virtual void ConfigurePlugins()
     {
         if (Protocol != null)
         {
@@ -139,7 +139,7 @@ public abstract class DriverBase : DisposableObject
     /// 暂停
     /// </summary>
     /// <param name="keepRun">是否继续</param>
-    public virtual void PasueThread(bool keepRun)
+    internal void PasueThread(bool keepRun)
     {
         lock (this)
         {
@@ -200,7 +200,7 @@ public abstract class DriverBase : DisposableObject
     /// 在停止设备线程后执行的异步操作。
     /// </summary>
     /// <returns>表示异步操作的任务</returns>
-    public void AfterStop()
+    internal void AfterStop()
     {
         lock (this)
         {
@@ -210,26 +210,6 @@ public abstract class DriverBase : DisposableObject
                 {
                     // 执行资源释放操作
                     this.SafeDispose();
-                    // 根据是否正在采集设备来从全局设备集合或业务设备集合中移除指定设备ID的驱动程序对象
-                    //if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
-                    //{
-                    //    if (IsCollectDevice)
-                    //    {
-                    //        lock (GlobalData.CollectDevices)
-                    //        {
-                    //            GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == DeviceId);
-
-                    //            GlobalData.Variables.RemoveWhere(it => it.Value.DeviceId == DeviceId);
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-                    //        lock (GlobalData.BusinessDevices)
-                    //        {
-                    //            GlobalData.BusinessDevices.RemoveWhere(it => it.Value.Id == DeviceId);
-                    //        }
-                    //    }
-                    //}
 
                     IsInitSuccess = true;
                     IsBeforStarted = false;
@@ -251,7 +231,7 @@ public abstract class DriverBase : DisposableObject
     /// </summary>
     /// <param name="cancellationToken">取消操作的令牌。</param>
     /// <returns>表示异步操作的任务。</returns>
-    public virtual async ValueTask BeforStartAsync(CancellationToken cancellationToken)
+    internal virtual async ValueTask BeforStartAsync(CancellationToken cancellationToken)
     {
         // 如果已经执行过初始化，则直接返回
         if (IsBeforStarted)
@@ -307,7 +287,7 @@ public abstract class DriverBase : DisposableObject
     /// </summary>
     /// <param name="cancellationToken">取消操作的令牌。</param>
     /// <returns>表示异步操作结果的枚举。</returns>
-    public virtual async ValueTask<ThreadRunReturnTypeEnum> ExecuteAsync(CancellationToken cancellationToken)
+    internal protected virtual async ValueTask<ThreadRunReturnTypeEnum> ExecuteAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -395,7 +375,7 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 内部初始化
     /// </summary>
-    internal virtual void Init(DeviceRunTime device)
+    internal protected virtual void Init(DeviceRunTime device)
     {
         CurrentDevice = device;
     }
@@ -408,13 +388,13 @@ public abstract class DriverBase : DisposableObject
     /// 初始化，在开始前执行，异常时会标识重启
     /// </summary>
     /// <param name="channel">通道，当通道类型为<see cref="ChannelTypeEnum.Other"/>时，传入null</param>
-    public abstract void Init(IChannel? channel = null);
+    internal protected abstract void Init(IChannel? channel = null);
 
     /// <summary>
     /// 获取设备变量打包列表/特殊方法列表
     /// </summary>
     /// <param name="collectVariableRunTimes"></param>
-    public virtual void LoadSourceRead(IEnumerable<VariableRunTime> collectVariableRunTimes)
+    internal protected virtual void LoadSourceRead(IEnumerable<VariableRunTime> collectVariableRunTimes)
     {
     }
 

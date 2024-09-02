@@ -65,7 +65,7 @@ public class ModbusSlave : BusinessBase
     protected IStringLocalizer Localizer { get; private set; }
 
     /// <inheritdoc/>
-    public override void Init(IChannel? channel = null)
+    protected override void Init(IChannel? channel = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         //载入配置
@@ -103,6 +103,8 @@ public class ModbusSlave : BusinessBase
         );
         _plc.WriteData += OnWriteData;
         Localizer = NetCoreApp.CreateLocalizerByType(typeof(ModbusSlave))!;
+
+        _plc.ConnectAsync().ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     /// <inheritdoc/>

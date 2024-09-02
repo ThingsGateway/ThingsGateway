@@ -22,7 +22,7 @@
     "LastErrorMessage": "LastErrorMessage",
 
     "Name": "Name",
-    "Name.Required": " {0} 不可为空",
+    "Name.Required": " {0}  cannot be empty",
     "Description": "Description",
     "ChannelId": "Channel",
     "ChannelName": "ChannelName",
@@ -49,7 +49,7 @@
     "LastErrorMessage": "LastErrorMessage",
 
     "Name": "Name",
-    "Name.Required": " {0} 不可为空",
+    "Name.Required": " {0}  cannot be empty",
     "Description": "Description",
     "ChannelId": "Channel",
     "ChannelName": "ChannelName",

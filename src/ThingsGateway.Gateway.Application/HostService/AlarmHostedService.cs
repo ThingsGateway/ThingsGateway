@@ -466,7 +466,7 @@ public class AlarmHostedService : BackgroundService
 
             if (RealAlarmTask != null)
             {
-                await RealAlarmTask.StopAsync(TimeSpan.FromSeconds(10)).ConfigureAwait(false); // 停止现有任务，等待最多10秒钟
+                await RealAlarmTask.StopAsync(TimeSpan.FromSeconds(30)).ConfigureAwait(false); // 停止现有任务，等待最多30秒钟
             }
 
             RealAlarmTask = new DoTask(a => DoWork(a), _logger, Localizer["RealAlarmTask"]); // 创建新的任务
@@ -524,14 +524,16 @@ public class AlarmHostedService : BackgroundService
         //}
     }
 
-    private Task CollectDeviceHostedService_Started()
+    private async Task CollectDeviceHostedService_Started()
     {
-        return StartAsync();
+        if (HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable || HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
+            await StartAsync().ConfigureAwait(false);
     }
 
-    private Task CollectDeviceHostedService_Stoping()
+    private async Task CollectDeviceHostedService_Stoping()
     {
-        return StopAsync();
+        if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
+            await StopAsync();
     }
 
     #endregion worker服务

@@ -12,8 +12,6 @@ using BootstrapBlazor.Components;
 
 using Microsoft.Extensions.Localization;
 
-using ThingsGateway.Core.Extension;
-
 using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Application;
@@ -59,7 +57,7 @@ public abstract class BusinessBase : DriverBase
     /// 初始化方法，用于初始化设备运行时。
     /// </summary>
     /// <param name="device">设备运行时实例。</param>
-    internal override void Init(DeviceRunTime device)
+    internal protected override void Init(DeviceRunTime device)
     {
         BusinessBaseLocalizer = NetCoreApp.CreateLocalizerByType(typeof(BusinessBase))!;
         base.Init(device); // 调用基类的初始化方法
@@ -75,15 +73,7 @@ public abstract class BusinessBase : DriverBase
                                 .Where(a => device.VariableRunTimes.Select(b => b.Value.DeviceId).Contains(a.Value.Id))
                                 .ToDictionary(a => a.Key, a => a.Value);
 
-        // 使用线程安全的方式更新全局业务设备字典
-        //lock (GlobalData.BusinessDevices)
-        {
-            // 移除全局业务设备中与当前设备相同Id的项
-            GlobalData.BusinessDevices.RemoveWhere(it => it.Value.Id == device.Id);
-
-            // 添加当前设备到全局业务设备字典中
-            GlobalData.BusinessDevices.TryAdd(CurrentDevice.Name, CurrentDevice);
-        }
+        CurrentDevice.RefreshBusinessDeviceRuntime(device.Id);
 
         // 如果设备的采集间隔小于等于50毫秒，则将其设置为50毫秒
         if (device.IntervalTime <= 50)

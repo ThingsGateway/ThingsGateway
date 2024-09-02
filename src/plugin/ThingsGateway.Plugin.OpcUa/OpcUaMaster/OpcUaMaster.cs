@@ -49,7 +49,7 @@ public class OpcUaMaster : CollectBase
     public override IProtocol Protocol => null;
 
     /// <inheritdoc/>
-    public override void Init(IChannel? channel = null)
+    protected override void Init(IChannel? channel = null)
     {
         //载入配置
         OpcUaProperty config = new()

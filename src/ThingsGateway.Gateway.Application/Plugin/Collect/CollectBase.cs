@@ -17,7 +17,6 @@ using Newtonsoft.Json.Linq;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Core.Extension;
 using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Gateway.Application.Extensions;
 using ThingsGateway.NewLife.X.Threading;
@@ -53,7 +52,7 @@ public abstract class CollectBase : DriverBase
     /// 获取设备变量打包列表/特殊方法列表
     /// </summary>
     /// <param name="collectVariableRunTimes"></param>
-    public override void LoadSourceRead(IEnumerable<VariableRunTime> collectVariableRunTimes)
+    internal protected override void LoadSourceRead(IEnumerable<VariableRunTime> collectVariableRunTimes)
     {
         var currentDevice = CurrentDevice;
         try
@@ -124,11 +123,11 @@ public abstract class CollectBase : DriverBase
         }
     }
 
-    internal override void Init(DeviceRunTime device)
+    internal protected override void Init(DeviceRunTime device)
     {
-        Localizer = NetCoreApp.CreateLocalizerByType(typeof(CollectBase))!;
         // 调用基类的初始化方法
         base.Init(device);
+        Localizer = NetCoreApp.CreateLocalizerByType(typeof(CollectBase))!;
 
         // 从插件服务中获取当前设备关联的驱动方法信息列表，并转换为列表形式
         var data = PluginService.GetDriverMethodInfos(device.PluginName, this);
@@ -136,31 +135,15 @@ public abstract class CollectBase : DriverBase
         // 将获取到的驱动方法信息列表赋值给 DeviceMethods
         DeviceMethods = data;
 
-        // 使用全局锁确保多线程安全地更新全局数据
-        //lock (GlobalData.CollectDevices)
-        {
-            // 从全局设备字典中移除具有相同 Id 的设备
-            GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == device.Id);
-
-            // 尝试向全局设备字典中添加当前设备，使用设备名称作为键
-            GlobalData.CollectDevices.TryAdd(CurrentDevice.Name, CurrentDevice);
-
-            // 从全局变量字典中移除与当前设备关联的变量
-            GlobalData.Variables.RemoveWhere(it => it.Value.DeviceId == device.Id);
-
-            // 遍历当前设备的变量运行时集合，将其中的变量添加到全局变量字典中
-            foreach (var item in CurrentDevice.VariableRunTimes)
-            {
-                GlobalData.Variables.TryAdd(item.Key, item.Value);
-            }
-        }
+        CurrentDevice.RefreshCollectDeviceRuntime(device.Id);
     }
+
 
     /// <summary>
     /// 注意非通用设备需重写
     /// </summary>
     /// <returns></returns>
-    protected virtual string GetAddressDescription()
+    internal protected virtual string GetAddressDescription()
     {
         return Protocol?.GetAddressDescription();
     }

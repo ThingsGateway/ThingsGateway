@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
@@ -18,35 +20,101 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public class BusinessDeviceHostedService : DeviceHostedService
 {
+    /// <summary>
+    /// 线程检查时间，10分钟
+    /// </summary>
+    public const int CheckIntervalTime = 600;
+
+    protected EasyLock _easyLock = new(false);
+
+    /// <summary>
+    /// 已执行CreatThreads
+    /// </summary>
+    protected volatile bool started = false;
+
+    private IStringLocalizer Localizer { get; }
+
+    private EasyLock publicRestartLock = new();
+
     public BusinessDeviceHostedService(ILogger<BusinessDeviceHostedService> logger, IStringLocalizer<BusinessDeviceHostedService> localizer)
     {
         _logger = logger;
         Localizer = localizer;
     }
 
-    private IStringLocalizer Localizer { get; }
+    #region 服务
 
-    private async Task CollectDeviceHostedService_Started()
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Delay(1000).ConfigureAwait(false);
-        await StartAsync().ConfigureAwait(false);
-    }
-
-    private async Task CollectDeviceHostedService_Starting()
-    {
-        if (started)
+        while (!stoppingToken.IsCancellationRequested)
         {
-            await StopAsync(true).ConfigureAwait(false);
+            try
+            {
+                //每5分钟检测一次
+                await Task.Delay(300000, stoppingToken).ConfigureAwait(false);
+
+                //检测设备线程假死
+                var data = DriverBases.ToList();
+                var num = data.Count;
+                for (int i = 0; i < num; i++)
+                {
+                    DriverBase driverBase = data[i];
+                    try
+                    {
+                        if (driverBase.CurrentDevice != null)
+                        {
+                            //线程卡死/初始化失败检测
+                            if ((driverBase.CurrentDevice.ActiveTime != null && driverBase.CurrentDevice.ActiveTime != DateTime.UnixEpoch.ToLocalTime() && driverBase.CurrentDevice.ActiveTime.Value.AddMinutes(CheckIntervalTime) <= DateTime.Now)
+                                || (driverBase.IsInitSuccess == false))
+                            {
+                                //如果线程处于暂停状态，跳过
+                                if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.Pause)
+                                    continue;
+                                //如果初始化失败
+                                if (!driverBase.IsInitSuccess)
+                                    _logger?.LogWarning(Localizer["DeviceInitFail", driverBase.CurrentDevice.Name]);
+                                else
+                                    _logger?.LogWarning(Localizer["DeviceTaskDeath", driverBase.CurrentDevice.Name]);
+                                //重启线程
+                                await RestartChannelThreadAsync(driverBase.CurrentDevice.Id, false).ConfigureAwait(false);
+                                break;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "WhileExecute");
+                    }
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "BusinessDeviceHostedService WhileExecute");
+            }
         }
-        await CreatThreadsAsync().ConfigureAwait(false);
+
     }
 
-    private async Task CollectDeviceHostedService_Stoping()
+    /// <inheritdoc/>
+    public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        await StopAsync(true).ConfigureAwait(false);
-    }
+        using var stoppingToken = new CancellationTokenSource();
+        _stoppingToken = stoppingToken.Token;
+        stoppingToken.Cancel();
+        //取消全部采集线程
+        await BeforeRemoveAllChannelThreadAsync().ConfigureAwait(false);
+        //停止全部采集线程
+        await RemoveAllChannelThreadAsync(true).ConfigureAwait(false);
+        DriverBases.RemoveBusinessDeviceRuntime();
 
-    #region worker服务
+        await base.StopAsync(cancellationToken).ConfigureAwait(false);
+    }
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
@@ -56,29 +124,171 @@ public class BusinessDeviceHostedService : DeviceHostedService
         return base.StartAsync(cancellationToken);
     }
 
-    /// <inheritdoc/>
-    public override async Task StopAsync(CancellationToken cancellationToken)
+    #endregion
+
+    /// <summary>
+    /// 更新设备线程
+    /// </summary>
+    public override async Task RestartChannelThreadAsync(long deviceId, bool isChanged, bool deleteCache = false)
     {
-        using var stoppingToken = new CancellationTokenSource();
-        _stoppingToken = stoppingToken.Token;
-        stoppingToken.Cancel();
-        await base.StopAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            // 等待单个重启锁
+            await singleRestartLock.WaitAsync().ConfigureAwait(false);
+
+            // 如果没有收到停止请求
+            if (!_stoppingToken.IsCancellationRequested)
+            {
+
+                // 获取包含指定设备ID的通道线程，如果找不到则抛出异常
+                var channelThread = ChannelThreads.FirstOrDefault(it => it.Has(deviceId))
+                    ?? throw new Exception(Localizer["UpadteDeviceIdNotFound", deviceId]);
+
+                // 获取设备运行时信息或者使用通道线程中当前设备的信息
+                var dev = isChanged ? (await GetDeviceRunTimeAsync(deviceId).ConfigureAwait(false)).FirstOrDefault() : channelThread.GetDriver(deviceId).CurrentDevice;
+
+                // 先移除设备驱动，此操作会取消线程，需要重新启动线程
+                await channelThread.RemoveDriverAsync(deviceId).ConfigureAwait(false);
+
+                if (deleteCache)
+                {
+                    Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+                    await Task.Delay(2000).ConfigureAwait(false);
+                    var dir = CacheDBUtil.GetFileBasePath();
+                    var dirs = Directory.GetDirectories(dir).FirstOrDefault(a => Path.GetFileName(a) == deviceId.ToString());
+                    if (dirs != null)
+                    {
+                        //删除文件夹
+                        try
+                        {
+                            Directory.Delete(dirs, true);
+                        }
+                        catch { }
+                    }
+                }
+
+                // 如果设备信息不为空
+                if (dev != null)
+                {
+                    // 创建新的设备驱动并获取对应的通道线程
+                    DriverBase newDriverBase = dev.CreateDriver(PluginService);
+                    var newChannelThread = GetChannelThread(newDriverBase);
+
+                    // 如果找到了对应的通道线程
+                    if (newChannelThread != null)
+                    {
+                        // 启动新的通道线程
+                        await StartChannelThreadAsync(newChannelThread).ConfigureAwait(false);
+                    }
+
+                }
+                else
+                {
+                }
+            }
+
+            _ = Task.Run(() =>
+            {
+                DispatchService.Dispatch(new());
+            });
+        }
+        finally
+        {
+            // 释放单个重启锁
+            singleRestartLock.Release();
+        }
     }
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task RestartAsync(bool removeDevice = true)
     {
-        await WhileExecuteAsync(stoppingToken).ConfigureAwait(false);
+        try
+        {
+            await publicRestartLock.WaitAsync().ConfigureAwait(false);
+            await StopAsync(removeDevice).ConfigureAwait(false);
+            await StartAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            publicRestartLock.Release();
+        }
     }
 
-    #endregion worker服务
+    /// <summary>
+    /// 启动/创建全部设备，如果没有找到设备会创建
+    /// </summary>
+    public async Task StartAsync()
+    {
+        try
+        {
+            await restartLock.WaitAsync().ConfigureAwait(false);
+            await singleRestartLock.WaitAsync().ConfigureAwait(false);
+            if (!started)
+            {
+                ChannelThreads.Clear();
+                DriverBases.RemoveBusinessDeviceRuntime();
+                await CreatAllChannelThreadsAsync().ConfigureAwait(false);
+                _ = Task.Run(() =>
+                {
+                    DispatchService.Dispatch(new());
+                });
+            }
+            await StartAllChannelThreadsAsync().ConfigureAwait(false);
 
-    #region 重写
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Start");
+        }
+        finally
+        {
+            started = true;
+            singleRestartLock.Release();
+            restartLock.Release();
+        }
+    }
+
+    /// <summary>
+    /// 停止
+    /// </summary>
+    public async Task StopAsync(bool removeDevice)
+    {
+        try
+        {
+            await restartLock.WaitAsync().ConfigureAwait(false);
+            await singleRestartLock.WaitAsync().ConfigureAwait(false);
+            if (started)
+            {
+                //取消全部采集线程
+                await BeforeRemoveAllChannelThreadAsync().ConfigureAwait(false);
+                //停止全部采集线程
+                await RemoveAllChannelThreadAsync(removeDevice).ConfigureAwait(false);
+                DriverBases.RemoveBusinessDeviceRuntime();
+
+
+                for (int i = 0; i < 3; i++)
+                {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Stop");
+        }
+        finally
+        {
+            started = false;
+            singleRestartLock.Release();
+            restartLock.Release();
+        }
+    }
 
     /// <summary>
     /// 读取数据库，创建全部设备
     /// </summary>
     /// <returns></returns>
-    protected override async Task CreatAllChannelThreadsAsync()
+    protected async Task CreatAllChannelThreadsAsync()
     {
         if (!_stoppingToken.IsCancellationRequested)
         {
@@ -87,18 +297,18 @@ public class BusinessDeviceHostedService : DeviceHostedService
             _logger.LogInformation(Localizer["DeviceRuntimeGeted"]);
             var idSet = deviceRunTimes.Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet().ToDictionary(a => a);
             var result = deviceRunTimes.Where(a => !idSet.ContainsKey(a.Id));
-            result.ParallelForEach(collectDeviceRunTime =>
+            result.ParallelForEach(businessDeviceRunTime =>
             {
                 if (!_stoppingToken.IsCancellationRequested)
                 {
                     try
                     {
-                        DriverBase driverBase = collectDeviceRunTime.CreateDriver(PluginService);
+                        DriverBase driverBase = businessDeviceRunTime.CreateDriver(PluginService);
                         GetChannelThread(driverBase);
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, Localizer["InitError", collectDeviceRunTime.Name]);
+                        _logger.LogError(ex, Localizer["InitError", businessDeviceRunTime.Name]);
                     }
                 }
             });
@@ -110,10 +320,56 @@ public class BusinessDeviceHostedService : DeviceHostedService
         }
     }
 
+
     protected override async Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId)
     {
         return await DeviceService.GetBusinessDeviceRuntimeAsync(deviceId).ConfigureAwait(false);
     }
 
-    #endregion 重写
+    #region 事件通知
+
+    private async Task CollectDeviceHostedService_Started()
+    {
+        if (HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable || HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
+        {
+            await StartAsync().ConfigureAwait(false);
+        }
+    }
+
+    private async Task CollectDeviceHostedService_Starting()
+    {
+        if (started)
+        {
+            await StopAsync(true).ConfigureAwait(false);
+        }
+        try
+        {
+            await restartLock.WaitAsync().ConfigureAwait(false);
+            await singleRestartLock.WaitAsync().ConfigureAwait(false);
+            if (!started)
+            {
+                ChannelThreads.Clear();
+                DriverBases.RemoveBusinessDeviceRuntime();
+                await CreatAllChannelThreadsAsync().ConfigureAwait(false);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "CreatThreads");
+        }
+        finally
+        {
+            started = true;
+            singleRestartLock.Release();
+            restartLock.Release();
+        }
+    }
+
+    private async Task CollectDeviceHostedService_Stoping()
+    {
+        if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
+            await StopAsync(true).ConfigureAwait(false);
+    }
+
+    #endregion
 }

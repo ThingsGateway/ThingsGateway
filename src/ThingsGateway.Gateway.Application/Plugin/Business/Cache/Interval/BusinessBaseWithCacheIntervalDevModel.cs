@@ -41,7 +41,7 @@ public abstract class BusinessBaseWithCacheIntervalDevModel<VarModel, DevModel> 
     /// 初始化方法，初始化插件。
     /// </summary>
     /// <param name="channel">通道对象</param>
-    public override void Init(IChannel? channel = null)
+    internal protected override void Init(IChannel? channel = null)
     {
         // 如果业务属性要求上传所有变量，则更新当前设备的变量运行次数和采集设备信息
         if (_businessPropertyWithCacheInterval.IsAllVariable)

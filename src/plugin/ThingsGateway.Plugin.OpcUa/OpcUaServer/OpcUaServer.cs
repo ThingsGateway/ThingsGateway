@@ -49,7 +49,7 @@ public partial class OpcUaServer : BusinessBase
     protected IStringLocalizer Localizer { get; private set; }
     private ConcurrentQueue<VariableData> CollectVariableRunTimes { get; set; } = new();
 
-    public override void Init(IChannel? channel = null)
+    protected override void Init(IChannel? channel = null)
     {
         if (_driverPropertys.IsAllVariable)
         {

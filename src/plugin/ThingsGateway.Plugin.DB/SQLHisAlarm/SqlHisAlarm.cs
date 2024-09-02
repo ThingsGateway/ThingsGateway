@@ -36,7 +36,7 @@ public partial class SqlHisAlarm : BusinessBaseWithCacheVarModel<HistoryAlarm>, 
 
     protected override BusinessPropertyWithCache _businessPropertyWithCache => _driverPropertys;
 
-    public override void Init(IChannel? channel = null)
+    protected override void Init(IChannel? channel = null)
     {
         CurrentDevice.VariableRunTimes = CurrentDevice.VariableRunTimes.Where(a => a.Value.AlarmEnable).ToDictionary(a => a.Key, a => a.Value);
         CollectDevices = CollectDevices

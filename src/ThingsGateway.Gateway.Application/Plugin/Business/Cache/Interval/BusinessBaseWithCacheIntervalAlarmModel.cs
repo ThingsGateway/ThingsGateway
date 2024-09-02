@@ -35,7 +35,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     /// <summary>
     /// 初始化方法，可传入通道参数
     /// </summary>
-    public override void Init(IChannel? channel = null)
+    internal protected override void Init(IChannel? channel = null)
     {
         // 如果业务属性的缓存要求上传所有变量，则设置当前设备的变量运行时间和采集设备列表
         if (_businessPropertyWithCacheInterval.IsAllVariable)

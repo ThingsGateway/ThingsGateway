@@ -89,7 +89,7 @@ public class MemoryVariable : CollectBase
         return variableSourceReads;
     }
 
-    public override void Init(IChannel? channel = null)
+    protected override void Init(IChannel? channel = null)
     {
     }
 

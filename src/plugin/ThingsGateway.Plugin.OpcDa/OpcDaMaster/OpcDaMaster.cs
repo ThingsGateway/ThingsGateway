@@ -45,7 +45,7 @@ public class OpcDaMaster : CollectBase
     public override IProtocol Protocol => null;
 
     /// <inheritdoc/>
-    public override void Init(IChannel? channel = null)
+    protected override void Init(IChannel? channel = null)
     {
         //载入配置
         OpcDaProperty opcNode = new()

@@ -27,7 +27,7 @@ namespace ThingsGateway.Server;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static Task Main(string[] args)
     {
         //当前工作目录设为程序集的基目录
         System.IO.Directory.SetCurrentDirectory(AppContext.BaseDirectory);
@@ -245,7 +245,7 @@ public class Program
 
 #endif
 
-        app.Run();
+        return app.RunAsync();
 
         #endregion build
     }

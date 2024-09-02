@@ -40,7 +40,7 @@ public class SiemensS7Master : CollectBase
     public override IProtocol Protocol => _plc;
 
     /// <inheritdoc/>
-    public override void Init(IChannel? channel = null)
+    protected override void Init(IChannel? channel = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         //载入配置

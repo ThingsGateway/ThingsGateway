@@ -8,6 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using ThingsGateway.Foundation.Extension.Collection;
 using ThingsGateway.NewLife.X.Extension;
 
 namespace ThingsGateway.Gateway.Application;
@@ -31,6 +32,51 @@ public static class DriverBaseExtension
         pluginService.SetDriverProperties(driver, deviceRunTime.DevicePropertys);
 
         return driver;
+    }
+
+    public static void RefreshCollectDeviceRuntime(this CollectDeviceRunTime newDevice, long oldDeviceId)
+    {
+        // 从全局设备字典中移除具有相同 Id 的设备
+        GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == oldDeviceId);
+
+        // 尝试向全局设备字典中添加当前设备，使用设备名称作为键
+        GlobalData.CollectDevices.TryAdd(newDevice.Name, newDevice);
+
+        // 从全局变量字典中移除与当前设备关联的变量
+        GlobalData.Variables.RemoveWhere(it => it.Value.DeviceId == oldDeviceId);
+
+        // 遍历当前设备的变量运行时集合，将其中的变量添加到全局变量字典中
+        foreach (var item in newDevice.VariableRunTimes)
+        {
+            GlobalData.Variables.TryAdd(item.Key, item.Value);
+        }
+    }
+    public static void RefreshBusinessDeviceRuntime(this DeviceRunTime newDevice, long oldDeviceId)
+    {
+        // 移除全局业务设备中与当前设备相同Id的项
+        GlobalData.BusinessDevices.RemoveWhere(it => it.Value.Id == oldDeviceId);
+
+        // 添加当前设备到全局业务设备字典中
+        GlobalData.BusinessDevices.TryAdd(newDevice.Name, newDevice);
+    }
+
+    public static void RemoveCollectDeviceRuntime(this IEnumerable<DriverBase> driverBases)
+    {
+        GlobalData.CollectDevices.RemoveWhere(it => driverBases.Any(a => a.DeviceId == it.Value.Id));
+        GlobalData.Variables.RemoveWhere(it => driverBases.Any(a => a.DeviceId == it.Value.DeviceId));
+    }
+    public static void RemoveBusinessDeviceRuntime(this IEnumerable<DriverBase> driverBases)
+    {
+        GlobalData.BusinessDevices.RemoveWhere(it => driverBases.Any(a => a.DeviceId == it.Value.Id));
+    }
+    public static void RemoveCollectDeviceRuntime(this DriverBase driverBase)
+    {
+        GlobalData.CollectDevices.RemoveWhere(it => driverBase.DeviceId == it.Value.Id);
+        GlobalData.Variables.RemoveWhere(it => driverBase.DeviceId == it.Value.DeviceId);
+    }
+    public static void RemoveBusinessDeviceRuntime(this DriverBase driverBase)
+    {
+        GlobalData.BusinessDevices.RemoveWhere(it => driverBase.DeviceId == it.Value.Id);
     }
 
     /// <summary>

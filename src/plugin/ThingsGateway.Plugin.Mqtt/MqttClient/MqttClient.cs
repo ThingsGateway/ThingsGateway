@@ -26,7 +26,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
     protected override BusinessPropertyWithCacheIntervalScript _businessPropertyWithCacheIntervalScript => _driverPropertys;
 
-    public override void Init(IChannel? channel = null)
+    protected override void Init(IChannel? channel = null)
     {
         base.Init(channel);
 

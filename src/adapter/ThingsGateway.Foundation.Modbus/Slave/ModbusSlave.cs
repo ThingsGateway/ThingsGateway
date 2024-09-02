@@ -402,6 +402,12 @@ public class ModbusSlave : ProtocolBase, ITcpService, IDtuClient
             modbusRtu = false;
         }
 
+        //忽略不同设备地址的报文
+        if (!MulStation && modbusRequest.Station != Station)
+        {
+            return;
+        }
+
         if (modbusRequest.FunctionCode <= 4)
         {
             var data = ModbusRequest(modbusRequest, true);

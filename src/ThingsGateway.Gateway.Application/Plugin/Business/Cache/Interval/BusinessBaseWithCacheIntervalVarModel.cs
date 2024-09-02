@@ -39,7 +39,7 @@ public abstract class BusinessBaseWithCacheIntervalVarModel<T> : BusinessBaseWit
     /// 初始化方法，用于初始化业务对象。
     /// </summary>
     /// <param name="channel">通道对象</param>
-    public override void Init(IChannel? channel = null)
+    internal protected override void Init(IChannel? channel = null)
     {
         // 如果业务属性指定了全部变量，则设置当前设备的变量运行时列表和采集设备列表
         if (_businessPropertyWithCacheInterval.IsAllVariable)

@@ -15,7 +15,6 @@ using Microsoft.Extensions.Logging;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Core.Extension;
 using ThingsGateway.NewLife.X;
 
 using TouchSocket.Core;
@@ -167,7 +166,7 @@ public class ChannelThread
     /// <summary>
     /// 启停锁
     /// </summary>
-    protected EasyLock EasyLock { get; } = new();
+    protected EasyLock RestartLock { get; } = new();
 
     /// <summary>
     /// 取消令箭列表
@@ -357,24 +356,14 @@ public class ChannelThread
 
             driverBase.AfterStop();
 
-
             // 如果需要移除的是采集设备
             if (IsCollectChannel)
             {
-                // 锁定采集设备集合，并移除与DriverBases关联的设备
-                //lock (GlobalData.CollectDevices)
-                {
-                    GlobalData.CollectDevices.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.Id));
-                    GlobalData.Variables.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.DeviceId));
-                }
+                driverBase.RemoveCollectDeviceRuntime();
             }
             else
             {
-                // 锁定业务设备集合，并移除与DriverBases关联的设备
-                //lock (GlobalData.BusinessDevices)
-                {
-                    GlobalData.BusinessDevices.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.Id));
-                }
+                driverBase.RemoveBusinessDeviceRuntime();
             }
 
             // 从驱动程序集合和令牌源集合中移除驱动程序对象和相关令牌
@@ -443,7 +432,7 @@ public class ChannelThread
         try
         {
             // 等待EasyLock锁的获取
-            await EasyLock.WaitAsync().ConfigureAwait(false);
+            await RestartLock.WaitAsync().ConfigureAwait(false);
 
             // 如果DriverTask不为null，则执行以下操作
             if (DriverTask != null)
@@ -476,7 +465,7 @@ public class ChannelThread
         finally
         {
             // 释放EasyLock锁
-            EasyLock.Release();
+            RestartLock.Release();
         }
     }
 
@@ -494,7 +483,7 @@ public class ChannelThread
         try
         {
             // 等待EasyLock锁的获取
-            await EasyLock.WaitAsync().ConfigureAwait(false);
+            await RestartLock.WaitAsync().ConfigureAwait(false);
 
             BeforeStopThread();
 
@@ -512,20 +501,11 @@ public class ChannelThread
                 // 如果需要移除的是采集设备
                 if (IsCollectChannel)
                 {
-                    // 锁定采集设备集合，并移除与DriverBases关联的设备
-                    //lock (GlobalData.CollectDevices)
-                    {
-                        GlobalData.CollectDevices.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.Id));
-                        GlobalData.Variables.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.DeviceId));
-                    }
+                    DriverBases.RemoveCollectDeviceRuntime();
                 }
                 else
                 {
-                    // 锁定业务设备集合，并移除与DriverBases关联的设备
-                    //lock (GlobalData.BusinessDevices)
-                    {
-                        GlobalData.BusinessDevices.RemoveWhere(it => DriverBases.Any(a => a.DeviceId == it.Value.Id));
-                    }
+                    DriverBases.RemoveBusinessDeviceRuntime();
                 }
                 DriverBases.Clear();
             }
@@ -540,7 +520,7 @@ public class ChannelThread
         finally
         {
             // 释放EasyLock锁
-            EasyLock.Release();
+            RestartLock.Release();
         }
     }
 
@@ -647,7 +627,7 @@ public class ChannelThread
                     if (driver.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && driver.IsCollectDevice)
                     {
                         if (count == 1)
-                            await Task.Delay(Math.Min(((CollectBase)driver).CollectProperties.ReIntervalTime, DeviceHostedService.CheckIntervalTime / 2) * 1000 - CycleInterval, token).ConfigureAwait(false);
+                            await Task.Delay(Math.Min(((CollectBase)driver).CollectProperties.ReIntervalTime, CollectDeviceHostedService.CheckIntervalTime / 2) * 1000 - CycleInterval, token).ConfigureAwait(false);
                     }
                     else
                     {

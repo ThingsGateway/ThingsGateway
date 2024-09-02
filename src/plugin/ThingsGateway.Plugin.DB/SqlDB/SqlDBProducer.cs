@@ -46,7 +46,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         return data.Cast<IDBHistoryValue>().ToList();
     }
 
-    public override void Init(IChannel? channel = null)
+    protected override void Init(IChannel? channel = null)
     {
         _config = new TypeAdapterConfig();
         _config.ForType<VariableRunTime, SQLHistoryValue>()
