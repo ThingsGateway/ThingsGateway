@@ -182,10 +182,6 @@ public class SiemensS7Master : CollectBase
 
     }
 
-    /// <summary>
-    /// <see cref="SiemensS7PLC.ReadDateAsync(string,CancellationToken)"/>
-    /// </summary>
-    /// <returns></returns>
     [DynamicMethod("ReadWriteDateAsync", "读写日期格式")]
     public async Task<IOperResult<System.DateTime>> ReadWriteDateAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
     {
@@ -195,13 +191,6 @@ public class SiemensS7Master : CollectBase
             return new OperResult<System.DateTime>(await _plc.WriteDateAsync(address, value.Value, cancellationToken).ConfigureAwait(false));
     }
 
-    /// <summary>
-    /// <see cref="SiemensS7PLC.ReadDateTimeAsync(string,CancellationToken)"/>
-    /// </summary>
-    /// <param name="address"></param>
-    /// <param name="value"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
     [DynamicMethod("ReadWriteDateTimeAsync", "读写日期时间格式")]
     public async Task<IOperResult<System.DateTime>> ReadWriteDateTimeAsync(string address, System.DateTime? value = null, CancellationToken cancellationToken = default)
     {

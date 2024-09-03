@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<Import Project="$(SolutionDir)Plugin.props" />
   <Import Project="$(SolutionDir)Version.props" />
+  <Import Project="$(SolutionDir)PackNuget.props" />
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
 

@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <NoWarn>CS8603;CS8618;CS1591;CS8625;CS8602;CS8604;CS8600;CS8601;NETSDK1206;NU5104</NoWarn>
+    <NoWarn>CS8603;CS8618;CS1591;CS8625;CS8602;CS8604;CS8600;CS8601;NETSDK1206;NU5104;NU5100</NoWarn>
     <TargetFrameworks>net6.0;net8.0;</TargetFrameworks>
     <LangVersion>12.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>

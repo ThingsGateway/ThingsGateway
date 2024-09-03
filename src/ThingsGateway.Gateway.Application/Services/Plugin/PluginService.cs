@@ -110,9 +110,9 @@ public class PluginService : IPluginService
             if (filtResult.FileName.IsNullOrEmpty() || filtResult.FileName == DefaultKey)
             {
                 // 如果是默认键，则搜索主程序上下文中的类型
-                if (_defaultDriverBaseDict.ContainsKey(pluginName))
+                if (_defaultDriverBaseDict.ContainsKey(filtResult.TypeName))
                 {
-                    var driver = (DriverBase)Activator.CreateInstance(_defaultDriverBaseDict[pluginName]);
+                    var driver = (DriverBase)Activator.CreateInstance(_defaultDriverBaseDict[filtResult.TypeName]);
                     driver.Directory = AppContext.BaseDirectory;
 
                     return driver;

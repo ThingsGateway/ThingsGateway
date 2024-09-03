@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
+  <Import Project="$(SolutionDir)NugetPackageReference.props" />
   <Import Project="$(SolutionDir)Version.props" />
   <PropertyGroup>
     <OutputType>WinExe</OutputType>

@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <Import Project="$(SolutionDir)Plugin.props" />
   <Import Project="$(SolutionDir)Version.props" />
+  <Import Project="$(SolutionDir)PackNuget.props" />
 
   <PropertyGroup>
     <DefineConstants>Plugin</DefineConstants>

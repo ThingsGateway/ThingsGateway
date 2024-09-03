@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <Import Project="$(SolutionDir)NugetPackageReference.props" />
   <Import Project="$(SolutionDir)Version.props" />
   <PropertyGroup>
     <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
@@ -27,7 +28,7 @@
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.ASPNetCore\ThingsGateway.Admin.ASPNetCore.csproj" />
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup Condition="'$(SolutionName)'!='ThingsGateway - Admin'">
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.ASPNetCore\ThingsGateway.Gateway.ASPNetCore.csproj" />
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
@@ -48,13 +49,13 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
-  
-  
+
+
   <ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
     <ProjectReference Include="$(SolutionDir)\pro\ThingsGateway.Gateway.ProRazor\ThingsGateway.Gateway.ProRazor.csproj" />
   </ItemGroup>
 
-  
+
 
 
   <ItemGroup>
@@ -111,4 +112,7 @@
     <None Include="$(SolutionDir)..\LICENSE" Pack="true" PackagePath="\" />
     <None Include="$(SolutionDir)..\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
+
+
+
 </Project>

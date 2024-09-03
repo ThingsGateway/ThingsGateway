@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <Import Project="$(SolutionDir)Plugin.props" />
   <Import Project="$(SolutionDir)Version.props" />
+  <Import Project="$(SolutionDir)PackNuget.props" />
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*Kafka*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" Condition="'$(OS)'=='Windows_NT'" />
@@ -11,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Confluent.Kafka" Version="2.5.2">
+    <PackageReference Include="Confluent.Kafka" Version="2.5.3">
       <Private>true</Private>
       <IncludeAssets>all</IncludeAssets>
       <PrivateAssets>runtime</PrivateAssets>

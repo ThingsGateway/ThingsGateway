@@ -163,11 +163,6 @@ public class ModbusSlave : BusinessBase
     /// <summary>
     /// RPC写入
     /// </summary>
-    /// <param name="address"></param>
-    /// <param name="bytes"></param>
-    /// <param name="thingsGatewayBitConverter"></param>
-    /// <param name="client"></param>
-    /// <returns></returns>
     private async ValueTask<OperResult> OnWriteData(ModbusRequest modbusRequest, IThingsGatewayBitConverter bitConverter, IClientChannel channel)
     {
         try

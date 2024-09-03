@@ -89,9 +89,9 @@ public class ThingsGatewayNodeManager : CustomNodeManager2
         }
     }
 
-    /// <summary>
-    /// 读取历史数据
-    /// </summary>
+    ///// <summary>
+    ///// 读取历史数据
+    ///// </summary>
     //public override void HistoryRead(OperationContext context,
     //    HistoryReadDetails details,
     //    TimestampsToReturn timestampsToReturn,
