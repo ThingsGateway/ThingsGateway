@@ -297,7 +297,7 @@ public class NetCoreApp
         }
 
 
-        return scanAssemblies;
+        return scanAssemblies.Distinct();
 
     }
 }
