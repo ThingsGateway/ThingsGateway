@@ -10,12 +10,12 @@
     <TargetFrameworks>net6.0;net8.0;</TargetFrameworks>
 
     <!--动态适用GC-->
-    <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
+    <GarbageCollectionAdaptationMode>1</GarbageCollectionAdaptationMode>
     <!--使用自托管线程池-->
     <!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
 
     <!--使用工作站GC-->
-    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <ServerGarbageCollection>true</ServerGarbageCollection>
 
     <!--<PlatformTarget>x86</PlatformTarget>-->
   </PropertyGroup>
