@@ -27,7 +27,7 @@
     "Close": "關閉",
     "Save": "導入到系統",
     "Export": "導出",
-    "ShowSubvariable": "顯示變數子節點"
+    "ShowSubvariable": "顯示變量子節點"
   },
 
   "ThingsGateway.Foundation.OpcUa.OpcUaResource": {
