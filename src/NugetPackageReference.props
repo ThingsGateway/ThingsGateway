@@ -1,0 +1,22 @@
+<Project>
+  
+  <!--PRO插件，需补充 LicenseKey 文件，也可以不依赖，单独放到Plugins文件夹内-->
+  <ItemGroup>
+    <PackageReference Include="ThingsGateway.Plugin.DCON" Version="*"/>
+    <!--<PackageReference Include="ThingsGateway.Plugin.DKQ_A16D" Version="*" />-->
+    <PackageReference Include="ThingsGateway.Plugin.EDPF_NT" Version="*" />
+    <!--<PackageReference Include="ThingsGateway.Plugin.IDR210" Version="*" />-->
+    <PackageReference Include="ThingsGateway.Plugin.KELID2008" Version="*" />
+    <PackageReference Include="ThingsGateway.Plugin.LKSIS" Version="*" />
+    <PackageReference Include="ThingsGateway.Plugin.Melsec" Version="*" />
+    <PackageReference Include="ThingsGateway.Plugin.Omron" Version="*" />
+    <!--<PackageReference Include="ThingsGateway.Plugin.URF_R330" Version="*" />-->
+    <PackageReference Include="ThingsGateway.Plugin.USBScaner" Version="*" />
+
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="$(SolutionDir)NugetPackageReference.props" Pack="false" PackagePath="\" />
+  </ItemGroup>
+  
+</Project>
