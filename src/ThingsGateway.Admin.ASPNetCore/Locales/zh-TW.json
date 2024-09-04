@@ -1,0 +1,37 @@
+﻿{
+  "ThingsGateway.Admin.Application.AuthController": {
+    "AuthController": "登錄API",
+    "LoginAsync": "登錄",
+    "LogoutAsync": "登出"
+  },
+  "ThingsGateway.Admin.Application.TestController": {
+    "TestController": "測試API",
+    "Test": "測試"
+  },
+  "ThingsGateway.Admin.Application.OpenApiAuthController": {
+    "OpenApiAuthController": "登錄API",
+    "LoginAsync": "登錄",
+    "LogoutAsync": "登出"
+  },
+
+  "ThingsGateway.Admin.Application.FileService": {
+    "FileNullError": "文件不能為空",
+    "FileLengthError": "文件大小不允許超過 {0} M",
+    "FileTypeError": "不支援 {0} 格式"
+  },
+
+  "ThingsGateway.Admin.Application.UnifyResultProvider": {
+    "TokenOver": "登錄已過期，請重新登錄",
+    "NoPermission": "禁止訪問，沒有權限"
+  },
+
+  "ThingsGateway.Admin.Application.AuthService": {
+    "SingleLoginWarn": "您的帳號已在別處登錄",
+    "UserNull": "用戶 {0} 不存在",
+    "PasswordError": "密碼錯誤次數過多，請 {0} 分鐘後再試",
+    "AuthErrorMax": "帳號密碼錯誤，超過 {0} 次後將鎖定 {1} 分鐘，錯誤次數 {2} ",
+    "UserDisable": "帳號 {0} 已停用",
+    "MustDesc": "密碼需要DESC加密後傳入",
+    "UserNoModule": "該帳號未分配模組,請聯繫管理員"
+  }
+}

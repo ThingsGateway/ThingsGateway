@@ -1,0 +1,53 @@
+﻿{
+  "ThingsGateway.Foundation.Modbus.ModbusMaster": {
+    "ModbusType": "Modbus類型",
+    "Station": "站號",
+    "DtuId": "Dtu註冊包(UTF8)",
+    "CheckClearTime": "連接滑動過期時間",
+    "HeartbeatHexString": "心跳檢測(HEX)",
+    "HeartbeatTime": "心跳間隔時間",
+
+    "CacheTimeout": "組包緩存時間",
+    "SendDelayTime": "發送延時",
+    "DataFormat": "解析規則",
+    "Timeout": "讀寫超時",
+    "ConnectTimeout": "連接超時",
+    "IsStringReverseByteWord": "字串反轉"
+  },
+  "ThingsGateway.Foundation.Modbus.ModbusSlave": {
+    "ModbusType": "Modbus類型",
+    "Station": "預設站號",
+    "CheckClearTime": "連接滑動過期時間",
+    "MulStation": "多站點",
+    "IsWriteMemory": "立即寫入記憶體",
+    "MaxClientCount": "最大連接數量",
+
+    "DtuId": "Dtu註冊包(UTF8)",
+    "HeartbeatHexString": "心跳檢測(HEX)",
+    "HeartbeatTime": "心跳間隔時間",
+
+    "CacheTimeout": "組包緩存時間",
+    "SendDelayTime": "發送延時",
+    "DataFormat": "解析規則",
+    "Timeout": "讀寫超時",
+    "ConnectTimeout": "連接超時",
+    "IsStringReverseByteWord": "字串反轉"
+  },
+  "ThingsGateway.Foundation.Modbus.ModbusResource": {
+    "AddressDes": "線圈寄存器使用從 00001 開始的地址編號。\n離散輸入寄存器使用從 10001 開始的地址編號。\n輸入寄存器使用從 30001 開始的地址編號。\n保持寄存器使用從 40001 開始的地址編號。\n舉例：40001=>保持寄存器第一個寄存器\n額外格式\n設備站號 ，比如40001;s=2; ，代表設備地址為2的保持寄存器第一個寄存器\n寫入功能碼 ，比如40001;w=16; ，代表保持寄存器第一個寄存器，寫入值時採用0x10功能碼\nDTU模式(只在TCPService中起作用) ，比如40001;id=T123T; ，代表保持寄存器第一個寄存器，DTU註冊包為T123T（UTF-8字串）",
+    "FunctionError": "功能碼錯誤",
+    "FunctionNotSame": "功能碼不一致，請求功能碼 {0}，返回功能碼 {1}",
+    "ModbusError1": "不支援的功能碼",
+    "ModbusError10": "網關路徑不可用",
+    "ModbusError11": "網關目標設備響應失敗",
+    "ModbusError2": "讀取寄存器越界",
+    "ModbusError3": "讀取長度超限",
+    "ModbusError4": "設備故障",
+    "ModbusError5": "設備已確認，但未執行",
+    "ModbusError6": "設備忙",
+    "ModbusError8": "存儲奇偶性錯誤",
+    "StationNotSame": "站號不一致，請求站號 {0} ，返回站號 {1}",
+    "ValueOverlimit": "{0} 不能超過 {1}",
+    "CrcError": "Crc校驗失敗"
+  }
+}

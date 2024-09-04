@@ -1,0 +1,282 @@
+﻿{
+  "ThingsGateway.Admin.Application.APPInfo": {
+    "Environment": "主機環境",
+    "FrameworkDescription": ".NET框架",
+    "OsArchitecture": "系統架構",
+    "UUID": "唯一編碼",
+    "UpdateTime": "更新時間"
+  },
+  "ThingsGateway.Admin.Application.HisHardwareInfo": {
+    "DriveUsage": "磁碟使用率",
+    "MemoryUsage": "記憶體使用率",
+    "CpuUsage": "CPU使用率",
+    "Temperature": "溫度",
+    "Battery": "電池"
+  },
+
+  "ThingsGateway.Admin.Application.OperDescAttribute": {
+    "SaveDict": "修改字典",
+    "DeleteDict": "刪除字典",
+    "EditLoginPolicy": "修改登錄策略",
+    "EditPasswordPolicy": "修改密碼策略",
+    "EditPagePolicy": "修改頁面策略",
+    "EditWebsitePolicy": "修改網站設定",
+    "DeleteOperLog": "刪除操作日誌",
+    "ExportOperLog": "匯出操作日誌",
+    "SaveResource": "修改資源",
+    "DeleteResource": "刪除資源",
+    "SaveRole": "修改角色",
+    "DeleteRole": "刪除角色",
+    "RoleGrantResource": "角色授權資源",
+    "RoleGrantUser": "角色授權用戶",
+    "RoleGrantApiPermission": "角色授權OpenApi",
+    "GrantApi": "API",
+    "GrantUser": "用戶",
+    "GrantRole": "角色",
+    "GrantResource": "資源",
+    "SaveUser": "修改用戶",
+    "DeleteuSER": "刪除用戶",
+    "ResetPassword": "重置密碼",
+    "UserGrantRole": "用戶授權角色",
+    "UserGrantResource": "用戶授權資源",
+    "UserGrantApiPermission": "用戶授權OpenApi",
+    "UpdateUserInfo": "更新個人資訊",
+    "WorkbenchInfo": "更新個人工作台",
+    "UpdatePassword": "更新個人密碼",
+    "ExitVerificat": "強退令牌",
+    "ExitSession": "強退會話"
+  },
+
+  "ThingsGateway.Admin.Application.SessionService": {
+  },
+  "ThingsGateway.Admin.Application.RoleService": {
+  },
+  "ThingsGateway.Admin.Application.HardwareInfoService": {
+    "GetHardwareInfoFail": "獲取硬體信息出錯"
+  },
+
+  "ThingsGateway.Admin.Application.UserSelectorOutput": {
+    "Account": "帳號"
+  },
+  "ThingsGateway.Admin.Application.ResourceSearchInput": {
+    "Module": "模組",
+    "Href": "路徑",
+    "Title": "標題"
+  },
+  "ThingsGateway.Admin.Application.WorkbenchInfo": {
+    "Razor": "首頁",
+    "Shortcuts": "快捷方式"
+  },
+  "ThingsGateway.Admin.Application.UpdatePasswordInput": {
+    "Password": "密碼",
+    "NewPassword": "新密碼",
+    "ConfirmPassword": "確認密碼",
+    "Password.Required": " {0} 是必填項",
+    "NewPassword.Required": " {0} 是必填項",
+    "ConfirmPassword.Required": " {0} 是必填項"
+  },
+  "ThingsGateway.Admin.Application.SysRole": {
+    "Code": "編碼",
+    "Name": "名稱",
+    "Name.Required": " {0} 是必填項",
+    "Category": "分類",
+    "SortCode": "排序",
+    "CanotDeleteAdmin": "不可刪除系統內建超管角色",
+    "CanotEditAdmin": "不可編輯超管角色",
+    "ApiRoleCanotGrantResource": "API角色不允許授權資源",
+    "CategoryError": "角色所屬分類 {0} 錯誤",
+    "NameDup": "存在重複的角色名稱 {0}"
+  },
+
+  "ThingsGateway.Admin.Application.SysUser": {
+    "Disable": "禁用",
+    "Enable": "啟用",
+    "GrantRole": "分配角色",
+    "SingleLoginWarn": "您的帳號已在別處登錄",
+    "ExitVerificat": "您已被強制下線",
+    "PasswordEdited": "密碼被修改，已退出登錄",
+    "Avatar": "頭像",
+    "Account": "帳號",
+    "Account.Required": " {0} 是必填項",
+    "Password": "密碼",
+    "Status": "啟用",
+    "Phone": "手機",
+    "Email": "郵箱",
+    "LastLoginIp": "上次登錄ip",
+    "LastLoginDevice": "上次登錄設備",
+    "LastLoginTime": "上次登錄時間",
+    "LastLoginAddress": "上次登錄地點",
+    "LatestLoginIp": "最新登錄ip",
+    "LatestLoginTime": "最新登錄時間",
+    "LatestLoginDevice": "最新登錄設備",
+    "LatestLoginAddress": "最新登錄地點",
+    "SortCode": "排序",
+    "CheckSelf": "禁止 {0} 自己",
+    "CanotDeleteAdminUser": "不可刪除系統內建超管用戶",
+    "CanotEditAdminUser": "不可編輯超管用戶",
+    "CanotGrantAdmin": "不能給超管分配角色",
+    "EmailDup": "存在重複的郵箱 {0}",
+    "AccountDup": "存在重複的帳號 {0}",
+    "CanotDeleteSelf": "不可刪除自己",
+    "EmailError": "郵箱 {0} 格式錯誤",
+    "PhoneError": "手機號碼 {0} 格式錯誤",
+    "DemoCanotUpdatePassword": "DEMO環境不允許修改密碼",
+    "OldPasswordError": "原密碼錯誤",
+    "ConfirmPasswordDiff": "兩次輸入的密碼不一致",
+    "PasswordLengthLess": "密碼長度不能小於 {0} ",
+    "PasswordMustNum ": "密碼必須包含數字",
+    "PasswordMustLow": "密碼必須包含小寫字母",
+    "PasswordMustUpp": "密碼必須包含大寫字母",
+    "PasswordMustSpecial": "密碼必須包含特殊字符"
+  },
+  "ThingsGateway.Admin.Application.VerificatInfo": {
+    "Expire": "過期時間(分)",
+    "Online": "在線狀態",
+    "VerificatRemain": "剩餘有效期",
+    "VerificatTimeout": "超時時間",
+    "Device": "登錄設備"
+  },
+
+  "ThingsGateway.Admin.Application.SessionOutput": {
+    "Account": "帳號",
+    "Online": "在線狀態",
+    "LatestLoginIp": "最新登錄ip",
+    "LatestLoginTime": "最新登錄時間",
+    "VerificatCount": "令牌數量"
+  },
+
+  "ThingsGateway.Admin.Application.SysDict": {
+    "Category.Required": "{0} 是必填項",
+    "Name.Required": "{0} 是必填項",
+    "Code.Required": "{0} 是必填項",
+    "Category": "分類",
+    "Name": "名稱",
+    "Code": "代碼",
+    "Remark": "備註",
+    "SortCode": "排序",
+    "DictDup": "存在重複的配置 分類 {0} 名稱 {1}",
+    "DemoCanotUpdateWebsitePolicy": "DEMO環境不允許修改網站設定"
+  },
+
+  "ThingsGateway.Admin.Application.SysResource": {
+    "Title": "標題",
+    "Module": "模組",
+    "Title.Required": "{0} 是必填項",
+    "Href.Required": "{0} 是必填項",
+    "Icon": "圖標",
+    "Href": "路徑",
+    "Code": "編碼",
+    "Category": "分類",
+    "Target": "跳轉類型",
+    "NavLinkMatch": "匹配類型",
+    "SortCode": "排序",
+    "ResourceDup": "存在重複的名稱 {0}",
+    "ResourceParentChoiceSelf": "父級不能選擇自己",
+    "ResourceParentNull": "父級不存在 {0}",
+    "NotFoundResource": "系統異常，沒找到該菜單",
+    "ModuleIdDiff": "模組與上級菜單不一致",
+    "CanotDeleteSystemResource": "不可刪除系統資源 {0}",
+    "ResourceMenuHrefNotNull": "菜單的路徑不能為空"
+  },
+
+  "ThingsGateway.Admin.Application.SysOperateLog": {
+    "ClassName": "類名",
+    "ExeMessage": "具體消息",
+    "MethodName": "方法名稱",
+    "ParamJson": "請求參數",
+    "ReqMethod": "請求方式",
+    "ReqUrl": "請求地址",
+    "ResultJson": "返回結果",
+    "Category": "日誌分類",
+    "ExeStatus": "執行狀態",
+    "Name": "日誌名稱",
+    "OpAccount": "帳號",
+    "OpBrowser": "瀏覽器",
+    "OpIp": "ip",
+    "OpOs": "系統",
+    "OpTime": "操作時間",
+    "VerificatId": "驗證Id"
+  },
+  "ThingsGateway.Admin.Application.OperateLogPageInput": {
+    "SearchDate": "時間範圍",
+    "Account": "操作帳號",
+    "Category": "分類"
+  },
+  "ThingsGateway.Admin.Application.LoginInput": {
+    "Account": "登錄帳號",
+    "Password": "登錄密碼",
+    "Account.Required": "{0} 是必填項",
+    "Password.Required": "{0} 是必填項"
+  },
+  "ThingsGateway.Admin.Application.LogoutInput": {
+    "VerificatId.Required": "{0} 是必填項"
+  },
+  "ThingsGateway.Admin.Application.AppConfig": {
+    "LoginPolicy": "登錄策略",
+    "PasswordPolicy": "密碼策略",
+    "PagePolicy": "頁面設定",
+    "WebsitePolicy": "網站設定"
+  },
+  "ThingsGateway.Admin.Application.LoginPolicy": {
+    "SingleOpen": "單用戶登錄開關",
+    "ErrorLockTime": "登錄錯誤鎖定時長(分)",
+    "ErrorResetTime": "登錄錯誤次數過期時長(分)",
+    "ErrorCount": "登錄錯誤次數鎖定閾值",
+    "VerificatExpireTime": "登錄過期時間(分)",
+    "ErrorLockTime.MinValue": " {0} 值太小",
+    "ErrorResetTime.MinValue": " {0} 值太小",
+    "ErrorCount.MinValue": " {0} 值太小",
+    "VerificatExpireTime.MinValue": " {0} 值太小"
+  },
+  "ThingsGateway.Admin.Application.PagePolicy": {
+    "DefaultShortcuts": "默認快捷方式",
+    "DefaultRazor": "默認首頁"
+  },
+  "ThingsGateway.Admin.Application.PasswordPolicy": {
+    "DefaultPassword": "默認用戶密碼",
+    "DefaultPassword.Required": " {0} 是必填項",
+    "PasswordMinLen": "密碼最小長度",
+    "PasswordMinLen.MinValue": " {0} 值太小",
+    "PasswordContainNum": "包含數字",
+    "PasswordContainLower": "包含小寫字母",
+    "PasswordContainUpper": "包含大寫字母",
+    "PasswordContainChar": "包含特殊字符"
+  },
+  "ThingsGateway.Admin.Application.WebsitePolicy": {
+    "WebStatus": "是否開放",
+    "CloseTip": "關閉提示",
+    "CloseTip.Required": " {0} 是必填項"
+  },
+  "ThingsGateway.Admin.Application.ResourceCategoryEnum": {
+    "Module": "模組",
+    "Menu": "菜單",
+    "Button": "按鈕"
+  },
+  "Microsoft.AspNetCore.Components.Routing.NavLinkMatch": {
+    "Prefix": "本窗口",
+    "All": "新窗口"
+  },
+
+  "ThingsGateway.Admin.Application.TargetEnum": {
+    "_self": "本窗口",
+    "_blank": "新窗口",
+    "_parent": "父級窗口",
+    "_top": "頂級窗口"
+  },
+  "ThingsGateway.Admin.Application.DictTypeEnum": {
+    "System": "系統配置",
+    "Define": "業務配置"
+  },
+
+  "ThingsGateway.Admin.Application.LogCateGoryEnum": {
+    "Login": "登錄",
+    "Logout": "登出",
+    "Operate": "操作",
+    "Exception": "異常"
+  },
+
+  "ThingsGateway.Admin.Application.LogEnum": {
+    "SUCCESS": "成功",
+    "FAIL": "失敗"
+  }
+}

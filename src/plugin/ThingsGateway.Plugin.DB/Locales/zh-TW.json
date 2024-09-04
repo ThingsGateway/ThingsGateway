@@ -1,0 +1,119 @@
+﻿{
+  "ThingsGateway.Plugin.QuestDB.QuestDBProducerProperty": {
+    "BigTextConnectStr": "連接字串",
+
+    "IsInterval": "啟用定時上傳",
+    "BusinessInterval": "定時上傳間隔",
+    "IsAllVariable": "選擇全部變量",
+    "QueueMaxCount": "記憶體佇列最大數量",
+    "CacheFileMaxLength": "緩存文件最大長度(mb)",
+    "SplitSize": "上傳每頁條數",
+    "CacheEnable": "啟用緩存"
+  },
+  "ThingsGateway.Plugin.QuestDB.QuestDBHistoryValue": {
+    "Id": "變量Id",
+
+    "CollectTime": "採集時間",
+    "CreateTime": "上傳時間",
+    "DeviceName": "設備名稱",
+    "Name": "變量名稱",
+    "IsOnline": "是否在線",
+    "Value": "變量值"
+  },
+
+  "ThingsGateway.Plugin.SqlDB.SqlDBProducerProperty": {
+    "IsReadDB": "啟用即時表",
+    "IsHisDB": "啟用歷史表",
+    "ReadDBTableName": "即時表名稱",
+    "HisDBTableName": "歷史表名稱",
+    "DbType": "資料庫類型",
+    "BigTextConnectStr": "連結字串",
+
+    "IsInterval": "啟用定時上傳",
+    "BusinessInterval": "定時上傳間隔",
+    "IsAllVariable": "選擇全部變量",
+    "QueueMaxCount": "記憶體佇列最大數量",
+    "CacheFileMaxLength": "緩存文件最大長度(mb)",
+    "SplitSize": "上傳每頁條數",
+    "CacheEnable": "啟用緩存"
+  },
+  "ThingsGateway.Plugin.SqlDB.SQLHistoryValue": {
+    "Id": "變量Id",
+
+    "CollectTime": "採集時間",
+    "CreateTime": "上傳時間",
+    "DeviceName": "設備名稱",
+    "Name": "變量名稱",
+    "IsOnline": "是否在線",
+    "Value": "變量值"
+  },
+  "ThingsGateway.Plugin.SqlDB.SQLRealValue": {
+    "Id": "變量Id",
+
+    "CollectTime": "採集時間",
+    "CreateTime": "上傳時間",
+    "DeviceName": "設備名稱",
+    "Name": "變量名稱",
+    "IsOnline": "是否在線",
+    "Value": "變量值"
+  },
+
+  "ThingsGateway.Plugin.TDengineDB.TDengineDBProducerProperty": {
+    "BigTextConnectStr": "連接字串",
+
+    "IsInterval": "啟用定時上傳",
+    "BusinessInterval": "定時上傳間隔",
+    "IsAllVariable": "選擇全部變量",
+    "QueueMaxCount": "記憶體佇列最大數量",
+    "CacheFileMaxLength": "緩存文件最大長度(mb)",
+    "SplitSize": "上傳每頁條數",
+    "CacheEnable": "啟用緩存"
+  },
+  "ThingsGateway.Plugin.TDengineDB.TDengineDBHistoryValue": {
+    "Id": "變量Id",
+
+    "CollectTime": "採集時間",
+    "CreateTime": "上傳時間",
+    "DeviceName": "設備名稱",
+    "Name": "變量名稱",
+    "IsOnline": "是否在線",
+    "Value": "變量值"
+  },
+
+  "ThingsGateway.Plugin.SqlHisAlarm.SQLHisAlarmProperty": {
+    "DbType": "資料庫類型",
+    "BigTextConnectStr": "連結字串",
+    "TableName": "表名稱",
+
+    "IsInterval": "啟用定時上傳",
+    "BusinessInterval": "定時上傳間隔",
+    "IsAllVariable": "選擇全部變量",
+    "QueueMaxCount": "記憶體佇列最大數量",
+    "CacheFileMaxLength": "緩存文件最大長度(mb)",
+    "SplitSize": "上傳每頁條數",
+    "CacheEnable": "啟用緩存"
+  },
+  "ThingsGateway.Plugin.SqlHisAlarm.HistoryAlarm": {
+
+    "Name": "名稱",
+    "Description": "描述",
+    "DeviceName": "採集設備",
+    "DataType": "資料類型",
+    "RegisterAddress": "變量地址",
+
+
+    "AlarmCode": "報警值",
+    "AlarmLimit": "報警閾值",
+    "AlarmText": "報警文本",
+    "AlarmTime": "報警時間",
+    "AlarmType": "報警類型",
+    "EventTime": "事件時間",
+    "EventType": "事件類型",
+
+    "Remark1": "備用1",
+    "Remark2": "備用2",
+    "Remark3": "備用3",
+    "Remark4": "備用4",
+    "Remark5": "備用5"
+  }
+}

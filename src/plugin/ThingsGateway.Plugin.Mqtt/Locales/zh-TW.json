@@ -1,0 +1,64 @@
+﻿{
+  "ThingsGateway.Plugin.Mqtt.MqttClientVariableProperty": {
+    "VariableRpcEnable": "啟用RPC"
+  },
+
+  "ThingsGateway.Plugin.Mqtt.MqttClientProperty": {
+    "IP": "IP",
+    "Port": "端口",
+    "IsWebSocket": "Websocket",
+    "WebSocketUrl": "WebSocketUrl",
+    "UserName": "用戶名",
+    "Password": "密碼",
+    "ConnectId": "連接ID",
+    "ConnectTimeout": "連接超時時間",
+    "DeviceRpcEnable": "允許Rpc寫入",
+    "RpcWriteTopic": "Rpc寫入主題",
+    "RpcQuestTopic": "Rpc請求數據主題",
+
+    "BigTextScriptDeviceModel": "設備上傳腳本",
+    "BigTextScriptVariableModel": "變量上傳腳本",
+    "BigTextScriptAlarmModel": "報警上傳腳本",
+    "IsDeviceList": "設備狀態列表上傳",
+    "IsVariableList": "變量列表上傳",
+    "IsAlarmList": "報警列表上傳",
+    "DeviceTopic": "設備主題",
+    "VariableTopic": "變量主題",
+    "AlarmTopic": "報警主題",
+
+    "IsInterval": "啟用定時上傳",
+    "BusinessInterval": "定時上傳間隔",
+    "IsAllVariable": "選擇全部變量",
+    "QueueMaxCount": "記憶體佇列最大數量",
+    "CacheFileMaxLength": "緩存文件最大長度(mb)",
+    "SplitSize": "上傳每頁條數",
+    "CacheEnable": "啟用緩存"
+  },
+  "ThingsGateway.Plugin.Mqtt.MqttServerProperty": {
+    "IP": "IP",
+    "Port": "端口",
+    "WebSocketPort": "Websocket端口",
+    "StartWithId": "允許連接的ID前綴",
+
+    "DeviceRpcEnable": "允許Rpc寫入",
+    "RpcWriteTopic": "Rpc寫入主題",
+
+    "BigTextScriptDeviceModel": "設備上傳腳本",
+    "BigTextScriptVariableModel": "變量上傳腳本",
+    "BigTextScriptAlarmModel": "報警上傳腳本",
+    "IsDeviceList": "設備狀態列表上傳",
+    "IsVariableList": "變量列表上傳",
+    "IsAlarmList": "報警列表上傳",
+    "DeviceTopic": "設備主題",
+    "VariableTopic": "變量主題",
+    "AlarmTopic": "報警主題",
+
+    "IsInterval": "啟用定時上傳",
+    "BusinessInterval": "定時上傳間隔",
+    "IsAllVariable": "選擇全部變量",
+    "QueueMaxCount": "記憶體佇列最大數量",
+    "CacheFileMaxLength": "緩存文件最大長度(mb)",
+    "SplitSize": "上傳每頁條數",
+    "CacheEnable": "啟用緩存"
+  }
+}

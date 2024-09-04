@@ -1,0 +1,77 @@
+﻿{
+  "ThingsGateway.Admin.Razor.NotFound404": {
+    "404": "抱歉，您訪問的頁面不存在。",
+    "401": "抱歉，您無權限訪問該頁面。",
+    "Home": "回到首頁",
+    "Login": "重新登錄"
+  },
+
+  "ThingsGateway.Admin.Razor.Login": {
+    "LoginErrorh1": "登錄異常",
+    "LoginSuccessh1": "登錄成功",
+    "LoginSuccessc1": "即將跳轉頁面",
+    "LoginErrorh2": "登錄失敗",
+    "LoginErrorc2": "請聯繫管理員!",
+    "Remark1": "邊緣採集網關",
+    "Remark2": "數據集中，多路轉發",
+    "Remark3": "邊緣計算，高效處理",
+    "Welcome": "歡迎使用"
+  },
+
+  "ThingsGateway.Admin.Razor.HardwareInfoPage": {
+    "SystemInfo": "系統信息",
+    "HardwareInfo": "硬體資源",
+    "HardwareInfoChart": "硬體資源歷史曲線",
+    "CpuUsage": "CPU使用率",
+    "AvailableMemory": "可用記憶體",
+    "TotalMemory": "總記憶體",
+    "WorkingSet": "進程記憶體",
+    "MemoryUsage": "記憶體使用率",
+    "AvailableDisk": "可用磁碟",
+    "TotalDisk": "總磁碟",
+    "DiskUsage": "磁碟使用率",
+    "HisHardwareInfo": "歷史曲線",
+    "DateTime": "時間",
+    "Data": "數據",
+    "OSName": "系統名稱",
+    "OSVersion": "系統版本"
+  },
+
+  "ThingsGateway.Admin.Razor.OperLogPage": {
+    "Date": "日期",
+    "Count": "數量",
+    "Operate": "成功",
+    "Exception": "失敗",
+    "Login": "登錄",
+    "Logout": "登出",
+    "SysOperateLog": "操作日誌"
+  },
+  "ThingsGateway.Admin.Razor.SysDictPage": {
+  },
+  "ThingsGateway.Admin.Razor.SessionPage": {
+    "VerificatInfo": "令牌列表",
+    "ExitSession": "強退會話"
+  },
+  "ThingsGateway.Admin.Razor.VerificatListPage": {
+    "ExitVerificat": "強退令牌"
+  },
+  "ThingsGateway.Admin.Razor.SysUserAvatarEdit": {
+    "Picture": "頭像"
+  },
+  "ThingsGateway.Admin.Razor.UserInfoEditComponent": {
+    "Picture": "頭像"
+  },
+  "ThingsGateway.Admin.Razor.ParentMenu": {
+    "ChoiceMenu": "選擇菜單"
+  },
+  "ThingsGateway.Admin.Razor.SysResourcePage": {
+    "Root": "根菜單"
+  },
+  "ThingsGateway.Admin.Razor.UserCenterPage": {
+    "UpdateUserInfo": "更新個人資訊",
+    "UserInfo": "個人資訊",
+    "UpdatePasswordInfo": "修改密碼",
+    "UpdateWorkbenchInfo": "更新個人工作台",
+    "WorkbenchInfo": "個人工作台"
+  }
+}

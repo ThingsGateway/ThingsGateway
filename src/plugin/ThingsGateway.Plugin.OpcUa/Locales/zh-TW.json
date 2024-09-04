@@ -1,0 +1,37 @@
+﻿{
+  "ThingsGateway.Plugin.OpcUa.OpcUaImportVariable": {
+    "NoVariablesAvailable": "無可用變量",
+    "Success": "成功"
+  },
+
+  "ThingsGateway.Plugin.OpcUa.OpcUaMasterProperty": {
+    "OpcUrl": "OpcUrl",
+    "UserName": "登錄帳號",
+    "Password": "登錄密碼",
+    "CheckDomain": "檢查域",
+    "UpdateRate": "推送間隔",
+    "ActiveSubscribe": "訂閱",
+    "GroupSize": "分組大小",
+    "DeadBand": "死區",
+    "KeepAliveInterval": "心跳間隔(ms)",
+    "UseSecurity": "安全策略",
+    "LoadType": "加載伺服器數據類型",
+    "SourceTimestampEnable": "伺服器時間戳",
+    "ReIntervalTime": "離線恢復時間",
+    "RetryCount": "失敗重試次數"
+  },
+  "ThingsGateway.Plugin.OpcUa.OpcUaServerProperty": {
+    "IsAllVariable": "選擇全部變量",
+    "OpcUaStringUrl": "服務地址",
+    "BigTextSubjectName": "SubjectName",
+    "BigTextApplicationUri": "ApplicationUri",
+    "SecurityPolicy": "安全策略",
+    "AutoAcceptUntrustedCertificates": "自動接受不受信任的憑證"
+  },
+  "ThingsGateway.Plugin.OpcUa.OpcUaServerVariableProperty": {
+    "DataType": "資料類型"
+  },
+  "ThingsGateway.Plugin.OpcUa.OpcUaServer": {
+    "CanStartService": "無法啟動服務"
+  }
+}

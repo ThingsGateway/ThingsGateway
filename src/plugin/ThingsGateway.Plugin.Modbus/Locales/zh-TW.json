@@ -1,0 +1,55 @@
+﻿{
+  "ThingsGateway.Plugin.Modbus.ModbusMasterProperty": {
+    "ModbusType": "協議類型",
+    "HeartbeatHexString": "心跳驗證(HexString)",
+    "Station": "預設站號",
+    "DtuId": "Dtu註冊包(UTF8)",
+    "DataFormat": "解析規則",
+    "IsStringReverseByteWord": "字串反轉",
+    "CheckClearTime": "客戶端連接滑動過期時間",
+    "Timeout": "讀寫超時時間",
+    "ConnectTimeout": "連接超時時間",
+    "SendDelayTime": "發送延時",
+    "CacheTimeout": "組包緩存過期時間",
+    "MaxPack": "最大打包長度",
+    "ReIntervalTime": "離線恢復時間",
+    "RetryCount": "失敗重試次數",
+    "ConcurrentCount": "最大並發數量"
+  },
+
+  "ThingsGateway.Plugin.Modbus.ModbusSlave": {
+    "CanStartService": "無法啟動服務",
+    "NotWriteEnable": "不允許寫入"
+  },
+
+  "ThingsGateway.Plugin.Modbus.ModbusSlaveProperty": {
+    "ModbusType": "協議類型",
+    "Station": "預設站號",
+    "DataFormat": "解析規則",
+    "IsStringReverseByteWord": "字串反轉",
+    "CheckClearTime": "客戶端連接滑動過期時間",
+    "DeviceRpcEnable": "允許寫入",
+    "IsWriteMemory": "立即寫入記憶體",
+    "MulStation": "多站點",
+    "MaxClientCount": "最大連接數",
+
+    "DtuId": "Dtu註冊包(UTF8)",
+    "HeartbeatTime": "心跳間隔時間",
+    "HeartbeatHexString": "心跳檢測(大寫16進位字串)",
+
+    "Timeout": "讀寫超時時間",
+    "ConnectTimeout": "連接超時時間",
+    "SendDelayTime": "發送延時",
+    "CacheTimeout": "組包緩存過期時間",
+    "MaxPack": "最大打包長度",
+    "ReIntervalTime": "離線恢復時間",
+    "RetryCount": "失敗重試次數",
+    "ConcurrentCount": "最大並發數量"
+  },
+
+  "ThingsGateway.Plugin.Modbus.ModbusSlaveVariableProperty": {
+    "ServiceAddress": "從站寄存器地址",
+    "DataType": "資料類型",
+    "VariableRpcEnable": "允許寫入"
+  }
+}

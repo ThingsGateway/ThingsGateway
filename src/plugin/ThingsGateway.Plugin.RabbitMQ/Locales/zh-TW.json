@@ -1,0 +1,29 @@
+﻿{
+  "ThingsGateway.Plugin.RabbitMQ.RabbitMQProducerProperty": {
+    "IP": "IP",
+    "Port": "端口",
+    "UserName": "用戶名",
+    "Password": "密碼",
+    "IsQueueDeclare": "聲明隊列",
+    "VirtualHost": "虛擬Host",
+    "ExchangeName": "交換機名稱",
+
+    "BigTextScriptDeviceModel": "設備上傳腳本",
+    "BigTextScriptVariableModel": "變量上傳腳本",
+    "BigTextScriptAlarmModel": "報警上傳腳本",
+    "IsDeviceList": "設備狀態列表上傳",
+    "IsVariableList": "變量列表上傳",
+    "IsAlarmList": "報警列表上傳",
+    "DeviceTopic": "設備主題",
+    "VariableTopic": "變量主題",
+    "AlarmTopic": "報警主題",
+
+    "IsInterval": "啟用定時上傳",
+    "BusinessInterval": "定時上傳間隔",
+    "IsAllVariable": "選擇全部變量",
+    "QueueMaxCount": "記憶體佇列最大數量",
+    "CacheFileMaxLength": "緩存文件最大長度(mb)",
+    "SplitSize": "上傳每頁條數",
+    "CacheEnable": "啟用緩存"
+  }
+}

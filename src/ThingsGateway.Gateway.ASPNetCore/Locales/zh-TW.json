@@ -1,0 +1,22 @@
+﻿{
+  "ThingsGateway.Gateway.Application.ConfigInfoControler": {
+    "ConfigInfoControler": "獲取配置信息",
+    "GetChannelList": "獲取通道信息",
+    "GetCollectDeviceList": "獲取設備信息",
+    "GetVariableList": "獲取變量信息"
+  },
+  "ThingsGateway.Gateway.Application.ControlControler": {
+    "ControlControler": "設備控制",
+    "PasueCollectThread": "控制採集線程啟停",
+    "PasueBusinessThread": "控制業務線程啟停",
+    "RestartCollectDeviceThread": "重启採集線程",
+    "RestartBusinessDeviceThread": "重启業務線程",
+    "WriteDeviceMethods": "寫入變量"
+  },
+  "ThingsGateway.Gateway.Application.RuntimeInfoControler": {
+    "RuntimeInfoControler": "獲取運行態信息",
+    "GetCollectDeviceList": "獲取設備信息",
+    "GetVariableList": "獲取變量信息",
+    "GetRealAlarmList": "獲取實時警報信息"
+  }
+}

@@ -1,0 +1,39 @@
+﻿{
+  "ThingsGateway.Foundation.Dlt645.Dlt645_2007Master": {
+    "FEHead": "前導符報文頭",
+    "OperCode": "操作員代碼",
+    "Password": "寫入密碼",
+    "Station": "通訊地址",
+    "DtuId": "Dtu註冊包(UTF8)",
+    "CheckClearTime": "連接滑動過期時間",
+    "HeartbeatHexString": "心跳檢測(HEX)",
+    "HeartbeatTime": "心跳間隔時間",
+
+    "CacheTimeout": "組包緩存時間",
+    "SendDelayTime": "發送延時",
+    "DataFormat": "解析規則",
+    "Timeout": "讀寫超時",
+    "ConnectTimeout": "連接超時",
+    "IsStringReverseByteWord": "字串反轉"
+  },
+
+  "ThingsGateway.Foundation.Dlt645.DltResource": {
+    "AddressDes": "資料標誌地址\n\n查看附帶文檔或者相關資料，下面列舉一些常見的資料標誌地址\n\n地址                       說明\n-----------------------------------------\n02010100    A相電壓\n02020100    A相電流\n02030000    瞬時總有功功率\n00000000    (當前)組合有功總電能\n00010000    (當前)正向有功總電能",
+    "SumError": "和校驗錯誤",
+    "StationNotSame": "站號不一致",
+    "FunctionError": "異常控制碼：{0}，錯誤信息：{1}",
+    "FunctionNotSame": "功能碼不一致，請求功能碼 {0}，返回功能碼 {1}",
+    "DataIdNotSame": "返回資料標誌不符合規則",
+    "BaudRateError": "不支援此波特率 {0}",
+    "CountError": "寫入參數數量不符合地址要求",
+    "DataIdError": "變數寄存器地址錯誤",
+    "Error1": "其他錯誤",
+    "Error2": "費率數超",
+    "Error3": "日時段數超",
+    "Error4": "年時區數超",
+    "Error5": "通信速率不能更改",
+    "Error6": "密碼錯/未授權",
+    "Error7": "無請求數據",
+    "Error8": "其他錯誤"
+  }
+}

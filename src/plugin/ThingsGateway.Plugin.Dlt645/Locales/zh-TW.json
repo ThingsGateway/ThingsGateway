@@ -1,0 +1,23 @@
+﻿{
+  "ThingsGateway.Plugin.Dlt645.Dlt645_2007MasterProperty": {
+    "FEHead": "前導符報文頭",
+    "OperCode": "操作員代碼",
+    "Password": "寫入密碼",
+    "Station": "通訊地址",
+    "DtuId": "Dtu註冊包(UTF8)",
+    "HeartbeatTime": "心跳間隔時間",
+
+    "HeartbeatHexString": "心跳驗證(HexString)",
+    "DataFormat": "解析規則",
+    "IsStringReverseByteWord": "字串反轉",
+    "CheckClearTime": "客戶端連接滑動過期時間",
+    "Timeout": "讀寫超時時間",
+    "ConnectTimeout": "連接超時時間",
+    "SendDelayTime": "發送延時",
+    "CacheTimeout": "組包緩存過期時間",
+    "MaxPack": "最大打包長度",
+    "ReIntervalTime": "離線恢復時間",
+    "RetryCount": "失敗重試次數",
+    "ConcurrentCount": "最大並發數量"
+  }
+}

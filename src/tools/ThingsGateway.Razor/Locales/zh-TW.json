@@ -1,0 +1,76 @@
+﻿{
+  "ThingsGateway.Razor.UserLogin": {
+    "Account": "登錄賬號",
+    "Password": "登錄密碼",
+    "Login": "登錄"
+  },
+  "ThingsGateway.Razor.ImportExcel": {
+    "First": "第一步",
+    "Upload": "上傳文件",
+    "Validate": "驗證",
+    "Second": "第二步",
+    "ValidateText": "驗證內容",
+    "UploadCount": "表 {0}，預計導入 {1} 條數據",
+    "Third": "第三",
+    "Import": "導入",
+    "Next": "下一步",
+    "Reset": "重置",
+    "Tip": "數據量較大時(大於20萬)，所需導入時間可能超過1分鐘，請耐心等待"
+  },
+  "ThingsGateway.Razor._Imports": {
+    "Add": "添加",
+    "Remove": "移除",
+    "BatchEdit": "批量編輯",
+    "Edit": "編輯",
+    "Close": "關閉",
+    "True": "是",
+    "False": "否",
+    "Save": "保存",
+    "Fail": "失敗 {0}",
+    "Fail1": "失敗",
+    "Success": "成功",
+    "TablesExportButtonExcelText": "導出Excel",
+    "TablesImportButtonExcelText": "導入Excel",
+    "ExportButtonText": "導出/導入",
+    "EmptyText": "空",
+    "PleaseSelect": "請選擇需要操作的數據"
+  },
+  "ThingsGateway.Razor.GlobalSearch": {
+    "SearchText": "搜索頁面"
+  },
+  "ThingsGateway.Razor.MenuIconList": {
+    "ChoiceIcon": "選擇圖標",
+    "Choice": "選擇"
+  },
+  "ThingsGateway.Razor.CommitItem": {
+    "CommitCount": "共 {0} 個提交",
+    "Author": "提交作者：",
+    "Branch": "分支名稱：",
+    "Message": "提交信息："
+  },
+  "ThingsGateway.Razor.ThemeToggle": {
+    "ThemeToggle": "夜間/白天"
+  },
+  "ThingsGateway.Razor.About": {
+    "Docs": "文檔",
+    "Community": "社區",
+    "QQGroup": "QQ群"
+  },
+  "ThingsGateway.Razor.BlazorReconnector": {
+    "Reconnecting1": "重連中...",
+    "Reconnecting2": "正在嘗試重新連接服務器",
+    "Reconnecting3": "伺服器正在更新新版本，稍等一會兒即可提供服務，或者 <kbd>F12</kbd> 開啟 <b>Developer tools</b> 查看 <b>控制台</b> 是否有錯誤輸出，請與管理員聯繫",
+    "ReconnectFailed1": "重連中...",
+    "ReconnectFailed2": "與服務器連接失敗",
+    "ReconnectFailed3": "請確認網絡是否正常，或者 <kbd>F12</kbd> 開啟 <b>Developer tools</b> 查看 <b>控制台</b> 是否有錯誤輸出，請與管理員聯繫",
+    "ReconnectFailed4": "重新連接",
+    "ReconnectFailed5": "重新加載",
+    "ReconnectRejected1": "重連中...",
+    "ReconnectRejected2": "伺服器拒絕連接",
+    "ReconnectRejected3": "所有的連接嘗試都被拒絕了，這很有可能是由於網絡問題或者伺服器問題引起的，請與管理員聯繫",
+    "ReconnectRejected4": "重新加載",
+    "RenderThingsGateway1": "ThingsGateway 邊緣採集網關",
+    "RenderThingsGateway2": "數據集中，多路轉發",
+    "RenderThingsGateway3": "邊緣計算，高效處理"
+  }
+}

@@ -1,0 +1,113 @@
+﻿{
+  "ThingsGateway.Gateway.Razor.TcpSessionClientDto": {
+    "Id": "Id",
+    "IP": "IP",
+    "Port": "端口",
+    "LastReceivedTime": "最近接收時間",
+    "LastSentTime": "最近發送時間"
+  },
+  "ThingsGateway.Gateway.Razor.DeviceStatus2": {
+    "GatewayDeviceShowDriverUI": "插件UI",
+    "DeviceRedundantThread": "切換冗餘",
+    "DeleteCache": "刪除緩存",
+    "GatewayDeviceLog": "通道日誌",
+    "GatewayDevicePause": "暫停/運行",
+    "GatewayDeviceRestart": "重启設備"
+  },
+  "ThingsGateway.Gateway.Razor.DeviceStatus": {
+    "LogConsole": "通道日誌"
+  },
+  "ThingsGateway.Gateway.Razor.DeviceStatusPage": {
+    "CollectDevice": "採集設備",
+    "BusinessDevice": "業務設備"
+  },
+  "ThingsGateway.Gateway.Razor.VariableRuntimePage": {
+    "WriteVariable": "寫入",
+    "WriteValue": "寫入值"
+  },
+  "ThingsGateway.Gateway.Razor.DriverDebugPage": {
+    "PluginUINotNull": "此插件未實現調試頁面",
+    "New": "新建",
+    "NewWinbox": "新建窗口"
+  },
+  "ThingsGateway.Gateway.Razor.Index": {
+    "CollectDevice": "採集設備",
+    "BusinessDevice": "業務設備",
+    "Variable": "變量",
+    "Alarm": "實時警報",
+    "AlarmCount": "警報數量",
+    "OnLine": "在線",
+    "OffLine": "離線",
+    "Shortcuts": "快捷方式",
+    "OperLog": "最近操作",
+    "BackendLog": "網關後台日誌",
+    "RpcLog": "網關RPC日誌",
+    "HardwareInfoChart": "硬件信息歷史曲線",
+    "DateTime": "時間",
+    "Data": "數據",
+    "HisHardwareInfo": "歷史曲線"
+  },
+  "ThingsGateway.Gateway.Razor.QuickActions": {
+    "TooltipText": "快捷操作",
+    "HeaderText": "快捷操作",
+    "ReloadPluginText": "重載插件",
+    "ReloadServiceText": "重启運行時",
+    "ReloadPluginConfirmText": "確定重載插件?",
+    "ReloadServiceConfirmText": "確定重启運行時?"
+  },
+  "ThingsGateway.Gateway.Razor.SavePlugin": {
+    "SavePlugin": "注意：文件名稱相同的插件將被覆蓋"
+  },
+  "ThingsGateway.Gateway.Razor.BackendLogPage": {
+    "BackendLog": "網關後台日誌",
+    "Date": "日期",
+    "Count": "數量"
+  },
+  "ThingsGateway.Gateway.Razor.RpcLogPage": {
+    "RpcLog": "網關RPC日誌",
+    "Date": "日期",
+    "Count": "數量"
+  },
+  "ThingsGateway.Gateway.Razor.ChannelPage": {
+    "ImportExcel": "導入通道",
+    "Clear": "清空"
+  },
+  "ThingsGateway.Gateway.Razor.CollectDevicePage": {
+    "ImportExcel": "導入採集設備",
+    "Clear": "清空"
+  },
+  "ThingsGateway.Gateway.Razor.BusinessDevicePage": {
+    "ImportExcel": "導入業務設備",
+    "Clear": "清空"
+  },
+  "ThingsGateway.Gateway.Razor.VariablePage": {
+    "ImportExcel": "導入變量",
+    "Clear": "清空",
+    "TestCount": "測試變量數量",
+    "Test": "一鍵添加測試變量"
+  },
+  "ThingsGateway.Gateway.Razor.DeviceEditComponent": {
+    "DeviceInformation": "設備信息",
+    "PluginInformation": "插件信息",
+    "BasicInformation": "基礎信息",
+    "Connection": "連接",
+    "Redundant": "冗餘",
+    "Remark": "備用",
+    "Check": "檢查"
+  },
+  "ThingsGateway.Gateway.Razor.VariableEditComponent": {
+    "VariableInformation": "變量信息",
+    "AlarmInformation": "警報信息",
+    "PluginInformation": "業務信息",
+    "BasicInformation": "基礎信息",
+    "Connection": "連接",
+    "Remark": "備用",
+    "RefreshBusinessProperty": "添加/刷新業務屬性",
+    "RefreshBusinessPropertyError": "需選擇業務設備，再添加業務屬性",
+    "ChoiceBusinessDeviceId": "業務設備"
+  },
+  "ThingsGateway.Gateway.Razor.ChannelEditComponent": {
+    "BasicInformation": "基礎信息",
+    "Connection": "連接"
+  }
+}

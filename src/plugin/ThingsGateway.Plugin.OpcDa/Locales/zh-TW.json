@@ -1,0 +1,14 @@
+﻿{
+  "ThingsGateway.Plugin.OpcDa.OpcDaMasterProperty": {
+    "ActiveSubscribe": "訂閱",
+    "CheckRate": "心跳間隔(min)",
+    "DeadBand": "死區",
+    "GroupSize": "最大組大小",
+    "OpcIP": "OpcIP",
+    "OpcName": "Opc名稱",
+    "UpdateRate": "訂閱推送間隔",
+    "SourceTimestampEnable": "伺服端時間戳",
+    "ReIntervalTime": "離線恢復時間",
+    "RetryCount": "失敗重試次數"
+  }
+}

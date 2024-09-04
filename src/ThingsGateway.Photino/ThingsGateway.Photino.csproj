@@ -77,6 +77,9 @@
 
     <EmbeddedResource Include="..\ThingsGateway.Server\Locales\en-US.json" Link="Locales\en-US.json" />
     <EmbeddedResource Include="..\ThingsGateway.Server\Locales\zh-CN.json" Link="Locales\zh-CN.json" />
+    <EmbeddedResource Include="..\ThingsGateway.Server\Locales\zh-TW.json">
+      <Link>Locales\zh-TW.json</Link>
+    </EmbeddedResource>
     <EmbeddedResource Include="Locales\*.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
