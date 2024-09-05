@@ -51,15 +51,12 @@ public class MemoryVariable : CollectBase
         var time = DateTime.Now;
         foreach (var property in variableSourceRead.VariableRunTimes)
         {
-            if (property.Value == null)
+            var result = property.SetValue(property.Value.ChangeType(property.DataType.GetSystemType()), time);
+            if (!result.IsSuccess)
             {
-                var result = property.SetValue(property.Value.ChangeType(property.DataType.GetSystemType()), time);
-                if (!result.IsSuccess)
-                {
-                    variableSourceRead.LastErrorMessage = result.ErrorMessage;
-                    operResult = result;
-                    success = false;
-                }
+                variableSourceRead.LastErrorMessage = result.ErrorMessage;
+                operResult = result;
+                success = false;
             }
         }
         if (operResult.IsSuccess)
