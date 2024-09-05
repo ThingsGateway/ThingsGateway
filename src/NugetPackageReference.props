@@ -1,7 +1,7 @@
 <Project>
   
   <!--PRO插件，需补充 LicenseKey 文件，也可以不依赖，单独放到Plugins文件夹内-->
-  <ItemGroup>
+  <ItemGroup  Condition="'$(SolutionName)'!='ThingsGateway - Admin'">
     <PackageReference Include="ThingsGateway.Plugin.DCON" Version="6.1.0.20"/>
     <!--<PackageReference Include="ThingsGateway.Plugin.DKQ_A16D" Version="6.1.0.20" />-->
     <PackageReference Include="ThingsGateway.Plugin.EDPF_NT" Version="6.1.0.20" />
@@ -15,7 +15,7 @@
 
   </ItemGroup>
   
-  <ItemGroup>
+  <ItemGroup  Condition="'$(SolutionName)'!='ThingsGateway - Admin'">
     <None Include="$(SolutionDir)NugetPackageReference.props" Pack="false" PackagePath="\" />
   </ItemGroup>
   
