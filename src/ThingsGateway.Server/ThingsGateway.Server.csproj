@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <Import Project="$(SolutionDir)NugetPackageReference.props"/>
+  <Import Project="$(SolutionDir)NugetPackageReference.props" />
 
   <Import Project="$(SolutionDir)Version.props" />
   <PropertyGroup>
@@ -35,6 +35,12 @@
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
   </ItemGroup>
 
+  
+  <ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
+    <ProjectReference Include="$(SolutionDir)\pro\ThingsGateway.Gateway.ProRazor\ThingsGateway.Gateway.ProRazor.csproj" />
+  </ItemGroup>
+
+  
   <ItemGroup>
     <Content Include="DockerPush.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -51,10 +57,6 @@
     </EmbeddedResource>
   </ItemGroup>
 
-
-  <ItemGroup Condition="'$(SolutionName)'=='ThingsGateway - Pro'">
-    <ProjectReference Include="$(SolutionDir)\pro\ThingsGateway.Gateway.ProRazor\ThingsGateway.Gateway.ProRazor.csproj" />
-  </ItemGroup>
 
 
 

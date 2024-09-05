@@ -2,11 +2,11 @@ chcp 65001
 rmdir /S /Q %~dp0\nupkgs
 mkdir %~dp0\nupkgs
 rem 构建解决方案
-dotnet clean "ThingsGateway - ProNuget.sln" -c Release
-dotnet build "ThingsGateway.sln" -c Release
-dotnet build "ThingsGateway - ProNuget.sln" -c Release
+
+dotnet build "ProNuget.sln" -c Release
 dotnet restore
-dotnet build "ThingsGateway - ProNuget.sln" -c Release
+dotnet build "ThingsGateway.sln" -c Release
+
 
 rem 切换到 ThingsGateway.Server 目录
 cd .\ThingsGateway.Server

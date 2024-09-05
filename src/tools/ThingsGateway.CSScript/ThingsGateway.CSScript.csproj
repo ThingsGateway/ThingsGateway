@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net6.0;net8.0;</TargetFrameworks>
-    <Version>8.8.9</Version>
+    <Version>8.9.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
