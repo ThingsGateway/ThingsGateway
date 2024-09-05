@@ -28,6 +28,7 @@
     "HisDBTableName": "HisDBTableName",
     "DbType": "DbType",
     "BigTextConnectStr": "ConnectString",
+    "BigTextScriptTabe": "DynamicScript",
 
     "IsInterval": "IsInterval",
     "BusinessInterval": "BusinessInterval",

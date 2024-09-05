@@ -28,7 +28,7 @@ public enum EventTypeEnum
     /// <summary>
     /// 报警确认
     /// </summary>
-    Check,
+    Confirm,
 
     /// <summary>
     /// 报警恢复

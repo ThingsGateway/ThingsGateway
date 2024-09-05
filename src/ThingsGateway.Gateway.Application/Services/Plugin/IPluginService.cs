@@ -35,7 +35,7 @@ public interface IPluginService
     /// <param name="pluginName"></param>
     /// <param name="driverBase"></param>
     /// <returns></returns>
-    (IEnumerable<IEditorItem> EditorItems, object Model) GetDriverPropertyTypes(string pluginName, DriverBase? driverBase = null);
+    (IEnumerable<IEditorItem> EditorItems, object Model, Type PropertyUIType) GetDriverPropertyTypes(string pluginName, DriverBase? driverBase = null);
 
     /// <summary>
     /// 根据插件类型获取信息

@@ -239,7 +239,7 @@ public class PluginService : IPluginService
     /// <param name="pluginName">插件名称</param>
     /// <param name="driverBase">驱动基类实例，可选参数</param>
     /// <returns>返回包含属性名称及其信息的字典</returns>
-    public (IEnumerable<IEditorItem> EditorItems, object Model) GetDriverPropertyTypes(string pluginName, DriverBase? driverBase = null)
+    public (IEnumerable<IEditorItem> EditorItems, object Model, Type PropertyUIType) GetDriverPropertyTypes(string pluginName, DriverBase? driverBase = null)
     {
         // 使用锁确保线程安全
         lock (this)
@@ -258,12 +258,12 @@ public class PluginService : IPluginService
                 {
                     // 返回缓存中存储的属性类型数据
                     var editorItems = data[pluginName];
-                    return (editorItems, driverBase.DriverProperties);
+                    return (editorItems, driverBase.DriverProperties, driverBase.DriverPropertyUIType);
                 }
             }
             // 如果缓存中不存在该插件的数据，则重新获取并缓存
 
-            return (SetCache(driverBase, pluginName, cacheKey, dispose), driverBase.DriverProperties); // 调用 SetCache 方法进行缓存并返回结果
+            return (SetCache(driverBase, pluginName, cacheKey, dispose), driverBase.DriverProperties, driverBase.DriverPropertyUIType); // 调用 SetCache 方法进行缓存并返回结果
 
             // 定义 SetCache 方法，用于设置缓存并返回
             IEnumerable<IEditorItem> SetCache(DriverBase driverBase, string pluginName, string cacheKey, bool dispose)

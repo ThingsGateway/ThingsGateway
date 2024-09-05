@@ -16,6 +16,7 @@
   <ItemGroup>
 
     <ProjectReference Include="$(SolutionDir)ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj">
+      <PrivateAssets>all</PrivateAssets>
       <Private>false</Private>
       <ExcludeAssets>runtime</ExcludeAssets>
     </ProjectReference>

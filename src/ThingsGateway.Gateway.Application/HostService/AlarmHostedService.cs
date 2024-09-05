@@ -377,17 +377,6 @@ public class AlarmHostedService : BackgroundService
             }
             changed = true;
         }
-        else if (eventEnum == EventTypeEnum.Check)
-        {
-            // 如果是确认报警事件
-            item.AlarmType = alarmEnum;
-            item.EventType = eventEnum;
-            item.AlarmLimit = limit.ToString();
-            item.AlarmCode = item.Value.ToString();
-            item.AlarmText = text;
-            item.EventTime = DateTime.Now;
-            changed = true;
-        }
 
         // 触发报警变化事件
         if (changed)
@@ -401,15 +390,23 @@ public class AlarmHostedService : BackgroundService
                     RealAlarmVariables.AddOrUpdate(item.Name, a => item, (a, b) => item);
                 }
             }
-            else
+            else if (item.EventType == EventTypeEnum.Finish)
             {
-                // 如果是需恢复报警事件或检查报警事件，则从实时报警列表中移除该变量
+                // 如果是需恢复报警事件，则从实时报警列表中移除该变量
                 RealAlarmVariables.TryRemove(item.Name, out _);
             }
             OnAlarmChanged?.Invoke(item.Adapt<AlarmVariable>());
         }
 
 
+    }
+
+    public void ConfirmAlarm(VariableRunTime item)
+    {
+        // 如果是确认报警事件
+        item.EventType = EventTypeEnum.Confirm;
+        item.EventTime = DateTime.Now;
+        OnAlarmChanged?.Invoke(item.Adapt<AlarmVariable>());
     }
 
     #endregion 核心实现

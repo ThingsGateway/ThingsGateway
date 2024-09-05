@@ -212,6 +212,9 @@ else
         <TabItem Text=@Localizer["PluginInformation"]>
             @if (Model.PluginPropertyModel != null)
             {
+                if (PropertyUIType==null)
+                {
+
                 <ValidateForm Model="Model.PluginPropertyModel.Value" @ref=Model.PluginPropertyModel.ValidateForm Id="@Model.Id.ToString()">
 
                     <EditorFormObject class="p-2" Items=PluginPropertyEditorItems AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="Model.PluginPropertyModel.Value" @key=Model.PluginPropertyModel.Value.GetType().TypeHandle.Value>
@@ -255,7 +258,12 @@ else
                             }
                         </FieldItems>
                     </EditorFormObject>
-                </ValidateForm>
+                    </ValidateForm>
+                }
+                else
+                {
+                    @UIRenderFragment
+                }
             }
         </TabItem>
 

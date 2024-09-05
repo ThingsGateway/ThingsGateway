@@ -1,0 +1,37 @@
+﻿@using BootstrapBlazor.Components
+@using ThingsGateway.Core.Extension
+@using ThingsGateway.Foundation
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Plugin.SqlDB
+@namespace ThingsGateway.Debug
+
+<ValidateForm Model="Model.PluginPropertyModel.Value" @ref=Model.PluginPropertyModel.ValidateForm Id="@Model.Id.ToString()">
+
+    <EditorFormObject class="p-2" Items=PluginPropertyEditorItems AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="Model.PluginPropertyModel.Value" @key=Model.PluginPropertyModel.Value.GetType().TypeHandle.Value>
+        <FieldItems>
+            @if (Model.PluginPropertyModel.Value is SqlDBProducerProperty businessProperty)
+            {
+                <EditorItem FieldExpression=@(()=>context) Field=@(context)>
+
+                    <EditTemplate Context="value">
+                        <div class="col-12  col-md-12">
+                            <Textarea @bind-Value=@businessProperty.BigTextScriptTabe ShowLabelTooltip="true"
+                                      rows="5" ShowLabel="true" />
+                        </div>
+
+                    </EditTemplate>
+                </EditorItem>
+            }
+        </FieldItems>
+    </EditorFormObject>
+</ValidateForm>
+
+@code{
+
+    [Parameter, EditorRequired]
+    public Device Model { get; set; }
+    [Parameter, EditorRequired]
+    public IEnumerable<IEditorItem> PluginPropertyEditorItems { get; set; }
+}

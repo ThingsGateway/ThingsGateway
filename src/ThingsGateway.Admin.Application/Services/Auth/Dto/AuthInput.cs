@@ -20,7 +20,7 @@ public class OpenApiLoginInput
     /// <summary>
     /// 账号
     ///</summary>
-    /// <example>apiAdmin</example>
+    /// <example>ApiAdmin</example>
     [Required]
     public string Account { get; set; }
 

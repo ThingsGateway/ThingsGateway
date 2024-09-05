@@ -53,6 +53,11 @@ public abstract class DriverBase : DisposableObject
     public virtual Type DriverDebugUIType { get; }
 
     /// <summary>
+    /// 插件属性UI Type，如果不存在，返回null
+    /// </summary>
+    public virtual Type DriverPropertyUIType { get; }
+
+    /// <summary>
     /// 插件配置项
     /// </summary>
     public abstract object DriverProperties { get; }

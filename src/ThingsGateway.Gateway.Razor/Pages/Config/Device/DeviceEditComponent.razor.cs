@@ -22,6 +22,8 @@ public partial class DeviceEditComponent
 {
     private IEnumerable<IEditorItem> PluginPropertyEditorItems;
 
+    private RenderFragment UIRenderFragment;
+    private Type PropertyUIType;
     [Parameter]
     public bool BatchEditEnable { get; set; }
 
@@ -125,6 +127,16 @@ public partial class DeviceEditComponent
             var data = PluginService.GetDriverPropertyTypes(selectedItem?.Value);
             Model.PluginPropertyModel = new ModelValueValidateForm() { Value = data.Model };
             PluginPropertyEditorItems = data.EditorItems;
+            PropertyUIType = data.PropertyUIType;
+            if (PropertyUIType != null)
+            {
+                var component = new ThingsGatewayDynamicComponent(PropertyUIType, new Dictionary<string, object?>
+                {
+                    [nameof(DeviceEditComponent.Model)] = Model,
+                    [nameof(DeviceEditComponent.PluginPropertyEditorItems)] = PluginPropertyEditorItems,
+                });
+                UIRenderFragment = component.Render();
+            }
             if (Model.DevicePropertys?.Any() == true)
             {
                 PluginServiceUtil.SetModel(Model.PluginPropertyModel.Value, Model.DevicePropertys);

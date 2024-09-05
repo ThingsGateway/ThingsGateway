@@ -18,7 +18,8 @@
     "RuntimeInfoControler": "Get runtime information",
     "GetCollectDeviceList": "Get device information",
     "GetVariableList": "Get variable information",
-    "GetRealAlarmList": "Get real-time alarm information"
+    "GetRealAlarmList": "Get real-time alarm information",
+    "CheckRealAlarm": "Confirm real-time alarm"
   }
 
 

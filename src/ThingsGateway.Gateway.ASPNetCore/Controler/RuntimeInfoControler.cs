@@ -65,6 +65,19 @@ public class RuntimeInfoControler : ControllerBase
             .ToPagedList(input);
         return data.Adapt<SqlSugarPagedList<AlarmVariable>>();
     }
+    /// <summary>
+    /// 确认实时报警
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost("checkRealAlarm")]
+    [DisplayName("确认实时报警")]
+    public void CheckRealAlarm(string variableName)
+    {
+        if (GlobalData.ReadOnlyRealAlarmVariables.TryGetValue(variableName, out var variable))
+        {
+            HostedServiceUtil.AlarmHostedService.ConfirmAlarm(variable);
+        }
+    }
 
     /// <summary>
     /// 获取变量信息

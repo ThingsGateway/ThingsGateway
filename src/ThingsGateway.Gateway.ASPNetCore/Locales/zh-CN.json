@@ -18,7 +18,8 @@
     "RuntimeInfoControler": "获取运行态信息",
     "GetCollectDeviceList": "获取设备信息",
     "GetVariableList": "获取变量信息",
-    "GetRealAlarmList": "获取实时报警信息"
+    "GetRealAlarmList": "获取实时报警信息",
+    "CheckRealAlarm": "确认实时报警"
   }
 
 

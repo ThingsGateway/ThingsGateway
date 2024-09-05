@@ -15,7 +15,9 @@ using Mapster;
 using SqlSugar;
 
 using ThingsGateway.Core;
+using ThingsGateway.Debug;
 using ThingsGateway.Foundation;
+using ThingsGateway.NewLife.X.Extension;
 
 namespace ThingsGateway.Plugin.SqlDB;
 
@@ -29,6 +31,7 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
 
     /// <inheritdoc/>
     public override Type DriverUIType => typeof(SqlDBPage);
+    public override Type DriverPropertyUIType => typeof(SqlDBProducerPropertyRazor);
 
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
@@ -55,6 +58,12 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
             .Map(dest => dest.CreateTime, (src) => DateTime.Now);
 
         _exRealTimerTick = new(_driverPropertys.BusinessInterval);
+
+        //必须为间隔上传
+        if (!_driverPropertys.BigTextScriptTabe.IsNullOrEmpty() && _driverPropertys.IsInterval)
+        {
+            //TODO: 动态表格式未完成
+        }
 
         base.Init(channel);
     }
