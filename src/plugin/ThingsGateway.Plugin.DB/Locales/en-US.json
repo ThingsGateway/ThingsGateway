@@ -28,7 +28,8 @@
     "HisDBTableName": "HisDBTableName",
     "DbType": "DbType",
     "BigTextConnectStr": "ConnectString",
-    "BigTextScriptTabe": "DynamicScript",
+    "BigTextScriptHisTable": "DynamicScriptHisTable",
+    "BigTextScriptRealTable": "DynamicScriptRealTable",
 
     "IsInterval": "IsInterval",
     "BusinessInterval": "BusinessInterval",

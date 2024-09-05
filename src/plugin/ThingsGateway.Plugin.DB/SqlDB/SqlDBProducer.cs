@@ -29,9 +29,19 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
     internal readonly SqlDBProducerProperty _driverPropertys = new();
     private readonly SqlDBProducerVariableProperty _variablePropertys = new();
 
-    /// <inheritdoc/>
-    public override Type DriverUIType => typeof(SqlDBPage);
     public override Type DriverPropertyUIType => typeof(SqlDBProducerPropertyRazor);
+
+    /// <inheritdoc/>
+    public override Type DriverUIType
+    {
+        get
+        {
+            if (_driverPropertys.BigTextScriptHisTable.IsNullOrEmpty() && _driverPropertys.BigTextScriptRealTable.IsNullOrEmpty())
+                return typeof(SqlDBPage);
+            else
+                return null;
+        }
+    }
 
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
 
@@ -49,25 +59,6 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         return data.Cast<IDBHistoryValue>().ToList();
     }
 
-    protected override void Init(IChannel? channel = null)
-    {
-        _config = new TypeAdapterConfig();
-        _config.ForType<VariableRunTime, SQLHistoryValue>()
-            //.Map(dest => dest.Id, (src) =>YitIdHelper.NextId())
-            .Map(dest => dest.Id, src => src.Id)//Id更改为变量Id
-            .Map(dest => dest.CreateTime, (src) => DateTime.Now);
-
-        _exRealTimerTick = new(_driverPropertys.BusinessInterval);
-
-        //必须为间隔上传
-        if (!_driverPropertys.BigTextScriptTabe.IsNullOrEmpty() && _driverPropertys.IsInterval)
-        {
-            //TODO: 动态表格式未完成
-        }
-
-        base.Init(channel);
-    }
-
     /// <inheritdoc/>
     public override bool IsConnected() => success;
 
@@ -75,25 +66,6 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
     public override string ToString()
     {
         return $" {nameof(SqlDBProducer)}";
-    }
-
-    internal ISugarQueryable<SQLHistoryValue> Query(DBHistoryValuePageInput input)
-    {
-        var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
-        var query = db.Queryable<SQLHistoryValue>().SplitTable()
-                             .WhereIF(input.StartTime != null, a => a.CreateTime >= input.StartTime)
-                           .WhereIF(input.EndTime != null, a => a.CreateTime <= input.EndTime)
-                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
-                           .WhereIF(input.VariableNames != null, it => input.VariableNames.Contains(it.Name))
-                           ;
-
-        for (int i = input.SortField.Count - 1; i >= 0; i--)
-        {
-            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
-        }
-        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
-
-        return query;
     }
 
     internal async Task<QueryData<SQLHistoryValue>> QueryHisData(QueryPageOptions option)
@@ -108,7 +80,6 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         };
 
         var query = db.GetQuery<SQLHistoryValue>(option).SplitTable();
-
         if (option.IsPage)
         {
             RefAsync<int> totalCount = 0;
@@ -176,16 +147,57 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         return ret;
     }
 
+    protected override void Init(IChannel? channel = null)
+    {
+        _config = new TypeAdapterConfig();
+        _config.ForType<VariableRunTime, SQLHistoryValue>()
+            //.Map(dest => dest.Id, (src) =>YitIdHelper.NextId())
+            .Map(dest => dest.Id, src => src.Id)//Id更改为变量Id
+            .Map(dest => dest.CreateTime, (src) => DateTime.Now);
+
+        _exRealTimerTick = new(_driverPropertys.BusinessInterval);
+
+
+
+        base.Init(channel);
+    }
+
     protected override async Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
     {
         var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
         db.DbMaintenance.CreateDatabase();
-        if (_driverPropertys.IsHisDB)
-            db.CodeFirst.InitTables(typeof(SQLHistoryValue));
-        if (_driverPropertys.IsReadDB)
-            db.CodeFirst.As<SQLRealValue>(_driverPropertys.ReadDBTableName).InitTables<SQLRealValue>();
-        //该功能索引名要加占位符
-        //[SugarIndex("{table}index_codetable1_name",nameof(CodeFirstTable1.Name),OrderByType.Asc)]
+
+        //必须为间隔上传
+        if (!_driverPropertys.BigTextScriptHisTable.IsNullOrEmpty())
+        {
+            var hisModel = CSharpScriptEngineExtension.Do<IDynamicSQL>(_driverPropertys.BigTextScriptHisTable);
+            if (_driverPropertys.IsHisDB)
+            {
+                var type = hisModel.GetModelType();
+                db.CodeFirst.InitTables(type);
+            }
+
+        }
+        else
+        {
+            if (_driverPropertys.IsHisDB)
+                db.CodeFirst.InitTables(typeof(SQLHistoryValue));
+        }
+        if (!_driverPropertys.BigTextScriptRealTable.IsNullOrEmpty())
+        {
+            var realModel = CSharpScriptEngineExtension.Do<IDynamicSQL>(_driverPropertys.BigTextScriptRealTable);
+            if (_driverPropertys.IsReadDB)
+            {
+                var type = realModel.GetModelType();
+                db.CodeFirst.InitTables(type);
+            }
+        }
+        else
+        {
+            if (_driverPropertys.IsReadDB)
+                db.CodeFirst.As<SQLRealValue>(_driverPropertys.ReadDBTableName).InitTables<SQLRealValue>();
+        }
+
         await base.ProtectedBeforStartAsync(cancellationToken).ConfigureAwait(false);
     }
 
@@ -222,5 +234,25 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
             await UpdateVarModelCache(cancellationToken).ConfigureAwait(false);
         }
         await Delay(cancellationToken).ConfigureAwait(false);
+    }
+
+    private ISugarQueryable<SQLHistoryValue> Query(DBHistoryValuePageInput input)
+    {
+        var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
+
+        var query = db.Queryable<SQLHistoryValue>().SplitTable()
+                           .WhereIF(input.StartTime != null, a => a.CreateTime >= input.StartTime)
+                           .WhereIF(input.EndTime != null, a => a.CreateTime <= input.EndTime)
+                           .WhereIF(!string.IsNullOrEmpty(input.VariableName), it => it.Name.Contains(input.VariableName))
+                           .WhereIF(input.VariableNames != null, it => input.VariableNames.Contains(it.Name))
+                           ;
+
+        for (int i = input.SortField.Count - 1; i >= 0; i--)
+        {
+            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
+        }
+        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
+
+        return query;
     }
 }

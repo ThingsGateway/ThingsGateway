@@ -28,7 +28,11 @@ public interface IDynamicModelData
 {
     dynamic GeData(object datas);
 }
-
+public interface IDynamicSQL
+{
+    IEnumerable<dynamic> GetList(IEnumerable<object> datas);
+    Type GetModelType();
+}
 /// <summary>
 /// 脚本扩展方法
 /// </summary>
@@ -79,7 +83,7 @@ public static class CSharpScriptEngineExtension
     /// <summary>
     /// 执行脚本获取返回值ReadWriteExpressions
     /// </summary>
-    public static T Do<T>(string source) where T : class
+    public static T Do<T>(string source, params Assembly[] assemblies) where T : class
     {
         var field = $"{CacheKey}-{source}";
         var runScript = Instance.Get<T>(field);
@@ -111,9 +115,13 @@ public static class CSharpScriptEngineExtension
                         }
 
                     });
-
+                    var evaluator = CSScript.Evaluator;
+                    foreach (var item in assemblies)
+                    {
+                        evaluator = evaluator.ReferenceAssembly(item.Location);
+                    }
                     // 动态加载并执行代码
-                    runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<T>(
+                    runScript = evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<T>(
                        $@"
         using System;
         using System.Linq;

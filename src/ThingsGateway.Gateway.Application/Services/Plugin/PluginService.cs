@@ -583,16 +583,31 @@ public class PluginService : IPluginService
     private Assembly GetAssembly(string path, List<string> paths, AssemblyLoadContext assemblyLoadContext)
     {
         Assembly assembly = null;
+        var cacheId = YitIdHelper.NextId();
         foreach (var item in paths)
         {
-            using var fs = new FileStream(item, FileMode.Open);
+            var dir = Path.GetDirectoryName(item).CombinePathWithOs($"Cache{cacheId}");
+            var cachePath = dir.CombinePath(Path.GetFileName(item));
+            Directory.CreateDirectory(dir);
+            File.Copy(item, cachePath, true);
+        }
+        foreach (var item in paths)
+        {
+            //using var fs = new FileStream(item, FileMode.Open);
+            var cachePath = Path.GetDirectoryName(item).CombinePathWithOs($"Cache{cacheId}").CombinePath(Path.GetFileName(item));
             if (item == path)
-                assembly = assemblyLoadContext.LoadFromStream(fs); //加载主程序集，并获取
+            {
+                //assembly = assemblyLoadContext.LoadFromStream(fs); //加载主程序集，并获取
+
+                //修改为从文件创立，满足roslyn引擎的要求
+                assembly = assemblyLoadContext.LoadFromAssemblyPath(cachePath);
+
+            }
             else
             {
                 try
                 {
-                    assemblyLoadContext.LoadFromStream(fs);//加载其余程序集
+                    assemblyLoadContext.LoadFromAssemblyPath(cachePath);
                 }
                 catch (Exception ex)
                 {

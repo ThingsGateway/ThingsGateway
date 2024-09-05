@@ -28,7 +28,8 @@
     "HisDBTableName": "歷史表名稱",
     "DbType": "資料庫類型",
     "BigTextConnectStr": "連結字串",
-    "BigTextScriptTabe":"動態腳本",
+    "BigTextScriptHisTable": "歷史表動態腳本",
+    "BigTextScriptRealTable": "即時表動態腳本",
 
     "IsInterval": "啟用定時上傳",
     "BusinessInterval": "定時上傳間隔",

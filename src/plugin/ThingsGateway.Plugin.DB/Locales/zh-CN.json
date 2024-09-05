@@ -28,7 +28,8 @@
     "HisDBTableName": "历史表名称",
     "DbType": "数据库类型",
     "BigTextConnectStr": "链接字符串",
-    "BigTextScriptTabe": "动态脚本",
+    "BigTextScriptHisTable": "历史表动态脚本",
+    "BigTextScriptRealTable": "实时表动态脚本",
 
     "IsInterval": "启用定时上传",
     "BusinessInterval": "定时上传间隔",

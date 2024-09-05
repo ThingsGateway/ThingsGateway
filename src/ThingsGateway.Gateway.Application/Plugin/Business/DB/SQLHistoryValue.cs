@@ -12,9 +12,7 @@ using BootstrapBlazor.Components;
 
 using SqlSugar;
 
-using ThingsGateway.Core;
-
-namespace ThingsGateway.Plugin.SqlDB;
+namespace ThingsGateway.Gateway.Application;
 
 [SplitTable(SplitType.Week)]//按周分表 （自带分表支持 年、季、月、周、日）
 [SugarTable("{name}_{year}{month}{day}", TableDescription = "设备采集历史表")]//3个变量必须要有

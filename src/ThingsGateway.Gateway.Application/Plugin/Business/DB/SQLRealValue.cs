@@ -12,9 +12,7 @@ using BootstrapBlazor.Components;
 
 using SqlSugar;
 
-using ThingsGateway.Core;
-
-namespace ThingsGateway.Plugin.SqlDB;
+namespace ThingsGateway.Gateway.Application;
 
 [SugarTable(TableDescription = "设备采集实时表")]
 [SugarIndex("{table}_index_Id", nameof(SQLRealValue.Id), OrderByType.Desc)]

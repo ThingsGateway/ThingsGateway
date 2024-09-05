@@ -60,12 +60,27 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         {
             var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
             db.Ado.CancellationToken = cancellationToken;
-            var result = await db.Fastest<SQLHistoryValue>().PageSize(50000).SplitTable().BulkCopyAsync(dbInserts).ConfigureAwait(false);
-            //var result = await db.Insertable(dbInserts).SplitTable().ExecuteCommandAsync().ConfigureAwait(false);
-            if (result > 0)
+            if (!_driverPropertys.BigTextScriptHisTable.IsNullOrEmpty())
             {
-                LogMessage.Trace($"TableName：{nameof(SQLHistoryValue)}，Count：{result}");
+                var getDeviceModel = CSharpScriptEngineExtension.Do<IDynamicSQL>(_driverPropertys.BigTextScriptHisTable);
+                var result = await db.InsertableByObject(getDeviceModel.GetList(dbInserts)).SplitTable().ExecuteCommandAsync().ConfigureAwait(false);
+                //var result = await db.Insertable(dbInserts).SplitTable().ExecuteCommandAsync().ConfigureAwait(false);
+                if (result > 0)
+                {
+                    LogMessage.Trace($"HisTable Data Count：{result}");
+                }
             }
+            else
+            {
+                var result = await db.Fastest<SQLHistoryValue>().PageSize(50000).SplitTable().BulkCopyAsync(dbInserts).ConfigureAwait(false);
+                //var result = await db.Insertable(dbInserts).SplitTable().ExecuteCommandAsync().ConfigureAwait(false);
+                if (result > 0)
+                {
+                    LogMessage.Trace($"HisTable Data Count：{result}");
+                }
+            }
+
+
             return OperResult.Success;
         }
         catch (Exception ex)
@@ -80,27 +95,58 @@ public partial class SqlDBProducer : BusinessBaseWithCacheIntervalVarModel<SQLHi
         {
             var db = SqlDBBusinessDatabaseUtil.GetDb(_driverPropertys);
             db.Ado.CancellationToken = cancellationToken;
-            if (!_initRealData)
+
+            if (!_driverPropertys.BigTextScriptRealTable.IsNullOrEmpty())
             {
-                if (datas?.Count != 0)
+                var getDeviceModel = CSharpScriptEngineExtension.Do<IDynamicSQL>(_driverPropertys.BigTextScriptRealTable);
+                if (!_initRealData)
                 {
-                    var result = await db.Storageable(datas).As(_driverPropertys.ReadDBTableName).PageSize(5000).ExecuteSqlBulkCopyAsync().ConfigureAwait(false);
-                    if (result > 0)
-                        LogMessage.Trace($"TableName：{nameof(SQLRealValue)}{Environment.NewLine} ，Count：{result}");
-                    _initRealData = true;
+                    if (datas?.Count != 0)
+                    {
+                        var result = db.StorageableByObject(getDeviceModel.GetList(datas)).ExecuteCommand();
+                        if (result > 0)
+                            LogMessage.Trace($"RealTable Data Count：{result}");
+                        _initRealData = true;
+                        return OperResult.Success;
+                    }
                     return OperResult.Success;
                 }
-                return OperResult.Success;
+                else
+                {
+                    if (datas?.Count != 0)
+                    {
+                        var result = await db.UpdateableByObject(getDeviceModel.GetList(datas)).ExecuteCommandAsync().ConfigureAwait(false);
+                        if (result > 0)
+                            LogMessage.Trace($"RealTable Data Count：{result}");
+                        return OperResult.Success;
+                    }
+                    return OperResult.Success;
+                }
             }
             else
             {
-                if (datas?.Count != 0)
+                if (!_initRealData)
                 {
-                    var result = await db.Fastest<SQLRealValue>().AS(_driverPropertys.ReadDBTableName).PageSize(100000).BulkUpdateAsync(datas).ConfigureAwait(false);
-                    LogMessage.Trace($"TableName：{nameof(SQLRealValue)}{Environment.NewLine} ，Count：{result}");
+                    if (datas?.Count != 0)
+                    {
+                        var result = await db.Storageable(datas).As(_driverPropertys.ReadDBTableName).PageSize(5000).ExecuteSqlBulkCopyAsync().ConfigureAwait(false);
+                        if (result > 0)
+                            LogMessage.Trace($"RealTable Data Count：{result}");
+                        _initRealData = true;
+                        return OperResult.Success;
+                    }
                     return OperResult.Success;
                 }
-                return OperResult.Success;
+                else
+                {
+                    if (datas?.Count != 0)
+                    {
+                        var result = await db.Fastest<SQLRealValue>().AS(_driverPropertys.ReadDBTableName).PageSize(100000).BulkUpdateAsync(datas).ConfigureAwait(false);
+                        LogMessage.Trace($"RealTable Data Count：{result}");
+                        return OperResult.Success;
+                    }
+                    return OperResult.Success;
+                }
             }
         }
         catch (Exception ex)

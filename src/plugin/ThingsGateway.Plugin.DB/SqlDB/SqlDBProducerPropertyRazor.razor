@@ -17,10 +17,13 @@
 
                     <EditTemplate Context="value">
                         <div class="col-12  col-md-12">
-                            <Textarea @bind-Value=@businessProperty.BigTextScriptTabe ShowLabelTooltip="true"
+                            <Textarea @bind-Value=@businessProperty.BigTextScriptHisTable ShowLabelTooltip="true"
                                       rows="5" ShowLabel="true" />
                         </div>
-
+                        <div class="col-12  col-md-12">
+                            <Textarea @bind-Value=@businessProperty.BigTextScriptRealTable ShowLabelTooltip="true"
+                                      rows="5" ShowLabel="true" />
+                        </div>
                     </EditTemplate>
                 </EditorItem>
             }

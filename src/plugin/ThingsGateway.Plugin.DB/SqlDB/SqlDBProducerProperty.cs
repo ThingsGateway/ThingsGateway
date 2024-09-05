@@ -41,10 +41,19 @@ public class SqlDBProducerProperty : BusinessPropertyWithCacheInterval
     [AutoGenerateColumn(ComponentType = typeof(Textarea), Rows = 1)]
     public string BigTextConnectStr { get; set; } = "server=.;uid=sa;pwd=111111;database=test;";
 
+
+
     /// <summary>
-    /// 表脚本
+    /// 实时表脚本
     /// </summary>
     [DynamicProperty(Remark = "必须为间隔上传，才生效")]
     [AutoGenerateColumn(Visible = true, IsVisibleWhenEdit = false, IsVisibleWhenAdd = false)]
-    public string? BigTextScriptTabe { get; set; }
+    public string? BigTextScriptRealTable { get; set; }
+    /// <summary>
+    /// 历史表脚本
+    /// </summary>
+    [DynamicProperty(Remark = "必须为间隔上传，才生效")]
+    [AutoGenerateColumn(Visible = true, IsVisibleWhenEdit = false, IsVisibleWhenAdd = false)]
+    public string? BigTextScriptHisTable { get; set; }
+
 }
