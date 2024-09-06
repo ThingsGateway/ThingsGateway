@@ -85,7 +85,18 @@ public partial class OpcUaServer : BusinessBase
     }
 
     /// <inheritdoc/>
-    public override bool IsConnected() => m_server?.CurrentInstance.CurrentState == Opc.Ua.ServerState.Running;
+    public override bool IsConnected()
+    {
+        try
+        {
+            return m_server?.CurrentInstance.CurrentState == Opc.Ua.ServerState.Running;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
+    }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

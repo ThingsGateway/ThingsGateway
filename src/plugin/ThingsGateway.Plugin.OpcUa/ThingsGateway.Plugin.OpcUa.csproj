@@ -10,7 +10,7 @@
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
 
-    <Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*OpcUa*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*Opc.Ua*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" Condition="'$(OS)'=='Windows_NT'" />
+    <Exec Command="@echo off&#xD;&#xA;setlocal enabledelayedexpansion&#xD;&#xA;&#xD;&#xA;    set &quot;dir=$(SolutionDir)ThingsGateway.Server\bin\$(Configuration)\$(TargetFramework)\Plugins\$(AssemblyName)&quot;&#xD;&#xA;    if not exist &quot;!dir!&quot; md &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*OpcUa*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;    copy &quot;$(TargetDir)*Opc.Ua*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;   if &quot;$(TargetFramework)&quot; EQU &quot;net6.0&quot;   copy &quot;$(TargetDir)*Asn1*.dll&quot; &quot;!dir!&quot;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;endlocal&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;&#xD;&#xA;" Condition="'$(OS)'=='Windows_NT'" />
   </Target>
 
   <ItemGroup>
