@@ -108,6 +108,11 @@ module.exports = {
           type: "doc",
           id: "206",
           label: "VariableExpression"
+        },
+        {
+          type: "doc",
+          id: "207",
+          label: "MqttCollect"
         }
 
       ]
