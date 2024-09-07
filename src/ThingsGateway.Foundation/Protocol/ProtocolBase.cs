@@ -193,7 +193,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual int GetLength(string address, int length, int typeLength, bool isBool = false)
     {
         var result = Math.Ceiling((double)length * typeLength / RegisterByteLength);
-        if (isBool && BitReverse(address))
+        if (isBool)
         {
             var data = Math.Ceiling((double)length / RegisterByteLength / 8);
             return (int)data;
