@@ -8,7 +8,7 @@
     <SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
     <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
-    <TargetFrameworks>net6.0;</TargetFrameworks>
+    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <!--<PublishAot>true</PublishAot>-->
 
     <!--动态适用GC-->
@@ -62,7 +62,7 @@
 
 
 
-    <None Include="..\ThingsGateway.Server\Directory.Build.targets" Link="Directory.Build.targets" />
+    
     <Content Include="..\ThingsGateway.Server\wwwroot\favicon.ico" Link="wwwroot\favicon.ico" />
     <Content Include="..\ThingsGateway.Server\wwwroot\favicon.png" Link="wwwroot\favicon.png" />
     <Content Include="..\ThingsGateway.Server\appsettings.Development.json" Link="appsettings.Development.json">

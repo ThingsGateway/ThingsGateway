@@ -169,15 +169,23 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     {
         return DefaultResource.Localizer["DefaultAddressDes"];
     }
-
     /// <summary>
     /// 获取bit偏移量
     /// </summary>
     /// <param name="address"></param>
     /// <returns></returns>
-    public virtual int GetBitOffset(string address)
+    public int GetBitOffsetDefault(string address)
     {
-        int bitIndex = 0;
+        return GetBitOffset(address) ?? 0;
+    }
+    /// <summary>
+    /// 获取bit偏移量
+    /// </summary>
+    /// <param name="address"></param>
+    /// <returns></returns>
+    public virtual int? GetBitOffset(string address)
+    {
+        int? bitIndex = null;
         if (address?.IndexOf('.') > 0)
             bitIndex = address.SplitStringByDelimiter().Last().ToInt();
         return bitIndex;
@@ -193,7 +201,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public virtual int GetLength(string address, int length, int typeLength, bool isBool = false)
     {
         var result = Math.Ceiling((double)length * typeLength / RegisterByteLength);
-        if (isBool)
+        if (isBool && GetBitOffset(address) != null)
         {
             var data = Math.Ceiling((double)length / RegisterByteLength / 8);
             return (int)data;
@@ -537,7 +545,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
 
         var result = await ReadAsync(address, GetLength(address, length, RegisterByteLength, true), cancellationToken).ConfigureAwait(false);
 
-        return result.OperResultFrom(() => bitConverter.ToBoolean(result.Content, GetBitOffset(address), length, BitReverse(address)));
+        return result.OperResultFrom(() => bitConverter.ToBoolean(result.Content, GetBitOffsetDefault(address), length, BitReverse(address)));
     }
 
     /// <inheritdoc/>

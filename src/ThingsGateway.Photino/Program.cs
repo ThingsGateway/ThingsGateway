@@ -57,9 +57,7 @@ internal class Program
         app.Services.UseServicesWithoutWeb();
 
         app.MainWindow.ContextMenuEnabled = false;
-#if !DEBUG
-        app.MainWindow.DevToolsEnabled = false;
-#endif
+        app.MainWindow.DevToolsEnabled = true;
         app.MainWindow.GrantBrowserPermissions = true;
         app.MainWindow.SetUseOsDefaultLocation(false);
         app.MainWindow.SetUseOsDefaultSize(false);

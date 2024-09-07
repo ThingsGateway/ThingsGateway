@@ -50,7 +50,7 @@ public class PackHelper
             item.Index = 0;
             // 获取变量的位偏移量
             //if (item.DataType == DataTypeEnum.Boolean)
-            item.Index = device.GetBitOffset(address);
+            item.Index = device.GetBitOffsetDefault(address);
             if (item.DataType == DataTypeEnum.Byte)
                 item.Index += (item.Index % 2 == 0) ? 1 : -1;
         }

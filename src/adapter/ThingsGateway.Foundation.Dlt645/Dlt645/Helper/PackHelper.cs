@@ -34,7 +34,7 @@ internal static class PackHelper
             item.ThingsGatewayBitConverter = transformParameter;
             item.Index = 0;
             if (item.DataType == DataTypeEnum.Boolean)
-                item.Index = device.GetBitOffset(item.RegisterAddress);
+                item.Index = device.GetBitOffsetDefault(item.RegisterAddress);
         }
         var group = deviceVariables.GroupBy(a => a.RegisterAddress);
         foreach (var item in group)

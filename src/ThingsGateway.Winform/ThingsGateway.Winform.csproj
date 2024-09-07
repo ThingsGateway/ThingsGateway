@@ -64,8 +64,7 @@
     <Compile Include="..\ThingsGateway.Server\SingleFilePublish.cs" Link="SingleFilePublish.cs" />
 
 
-
-    <None Include="..\ThingsGateway.Server\Directory.Build.targets" Link="Directory.Build.targets" />
+ 
     <Content Include="..\ThingsGateway.Server\wwwroot\favicon.ico" Link="wwwroot\favicon.ico" />
     <Content Include="..\ThingsGateway.Server\wwwroot\favicon.png" Link="wwwroot\favicon.png" />
     <Content Include="..\ThingsGateway.Server\appsettings.Development.json" Link="appsettings.Development.json">

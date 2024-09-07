@@ -90,13 +90,18 @@ public interface IProtocol : IDisposable
     /// </summary>
     /// <returns></returns>
     string GetAddressDescription();
-
+    /// <summary>
+    /// 获取变量地址对应的bit偏移，默认0
+    /// </summary>
+    /// <param name="address">变量地址</param>
+    /// <returns></returns>
+    int GetBitOffsetDefault(string address);
     /// <summary>
     /// 获取变量地址对应的bit偏移
     /// </summary>
     /// <param name="address">变量地址</param>
     /// <returns></returns>
-    int GetBitOffset(string address);
+    int? GetBitOffset(string address);
 
     /// <summary>
     /// 获取数据类型对应的寄存器长度

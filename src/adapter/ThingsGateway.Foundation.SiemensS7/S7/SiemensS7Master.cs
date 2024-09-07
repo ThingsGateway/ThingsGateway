@@ -79,7 +79,7 @@ public partial class SiemensS7Master : ProtocolBase
     }
 
     /// <inheritdoc/>
-    public override int GetBitOffset(string address)
+    public override int? GetBitOffset(string address)
     {
         if (address.IndexOf('.') > 0)
         {
@@ -97,7 +97,10 @@ public partial class SiemensS7Master : ProtocolBase
                 return 0;
             }
         }
-        return 0;
+        else
+        {
+            return null;
+        }
     }
 
     /// <inheritdoc/>

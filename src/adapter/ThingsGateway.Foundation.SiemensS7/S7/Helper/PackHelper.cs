@@ -36,7 +36,7 @@ internal static class PackHelper
             item.ThingsGatewayBitConverter = transformParameter;
             item.Index = 0;
             if (item.DataType == DataTypeEnum.Boolean)
-                item.Index = device.GetBitOffset(address);
+                item.Index = device.GetBitOffsetDefault(address);
         }
 
         // 按读取间隔分组
