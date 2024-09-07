@@ -106,7 +106,15 @@ internal static class PackHelper
                 }
                 if (it.ThingsGatewayBitConverter.ArrayLength != null)
                 {
-                    lastLen *= it.ThingsGatewayBitConverter.ArrayLength.Value;
+                    if (it.DataType == DataTypeEnum.Boolean)
+                    {
+                        var len = Math.Ceiling((decimal)it.ThingsGatewayBitConverter.ArrayLength.Value / 8);
+                        lastLen *= (int)len;
+                    }
+                    else
+                    {
+                        lastLen *= it.ThingsGatewayBitConverter.ArrayLength.Value;
+                    }
                 }
 
                 // 将变量的应读取长度写入SiemensAddress实例中

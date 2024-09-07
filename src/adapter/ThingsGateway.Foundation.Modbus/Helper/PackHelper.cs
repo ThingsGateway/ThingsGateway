@@ -80,14 +80,24 @@ public class PackHelper
                             break;
                     }
                 }
-                // 如果是数组，需要乘以数组长度
-                {
-                    lastLen *= it.ThingsGatewayBitConverter.ArrayLength ?? 1;
-                }
 
                 // 解析地址，并设置字节长度
                 var address = it.RegisterAddress;
                 var result = ModbusAddress.ParseFrom(address, station, dtuid, isCache: false);
+
+                // 如果是数组，需要乘以数组长度
+                if ((result.FunctionCode == 3 || result.FunctionCode == 4) && it.DataType == DataTypeEnum.Boolean)
+                {
+                    if (it.ThingsGatewayBitConverter.ArrayLength != null)
+                    {
+                        var len = Math.Ceiling((decimal)it.ThingsGatewayBitConverter.ArrayLength.Value / 8);
+                        lastLen *= (int)len;
+                    }
+                }
+                else
+                {
+                    lastLen *= it.ThingsGatewayBitConverter.ArrayLength ?? 1;
+                }
                 result.Length = (ushort)lastLen;
                 return result;
             });
