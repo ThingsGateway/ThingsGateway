@@ -26,6 +26,12 @@ module.exports = {
       id: "100",
       label: "驱动调试"
     },
+    
+    {
+      type: "doc",
+      id: "40001",
+      label: "软件配置"
+    },
     {
       type: "category",
       label: "基础手册",

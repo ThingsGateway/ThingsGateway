@@ -1,0 +1,201 @@
+---
+id: 40001
+title: 软件配置
+---
+
+import useBaseUrl from "@docusaurus/useBaseUrl";
+import Tag from "@site/src/components/Tag.js";
+import Highlight from '@site/src/components/Highlight.js';
+
+
+:::tip `提示`
+
+ 默认直接启动即可，无需配置即可正常使用
+
+ 配置文件为 ``appsettings.json`` 
+
+:::
+
+:::tip `提示`
+
+dotnet应用可以在 启动指令中 添加urls参数，指定启动端口，也可配置 ``appsettings.json`` 文件
+
+```
+  "urls": "http://*:5000"
+```
+
+:::
+
+
+
+## 一、数据库
+
+**ThingsGateway** 默认使用 ``Sqlite`` 数据库，方便部署，也可以通过配置 ``appsettings.json`` 文件，修改数据库配置
+
+找到 ``SqlSugarOptions``节点，默认配置为
+
+```
+
+  //Sqlsugar数据库配置
+  "SqlSugarOptions": [
+    {
+      "ConfigId": "DB_Admin", //ID
+      //"ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
+      //"DbType": "MySql", //数据库类型
+      "ConnectionString": "Data Source=Admin.db;", //连接字符串
+      "DbType": "Sqlite", //数据库类型
+      "LanguageType": "Chinese", //中文提示
+      "IsAutoCloseConnection": true, //是否自动释放
+      "InitTable": true, //是否初始化数据库,适用于codefirst
+      "InitSeedData": true, //是否初始化种子数据
+      "IsUpdateSeedData": false, //是否更新种子数据
+      "IsShowSql": false //是否控制台显示Sql语句
+    },
+    {
+      "ConfigId": "DB_Log", //ID
+      //"ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
+      //"DbType": "MySql", //数据库类型
+      "ConnectionString": "Data Source=Log.db", //连接字符串
+      "DbType": "Sqlite", //数据库类型
+      "LanguageType": "Chinese", //中文提示
+      "IsAutoCloseConnection": true, //是否自动释放
+      "InitTable": true, //是否初始化数据库,适用于codefirst
+      "InitSeedData": true, //是否初始化种子数据
+      "IsUpdateSeedData": false, //是否更新种子数据
+      "IsShowSql": false //是否控制台显示Sql语句
+    },
+    {
+      "ConfigId": "DB_TokenCache", //ID
+      //"ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
+      //"DbType": "MySql", //数据库类型
+      "ConnectionString": "Data Source=TokenCache.db", //连接字符串
+      "DbType": "Sqlite", //数据库类型
+      "LanguageType": "Chinese", //中文提示
+      "IsAutoCloseConnection": true, //是否自动释放
+      "InitTable": true, //是否初始化数据库,适用于codefirst
+      "InitSeedData": true, //是否初始化种子数据
+      "IsUpdateSeedData": false, //是否更新种子数据
+      "IsShowSql": false //是否控制台显示Sql语句
+    },
+    {
+      "ConfigId": "DB_HardwareInfo", //ID
+      //"ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
+      //"DbType": "MySql", //数据库类型
+      "ConnectionString": "Data Source=HardwareInfo.db", //连接字符串
+      "DbType": "Sqlite", //数据库类型
+      "LanguageType": "Chinese", //中文提示
+      "IsAutoCloseConnection": true, //是否自动释放
+      "InitTable": true, //是否初始化数据库,适用于codefirst
+      "InitSeedData": true, //是否初始化种子数据
+      "IsUpdateSeedData": false, //是否更新种子数据
+      "IsShowSql": false //是否控制台显示Sql语句
+    },
+    {
+      "ConfigId": "DB_Custom", //ID
+      //"ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
+      //"DbType": "MySql", //数据库类型
+      "ConnectionString": "Data Source=ThingsGateway.db", //连接字符串
+      "DbType": "Sqlite", //数据库类型
+      "LanguageType": "Chinese", //中文提示
+      "IsAutoCloseConnection": true, //是否自动释放
+      "InitTable": true, //是否初始化数据库,适用于codefirst
+      "InitSeedData": true, //是否初始化种子数据
+      "IsUpdateSeedData": false, //是否更新种子数据
+      "IsShowSql": false //是否控制台显示Sql语句
+    }
+
+  ],
+
+```
+
+查看配置注释，更换 ``数据库连接字符串`` 以及 ``数据库类型``
+
+
+
+## 二、日志配置
+
+找到 ``Logging``节点，默认配置为
+
+```
+
+
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    },
+    "EventLog": {
+      "LogLevel": {
+        "Default": "Warning",
+        "Microsoft.Hosting.Lifetime": "Information"
+      } //windows事件输出日志等级
+    },
+    "Console": {
+      "LogLevel": {
+        "Default": "Information",
+        "Microsoft": "Warning",
+        "Microsoft.Hosting.Lifetime": "Information"
+      } //控制台输出日志等级
+    },
+    "BackendLog": {
+      "LogLevel": {
+        "Default": "Warning"
+      }
+    }
+  },
+
+
+
+```
+
+可以看到 ``EventLog`` ``Console`` 以及 ``BackendLog`` 日志源的配置日志等级
+
+
+
+
+## 三、冗余配置
+
+ThingsGateway支持双机热备冗余
+
+找到 ``ManagementOptions``节点，默认配置为
+
+```
+
+  //冗余配置
+  "ManagementOptions": {
+    "PrimaryUri": "127.0.0.1:7101", //主(备)站IP
+    "VerifyToken": "ThingsGateway", //登录token，双方一致
+    "HeartbeatInterval": 3000, //心跳间隔
+    "MaxErrorCount": 3, //最大错误次数
+    "Redundancy": {
+      "Enable": true, //启用冗余
+      "IsPrimary": true, //是否主站
+      "IsStartBusinessDevice": true, //是否启用备用站点的业务设备
+      "SyncInterval": 5000 //数据同步间隔
+      //主从站的采集配置必须一致
+      //默认主站优先，当主站恢复后，从站切换回备用模式。
+      //主从站都完成对采集的初始化，但从站的数据都来自主站的数据同步
+    }
+  },
+
+
+```
+
+
+## 四、网关限制配置
+
+
+找到 ``ChannelThread``节点，默认配置为
+
+```
+  "ChannelThread": {
+    "MinCycleInterval": 10, //最小循环间隔
+    "MaxCycleInterval": 200, //最大循环间隔
+    "MaxVariableCount": 4000000, //最大变量数量
+    "MaxCount": 4000 //最大通道数量(每个通道为一个循环任务)
+  },
+
+
+```
+
