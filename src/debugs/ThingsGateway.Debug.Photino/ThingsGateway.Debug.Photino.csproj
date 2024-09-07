@@ -17,9 +17,9 @@
 
 
   <ItemGroup>
-    <PackageReference Include="Photino.Native" Version="3.1.5" />
-    <PackageReference Include="Photino.NET" Version="3.1.16" />
-    <PackageReference Include="Photino.Blazor" Version="3.1.8" />
+    <PackageReference Include="Photino.Native" Version="3.1.6" />
+    <PackageReference Include="Photino.NET" Version="3.1.17" />
+    <PackageReference Include="Photino.Blazor" Version="3.1.9" />
 
   </ItemGroup>
 
