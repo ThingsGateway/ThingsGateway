@@ -68,12 +68,6 @@ public class InternalTableColumn(string fieldName, Type fieldType, string? field
 
     public string GetFieldName() => fieldName;
 
-
-
-
-
-
-
     public bool? Sortable { get; set; }
     public bool DefaultSort { get; set; }
     public SortOrder DefaultSortOrder { get; set; }
@@ -105,5 +99,25 @@ public class InternalTableColumn(string fieldName, Type fieldType, string? field
     public bool IsMarkupString { get; set; }
     public bool? Visible { get; set; }
     public Func<ITableColumn, string?, SearchFilterAction>? CustomSearch { get; set; }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public bool? Required { get; set; }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public bool? IsRequiredWhenAdd { get; set; }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public bool? IsRequiredWhenEdit { get; set; }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    public string? RequiredErrorMessage { get; set; }
 
 }

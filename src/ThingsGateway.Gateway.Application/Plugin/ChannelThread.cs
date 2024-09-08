@@ -627,7 +627,7 @@ public class ChannelThread
                     if (driver.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && driver.IsCollectDevice)
                     {
                         if (count == 1)
-                            await Task.Delay(Math.Min(((CollectBase)driver).CollectProperties.ReIntervalTime, CollectDeviceHostedService.CheckIntervalTime / 2) * 1000 - CycleInterval, token).ConfigureAwait(false);
+                            await Task.Delay(Math.Max(Math.Min(((CollectBase)driver).CollectProperties.ReIntervalTime, CollectDeviceHostedService.CheckIntervalTime / 2) * 1000 - CycleInterval, 3000), token).ConfigureAwait(false);
                     }
                     else
                     {

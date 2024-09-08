@@ -17,15 +17,6 @@ namespace ThingsGateway.Plugin.VariableExpression;
 /// </summary>
 public class MemoryVariableProperty : CollectPropertyBase
 {
-    /// <summary>
-    /// 离线后恢复运行的间隔时间 /s，默认300s
-    /// </summary>
     public override int ReIntervalTime { get; set; } = 30;
-
-    /// <summary>
-    /// 失败重试次数，默认3
-    /// </summary>
     public override int RetryCount { get; set; } = 3;
-
-    public override int ConcurrentCount { get; set; } = 1;
 }

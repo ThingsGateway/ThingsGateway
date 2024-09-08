@@ -51,6 +51,8 @@ public static class PluginServiceUtil
         if (!string.IsNullOrEmpty(source.PlaceHolder)) dest.PlaceHolder = source.PlaceHolder;
         if (!string.IsNullOrEmpty(source.Step)) dest.Step = source.Step;
         if (source.Order != 0) dest.Order = source.Order;
+        if (source.Required.HasValue) dest.Required = source.Required;
+        if (!string.IsNullOrEmpty(source.RequiredErrorMessage)) dest.RequiredErrorMessage = source.RequiredErrorMessage;
 
         if (source is ITableColumn source1 && dest is ITableColumn dest1)
         {
@@ -94,6 +96,9 @@ public static class PluginServiceUtil
         if (source.IsReadonlyWhenEdit.HasValue) dest.IsReadonlyWhenEdit = source.IsReadonlyWhenEdit;
         if (source.GetTooltipTextCallback != null) dest.GetTooltipTextCallback = source.GetTooltipTextCallback;
         if (source.CustomSearch != null) dest.CustomSearch = source.CustomSearch;
+        if (source.ToolboxTemplate != null) dest.ToolboxTemplate = source.ToolboxTemplate;
+        if (source.IsRequiredWhenAdd.HasValue) dest.IsRequiredWhenAdd = source.IsRequiredWhenAdd;
+        if (source.IsRequiredWhenEdit.HasValue) dest.IsRequiredWhenEdit = source.IsRequiredWhenEdit;
     }
 
     /// <summary>

@@ -63,6 +63,6 @@ public class MqttCollectProperty : CollectPropertyBase
     [DynamicProperty]
     public int ConnectTimeout { get; set; } = 3000;
 
-    public override int ReIntervalTime { get; set; }
-    public override int RetryCount { get; set; }
+    public override int ReIntervalTime { get; set; } = 30;
+    public override int RetryCount { get; set; } = 3;
 }
