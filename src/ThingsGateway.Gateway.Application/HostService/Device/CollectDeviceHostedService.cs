@@ -353,6 +353,7 @@ public class CollectDeviceHostedService : DeviceHostedService
                     {
                         DriverBase driverBase = collectDeviceRunTime.CreateDriver(PluginService);
                         GetChannelThread(driverBase);
+
                     }
                     catch (Exception ex)
                     {

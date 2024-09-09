@@ -87,4 +87,11 @@ public abstract class BusinessBase : DriverBase
     {
         await Task.Delay(Math.Max(CurrentDevice.IntervalTime - ChannelThread.CycleInterval, ChannelThread.CycleInterval), cancellationToken).ConfigureAwait(false);
     }
+
+    protected override void Dispose(bool disposing)
+    {
+        this.RemoveBusinessDeviceRuntime();
+        base.Dispose(disposing);
+    }
+
 }

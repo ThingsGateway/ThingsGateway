@@ -3,12 +3,11 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net8.0;net6.0;</TargetFrameworks>
-    <Version>8.9.0</Version>
+    <Version>8.9.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.CSScript\ThingsGateway.CSScript.csproj" />
-    <ProjectReference Include="$(SolutionDir)\adapter\ThingsGateway.Foundation.SourceGenerator\ThingsGateway.Foundation.SourceGenerator.csproj" ReferenceOutputAssembly="false" />
     <ProjectReference Include="$(SolutionDir)\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
   </ItemGroup>
 

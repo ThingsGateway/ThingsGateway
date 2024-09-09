@@ -107,9 +107,9 @@ public partial class DriverDebugPage
                     ContentTemplate = debugRender,
                     Width = "1200px",
                     Height = "900px",
-                    Top = "150px",
-                    Left = "250px",
-                    Background = "var(--bb-primary-color)"
+                    Top = "100px",
+                    Left = "220px",
+                    Background = "var(--bb-primary-color)",
                 };
                 await WinBoxService.Show(option);
             }

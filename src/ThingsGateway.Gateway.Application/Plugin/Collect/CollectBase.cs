@@ -138,6 +138,11 @@ public abstract class CollectBase : DriverBase
         CurrentDevice.RefreshCollectDeviceRuntime(device.Id);
     }
 
+    protected override void Dispose(bool disposing)
+    {
+        this.RemoveCollectDeviceRuntime();
+        base.Dispose(disposing);
+    }
 
     /// <summary>
     /// 注意非通用设备需重写

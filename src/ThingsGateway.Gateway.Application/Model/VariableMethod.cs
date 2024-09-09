@@ -137,7 +137,7 @@ public class VariableMethod
             else
             {
                 if (strs.Length <= index)
-                    break;
+                    continue;
                 os[i] = ThingsGatewayStringConverter.Default.Deserialize(null, strs[index], ps[i].ParameterType);
                 index++;
             }

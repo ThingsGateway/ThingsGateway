@@ -250,23 +250,31 @@ public abstract class DeviceHostedService : BackgroundService
     /// <returns>通道线程管理器</returns>
     protected ChannelThread GetChannelThread(DriverBase driverBase)
     {
-        var channelId = driverBase.CurrentDevice.ChannelId;
-        lock (ChannelThreads)
+        try
         {
-            // 尝试从现有的通道线程管理器列表中查找匹配的通道线程
-            var channelThread = ChannelThreads.FirstOrDefault(t => t.ChannelId == channelId);
-            if (channelThread != null)
+            var channelId = driverBase.CurrentDevice.ChannelId;
+            lock (ChannelThreads)
             {
-                // 如果找到了匹配的通道线程，则将驱动程序添加到该线程中
-                channelThread.AddDriver(driverBase);
-                channelThread.Channel?.Setup(channelThread.FoundataionConfig.Clone());
-                return channelThread;
+                // 尝试从现有的通道线程管理器列表中查找匹配的通道线程
+                var channelThread = ChannelThreads.FirstOrDefault(t => t.ChannelId == channelId);
+                if (channelThread != null)
+                {
+                    // 如果找到了匹配的通道线程，则将驱动程序添加到该线程中
+                    channelThread.AddDriver(driverBase);
+                    channelThread.Channel?.Setup(channelThread.FoundataionConfig.Clone());
+                    return channelThread;
+                }
+
+                // 如果未找到匹配的通道线程，则创建一个新的通道线程
+                return NewChannelThread(driverBase, channelId);
             }
-
-            // 如果未找到匹配的通道线程，则创建一个新的通道线程
-            return NewChannelThread(driverBase, channelId);
         }
-
+        catch (Exception ex)
+        {
+            driverBase.SafeDispose();
+            _logger.LogWarning(ex, nameof(GetChannelThread));
+            return null;
+        }
         // 创建新的通道线程的内部方法
         ChannelThread NewChannelThread(DriverBase driverBase, long channelId)
         {
@@ -275,22 +283,26 @@ public abstract class DeviceHostedService : BackgroundService
             if (channel == null)
             {
                 _logger.LogWarning(Localizer["ChannelNotNull", driverBase.CurrentDevice.Name, channelId]);
+                driverBase.SafeDispose();
                 return null;
             }
             // 检查通道是否启用
             if (!channel.Enable)
             {
                 _logger.LogWarning(Localizer["ChannelNotEnable", driverBase.CurrentDevice.Name, channel.Name]);
+                driverBase.SafeDispose();
                 return null;
             }
             // 确保通道不为 null
             ArgumentNullException.ThrowIfNull(channel);
             if (ChannelThreads.Count > ChannelThread.MaxCount)
             {
+                driverBase.SafeDispose();
                 throw new Exception($"Exceeded maximum number of channels：{ChannelThread.MaxCount}");
             }
             if (DriverBases.Select(a => a.CurrentDevice.VariableRunTimes.Count).Sum() > ChannelThread.MaxVariableCount)
             {
+                driverBase.SafeDispose();
                 throw new Exception($"Exceeded maximum number of variables：{ChannelThread.MaxVariableCount}");
             }
 
