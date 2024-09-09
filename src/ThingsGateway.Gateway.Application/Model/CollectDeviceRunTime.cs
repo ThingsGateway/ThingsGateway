@@ -50,4 +50,13 @@ public class CollectDeviceRunTime : DeviceRunTime
     [Newtonsoft.Json.JsonIgnore]
     [AdaptIgnore]
     public List<VariableSourceRead>? VariableSourceReads { get; set; }
+
+
+    /// <summary>
+    /// 特殊地址变量
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    [AdaptIgnore]
+    public List<VariableRunTime>? OtherVariableRunTimes { get; set; }
 }

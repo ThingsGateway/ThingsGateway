@@ -240,6 +240,7 @@ public partial class MqttCollect : CollectBase
             CurrentDevice.SetDeviceStatus(TimerX.Now, 999);
         }
 
+        ScriptVariableRun(cancellationToken);
 
     }
 }

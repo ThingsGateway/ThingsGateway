@@ -53,5 +53,32 @@ VS的bug导致的，可以尝试升级vs，把工程目录下的.vs文件夹已�
 选择一种解决方案：
 
 1、升级操作系统，
+
 2、升级sqlite版本，(感谢群友的文章)查看博客 (https://blog.csdn.net/qq_40817472/article/details/141648765)
+
 3、使用net6发布ThingsGateway项目
+
+
+#### 7、我想在当前设备中添加变量，该变量表示设备是否在线，不参与通讯
+
+在变量地址中填写``DeviceStatus``，固定值为``DeviceStatusEnum``类型，如果需要bool类型，还可以在读取表达式中写
+```
+(DeviceStatusEnum)raw==DeviceStatusEnum.OnLine
+```
+
+
+#### 8、我想在当前设备中添加变量，该变量作为计算点，不参与通讯
+
+在变量地址中填写``Script``，在读取表达式中填写所需计算过程
+
+```
+
+不限制是否当前设备，只要变量名称存在，就可以正常运算
+下面示例是 两个变量值相加
+
+
+GlobalData.ReadOnlyVariables["变量名称1"].Value.ToInt()+GlobalData.ReadOnlyVariables["变量名称2"].Value.ToInt()
+
+```
+
+同理，在内存变量插件中，也可以这样写。

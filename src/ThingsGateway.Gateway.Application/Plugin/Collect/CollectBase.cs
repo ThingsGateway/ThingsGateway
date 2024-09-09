@@ -62,9 +62,24 @@ public abstract class CollectBase : DriverBase
             var tags = collectVariableRunTimes
                 .Where(it => it.ProtectType != ProtectTypeEnum.WriteOnly
                 && string.IsNullOrEmpty(it.OtherMethod)
-                && !string.IsNullOrEmpty(it.RegisterAddress)).ToList();
+                && !string.IsNullOrEmpty(it.RegisterAddress));
+
+
+            //筛选特殊变量地址
+            //1、DeviceStatus
+            Func<VariableRunTime, bool> source = (a =>
+            {
+                return a.RegisterAddress != nameof(DeviceRunTime.DeviceStatus) &&
+                a.RegisterAddress != "Script"
+                ;
+
+            });
+
+
+            currentDevice.OtherVariableRunTimes = tags.Where(a => !source(a)).ToList();
+
             // 将打包后的结果存储在当前设备的 VariableSourceReads 属性中
-            currentDevice.VariableSourceReads = ProtectedLoadSourceRead(tags);
+            currentDevice.VariableSourceReads = ProtectedLoadSourceRead(tags.Where(source).ToList());
         }
         catch (Exception ex)
         {
@@ -214,9 +229,14 @@ public abstract class CollectBase : DriverBase
             }
         }
 
+
+
+
         // 如果所有方法和变量读取都成功，则清零错误计数器
         if (readResultCount.deviceMethodsVariableFailedNum == 0 && readResultCount.deviceSourceVariableFailedNum == 0 && (readResultCount.deviceMethodsVariableSuccessNum != 0 || readResultCount.deviceSourceVariableSuccessNum != 0))
         {
+            ScriptVariableRun(cancellationToken);
+
             //只有成功读取一次，失败次数都会清零
             CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
         }
@@ -428,6 +448,28 @@ public abstract class CollectBase : DriverBase
 
             return false;
         }
+    }
+
+    protected void ScriptVariableRun(CancellationToken cancellationToken)
+    {
+        DateTime dateTime = TimerX.Now;
+        //特殊地址变量
+        for (int i = 0; i < CurrentDevice.OtherVariableRunTimes.Count; i++)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var variableRunTime = CurrentDevice.OtherVariableRunTimes[i];
+            if (variableRunTime.RegisterAddress == nameof(DeviceRunTime.DeviceStatus))
+            {
+                variableRunTime.SetValue(variableRunTime.CollectDeviceRunTime.DeviceStatus, dateTime);
+            }
+            else
+            {
+                variableRunTime.SetValue(default, dateTime);
+            }
+        }
+
     }
 
     /// <summary>

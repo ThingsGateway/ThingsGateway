@@ -111,6 +111,9 @@ public class OpcDaMaster : CollectBase
             {
                 CurrentDevice.SetDeviceStatus(TimerX.Now, 999);
             }
+
+            ScriptVariableRun(cancellationToken);
+
         }
         else
         {

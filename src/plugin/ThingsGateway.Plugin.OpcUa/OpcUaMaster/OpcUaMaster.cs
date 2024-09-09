@@ -84,7 +84,6 @@ public class OpcUaMaster : CollectBase
     }
 
     /// <inheritdoc/>
-    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (_plc != null)
@@ -142,6 +141,8 @@ public class OpcUaMaster : CollectBase
         }
         if (_driverProperties.ActiveSubscribe)
         {
+            ScriptVariableRun(cancellationToken);
+
             //获取设备连接状态
             if (IsConnected())
             {
