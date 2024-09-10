@@ -62,7 +62,7 @@ public class VariableService : BaseService<Variable>, IVariableService
         List<Device> newDevices = new();
         List<Variable> newVariables = new();
         var addressNum = 1;
-        var variableCount = 1000;
+        var variableCount = 10000;
         var channelCount = Math.Max(count / variableCount, 1);
         for (int i = 0; i < channelCount; i++)
         {
@@ -90,8 +90,8 @@ public class VariableService : BaseService<Variable>, IVariableService
                 //动态插件属性默认
                 newDevices.Add(device);
             }
-            if (channelCount == i + 1 && (count % 1000) != 0)
-                variableCount = Math.Min(count % 1000, 1000);
+            if (channelCount == i + 1 && (count % 10000) != 0)
+                variableCount = Math.Min(count % 10000, 10000);
             for (int i1 = 0; i1 < variableCount; i1++)
             {
                 addressNum++;
@@ -138,9 +138,9 @@ public class VariableService : BaseService<Variable>, IVariableService
 
         var result = await db.UseTranAsync(async () =>
         {
-            await db.Fastest<Channel>().PageSize(50000).BulkCopyAsync(newChannels).ConfigureAwait(false);
-            await db.Fastest<Device>().PageSize(50000).BulkCopyAsync(newDevices).ConfigureAwait(false);
-            await db.Fastest<Variable>().PageSize(50000).BulkCopyAsync(newVariables).ConfigureAwait(false);
+            await db.Fastest<Channel>().PageSize(100000).BulkCopyAsync(newChannels).ConfigureAwait(false);
+            await db.Fastest<Device>().PageSize(100000).BulkCopyAsync(newDevices).ConfigureAwait(false);
+            await db.Fastest<Variable>().PageSize(100000).BulkCopyAsync(newVariables).ConfigureAwait(false);
         }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {

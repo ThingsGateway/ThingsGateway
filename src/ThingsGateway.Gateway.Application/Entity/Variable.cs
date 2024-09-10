@@ -122,6 +122,14 @@ public class Variable : PrimaryIdEntity
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public virtual bool RpcWriteEnable { get; set; } = true;
 
+
+    /// <summary>
+    /// 保存值
+    /// </summary>
+    [SugarColumn(ColumnDescription = "保存值", IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public virtual bool SaveValue { get; set; } = false;
+
     /// <summary>
     /// 变量额外属性Json
     /// </summary>

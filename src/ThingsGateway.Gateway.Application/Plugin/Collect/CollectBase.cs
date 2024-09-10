@@ -155,6 +155,7 @@ public abstract class CollectBase : DriverBase
 
     protected override void Dispose(bool disposing)
     {
+
         this.RemoveCollectDeviceRuntime();
         base.Dispose(disposing);
     }

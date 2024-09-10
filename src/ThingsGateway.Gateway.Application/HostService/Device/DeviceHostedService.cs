@@ -355,6 +355,7 @@ public abstract class DeviceHostedService : BackgroundService
         // 检查是否已请求停止，如果没有则开始每个通道线程
         if (!_stoppingToken.IsCancellationRequested)
         {
+
             foreach (var item in ChannelThreads)
             {
                 if (!_stoppingToken.IsCancellationRequested)

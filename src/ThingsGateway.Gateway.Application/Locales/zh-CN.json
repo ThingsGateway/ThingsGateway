@@ -120,6 +120,7 @@
     "ReadExpressions": "读取表达式",
     "WriteExpressions": "写入表达式",
     "RpcWriteEnable": "远程写入",
+    "SaveValue": "保存值",
 
     "AlarmDelay": "报警延时",
     "BoolOpenAlarmEnable": "布尔开报警使能",
@@ -398,6 +399,7 @@
     "ReadExpressions": "读取表达式",
     "WriteExpressions": "写入表达式",
     "RpcWriteEnable": "远程写入",
+    "SaveValue": "保存值",
 
     "AlarmDelay": "报警延时",
     "BoolOpenAlarmEnable": "布尔开报警使能",

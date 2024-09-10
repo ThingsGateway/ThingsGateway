@@ -13,6 +13,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
+using Newtonsoft.Json.Linq;
+
 using System.Collections.Concurrent;
 
 using ThingsGateway.NewLife.X;
@@ -356,9 +358,35 @@ public class ChannelThread
 
             driverBase.AfterStop();
 
+
             // 如果需要移除的是采集设备
             if (IsCollectChannel)
             {
+                try
+                {
+                    //添加保存数据变量读取操作
+                    var saveVariable = driverBase.CurrentDevice.VariableRunTimes.Where(a => a.Value.SaveValue).Select(a =>
+                    {
+                        return new CacheDBItem<JToken>()
+                        {
+                            Id = a.Value.Id,
+                            Value = JToken.FromObject(a.Value.Value)
+                        };
+                    }).ToList();
+
+                    if (saveVariable.Any())
+                    {
+                        var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<JToken>), nameof(VariableRunTime), nameof(VariableRunTime.SaveValue));
+                        var varList = await cacheDb.DBProvider.Storageable(saveVariable).ExecuteCommandAsync().ConfigureAwait(false);
+
+                        cacheDb.SafeDispose();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogMessage.LogWarning(ex, "SaveValue");
+                }
+
                 driverBase.RemoveCollectDeviceRuntime();
             }
             else
@@ -501,6 +529,8 @@ public class ChannelThread
                 // 如果需要移除的是采集设备
                 if (IsCollectChannel)
                 {
+
+
                     DriverBases.RemoveCollectDeviceRuntime();
                 }
                 else

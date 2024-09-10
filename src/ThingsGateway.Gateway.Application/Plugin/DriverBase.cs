@@ -246,6 +246,7 @@ public abstract class DriverBase : DisposableObject
 
         try
         {
+
             // 如果已经取消了操作，则直接返回
             if (cancellationToken.IsCancellationRequested)
             {
