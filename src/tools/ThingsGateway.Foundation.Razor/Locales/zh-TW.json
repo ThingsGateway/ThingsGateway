@@ -61,7 +61,7 @@
     "MulRead": "多讀"
   },
   "ThingsGateway.Debug.ChannelDataEditComponent": {
-    "BasicInformation": "基礎信息",
+    "BasicInformation": "基礎資訊",
     "Connection": "連接"
   }
 }

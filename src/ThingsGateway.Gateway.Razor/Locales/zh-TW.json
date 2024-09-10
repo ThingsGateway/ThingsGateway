@@ -42,7 +42,7 @@
     "OperLog": "最近操作",
     "BackendLog": "網關後台日誌",
     "RpcLog": "網關RPC日誌",
-    "HardwareInfoChart": "硬件信息歷史曲線",
+    "HardwareInfoChart": "硬體資訊歷史曲線",
     "DateTime": "時間",
     "Data": "數據",
     "HisHardwareInfo": "歷史曲線"
@@ -87,19 +87,19 @@
     "Test": "一鍵添加測試變量"
   },
   "ThingsGateway.Gateway.Razor.DeviceEditComponent": {
-    "DeviceInformation": "設備信息",
-    "PluginInformation": "插件信息",
-    "BasicInformation": "基礎信息",
+    "DeviceInformation": "設備資訊",
+    "PluginInformation": "插件資訊",
+    "BasicInformation": "基礎資訊",
     "Connection": "連接",
     "Redundant": "冗餘",
     "Remark": "備用",
     "Check": "檢查"
   },
   "ThingsGateway.Gateway.Razor.VariableEditComponent": {
-    "VariableInformation": "變量信息",
-    "AlarmInformation": "警報信息",
-    "PluginInformation": "業務信息",
-    "BasicInformation": "基礎信息",
+    "VariableInformation": "變量資訊",
+    "AlarmInformation": "警報資訊",
+    "PluginInformation": "業務資訊",
+    "BasicInformation": "基礎資訊",
     "Connection": "連接",
     "Remark": "備用",
     "RefreshBusinessProperty": "添加/刷新業務屬性",
@@ -107,7 +107,7 @@
     "ChoiceBusinessDeviceId": "業務設備"
   },
   "ThingsGateway.Gateway.Razor.ChannelEditComponent": {
-    "BasicInformation": "基礎信息",
+    "BasicInformation": "基礎資訊",
     "Connection": "連接"
   }
 }

@@ -19,7 +19,7 @@
   },
 
   "ThingsGateway.Admin.Razor.HardwareInfoPage": {
-    "SystemInfo": "系統信息",
+    "SystemInfo": "系統資訊",
     "HardwareInfo": "硬體資源",
     "HardwareInfoChart": "硬體資源歷史曲線",
     "CpuUsage": "CPU使用率",

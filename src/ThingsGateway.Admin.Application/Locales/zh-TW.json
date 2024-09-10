@@ -52,7 +52,7 @@
   "ThingsGateway.Admin.Application.RoleService": {
   },
   "ThingsGateway.Admin.Application.HardwareInfoService": {
-    "GetHardwareInfoFail": "獲取硬體信息出錯"
+    "GetHardwareInfoFail": "獲取硬體資訊出錯"
   },
 
   "ThingsGateway.Admin.Application.UserSelectorOutput": {

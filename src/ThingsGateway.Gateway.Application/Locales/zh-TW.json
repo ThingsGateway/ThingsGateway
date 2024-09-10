@@ -1,16 +1,16 @@
 ﻿{
   "ThingsGateway.Gateway.Application.VariableSearchInput": {
-    "Name": "變量名稱",
+    "Name": "變數名稱",
     "DeviceId": "採集設備",
-    "RegisterAddress": "寄存器地址"
+    "RegisterAddress": "暫存器地址"
   },
 
   "ThingsGateway.Gateway.Application.CollectDeviceRuntime": {
     "SourceVariableCount": "打包數量",
     "MethodVariableCount": "方法數量",
-    "ActiveTime": "活躍時間",
-    "DeviceVariableCount": "變量數量",
-    "LastErrorMessage": "離線原因",
+    "ActiveTime": "活動時間",
+    "DeviceVariableCount": "變數數量",
+    "LastErrorMessage": "下線原因",
     "Name": "名稱",
     "Name.Required": " {0} 不可為空",
     "Description": "描述",
@@ -22,7 +22,7 @@
     "IntervalTime.MinValue": " {0} 值太小",
     "PluginName": "插件名稱",
     "PluginName.Required": " {0} 不可為空",
-    "Enable": "設備使能",
+    "Enable": "設備啟用",
     "RedundantEnable": "啟用冗餘",
     "RedundantDeviceId": "冗餘設備",
     "Remark1": "備用1",
@@ -43,12 +43,13 @@
     "NotNull": " {0} 不存在",
     "DeviceNotNull": "設備名稱不存在"
   },
+
   "ThingsGateway.Gateway.Application.DeviceRuntime": {
     "SourceVariableCount": "打包數量",
     "MethodVariableCount": "方法數量",
-    "ActiveTime": "活躍時間",
-    "DeviceVariableCount": "變量數量",
-    "LastErrorMessage": "離線原因",
+    "ActiveTime": "活動時間",
+    "DeviceVariableCount": "變數數量",
+    "LastErrorMessage": "下線原因",
     "Name": "名稱",
     "Name.Required": " {0} 不可為空",
     "Description": "描述",
@@ -60,7 +61,7 @@
     "IntervalTime.MinValue": " {0} 值太小",
     "PluginName": "插件名稱",
     "PluginName.Required": " {0} 不可為空",
-    "Enable": "設備使能",
+    "Enable": "設備啟用",
     "RedundantEnable": "啟用冗餘",
     "RedundantDeviceId": "冗餘設備",
     "Remark1": "備用1",
@@ -81,16 +82,17 @@
     "NotNull": " {0} 不存在",
     "DeviceNotNull": "設備名稱不存在"
   },
+
   "ThingsGateway.Gateway.Application.VariableRuntime": {
     "ChangeTime": "變化時間",
     "CollectTime": "採集時間",
     "DeviceName": "設備名稱",
-    "IsOnline": "線上",
-    "LastErrorMessage": "離線原因",
+    "IsOnline": "上線",
+    "LastErrorMessage": "下線原因",
     "LastSetValue": "上次值",
     "RawValue": "原始值",
     "Value": "即時值",
-    "AlarmEnable": "警報使能",
+    "AlarmEnable": "警報啟用",
     "Name": "名稱",
     "Name.Required": " {0} 不可為空",
     "Description": "描述",
@@ -99,41 +101,41 @@
     "DeviceId.Required": " {0} 不可為空",
     "IntervalTime": "執行間隔",
     "IntervalTime.MinValue": " {0} 值太小",
-    "Enable": "變量使能",
+    "Enable": "變數啟用",
     "ProtectType": "讀寫權限",
-    "DataType": "數據類型",
+    "DataType": "資料類型",
     "ReadExpressions": "讀取表達式",
     "WriteExpressions": "寫入表達式",
-    "RpcWriteEnable": "遠程寫入",
+    "RpcWriteEnable": "遠端寫入",
     "AlarmDelay": "警報延遲",
-    "BoolOpenAlarmEnable": "布爾開警報使能",
-    "BoolOpenRestrainExpressions": "布爾開警報約束",
-    "BoolOpenAlarmText": "布爾開警報文字",
-    "BoolCloseAlarmEnable": "布爾關警報使能",
-    "BoolCloseRestrainExpressions": "布爾關警報約束",
-    "BoolCloseAlarmText": "布爾關警報文字",
-    "HAlarmEnable": "高報使能",
+    "BoolOpenAlarmEnable": "布林開警報啟用",
+    "BoolOpenRestrainExpressions": "布林開警報約束",
+    "BoolOpenAlarmText": "布林開警報文字",
+    "BoolCloseAlarmEnable": "布林關警報啟用",
+    "BoolCloseRestrainExpressions": "布林關警報約束",
+    "BoolCloseAlarmText": "布林關警報文字",
+    "HAlarmEnable": "高報啟用",
     "HRestrainExpressions": "高報約束",
     "HAlarmText": "高報文字",
     "HAlarmCode": "高限值",
-    "HHAlarmEnable": "高高報使能",
+    "HHAlarmEnable": "高高報啟用",
     "HHRestrainExpressions": "高高報約束",
     "HHAlarmText": "高高報文字",
     "HHAlarmCode": "高高限值",
-    "LAlarmEnable": "低報使能",
+    "LAlarmEnable": "低報啟用",
     "LRestrainExpressions": "低報約束",
     "LAlarmText": "低報文字",
     "LAlarmCode": "低限值",
-    "LLAlarmEnable": "低低報使能",
+    "LLAlarmEnable": "低低報啟用",
     "LLRestrainExpressions": "低低報約束",
     "LLAlarmText": "低低報文字",
     "LLAlarmCode": "低低限值",
-    "CustomAlarmEnable": "自定義警報使能",
-    "CustomRestrainExpressions": "自定義警報約束",
-    "CustomAlarmText": "自定義警報文字",
-    "CustomAlarmCode": "自定義警報限值",
+    "CustomAlarmEnable": "自訂警報啟用",
+    "CustomRestrainExpressions": "自訂警報約束",
+    "CustomAlarmText": "自訂警報文字",
+    "CustomAlarmCode": "自訂警報限值",
     "Unit": "單位",
-    "RegisterAddress": "變量地址",
+    "RegisterAddress": "變數地址",
     "OtherMethod": "特殊方法",
     "Remark1": "備用1",
     "Remark2": "備用2",
@@ -148,52 +150,60 @@
     "EventTime": "事件時間",
     "EventType": "事件類型"
   },
+
   "ThingsGateway.Gateway.Application.DeviceHostedService": {
     "ChannelNotNull": "設備 {0} -通道 {1} 不能為空",
     "ChannelNotEnable": "設備 {0} -通道 {1} 未啟用",
-    "UpadteDeviceIdNotFound": "更新設備線程失敗，不存在id為 {0} 的設備",
+    "UpadteDeviceIdNotFound": "更新設備執行緒失敗，不存在id為 {0} 的設備",
     "DeviceSwtichMain": "設備 {0} 切換到主通道",
     "DeviceSwtichBackup": "設備 {0} 切換到備用通道",
-    "DeviceInitFail": "設備 {0} 初始化失敗，重啟線程",
-    "DeviceTaskDeath": "設備 {0} 線程假死，重啟線程",
+    "DeviceInitFail": "設備 {0} 初始化失敗，重啟執行緒",
+    "DeviceTaskDeath": "設備 {0} 執行緒假死，重啟執行緒",
     "InitError": " {0} 創建錯誤"
   },
+
   "ThingsGateway.Gateway.Application.BusinessBase": {
-    "IntervalInsertVariableFail": "間隔上傳變量失敗",
+    "IntervalInsertVariableFail": "間隔上傳變數失敗",
     "IntervalInsertDeviceFail": "間隔上傳設備失敗",
     "IntervalInsertAlarmFail": "間隔上傳警報失敗"
   },
+
   "ThingsGateway.Gateway.Application.CollectBase": {
-    "VariablePackError": "變量打包失敗 {0} ",
+    "VariablePackError": "變數打包失敗 {0} ",
     "GetMethodError": "插件方法初始化失敗 {0} ",
-    "MethodNotNull": "特殊方法變量 {0} 找不到執行方法 {1}，請檢查現有方法列表",
-    "CollectFail": "{0} - 採集[{1} - {2}] 數據失敗  {3}",
-    "CollectSuccess": "{0} - 採集[{1} - {2}] 數據成功  {3}",
+    "MethodNotNull": "特殊方法變數 {0} 找不到執行方法 {1}，請檢查現有方法列表",
+    "CollectFail": "{0} - 採集[{1} - {2}] 資料失敗  {3}",
+    "CollectSuccess": "{0} - 採集[{1} - {2}] 資料成功  {3}",
     "MethodFail": "{0} - 執行方法[{1}] - 失敗  {2}",
     "MethodSuccess": "{0} - 執行方法[{1}] - 成功  {2}",
     "WriteExpressionsError": " {0} 轉換寫入表達式 {1} 失敗 {2} "
   },
+
   "ThingsGateway.Gateway.Application.BusinessDeviceHostedService": {
-    "DeviceRuntimeGeting": "正在獲取業務設備組態信息",
-    "DeviceRuntimeGeted": "已獲取業務設備組態信息",
+    "DeviceRuntimeGeting": "正在獲取業務設備組態資訊",
+    "DeviceRuntimeGeted": "已獲取業務設備組態資訊",
     "InitError": " {0} 創建錯誤"
   },
+
   "ThingsGateway.Gateway.Application.CollectDeviceHostedService": {
-    "DeviceRuntimeGeting": "正在獲取採集設備組態信息",
-    "DeviceRuntimeGeted": "已獲取採集設備組態信息",
+    "DeviceRuntimeGeting": "正在獲取採集設備組態資訊",
+    "DeviceRuntimeGeted": "已獲取採集設備組態資訊",
     "InitError": " {0} 創建錯誤"
   },
+
   "ThingsGateway.Gateway.Application.DriverBase": {
-    "DeviceTaskStart": "設備 {0} 線程開始",
-    "DeviceTaskStartTimeout": "設備 {0} 線程啟動超時 {1} 秒",
-    "DeviceTaskStop": "設備 {0} 線程停止",
-    "DeviceTaskPause": "設備 {0} 線程暫停",
-    "DeviceTaskContinue": "設備 {0} 線程繼續"
+    "DeviceTaskStart": "設備 {0} 執行緒開始",
+    "DeviceTaskStartTimeout": "設備 {0} 執行緒啟動超時 {1} 秒",
+    "DeviceTaskStop": "設備 {0} 執行緒停止",
+    "DeviceTaskPause": "設備 {0} 執行緒暫停",
+    "DeviceTaskContinue": "設備 {0} 執行緒繼續"
   },
+
   "ThingsGateway.Gateway.Application.ChannelThread": {
     "PluginTypeDiff": "設備 {0} 與通道 {1} 的其他設備類型不相同，不能選擇同一個通道",
     "InitFail": "插件 {0} 設備 {1} 初始化失敗"
   },
+
   "ThingsGateway.Gateway.Application.DoTask": {
     "Timeout": " {0} 停止超時，退出等待阻塞",
     "Error": "{0} 停止錯誤",
@@ -208,35 +218,40 @@
     "SwitchPrimaryState": "無法連接冗餘站點，本機將切換到正常狀態",
     "SwitchStandbyState": "主站已恢復，本機(從站)將切換到備用狀態",
     "SwitchNormalState": "本機(主站)將切換到正常狀態",
-    "ErrorSynchronizingData": "同步數據到從站錯誤",
+    "ErrorSynchronizingData": "同步資料到從站錯誤",
     "RedundancyDisable": "不啟用網關冗餘站點"
   },
+
   "ThingsGateway.Gateway.Application.AlarmHostedService": {
-    "RealAlarmTask": "實時警報線程",
-    "RealAlarmTaskStart": "實時警報線程啟動"
+    "RealAlarmTask": "即時警報執行緒",
+    "RealAlarmTaskStart": "即時警報執行緒啟動"
   },
+
   "ThingsGateway.Gateway.Application.PluginService": {
-    "LoadTypeSuccess": "加載插件 {0} 成功",
-    "LoadTypeFail1": "加載插件 {0} 失敗，插件類型不存在",
-    "LoadTypeFail2": "加載插件文件 {0} 失敗，文件不存在",
+    "LoadTypeSuccess": "載入插件 {0} 成功",
+    "LoadTypeFail1": "載入插件 {0} 失敗，插件類型不存在",
+    "LoadTypeFail2": "載入插件檔案 {0} 失敗，檔案不存在",
     "PluginNotFound": "沒有發現插件類型",
-    "LoadOtherFileFail": "嘗試加載附屬程序集 {0} 失敗，如果此程序集為DllImport，可以忽略此警告。",
-    "LoadPluginFail": "加載插件 {0} 失敗",
-    "AddPluginFile": "添加插件文件 {0}"
+    "LoadOtherFileFail": "嘗試載入附屬程式集 {0} 失敗，如果此程式集為DllImport，可以忽略此警告。",
+    "LoadPluginFail": "載入插件 {0} 失敗",
+    "AddPluginFile": "添加插件檔案 {0}"
   },
+
   "ThingsGateway.Gateway.Application.PluginOutput": {
     "FullName": "插件全名稱",
-    "FileName": "插件文件",
+    "FileName": "插件檔案",
     "PluginType": "插件類型",
     "Name": "插件名稱",
     "Version": "插件版本",
     "LastWriteTime": "插件編譯時間"
   },
+
   "ThingsGateway.Gateway.Application.PluginAddInput": {
-    "MainFile": "主程序集",
-    "OtherFiles": "附屬程序集，可上傳多個",
+    "MainFile": "主程式集",
+    "OtherFiles": "附屬程式集，可上傳多個",
     "SavePlugin": "添加/修改插件"
   },
+
   "ThingsGateway.Gateway.Application.BackendLog": {
     "LogTime": "時間",
     "LogLevel": "日誌級別",
@@ -245,6 +260,7 @@
     "Exception": "異常對象",
     "DeleteBackendLog": "刪除後台日誌"
   },
+
   "ThingsGateway.Gateway.Application.RpcLog": {
     "LogTime": "時間",
     "OperateSource": "操作源",
@@ -256,6 +272,7 @@
     "OperateMessage": "具體消息",
     "DeleteRpc": "刪除RPC日誌"
   },
+
   "ThingsGateway.Gateway.Application.Device": {
     "Name": "名稱",
     "Name.Required": " {0} 不可為空",
@@ -268,7 +285,7 @@
     "PluginType": "插件類型",
     "PluginName": "插件名稱",
     "PluginName.Required": " {0} 不可為空",
-    "Enable": "設備使能",
+    "Enable": "設備啟用",
     "RedundantEnable": "啟用冗餘",
     "RedundantDeviceId": "冗餘設備",
     "Remark1": "備用1",
@@ -289,28 +306,29 @@
     "NotNull": " {0} 不存在",
     "DeviceNotNull": "設備名稱不存在"
   },
+
   "ThingsGateway.Gateway.Application.Channel": {
     "Name": "名稱",
     "Name.Required": " {0} 不可為空",
     "ChannelType": "通道類型",
     "Enable": "啟用",
     "LogEnable": "啟用調試日誌",
-    "RemoteUrl": "遠程IP地址",
+    "RemoteUrl": "遠端IP地址",
     "BindUrl": "本地綁定IP地址",
     "PortName": "COM口",
-    "BaudRate": "波特率",
-    "DataBits": "數據位",
-    "Parity": "校驗位",
+    "BaudRate": "傳輸速率",
+    "DataBits": "資料位",
+    "Parity": "檢驗位",
     "StopBits": "停止位",
     "DtrEnable": "Dtr",
     "RtsEnable": "Rts",
-    "RemoteUrlNotNull": "遠程IP地址不可為空",
+    "RemoteUrlNotNull": "遠端IP地址不可為空",
     "BindUrlNotNull": "本地綁定IP地址不可為空",
-    "BindUrlOrRemoteUrlNotNull": "遠程IP地址或本地綁定IP地址不可為空",
+    "BindUrlOrRemoteUrlNotNull": "遠端IP地址或本地綁定IP地址不可為空",
     "PortNameNotNull": "COM口不可為空",
-    "BaudRateNotNull": "波特率不可為空",
-    "DataBitsNotNull": "數據位可為空",
-    "ParityNotNull": "校驗位不可為空",
+    "BaudRateNotNull": "傳輸速率不可為空",
+    "DataBitsNotNull": "資料位可為空",
+    "ParityNotNull": "檢驗位不可為空",
     "StopBitsNotNull": "停止位不可為空",
     "SaveChannel": "新增/修改通道",
     "DeleteChannel": "刪除通道",
@@ -318,23 +336,24 @@
     "ExportChannel": "匯出通道",
     "ImportChannel": "匯入通道",
     "ImportNullError": "無法識別",
-    "NotOther": "不支持其他通道類型",
+    "NotOther": "不支援其他通道類型",
     "Connect": "連接",
     "Confim": "創建",
     "Disconnect": "斷開",
     "Channel": "通道"
   },
+
   "ThingsGateway.Gateway.Application.Variable": {
-    "AddressOrOtherMethodNotNull": " 變量地址或特殊方法不能同時為空 ",
-    "SaveVariable": "新增/修改變量",
-    "CopyVariable": "複製變量",
-    "DeleteVariable": "複製變量",
-    "ClearVariable": "清空變量",
-    "ExportVariable": "匯出變量",
-    "ImportVariable": "匯入變量",
+    "AddressOrOtherMethodNotNull": " 變數地址或特殊方法不能同時為空 ",
+    "SaveVariable": "新增/修改變數",
+    "CopyVariable": "複製變數",
+    "DeleteVariable": "複製變數",
+    "ClearVariable": "清空變數",
+    "ExportVariable": "匯出變數",
+    "ImportVariable": "匯入變數",
     "NotNull": " {0} 不存在",
     "DeviceNotNull": "設備名稱不存在",
-    "VariableNotNull": "變量名稱不存在",
+    "VariableNotNull": "變數名稱不存在",
     "Name": "名稱",
     "Name.Required": " {0} 不可為空",
     "Description": "描述",
@@ -343,41 +362,41 @@
     "DeviceId.Required": " {0} 不可為空",
     "IntervalTime": "執行間隔",
     "IntervalTime.MinValue": " {0} 值太小",
-    "Enable": "變量使能",
+    "Enable": "變數啟用",
     "ProtectType": "讀寫權限",
-    "DataType": "數據類型",
+    "DataType": "資料類型",
     "ReadExpressions": "讀取表達式",
     "WriteExpressions": "寫入表達式",
-    "RpcWriteEnable": "遠程寫入",
+    "RpcWriteEnable": "遠端寫入",
     "AlarmDelay": "警報延遲",
-    "BoolOpenAlarmEnable": "布爾開警報使能",
-    "BoolOpenRestrainExpressions": "布爾開警報約束",
-    "BoolOpenAlarmText": "布爾開警報文本",
-    "BoolCloseAlarmEnable": "布爾關警報使能",
-    "BoolCloseRestrainExpressions": "布爾關警報約束",
-    "BoolCloseAlarmText": "布爾關警報文本",
-    "HAlarmEnable": "高報使能",
+    "BoolOpenAlarmEnable": "布林開警報啟用",
+    "BoolOpenRestrainExpressions": "布林開警報約束",
+    "BoolOpenAlarmText": "布林開警報文字",
+    "BoolCloseAlarmEnable": "布林關警報啟用",
+    "BoolCloseRestrainExpressions": "布林關警報約束",
+    "BoolCloseAlarmText": "布林關警報文字",
+    "HAlarmEnable": "高報啟用",
     "HRestrainExpressions": "高報約束",
-    "HAlarmText": "高報文本",
+    "HAlarmText": "高報文字",
     "HAlarmCode": "高限值",
-    "HHAlarmEnable": "高高報使能",
+    "HHAlarmEnable": "高高報啟用",
     "HHRestrainExpressions": "高高報約束",
-    "HHAlarmText": "高高報文本",
+    "HHAlarmText": "高高報文字",
     "HHAlarmCode": "高高限值",
-    "LAlarmEnable": "低報使能",
+    "LAlarmEnable": "低報啟用",
     "LRestrainExpressions": "低報約束",
-    "LAlarmText": "低報文本",
+    "LAlarmText": "低報文字",
     "LAlarmCode": "低限值",
-    "LLAlarmEnable": "低低報使能",
+    "LLAlarmEnable": "低低報啟用",
     "LLRestrainExpressions": "低低報約束",
-    "LLAlarmText": "低低報文本",
+    "LLAlarmText": "低低報文字",
     "LLAlarmCode": "低低限值",
-    "CustomAlarmEnable": "自定義警報使能",
-    "CustomRestrainExpressions": "自定義警報約束",
-    "CustomAlarmText": "自定義警報文本",
-    "CustomAlarmCode": "自定義警報限值",
+    "CustomAlarmEnable": "自訂警報啟用",
+    "CustomRestrainExpressions": "自訂警報約束",
+    "CustomAlarmText": "自訂警報文字",
+    "CustomAlarmCode": "自訂警報限值",
     "Unit": "單位",
-    "RegisterAddress": "變量地址",
+    "RegisterAddress": "變數地址",
     "OtherMethod": "特殊方法",
     "Remark1": "備用1",
     "Remark2": "備用2",
@@ -385,33 +404,38 @@
     "Remark4": "備用4",
     "Remark5": "備用5"
   },
+
   "ThingsGateway.Gateway.Application.RpcLogPageInput": {
     "SearchDate": "時間區間",
     "OperateObject": "操作對象",
     "OperateSource": "操作源"
   },
+
   "ThingsGateway.Gateway.Application.BackendLogPageInput": {
     "SearchDate": "時間區間",
     "LogLevel": "日誌等級",
-    "LogSource": "日誌源"
+    "LogSource": "日誌來源"
   },
+
   "ThingsGateway.Gateway.Application.RpcService": {
-    "VariableNotNull": " {0} 變量不存在",
-    "VariableReadOnly": " {0} 變量只讀",
-    "VariableWriteDisable": " {0} 變量不允許寫入",
+    "VariableNotNull": " {0} 變數不存在",
+    "VariableReadOnly": " {0} 變數唯讀",
+    "VariableWriteDisable": " {0} 變數不允許寫入",
     "DriverNotNull": "系統錯誤，不存在對應採集設備，請稍候重試",
     "DevicePause": " {0} 設備已暫停",
-    "WriteVariable": "寫入變量"
+    "WriteVariable": "寫入變數"
   },
+
   "ThingsGateway.Gateway.Application.ExportString": {
-    "VariableName": "變量",
+    "VariableName": "變數",
     "RedundantDeviceName": "冗餘設備",
     "ChannelName": "通道",
     "DeviceName": "設備"
   },
+
   "ThingsGateway.Gateway.Application.ProtectTypeEnum": {
-    "ReadOnly": "只讀",
+    "ReadOnly": "唯讀",
     "ReadWrite": "讀寫",
-    "WriteOnly": "只寫"
+    "WriteOnly": "唯寫"
   }
 }
