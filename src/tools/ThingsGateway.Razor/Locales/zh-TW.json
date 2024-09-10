@@ -36,7 +36,7 @@
     "PleaseSelect": "請選擇需要操作的數據"
   },
   "ThingsGateway.Razor.GlobalSearch": {
-    "SearchText": "搜索頁面"
+    "SearchText": "搜尋頁面"
   },
   "ThingsGateway.Razor.MenuIconList": {
     "ChoiceIcon": "選擇圖標",
@@ -46,7 +46,7 @@
     "CommitCount": "共 {0} 個提交",
     "Author": "提交作者：",
     "Branch": "分支名稱：",
-    "Message": "提交信息："
+    "Message": "提交資訊："
   },
   "ThingsGateway.Razor.ThemeToggle": {
     "ThemeToggle": "夜間/白天"

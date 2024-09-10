@@ -15,7 +15,7 @@
     "Disconnecting": "正在斷開連接",
     "DtuConnected": "Dtu標識 {0} 連接成功",
     "DtuNoConnectedWaining": "客戶端(Dtu)未連接，id：{0}",
-    "ErrorMessage": "錯誤信息",
+    "ErrorMessage": "錯誤資訊",
     "EventError": "在事件 {0} 中發生錯誤",
     "Exception": "異常堆疊",
     "LengthShortError": "數據長度不足，原始數據：{0}",
