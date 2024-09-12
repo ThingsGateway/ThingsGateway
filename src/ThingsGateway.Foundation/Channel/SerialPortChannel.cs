@@ -42,6 +42,8 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     /// <inheritdoc/>
     public ChannelEventHandler Stoped { get; set; } = new();
 
+    /// <inheritdoc/>
+    public ChannelEventHandler Stoping { get; set; } = new();
     /// <summary>
     /// 等待池
     /// </summary>
@@ -59,6 +61,9 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     {
         if (Online)
         {
+            await this.OnChannelEvent(Stoping).ConfigureAwait(false);
+
+
             await base.CloseAsync(msg).ConfigureAwait(false);
             Logger?.Debug($"{ToString()}  Closed{msg}");
 
@@ -111,6 +116,7 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     /// <inheritdoc/>
     protected override async Task OnSerialClosing(ClosingEventArgs e)
     {
+        await this.OnChannelEvent(Stoping).ConfigureAwait(false);
         Logger?.Debug($"{ToString()} Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
         await base.OnSerialClosing(e).ConfigureAwait(false);
     }

@@ -41,7 +41,8 @@ public class TcpClientChannel : TcpClient, IClientChannel
 
     /// <inheritdoc/>
     public ChannelEventHandler Stoped { get; set; } = new();
-
+    /// <inheritdoc/>
+    public ChannelEventHandler Stoping { get; set; } = new();
     /// <summary>
     /// 等待池
     /// </summary>
@@ -54,6 +55,7 @@ public class TcpClientChannel : TcpClient, IClientChannel
     {
         CloseAsync(msg).ConfigureAwait(false).GetAwaiter().GetResult();
     }
+
 
     public override async Task CloseAsync(string msg)
     {
@@ -109,6 +111,7 @@ public class TcpClientChannel : TcpClient, IClientChannel
     /// <inheritdoc/>
     protected override async Task OnTcpClosing(ClosingEventArgs e)
     {
+        await this.OnChannelEvent(Stoping).ConfigureAwait(false);
         Logger?.Debug($"{ToString()}  Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
 
         await base.OnTcpClosing(e).ConfigureAwait(false);

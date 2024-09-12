@@ -37,7 +37,8 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
 
     /// <inheritdoc/>
     public ChannelEventHandler Stoped { get; set; } = new();
-
+    /// <inheritdoc/>
+    public ChannelEventHandler Stoping { get; set; } = new();
     /// <summary>
     /// 等待池
     /// </summary>
@@ -103,6 +104,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     protected override async Task OnTcpClosing(ClosingEventArgs e)
     {
         Logger?.Debug($"{ToString()} Closing{(e.Message.IsNullOrEmpty() ? string.Empty : $"-{e.Message}")}");
+        await this.OnChannelEvent(Stoping).ConfigureAwait(false);
         await base.OnTcpClosing(e).ConfigureAwait(false);
     }
 

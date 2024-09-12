@@ -566,7 +566,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
             var driverPluginFullNameDict = _pluginService.GetList().ToDictionary(a => a.FullName);
 
             // 获取所有驱动程序，并将驱动程序名称作为键构建字典
-            var driverPluginNameDict = _pluginService.GetList().ToDictionary(a => a.Name);
+            var driverPluginNameDict = _pluginService.GetList().DistinctBy(a => a.Name).ToDictionary(a => a.Name);
             ConcurrentDictionary<string, (Type, Dictionary<string, PropertyInfo>, Dictionary<string, PropertyInfo>)> propertysDict = new();
             foreach (var sheetName in sheetNames)
             {

@@ -154,7 +154,8 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
 
     /// <inheritdoc/>
     public ChannelEventHandler Stoped { get; set; } = new();
-
+    /// <inheritdoc/>
+    public ChannelEventHandler Stoping { get; set; } = new();
     public void Close(string msg)
     {
         CloseAsync(msg).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -182,6 +183,12 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
     protected override TcpSessionClientChannel NewClient()
     {
         return new TcpSessionClientChannel();
+    }
+
+    protected override async Task OnTcpClosing(TcpSessionClientChannel socketClient, ClosingEventArgs e)
+    {
+        await socketClient.OnChannelEvent(Stoping).ConfigureAwait(false);
+        await base.OnTcpClosing(socketClient, e);
     }
 
     /// <inheritdoc/>

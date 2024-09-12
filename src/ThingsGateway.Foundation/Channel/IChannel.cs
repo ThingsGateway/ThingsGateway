@@ -54,6 +54,11 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     public ChannelEventHandler Stoped { get; set; }
 
     /// <summary>
+    /// 通道停止前
+    /// </summary>
+    public ChannelEventHandler Stoping { get; set; }
+
+    /// <summary>
     /// 关闭客户端。
     /// </summary>
     /// <param name="msg"></param>

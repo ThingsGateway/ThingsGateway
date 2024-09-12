@@ -42,7 +42,8 @@ public class UdpSessionChannel : UdpSession, IClientChannel
 
     /// <inheritdoc/>
     public ChannelEventHandler Stoped { get; set; } = new();
-
+    /// <inheritdoc/>
+    public ChannelEventHandler Stoping { get; set; } = new();
     /// <summary>
     /// 等待池
     /// </summary>
@@ -115,6 +116,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     {
         if (Monitor != null)
         {
+            await this.OnChannelEvent(Stoping).ConfigureAwait(false);
             await base.StopAsync().ConfigureAwait(false);
             if (Monitor == null)
             {

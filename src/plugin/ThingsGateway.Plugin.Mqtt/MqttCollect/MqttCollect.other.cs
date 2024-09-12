@@ -43,7 +43,7 @@ public partial class MqttCollect : CollectBase
         if (TopicItemDict.TryGetValue(args.ApplicationMessage.Topic, out var tuples))
         {
 
-            JObject json = JObject.Parse(Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment));
+            JToken json = JToken.Parse(Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment));
             DateTime dateTime = DateTime.Now;
             foreach (var item in tuples)
             {

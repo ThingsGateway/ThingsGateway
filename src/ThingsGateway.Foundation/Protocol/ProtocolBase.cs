@@ -14,6 +14,8 @@ using ThingsGateway.Foundation.Extension.Generic;
 using ThingsGateway.Foundation.Extension.String;
 using ThingsGateway.NewLife.X;
 
+using TouchSocket.Resources;
+
 namespace ThingsGateway.Foundation;
 
 /// <summary>
@@ -32,6 +34,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             Logger = channel.Logger;
             Channel.Starting.Add(ChannelStarting);
             Channel.Stoped.Add(ChannelStoped);
+            Channel.Stoping.Add(ChannelStoping);
             Channel.Started.Add(ChannelStarted);
             Channel.ChannelReceived.Add(ChannelReceived);
             Channel.Config.ConfigurePlugins(ConfigurePlugins());
@@ -103,11 +106,20 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     public abstract DataHandlingAdapter GetDataAdapter();
 
     /// <summary>
-    /// 通道连接成功时，如果通道存在其他设备并且不希望其他设备处理时，返回null
+    /// 通道连接成功时，如果通道存在其他设备并且不希望其他设备处理时，返回true
     /// </summary>
     /// <param name="channel"></param>
     /// <returns></returns>
     protected virtual Task<bool> ChannelStarted(IClientChannel channel)
+    {
+        return Task.FromResult(false);
+    }
+    /// <summary>
+    /// 通道断开连接前，如果通道存在其他设备并且不希望其他设备处理时，返回null
+    /// </summary>
+    /// <param name="channel"></param>
+    /// <returns></returns>
+    protected virtual Task<bool> ChannelStoping(IClientChannel channel)
     {
         return Task.FromResult(false);
     }
@@ -443,7 +455,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
             }
             else
             {
-                throw new Exception(result.ErrorMessage);
+                throw result.Exception ?? new(TouchSocketCoreResource.UnknownError);
             }
         }
         finally
@@ -806,6 +818,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                 Channel.Starting.Remove(ChannelStarting);
                 Channel.Stoped.Remove(ChannelStoped);
                 Channel.Started.Remove(ChannelStarted);
+                Channel.Stoping.Remove(ChannelStoping);
                 Channel.ChannelReceived.Remove(ChannelReceived);
                 Channel.Collects.Remove(this);
                 if (Channel.Collects.Count == 0)

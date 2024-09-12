@@ -286,6 +286,7 @@ public abstract class CollectBase : DriverBase
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
                         LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Succeeded {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult.Content?.ToSystemTextJsonString()));
                     readResultCount.deviceMethodsVariableSuccessNum++;
+                    CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
                 }
                 else
                 {
@@ -307,7 +308,7 @@ public abstract class CollectBase : DriverBase
 
                     readResultCount.deviceMethodsVariableFailedNum++;
                     readVariableMethods.LastErrorMessage = readResult.ErrorMessage;
-                    CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, readResult.ToString());
+                    CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
                 }
                 if (delay)
                     await Task.Delay(ChannelThread.MinCycleInterval, cancellationToken).ConfigureAwait(false);
@@ -363,6 +364,7 @@ public abstract class CollectBase : DriverBase
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
                         LogMessage?.Trace(string.Format("{0} - Collection[{1} - {2}] data succeeded {3}", DeviceName, variableSourceRead?.RegisterAddress, variableSourceRead?.Length, readResult.Content?.ToHexString(' ')));
                     readResultCount.deviceSourceVariableSuccessNum++;
+                    CurrentDevice.SetDeviceStatus(TimerX.Now, CurrentDevice.ErrorCount + 1, readResult.ErrorMessage);
                 }
                 else
                 {
@@ -385,7 +387,7 @@ public abstract class CollectBase : DriverBase
 
                         readResultCount.deviceSourceVariableFailedNum++;
                         variableSourceRead.LastErrorMessage = readResult.ErrorMessage;
-                        CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, readResult.ErrorMessage);
+                        CurrentDevice.SetDeviceStatus(TimerX.Now, CurrentDevice.ErrorCount + 1, readResult.ErrorMessage);
                         var time = DateTime.Now;
                         variableSourceRead.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
                     }
@@ -424,7 +426,7 @@ public abstract class CollectBase : DriverBase
                                     LogMessage?.LogWarning(exception, Localizer["CollectFail", DeviceName, item?.RegisterAddress, item?.Length, exception.Message]);
                             }
                             item.LastErrorMessage = exception.Message;
-                            CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, exception.Message);
+                            CurrentDevice.SetDeviceStatus(TimerX.Now, CurrentDevice.ErrorCount + 1, exception.Message);
                             var time = DateTime.Now;
                             item.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
                         }
@@ -436,7 +438,7 @@ public abstract class CollectBase : DriverBase
                                     LogMessage?.LogWarning(exception, Localizer["MethodFail", DeviceName, item.MethodInfo.Name, exception.Message]);
                             }
                             item.LastErrorMessage = exception.Message;
-                            CurrentDevice.SetDeviceStatus(DateTime.Now, CurrentDevice.ErrorCount + 1, exception.Message);
+                            CurrentDevice.SetDeviceStatus(TimerX.Now, CurrentDevice.ErrorCount + 1, exception.Message);
                             var time = DateTime.Now;
                             item.Variable.SetValue(null, time, isOnline: false);
                         }

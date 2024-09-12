@@ -131,7 +131,10 @@ public partial class MqttCollect : CollectBase
                     try
                     {
                         var addressSplit = item.RegisterAddress.Split('+');
-                        TopicItemDict[group.Key].Add(new Tuple<string, VariableRunTime>(addressSplit[1], item));
+                        if (addressSplit.Length > 1)
+                            TopicItemDict[group.Key].Add(new Tuple<string, VariableRunTime>(addressSplit[1], item));
+                        else
+                            TopicItemDict[group.Key].Add(new Tuple<string, VariableRunTime>("", item));
                     }
                     catch
                     {
