@@ -34,6 +34,7 @@ public class S7BitConverter : ThingsGatewayBitConverter
         data.StringLength = StringLength;
         data.ArrayLength = ArrayLength;
         data.IsStringReverseByteWord = IsStringReverseByteWord;
+        data.IsVariableStringLength = IsVariableStringLength;
 
         return data;
     }

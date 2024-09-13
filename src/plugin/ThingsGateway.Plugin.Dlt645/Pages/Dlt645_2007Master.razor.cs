@@ -33,8 +33,8 @@ public partial class Dlt645_2007Master : ComponentBase, IDisposable
 
     public void Dispose()
     {
-        ChannelData?.Channel?.SafeDispose();
         _plc?.SafeDispose();
+        ChannelData?.Channel?.SafeDispose();
         GC.SuppressFinalize(this);
     }
 

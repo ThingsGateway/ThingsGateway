@@ -815,13 +815,8 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
         {
             lock (Channel)
             {
-                Channel.Starting.Remove(ChannelStarting);
-                Channel.Stoped.Remove(ChannelStoped);
-                Channel.Started.Remove(ChannelStarted);
-                Channel.Stoping.Remove(ChannelStoping);
-                Channel.ChannelReceived.Remove(ChannelReceived);
-                Channel.Collects.Remove(this);
-                if (Channel.Collects.Count == 0)
+
+                if (Channel.Collects.Count == 1)
                 {
                     try
                     {
@@ -845,6 +840,12 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                     });
                     tcpServiceChannel.SafeClose();
                 }
+                Channel.Starting.Remove(ChannelStarting);
+                Channel.Stoped.Remove(ChannelStoped);
+                Channel.Started.Remove(ChannelStarted);
+                Channel.Stoping.Remove(ChannelStoping);
+                Channel.ChannelReceived.Remove(ChannelReceived);
+                Channel.Collects.Remove(this);
             }
         }
         base.Dispose(disposing);

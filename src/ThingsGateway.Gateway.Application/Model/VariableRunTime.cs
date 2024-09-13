@@ -30,6 +30,7 @@ public class VariableRunTime : Variable, IVariable
     [NotNull]
     public override long? DeviceId { get; set; }
 
+
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true, Order = 3)]
     public override string? Unit { get; set; }
 

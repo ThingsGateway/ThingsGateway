@@ -3,6 +3,7 @@ rmdir /S /Q %~dp0\nupkgs
 mkdir %~dp0\nupkgs
 rem 构建解决方案
 
+dotnet build "ProNuget2.sln" -c Release
 dotnet build "ProNuget1.sln" -c Release
 dotnet build "ProNuget.sln" -c Release
 dotnet restore "ThingsGateway.sln"

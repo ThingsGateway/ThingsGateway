@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "others", "others", "{2C6B6E
 		Delete nupkgs.bat = Delete nupkgs.bat
 		Directory.Build.props = Directory.Build.props
 		Foundation.props = Foundation.props
+		NugetPackageReference.props = NugetPackageReference.props
 		PackNuget.props = PackNuget.props
 		Plugin.props = Plugin.props
 		..\README.md = ..\README.md
@@ -307,7 +308,7 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
-		RESX_Rules = {"EnabledRules":[]}
 		RESX_NeutralResourcesLanguage = zh-Hans
+		RESX_Rules = {"EnabledRules":[]}
 	EndGlobalSection
 EndGlobal

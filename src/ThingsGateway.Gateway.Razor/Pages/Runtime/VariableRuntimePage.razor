@@ -57,7 +57,7 @@
             <TableColumn @bind-Field="@context.Unit" Filterable=true Sortable=true Visible="false" />
 
             <TableColumn @bind-Field="@context.Index" Filterable=true Sortable=true Visible="false" />
-            <TableColumn @bind-Field="@context.Id" Visible="false" DefaultSort=true DefaultSortOrder="SortOrder.Asc" />
+            <TableColumn @bind-Field="@context.Id" Visible="false" Sortable=true DefaultSort=true DefaultSortOrder="SortOrder.Asc" />
             @* <TableColumn Field="@context.AlarmEnable" FieldExpression=@(()=>context.AlarmEnable) Filterable Sortable="false" Visible="false" />
 
             <TableColumn @bind-Field="@context.BoolOpenAlarmEnable" Filterable Sortable="false" Visible="false" />
