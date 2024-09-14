@@ -175,27 +175,27 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 底层驱动配置
     /// </summary>
-    public TouchSocketConfig FoundataionConfig => ChannelThread.FoundataionConfig;
+    public TouchSocketConfig FoundataionConfig => ChannelThread?.FoundataionConfig;
 
     /// <summary>
     /// 日志
     /// </summary>
-    public ILogger Logger => ChannelThread.Logger;
+    public ILogger Logger => ChannelThread?.Logger;
 
     /// <summary>
     /// 底层日志，需由线程管理器传入
     /// </summary>
-    public LoggerGroup LogMessage => ChannelThread.LogMessage;
+    public LoggerGroup LogMessage => ChannelThread?.LogMessage;
 
     /// <summary>
     /// 日志路径
     /// </summary>
-    public string LogPath => ChannelThread.LogPath;
+    public string LogPath => ChannelThread?.LogPath;
 
     /// <summary>
     /// 写入锁
     /// </summary>
-    protected internal EasyLock WriteLock => ChannelThread.WriteLock;
+    protected internal EasyLock WriteLock => ChannelThread?.WriteLock;
 
     #endregion 任务管理器传入
 

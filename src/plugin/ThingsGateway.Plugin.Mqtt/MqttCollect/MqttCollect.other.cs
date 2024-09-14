@@ -39,33 +39,39 @@ public partial class MqttCollect : CollectBase
 
     private Task MqttClient_ApplicationMessageReceivedAsync(MQTTnet.Client.MqttApplicationMessageReceivedEventArgs args)
     {
-
-        if (TopicItemDict.TryGetValue(args.ApplicationMessage.Topic, out var tuples))
+        try
         {
-
-            JToken json = JToken.Parse(Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment));
-            DateTime dateTime = DateTime.Now;
-            foreach (var item in tuples)
+            if (TopicItemDict.TryGetValue(args.ApplicationMessage.Topic, out var tuples))
             {
-                try
+
+                JToken json = JToken.Parse(Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment));
+                DateTime dateTime = DateTime.Now;
+                foreach (var item in tuples)
                 {
-                    var jtoken = json.SelectToken(item.Item1);
-                    object value;
-                    if (jtoken is JValue jValue)
+                    try
                     {
-                        value = jValue.Value;
+                        var jtoken = json.SelectToken(item.Item1);
+                        object value;
+                        if (jtoken is JValue jValue)
+                        {
+                            value = jValue.Value;
+                        }
+                        else
+                        {
+                            value = jtoken;
+                        }
+                        item.Item2.SetValue(value, dateTime);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        value = jtoken;
+                        LogMessage.LogTrace($"parse error: topic  {Environment.NewLine}{args.ApplicationMessage.Topic}  {Environment.NewLine} json {Environment.NewLine}{json} {Environment.NewLine} select: {item.Item1} {Environment.NewLine} {ex}");
                     }
-                    item.Item2.SetValue(value, dateTime);
-                }
-                catch (Exception ex)
-                {
-                    LogMessage.LogTrace($"parse error: json {Environment.NewLine}{json} {Environment.NewLine} select: {item.Item1} {Environment.NewLine} {ex}");
                 }
             }
+        }
+        catch (Exception ex)
+        {
+            LogMessage.LogTrace($"parse error: topic  {Environment.NewLine}{args.ApplicationMessage.Topic} {Environment.NewLine} {ex}");
         }
         return Task.CompletedTask;
 

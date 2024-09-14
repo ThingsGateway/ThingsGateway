@@ -105,10 +105,7 @@ public static class LocalizerExtensions
     /// <summary>
     /// 获得类型属性的描述信息
     /// </summary>
-    /// <param name="modelType"></param>
-    /// <param name="fieldName"></param>
-    /// <returns></returns>
-    public static string GetPropertyDisplayName(this Type modelType, string fieldName)
+    public static string GetPropertyDisplayName(this Type modelType, string fieldName, Func<MemberInfo, string> func = null)
     {
         var cacheKey = $"{nameof(GetPropertyDisplayName)}-{CultureInfo.CurrentUICulture.Name}-{modelType.FullName}-{modelType.TypeHandle.Value}-{fieldName}";
         var displayName = NetCoreApp.CacheService.GetOrCreate(cacheKey, entry =>
@@ -144,8 +141,8 @@ public static class LocalizerExtensions
             // 回退查找 Display 标签
             var dn = memberInfo.GetCustomAttribute<DisplayAttribute>(true)?.Name
                 ?? memberInfo.GetCustomAttribute<DisplayNameAttribute>(true)?.DisplayName
-                ?? memberInfo.GetCustomAttribute<DescriptionAttribute>(true)?.Description;
-
+                ?? memberInfo.GetCustomAttribute<DescriptionAttribute>(true)?.Description
+                ?? func?.Invoke(memberInfo);
             return dn;
         }
     }

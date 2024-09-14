@@ -341,7 +341,7 @@ public class VariableService : BaseService<Variable>, IVariableService
         //变量页
         ConcurrentList<Dictionary<string, object>> variableExports = new();
         //变量附加属性，转成Dict<表名,List<Dict<列名，列数据>>>的形式
-        ConcurrentDictionary<string, ConcurrentList<ConcurrentDictionary<string, object>>> devicePropertys = new();
+        ConcurrentDictionary<string, ConcurrentList<Dictionary<string, object>>> devicePropertys = new();
         ConcurrentDictionary<string, (VariablePropertyBase, Dictionary<string, PropertyInfo>)> propertysDict = new();
 
         #region 列名称
@@ -394,7 +394,7 @@ public class VariableService : BaseService<Variable>, IVariableService
             {
                 //插件属性
                 //单个设备的行数据
-                ConcurrentDictionary<string, object> driverInfo = new();
+                Dictionary<string, object> driverInfo = new();
                 var has = deviceDicts.TryGetValue(item.Key, out var businessDevice);
                 if (!has)
                     continue;
@@ -414,7 +414,7 @@ public class VariableService : BaseService<Variable>, IVariableService
                     var variablePropertyType = variableProperty.GetType();
                     propertys.Item2 = variablePropertyType.GetRuntimeProperties()
        .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
-       .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name));
+       .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
                     propertysDict.TryAdd(businessDevice.PluginName, propertys);
                 }
 
@@ -681,11 +681,11 @@ public class VariableService : BaseService<Variable>, IVariableService
                             propertys.Item1 = variablePropertyType;
                             propertys.Item2 = variablePropertyType.GetRuntimeProperties()
                                 .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
-                                .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name));
+                                .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
 
                             // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
                             var properties = propertys.Item1.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
-                                            .ToDictionary(a => propertys.Item1.GetPropertyDisplayName(a.Name));
+                                            .ToDictionary(a => propertys.Item1.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
 
                             propertys.Item3 = properties;
                             propertysDict.TryAdd(driverPluginType.FullName, propertys);

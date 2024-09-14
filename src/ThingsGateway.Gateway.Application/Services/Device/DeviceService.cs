@@ -444,7 +444,7 @@ public class DeviceService : BaseService<Device>, IDeviceService
                 var driverPropertyType = driverProperties.GetType();
                 propertys.Item2 = driverPropertyType.GetRuntimeProperties()
 .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
-.ToDictionary(a => driverPropertyType.GetPropertyDisplayName(a.Name), a => a);
+.ToDictionary(a => driverPropertyType.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description), a => a);
 
                 propertysDict.TryAdd(device.PluginName, propertys);
             }
@@ -752,11 +752,11 @@ public class DeviceService : BaseService<Device>, IDeviceService
 
                         propertys.Item2 = type.GetRuntimeProperties()
                             .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null && a.CanWrite)
-                            .ToDictionary(a => type.GetPropertyDisplayName(a.Name));
+                            .ToDictionary(a => type.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
 
                         // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
                         var properties = propertys.Item1.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
-                                        .ToDictionary(a => propertys.Item1.GetPropertyDisplayName(a.Name));
+                                        .ToDictionary(a => propertys.Item1.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
 
                         propertys.Item3 = properties;
                         propertysDict.TryAdd(driverPluginType.FullName, propertys);
