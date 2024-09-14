@@ -364,7 +364,7 @@ public abstract class CollectBase : DriverBase
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
                         LogMessage?.Trace(string.Format("{0} - Collection[{1} - {2}] data succeeded {3}", DeviceName, variableSourceRead?.RegisterAddress, variableSourceRead?.Length, readResult.Content?.ToHexString(' ')));
                     readResultCount.deviceSourceVariableSuccessNum++;
-                    CurrentDevice.SetDeviceStatus(TimerX.Now, CurrentDevice.ErrorCount + 1, readResult.ErrorMessage);
+                    CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
                 }
                 else
                 {
