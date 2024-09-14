@@ -11,7 +11,7 @@ A cross-platform, high-performance edge data collection gateway based on net8, c
 ## Documentation
 
 ﻿
-[Documentation](https://kimdiego2098.github.io/).
+[Documentation](https://thingsgateway.cn/).
 ﻿
 [NuGet](https://www.nuget.org/packages?q=Tags%3A%22ThingsGateway%22)
 ﻿
@@ -80,7 +80,7 @@ docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway_arm64
 ## Sponsorship
 
 ﻿
-[Sponsorship Approach](https://kimdiego2098.github.io/docs/1000)
+[Sponsorship Approach](https://thingsgateway.cn/docs/1000)
 ﻿
 
 ## Community
@@ -92,4 +92,4 @@ QQ Group: 605534569 [Jump](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=NnBjPO-8kcN
 ## Pro Plugins
 
 ﻿
-[Plugin List](https://kimdiego2098.github.io/docs/1001)
+[Plugin List](https://thingsgateway.cn/docs/1001)

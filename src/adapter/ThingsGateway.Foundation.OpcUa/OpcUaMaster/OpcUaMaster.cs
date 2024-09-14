@@ -4,7 +4,7 @@
 //  源代码使用协议遵循本仓库的开源协议及附加协议
 //  Gitee源代码仓库：https://gitee.com/diego2098/ThingsGateway
 //  Github源代码仓库：https://github.com/kimdiego2098/ThingsGateway
-//  使用文档：https://kimdiego2098.github.io/
+//  使用文档：https://thingsgateway.cn/
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ public class OpcUaMaster : IDisposable
     /// <summary>
     /// ProductUri
     /// </summary>
-    public string ProductUri = "https://kimdiego2098.github.io/";
+    public string ProductUri = "https://thingsgateway.cn/";
 
     /// <summary>
     /// 当前保存的变量名称列表

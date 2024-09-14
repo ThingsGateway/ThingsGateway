@@ -6,7 +6,7 @@
 
 ## 文档
 
-[文档](https://kimdiego2098.github.io/)
+[文档](https://thingsgateway.cn/)
 
 [NuGet](https://www.nuget.org/packages?q=Tags%3A%22ThingsGateway%22)
 
@@ -64,7 +64,7 @@ docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway_arm64
 
 ## 赞助
 
-[赞助途径](https://kimdiego2098.github.io/docs/1000)
+[赞助途径](https://thingsgateway.cn/docs/1000)
 
 ## 社区
 
@@ -72,4 +72,4 @@ QQ群：605534569 [跳转](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=NnBjPO-8kcN
 
 ## Pro插件
 
-[插件列表](https://kimdiego2098.github.io/docs/1001)
+[插件列表](https://thingsgateway.cn/docs/1001)
