@@ -26,6 +26,11 @@ public abstract class BusinessBase : DriverBase
     /// </summary>
     public IReadOnlyDictionary<string, CollectDeviceRunTime> CollectDevices { get; protected set; }
 
+    /// <summary>
+    /// 变量属性UI Type，如果不存在，返回null
+    /// </summary>
+    public virtual Type DriverVariablePropertyUIType { get; }
+
     public override DriverPropertyBase DriverProperties => _businessPropertyBase;
 
     public List<IEditorItem> PluginVariablePropertyEditorItems

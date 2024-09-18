@@ -8,278 +8,287 @@
 @if (ValidateEnable)
 {
 
-    <ValidateForm Model="Model" OnValidSubmit="ValidSubmit">
-        <Tab>
-            <TabItem Text=@Localizer["VariableInformation"]>
-                <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
-                    <FieldItems>
-                        <EditorItem @bind-Field="@context.Description">
-                            <EditTemplate Context="value">
-                                <div class="col-12">
-                                    <h6>@Localizer["BasicInformation"]</h6>
-                                </div>
-                            </EditTemplate>
-                        </EditorItem>
-                        <EditorItem @bind-Field="@context.Name" Readonly=BatchEditEnable />
-                        <EditorItem @bind-Field="@context.Description" />
-                        <EditorItem @bind-Field="@context.Unit" />
-                        <EditorItem @bind-Field="@context.ProtectType" />
-                        <EditorItem @bind-Field="@context.Enable" />
-                        <EditorItem @bind-Field="@context.RpcWriteEnable" />
-                        <EditorItem @bind-Field="@context.SaveValue" />
+            <ValidateForm Model="Model" OnValidSubmit="ValidSubmit">
+                <Tab>
+                    <TabItem Text=@Localizer["VariableInformation"]>
+                        <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
+                            <FieldItems>
+                                <EditorItem @bind-Field="@context.Description">
+                                    <EditTemplate Context="value">
+                                        <div class="col-12">
+                                            <h6>@Localizer["BasicInformation"]</h6>
+                                        </div>
+                                    </EditTemplate>
+                                </EditorItem>
+                                <EditorItem @bind-Field="@context.Name" Readonly=BatchEditEnable />
+                                <EditorItem @bind-Field="@context.Description" />
+                                <EditorItem @bind-Field="@context.Unit" />
+                                <EditorItem @bind-Field="@context.ProtectType" />
+                                <EditorItem @bind-Field="@context.Enable" />
+                                <EditorItem @bind-Field="@context.RpcWriteEnable" />
+                                <EditorItem @bind-Field="@context.SaveValue" />
 
-                        <EditorItem @bind-Field="@context.Description">
-                            <EditTemplate Context="value">
-                                <div class="col-12">
-                                    <h6>@Localizer["Connection"]</h6>
-                                </div>
-                            </EditTemplate>
-                        </EditorItem>
+                                <EditorItem @bind-Field="@context.Description">
+                                    <EditTemplate Context="value">
+                                        <div class="col-12">
+                                            <h6>@Localizer["Connection"]</h6>
+                                        </div>
+                                    </EditTemplate>
+                                </EditorItem>
 
-                        <EditorItem @bind-Field="@context.DeviceId">
-                            <EditTemplate Context="value">
-                                <div class="col-12  col-md-6">
-                                    <Select IsVirtualize @bind-Value="@value.DeviceId" Items="@CollectDevices" ShowSearch="true" OnSelectedItemChanged="OnDeviceSelectedItemChanged" IsPopover />
-                                </div>
-                            </EditTemplate>
-                        </EditorItem>
+                                <EditorItem @bind-Field="@context.DeviceId">
+                                    <EditTemplate Context="value">
+                                        <div class="col-12  col-md-6">
+                                            <Select IsVirtualize @bind-Value="@value.DeviceId" Items="@CollectDevices" ShowSearch="true" OnSelectedItemChanged="OnDeviceSelectedItemChanged" IsPopover />
+                                        </div>
+                                    </EditTemplate>
+                                </EditorItem>
 
-                        <EditorItem @bind-Field="@context.DataType" />
+                                <EditorItem @bind-Field="@context.DataType" />
 
-                        <EditorItem @bind-Field="@context.IntervalTime" />
+                                <EditorItem @bind-Field="@context.IntervalTime" />
 
-                        <EditorItem @bind-Field="@context.OtherMethod">
-                            <EditTemplate Context="value">
-                                <div class="col-12  col-md-6">
-                                    <Select IsVirtualize @bind-Value="@value.OtherMethod" Items="@OtherMethods" ShowSearch="true" IsPopover />
-                                </div>
-                            </EditTemplate>
-                        </EditorItem>
+                                <EditorItem @bind-Field="@context.OtherMethod">
+                                    <EditTemplate Context="value">
+                                        <div class="col-12  col-md-6">
+                                            <Select IsVirtualize @bind-Value="@value.OtherMethod" Items="@OtherMethods" ShowSearch="true" IsPopover />
+                                        </div>
+                                    </EditTemplate>
+                                </EditorItem>
 
-                        <EditorItem @bind-Field="@context.RegisterAddress" Rows="1" />
+                                <EditorItem @bind-Field="@context.RegisterAddress" Rows="1" />
 
-                        <EditorItem @bind-Field="@context.ReadExpressions" Rows="1" />
-                        <EditorItem @bind-Field="@context.WriteExpressions" Rows="1" />
+                                <EditorItem @bind-Field="@context.ReadExpressions" Rows="1" />
+                                <EditorItem @bind-Field="@context.WriteExpressions" Rows="1" />
 
 
 
-                        <EditorItem @bind-Field="@context.Description">
-                            <EditTemplate Context="value">
-                                <div class="col-12">
-                                    <h6>@Localizer["Remark"]</h6>
-                                </div>
-                            </EditTemplate>
-                        </EditorItem>
-                        <EditorItem @bind-Field="@context.Remark1" />
-                        <EditorItem @bind-Field="@context.Remark2" />
-                        <EditorItem @bind-Field="@context.Remark3" />
-                        <EditorItem @bind-Field="@context.Remark4" />
-                        <EditorItem @bind-Field="@context.Remark5" />
-                    </FieldItems>
+                                <EditorItem @bind-Field="@context.Description">
+                                    <EditTemplate Context="value">
+                                        <div class="col-12">
+                                            <h6>@Localizer["Remark"]</h6>
+                                        </div>
+                                    </EditTemplate>
+                                </EditorItem>
+                                <EditorItem @bind-Field="@context.Remark1" />
+                                <EditorItem @bind-Field="@context.Remark2" />
+                                <EditorItem @bind-Field="@context.Remark3" />
+                                <EditorItem @bind-Field="@context.Remark4" />
+                                <EditorItem @bind-Field="@context.Remark5" />
+                            </FieldItems>
 
-                </EditorForm>
+                        </EditorForm>
 
-            </TabItem>
-            <TabItem Text=@Localizer["AlarmInformation"]>
-                <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
-                    <FieldItems>
+                    </TabItem>
+                    <TabItem Text=@Localizer["AlarmInformation"]>
+                        <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
+                            <FieldItems>
 
-                        <EditorItem @bind-Field="@context.BoolCloseAlarmText" />
-                        <EditorItem @bind-Field="@context.BoolCloseRestrainExpressions" />
-                        <EditorItem @bind-Field="@context.BoolCloseAlarmEnable" Rows="1" />
-                        <EditorItem @bind-Field="@context.BoolOpenAlarmText" />
-                        <EditorItem @bind-Field="@context.BoolOpenRestrainExpressions" />
-                        <EditorItem @bind-Field="@context.BoolOpenAlarmEnable" Rows="1" />
-                        <EditorItem @bind-Field="@context.HHAlarmText" />
-                        <EditorItem @bind-Field="@context.HHAlarmCode" />
-                        <EditorItem @bind-Field="@context.HHRestrainExpressions" />
-                        <EditorItem @bind-Field="@context.HHAlarmEnable" />
-                        <EditorItem @bind-Field="@context.HAlarmText" />
-                        <EditorItem @bind-Field="@context.HAlarmCode" />
-                        <EditorItem @bind-Field="@context.HRestrainExpressions" />
-                        <EditorItem @bind-Field="@context.HAlarmEnable" />
-                        <EditorItem @bind-Field="@context.LAlarmText" />
-                        <EditorItem @bind-Field="@context.LAlarmCode" />
-                        <EditorItem @bind-Field="@context.LRestrainExpressions" />
-                        <EditorItem @bind-Field="@context.LAlarmEnable" />
-                        <EditorItem @bind-Field="@context.LLAlarmText" />
-                        <EditorItem @bind-Field="@context.LLAlarmCode" />
-                        <EditorItem @bind-Field="@context.LLRestrainExpressions" />
-                        <EditorItem @bind-Field="@context.LLAlarmEnable" />
-                        <EditorItem @bind-Field="@context.CustomAlarmText" />
-                        <EditorItem @bind-Field="@context.CustomAlarmCode" />
-                        <EditorItem @bind-Field="@context.CustomRestrainExpressions" />
-                        <EditorItem @bind-Field="@context.CustomAlarmEnable" />
-                        <EditorItem @bind-Field="@context.AlarmDelay" />
-                    </FieldItems>
-                </EditorForm>
-            </TabItem>
-        </Tab>
-        <div class="form-footer">
+                                <EditorItem @bind-Field="@context.BoolCloseAlarmText" />
+                                <EditorItem @bind-Field="@context.BoolCloseRestrainExpressions" />
+                                <EditorItem @bind-Field="@context.BoolCloseAlarmEnable" Rows="1" />
+                                <EditorItem @bind-Field="@context.BoolOpenAlarmText" />
+                                <EditorItem @bind-Field="@context.BoolOpenRestrainExpressions" />
+                                <EditorItem @bind-Field="@context.BoolOpenAlarmEnable" Rows="1" />
+                                <EditorItem @bind-Field="@context.HHAlarmText" />
+                                <EditorItem @bind-Field="@context.HHAlarmCode" />
+                                <EditorItem @bind-Field="@context.HHRestrainExpressions" />
+                                <EditorItem @bind-Field="@context.HHAlarmEnable" />
+                                <EditorItem @bind-Field="@context.HAlarmText" />
+                                <EditorItem @bind-Field="@context.HAlarmCode" />
+                                <EditorItem @bind-Field="@context.HRestrainExpressions" />
+                                <EditorItem @bind-Field="@context.HAlarmEnable" />
+                                <EditorItem @bind-Field="@context.LAlarmText" />
+                                <EditorItem @bind-Field="@context.LAlarmCode" />
+                                <EditorItem @bind-Field="@context.LRestrainExpressions" />
+                                <EditorItem @bind-Field="@context.LAlarmEnable" />
+                                <EditorItem @bind-Field="@context.LLAlarmText" />
+                                <EditorItem @bind-Field="@context.LLAlarmCode" />
+                                <EditorItem @bind-Field="@context.LLRestrainExpressions" />
+                                <EditorItem @bind-Field="@context.LLAlarmEnable" />
+                                <EditorItem @bind-Field="@context.CustomAlarmText" />
+                                <EditorItem @bind-Field="@context.CustomAlarmCode" />
+                                <EditorItem @bind-Field="@context.CustomRestrainExpressions" />
+                                <EditorItem @bind-Field="@context.CustomAlarmEnable" />
+                                <EditorItem @bind-Field="@context.AlarmDelay" />
+                            </FieldItems>
+                        </EditorForm>
+                    </TabItem>
+                </Tab>
+                <div class="form-footer">
 
-            <Button class="mt-2" ButtonType="ButtonType.Submit" Icon="fa-solid fa-floppy-disk" IsAsync Text=@DefaultLocalizer["Save"] />
-        </div>
-    </ValidateForm>
+                    <Button class="mt-2" ButtonType="ButtonType.Submit" Icon="fa-solid fa-floppy-disk" IsAsync Text=@DefaultLocalizer["Save"] />
+                </div>
+            </ValidateForm>
 
 }
 else
 {
 
-    <Tab>
-        <TabItem Text=@Localizer["VariableInformation"]>
-            <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
-                <FieldItems>
-                    <EditorItem @bind-Field="@context.Description">
-                        <EditTemplate Context="value">
-                            <div class="col-12">
-                                <h6>@Localizer["BasicInformation"]</h6>
+            <Tab>
+                <TabItem Text=@Localizer["VariableInformation"]>
+                    <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
+                        <FieldItems>
+                            <EditorItem @bind-Field="@context.Description">
+                                <EditTemplate Context="value">
+                                    <div class="col-12">
+                                        <h6>@Localizer["BasicInformation"]</h6>
+                                    </div>
+                                </EditTemplate>
+                            </EditorItem>
+                            <EditorItem @bind-Field="@context.Name" />
+                            <EditorItem @bind-Field="@context.Description" />
+                            <EditorItem @bind-Field="@context.Unit" />
+                            <EditorItem @bind-Field="@context.ProtectType" />
+                            <EditorItem @bind-Field="@context.Enable" />
+                            <EditorItem @bind-Field="@context.RpcWriteEnable" />
+                            <EditorItem @bind-Field="@context.SaveValue" />
+
+                            <EditorItem @bind-Field="@context.Description">
+                                <EditTemplate Context="value">
+                                    <div class="col-12">
+                                        <h6>@Localizer["Connection"]</h6>
+                                    </div>
+                                </EditTemplate>
+                            </EditorItem>
+
+                            <EditorItem @bind-Field="@context.DeviceId">
+                                <EditTemplate Context="value">
+                                    <div class="col-12  col-md-6">
+                                        <Select IsVirtualize @bind-Value="@value.DeviceId" Items="@CollectDevices" ShowSearch="true" OnSelectedItemChanged="OnDeviceSelectedItemChanged" IsPopover />
+                                    </div>
+                                </EditTemplate>
+                            </EditorItem>
+
+                            <EditorItem @bind-Field="@context.DataType" />
+
+                            <EditorItem @bind-Field="@context.IntervalTime" />
+
+                            <EditorItem @bind-Field="@context.OtherMethod">
+                                <EditTemplate Context="value">
+                                    <div class="col-12  col-md-6">
+                                        <Select IsVirtualize @bind-Value="@value.OtherMethod" Items="@OtherMethods" ShowSearch="true" IsPopover />
+                                    </div>
+                                </EditTemplate>
+                            </EditorItem>
+
+                            <EditorItem @bind-Field="@context.RegisterAddress" Rows="1" />
+
+                            <EditorItem @bind-Field="@context.ReadExpressions" Rows="1" />
+                            <EditorItem @bind-Field="@context.WriteExpressions" Rows="1" />
+
+
+
+                            <EditorItem @bind-Field="@context.Description">
+                                <EditTemplate Context="value">
+                                    <div class="col-12">
+                                        <h6>@Localizer["Remark"]</h6>
+                                    </div>
+                                </EditTemplate>
+                            </EditorItem>
+                            <EditorItem @bind-Field="@context.Remark1" />
+                            <EditorItem @bind-Field="@context.Remark2" />
+                            <EditorItem @bind-Field="@context.Remark3" />
+                            <EditorItem @bind-Field="@context.Remark4" />
+                            <EditorItem @bind-Field="@context.Remark5" />
+                        </FieldItems>
+                    </EditorForm>
+                </TabItem>
+                <TabItem Text=@Localizer["AlarmInformation"]>
+                    <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
+                        <FieldItems>
+                            <EditorItem @bind-Field="@context.BoolCloseAlarmText" />
+                            <EditorItem @bind-Field="@context.BoolCloseRestrainExpressions" />
+                            <EditorItem @bind-Field="@context.BoolCloseAlarmEnable" Rows="1" />
+                            <EditorItem @bind-Field="@context.BoolOpenAlarmText" />
+                            <EditorItem @bind-Field="@context.BoolOpenRestrainExpressions" />
+                            <EditorItem @bind-Field="@context.BoolOpenAlarmEnable" Rows="1" />
+                            <EditorItem @bind-Field="@context.HHAlarmText" />
+                            <EditorItem @bind-Field="@context.HHAlarmCode" />
+                            <EditorItem @bind-Field="@context.HHRestrainExpressions" />
+                            <EditorItem @bind-Field="@context.HHAlarmEnable" />
+                            <EditorItem @bind-Field="@context.HAlarmText" />
+                            <EditorItem @bind-Field="@context.HAlarmCode" />
+                            <EditorItem @bind-Field="@context.HRestrainExpressions" />
+                            <EditorItem @bind-Field="@context.HAlarmEnable" />
+                            <EditorItem @bind-Field="@context.LAlarmText" />
+                            <EditorItem @bind-Field="@context.LAlarmCode" />
+                            <EditorItem @bind-Field="@context.LRestrainExpressions" />
+                            <EditorItem @bind-Field="@context.LAlarmEnable" />
+                            <EditorItem @bind-Field="@context.LLAlarmText" />
+                            <EditorItem @bind-Field="@context.LLAlarmCode" />
+                            <EditorItem @bind-Field="@context.LLRestrainExpressions" />
+                            <EditorItem @bind-Field="@context.LLAlarmEnable" />
+                            <EditorItem @bind-Field="@context.CustomAlarmText" />
+                            <EditorItem @bind-Field="@context.CustomAlarmCode" />
+                            <EditorItem @bind-Field="@context.CustomRestrainExpressions" />
+                            <EditorItem @bind-Field="@context.CustomAlarmEnable" />
+                            <EditorItem @bind-Field="@context.AlarmDelay" />
+                        </FieldItems>
+                    </EditorForm>
+                </TabItem>
+
+                <TabItem Text=@Localizer["PluginInformation"]>
+                    <div style="min-height:500px" class="px-4">
+                        <div class="row g-2 mx-1 form-inline">
+
+                            <div class="col-12 col-md-8">
+                                <label required="true" style="width:20%">@Localizer["ChoiceBusinessDeviceId"]</label>
+                                <Select SkipValidate IsVirtualize @bind-Value="@ChoiceBusinessDeviceId" Items="@BusinessDevices" ShowSearch="true" ShowLabel="false" IsPopover />
                             </div>
-                        </EditTemplate>
-                    </EditorItem>
-                    <EditorItem @bind-Field="@context.Name" />
-                    <EditorItem @bind-Field="@context.Description" />
-                    <EditorItem @bind-Field="@context.Unit" />
-                    <EditorItem @bind-Field="@context.ProtectType" />
-                    <EditorItem @bind-Field="@context.Enable" />
-                    <EditorItem @bind-Field="@context.RpcWriteEnable" />
-                    <EditorItem @bind-Field="@context.SaveValue" />
-
-                    <EditorItem @bind-Field="@context.Description">
-                        <EditTemplate Context="value">
-                            <div class="col-12">
-                                <h6>@Localizer["Connection"]</h6>
+                            <div class="col-12 col-md-4">
+                                <Button OnClick="() => RefreshBusinessPropertyClickAsync(ChoiceBusinessDeviceId)">@Localizer["RefreshBusinessProperty"]</Button>
                             </div>
-                        </EditTemplate>
-                    </EditorItem>
-
-                    <EditorItem @bind-Field="@context.DeviceId">
-                        <EditTemplate Context="value">
-                            <div class="col-12  col-md-6">
-                                <Select IsVirtualize @bind-Value="@value.DeviceId" Items="@CollectDevices" ShowSearch="true" OnSelectedItemChanged="OnDeviceSelectedItemChanged" IsPopover />
-                            </div>
-                        </EditTemplate>
-                    </EditorItem>
-
-                    <EditorItem @bind-Field="@context.DataType" />
-
-                    <EditorItem @bind-Field="@context.IntervalTime" />
-
-                    <EditorItem @bind-Field="@context.OtherMethod">
-                        <EditTemplate Context="value">
-                            <div class="col-12  col-md-6">
-                                <Select IsVirtualize @bind-Value="@value.OtherMethod" Items="@OtherMethods" ShowSearch="true" IsPopover />
-                            </div>
-                        </EditTemplate>
-                    </EditorItem>
-
-                    <EditorItem @bind-Field="@context.RegisterAddress" Rows="1" />
-
-                    <EditorItem @bind-Field="@context.ReadExpressions" Rows="1" />
-                    <EditorItem @bind-Field="@context.WriteExpressions" Rows="1" />
-
-
-
-                    <EditorItem @bind-Field="@context.Description">
-                        <EditTemplate Context="value">
-                            <div class="col-12">
-                                <h6>@Localizer["Remark"]</h6>
-                            </div>
-                        </EditTemplate>
-                    </EditorItem>
-                    <EditorItem @bind-Field="@context.Remark1" />
-                    <EditorItem @bind-Field="@context.Remark2" />
-                    <EditorItem @bind-Field="@context.Remark3" />
-                    <EditorItem @bind-Field="@context.Remark4" />
-                    <EditorItem @bind-Field="@context.Remark5" />
-                </FieldItems>
-            </EditorForm>
-        </TabItem>
-        <TabItem Text=@Localizer["AlarmInformation"]>
-            <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
-                <FieldItems>
-                    <EditorItem @bind-Field="@context.BoolCloseAlarmText" />
-                    <EditorItem @bind-Field="@context.BoolCloseRestrainExpressions" />
-                    <EditorItem @bind-Field="@context.BoolCloseAlarmEnable" Rows="1" />
-                    <EditorItem @bind-Field="@context.BoolOpenAlarmText" />
-                    <EditorItem @bind-Field="@context.BoolOpenRestrainExpressions" />
-                    <EditorItem @bind-Field="@context.BoolOpenAlarmEnable" Rows="1" />
-                    <EditorItem @bind-Field="@context.HHAlarmText" />
-                    <EditorItem @bind-Field="@context.HHAlarmCode" />
-                    <EditorItem @bind-Field="@context.HHRestrainExpressions" />
-                    <EditorItem @bind-Field="@context.HHAlarmEnable" />
-                    <EditorItem @bind-Field="@context.HAlarmText" />
-                    <EditorItem @bind-Field="@context.HAlarmCode" />
-                    <EditorItem @bind-Field="@context.HRestrainExpressions" />
-                    <EditorItem @bind-Field="@context.HAlarmEnable" />
-                    <EditorItem @bind-Field="@context.LAlarmText" />
-                    <EditorItem @bind-Field="@context.LAlarmCode" />
-                    <EditorItem @bind-Field="@context.LRestrainExpressions" />
-                    <EditorItem @bind-Field="@context.LAlarmEnable" />
-                    <EditorItem @bind-Field="@context.LLAlarmText" />
-                    <EditorItem @bind-Field="@context.LLAlarmCode" />
-                    <EditorItem @bind-Field="@context.LLRestrainExpressions" />
-                    <EditorItem @bind-Field="@context.LLAlarmEnable" />
-                    <EditorItem @bind-Field="@context.CustomAlarmText" />
-                    <EditorItem @bind-Field="@context.CustomAlarmCode" />
-                    <EditorItem @bind-Field="@context.CustomRestrainExpressions" />
-                    <EditorItem @bind-Field="@context.CustomAlarmEnable" />
-                    <EditorItem @bind-Field="@context.AlarmDelay" />
-                </FieldItems>
-            </EditorForm>
-        </TabItem>
-
-        <TabItem Text=@Localizer["PluginInformation"]>
-            <div style="min-height:500px" class="px-4">
-                <div class="row g-2 mx-1 form-inline">
-
-                    <div class="col-12 col-md-8">
-                        <label required="true" style="width:20%">@Localizer["ChoiceBusinessDeviceId"]</label>
-                        <Select SkipValidate IsVirtualize @bind-Value="@ChoiceBusinessDeviceId" Items="@BusinessDevices" ShowSearch="true" ShowLabel="false" IsPopover />
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <Button OnClick="() => RefreshBusinessPropertyClickAsync(ChoiceBusinessDeviceId)">@Localizer["RefreshBusinessProperty"]</Button>
-                    </div>
-                </div>
+                        </div>
                 @if (Model.VariablePropertyModels != null)
                 {
                     @foreach (var item in Model.VariablePropertyModels)
                     {
-                        var has = VariablePropertyEditors.TryGetValue(item.Key, out var items);
-                        if (has)
+                        var custom = VariablePropertyRenderFragments.TryGetValue(item.Key, out var renderFragment);
+
+                        if (!custom)
                         {
+                            var has = VariablePropertyEditors.TryGetValue(item.Key, out var items);
+                            if (has)
+                            {
 
-                            <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
-                                <HeaderTemplate>
-                                    @{
-                                        BusinessDeviceDict.TryGetValue(item.Key, out var items);
-                                    }
-                                    <div class="flex-fill">
-                                        @($"{items.Name} - {PluginServiceUtil.GetFileNameAndTypeName(items?.PluginName).TypeName}")
-                                    </div>
+                                                                    <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+                                                                        <HeaderTemplate>
+                                        @{
+                                            BusinessDeviceDict.TryGetValue(item.Key, out var items);
+                                        }
+                                                                            <div class="flex-fill">
+                                            @($"{items.Name} - {PluginServiceUtil.GetFileNameAndTypeName(items?.PluginName).TypeName}")
+                                                                            </div>
 
-                                    <Button OnClick=@((a)=>
+                                                                            <Button OnClick=@((a)=>
                             {
                             Model.VariablePropertyModels.Remove(item.Key);
                             }) class="mx-2" Color="Color.None" style="color: var(--bs-card-titlecolor);" Icon=@("fas fa-delete-left") />
 
-                                </HeaderTemplate>
+                                                                        </HeaderTemplate>
 
-                                <BodyTemplate>
-                                    <ValidateForm Model="item.Value.Value" Id=@((item.Key+Model.Id).ToString()) @ref=item.Value.ValidateForm>
+                                                                        <BodyTemplate>
+                                                                            <ValidateForm Model="item.Value.Value" Id=@((item.Key+Model.Id).ToString()) @ref=item.Value.ValidateForm>
 
-                                        <EditorFormObject class="p-2" Items=items AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="item.Value.Value" @key=item.Value.Value.GetType().TypeHandle.Value>
+                                                                                <EditorFormObject class="p-2" Items=items AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="item.Value.Value" @key=item.Value.Value.GetType().TypeHandle.Value>
 
-                                        </EditorFormObject>
-                                    </ValidateForm>
-                                </BodyTemplate>
-                            </Card>
+                                                                                </EditorFormObject>
+                                                                            </ValidateForm>
+                                                                        </BodyTemplate>
+                                                                    </Card>
+                            }
+                        }
+                        else
+                        {
+                            @renderFragment
                         }
                     }
                 }
-            </div>
+                    </div>
 
-        </TabItem>
-    </Tab>
+                </TabItem>
+            </Tab>
 }
 
 

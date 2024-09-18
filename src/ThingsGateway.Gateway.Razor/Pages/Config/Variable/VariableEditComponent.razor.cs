@@ -68,6 +68,7 @@ public partial class VariableEditComponent
     private IPluginService PluginService { get; set; }
 
     private ConcurrentDictionary<long, IEnumerable<IEditorItem>>? VariablePropertyEditors { get; set; } = new();
+    private ConcurrentDictionary<long, RenderFragment>? VariablePropertyRenderFragments { get; set; } = new();
 
     public async Task ValidSubmit(EditContext editContext)
     {
@@ -123,6 +124,17 @@ public partial class VariableEditComponent
                 Model.VariablePropertyModels ??= new();
                 Model.VariablePropertyModels.AddOrUpdate(id, (a) => new ModelValueValidateForm() { Value = data.Model }, (a, b) => new ModelValueValidateForm() { Value = data.Model });
                 VariablePropertyEditors.TryAdd(id, data.EditorItems);
+
+                if (data.VariablePropertyUIType != null)
+                {
+                    var component = new ThingsGatewayDynamicComponent(data.VariablePropertyUIType, new Dictionary<string, object?>
+                    {
+                        [nameof(VariableEditComponent.Model)] = Model,
+                        [nameof(DeviceEditComponent.PluginPropertyEditorItems)] = data.EditorItems,
+                    });
+                    VariablePropertyRenderFragments.AddOrUpdate(id, component.Render());
+                }
+
                 if (Model.VariablePropertys.TryGetValue(id, out var dict))
                 {
                     PluginServiceUtil.SetModel(data.Model, dict);

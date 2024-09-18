@@ -20,7 +20,7 @@ namespace ThingsGateway.Gateway.Razor;
 
 public partial class DeviceEditComponent
 {
-    private IEnumerable<IEditorItem> PluginPropertyEditorItems;
+    internal IEnumerable<IEditorItem> PluginPropertyEditorItems;
 
     private RenderFragment UIRenderFragment;
     private Type PropertyUIType;

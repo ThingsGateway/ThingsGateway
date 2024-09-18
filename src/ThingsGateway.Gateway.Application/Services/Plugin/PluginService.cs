@@ -304,7 +304,7 @@ public class PluginService : IPluginService
     /// <summary>
     /// 获取变量的属性类型
     /// </summary>
-    public (IEnumerable<IEditorItem> EditorItems, object Model) GetVariablePropertyTypes(string pluginName, BusinessBase? businessBase = null)
+    public (IEnumerable<IEditorItem> EditorItems, object Model, Type VariablePropertyUIType) GetVariablePropertyTypes(string pluginName, BusinessBase? businessBase = null)
     {
         lock (this)
         {
@@ -315,10 +315,10 @@ public class PluginService : IPluginService
             var data = NetCoreApp.CacheService.HashGetAll<List<IEditorItem>>(cacheKey);
             if (data?.ContainsKey(pluginName) == true)
             {
-                return (data[pluginName], businessBase.VariablePropertys);
+                return (data[pluginName], businessBase.VariablePropertys, businessBase.DriverVariablePropertyUIType);
             }
             // 如果缓存中不存在该插件的数据，则重新获取并缓存
-            return (SetCache(pluginName, cacheKey), businessBase.VariablePropertys);
+            return (SetCache(pluginName, cacheKey), businessBase.VariablePropertys, businessBase.DriverVariablePropertyUIType);
 
             // 定义 SetCache 方法，用于设置缓存并返回
             IEnumerable<IEditorItem> SetCache(string pluginName, string cacheKey)

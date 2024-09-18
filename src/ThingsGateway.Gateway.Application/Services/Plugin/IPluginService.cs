@@ -50,7 +50,7 @@ public interface IPluginService
     /// <param name="pluginName"></param>
     /// <param name="businessBase"></param>
     /// <returns></returns>
-    (IEnumerable<IEditorItem> EditorItems, object Model) GetVariablePropertyTypes(string pluginName, BusinessBase? businessBase = null);
+    (IEnumerable<IEditorItem> EditorItems, object Model, Type VariablePropertyUIType) GetVariablePropertyTypes(string pluginName, BusinessBase? businessBase = null);
 
     /// <summary>
     /// 分页显示插件
