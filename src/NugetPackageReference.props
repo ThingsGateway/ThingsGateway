@@ -2,17 +2,17 @@
   
   <!--PRO插件，需补充 LicenseKey 文件，也可以不依赖，单独放到Plugins文件夹内-->
   <ItemGroup  Condition="'$(SolutionName)'=='ThingsGateway'">
-    <PackageReference Include="ThingsGateway.Plugin.AllenBradleyCip" Version="6.1.0.28"/>
-    <PackageReference Include="ThingsGateway.Plugin.DCON" Version="6.1.0.28"/>
-    <!--<PackageReference Include="ThingsGateway.Plugin.DKQ_A16D" Version="6.1.0.28" />-->
-    <PackageReference Include="ThingsGateway.Plugin.EDPF_NT" Version="6.1.0.28" />
-    <!--<PackageReference Include="ThingsGateway.Plugin.IDR210" Version="6.1.0.28" />-->
-    <PackageReference Include="ThingsGateway.Plugin.KELID2008" Version="6.1.0.28" />
-    <PackageReference Include="ThingsGateway.Plugin.LKSIS" Version="6.1.0.28" />
-    <PackageReference Include="ThingsGateway.Plugin.Melsec" Version="6.1.0.28" />
-    <PackageReference Include="ThingsGateway.Plugin.Omron" Version="6.1.0.28" />
-    <!--<PackageReference Include="ThingsGateway.Plugin.URF_R330" Version="6.1.0.28" />-->
-    <PackageReference Include="ThingsGateway.Plugin.USBScaner" Version="6.1.0.28" />
+    <PackageReference Include="ThingsGateway.Plugin.AllenBradleyCip" Version="6.1.0.29"/>
+    <PackageReference Include="ThingsGateway.Plugin.DCON" Version="6.1.0.29"/>
+    <!--<PackageReference Include="ThingsGateway.Plugin.DKQ_A16D" Version="6.1.0.29" />-->
+    <PackageReference Include="ThingsGateway.Plugin.EDPF_NT" Version="6.1.0.29" />
+    <!--<PackageReference Include="ThingsGateway.Plugin.IDR210" Version="6.1.0.29" />-->
+    <PackageReference Include="ThingsGateway.Plugin.KELID2008" Version="6.1.0.29" />
+    <PackageReference Include="ThingsGateway.Plugin.LKSIS" Version="6.1.0.29" />
+    <PackageReference Include="ThingsGateway.Plugin.Melsec" Version="6.1.0.29" />
+    <PackageReference Include="ThingsGateway.Plugin.Omron" Version="6.1.0.29" />
+    <!--<PackageReference Include="ThingsGateway.Plugin.URF_R330" Version="6.1.0.29" />-->
+    <PackageReference Include="ThingsGateway.Plugin.USBScaner" Version="6.1.0.29" />
 
   </ItemGroup>
   
