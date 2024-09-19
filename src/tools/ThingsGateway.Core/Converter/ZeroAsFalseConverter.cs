@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 using ThingsGateway.NewLife.X;
 
-namespace ThingsGateway.Core;
+namespace ThingsGateway;
 
 public class ZeroAsFalseConverter : JsonConverter
 {

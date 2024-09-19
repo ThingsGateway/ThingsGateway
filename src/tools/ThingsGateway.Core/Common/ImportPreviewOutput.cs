@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Core.List;
+using ThingsGateway.List;
 
 namespace ThingsGateway;
 

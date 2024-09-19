@@ -12,7 +12,7 @@ using BootstrapBlazor.Components;
 
 using System.ComponentModel.DataAnnotations;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 
 namespace ThingsGateway.Admin.Application;
 

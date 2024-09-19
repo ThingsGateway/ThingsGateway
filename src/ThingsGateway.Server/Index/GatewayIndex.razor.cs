@@ -25,7 +25,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.Gateway.Application;
 
 namespace ThingsGateway.Gateway.Razor;

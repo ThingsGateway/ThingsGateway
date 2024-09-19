@@ -10,7 +10,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace ThingsGateway.Core;
+namespace ThingsGateway;
 
 /// <summary>
 /// 最小值校验

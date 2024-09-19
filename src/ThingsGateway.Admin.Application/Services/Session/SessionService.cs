@@ -14,7 +14,7 @@ using Mapster;
 
 using SqlSugar;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.NewLife.X.Extension;
 
 namespace ThingsGateway.Admin.Application;

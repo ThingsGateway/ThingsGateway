@@ -14,7 +14,7 @@ using Microsoft.Extensions.Localization;
 
 using SqlSugar;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 
 namespace ThingsGateway;
 

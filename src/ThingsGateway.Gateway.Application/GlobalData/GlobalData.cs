@@ -74,7 +74,7 @@ public static class GlobalData
     /// <summary>
     /// 只读的变量字典，提供对变量的只读访问
     /// </summary>
-    public static IReadOnlyDictionary<string, VariableRunTime> ReadOnlyVariables => Variables;
+    public static IEnumerable<KeyValuePair<string, VariableRunTime>> ReadOnlyVariables => Variables;
 
     public static IRpcService RpcService
     {
@@ -101,7 +101,7 @@ public static class GlobalData
     /// <summary>
     /// 内部使用的变量字典，用于存储变量对象
     /// </summary>
-    internal static ConcurrentDictionary<string, VariableRunTime> Variables { get; } = new();
+    internal static IEnumerable<KeyValuePair<string, VariableRunTime>> Variables => CollectDevices.SelectMany(a => a.Value.VariableRunTimes);
 
     /// <summary>
     /// 设备状态变化处理方法，用于处理设备状态变化时的逻辑

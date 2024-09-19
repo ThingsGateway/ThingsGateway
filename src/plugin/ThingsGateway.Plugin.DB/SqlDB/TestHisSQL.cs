@@ -10,7 +10,7 @@
 
 //using SqlSugar;
 
-//using ThingsGateway.Core;
+//using ThingsGateway;
 //using ThingsGateway.Foundation;
 //using ThingsGateway.NewLife.X.Extension;
 

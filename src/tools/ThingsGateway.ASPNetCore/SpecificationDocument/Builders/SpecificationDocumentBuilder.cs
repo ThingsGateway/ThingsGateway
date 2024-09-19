@@ -30,8 +30,8 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-using ThingsGateway.Core;
-using ThingsGateway.Core.Extension;
+using ThingsGateway;
+using ThingsGateway.Extension;
 
 namespace ThingsGateway.ASPNetCore.SpecificationDocument;
 

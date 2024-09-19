@@ -8,13 +8,21 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+// 版权归百小僧及百签科技（广东）有限公司所有。
+
+
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
-namespace ThingsGateway.Core.Extension;
+namespace ThingsGateway;
 
+/// <summary>
+/// 对象拓展类
+/// </summary>
 public static class ObjectExtensions
 {
     /// <summary>
@@ -43,15 +51,162 @@ public static class ObjectExtensions
         bool IsTheRawGenericType(Type type) => generic == (type.IsGenericType ? type.GetGenericTypeDefinition() : type);
     }
 
+
+    /// <summary>
+    /// 将 DateTimeOffset 转换成本地 DateTime
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <returns></returns>
+    public static DateTime ConvertToDateTime(this DateTimeOffset dateTime)
+    {
+        if (dateTime.Offset.Equals(TimeSpan.Zero))
+            return dateTime.UtcDateTime;
+        if (dateTime.Offset.Equals(TimeZoneInfo.Local.GetUtcOffset(dateTime.DateTime)))
+            return dateTime.ToLocalTime().DateTime;
+        else
+            return dateTime.DateTime;
+    }
+
+    /// <summary>
+    /// 将 DateTimeOffset? 转换成本地 DateTime?
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <returns></returns>
+    public static DateTime? ConvertToDateTime(this DateTimeOffset? dateTime)
+    {
+        return dateTime.HasValue ? dateTime.Value.ConvertToDateTime() : null;
+    }
+
+    /// <summary>
+    /// 将 DateTime 转换成 DateTimeOffset
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <returns></returns>
+    public static DateTimeOffset ConvertToDateTimeOffset(this DateTime dateTime)
+    {
+        return DateTime.SpecifyKind(dateTime, DateTimeKind.Local);
+    }
+
+    /// <summary>
+    /// 将 DateTime? 转换成 DateTimeOffset?
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <returns></returns>
+    public static DateTimeOffset? ConvertToDateTimeOffset(this DateTime? dateTime)
+    {
+        return dateTime.HasValue ? dateTime.Value.ConvertToDateTimeOffset() : null;
+    }
+
+    /// <summary>
+    /// 将流保存到本地磁盘
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static void CopyToSave(this Stream stream, string path)
+    {
+        // 空检查
+        if (string.IsNullOrWhiteSpace(path)) throw new ArgumentNullException(nameof(path));
+
+        using var fileStream = File.Create(path);
+        stream.CopyTo(fileStream);
+    }
+
+    /// <summary>
+    /// 将字节数组保存到本地磁盘
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static void CopyToSave(this byte[] bytes, string path)
+    {
+        using var stream = new MemoryStream(bytes);
+        stream.CopyToSave(path);
+    }
+
+    /// <summary>
+    /// 将流保存到本地磁盘
+    /// </summary>
+    /// <param name="stream"></param>
+    /// <param name="path">需包含文件名完整路径</param>
+    /// <returns></returns>
+    public static async Task CopyToSaveAsync(this Stream stream, string path)
+    {
+        // 空检查
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            throw new ArgumentNullException(nameof(path));
+        }
+
+        // 文件名判断
+        if (string.IsNullOrWhiteSpace(Path.GetFileName(path)))
+        {
+            throw new ArgumentException("The parameter of <path> parameter must include the complete file name.");
+        }
+
+        using var fileStream = File.Create(path);
+        await stream.CopyToAsync(fileStream).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// 将字节数组保存到本地磁盘
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <param name="path"></param>
+    /// <returns></returns>
+    public static async Task CopyToSaveAsync(this byte[] bytes, string path)
+    {
+        using var stream = new MemoryStream(bytes);
+        await stream.CopyToSaveAsync(path).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// 合并两个字典
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="dic">字典</param>
+    /// <param name="newDic">新字典</param>
+    /// <returns></returns>
+    internal static Dictionary<string, T> AddOrUpdate<T>(this Dictionary<string, T> dic, IDictionary<string, T> newDic)
+    {
+        foreach (var key in newDic.Keys)
+        {
+            if (dic.TryGetValue(key, out var value))
+            {
+                dic[key] = value;
+            }
+            else
+            {
+                dic.Add(key, newDic[key]);
+            }
+        }
+
+        return dic;
+    }
+
+    /// <summary>
+    /// 合并两个字典
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="dic">字典</param>
+    /// <param name="newDic">新字典</param>
+    internal static void AddOrUpdate<T>(this ConcurrentDictionary<string, T> dic, Dictionary<string, T> newDic)
+    {
+        foreach (var (key, value) in newDic)
+        {
+            dic.AddOrUpdate(key, value, (key, old) => value);
+        }
+    }
+
     /// <summary>
     /// 将一个对象转换为指定类型
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <param name="obj"></param>
     /// <returns></returns>
-    public static T ChangeType<T>(this object obj)
+    internal static T ChangeType<T>(this object obj)
     {
-        return (T)ChangeType(obj, typeof(T))!;
+        return (T)ChangeType(obj, typeof(T));
     }
 
     /// <summary>
@@ -139,18 +294,95 @@ public static class ObjectExtensions
     }
 
     /// <summary>
+    /// 清除字符串前后缀
+    /// </summary>
+    /// <param name="str">字符串</param>
+    /// <param name="pos">0：前后缀，1：后缀，-1：前缀</param>
+    /// <param name="affixes">前后缀集合</param>
+    /// <returns></returns>
+    internal static string ClearStringAffixes(this string str, int pos = 0, params string[] affixes)
+    {
+        // 空字符串直接返回
+        if (string.IsNullOrWhiteSpace(str)) return str;
+
+        // 空前后缀集合直接返回
+        if (affixes == null || affixes.Length == 0) return str;
+
+        var startCleared = false;
+        var endCleared = false;
+
+        string tempStr = null;
+        foreach (var affix in affixes)
+        {
+            if (string.IsNullOrWhiteSpace(affix)) continue;
+
+            if (pos != 1 && !startCleared && str.StartsWith(affix, StringComparison.OrdinalIgnoreCase))
+            {
+                tempStr = str[affix.Length..];
+                startCleared = true;
+            }
+            if (pos != -1 && !endCleared && str.EndsWith(affix, StringComparison.OrdinalIgnoreCase))
+            {
+                var _tempStr = !string.IsNullOrWhiteSpace(tempStr) ? tempStr : str;
+                tempStr = _tempStr[..^affix.Length];
+                endCleared = true;
+
+                if (string.IsNullOrWhiteSpace(tempStr))
+                {
+                    tempStr = null;
+                    endCleared = false;
+                }
+            }
+            if (startCleared && endCleared) break;
+        }
+
+        return !string.IsNullOrWhiteSpace(tempStr) ? tempStr : str;
+    }
+
+    /// <summary>
+    /// 将时间戳转换为 DateTime
+    /// </summary>
+    /// <param name="timestamp"></param>
+    /// <returns></returns>
+    internal static DateTime ConvertToDateTime(this long timestamp)
+    {
+        var timeStampDateTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var digitCount = (int)Math.Floor(Math.Log10(timestamp) + 1);
+
+        if (digitCount != 13 && digitCount != 10)
+        {
+            throw new ArgumentException("Data is not a valid timestamp format.");
+        }
+
+        return (digitCount == 13
+            ? timeStampDateTime.AddMilliseconds(timestamp)  // 13 位时间戳
+            : timeStampDateTime.AddSeconds(timestamp)).ToLocalTime();   // 10 位时间戳
+    }
+
+    /// <summary>
+    /// 格式化字符串
+    /// </summary>
+    /// <param name="str"></param>
+    /// <param name="args"></param>
+    /// <returns></returns>
+    internal static string Format(this string str, params object[] args)
+    {
+        return args == null || args.Length == 0 ? str : string.Format(str, args);
+    }
+
+    /// <summary>
     /// 获取所有祖先类型
     /// </summary>
     /// <param name="type"></param>
     /// <returns></returns>
-    public static IEnumerable<Type> GetAncestorTypes(this Type type)
+    internal static IEnumerable<Type> GetAncestorTypes(this Type type)
     {
         var ancestorTypes = new List<Type>();
         while (type != null && type != typeof(object))
         {
             if (IsNoObjectBaseType(type))
             {
-                var baseType = type.BaseType!;
+                var baseType = type.BaseType;
                 ancestorTypes.Add(baseType);
                 type = baseType;
             }
@@ -173,7 +405,7 @@ public static class ObjectExtensions
         where TAttribute : Attribute
     {
         // 获取方法所在类型
-        var declaringType = method.DeclaringType!;
+        var declaringType = method.DeclaringType;
 
         var attributeType = typeof(TAttribute);
 
@@ -189,12 +421,13 @@ public static class ObjectExtensions
         return foundAttribute;
     }
 
+
     /// <summary>
     /// 获取方法真实返回类型
     /// </summary>
     /// <param name="method"></param>
     /// <returns></returns>
-    public static Type GetRealReturnType(this MethodInfo method)
+    internal static Type GetRealReturnType(this MethodInfo method)
     {
         // 判断是否是异步方法
         var isAsyncMethod = method.IsAsync();
@@ -211,11 +444,14 @@ public static class ObjectExtensions
     /// <param name="type">类类型</param>
     /// <param name="inherit">是否继承查找</param>
     /// <returns>特性对象</returns>
-    public static TAttribute GetTypeAttribute<TAttribute>(this Type type, bool inherit = false)
+    internal static TAttribute GetTypeAttribute<TAttribute>(this Type type, bool inherit = false)
         where TAttribute : Attribute
     {
         // 空检查
-        ArgumentNullException.ThrowIfNull(type);
+        if (type == null)
+        {
+            throw new ArgumentNullException(nameof(type));
+        }
 
         // 检查特性并获取特性对象
         return type.IsDefined(typeof(TAttribute), inherit)
@@ -228,7 +464,7 @@ public static class ObjectExtensions
     /// </summary>
     /// <param name="obj">对象</param>
     /// <returns></returns>
-    public static bool IsAnonymous(this object obj)
+    internal static bool IsAnonymous(this object obj)
     {
         var type = obj is Type t ? t : obj.GetType();
 
@@ -243,10 +479,10 @@ public static class ObjectExtensions
     /// </summary>
     /// <param name="method">方法</param>
     /// <returns></returns>
-    public static bool IsAsync(this MethodInfo method)
+    internal static bool IsAsync(this MethodInfo method)
     {
         return method.GetCustomAttribute<AsyncMethodBuilderAttribute>() != null
-            || method.ReturnType.ToString().StartsWith(typeof(Task).FullName!);
+            || method.ReturnType.ToString().StartsWith(typeof(Task).FullName);
     }
 
     /// <summary>
@@ -255,7 +491,7 @@ public static class ObjectExtensions
     /// <typeparam name="T">元素类型</typeparam>
     /// <param name="collection">集合对象</param>
     /// <returns><see cref="bool"/> 实例，true 表示空集合，false 表示非空集合</returns>
-    public static bool IsEmpty<T>(this IEnumerable<T> collection)
+    internal static bool IsEmpty<T>(this IEnumerable<T> collection)
     {
         return collection == null || !collection.Any();
     }
@@ -288,9 +524,38 @@ public static class ObjectExtensions
     /// </summary>
     /// <param name="type">类型</param>
     /// <returns></returns>
-    public static bool IsValueTuple(this Type type)
+    internal static bool IsValueTuple(this Type type)
     {
         return type.Namespace == "System" && type.Name.Contains("ValueTuple`");
+    }
+
+    /// <summary>
+    /// 切割骆驼命名式字符串
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    internal static string[] SplitCamelCase(this string str)
+    {
+        if (str == null) return Array.Empty<string>();
+
+        if (string.IsNullOrWhiteSpace(str)) return [str];
+        if (str.Length == 1) return [str];
+
+        return Regex.Split(str, @"(?=\p{Lu}\p{Ll})|(?<=\p{Ll})(?=\p{Lu})")
+            .Where(u => u.Length > 0)
+            .ToArray();
+    }
+
+    /// <summary>
+    /// 首字母小写
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    internal static string ToLowerCamelCase(this string str)
+    {
+        if (string.IsNullOrWhiteSpace(str)) return str;
+
+        return string.Concat(str.First().ToString().ToLower(), str.AsSpan(1));
     }
 
     /// <summary>
@@ -298,7 +563,7 @@ public static class ObjectExtensions
     /// </summary>
     /// <param name="jsonElement"></param>
     /// <returns></returns>
-    public static object ToObject(this JsonElement jsonElement)
+    internal static object ToObject(this JsonElement jsonElement)
     {
         switch (jsonElement.ValueKind)
         {
@@ -337,5 +602,17 @@ public static class ObjectExtensions
             default:
                 return default;
         }
+    }
+
+    /// <summary>
+    /// 首字母大写
+    /// </summary>
+    /// <param name="str"></param>
+    /// <returns></returns>
+    internal static string ToUpperCamelCase(this string str)
+    {
+        if (string.IsNullOrWhiteSpace(str)) return str;
+
+        return string.Concat(str.First().ToString().ToUpper(), str.AsSpan(1));
     }
 }

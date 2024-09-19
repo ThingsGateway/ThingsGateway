@@ -12,7 +12,7 @@ using BootstrapBlazor.Components;
 
 using Microsoft.JSInterop;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 

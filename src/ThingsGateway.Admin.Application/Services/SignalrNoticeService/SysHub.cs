@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 
 namespace ThingsGateway.Admin.Application;
 

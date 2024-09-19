@@ -12,8 +12,8 @@ using BootstrapBlazor.Components;
 
 using Mapster;
 
-using ThingsGateway.Core.Extension;
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Extension;
+using ThingsGateway.Json.Extension;
 using ThingsGateway.NewLife.X;
 using ThingsGateway.NewLife.X.Extension;
 

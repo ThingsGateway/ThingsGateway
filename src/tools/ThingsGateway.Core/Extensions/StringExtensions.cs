@@ -10,7 +10,7 @@
 
 using System.Text.RegularExpressions;
 
-namespace ThingsGateway.Core.Extension;
+namespace ThingsGateway.Extension;
 
 public static class StringExtensions
 {

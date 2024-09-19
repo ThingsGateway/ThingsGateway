@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Globalization;
 using System.Reflection;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.NewLife.X;
 
 namespace ThingsGateway.Admin.Application;

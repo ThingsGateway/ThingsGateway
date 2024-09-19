@@ -14,7 +14,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace ThingsGateway.Core;
+namespace ThingsGateway;
 
 /// <summary>
 /// MD5 加密

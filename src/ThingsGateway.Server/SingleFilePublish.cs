@@ -43,9 +43,9 @@ public class SingleFilePublish : ISingleFilePublish
         return
         [
             "ThingsGateway.Foundation",
-            "ThingsGateway.Core",
+            "ThingsGateway",
             "ThingsGateway.NewLife.X",
-            "ThingsGateway.Startup",
+            "ThingsGateway.Core",
             "ThingsGateway.CSScript",
             "ThingsGateway.Razor",
             "ThingsGateway.Gateway.Application",

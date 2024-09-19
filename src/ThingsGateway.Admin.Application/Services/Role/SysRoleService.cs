@@ -10,7 +10,7 @@
 
 using BootstrapBlazor.Components;
 
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Json.Extension;
 using ThingsGateway.NewLife.X;
 using ThingsGateway.NewLife.X.Extension;
 

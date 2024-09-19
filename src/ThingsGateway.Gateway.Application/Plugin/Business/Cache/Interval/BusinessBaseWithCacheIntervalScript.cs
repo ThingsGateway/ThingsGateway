@@ -11,7 +11,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Json.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 

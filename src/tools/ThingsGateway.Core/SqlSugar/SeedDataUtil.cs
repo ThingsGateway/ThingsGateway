@@ -16,7 +16,7 @@ using Newtonsoft.Json;
 
 using System;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 
 /// <summary>
 /// 种子数据工具类

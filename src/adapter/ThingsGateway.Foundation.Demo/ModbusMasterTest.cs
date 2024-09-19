@@ -24,40 +24,27 @@ internal class ModbusMasterTest
         //查看modbus驱动地址说明
         Console.WriteLine(modbusMaster.GetAddressDescription());
 
-        //读写方法都带取消令牌
-        for (int i = 0; i < 10; i++)
-        {
-            _ = Task.Run(async () =>
-            {
-                var result = await modbusMaster.ReadAsync("400001", 100).ConfigureAwait(false);
-                if (!result.IsSuccess)
-                {
-                }
-            });
-        }
-
-        await Task.Delay(70000).ConfigureAwait(false);
         //读取并解析寄存器数据
         var data = await modbusMaster.ReadInt16Async("40001", 1, cancellationToken: CancellationToken.None).ConfigureAwait(false);
         var data1 = await modbusMaster.ReadSingleAsync("40001").ConfigureAwait(false);
         var data2 = await modbusMaster.ReadUInt32Async("40001").ConfigureAwait(false);
-        var data12 = await modbusMaster.WriteAsync("40001", (ushort)1).ConfigureAwait(false);
+        var data3 = await modbusMaster.WriteAsync("40001", (ushort)1).ConfigureAwait(false);
 
         //读取字节数组
-        var data3 = await modbusMaster.ReadAsync("40001", 10).ConfigureAwait(false);
-        if (data3.IsSuccess)
+        var data4 = await modbusMaster.ReadAsync("40001", 10).ConfigureAwait(false);
+        if (data4.IsSuccess)
         {
-            ValueByteBlock valueByteBlock = new(data3.Content);
-            valueByteBlock.ReadFloat(EndianType.LittleSwap);
+            ValueByteBlock valueByteBlock = new(data4.Content);
+            var float1 = valueByteBlock.ReadFloat(EndianType.LittleSwap);
         }
         //自定义数据格式
-        var data4 = await modbusMaster.ReadSingleAsync("40001;data=ABCD").ConfigureAwait(false);
+        var data5 = await modbusMaster.ReadSingleAsync("40001;data=ABCD").ConfigureAwait(false);
 
         //自带打包方法
         //1、实现IVariable接口
         //2、实现IVariableSource接口
         //3、调用LoadSourceRead，返回打包封装类
-        //4、调用ReadAsync读取数据，并调用PraseStructContent解析数据
+        //4、调用ReadAsync读取数据，并调用 PraseStructContent 解析数据
         //5、解析数据后，可以通过IVariable获取解析后的数据
         List<VariableClass> variableClasses = new()
         {

@@ -11,7 +11,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 
 namespace ThingsGateway.Razor;
 

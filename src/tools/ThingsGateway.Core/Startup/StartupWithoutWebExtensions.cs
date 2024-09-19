@@ -16,8 +16,8 @@ using Microsoft.Extensions.FileSystemGlobbing;
 
 using System.Reflection;
 
-using ThingsGateway.Core;
-using ThingsGateway.Core.List;
+using ThingsGateway;
+using ThingsGateway.List;
 
 namespace ThingsGateway;
 

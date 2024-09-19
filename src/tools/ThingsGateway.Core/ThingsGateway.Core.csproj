@@ -1,10 +1,28 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <Import Project="$(SolutionDir)Version.props" />
   <Import Project="$(SolutionDir)PackNuget.props" />
 
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
+    <PackageReference Include="Yitter.IdGenerator" Version="1.0.14" />
+    <PackageReference Include="MiniExcel" Version="1.34.2" />
+    <PackageReference Include="Mapster" Version="7.4.0" />
+    <PackageReference Include="BootstrapBlazor" Version="8.9.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.8" />
+  </ItemGroup>
+
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
+    <PackageReference Include="SqlSugarCore" Version="5.1.4.169" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
+    <PackageReference Include="SqlSugarCore" Version="5.1.4.122" />
+  </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="..\ThingsGateway.NewLife.X\ThingsGateway.NewLife.X.csproj" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
+
 </Project>

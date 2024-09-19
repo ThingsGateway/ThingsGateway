@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using System.Web;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 
 using Yitter.IdGenerator;
 

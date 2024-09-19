@@ -10,7 +10,7 @@
 
 using ThingsGateway.NewLife.X.Caching;
 
-namespace ThingsGateway.Core;
+namespace ThingsGateway;
 
 /// <summary>
 /// 缓存服务

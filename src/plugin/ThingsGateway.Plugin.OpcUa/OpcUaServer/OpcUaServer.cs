@@ -18,7 +18,7 @@ using Opc.Ua.Configuration;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.NewLife.X.Threading;
 
@@ -53,7 +53,7 @@ public partial class OpcUaServer : BusinessBase
     {
         if (_driverPropertys.IsAllVariable)
         {
-            CurrentDevice.VariableRunTimes = GlobalData.ReadOnlyVariables;
+            CurrentDevice.VariableRunTimes = GlobalData.ReadOnlyVariables.ToDictionary(a => a.Key, a => a.Value);
             CollectDevices = GlobalData.ReadOnlyCollectDevices;
         }
 

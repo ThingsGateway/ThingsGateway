@@ -12,7 +12,7 @@ using BootstrapBlazor.Components;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 
 using Yitter.IdGenerator;
 

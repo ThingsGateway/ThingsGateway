@@ -10,7 +10,7 @@
 
 using Microsoft.JSInterop;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.Foundation;
 using ThingsGateway.Razor;
 

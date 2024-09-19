@@ -14,7 +14,7 @@ using Mapster;
 
 using SqlSugar;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 using ThingsGateway.Foundation;
 
 namespace ThingsGateway.Plugin.TDengineDB;

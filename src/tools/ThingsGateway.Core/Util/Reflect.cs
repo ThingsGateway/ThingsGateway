@@ -11,7 +11,7 @@
 using System.Reflection;
 using System.Runtime.Loader;
 
-namespace ThingsGateway.Core;
+namespace ThingsGateway;
 
 /// <summary>
 /// 内部反射静态类

@@ -10,7 +10,7 @@
 
 using System.Text;
 
-namespace ThingsGateway.Core;
+namespace ThingsGateway;
 
 /// <summary>
 /// FileUtil

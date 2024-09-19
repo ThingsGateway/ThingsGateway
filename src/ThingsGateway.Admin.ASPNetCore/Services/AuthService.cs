@@ -18,7 +18,7 @@ using SqlSugar;
 using System.Security.Claims;
 
 using ThingsGateway.ASPNetCore;
-using ThingsGateway.Core;
+using ThingsGateway;
 
 using Yitter.IdGenerator;
 

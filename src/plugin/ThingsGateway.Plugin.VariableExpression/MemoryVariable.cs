@@ -12,7 +12,7 @@ using Newtonsoft.Json.Linq;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.Gateway.Application;
 
 namespace ThingsGateway.Plugin.VariableExpression;

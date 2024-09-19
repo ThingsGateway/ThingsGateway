@@ -13,7 +13,7 @@ using Mapster;
 using Microsoft.AspNetCore.Components.Forms;
 
 using ThingsGateway.Admin.Application;
-using ThingsGateway.Core;
+using ThingsGateway;
 using ThingsGateway.NewLife.X.Extension;
 
 namespace ThingsGateway.Admin.Razor;

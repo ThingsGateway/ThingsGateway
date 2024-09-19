@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 using ThingsGateway.Admin.Application;
-using ThingsGateway.Core;
+using ThingsGateway;
 
 namespace ThingsGateway.Admin.NetCore;
 

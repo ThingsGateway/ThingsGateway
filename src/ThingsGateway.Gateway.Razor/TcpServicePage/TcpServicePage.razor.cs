@@ -10,7 +10,7 @@
 
 using Mapster;
 
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Json.Extension;
 using ThingsGateway.Foundation;
 using ThingsGateway.Gateway.Application;
 

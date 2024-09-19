@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 
 using ThingsGateway.Admin.Application;
-using ThingsGateway.Core;
+using ThingsGateway;
 
 namespace ThingsGateway.Gateway.Application;
 

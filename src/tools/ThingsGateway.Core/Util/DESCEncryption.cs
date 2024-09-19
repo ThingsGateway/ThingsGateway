@@ -15,7 +15,7 @@ using System.Text;
 
 using ThingsGateway.NewLife.X.Extension;
 
-namespace ThingsGateway.Core;
+namespace ThingsGateway;
 
 /// <summary>
 /// DESC 加解密

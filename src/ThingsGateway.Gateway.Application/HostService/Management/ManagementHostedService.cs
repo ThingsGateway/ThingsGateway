@@ -122,7 +122,7 @@ public class ManagementHostedService : BackgroundService
                             if (online)
                             {
                                 var deviceRunTimes = GlobalData.CollectDevices.Values.Adapt<List<DeviceDataWithValue>>();
-                                var variableRunTimes = GlobalData.Variables.Values.Adapt<List<VariableDataWithValue>>();
+                                var variableRunTimes = GlobalData.Variables.Select(a => a.Value).Adapt<List<VariableDataWithValue>>();
                                 var variableRunTimes1 = variableRunTimes.ChunkBetter(80000);
                                 var variableRuntimes1Count = variableRunTimes1.Count();
                                 int itemsPerList = (int)Math.Ceiling((double)deviceRunTimes.Count / variableRuntimes1Count);

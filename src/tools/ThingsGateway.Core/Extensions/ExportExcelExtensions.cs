@@ -22,7 +22,7 @@ using SqlSugar;
 using System.Data;
 using System.Reflection;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 
 namespace ThingsGateway;
 

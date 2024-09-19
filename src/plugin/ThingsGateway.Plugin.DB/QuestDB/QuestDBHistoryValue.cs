@@ -12,7 +12,7 @@ using BootstrapBlazor.Components;
 
 using SqlSugar;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 
 namespace ThingsGateway.Plugin.QuestDB;
 

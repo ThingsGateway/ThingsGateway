@@ -10,7 +10,7 @@
 
 using Microsoft.AspNetCore.Components.Forms;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 
 namespace ThingsGateway.Razor;
 

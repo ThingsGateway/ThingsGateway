@@ -16,8 +16,8 @@ using Rougamo.Context;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Core.Extension;
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Extension;
+using ThingsGateway.Json.Extension;
 
 using UAParser;
 

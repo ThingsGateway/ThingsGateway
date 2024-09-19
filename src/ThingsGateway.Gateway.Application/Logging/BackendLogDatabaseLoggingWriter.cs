@@ -14,7 +14,7 @@ using SqlSugar;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.Logging;
 
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;

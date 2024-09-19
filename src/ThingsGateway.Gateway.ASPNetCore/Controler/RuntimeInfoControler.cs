@@ -18,7 +18,7 @@ using SqlSugar;
 using System.ComponentModel;
 
 using ThingsGateway.Admin.Application;
-using ThingsGateway.Core;
+using ThingsGateway;
 using ThingsGateway.NewLife.X.Extension;
 namespace ThingsGateway.Gateway.Application;
 

@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Core;
+namespace ThingsGateway;
 #pragma warning disable CS8604 // 引用类型参数可能为 null。
 
 /// <summary>

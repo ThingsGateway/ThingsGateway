@@ -37,9 +37,10 @@ internal partial class ReverseCallbackServer : RpcServer
                 value.LastErrorMessage = deviceData.LastErrorMessage;
             }
         }
+        var dict = GlobalData.Variables.ToDictionary(a => a.Key, a => a.Value);
         foreach (var variableData in variableDatas)
         {
-            if (GlobalData.Variables.TryGetValue(variableData.Name, out var value))
+            if (dict.TryGetValue(variableData.Name, out var value))
             {
                 value.SetValue(variableData.RawValue, variableData.CollectTime, variableData.IsOnline);
                 value.SetErrorMessage(variableData.LastErrorMessage);

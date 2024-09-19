@@ -35,7 +35,7 @@ using System.Text.Json;
 
 using ThingsGateway;
 using ThingsGateway.ASPNetCore;
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.Logging;
 using ThingsGateway.NewLife.X;
 using ThingsGateway.NewLife.X.Extension;

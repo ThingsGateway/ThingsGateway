@@ -16,8 +16,8 @@ using SqlSugar;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Core.Extension;
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Extension;
+using ThingsGateway.Json.Extension;
 using ThingsGateway.Foundation.Modbus;
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.NewLife.X;

@@ -18,7 +18,7 @@ using System.Reflection;
 
 using ThingsGateway;
 using ThingsGateway.Admin.Application;
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.NewLife.X;
 
 public class ApiPermissionService : IApiPermissionService

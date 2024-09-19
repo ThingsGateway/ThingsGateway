@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Components.Web;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.Foundation;
 using ThingsGateway.Razor;
 

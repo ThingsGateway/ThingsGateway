@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Core;
+namespace ThingsGateway;
 
 public class CacheConst
 {

@@ -12,7 +12,7 @@ using BootstrapBlazor.Components;
 
 using SqlSugar;
 
-using ThingsGateway.Core.List;
+using ThingsGateway.List;
 
 namespace ThingsGateway.Admin.Application;
 

@@ -17,7 +17,7 @@ using Microsoft.Extensions.Options;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 using ThingsGateway.Razor;
 
 namespace ThingsGateway.Debug;

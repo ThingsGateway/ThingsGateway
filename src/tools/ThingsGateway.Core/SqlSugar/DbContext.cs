@@ -13,7 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using SqlSugar;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 
 namespace ThingsGateway;
 

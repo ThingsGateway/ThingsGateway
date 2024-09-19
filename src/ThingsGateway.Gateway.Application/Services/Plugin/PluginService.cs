@@ -22,7 +22,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Xml.Linq;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.NewLife.X;
 
 using TouchSocket.Core;

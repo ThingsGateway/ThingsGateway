@@ -10,7 +10,7 @@
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.Foundation.Extension.Generic;
 
 namespace ThingsGateway.Gateway.Application;

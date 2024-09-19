@@ -22,7 +22,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 using ThingsGateway.ASPNetCore;
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 
 namespace ThingsGateway;
 

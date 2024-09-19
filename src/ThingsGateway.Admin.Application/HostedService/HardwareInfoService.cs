@@ -18,7 +18,7 @@ using SqlSugar;
 
 using System.Runtime.InteropServices;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.NewLife.X;
 using ThingsGateway.NewLife.X.Threading;
 

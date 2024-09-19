@@ -11,7 +11,7 @@
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 
 namespace ThingsGateway.Admin.Application;
 

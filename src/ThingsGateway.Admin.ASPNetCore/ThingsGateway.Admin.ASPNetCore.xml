@@ -276,7 +276,7 @@
             <typeparam name="T">实体</typeparam>
             <param name="input">实体对象或者IDataReader</param>
             <param name="fileName">文件名称</param>
-            <param name="isDynamicExcelColumn">动态excel列，根据实体的<see cref="T:ThingsGateway.Core.IgnoreExcelAttribute"/>属性判断是否生成 </param>
+            <param name="isDynamicExcelColumn">动态excel列，根据实体的<see cref="T:ThingsGateway.IgnoreExcelAttribute"/>属性判断是否生成 </param>
             <returns>导出的文件流</returns>
         </member>
         <member name="M:ThingsGateway.Admin.Application.IImportExportService.GetUrlEncodeFileName(System.String)">
@@ -300,7 +300,7 @@
             <typeparam name="T">实体</typeparam>
             <param name="input">实体对象或者IDataReader</param>
             <param name="fileName">文件名称</param>
-            <param name="isDynamicExcelColumn">动态excel列，根据实体的<see cref="T:ThingsGateway.Core.IgnoreExcelAttribute"/>属性判断是否生成 </param>
+            <param name="isDynamicExcelColumn">动态excel列，根据实体的<see cref="T:ThingsGateway.IgnoreExcelAttribute"/>属性判断是否生成 </param>
             <returns></returns>
         </member>
         <member name="M:ThingsGateway.Admin.Application.ImportExportService.UploadFileAsync(Microsoft.AspNetCore.Components.Forms.IBrowserFile)">

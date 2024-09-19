@@ -15,9 +15,9 @@ using Newtonsoft.Json.Linq;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Core.Extension;
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.Foundation.Extension.Collection;
+using ThingsGateway.Json.Extension;
 
 using TouchSocket.Core;
 
@@ -47,18 +47,19 @@ public class RpcService : IRpcService
         Dictionary<CollectBase, Dictionary<VariableRunTime, JToken>> WriteMethods = new();
         // 用于存储结果的并发字典
         ConcurrentDictionary<string, OperResult> results = new();
+        var dict = GlobalData.Variables.ToDictionary(a => a.Key, a => a.Value);
 
         // 对每个要操作的变量进行检查和处理
         foreach (var item in items)
         {
             // 查找变量是否存在
-            if (!GlobalData.Variables.ContainsKey(item.Key))
+            if (!dict.ContainsKey(item.Key))
             {
                 // 如果变量不存在，则添加错误信息到结果中并继续下一个变量的处理
                 results.TryAdd(item.Key, new OperResult(Localizer["VariableNotNull", item.Key]));
                 continue;
             }
-            var tag = GlobalData.Variables[item.Key];
+            var tag = dict[item.Key];
 
             // 检查变量的保护类型和远程写入权限
             if (tag.ProtectType == ProtectTypeEnum.ReadOnly)

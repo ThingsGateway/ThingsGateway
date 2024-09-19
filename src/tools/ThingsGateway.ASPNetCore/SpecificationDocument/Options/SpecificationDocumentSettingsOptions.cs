@@ -16,7 +16,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 using ThingsGateway.ASPNetCore;
-using ThingsGateway.Core;
+using ThingsGateway;
 
 namespace ThingsGateway;
 

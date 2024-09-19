@@ -14,7 +14,7 @@ using System.Collections;
 using System.Data;
 using System.Reflection;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 
 namespace ThingsGateway;
 

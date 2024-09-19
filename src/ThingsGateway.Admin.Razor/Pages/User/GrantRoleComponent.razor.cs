@@ -11,7 +11,7 @@
 using Microsoft.AspNetCore.Components.Web;
 
 using ThingsGateway.Admin.Application;
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.NewLife.X.Extension;
 
 namespace ThingsGateway.Admin.Razor;

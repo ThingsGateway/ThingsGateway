@@ -12,7 +12,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace ThingsGateway.Core.Json.Extension;
+namespace ThingsGateway.Json.Extension;
 
 public static class SystemTextJsonExtensions
 {

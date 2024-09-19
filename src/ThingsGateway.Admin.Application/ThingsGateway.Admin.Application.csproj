@@ -6,7 +6,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
     <PackageReference Include="Rougamo.Fody" Version="4.0.3" />
     <PackageReference Include="UAParser" Version="3.1.47" />
-    <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.Startup\ThingsGateway.Startup.csproj" />
+    <ProjectReference Include="..\tools\ThingsGateway.Core\ThingsGateway.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

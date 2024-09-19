@@ -10,7 +10,7 @@
 
 using BootstrapBlazor.Components;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 

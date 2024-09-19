@@ -15,7 +15,7 @@ using Microsoft.Extensions.Localization;
 
 using System.Reflection;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 
 namespace ThingsGateway;
 

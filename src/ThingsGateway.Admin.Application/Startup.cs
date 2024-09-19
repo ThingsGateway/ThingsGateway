@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Text;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 
 namespace ThingsGateway.Admin.Application;
 

@@ -14,8 +14,8 @@ using Microsoft.Extensions.Configuration;
 
 using System.Text.RegularExpressions;
 
-using ThingsGateway.Core.Extension;
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Extension;
+using ThingsGateway.Json.Extension;
 using ThingsGateway.NewLife.X;
 
 namespace ThingsGateway.Admin.Application;

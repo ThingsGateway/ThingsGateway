@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Core.Extension;
+namespace ThingsGateway.Extension;
 
 public static class DateExtensions
 {

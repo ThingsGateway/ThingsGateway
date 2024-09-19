@@ -10,7 +10,7 @@
 
 using System.Collections.Concurrent;
 
-namespace ThingsGateway.Core.Extension;
+namespace ThingsGateway.Extension;
 
 /// <inheritdoc/>
 public static class ConcurrentQueueExtensions

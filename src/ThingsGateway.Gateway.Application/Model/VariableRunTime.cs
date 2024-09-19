@@ -14,7 +14,7 @@ using Mapster;
 
 using System.Diagnostics.CodeAnalysis;
 
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Json.Extension;
 using ThingsGateway.Gateway.Application.Extensions;
 
 namespace ThingsGateway.Gateway.Application;

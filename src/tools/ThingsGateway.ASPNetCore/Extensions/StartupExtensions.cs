@@ -17,8 +17,8 @@ using Microsoft.Extensions.Hosting;
 
 using System.Reflection;
 
-using ThingsGateway.Core;
-using ThingsGateway.Core.List;
+using ThingsGateway;
+using ThingsGateway.List;
 
 namespace ThingsGateway;
 

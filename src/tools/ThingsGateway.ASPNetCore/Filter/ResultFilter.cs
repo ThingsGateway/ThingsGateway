@@ -25,7 +25,7 @@ using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Json.Extension;
 
 namespace ThingsGateway.ASPNetCore;
 

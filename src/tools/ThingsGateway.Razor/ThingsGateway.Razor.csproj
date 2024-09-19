@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ThingsGateway.Startup\ThingsGateway.Startup.csproj" />
+    <ProjectReference Include="..\ThingsGateway.Core\ThingsGateway.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

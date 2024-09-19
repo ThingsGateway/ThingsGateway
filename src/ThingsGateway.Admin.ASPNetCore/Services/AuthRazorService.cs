@@ -10,8 +10,8 @@
 
 using BootstrapBlazor.Components;
 
-using ThingsGateway.Core;
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway;
+using ThingsGateway.Json.Extension;
 
 namespace ThingsGateway.Admin.Application;
 

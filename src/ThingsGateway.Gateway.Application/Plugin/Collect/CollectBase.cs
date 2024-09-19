@@ -17,7 +17,7 @@ using Newtonsoft.Json.Linq;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Json.Extension;
 using ThingsGateway.Gateway.Application.Extensions;
 using ThingsGateway.NewLife.X.Threading;
 

@@ -13,7 +13,7 @@ using SqlSugar;
 using System.Linq.Expressions;
 using System.Reflection;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 
 namespace ThingsGateway;
 

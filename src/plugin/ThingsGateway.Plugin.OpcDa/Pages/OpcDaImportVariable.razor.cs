@@ -16,7 +16,7 @@ using Microsoft.Extensions.Localization;
 
 using System.Diagnostics.CodeAnalysis;
 
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 using ThingsGateway.Foundation.OpcDa;
 using ThingsGateway.Foundation.OpcDa.Rcw;
 

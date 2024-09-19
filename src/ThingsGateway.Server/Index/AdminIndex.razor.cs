@@ -24,7 +24,7 @@ using Microsoft.Extensions.Localization;
 using System.Diagnostics.CodeAnalysis;
 
 using ThingsGateway.Admin.Application;
-using ThingsGateway.Core.Extension;
+using ThingsGateway.Extension;
 
 namespace ThingsGateway.Admin.Razor;
 

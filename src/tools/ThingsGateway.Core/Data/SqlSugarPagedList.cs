@@ -10,7 +10,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace ThingsGateway.Core;
+namespace ThingsGateway;
 
 /// <summary>
 /// SqlSugar 分页泛型集合

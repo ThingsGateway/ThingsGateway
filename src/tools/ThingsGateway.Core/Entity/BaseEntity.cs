@@ -14,7 +14,7 @@ using SqlSugar;
 
 using System.Diagnostics.CodeAnalysis;
 
-using ThingsGateway.Core;
+using ThingsGateway;
 
 namespace ThingsGateway;
 

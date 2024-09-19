@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Core;
+using ThingsGateway;
 
 namespace ThingsGateway.Razor;
 
