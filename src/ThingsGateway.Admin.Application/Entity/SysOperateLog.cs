@@ -87,7 +87,7 @@ public class SysOperateLog
     /// <summary>
     /// 执行状态
     ///</summary>
-    [SugarColumn(ColumnDescription = "执行状态", Length = 200)]
+    [SugarColumn(ColumnDescription = "执行状态")]
     [AutoGenerateColumn(Filterable = true, Sortable = true)]
     public bool ExeStatus { get; set; }
 
