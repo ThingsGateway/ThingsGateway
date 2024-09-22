@@ -15,6 +15,7 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public class VariableClass : IVariable
 {
+/// <inheritdoc/>
     protected object? _value;
 
     /// <summary>
@@ -36,8 +37,10 @@ public class VariableClass : IVariable
     /// </summary>
     public virtual int? IntervalTime { get; set; }
 
+/// <inheritdoc/>
     public bool IsOnline { get; set; }
 
+/// <inheritdoc/>
     public string LastErrorMessage => VariableSource?.LastErrorMessage;
 
     /// <summary>

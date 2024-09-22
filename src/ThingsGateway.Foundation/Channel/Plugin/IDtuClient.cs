@@ -10,10 +10,21 @@
 
 namespace ThingsGateway.Foundation;
 
-public interface IDtu : ITcpService
+/// <inheritdoc/>
+public interface IDtuClient
 {
     /// <summary>
-    /// 心跳检测(大写16进制字符串)
+    /// DtuId
+    /// </summary>
+    public string DtuId { get; set; }
+
+    /// <summary>
+    /// 心跳内容
     /// </summary>
     public string HeartbeatHexString { get; set; }
+
+    /// <summary>
+    /// 心跳时间
+    /// </summary>
+    public int HeartbeatTime { get; set; }
 }

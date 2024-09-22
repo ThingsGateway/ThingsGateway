@@ -36,7 +36,7 @@ public static class LoggerExtensions
     /// </summary>
     public static string GetDebugLogBasePath()
     {
-        return "wwwroot".CombinePath("debugLogs");
+        return "DebugLogs";
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public static class LoggerExtensions
     /// </summary>
     public static string GetLogBasePath()
     {
-        return "wwwroot".CombinePath("logs");
+        return "Logs";
     }
 
     /// <summary>

@@ -10,8 +10,6 @@
 
 namespace ThingsGateway.Foundation;
 
-
-
 /// <summary>
 /// 通道管理
 /// </summary>
@@ -19,7 +17,7 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
 {
 
     /// <summary>
-    /// 接收到数据
+    /// 接收数据事件
     /// </summary>
     public ChannelReceivedEventHandler ChannelReceived { get; set; }
 
@@ -29,7 +27,7 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     public ChannelTypeEnum ChannelType { get; }
 
     /// <summary>
-    /// 该通道下的所有设备
+    /// 通道下的所有设备
     /// </summary>
     public ConcurrentList<IProtocol> Collects { get; }
 
@@ -61,7 +59,7 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     /// <summary>
     /// 关闭客户端。
     /// </summary>
-    /// <param name="msg"></param>
+    /// <param name="msg">关闭消息</param>
     public void Close(string msg);
 
     /// <summary>
@@ -82,21 +80,16 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     /// <exception cref="Exception"></exception>
     public Task ConnectAsync(int millisecondsTimeout = 3000, CancellationToken token = default);
 }
+
+/// <summary>
+/// 接收事件回调类
+/// </summary>
 public class ChannelReceivedEventHandler : List<Func<IClientChannel, ReceivedDataEventArgs, Task>>
 {
 }
+/// <summary>
+/// 通道事件回调类
+/// </summary>
 public class ChannelEventHandler : List<Func<IClientChannel, Task<bool>>>
 {
 }
-
-///// <summary>
-///// ChannelEventHandler
-///// </summary>
-//public delegate Task ChannelEventHandler(IClientChannel channel);
-
-///// <summary>
-///// 接收数据
-///// </summary>
-///// <param name="client"></param>
-///// <param name="e"></param>
-//public delegate Task ChannelReceivedEventHandler(IClientChannel client, ReceivedDataEventArgs e);

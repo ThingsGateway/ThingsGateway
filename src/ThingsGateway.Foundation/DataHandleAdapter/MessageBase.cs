@@ -15,14 +15,17 @@ public class MessageBase : OperResultClass<byte[]>, IResultMessage, IWaitHandle
 {
     #region 构造
 
-    public MessageBase()
+    /// <inheritdoc />
+    public MessageBase() : base()
     {
     }
 
+    /// <inheritdoc />
     public MessageBase(IOperResult operResult) : base(operResult)
     {
     }
 
+    /// <inheritdoc />
     public MessageBase(Exception ex) : base(ex)
     {
     }
@@ -38,6 +41,7 @@ public class MessageBase : OperResultClass<byte[]>, IResultMessage, IWaitHandle
     /// <inheritdoc/>
     public virtual int Sign { get; set; } = -1;
 
+    /// <inheritdoc />
     public virtual FilterResult CheckBody<TByteBlock>(ref TByteBlock byteBlock) where TByteBlock : IByteBlock
     {
         return FilterResult.Success;

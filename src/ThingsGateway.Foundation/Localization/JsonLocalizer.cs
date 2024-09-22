@@ -27,12 +27,14 @@ public class JsonLocalizer : IStringLocalizer
     private string _folderName;
     private Type _type;
 
+    /// <inheritdoc/>
     public JsonLocalizer(Type resourceType, string folderName)
     {
         _type = resourceType;
         _folderName = folderName;
     }
 
+    /// <inheritdoc/>
     public LocalizedString this[string name]
     {
         get
@@ -62,6 +64,7 @@ public class JsonLocalizer : IStringLocalizer
         }
     }
 
+    /// <inheritdoc/>
     public LocalizedString this[string name, params object[] arguments]
     {
         get
@@ -71,6 +74,7 @@ public class JsonLocalizer : IStringLocalizer
         }
     }
 
+    /// <inheritdoc/>
     public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
     {
         if (_resources.TryGetValue(CultureInfo.CurrentUICulture.Name, out var resource))

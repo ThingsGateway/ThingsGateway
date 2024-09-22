@@ -10,6 +10,7 @@
 
 namespace ThingsGateway.Foundation;
 
+/// <inheritdoc/>
 public interface ITcpService
 {
     /// <summary>

@@ -11,11 +11,11 @@
 namespace ThingsGateway.Foundation;
 
 /// <summary>
-/// 自增
+/// 自增数据类，用于自增数据，可以设置最大值，初始值，自增步长等。
 /// </summary>
 public sealed class IncrementCount : DisposableObject
 {
-    private readonly EasyLock easyLock = new();
+    private readonly WaitLock easyLock = new();
     private long current = 0;
     private long max = long.MaxValue;
     private long start = 0;
@@ -30,7 +30,7 @@ public sealed class IncrementCount : DisposableObject
     }
 
     /// <summary>
-    /// Tick
+    /// 自增步长
     /// </summary>
     public int IncreaseTick { get; set; } = 1;
 
@@ -73,6 +73,7 @@ public sealed class IncrementCount : DisposableObject
     /// <summary>
     /// 将当前的值重置为指定值
     /// </summary>
+    /// <param name="value">指定值</param>
     public void ResetCurrentValue(long value)
     {
         easyLock.Wait();
@@ -101,6 +102,7 @@ public sealed class IncrementCount : DisposableObject
     /// <summary>
     /// 重置当前序号的初始值
     /// </summary>
+    /// <param name="start">初始值</param>
     public void ResetStartValue(long start)
     {
         easyLock.Wait();

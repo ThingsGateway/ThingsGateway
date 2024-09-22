@@ -12,11 +12,16 @@ using ThingsGateway.Foundation.Extension.String;
 
 namespace ThingsGateway.Foundation;
 
+/// <inheritdoc/>
 [PluginOption(Singleton = true)]
 public class DtuPlugin : PluginBase, ITcpReceivingPlugin
 {
+    /// <summary>
+    /// 心跳16进制字符串
+    /// </summary>
     public string HeartbeatHexString { get; set; }
 
+/// <inheritdoc/>
     public async Task OnTcpReceiving(ITcpSession client, ByteBlockEventArgs e)
     {
         var len = HeartbeatHexString.HexStringToBytes().Length;

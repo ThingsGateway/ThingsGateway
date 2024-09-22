@@ -9,8 +9,16 @@
 // ------------------------------------------------------------------------------
 namespace ThingsGateway.Foundation;
 
+/// <summary>
+/// 时间扩展类
+/// </summary>
 public static class DateTimeExtensions
 {
+    /// <summary>
+    /// DateTime转Unix时间戳
+    /// </summary>
+    /// <param name="dateTime"></param>
+    /// <returns></returns>
     public static long DateTimeToUnixTimestamp(this DateTime dateTime)
     {
         // Unix 时间起点

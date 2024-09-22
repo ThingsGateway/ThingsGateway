@@ -10,10 +10,13 @@
 
 namespace ThingsGateway.Foundation;
 
-/// <inheritdoc/>
+/// <summary>
+/// TCP服务器
+/// </summary>
+/// <typeparam name="TClient"></typeparam>
 public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcpService<TClient> where TClient : TcpSessionClientChannel, new()
 {
-    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
+    private readonly WaitLock m_semaphoreForConnect = new WaitLock();
 
     /// <inheritdoc/>
     public ConcurrentList<IProtocol> Collects { get; } = new();
@@ -21,29 +24,25 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
     /// <summary>
     /// 停止时是否发送ShutDown
     /// </summary>
-    public bool ShutDownEnable { get; set; }
+    public bool ShutDownEnable { get; set; } = true;
 
     /// <inheritdoc/>
     public override async Task ClearAsync()
     {
-        foreach (var id in GetIds())
+        foreach (var client in Clients)
         {
-            if (this.TryGetClient(id, out var client))
+            try
             {
-                try
-                {
-                    if (ShutDownEnable)
-                        client.TryShutdown();
-                    await client.CloseAsync().ConfigureAwait(false);
-                    client.SafeDispose();
-                }
-                catch
-                {
-                }
+                if (ShutDownEnable)
+                    client.TryShutdown();
+                await client.CloseAsync().ConfigureAwait(false);
+                client.SafeDispose();
+            }
+            catch
+            {
             }
         }
     }
-
     public async Task ClientDisposeAsync(string id)
     {
         if (this.TryGetClient(id, out var client))
@@ -54,7 +53,6 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
             client.SafeDispose();
         }
     }
-
     /// <inheritdoc/>
     public override async Task StartAsync()
     {
@@ -100,17 +98,20 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
         }
     }
 
-    public override string ToString()
+    /// <inheritdoc/>
+    public override string? ToString()
     {
         return Monitors.FirstOrDefault()?.Option?.IpHost.ToString();
     }
 
+    /// <inheritdoc/>
     protected override Task OnTcpClosed(TClient socketClient, ClosedEventArgs e)
     {
         Logger?.Debug($"{socketClient}  Closed");
         return base.OnTcpClosed(socketClient, e);
     }
 
+    /// <inheritdoc/>
     protected override Task OnTcpClosing(TClient socketClient, ClosingEventArgs e)
     {
         Logger?.Debug($"{socketClient} Closing");
@@ -133,7 +134,7 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
 }
 
 /// <summary>
-/// Tcp服务器
+/// Tcp服务器通道
 /// </summary>
 public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>, IChannel
 {
@@ -156,16 +157,20 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
     public ChannelEventHandler Stoped { get; set; } = new();
     /// <inheritdoc/>
     public ChannelEventHandler Stoping { get; set; } = new();
+
+    /// <inheritdoc/>
     public void Close(string msg)
     {
         CloseAsync(msg).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
+    /// <inheritdoc/>
     public Task CloseAsync(string msg)
     {
         return StopAsync();
     }
 
+    /// <inheritdoc/>
     public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
     {
         ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -180,11 +185,13 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
         return StartAsync();
     }
 
+    /// <inheritdoc/>
     protected override TcpSessionClientChannel NewClient()
     {
         return new TcpSessionClientChannel();
     }
 
+    /// <inheritdoc/>
     protected override async Task OnTcpClosing(TcpSessionClientChannel socketClient, ClosingEventArgs e)
     {
         await socketClient.OnChannelEvent(Stoping).ConfigureAwait(false);

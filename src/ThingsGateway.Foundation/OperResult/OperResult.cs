@@ -118,6 +118,10 @@ public struct OperResult<T> : IOperResult<T>
         return $"{messageString}{exceptionString}";
     }
 
+    /// <summary>
+    /// 返回OperResult
+    /// </summary>
+    /// <param name="operResult"></param>
     public static implicit operator OperResult(OperResult<T> operResult)
     {
         return new OperResult(operResult);
@@ -348,6 +352,9 @@ public struct OperResult<T, T2, T3> : IOperResult<T, T2, T3>
 /// <inheritdoc cref="IOperResult"/>
 public struct OperResult : IOperResult
 {
+    /// <summary>
+    /// 成功结果
+    /// </summary>
     public static OperResult Success = new OperResult();
 
     /// <summary>
@@ -565,22 +572,27 @@ public class OperResultClass : IOperResult
 /// <inheritdoc/>
 public class OperResultClass<T> : OperResultClass, IOperResult<T>
 {
+/// <inheritdoc/>
     public OperResultClass() : base()
     {
     }
 
+/// <inheritdoc/>
     public OperResultClass(IOperResult operResult) : base(operResult)
     {
     }
 
+/// <inheritdoc/>
     public OperResultClass(string msg) : base(msg)
     {
     }
 
+/// <inheritdoc/>
     public OperResultClass(Exception ex) : base(ex)
     {
     }
 
+/// <inheritdoc/>
     public OperResultClass(string msg, Exception ex) : base(msg, ex)
     {
     }

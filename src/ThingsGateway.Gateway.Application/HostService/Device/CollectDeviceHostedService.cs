@@ -29,17 +29,17 @@ public class CollectDeviceHostedService : DeviceHostedService
     /// </summary>
     public const int CheckIntervalTime = 600;
 
-    private EasyLock _easyLock = new(false);
+    private WaitLock _easyLock = new(false);
 
     /// <summary>
     /// 已执行CreatThreads
     /// </summary>
     private volatile bool started = false;
 
-    private EasyLock publicRestartLock = new();
+    private WaitLock publicRestartLock = new();
     private IStringLocalizer Localizer { get; }
 
-    public CollectDeviceHostedService(ILogger<CollectDeviceHostedService> logger, IStringLocalizer<CollectDeviceHostedService> localizer)
+    public CollectDeviceHostedService(ILogger<CollectDeviceHostedService> logger, IStringLocalizer<DeviceHostedService> localizer)
     {
         _logger = logger;
         Localizer = localizer;

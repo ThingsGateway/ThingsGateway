@@ -26,12 +26,12 @@ public abstract class DeviceHostedService : BackgroundService
     /// <summary>
     /// 全部重启锁
     /// </summary>
-    protected readonly EasyLock restartLock = new();
+    protected readonly WaitLock restartLock = new();
 
     /// <summary>
     /// 单个重启锁
     /// </summary>
-    protected readonly EasyLock singleRestartLock = new();
+    protected readonly WaitLock singleRestartLock = new();
 
     protected ILogger _logger;
     /// <summary>

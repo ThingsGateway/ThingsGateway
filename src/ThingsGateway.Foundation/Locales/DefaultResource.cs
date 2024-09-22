@@ -12,10 +12,16 @@ using Microsoft.Extensions.Localization;
 
 namespace ThingsGateway.Foundation;
 
+/// <summary>
+/// 语言资源
+/// </summary>
 public class DefaultResource
 {
     private static IStringLocalizer localizer;
 
+    /// <summary>
+    /// Localizer
+    /// </summary>
     public static IStringLocalizer Localizer
     {
         get

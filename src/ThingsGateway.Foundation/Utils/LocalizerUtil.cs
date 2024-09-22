@@ -17,8 +17,10 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public static class LocalizerUtil
 {
+    /// <inheritdoc/>
     public static Func<Type, IStringLocalizer> getLocalizer;
 
+    /// <inheritdoc/>
     public static Func<Type, IStringLocalizer> GetLocalizer
     {
         get
@@ -33,6 +35,7 @@ public static class LocalizerUtil
         }
     }
 
+    /// <inheritdoc/>
     public static void SetLocalizerFactory(Func<Type, IStringLocalizer> func)
     {
         GetLocalizer = func;

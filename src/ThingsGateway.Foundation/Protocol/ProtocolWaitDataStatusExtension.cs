@@ -12,6 +12,7 @@ using TouchSocket.Resources;
 
 namespace ThingsGateway.Foundation;
 
+/// <inheritdoc/>
 public static partial class ProtocolWaitDataStatusExtension
 {
     /// <summary>

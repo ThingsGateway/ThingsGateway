@@ -12,6 +12,9 @@ using Newtonsoft.Json;
 
 namespace ThingsGateway.Foundation.Json.Extension;
 
+/// <summary>
+/// json扩展
+/// </summary>
 public static class JsonExtensions
 {
     /// <summary>
@@ -23,16 +26,34 @@ public static class JsonExtensions
         NullValueHandling = NullValueHandling.Ignore // 忽略空值属性
     };
 
+    /// <summary>
+    /// 反序列化
+    /// </summary>
+    /// <param name="json"></param>
+    /// <param name="type"></param>
+    /// <param name="jsonSerializerSettings"></param>
+    /// <returns></returns>
     public static object FromJsonNetString(this string json, Type type, JsonSerializerSettings? jsonSerializerSettings = null)
     {
         return Newtonsoft.Json.JsonConvert.DeserializeObject(json, type, jsonSerializerSettings ?? Options);
     }
-
+    /// <summary>
+    /// 反序列化
+    /// </summary>
+    /// <param name="json"></param>
+    /// <param name="jsonSerializerSettings"></param>
+    /// <returns></returns>
     public static T FromJsonNetString<T>(this string json, JsonSerializerSettings? jsonSerializerSettings = null)
     {
         return (T)FromJsonNetString(json, typeof(T), jsonSerializerSettings);
     }
 
+    /// <summary>
+    /// 序列化
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="jsonSerializerSettings"></param>
+    /// <returns></returns>
     public static string ToJsonNetString(this object item, JsonSerializerSettings? jsonSerializerSettings = null)
     {
         return Newtonsoft.Json.JsonConvert.SerializeObject(item, jsonSerializerSettings ?? Options);

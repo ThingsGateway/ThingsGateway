@@ -10,14 +10,11 @@
 
 namespace ThingsGateway.Foundation;
 
-/// <summary>
-/// 能对适配器做配置的客户端
-/// </summary>
-public interface IAdapterObject
+/// <inheritdoc/>
+public interface IDtu : ITcpService
 {
     /// <summary>
-    /// 设置数据处理适配器
+    /// 心跳检测(大写16进制字符串)
     /// </summary>
-    /// <param name="adapter">适配器</param>
-    void SetDataHandlingAdapter(DataHandlingAdapter adapter);
+    public string HeartbeatHexString { get; set; }
 }

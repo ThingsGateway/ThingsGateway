@@ -10,8 +10,10 @@
 
 namespace ThingsGateway.Foundation;
 
+/// <inheritdoc/>
 public static class PluginUtil
 {
+    /// <inheritdoc/>
     public static Action<IPluginManager> GetDtuClientPlugin(IDtuClient dtuClient)
     {
         Action<IPluginManager> action = a => { };
@@ -26,6 +28,7 @@ public static class PluginUtil
         return action;
     }
 
+    /// <inheritdoc/>
     public static Action<IPluginManager> GetDtuPlugin(IDtu dtu)
     {
         Action<IPluginManager> action = a => { };
@@ -50,6 +53,7 @@ public static class PluginUtil
         return action;
     }
 
+    /// <inheritdoc/>
     public static Action<IPluginManager> GetTcpServicePlugin(ITcpService tcpService)
     {
         Action<IPluginManager> action = a => { };

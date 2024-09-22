@@ -10,40 +10,50 @@
 
 using Newtonsoft.Json;
 
-using System.Text;
-
-using ThingsGateway.Foundation.Extension.String;
-
 namespace ThingsGateway.Foundation;
 
 /// <summary>
-/// String值转换为基础类型。
+/// Json字符串转到对应类
 /// </summary>
-public class StringToClassConverter<TState> : ISerializerFormatter<string, TState>
+public class JsonStringToClassSerializerFormatter<TState> : ISerializerFormatter<string, TState>
 {
+    /// <summary>
+    /// JsonSettings
+    /// </summary>
+    public JsonSerializerSettings JsonSettings { get; set; } = new JsonSerializerSettings();
+
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    public int Order { get; set; } = -100;
+    public int Order { get; set; } = -99;
 
     /// <inheritdoc/>
     public bool TryDeserialize(TState state, in string source, Type targetType, out object target)
     {
-        return targetType.GetTypeValue(source, out target!);
+        try
+        {
+            target = JsonConvert.DeserializeObject(source, targetType, JsonSettings)!;
+            return true;
+        }
+        catch
+        {
+            target = default;
+            return false;
+        }
     }
 
     /// <inheritdoc/>
     public bool TrySerialize(TState state, in object target, out string source)
     {
-        if (target != null)
+        try
         {
-            var targetType = target.GetType();
-            return targetType.GetTypeStringValue(target, out source!);
+            source = JsonConvert.SerializeObject(target, JsonSettings);
+            return true;
         }
-        else
+        catch (Exception)
         {
             source = null;
-            return true;
+            return false;
         }
     }
 }

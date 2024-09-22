@@ -64,6 +64,10 @@ public interface IThingsGatewayBitConverter
     /// 获取或设置在解析字符串的时候是否变长字符串
     /// </summary>
     bool IsVariableStringLength { get; set; }
+
+    /// <summary>
+    /// 4字节解析规则
+    /// </summary>
     DataFormatEnum DataFormat { get; set; }
 
     #region GetBytes
@@ -326,6 +330,11 @@ public interface IThingsGatewayBitConverter
     /// <returns>decimal对象</returns>
     decimal[] ToDecimal(byte[] buffer, int offset, int length);
 
+    /// <summary>
+    /// 获取指定的数据格式
+    /// </summary>
+    /// <param name="dataFormat"></param>
+    /// <returns></returns>
     IThingsGatewayBitConverter GetByDataFormat(DataFormatEnum dataFormat);
 
     #endregion ToValue

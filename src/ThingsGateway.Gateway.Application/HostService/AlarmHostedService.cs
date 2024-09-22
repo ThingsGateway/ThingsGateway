@@ -59,7 +59,7 @@ public class AlarmHostedService : BackgroundService
     /// <summary>
     /// 重启锁
     /// </summary>
-    private EasyLock RestartLock { get; } = new();
+    private WaitLock RestartLock { get; } = new();
 
     #region 核心实现
 

@@ -8,22 +8,27 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation;
+using System.Diagnostics.CodeAnalysis;
 
-public interface IDtuClient
+namespace System;
+
+/// <summary>
+/// 异常扩展
+/// </summary>
+public static class ExceptionExtensions
 {
     /// <summary>
-    /// DtuId
+    ///  null检查
     /// </summary>
-    public string DtuId { get; set; }
+    /// <param name="argument"></param>
+    /// <param name="paramName"></param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static void ThrowIfNull([NotNull] this object? argument, string paramName)
+    {
+        if (argument == null)
+        {
+            throw new ArgumentNullException(paramName);
+        }
+    }
 
-    /// <summary>
-    /// 心跳内容
-    /// </summary>
-    public string HeartbeatHexString { get; set; }
-
-    /// <summary>
-    /// 心跳时间
-    /// </summary>
-    public int HeartbeatTime { get; set; }
 }

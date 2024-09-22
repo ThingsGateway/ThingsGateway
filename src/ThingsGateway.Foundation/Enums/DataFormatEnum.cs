@@ -11,7 +11,7 @@
 namespace ThingsGateway.Foundation;
 
 /// <summary>
-/// 应用于多字节数据的解析或是生成格式<br />
+/// 应用于多字节数据的解析或是生成格式
 /// </summary>
 public enum DataFormatEnum
 {

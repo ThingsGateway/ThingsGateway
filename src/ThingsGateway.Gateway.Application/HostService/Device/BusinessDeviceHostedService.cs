@@ -25,7 +25,7 @@ public class BusinessDeviceHostedService : DeviceHostedService
     /// </summary>
     public const int CheckIntervalTime = 600;
 
-    protected EasyLock _easyLock = new(false);
+    protected WaitLock _easyLock = new(false);
 
     /// <summary>
     /// 已执行CreatThreads
@@ -34,9 +34,9 @@ public class BusinessDeviceHostedService : DeviceHostedService
 
     private IStringLocalizer Localizer { get; }
 
-    private EasyLock publicRestartLock = new();
+    private WaitLock publicRestartLock = new();
 
-    public BusinessDeviceHostedService(ILogger<BusinessDeviceHostedService> logger, IStringLocalizer<BusinessDeviceHostedService> localizer)
+    public BusinessDeviceHostedService(ILogger<BusinessDeviceHostedService> logger, IStringLocalizer<DeviceHostedService> localizer)
     {
         _logger = logger;
         Localizer = localizer;

@@ -12,27 +12,30 @@ using System.Text;
 
 namespace ThingsGateway.Foundation;
 
-/// <summary>
 /// <inheritdoc/>
-/// </summary>
 public class LastLogResult : OperResultClass<IEnumerable<LogData>>
 {
-    public LastLogResult()
+    /// <inheritdoc/>
+    public LastLogResult() : base()
     {
     }
 
+    /// <inheritdoc/>
     public LastLogResult(IOperResult operResult) : base(operResult)
     {
     }
 
+    /// <inheritdoc/>
     public LastLogResult(string msg) : base(msg)
     {
     }
 
+    /// <inheritdoc/>
     public LastLogResult(Exception ex) : base(ex)
     {
     }
 
+    /// <inheritdoc/>
     public LastLogResult(string msg, Exception ex) : base(msg, ex)
     {
     }

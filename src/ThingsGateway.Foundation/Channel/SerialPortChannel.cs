@@ -12,11 +12,14 @@ using TouchSocket.SerialPorts;
 
 namespace ThingsGateway.Foundation;
 
-/// <inheritdoc cref="SerialPortClient"/>
+/// <summary>
+/// 串口通道
+/// </summary>
 public class SerialPortChannel : SerialPortClient, IClientChannel
 {
-    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
+    private readonly WaitLock m_semaphoreForConnect = new WaitLock();
 
+    /// <inheritdoc/>
     public SerialPortChannel()
     {
         WaitHandlePool.MaxSign = ushort.MaxValue;
@@ -31,6 +34,7 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     /// <inheritdoc/>
     public ConcurrentList<IProtocol> Collects { get; } = new();
 
+    /// <inheritdoc/>
     public DataHandlingAdapter ReadOnlyDataHandlingAdapter => ProtectedDataHandlingAdapter;
 
     /// <inheritdoc/>
@@ -50,19 +54,20 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
 
     /// <inheritdoc/>
-    public EasyLock WaitLock { get; } = new EasyLock();
+    public WaitLock WaitLock { get; } = new WaitLock();
 
+    /// <inheritdoc/>
     public void Close(string msg)
     {
         CloseAsync(msg).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
+    /// <inheritdoc/>
     public override async Task CloseAsync(string msg)
     {
         if (Online)
         {
             await this.OnChannelEvent(Stoping).ConfigureAwait(false);
-
 
             await base.CloseAsync(msg).ConfigureAwait(false);
             Logger?.Debug($"{ToString()}  Closed{msg}");
@@ -73,11 +78,13 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
         }
     }
 
+    /// <inheritdoc/>
     public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
     {
         ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
+    /// <inheritdoc/>
     public new async Task ConnectAsync(int millisecondsTimeout, CancellationToken token)
     {
         if (!Online)
@@ -100,13 +107,15 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
         }
     }
 
+    /// <inheritdoc/>
     public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
     {
         if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
             SetAdapter(singleStreamDataHandlingAdapter);
     }
 
-    public override string ToString()
+    /// <inheritdoc/>
+    public override string? ToString()
     {
         if (ProtectedMainSerialPort != null)
             return $"{ProtectedMainSerialPort.PortName}[{ProtectedMainSerialPort.BaudRate},{ProtectedMainSerialPort.DataBits},{ProtectedMainSerialPort.StopBits},{ProtectedMainSerialPort.Parity}]";

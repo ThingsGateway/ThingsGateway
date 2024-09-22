@@ -39,7 +39,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
 
     private MqttClientSubscribeOptions _mqttSubscribeOptions;
 
-    private EasyLock ConnectLock = new();
+    private WaitLock ConnectLock = new();
 
     protected override void AlarmChange(AlarmVariable alarmVariable)
     {

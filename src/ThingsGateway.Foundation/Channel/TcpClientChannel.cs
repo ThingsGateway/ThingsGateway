@@ -11,12 +11,13 @@
 namespace ThingsGateway.Foundation;
 
 /// <summary>
-/// 简单Tcp客户端
+/// Tcp客户端通道
 /// </summary>
 public class TcpClientChannel : TcpClient, IClientChannel
 {
-    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
+    private readonly WaitLock m_semaphoreForConnect = new WaitLock();
 
+    /// <inheritdoc/>
     public TcpClientChannel()
     {
         WaitHandlePool.MaxSign = ushort.MaxValue;
@@ -31,6 +32,7 @@ public class TcpClientChannel : TcpClient, IClientChannel
     /// <inheritdoc/>
     public ConcurrentList<IProtocol> Collects { get; } = new();
 
+    /// <inheritdoc/>
     public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
 
     /// <inheritdoc/>
@@ -49,14 +51,16 @@ public class TcpClientChannel : TcpClient, IClientChannel
     public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
 
     /// <inheritdoc/>
-    public EasyLock WaitLock { get; } = new EasyLock();
+    public WaitLock WaitLock { get; } = new WaitLock();
 
+    /// <inheritdoc/>
     public void Close(string msg)
     {
         CloseAsync(msg).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
 
+    /// <inheritdoc/>
     public override async Task CloseAsync(string msg)
     {
         if (Online)
@@ -68,11 +72,13 @@ public class TcpClientChannel : TcpClient, IClientChannel
         }
     }
 
+    /// <inheritdoc/>
     public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
     {
         ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
+    /// <inheritdoc/>
     public override async Task ConnectAsync(int millisecondsTimeout, CancellationToken token)
     {
         if (!Online)
@@ -96,6 +102,7 @@ public class TcpClientChannel : TcpClient, IClientChannel
         }
     }
 
+    /// <inheritdoc/>
     public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
     {
         if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)

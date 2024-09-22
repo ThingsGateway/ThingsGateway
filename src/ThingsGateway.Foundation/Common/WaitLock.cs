@@ -8,24 +8,26 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Foundation;
 
 /// <summary>
-/// EasyLock，使用轻量级SemaphoreSlim锁，只允许一个并发量，并记录并发信息
+/// WaitLock，使用轻量级SemaphoreSlim锁，只允许一个并发量，并记录并发信息
 /// </summary>
-public sealed class EasyLock : DisposableObject
+public sealed class WaitLock : DisposableObject
 {
     private readonly SemaphoreSlim m_waiterLock = new SemaphoreSlim(1, 1);
 
     /// <inheritdoc/>
-    public EasyLock(bool initialState = true)
+    public WaitLock(bool initialState = true)
     {
         if (!initialState)
             m_waiterLock.Wait();
     }
 
     /// <inheritdoc/>
-    ~EasyLock()
+    ~WaitLock()
     {
         this.SafeDispose();
     }

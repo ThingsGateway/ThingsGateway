@@ -163,12 +163,12 @@ public class ChannelThread
     /// <summary>
     /// 读写锁
     /// </summary>
-    protected internal EasyLock WriteLock { get; } = new();
+    protected internal WaitLock WriteLock { get; } = new();
 
     /// <summary>
     /// 启停锁
     /// </summary>
-    protected EasyLock RestartLock { get; } = new();
+    protected WaitLock RestartLock { get; } = new();
 
     /// <summary>
     /// 取消令箭列表
@@ -459,7 +459,7 @@ public class ChannelThread
     {
         try
         {
-            // 等待EasyLock锁的获取
+            // 等待WaitLock锁的获取
             await RestartLock.WaitAsync().ConfigureAwait(false);
 
             // 如果DriverTask不为null，则执行以下操作
@@ -492,7 +492,7 @@ public class ChannelThread
         }
         finally
         {
-            // 释放EasyLock锁
+            // 释放WaitLock锁
             RestartLock.Release();
         }
     }
@@ -510,7 +510,7 @@ public class ChannelThread
 
         try
         {
-            // 等待EasyLock锁的获取
+            // 等待WaitLock锁的获取
             await RestartLock.WaitAsync().ConfigureAwait(false);
 
             BeforeStopThread();
@@ -549,7 +549,7 @@ public class ChannelThread
         }
         finally
         {
-            // 释放EasyLock锁
+            // 释放WaitLock锁
             RestartLock.Release();
         }
     }
@@ -566,7 +566,7 @@ public class ChannelThread
             releaseCount = 0;
             List<Task> tasks = new List<Task>();
             ConcurrentList<DriverBase> driverBases = new();
-            EasyLock easyLock = new(false);
+            WaitLock easyLock = new(false);
             using CancellationTokenSource cancellationTokenSource = new();
             foreach (var driver1 in DriverBases)
             {

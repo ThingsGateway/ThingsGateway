@@ -195,7 +195,7 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 写入锁
     /// </summary>
-    protected internal EasyLock WriteLock => ChannelThread?.WriteLock;
+    protected internal WaitLock WriteLock => ChannelThread?.WriteLock;
 
     #endregion 任务管理器传入
 

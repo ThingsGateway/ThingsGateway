@@ -11,6 +11,7 @@
 using System.Globalization;
 using System.Net;
 
+using ThingsGateway.NewLife;
 using ThingsGateway.NewLife.X;
 
 namespace ThingsGateway.Foundation.Extension.String;
@@ -29,7 +30,7 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// 根据<see cref="Type"/> 数据类型转化返回值类型，如果不成功，返回false
+    /// 根据<see cref="Type"/> 数据类型转化常见类型，如果不成功，返回false
     /// </summary>
     /// <param name="propertyType"></param>
     /// <param name="value"></param>
@@ -82,7 +83,7 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// 根据<see cref="Type"/> 数据类型转化返回值类型，如果不成功，返回false
+    /// 根据<see cref="Type"/> 数据类型转化常见类型，如果不成功，返回false
     /// </summary>
     /// <param name="propertyType"></param>
     /// <param name="value"></param>

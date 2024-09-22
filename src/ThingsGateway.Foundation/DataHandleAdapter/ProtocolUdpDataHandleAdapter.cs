@@ -39,6 +39,7 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
     /// </summary>
     public TRequest Request { get; set; }
 
+    /// <inheritdoc />
     public void SetRequest(int sign, ISendMessage sendMessage)
     {
         var request = GetInstance();

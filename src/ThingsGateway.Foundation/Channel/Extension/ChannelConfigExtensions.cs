@@ -14,15 +14,30 @@ using TouchSocket.SerialPorts;
 
 namespace ThingsGateway.Foundation;
 
+
+/// <summary>
+/// 通道扩展
+/// </summary>
 public static class ChannelConfigExtensions
 {
-    public static async Task OnChannelReceivedEvent(this IClientChannel @this, ReceivedDataEventArgs e, ChannelReceivedEventHandler funcs)
+    /// <summary>
+    /// 触发通道接收事件
+    /// </summary>
+    /// <param name="clientChannel">通道</param>
+    /// <param name="e">接收数据</param>
+    /// <param name="funcs">事件</param>
+    /// <returns></returns>
+    internal static async Task OnChannelReceivedEvent(this IClientChannel clientChannel, ReceivedDataEventArgs e, ChannelReceivedEventHandler funcs)
     {
+        clientChannel.ThrowIfNull(nameof(IClientChannel));
+        e.ThrowIfNull(nameof(ReceivedDataEventArgs));
+        funcs.ThrowIfNull(nameof(ChannelReceivedEventHandler));
+
         if (funcs.Count > 0)
         {
             foreach (var func in funcs)
             {
-                await func.Invoke(@this, e).ConfigureAwait(false);
+                await func.Invoke(clientChannel, e).ConfigureAwait(false);
                 if (e.Handled)
                 {
                     break;
@@ -31,14 +46,22 @@ public static class ChannelConfigExtensions
         }
     }
 
-
-    public static async Task OnChannelEvent(this IClientChannel @this, ChannelEventHandler funcs)
+    /// <summary>
+    /// 触发通道事件
+    /// </summary>
+    /// <param name="clientChannel">通道</param>
+    /// <param name="funcs">事件</param>
+    /// <returns></returns>
+    internal static async Task OnChannelEvent(this IClientChannel clientChannel, ChannelEventHandler funcs)
     {
+        clientChannel.ThrowIfNull(nameof(IClientChannel));
+        funcs.ThrowIfNull(nameof(ChannelEventHandler));
+
         if (funcs.Count > 0)
         {
             foreach (var func in funcs)
             {
-                var handled = await func.Invoke(@this).ConfigureAwait(false);
+                var handled = await func.Invoke(clientChannel).ConfigureAwait(false);
                 if (handled)
                 {
                     break;
@@ -48,57 +71,53 @@ public static class ChannelConfigExtensions
     }
 
     /// <summary>
-    /// 获取通道
+    /// 获取一个新的通道。传入通道类型，远程服务端地址，绑定地址，串口配置信息
     /// </summary>
-    public static IChannel GetChannel(this TouchSocketConfig config, ChannelTypeEnum channel, string remoteUrl, string bindUrl, SerialPortOption serialPortOption)
+    /// <param name="config">配置</param>
+    /// <param name="channelType">通道类型</param>
+    /// <param name="remoteUrl">远端IP端口配置</param>
+    /// <param name="bindUrl">本地IP端口配置</param>
+    /// <param name="serialPortOption">串口配置</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public static IChannel? GetChannel(this TouchSocketConfig config, ChannelTypeEnum channelType, string? remoteUrl = default, string? bindUrl = default, SerialPortOption? serialPortOption = default)
     {
-        switch (channel)
+        config.ThrowIfNull(nameof(TouchSocketConfig));
+        channelType.ThrowIfNull(nameof(ChannelTypeEnum));
+
+
+        switch (channelType)
         {
             case ChannelTypeEnum.TcpClient:
-                if (string.IsNullOrEmpty(remoteUrl)) throw new ArgumentNullException(nameof(IPHost));
+                remoteUrl.ThrowIfNull(nameof(IPHost));
                 return config.GetTcpClientWithIPHost(remoteUrl, bindUrl);
 
             case ChannelTypeEnum.TcpService:
-                if (string.IsNullOrEmpty(bindUrl)) throw new ArgumentNullException(nameof(IPHost));
+                bindUrl.ThrowIfNull(nameof(IPHost));
                 return config.GetTcpServiceWithBindIPHost(bindUrl);
 
             case ChannelTypeEnum.SerialPort:
-                if (serialPortOption == null) throw new ArgumentNullException(nameof(SerialPortOption));
+                serialPortOption.ThrowIfNull(nameof(SerialPortOption));
                 return config.GetSerialPortWithOption(serialPortOption);
 
             case ChannelTypeEnum.UdpSession:
-                if (string.IsNullOrEmpty(remoteUrl) && string.IsNullOrEmpty(bindUrl)) throw new ArgumentNullException(nameof(IPHost));
+                if (string.IsNullOrEmpty(remoteUrl) && string.IsNullOrEmpty(bindUrl))
+                    throw new ArgumentNullException(nameof(IPHost));
                 return config.GetUdpSessionWithIPHost(remoteUrl, bindUrl);
         }
-        return null;
-    }
-
-    /// <summary>
-    /// 获取配置。可以指定日志等级以及日志方法
-    /// </summary>
-    /// <param name="logLevel"></param>
-    /// <param name="action"></param>
-    /// <param name="config"></param>
-    /// <returns></returns>
-    public static TouchSocketConfig GetConfigWithLog(this TouchSocketConfig config, LogLevel logLevel, Action<LogLevel, object, string, Exception> action)
-    {
-        config ??= new TouchSocketConfig();
-        var LogMessage = new LoggerGroup() { LogLevel = logLevel };
-        LogMessage.AddLogger(new EasyLogger(action) { LogLevel = logLevel });
-        config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
-        return config;
+        return default;
     }
 
     /// <summary>
     /// 获取一个新的串口通道。传入串口配置信息
     /// </summary>
-    /// <param name="config"></param>
-    /// <param name="value"></param>
+    /// <param name="config">配置</param>
+    /// <param name="serialPortOption">串口配置</param>
     /// <returns></returns>
-    public static SerialPortChannel GetSerialPortWithOption(this TouchSocketConfig config, SerialPortOption value)
+    public static SerialPortChannel GetSerialPortWithOption(this TouchSocketConfig config, SerialPortOption serialPortOption)
     {
-        if (value == null) throw new ArgumentNullException(nameof(SerialPortOption));
-        config.SetSerialPortOption(value);
+        serialPortOption.ThrowIfNull(nameof(SerialPortOption));
+        config.SetSerialPortOption(serialPortOption);
 
         //载入配置
         SerialPortChannel serialPortChannel = new SerialPortChannel();
@@ -108,16 +127,20 @@ public static class ChannelConfigExtensions
     }
 
     /// <summary>
-    /// 获取一个新的Tcp客户端通道。传入远程服务端地址
+    /// 获取一个新的Tcp客户端通道。传入远程服务端地址和绑定地址
     /// </summary>
+    /// <param name="config">配置</param>
+    /// <param name="remoteUrl">远端IP端口配置</param>
+    /// <param name="bindUrl">本地IP端口配置</param>
     /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static TcpClientChannel GetTcpClientWithIPHost(this TouchSocketConfig config, string remoteUrl, string? bindUrl = default)
     {
-        if (remoteUrl == null)
-            throw new ArgumentNullException(nameof(IPHost));
+        remoteUrl.ThrowIfNull(nameof(IPHost));
         config.SetRemoteIPHost(remoteUrl);
         if (!string.IsNullOrEmpty(bindUrl))
             config.SetBindIPHost(bindUrl);
+
         //载入配置
         TcpClientChannel tcpClientChannel = new TcpClientChannel();
         tcpClientChannel.Setup(config);
@@ -125,12 +148,16 @@ public static class ChannelConfigExtensions
     }
 
     /// <summary>
-    /// 获取一个新的Tcp服务端通道。传入绑定地址
+    /// 获取一个新的Tcp服务会话通道。传入远程服务端地址和绑定地址
     /// </summary>
+    /// <param name="config">配置</param>
+    /// <param name="bindUrl">本地IP端口配置</param>
     /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static TcpServiceChannel GetTcpServiceWithBindIPHost(this TouchSocketConfig config, string bindUrl)
     {
-        if (bindUrl == null) throw new ArgumentNullException(nameof(IPHost));
+        bindUrl.ThrowIfNull(nameof(IPHost));
+
         var urls = bindUrl.SplitStringBySemicolon();
         config.SetListenIPHosts(IPHost.ParseIPHosts(urls));
         //载入配置
@@ -140,13 +167,21 @@ public static class ChannelConfigExtensions
     }
 
     /// <summary>
-    /// 获取一个新的Udp通道。传入默认远程服务端地址，绑定地址
+    /// 获取一个新的Udp会话通道。传入远程服务端地址和绑定地址
     /// </summary>
+    /// <param name="config">配置</param>
+    /// <param name="remoteUrl">远端IP端口配置</param>
+    /// <param name="bindUrl">本地IP端口配置</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public static UdpSessionChannel GetUdpSessionWithIPHost(this TouchSocketConfig config, string? remoteUrl, string? bindUrl)
     {
-        if (string.IsNullOrEmpty(remoteUrl) && string.IsNullOrEmpty(bindUrl)) throw new ArgumentNullException(nameof(IPHost));
+        if (string.IsNullOrEmpty(remoteUrl) && string.IsNullOrEmpty(bindUrl))
+            throw new ArgumentNullException(nameof(IPHost));
+
         if (!string.IsNullOrEmpty(remoteUrl))
             config.SetRemoteIPHost(remoteUrl);
+
         if (!string.IsNullOrEmpty(bindUrl))
             config.SetBindIPHost(bindUrl);
         else

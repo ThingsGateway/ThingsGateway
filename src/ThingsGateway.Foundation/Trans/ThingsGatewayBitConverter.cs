@@ -35,6 +35,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     public Encoding Encoding { get; set; } = Encoding.UTF8;
 
 #endif
+    /// <inheritdoc/>
     public DataFormatEnum DataFormat { get; set; }
 
     /// <inheritdoc/>
@@ -89,6 +90,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// </summary>
     public static readonly ThingsGatewayBitConverter LittleEndian;
 
+    /// <inheritdoc/>
     public virtual IThingsGatewayBitConverter GetByDataFormat(DataFormatEnum dataFormat)
     {
         var data = new ThingsGatewayBitConverter(EndianType);
@@ -416,6 +418,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
     }
 
+    /// <inheritdoc/>
     public virtual double ToDouble(byte[] buffer, int offset)
     {
         if (buffer.Length - offset < 8)
@@ -560,6 +563,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return numArray;
     }
 
+    /// <inheritdoc/>
     public virtual byte[] GetBytes(decimal value)
     {
         var bytes = new byte[16];
@@ -571,31 +575,37 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return bytes;
     }
 
+    /// <inheritdoc/>
     public virtual byte[] GetBytes(char value)
     {
         return TouchSocketBitConverter.GetBytes(value);
     }
 
+    /// <inheritdoc/>
     public virtual byte[] GetBytes(bool value)
     {
         return TouchSocketBitConverter.GetBytes(value);
     }
 
+    /// <inheritdoc/>
     public virtual byte[] GetBytes(bool[] values)
     {
         return TouchSocketBitConverter.GetBytes(values);
     }
 
+    /// <inheritdoc/>
     public virtual byte[] GetBytes(short value)
     {
         return TouchSocketBitConverter.GetBytes(value);
     }
 
+    /// <inheritdoc/>
     public virtual byte[] GetBytes(ushort value)
     {
         return TouchSocketBitConverter.GetBytes(value);
     }
 
+    /// <inheritdoc/>
     public virtual byte[] GetBytes(int value)
     {
         var bytes = BitConverter.GetBytes(value);
@@ -606,6 +616,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return bytes;
     }
 
+    /// <inheritdoc/>
     public virtual byte[] GetBytes(uint value)
     {
         var bytes = BitConverter.GetBytes(value);
@@ -616,6 +627,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return bytes;
     }
 
+    /// <inheritdoc/>
     public virtual byte[] GetBytes(long value)
     {
         var bytes = BitConverter.GetBytes(value);
@@ -626,6 +638,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return bytes;
     }
 
+    /// <inheritdoc/>
     public virtual byte[] GetBytes(ulong value)
     {
         var bytes = BitConverter.GetBytes(value);
@@ -636,6 +649,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return bytes;
     }
 
+    /// <inheritdoc/>
     public virtual byte[] GetBytes(float value)
     {
         var bytes = BitConverter.GetBytes(value);
@@ -646,6 +660,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return bytes;
     }
 
+    /// <inheritdoc/>
     public virtual byte[] GetBytes(double value)
     {
         var bytes = BitConverter.GetBytes(value);
@@ -656,6 +671,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         return bytes;
     }
 
+    /// <inheritdoc/>
     public virtual decimal ToDecimal(byte[] buffer, int offset)
     {
         if (buffer.Length - offset < 16)
@@ -682,6 +698,7 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
         }
     }
 
+    /// <inheritdoc/>
     public virtual char ToChar(byte[] buffer, int offset)
     {
         return TouchSocketBitConverter.ToChar(buffer, offset);

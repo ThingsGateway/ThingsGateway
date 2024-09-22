@@ -44,6 +44,7 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
     /// </summary>
     public TRequest Request { get; set; }
 
+    /// <inheritdoc />
     public void SetRequest(int sign, ISendMessage sendMessage)
     {
         var request = GetInstance();
@@ -58,6 +59,7 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
         return Owner?.ToString();
     }
 
+    /// <inheritdoc />
     protected override FilterResult Filter<TByteBlock>(ref TByteBlock byteBlock, bool beCached, ref TRequest request, ref int tempCapacity)
     {
         if (Logger?.LogLevel <= LogLevel.Trace)
@@ -154,6 +156,7 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
         Request = null;
     }
 
+    /// <inheritdoc />
     protected override async Task PreviewSendAsync(ReadOnlyMemory<byte> memory)
     {
         if (Logger?.LogLevel <= LogLevel.Trace)

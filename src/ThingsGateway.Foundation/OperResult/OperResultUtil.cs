@@ -10,6 +10,7 @@
 
 namespace ThingsGateway.Foundation;
 
+/// <inheritdoc/>
 public static class OperResultUtil
 {
     /// <summary>

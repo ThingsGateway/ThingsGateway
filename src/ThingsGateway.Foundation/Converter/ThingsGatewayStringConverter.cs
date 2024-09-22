@@ -10,8 +10,22 @@
 
 namespace ThingsGateway.Foundation;
 
-public struct AdapterResult
+/// <summary>
+/// String类型数据转换器
+/// </summary>
+public class ThingsGatewayStringConverter : StringSerializerConverter
 {
-    public byte[] Content { get; set; }
-    public FilterResult FilterResult { get; set; }
+    /// <summary>
+    /// 默认实例
+    /// </summary>
+    public static ThingsGatewayStringConverter Default = new ThingsGatewayStringConverter();
+
+    /// <summary>
+    /// 构造函数
+    /// </summary>
+    public ThingsGatewayStringConverter(params ISerializerFormatter<string, object>[] converters) : base(converters)
+    {
+        Add(new StringToClassConverter<object>());
+        Add(new JsonStringToClassSerializerFormatter<object>());
+    }
 }

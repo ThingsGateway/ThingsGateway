@@ -10,11 +10,14 @@
 
 namespace ThingsGateway.Foundation;
 
-/// <inheritdoc/>
+/// <summary>
+/// Udp通道
+/// </summary>
 public class UdpSessionChannel : UdpSession, IClientChannel
 {
-    private readonly EasyLock m_semaphoreForConnect = new EasyLock();
+    private readonly WaitLock m_semaphoreForConnect = new WaitLock();
 
+    /// <inheritdoc/>
     public UdpSessionChannel()
     {
         WaitHandlePool.MaxSign = ushort.MaxValue;
@@ -32,6 +35,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     /// <inheritdoc/>
     public bool Online => ServerState == ServerState.Running;
 
+    /// <inheritdoc/>
     public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
 
     /// <inheritdoc/>
@@ -44,24 +48,28 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     public ChannelEventHandler Stoped { get; set; } = new();
     /// <inheritdoc/>
     public ChannelEventHandler Stoping { get; set; } = new();
+
     /// <summary>
     /// 等待池
     /// </summary>
     public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
 
     /// <inheritdoc/>
-    public EasyLock WaitLock { get; } = new EasyLock();
+    public WaitLock WaitLock { get; } = new WaitLock();
 
+    /// <inheritdoc/>
     public void Close(string msg)
     {
         CloseAsync(msg).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
+    /// <inheritdoc/>
     public Task CloseAsync(string msg)
     {
         return StopAsync();
     }
 
+    /// <inheritdoc/>
     public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
     {
         ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -77,6 +85,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
         await this.OnChannelEvent(Started).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
     public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
     {
         if (adapter is UdpDataHandlingAdapter udpDataHandlingAdapter)

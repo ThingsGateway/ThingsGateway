@@ -51,7 +51,7 @@ public class PluginService : IPluginService
     private const string _cacheKeyGetPluginOutputs = $"{ThingsGatewayCacheConst.Cache_Prefix}{nameof(PluginService)}{nameof(GetList)}";
 
     private readonly IDispatchService<PluginOutput> _dispatchService;
-    private readonly EasyLock _locker = new();
+    private readonly WaitLock _locker = new();
 
     /// <summary>
     /// 驱动服务日志

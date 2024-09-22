@@ -10,9 +10,12 @@
 
 namespace ThingsGateway.Foundation;
 
-/// <inheritdoc cref="TcpSessionClient"/>
+/// <summary>
+/// Tcp终端通道
+/// </summary>
 public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
 {
+    /// <inheritdoc/>
     public TcpSessionClientChannel()
     {
         WaitHandlePool.MaxSign = ushort.MaxValue;
@@ -27,6 +30,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     /// <inheritdoc/>
     public ConcurrentList<IProtocol> Collects { get; } = new();
 
+    /// <inheritdoc/>
     public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
 
     /// <inheritdoc/>
@@ -39,33 +43,35 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     public ChannelEventHandler Stoped { get; set; } = new();
     /// <inheritdoc/>
     public ChannelEventHandler Stoping { get; set; } = new();
+
     /// <summary>
     /// 等待池
     /// </summary>
     public WaitHandlePool<MessageBase> WaitHandlePool { get; private set; } = new();
 
     /// <inheritdoc/>
-    public EasyLock WaitLock { get; } = new EasyLock();
+    public WaitLock WaitLock { get; } = new WaitLock();
 
+    /// <inheritdoc/>
     public void Close(string msg)
     {
         CloseAsync(msg).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
     public override Task CloseAsync(string msg)
     {
         WaitHandlePool.SafeDispose();
         return base.CloseAsync(msg);
     }
 
-    public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
-    {
-        throw new NotSupportedException();
-    }
+    /// <inheritdoc/>
+    public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default) => throw new NotSupportedException();
 
     /// <inheritdoc/>
     public Task ConnectAsync(int timeout, CancellationToken token) => throw new NotImplementedException();
 
+    /// <inheritdoc/>
     public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
     {
         if (adapter is SingleStreamDataHandlingAdapter singleStreamDataHandlingAdapter)
@@ -125,6 +131,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
         await base.OnTcpConnecting(e).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
     protected override async Task OnTcpReceived(ReceivedDataEventArgs e)
     {
         await base.OnTcpReceived(e).ConfigureAwait(false);

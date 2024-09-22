@@ -12,6 +12,7 @@ using System.Collections.Concurrent;
 using System.Text;
 
 using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.X.Caching;
 using ThingsGateway.NewLife.X.Extension;
 using ThingsGateway.NewLife.X.Threading;
 
@@ -25,9 +26,32 @@ namespace ThingsGateway.Foundation;
 /// </remarks>
 public class TextFileLogger : LoggerBase, IDisposable
 {
-    public static string Separator = Environment.NewLine + "-----ThingsGateway-Log-Separator-----" + Environment.NewLine;
-    public static byte[] SeparatorBytes = Encoding.UTF8.GetBytes(Separator);
+    private static string separator = Environment.NewLine + "-----ThingsGateway-Log-Separator-----" + Environment.NewLine;
 
+    /// <summary>
+    /// 分隔符
+    /// </summary>
+    public static string Separator
+    {
+        get
+        {
+            return separator;
+        }
+        set
+        {
+            separator = value;
+            separatorBytes = Encoding.UTF8.GetBytes(separator);
+        }
+    }
+    private static byte[] separatorBytes = Encoding.UTF8.GetBytes(Environment.NewLine + "-----ThingsGateway-Log-Separator-----" + Environment.NewLine);
+
+    internal static byte[] SeparatorBytes
+    {
+        get
+        {
+            return separatorBytes;
+        }
+    }
     /// <summary>日志文件备份。超过备份数后，最旧的文件将被删除，默认100，0表示不限制个数</summary>
     public static Int32 FileBackups { get; set; } = 5;
 
@@ -54,7 +78,7 @@ public class TextFileLogger : LoggerBase, IDisposable
 
     #region 构造
 
-    private static readonly ConcurrentDictionary<String, TextFileLogger> cache = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly MemoryCache cache = new MemoryCache();
 
     /// <summary>该构造函数没有作用，为了继承而设置</summary>
     public TextFileLogger()

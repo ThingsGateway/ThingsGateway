@@ -43,7 +43,7 @@ public class ManagementHostedService : BackgroundService
     /// <summary>
     /// 启动锁
     /// </summary>
-    internal EasyLock StartLock = new(true);
+    internal WaitLock StartLock = new(true);
 
     private readonly ILogger _logger;
     private readonly IStringLocalizer<ManagementHostedService> Localizer;
