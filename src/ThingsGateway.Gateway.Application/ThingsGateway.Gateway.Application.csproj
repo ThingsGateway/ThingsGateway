@@ -6,7 +6,7 @@
   <ItemGroup>
     <PackageReference Include="SqlSugar.TDengineCore" Version="4.18.0" />
     <PackageReference Include="Rougamo.Fody" Version="4.0.3" />
-    <PackageReference Include="TouchSocket.Dmtp" Version="2.1.2" />
+    <PackageReference Include="TouchSocket.Dmtp" Version="2.1.3" />
     
   </ItemGroup>
 
