@@ -91,7 +91,7 @@ public class VariableBasicData : VariableData
     public DataTypeEnum DataType { get; set; }
 }
 
-internal class VariableDataWithValue
+public class VariableDataWithValue
 {
     /// <inheritdoc cref="Variable.Name"/>
     public string Name { get; set; }

@@ -17,7 +17,7 @@ using Newtonsoft.Json.Linq;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.Extension;
 
 using TouchSocket.Core;
 
@@ -51,16 +51,16 @@ public class ChannelThread
 
     static ChannelThread()
     {
-        var minCycleInterval = NetCoreApp.Configuration.GetSection("ChannelThread:MinCycleInterval").Get<int?>() ?? 10;
+        var minCycleInterval = App.Configuration.GetSection("ChannelThread:MinCycleInterval").Get<int?>() ?? 10;
         MinCycleInterval = minCycleInterval < 10 ? 10 : minCycleInterval;
 
-        var maxCycleInterval = NetCoreApp.Configuration.GetSection("ChannelThread:MaxCycleInterval").Get<int?>() ?? 100;
+        var maxCycleInterval = App.Configuration.GetSection("ChannelThread:MaxCycleInterval").Get<int?>() ?? 100;
         MaxCycleInterval = maxCycleInterval < 100 ? 100 : maxCycleInterval;
 
-        var maxCount = NetCoreApp.Configuration.GetSection("ChannelThread:MaxCount").Get<int?>() ?? 1000;
+        var maxCount = App.Configuration.GetSection("ChannelThread:MaxCount").Get<int?>() ?? 1000;
         MaxCount = maxCount < 10 ? 10 : maxCount;
 
-        var maxVariableCount = NetCoreApp.Configuration.GetSection("ChannelThread:MaxVariableCount").Get<int?>() ?? 1000000;
+        var maxVariableCount = App.Configuration.GetSection("ChannelThread:MaxVariableCount").Get<int?>() ?? 1000000;
         MaxVariableCount = maxVariableCount < 1000 ? 1000 : maxVariableCount;
 
         CycleInterval = MaxCycleInterval;
@@ -70,16 +70,16 @@ public class ChannelThread
 
     private static async Task SetCycleInterval()
     {
-        var appLifetime = NetCoreApp.RootServices!.GetService<IHostApplicationLifetime>()!;
+        var appLifetime = App.RootServices!.GetService<IHostApplicationLifetime>()!;
+        var hardwareJob = GlobalData.HardwareJob;
 
-        var hardwareInfoService = HostedServiceUtil.GetHostedService<HardwareInfoService>();
         List<float> cpus = new();
         while (!((appLifetime?.ApplicationStopping ?? default).IsCancellationRequested || (appLifetime?.ApplicationStopped ?? default).IsCancellationRequested))
         {
             try
             {
-                if (hardwareInfoService?.APPInfo?.MachineInfo?.CpuRate == null) continue;
-                cpus.Add(hardwareInfoService.APPInfo.MachineInfo.CpuRate * 100);
+                if (hardwareJob?.HardwareInfo?.MachineInfo?.CpuRate == null) continue;
+                cpus.Add((float)(hardwareJob.HardwareInfo.MachineInfo.CpuRate * 100));
                 if (cpus.Count == 1 || cpus.Count > 5)
                 {
                     var avg = cpus.Average();
@@ -94,7 +94,7 @@ public class ChannelThread
                         CycleInterval = Math.Min(CycleInterval, MinCycleInterval);
                     }
                 }
-                await Task.Delay(hardwareInfoService.HardwareInfoConfig.RealInterval * 1000, appLifetime?.ApplicationStopping ?? default).ConfigureAwait(false);
+                await Task.Delay(30000, appLifetime?.ApplicationStopping ?? default).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
@@ -115,9 +115,9 @@ public class ChannelThread
     /// <param name="getChannel">获取通道的方法</param>
     public ChannelThread(Channel channel, Func<TouchSocketConfig, IChannel> getChannel)
     {
-        Localizer = NetCoreApp.CreateLocalizerByType(typeof(ChannelThread))!;
+        Localizer = App.CreateLocalizerByType(typeof(ChannelThread))!;
         // 初始化日志记录器，使用通道名称作为日志记录器的名称
-        Logger = NetCoreApp.RootServices.GetService<ILoggerFactory>().CreateLogger($"Channel[{channel.Name}]");
+        Logger = App.RootServices.GetService<ILoggerFactory>().CreateLogger($"Channel[{channel.Name}]");
 
         // 设置通道信息
         ChannelTable = channel;
@@ -255,7 +255,7 @@ public class ChannelThread
                     }
 
                     // 创建新的文件日志记录器，并设置日志级别为 Trace
-                    TextLogger = TextFileLogger.Create(LogPath);
+                    TextLogger = TextFileLogger.CreateTextLogger(LogPath);
                     TextLogger.LogLevel = TouchSocket.Core.LogLevel.Trace;
 
                     // 将文件日志记录器添加到日志消息组中
@@ -529,8 +529,6 @@ public class ChannelThread
                 // 如果需要移除的是采集设备
                 if (IsCollectChannel)
                 {
-
-
                     DriverBases.RemoveCollectDeviceRuntime();
                 }
                 else
@@ -605,6 +603,11 @@ public class ChannelThread
         }
         else
         {
+            //foreach (var driver in DriverBases)
+            //{
+            //    await DoWork(driver, DriverBases.Count, stoppingToken, CancellationToken.None).ConfigureAwait(false);
+            //}
+
             ParallelOptions parallelOptions = new();
             parallelOptions.CancellationToken = stoppingToken;
             parallelOptions.MaxDegreeOfParallelism = DriverBases.Count == 0 ? 1 : DriverBases.Count;

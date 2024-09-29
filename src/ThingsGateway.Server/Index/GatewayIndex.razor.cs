@@ -10,15 +10,12 @@
 //------------------------------------------------------------------------------
 
 
-#if !Admin
 
 
 using BootstrapBlazor.Components;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 
 using System.Diagnostics.CodeAnalysis;
@@ -39,11 +36,11 @@ public partial class GatewayIndex : IDisposable
 {
     #region 曲线
 
-    private HardwareInfoService HardwareInfoService { get; set; }
+    [Inject]
+    private IHardwareJob HardwareJob { get; set; }
 
     protected override void OnInitialized()
     {
-        HardwareInfoService = (HardwareInfoService)NetCoreApp.RootServices.GetServices<IHostedService>().FirstOrDefault(it => it is HardwareInfoService)!;
         _ = RunTimerAsync();
         base.OnInitialized();
     }
@@ -66,7 +63,7 @@ public partial class GatewayIndex : IDisposable
                     await CPULineChart.Update(ChartAction.Update);
 
                 await InvokeAsync(StateHasChanged);
-                await Task.Delay((HardwareInfoService.HardwareInfoConfig ?? new()).RealInterval * 1000 + 1000);
+                await Task.Delay(30000);
             }
             catch (Exception ex)
             {
@@ -83,15 +80,15 @@ public partial class GatewayIndex : IDisposable
 
     [Inject]
     [NotNull]
-    private IStringLocalizer<HisHardwareInfo> HisHardwareInfoLocalizer { get; set; }
+    private IStringLocalizer<HistoryHardwareInfo> HistoryHardwareInfoLocalizer { get; set; }
 
     private async Task<ChartDataSource> OnCPUInit()
     {
         if (ChartDataSource == null)
         {
-            var hisHardwareInfos = await HardwareInfoService.GetHisHardwareInfos();
+            var hisHardwareInfos = await HardwareJob.GetHistoryHardwareInfos();
             ChartDataSource = new ChartDataSource();
-            ChartDataSource.Options.Title = Localizer[nameof(HisHardwareInfo)];
+            ChartDataSource.Options.Title = Localizer[nameof(HistoryHardwareInfo)];
             ChartDataSource.Options.X.Title = Localizer["DateTime"];
             ChartDataSource.Options.Y.Title = Localizer["Data"];
             ChartDataSource.Labels = hisHardwareInfos.Select(a => a.Date.ToString("dd HH:mm zz"));
@@ -99,14 +96,14 @@ public partial class GatewayIndex : IDisposable
             {
                 Tension = 0.4f,
                 PointRadius = 1,
-                Label = HisHardwareInfoLocalizer[nameof(HisHardwareInfo.CpuUsage)],
+                Label = HistoryHardwareInfoLocalizer[nameof(HistoryHardwareInfo.CpuUsage)],
                 Data = hisHardwareInfos.Select(a => (object)a.CpuUsage),
             });
             ChartDataSource.Data.Add(new ChartDataset()
             {
                 Tension = 0.4f,
                 PointRadius = 1,
-                Label = HisHardwareInfoLocalizer[nameof(HisHardwareInfo.MemoryUsage)],
+                Label = HistoryHardwareInfoLocalizer[nameof(HistoryHardwareInfo.MemoryUsage)],
                 Data = hisHardwareInfos.Select(a => (object)a.MemoryUsage),
             });
 
@@ -114,7 +111,7 @@ public partial class GatewayIndex : IDisposable
             {
                 Tension = 0.4f,
                 PointRadius = 1,
-                Label = HisHardwareInfoLocalizer[nameof(HisHardwareInfo.DriveUsage)],
+                Label = HistoryHardwareInfoLocalizer[nameof(HistoryHardwareInfo.DriveUsage)],
                 Data = hisHardwareInfos.Select(a => (object)a.DriveUsage),
             });
 
@@ -123,7 +120,7 @@ public partial class GatewayIndex : IDisposable
                 ShowPointStyle = false,
                 Tension = 0.4f,
                 PointRadius = 1,
-                Label = HisHardwareInfoLocalizer[nameof(HisHardwareInfo.Temperature)],
+                Label = HistoryHardwareInfoLocalizer[nameof(HistoryHardwareInfo.Temperature)],
                 Data = hisHardwareInfos.Select(a => (object)a.Temperature),
             });
 
@@ -131,13 +128,13 @@ public partial class GatewayIndex : IDisposable
             {
                 Tension = 0.4f,
                 PointRadius = 1,
-                Label = HisHardwareInfoLocalizer[nameof(HisHardwareInfo.Battery)],
+                Label = HistoryHardwareInfoLocalizer[nameof(HistoryHardwareInfo.Battery)],
                 Data = hisHardwareInfos.Select(a => (object)a.Battery),
             });
         }
         else
         {
-            var hisHardwareInfos = await HardwareInfoService.GetHisHardwareInfos();
+            var hisHardwareInfos = await HardwareJob.GetHistoryHardwareInfos();
             ChartDataSource.Labels = hisHardwareInfos.Select(a => a.Date.ToString("dd HH:mm zz"));
             ChartDataSource.Data[0].Data = hisHardwareInfos.Select(a => (object)a.CpuUsage);
             ChartDataSource.Data[1].Data = hisHardwareInfos.Select(a => (object)a.MemoryUsage);
@@ -210,4 +207,3 @@ public partial class GatewayIndex : IDisposable
     }
 }
 
-#endif

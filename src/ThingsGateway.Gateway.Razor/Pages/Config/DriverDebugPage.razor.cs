@@ -11,8 +11,7 @@
 using Mapster;
 
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.NewLife.X.Extension;
-using ThingsGateway.Razor;
+using ThingsGateway.NewLife.Extension;
 
 namespace ThingsGateway.Gateway.Razor;
 
@@ -36,7 +35,7 @@ public partial class DriverDebugPage
         {
             try
             {
-                var driver = HostedServiceUtil.CollectDeviceHostedService.GetDebugUI(pluginOutput.FullName);
+                var driver = GlobalData.CollectDeviceHostedService.GetDebugUI(pluginOutput.FullName);
                 if (driver == null)
                 {
                     pluginOutputs.Remove(pluginOutput);
@@ -71,7 +70,7 @@ public partial class DriverDebugPage
             var pluginName = plugin.FullName;
             if (!pluginName.IsNullOrWhiteSpace())
             {
-                var driver = HostedServiceUtil.CollectDeviceHostedService.GetDebugUI(pluginName);
+                var driver = GlobalData.CollectDeviceHostedService.GetDebugUI(pluginName);
                 if (driver == null)
                 {
                     await ToastService.Warning(null, Localizer["PluginUINotNull"]);

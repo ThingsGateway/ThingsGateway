@@ -12,9 +12,9 @@
 
 <Tab>
     <TabItem Text=@Localizer["CollectDevice"]>
-        <DeviceStatus Channels=Channels Devices=CollectDevices Plugins=Plugins DeviceQuery="CollectDeviceQuery" DeviceHostedService=@HostedServiceUtil.CollectDeviceHostedService DriverBases="CollectBases"></DeviceStatus>
+        <DeviceStatus Channels=Channels Devices=CollectDevices Plugins=Plugins DeviceQuery="CollectDeviceQuery" DeviceHostedService=@GlobalData.CollectDeviceHostedService DriverBases="CollectBases"></DeviceStatus>
     </TabItem>
     <TabItem Text=@Localizer["BusinessDevice"]>
-        <DeviceStatus Channels=Channels Devices=BusinessDevices Plugins=Plugins DeviceQuery="BusinessDeviceQuery" DeviceHostedService=@HostedServiceUtil.BusinessDeviceHostedService DriverBases="BusinessBases"></DeviceStatus>
+        <DeviceStatus Channels=Channels Devices=BusinessDevices Plugins=Plugins DeviceQuery="BusinessDeviceQuery" DeviceHostedService=@GlobalData.BusinessDeviceHostedService DriverBases="BusinessBases"></DeviceStatus>
     </TabItem>
 </Tab>

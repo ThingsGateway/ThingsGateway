@@ -10,12 +10,9 @@
 
 using Microsoft.AspNetCore.Components.WebView;
 using Microsoft.AspNetCore.Components.WebView.WindowsForms;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Web.WebView2.Core;
 
 using System.Windows.Forms;
-
-using ThingsGateway.Admin.NetCore;
 
 namespace ThingsGateway.Winform
 {
@@ -23,17 +20,6 @@ namespace ThingsGateway.Winform
     {
         protected string UploadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "uploads");
         private BlazorWebView blazorWebView;
-        public static void StopHostedService(IServiceProvider serviceProvider)
-        {
-
-            var applicationLifetime = serviceProvider.GetRequiredService<ApplicationLifetime>();
-            applicationLifetime.StopApplication();
-
-            var _hostedServiceExecutor = serviceProvider.GetRequiredService<HostedServiceExecutor>();
-            _hostedServiceExecutor.StopAsync(default).ConfigureAwait(true).GetAwaiter().GetResult();
-            applicationLifetime.NotifyStopped();
-
-        }
 
         public MainForm(IServiceProvider serviceProvider)
         {
@@ -53,10 +39,8 @@ namespace ThingsGateway.Winform
                 Services = serviceProvider
             };
 
-            FormClosing += (sender, e) =>
-            {
-                StopHostedService(serviceProvider);
-            };
+            FormClosing += Program.Closing;
+
             blazorWebView.RootComponents.Add<Routes>("#app");
             Controls.Add(blazorWebView);
             blazorWebView.BringToFront();
@@ -76,6 +60,8 @@ namespace ThingsGateway.Winform
                     }
                 };
         }
+
+
 
         private void BlazorWebViewInitialized(object? sender, EventArgs e)
         {
@@ -106,7 +92,6 @@ namespace ThingsGateway.Winform
 
             //指定下载保存位置
             e.ResultFilePath = filePath;
-            MessageBox.Show($"下载文件完成 {fileName}", "提示");
         }
 
         private void MainForm_KeyUp(object? sender, KeyEventArgs e)

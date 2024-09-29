@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Components.Web;
 
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.Razor;
 
 using TouchSocket.Core;
 

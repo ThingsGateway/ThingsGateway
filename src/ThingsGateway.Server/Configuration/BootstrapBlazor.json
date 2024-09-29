@@ -1,0 +1,33 @@
+{
+
+
+  //BootstrapBlazor配置
+  "BootstrapBlazorOptions": {
+
+
+    "ToastDelay": 4000,
+    "MessageDelay": 4000,
+    "SwalDelay": 4000,
+    "EnableErrorLogger": true,
+    "FallbackCulture": "zh-CN",
+    "SupportedCultures": [
+      "zh-CN",
+      "en-US",
+      "zh-TW"
+    ],
+    "DefaultCultureInfo": "zh-CN", //修改默认语言
+    "TableSettings": {
+      "CheckboxColumnWidth": 36
+    },
+    "IgnoreLocalizerMissing": true,
+    "StepSettings": {
+      "Short": 1,
+      "Int": 1,
+      "Long": 1,
+      "Float": 0.1,
+      "Double": 0.01,
+      "Decimal": 0.01
+    }
+  }
+
+}

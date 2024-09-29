@@ -15,9 +15,9 @@ using Newtonsoft.Json.Linq;
 
 using System.Collections.Concurrent;
 
+using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Extension;
 using ThingsGateway.Foundation.Extension.Collection;
-using ThingsGateway.Json.Extension;
 
 using TouchSocket.Core;
 
@@ -26,7 +26,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 变量写入/执行变量方法
 /// </summary>
-public class RpcService : IRpcService
+internal class RpcService : IRpcService
 {
     private readonly ConcurrentQueue<RpcLog> _logQueues = new();
 
@@ -74,7 +74,7 @@ public class RpcService : IRpcService
             }
 
             // 查找变量对应的设备
-            var dev = (CollectBase)HostedServiceUtil.CollectDeviceHostedService.DriverBases.FirstOrDefault(it => it.DeviceId == tag.DeviceId);
+            var dev = (CollectBase)GlobalData.CollectDeviceHostedService.DriverBases.FirstOrDefault(it => it.DeviceId == tag.DeviceId);
             if (dev == null)
             {
                 // 如果设备不存在，则添加错误信息到结果中并继续下一个变量的处理
@@ -137,8 +137,8 @@ public class RpcService : IRpcService
                     string parJson;
                     if (resultItem.Key.IsNullOrEmpty())
                     {
-                        operObj = items.Select(x => x.Key).ToSystemTextJsonString();
-                        parJson = items.Select(x => x.Value).ToSystemTextJsonString();
+                        operObj = items.Select(x => x.Key).ToJsonNetString();
+                        parJson = items.Select(x => x.Value).ToJsonNetString();
                     }
                     else
                     {
@@ -237,7 +237,7 @@ public class RpcService : IRpcService
     private async Task RpcLogInsertAsync()
     {
         var db = DbContext.Db.GetConnectionScopeWithAttr<RpcLog>().CopyNew(); // 创建一个新的数据库上下文实例
-        var appLifetime = NetCoreApp.RootServices!.GetService<IHostApplicationLifetime>()!;
+        var appLifetime = App.RootServices!.GetService<IHostApplicationLifetime>()!;
         // 在应用程序未停止的情况下循环执行日志插入操作
         while (!((appLifetime?.ApplicationStopping ?? default).IsCancellationRequested || (appLifetime?.ApplicationStopped ?? default).IsCancellationRequested))
         {

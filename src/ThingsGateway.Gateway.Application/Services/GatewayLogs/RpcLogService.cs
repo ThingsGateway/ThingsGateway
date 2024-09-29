@@ -16,7 +16,7 @@ using System.Data;
 
 namespace ThingsGateway.Gateway.Application;
 
-public class RpcLogService : BaseService<RpcLog>, IRpcLogService
+internal class RpcLogService : BaseService<RpcLog>, IRpcLogService
 {
     #region 查询
 

@@ -8,16 +8,17 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Hosting;
 
 using Photino.Blazor;
 
+using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
 
-using ThingsGateway.Admin.NetCore;
+using ThingsGateway.NewLife.Log;
 
 namespace ThingsGateway.Photino;
 
@@ -29,77 +30,104 @@ internal class Program
     {
         //当前工作目录设为程序集的基目录
         System.IO.Directory.SetCurrentDirectory(AppContext.BaseDirectory);
-
         // 增加中文编码支持
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-#if Pro
+        #region 控制台输出Logo
 
-        MenuConfigs.Default.MenuItems.AddRange(ThingsGateway.Debug.ProRcl.ProMenuConfigs.Default.MenuItems);
+        Console.Write(Environment.NewLine);
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        XTrace.WriteLine(string.Empty);
+        Console.WriteLine(
+            """
 
-#endif
+               _______  _      _                      _____         _
+              |__   __|| |    (_)                    / ____|       | |
+                 | |   | |__   _  _ __    __ _  ___ | |  __   __ _ | |_  ___ __      __ __ _  _   _
+                 | |   | '_ \ | || '_ \  / _` |/ __|| | |_ | / _` || __|/ _ \\ \ /\ / // _` || | | |
+                 | |   | | | || || | | || (_| |\__ \| |__| || (_| || |_|  __/ \ V  V /| (_| || |_| |
+                 |_|   |_| |_||_||_| |_| \__, ||___/ \_____| \__,_| \__|\___|  \_/\_/  \__,_| \__, |
+                                          __/ |                                                __/ |
+                                         |___/                                                |___/
+
+            """
+         );
+        Console.ResetColor();
+
+        #endregion 控制台输出Logo
 
         var builder = PhotinoBlazorAppBuilder.CreateDefault(args);
-
-        builder.Services.ConfigureServicesWithoutWeb();
-
-        // 添加配置服务
-        builder.Services.AddSingleton<IConfiguration>(NetCoreApp.Configuration);
-
-        // 增加中文编码支持网页源码显示汉字
-        builder.Services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
-
         builder.RootComponents.Add<Routes>("#app");
 
+        var options = RunOptions.Default.ConfigureBuilder(builder =>
+        {
 
-        var app = builder.Build();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                builder.Host.UseWindowsService();
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                builder.Host.UseSystemd();
 
-        app.Services.UseServicesWithoutWeb();
+            if (!builder.Environment.IsDevelopment())
+            {
+                builder.Services.AddResponseCompression(
+                    opts =>
+                    {
+                        opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+                    });
+            }
 
-        app.MainWindow.ContextMenuEnabled = false;
-        app.MainWindow.DevToolsEnabled = true;
-        app.MainWindow.GrantBrowserPermissions = true;
-        app.MainWindow.SetUseOsDefaultLocation(false);
-        app.MainWindow.SetUseOsDefaultSize(false);
-        app.MainWindow.SetSize(new System.Drawing.Size(1920, 1080));
-        app.MainWindow.SetTitle("ThingsGateway");
-        app.MainWindow.SetIconFile("favicon.ico");
+            builder.WebHost.UseWebRoot("wwwroot");
+            builder.WebHost.UseStaticWebAssets();
+            // 设置接口超时时间和上传大小-Kestrel
+            builder.WebHost.ConfigureKestrel(u =>
+            {
+                u.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(30);
+                u.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(30);
+                u.Limits.MaxRequestBodySize = null;
+            });
+
+
+
+
+        })
+              .Configure(app =>
+              {
+
+              }).Silence(true, true)
+              .ConfigureServices(services =>
+              {
+                  foreach (var item in builder.Services)
+                  {
+                      services.Add(item);
+                  }
+              });
+        ;
+        Serve.BuildApplication(options, default, out var startUrls, out var app);
+
+        app.Start();
+
+        var hybridApp = builder.Build(app.Services);
+
+        hybridApp.MainWindow.ContextMenuEnabled = false;
+        hybridApp.MainWindow.DevToolsEnabled = true;
+        hybridApp.MainWindow.GrantBrowserPermissions = true;
+        hybridApp.MainWindow.SetUseOsDefaultLocation(false);
+        hybridApp.MainWindow.SetUseOsDefaultSize(false);
+        hybridApp.MainWindow.SetSize(new System.Drawing.Size(1920, 1080));
+        hybridApp.MainWindow.SetTitle("ThingsGateway");
+        hybridApp.MainWindow.SetIconFile("favicon.ico");
         AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
         {
         };
 
-        app.MainWindow.WindowClosing += (sender, e) =>
+        hybridApp.MainWindow.WindowClosing += (sender, e) =>
         {
-            StopHostedService(app.Services);
+            app.StopAsync();
             return false;
         };
-        StartHostedService(app.Services);
-        app.Run();
-        Thread.Sleep(2000);
+        hybridApp.Run();
+        Thread.Sleep(5000);
     }
 
-    public static void StartHostedService(IServiceProvider serviceProvider)
-    {
-
-        var applicationLifetime = serviceProvider.GetRequiredService<ApplicationLifetime>();
-        var hostedServiceExecutor = serviceProvider.GetRequiredService<HostedServiceExecutor>();
-        // Fire IHostedService.Start
-        hostedServiceExecutor.StartAsync(default).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        applicationLifetime.NotifyStarted();
-
-    }
-
-    public static void StopHostedService(IServiceProvider serviceProvider)
-    {
-
-        var applicationLifetime = serviceProvider.GetRequiredService<ApplicationLifetime>();
-        applicationLifetime.StopApplication();
-
-        var _hostedServiceExecutor = serviceProvider.GetRequiredService<HostedServiceExecutor>();
-        _hostedServiceExecutor.StopAsync(default).ConfigureAwait(false).GetAwaiter().GetResult();
-        applicationLifetime.NotifyStopped();
-
-    }
 
 }

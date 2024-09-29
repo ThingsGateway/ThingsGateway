@@ -32,7 +32,7 @@ public class BackendLogDatabaseLoggingWriter : IDatabaseLoggingWriter
     private readonly ConcurrentQueue<BackendLog> _logQueues = new();
 
     // 自定义日志级别，默认为警告级别
-    private LogLevel CustomLevel = NetCoreApp.Configuration.GetSection("Logging:BackendLog:LogLevel:Default").Get<LogLevel?>() ?? LogLevel.Warning;
+    private LogLevel CustomLevel = App.Configuration.GetSection("Logging:BackendLog:LogLevel:Default").Get<LogLevel?>() ?? LogLevel.Warning;
 
     // SqlSugar客户端实例
     private SqlSugarClient SqlSugarClient;

@@ -3,26 +3,22 @@
   <Import Project="$(SolutionDir)PackNuget.props" />
 
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
-    <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj" />
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
+    <ProjectReference Include="..\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
     <PackageReference Include="BootstrapBlazor.WinBox" Version="8.0.3" />
+    <PackageReference Include="ThingsGateway.Foundation.Razor" Version="9.0.*" />
+    <PackageReference Include="ThingsGateway.Admin.Razor" Version="7.0.*" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Content Remove="Locales\*.json" />
     <EmbeddedResource Include="Locales\*.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
-  
-  <ItemGroup>
-    <Content Update="wwwroot\**">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <Pack>true</Pack>
-      <PackagePath>contentFiles/any/wwwroot</PackagePath>
-    </Content>
-  </ItemGroup>
+
+  <PropertyGroup>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
   
 </Project>
 

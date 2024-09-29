@@ -8,56 +8,103 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
+using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Unicode;
 using System.Windows.Forms;
 
-using ThingsGateway.Admin.NetCore;
+using ThingsGateway.NewLife.Log;
 
 namespace ThingsGateway.Winform;
 
 internal class Program
 {
-
+    internal static void Closing(object? sender, FormClosingEventArgs e)
+    {
+        webApplication.StopAsync();
+    }
     [STAThread]
     private static void Main(string[] args)
     {
         //当前工作目录设为程序集的基目录
         System.IO.Directory.SetCurrentDirectory(AppContext.BaseDirectory);
-
         // 增加中文编码支持
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-#if Pro
+        #region 控制台输出Logo
 
-        MenuConfigs.Default.MenuItems.AddRange(ThingsGateway.Debug.ProRcl.ProMenuConfigs.Default.MenuItems);
+        Console.Write(Environment.NewLine);
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        XTrace.WriteLine(string.Empty);
+        Console.WriteLine(
+            """
 
-#endif
+               _______  _      _                      _____         _
+              |__   __|| |    (_)                    / ____|       | |
+                 | |   | |__   _  _ __    __ _  ___ | |  __   __ _ | |_  ___ __      __ __ _  _   _
+                 | |   | '_ \ | || '_ \  / _` |/ __|| | |_ | / _` || __|/ _ \\ \ /\ / // _` || | | |
+                 | |   | | | || || | | || (_| |\__ \| |__| || (_| || |_|  __/ \ V  V /| (_| || |_| |
+                 |_|   |_| |_||_||_| |_| \__, ||___/ \_____| \__,_| \__|\___|  \_/\_/  \__,_| \__, |
+                                          __/ |                                                __/ |
+                                         |___/                                                |___/
 
-        ServiceCollection serviceDescriptors = new();
+            """
+         );
+        Console.ResetColor();
 
-        serviceDescriptors.AddWindowsFormsBlazorWebView();
-
-        serviceDescriptors.ConfigureServicesWithoutWeb();
-
-        // 添加配置服务
-        serviceDescriptors.AddSingleton<IConfiguration>(NetCoreApp.Configuration);
-
-        // 增加中文编码支持网页源码显示汉字
-        serviceDescriptors.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
-
-
-        var services = serviceDescriptors.BuildServiceProvider();
+        #endregion 控制台输出Logo
 
 
-        services.UseServicesWithoutWeb();
+        var options = RunOptions.Default.ConfigureBuilder(builder =>
+        {
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                builder.Host.UseWindowsService();
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                builder.Host.UseSystemd();
+
+            if (!builder.Environment.IsDevelopment())
+            {
+                builder.Services.AddResponseCompression(
+                    opts =>
+                    {
+                        opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+                    });
+            }
+
+            builder.WebHost.UseWebRoot("wwwroot");
+            builder.WebHost.UseStaticWebAssets();
+            // 设置接口超时时间和上传大小-Kestrel
+            builder.WebHost.ConfigureKestrel(u =>
+            {
+                u.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(30);
+                u.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(30);
+                u.Limits.MaxRequestBodySize = null;
+            });
 
 
-        StartHostedService(services);
+
+
+        })
+              .Configure(app =>
+              {
+
+              }).Silence(true, true)
+              .ConfigureServices(services =>
+              {
+                  services.AddWindowsFormsBlazorWebView();
+              });
+        ;
+
+        Serve.BuildApplication(options, default, out var startUrls, out var app);
+        webApplication = app;
+        app.Start();
+
         AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
         {
             MessageBox.Show(text: error.ExceptionObject.ToString(), caption: "Error");
@@ -66,22 +113,12 @@ internal class Program
         Application.SetHighDpiMode(HighDpiMode.SystemAware);
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
-        Application.Run(new MainForm(services));
+        Application.Run(new MainForm(app.Services));
 
-        Thread.Sleep(2000);
+        Thread.Sleep(5000);
     }
 
-    public static void StartHostedService(IServiceProvider serviceProvider)
-    {
 
-        var applicationLifetime = serviceProvider.GetRequiredService<ApplicationLifetime>();
-        var hostedServiceExecutor = serviceProvider.GetRequiredService<HostedServiceExecutor>();
-        // Fire IHostedService.Start
-        hostedServiceExecutor.StartAsync(default).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        applicationLifetime.NotifyStarted();
-
-    }
-
+    private static WebApplication webApplication;
 
 }

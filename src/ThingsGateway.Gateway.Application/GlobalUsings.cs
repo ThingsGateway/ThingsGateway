@@ -11,5 +11,4 @@
 global using Microsoft.Extensions.DependencyInjection;
 
 global using ThingsGateway.Admin.Application;
-global using ThingsGateway;
 global using ThingsGateway.Foundation;

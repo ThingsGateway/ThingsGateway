@@ -10,7 +10,7 @@
 
 using SqlSugar;
 
-using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -67,7 +67,7 @@ public class CacheDB : DisposeBase
             DbType = DbType.Sqlite,
             IsAutoCloseConnection = true,
         });
-        NetCoreApp.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
+        App.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
         return sqlSugarClient;
     }
 }

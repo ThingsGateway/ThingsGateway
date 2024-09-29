@@ -18,7 +18,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 业务设备服务
 /// </summary>
-public class BusinessDeviceHostedService : DeviceHostedService
+internal class BusinessDeviceHostedService : DeviceHostedService, IBusinessDeviceHostedService
 {
     /// <summary>
     /// 线程检查时间，10分钟
@@ -32,14 +32,17 @@ public class BusinessDeviceHostedService : DeviceHostedService
     /// </summary>
     protected volatile bool started = false;
 
-    private IStringLocalizer Localizer { get; }
+    private IStringLocalizer BusinessDeviceHostedServiceLocalizer { get; }
+
+    /// <inheritdoc/>
+    public bool StartBusinessDeviceEnable { get; set; } = true;
 
     private WaitLock publicRestartLock = new();
 
-    public BusinessDeviceHostedService(ILogger<BusinessDeviceHostedService> logger, IStringLocalizer<DeviceHostedService> localizer)
+    public BusinessDeviceHostedService(ILogger<BusinessDeviceHostedService> logger, IStringLocalizer<BusinessDeviceHostedService> localizer)
     {
         _logger = logger;
-        Localizer = localizer;
+        BusinessDeviceHostedServiceLocalizer = localizer;
     }
 
     #region 服务
@@ -64,8 +67,8 @@ public class BusinessDeviceHostedService : DeviceHostedService
                         if (driverBase.CurrentDevice != null)
                         {
                             //线程卡死/初始化失败检测
-                            if ((driverBase.CurrentDevice.ActiveTime != null && driverBase.CurrentDevice.ActiveTime != DateTime.UnixEpoch.ToLocalTime() && driverBase.CurrentDevice.ActiveTime.Value.AddMinutes(CheckIntervalTime) <= DateTime.Now)
-                                || (driverBase.IsInitSuccess == false))
+                            if (((driverBase.CurrentDevice.ActiveTime != null && driverBase.CurrentDevice.ActiveTime != DateTime.UnixEpoch.ToLocalTime() && driverBase.CurrentDevice.ActiveTime.Value.AddMinutes(CheckIntervalTime) <= DateTime.Now)
+                                || (driverBase.IsInitSuccess == false)) && !driverBase.DisposedValue)
                             {
                                 //如果线程处于暂停状态，跳过
                                 if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.Pause)
@@ -118,17 +121,15 @@ public class BusinessDeviceHostedService : DeviceHostedService
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-        HostedServiceUtil.CollectDeviceHostedService.Starting += CollectDeviceHostedService_Starting;
-        HostedServiceUtil.CollectDeviceHostedService.Started += CollectDeviceHostedService_Started;
-        HostedServiceUtil.CollectDeviceHostedService.Stoping += CollectDeviceHostedService_Stoping;
+        GlobalData.CollectDeviceHostedService.Starting += CollectDeviceHostedService_Starting;
+        GlobalData.CollectDeviceHostedService.Started += CollectDeviceHostedService_Started;
+        GlobalData.CollectDeviceHostedService.Stoping += CollectDeviceHostedService_Stoping;
         return base.StartAsync(cancellationToken);
     }
 
     #endregion
 
-    /// <summary>
-    /// 更新设备线程
-    /// </summary>
+    /// <inheritdoc/>
     public override async Task RestartChannelThreadAsync(long deviceId, bool isChanged, bool deleteCache = false)
     {
         try
@@ -199,6 +200,7 @@ public class BusinessDeviceHostedService : DeviceHostedService
         }
     }
 
+    /// <inheritdoc/>
     public async Task RestartAsync(bool removeDevice = true)
     {
         try
@@ -247,9 +249,7 @@ public class BusinessDeviceHostedService : DeviceHostedService
         }
     }
 
-    /// <summary>
-    /// 停止
-    /// </summary>
+    /// <inheritdoc/>
     public async Task StopAsync(bool removeDevice)
     {
         try
@@ -292,9 +292,9 @@ public class BusinessDeviceHostedService : DeviceHostedService
     {
         if (!_stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation(Localizer["DeviceRuntimeGeting"]);
+            _logger.LogInformation(BusinessDeviceHostedServiceLocalizer["DeviceRuntimeGeting"]);
             var deviceRunTimes = await DeviceService.GetBusinessDeviceRuntimeAsync().ConfigureAwait(false);
-            _logger.LogInformation(Localizer["DeviceRuntimeGeted"]);
+            _logger.LogInformation(BusinessDeviceHostedServiceLocalizer["DeviceRuntimeGeted"]);
             var idSet = deviceRunTimes.Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet().ToDictionary(a => a);
             var result = deviceRunTimes.Where(a => !idSet.ContainsKey(a.Id));
             result.ParallelForEach(businessDeviceRunTime =>
@@ -330,7 +330,7 @@ public class BusinessDeviceHostedService : DeviceHostedService
 
     private async Task CollectDeviceHostedService_Started()
     {
-        if (HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable || HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
+        if (GlobalData.CollectDeviceHostedService.StartCollectDeviceEnable || GlobalData.BusinessDeviceHostedService.StartBusinessDeviceEnable)
         {
             await StartAsync().ConfigureAwait(false);
         }
@@ -367,7 +367,7 @@ public class BusinessDeviceHostedService : DeviceHostedService
 
     private async Task CollectDeviceHostedService_Stoping()
     {
-        if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
+        if (!GlobalData.BusinessDeviceHostedService.StartBusinessDeviceEnable)
             await StopAsync(true).ConfigureAwait(false);
     }
 

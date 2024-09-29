@@ -8,7 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-#if !Admin
 
 using BootstrapBlazor.Components;
 
@@ -165,4 +164,3 @@ public partial class GatewayIndexComponent : IDisposable
 
     #endregion 曲线
 }
-#endif

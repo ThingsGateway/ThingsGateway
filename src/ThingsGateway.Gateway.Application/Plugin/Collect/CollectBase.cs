@@ -17,9 +17,9 @@ using Newtonsoft.Json.Linq;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Json.Extension;
+using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Gateway.Application.Extensions;
-using ThingsGateway.NewLife.X.Threading;
+using ThingsGateway.NewLife.Threading;
 
 using TouchSocket.Core;
 
@@ -142,7 +142,7 @@ public abstract class CollectBase : DriverBase
     {
         // 调用基类的初始化方法
         base.Init(device);
-        Localizer = NetCoreApp.CreateLocalizerByType(typeof(CollectBase))!;
+        Localizer = App.CreateLocalizerByType(typeof(CollectBase))!;
 
         // 从插件服务中获取当前设备关联的驱动方法信息列表，并转换为列表形式
         var data = PluginService.GetDriverMethodInfos(device.PluginName, this);
@@ -155,7 +155,7 @@ public abstract class CollectBase : DriverBase
 
     protected override void Dispose(bool disposing)
     {
-
+        //去掉全局变量
         this.RemoveCollectDeviceRuntime();
         base.Dispose(disposing);
     }
@@ -230,9 +230,6 @@ public abstract class CollectBase : DriverBase
             }
         }
 
-
-
-
         // 如果所有方法和变量读取都成功，则清零错误计数器
         if (readResultCount.deviceMethodsVariableFailedNum == 0 && readResultCount.deviceSourceVariableFailedNum == 0 && (readResultCount.deviceMethodsVariableSuccessNum != 0 || readResultCount.deviceSourceVariableSuccessNum != 0))
         {
@@ -241,6 +238,9 @@ public abstract class CollectBase : DriverBase
             //只有成功读取一次，失败次数都会清零
             CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
         }
+
+
+        #region 执行方法
 
         async ValueTask<bool> ReadVariableMed(ReadResultCount readResultCount, VariableMethod readVariableMethods, CancellationToken cancellationToken, bool delay = true)
         {
@@ -284,7 +284,7 @@ public abstract class CollectBase : DriverBase
                 {
                     // 方法调用成功时记录日志并增加成功计数器
                     if (LogMessage.LogLevel <= TouchSocket.Core.LogLevel.Trace)
-                        LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Succeeded {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult.Content?.ToSystemTextJsonString()));
+                        LogMessage?.Trace(string.Format("{0} - Execute method[{1}] - Succeeded {2}", DeviceName, readVariableMethods.MethodInfo.Name, readResult.Content?.ToJsonNetString()));
                     readResultCount.deviceMethodsVariableSuccessNum++;
                     CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
                 }
@@ -316,6 +316,10 @@ public abstract class CollectBase : DriverBase
 
             return false;
         }
+
+        #endregion
+
+        #region 执行默认读取
 
         async ValueTask<bool> ReadVariableSource(ReadResultCount readResultCount, VariableSourceRead? variableSourceRead, CancellationToken cancellationToken, bool delay = true)
         {
@@ -398,6 +402,8 @@ public abstract class CollectBase : DriverBase
 
             return false;
         }
+
+        #endregion
 
         async ValueTask<bool> TestOnline(CancellationToken cancellationToken)
         {
@@ -494,7 +500,7 @@ public abstract class CollectBase : DriverBase
             {
                 while (WriteLock.IsWaitting)
                 {
-                    await Task.Delay(100).ConfigureAwait(false);
+                    await Task.Delay(100).ConfigureAwait(false);//写优先，直接等待一段时间
                 }
             }
 
@@ -571,10 +577,7 @@ public abstract class CollectBase : DriverBase
     private class ReadResultCount
     {
         public int deviceMethodsVariableFailedNum = 0;
-
-        // 初始化成功和失败的计数器
         public int deviceMethodsVariableSuccessNum = 0;
-
         public int deviceSourceVariableFailedNum = 0;
         public int deviceSourceVariableSuccessNum = 0;
     }

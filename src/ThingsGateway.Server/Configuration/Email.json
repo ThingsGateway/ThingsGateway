@@ -1,0 +1,14 @@
+{
+
+
+  "Email": {
+    "Host": "smtp.163.com", // 主机
+    "Port": 465, // 端口 465、994、25
+    "EnableSsl": true, // 启用SSL
+    "DefaultFromEmail": "xxx@163.com", // 默认发件者邮箱
+    "DefaultToEmail": "xxx@qq.com", // 默认接收人邮箱
+    "UserName": "xxx@163.com", // 邮箱账号
+    "Password": "", // 邮箱授权码
+    "DefaultFromName": "ThingsGateway" // 默认邮件标题
+  }
+}

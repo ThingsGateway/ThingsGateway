@@ -1,4 +1,28 @@
 ﻿{
+
+
+  "ThingsGateway.Gateway.Application.ConfigInfoControler": {
+    "ConfigInfoControler": "获取配置信息",
+    "GetChannelList": "获取通道信息",
+    "GetCollectDeviceList": "获取设备信息",
+    "GetVariableList": "获取变量信息"
+  },
+  "ThingsGateway.Gateway.Application.ControlControler": {
+    "ControlControler": "设备控制",
+    "PauseCollectThread": "控制采集线程启停",
+    "PauseBusinessThread": "控制业务线程启停",
+    "RestartCollectDeviceThread": "重启采集线程",
+    "RestartBusinessDeviceThread": "重启业务线程",
+    "WriteDeviceMethods": "写入变量"
+  },
+  "ThingsGateway.Gateway.Application.RuntimeInfoControler": {
+    "RuntimeInfoControler": "获取运行态信息",
+    "GetCollectDeviceList": "获取设备信息",
+    "GetVariableList": "获取变量信息",
+    "GetRealAlarmList": "获取实时报警信息",
+    "CheckRealAlarm": "确认实时报警"
+  },
+
   "ThingsGateway.Gateway.Application.VariableSearchInput": {
     "Name": "变量名称",
     "DeviceId": "采集设备",
@@ -203,13 +227,11 @@
   },
   "ThingsGateway.Gateway.Application.BusinessDeviceHostedService": {
     "DeviceRuntimeGeting": "正在获取业务设备组态信息",
-    "DeviceRuntimeGeted": "已获取业务设备组态信息",
-    "InitError": " {0} 创建错误"
+    "DeviceRuntimeGeted": "已获取业务设备组态信息"
   },
   "ThingsGateway.Gateway.Application.CollectDeviceHostedService": {
     "DeviceRuntimeGeting": "正在获取采集设备组态信息",
-    "DeviceRuntimeGeted": "已获取采集设备组态信息",
-    "InitError": " {0} 创建错误"
+    "DeviceRuntimeGeted": "已获取采集设备组态信息"
   },
 
   "ThingsGateway.Gateway.Application.DriverBase": {

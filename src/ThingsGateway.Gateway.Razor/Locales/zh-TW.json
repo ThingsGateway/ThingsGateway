@@ -45,7 +45,7 @@
     "HardwareInfoChart": "硬體資訊歷史曲線",
     "DateTime": "時間",
     "Data": "數據",
-    "HisHardwareInfo": "歷史曲線"
+    "HistoryHardwareInfo": "歷史曲線"
   },
   "ThingsGateway.Gateway.Razor.QuickActions": {
     "TooltipText": "快捷操作",

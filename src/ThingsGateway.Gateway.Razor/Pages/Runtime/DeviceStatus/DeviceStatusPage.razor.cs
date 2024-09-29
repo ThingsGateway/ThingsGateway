@@ -58,19 +58,19 @@ public partial class DeviceStatusPage : IDisposable
         BusinessDevices = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList());
         //获取插件信息
         Plugins = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(PluginService.GetList().BuildPluginSelectList());
-        CollectBases = HostedServiceUtil.CollectDeviceHostedService?.DriverBases.Select(a => (CollectBase)a)!;
-        BusinessBases = HostedServiceUtil.BusinessDeviceHostedService?.DriverBases.Select(a => (BusinessBase)a)!;
+        CollectBases = GlobalData.CollectDeviceHostedService?.DriverBases.Select(a => (CollectBase)a)!;
+        BusinessBases = GlobalData.BusinessDeviceHostedService?.DriverBases.Select(a => (BusinessBase)a)!;
         return base.OnParametersSetAsync();
     }
 
     private void BusinessDeviceQuery()
     {
-        BusinessBases = HostedServiceUtil.BusinessDeviceHostedService?.DriverBases.Select(a => (BusinessBase)a)!;
+        BusinessBases = GlobalData.BusinessDeviceHostedService?.DriverBases.Select(a => (BusinessBase)a)!;
     }
 
     private void CollectDeviceQuery()
     {
-        CollectBases = HostedServiceUtil.CollectDeviceHostedService?.DriverBases.Select(a => (CollectBase)a)!;
+        CollectBases = GlobalData.CollectDeviceHostedService?.DriverBases.Select(a => (CollectBase)a)!;
     }
 
     private async Task Notify(DispatchEntry<PluginOutput> entry)

@@ -57,8 +57,9 @@
     "HardwareInfoChart": "硬件信息历史曲线",
     "DateTime": "时间",
     "Data": "数据",
-    "HisHardwareInfo": "历史曲线"
+    "HistoryHardwareInfo": "历史曲线"
   },
+
   "ThingsGateway.Gateway.Razor.GatewayIndex": {
     "CollectDevice": "采集设备",
     "BusinessDevice": "业务设备",
@@ -74,7 +75,7 @@
     "HardwareInfoChart": "硬件信息历史曲线",
     "DateTime": "时间",
     "Data": "数据",
-    "HisHardwareInfo": "历史曲线"
+    "HistoryHardwareInfo": "历史曲线"
   }
 
 }

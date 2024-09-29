@@ -45,7 +45,7 @@ public static class BusinessDatabaseUtil
             ConfigureExternalServices = configureExternalServices,
         }
         );
-        NetCoreApp.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
+        App.RootServices.GetService<ISugarAopService>().AopSetting(sqlSugarClient);//aop配置
         return sqlSugarClient;
     }
 
@@ -56,7 +56,7 @@ public static class BusinessDatabaseUtil
     {
         try
         {
-            var businessDevice = HostedServiceUtil.BusinessDeviceHostedService.DriverBases.Where(a => a is IDBHistoryValueService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
+            var businessDevice = GlobalData.BusinessDeviceHostedService.DriverBases.Where(a => a is IDBHistoryValueService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
             if (businessDevice == null)
             {
                 return new(new ArgumentNullException(nameof(businessDevice)));
@@ -81,7 +81,7 @@ public static class BusinessDatabaseUtil
     {
         try
         {
-            var businessDevice = HostedServiceUtil.BusinessDeviceHostedService.DriverBases.Where(a => a is IDBHistoryValueService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
+            var businessDevice = GlobalData.BusinessDeviceHostedService.DriverBases.Where(a => a is IDBHistoryValueService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
             if (businessDevice == null)
             {
                 return new(new ArgumentNullException(nameof(businessDevice)));
@@ -106,7 +106,7 @@ public static class BusinessDatabaseUtil
     {
         try
         {
-            var businessDevice = HostedServiceUtil.BusinessDeviceHostedService.DriverBases.Where(a => a is IDBHistoryValueService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
+            var businessDevice = GlobalData.BusinessDeviceHostedService.DriverBases.Where(a => a is IDBHistoryValueService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
             if (businessDevice == null)
             {
                 return new(new ArgumentNullException(nameof(businessDevice)));
@@ -131,7 +131,7 @@ public static class BusinessDatabaseUtil
     {
         try
         {
-            var businessDevice = HostedServiceUtil.BusinessDeviceHostedService.DriverBases.Where(a => a is IDBHistoryValueService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
+            var businessDevice = GlobalData.BusinessDeviceHostedService.DriverBases.Where(a => a is IDBHistoryValueService b).Where(a => a.DeviceName == businessDeviceName).FirstOrDefault();
             if (businessDevice == null)
             {
                 return new(new ArgumentNullException(nameof(businessDevice)));

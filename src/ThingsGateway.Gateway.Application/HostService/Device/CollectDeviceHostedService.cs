@@ -22,7 +22,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 采集设备服务
 /// </summary>
-public class CollectDeviceHostedService : DeviceHostedService
+internal class CollectDeviceHostedService : DeviceHostedService, ICollectDeviceHostedService
 {
     /// <summary>
     /// 线程检查时间，10分钟
@@ -37,12 +37,15 @@ public class CollectDeviceHostedService : DeviceHostedService
     private volatile bool started = false;
 
     private WaitLock publicRestartLock = new();
-    private IStringLocalizer Localizer { get; }
+    private IStringLocalizer CollectDeviceHostedServiceLocalizer { get; }
 
-    public CollectDeviceHostedService(ILogger<CollectDeviceHostedService> logger, IStringLocalizer<DeviceHostedService> localizer)
+    /// <inheritdoc/>
+    public bool StartCollectDeviceEnable { get; set; } = true;
+
+    public CollectDeviceHostedService(ILogger<CollectDeviceHostedService> logger, IStringLocalizer<CollectDeviceHostedService> localizer)
     {
         _logger = logger;
-        Localizer = localizer;
+        CollectDeviceHostedServiceLocalizer = localizer;
     }
 
     #region 服务
@@ -50,7 +53,10 @@ public class CollectDeviceHostedService : DeviceHostedService
     /// <inheritdoc/>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await HostedServiceUtil.ManagementHostedService.StartLock.WaitAsync().ConfigureAwait(false);
+        await Task.Yield();
+        await Task.Delay(30000);
+        if (StartCollectDeviceEnable)
+            await StartAsync().ConfigureAwait(false);
         GlobalData.DeviceStatusChangeEvent += DeviceRedundantThread;
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -71,7 +77,7 @@ public class CollectDeviceHostedService : DeviceHostedService
                         {
                             //线程卡死/初始化失败检测
                             if ((driverBase.CurrentDevice.ActiveTime != null && driverBase.CurrentDevice.ActiveTime != DateTime.UnixEpoch.ToLocalTime() && driverBase.CurrentDevice.ActiveTime.Value.AddMinutes(CheckIntervalTime) <= DateTime.Now)
-                                || (driverBase.IsInitSuccess == false))
+                                || (driverBase.IsInitSuccess == false) && !driverBase.DisposedValue)
                             {
                                 //如果线程处于暂停状态，跳过
                                 if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.Pause)
@@ -128,18 +134,20 @@ public class CollectDeviceHostedService : DeviceHostedService
     #endregion
 
 
+    /// <inheritdoc/>
     public event RestartEventHandler Started;
 
+    /// <inheritdoc/>
     public event RestartEventHandler Starting;
 
+    /// <inheritdoc/>
     public event RestartEventHandler Stoped;
 
+    /// <inheritdoc/>
     public event RestartEventHandler Stoping;
 
 
-    /// <summary>
-    /// 更新设备线程
-    /// </summary>
+    /// <inheritdoc/>
     public override async Task RestartChannelThreadAsync(long deviceId, bool isChanged, bool deleteCache = false)
     {
         try
@@ -282,6 +290,7 @@ public class CollectDeviceHostedService : DeviceHostedService
         }
     }
 
+    /// <inheritdoc/>
     public async Task RestartAsync(bool removeDevice = true)
     {
         try
@@ -299,7 +308,7 @@ public class CollectDeviceHostedService : DeviceHostedService
     /// <summary>
     /// 启动/创建全部设备，如果没有找到设备会创建
     /// </summary>
-    internal async Task StartAsync()
+    public async Task StartAsync()
     {
         try
         {
@@ -380,9 +389,7 @@ public class CollectDeviceHostedService : DeviceHostedService
         }
     }
 
-    /// <summary>
-    /// 停止
-    /// </summary>
+    /// <inheritdoc/>
     public async Task StopAsync(bool removeDevice)
     {
         try
@@ -461,7 +468,7 @@ public class CollectDeviceHostedService : DeviceHostedService
     {
         if (!_stoppingToken.IsCancellationRequested)
         {
-            _logger.LogInformation(Localizer["DeviceRuntimeGeting"]);
+            _logger.LogInformation(CollectDeviceHostedServiceLocalizer["DeviceRuntimeGeting"]);
             var collectDeviceRunTimes = (await DeviceService.GetCollectDeviceRuntimeAsync().ConfigureAwait(false));
             var idSet = collectDeviceRunTimes.Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet().ToDictionary(a => a);
             var result = collectDeviceRunTimes.Where(a => !idSet.ContainsKey(a.Id));
@@ -490,14 +497,14 @@ public class CollectDeviceHostedService : DeviceHostedService
                 {
                     try
                     {
-                        ExpressionEvaluatorExtension.AddScript(script);
+                        _ = ExpressionEvaluatorExtension.GetOrAddScript(script);
                     }
                     catch
                     {
                     }
                 }
             });
-            _logger.LogInformation(Localizer["DeviceRuntimeGeted"]);
+            _logger.LogInformation(CollectDeviceHostedServiceLocalizer["DeviceRuntimeGeted"]);
         }
         for (int i = 0; i < 3; i++)
         {
@@ -577,8 +584,5 @@ public class CollectDeviceHostedService : DeviceHostedService
     }
 
     #endregion
-
-
-
 
 }

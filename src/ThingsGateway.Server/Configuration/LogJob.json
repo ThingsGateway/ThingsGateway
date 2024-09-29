@@ -1,0 +1,5 @@
+{
+  "LogJob": {
+    "OperateLogDaysAgo": 30 //操作日志保留天数
+  }
+}

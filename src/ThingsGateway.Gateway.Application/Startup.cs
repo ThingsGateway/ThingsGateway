@@ -20,9 +20,9 @@ public class Startup : AppStartup
     public void ConfigureAdminApp(IServiceCollection services)
     {
         //底层多语言配置
-        //Foundation.LocalizerUtil.SetLocalizerFactory((a) => NetCoreApp.CreateLocalizerByType(a));
+        //Foundation.LocalizerUtil.SetLocalizerFactory((a) => App.CreateLocalizerByType(a));
 
-        TypeAdapterConfig.GlobalSettings.Scan(NetCoreApp.Assemblies.ToArray());
+        TypeAdapterConfig.GlobalSettings.Scan(App.Assemblies.ToArray());
         // 配置默认全局映射（支持覆盖）
         TypeAdapterConfig.GlobalSettings.Default
               .PreserveReference(true);
@@ -40,6 +40,7 @@ public class Startup : AppStartup
             };
         });
 
+
         services.AddSingleton<IChannelService, ChannelService>();
         services.AddSingleton<IVariableService, VariableService>();
         services.AddSingleton<IDeviceService, DeviceService>();
@@ -47,18 +48,29 @@ public class Startup : AppStartup
         services.AddSingleton<IBackendLogService, BackendLogService>();
         services.AddSingleton<IRpcLogService, RpcLogService>();
         services.AddSingleton<IRpcService, RpcService>();
+        services.AddScoped<IGatewayExportService, GatewayExportService>();
 
-        services.AddHostedService<AdminTaskService>();
-        services.AddHostedService<CollectDeviceHostedService>();
-        services.AddHostedService<BusinessDeviceHostedService>();
-        services.AddHostedService<AlarmHostedService>();
-        services.AddHostedService<ManagementHostedService>();
+        services.AddGatewayHostedService<ICollectDeviceHostedService, CollectDeviceHostedService>();
+        services.AddGatewayHostedService<IBusinessDeviceHostedService, BusinessDeviceHostedService>();
+        services.AddGatewayHostedService<IAlarmHostedService, AlarmHostedService>();
     }
 
     public void UseAdminCore(IServiceProvider serviceProvider)
     {
+        //检查ConfigId
+        var configIdGroup = DbContext.DbConfigs.GroupBy(it => it.ConfigId);
+        foreach (var configId in configIdGroup)
+        {
+            if (configId.Count() > 1) throw new($"Sqlsugar connect configId: {configId.Key} Duplicate!");
+        }
+
+        //遍历配置
+        DbContext.DbConfigs?.ForEach(it =>
+        {
+            var connection = DbContext.Db.GetConnection(it.ConfigId);//获取数据库连接对象
+            connection.DbMaintenance.CreateDatabase();//创建数据库,如果存在则不创建
+        });
         var fullName = Assembly.GetExecutingAssembly().FullName;//获取程序集全名
         CodeFirstUtils.CodeFirst(fullName!);//CodeFirst
-
     }
 }

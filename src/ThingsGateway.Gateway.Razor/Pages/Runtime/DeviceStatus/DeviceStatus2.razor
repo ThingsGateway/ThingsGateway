@@ -50,7 +50,7 @@
 
             <Tooltip Title="@Localizer["GatewayDevicePause"]" Placement="Placement.Bottom">
 
-                <Button OnClick=@(()=>PasueThread(Item.DeviceId,!Item.CurrentDevice?.KeepRun)) IsDisabled=@(!AuthorizeButton("暂停")) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@(Item.CurrentDevice.KeepRun?"fa fa-pause":"fa fa-play") />
+                <Button OnClick=@(()=>PauseThread(Item.DeviceId,!Item.CurrentDevice?.KeepRun)) IsDisabled=@(!AuthorizeButton("暂停")) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@(Item.CurrentDevice.KeepRun?"fa fa-pause":"fa fa-play") />
             </Tooltip>
 
             <Tooltip Title="@Localizer["GatewayDeviceRestart"]" Placement="Placement.Bottom">

@@ -16,8 +16,7 @@ using System.Data;
 
 using ThingsGateway.Extension;
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.NewLife.X.Extension;
-using ThingsGateway.Razor;
+using ThingsGateway.NewLife.Extension;
 
 namespace ThingsGateway.Gateway.Razor;
 

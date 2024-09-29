@@ -15,16 +15,6 @@
                           Color="Color.Danger"
                           ConfirmIcon="fa-solid fa-triangle-exclamation text-danger"
                           ConfirmButtonColor="Color.Danger"
-                          Text=@(ReloadPluginText)
-                          Content=@(ReloadPluginConfirmText)
-                          Icon="fas fa-rotate"
-                          IsAsync="true"
-                          OnConfirm="OnReloadPlugin" IsDisabled=@(!AuthorizeButton("重启"))/>
-        <PopConfirmButton Placement="Placement.Top"
-                          class="m-2"
-                          Color="Color.Danger"
-                          ConfirmIcon="fa-solid fa-triangle-exclamation text-danger"
-                          ConfirmButtonColor="Color.Danger"
                           Text=@(ReloadServiceText)
                           Content=@(ReloadServiceConfirmText)
                           Icon="fas fa-rotate"

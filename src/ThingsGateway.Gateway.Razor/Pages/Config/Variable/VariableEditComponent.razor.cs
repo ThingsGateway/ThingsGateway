@@ -13,8 +13,7 @@ using Microsoft.AspNetCore.Components.Forms;
 using System.Collections.Concurrent;
 
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.NewLife.X;
-using ThingsGateway.Razor;
+using ThingsGateway.NewLife.Extension;
 
 using TouchSocket.Core;
 

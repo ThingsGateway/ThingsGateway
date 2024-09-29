@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+  <Import Project="$(SolutionDir)Version.props" />
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
+
+    <!--动态适用GC-->
+    <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
+    <!--使用自托管线程池-->
+    <!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
+
+    <!--使用工作站GC-->
+    <!--<ServerGarbageCollection>true</ServerGarbageCollection>-->
+  </PropertyGroup>
+
+
+
+
+  <ItemGroup>
+    <Content Update="wwwroot\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Locales\*.json" />
+    <EmbeddedResource Include="Locales\*.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="ThingsGateway.Razor" Version="7.0.*" />
+    <PackageReference Include="ThingsGateway.Debug.Razor" Version="9.0.*" />
+    <PackageReference Include="Photino.NET" Version="3.1.18" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="6.0.33" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="8.0.8" />
+  </ItemGroup>
+
+  
+  <ItemGroup>
+    <Compile Include="..\..\ThingsGateway.Photino\Photino\**" LinkBase="Photino">
+    </Compile>
+    
+  </ItemGroup>
+
+  
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

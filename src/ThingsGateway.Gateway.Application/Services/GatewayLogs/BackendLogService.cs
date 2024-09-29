@@ -16,7 +16,7 @@ using System.Data;
 
 namespace ThingsGateway.Gateway.Application;
 
-public class BackendLogService : BaseService<BackendLog>, IBackendLogService
+internal class BackendLogService : BaseService<BackendLog>, IBackendLogService
 {
     #region 查询
 

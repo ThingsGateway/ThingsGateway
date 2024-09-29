@@ -1,0 +1,37 @@
+<Project>
+
+<!--Admin-->
+
+  <ItemGroup>
+    <PackageReference Include="ThingsGateway.Admin.Razor" Version="7.0.*" />
+    <PackageReference Include="ThingsGateway.Admin.Application" Version="7.0.*" GeneratePathProperty="true"/>
+  </ItemGroup>
+  
+  <Target Name="CopyAdminNugetPackages" AfterTargets="Build">
+    <ItemGroup>
+      <!-- setting up the variable for convenience -->
+      <AdminApplicationPackageFiles Include="$(PkgThingsGateway_Admin_Application)\Content\SeedData\Admin\*.*" />
+    </ItemGroup>
+    <PropertyGroup>
+      <AdminApplicationFolder>$(TargetDir)SeedData\Admin\</AdminApplicationFolder>
+    </PropertyGroup>
+    <RemoveDir Directories="$(AdminApplicationFolder)" />
+    <Copy SourceFiles="@(AdminApplicationPackageFiles)" DestinationFolder="$(AdminApplicationFolder)%(RecursiveDir)" />
+
+  </Target>
+  
+  <Target Name="AdminPostPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <!-- setting up the variable for convenience -->
+      <AdminFiles Include="bin\$(Configuration)\$(TargetFramework)\SeedData\**" />
+    </ItemGroup>
+    <PropertyGroup>
+    </PropertyGroup>
+    <Copy SourceFiles="@(AdminFiles)" DestinationFolder="$(PublishDir)SeedData\%(RecursiveDir)" />
+
+  </Target>
+
+  <!--Admin-->
+
+  
+</Project>

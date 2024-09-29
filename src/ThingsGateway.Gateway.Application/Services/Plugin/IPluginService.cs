@@ -58,11 +58,6 @@ public interface IPluginService
     public QueryData<PluginOutput> Page(QueryPageOptions options, PluginTypeEnum? pluginTypeEnum = null);
 
     /// <summary>
-    /// 清空全部插件信息
-    /// </summary>
-    void Remove();
-
-    /// <summary>
     /// 添加插件
     /// </summary>
     /// <param name="plugin"></param>

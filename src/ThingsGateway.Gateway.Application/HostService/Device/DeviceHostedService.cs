@@ -10,18 +10,21 @@
 
 using BootstrapBlazor.Components;
 
+using Mapster;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
 using TouchSocket.Core;
+using TouchSocket.SerialPorts;
 
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
 /// 设备服务
 /// </summary>
-public abstract class DeviceHostedService : BackgroundService
+internal abstract class DeviceHostedService : BackgroundService, IDeviceHostedService
 {
     /// <summary>
     /// 全部重启锁
@@ -46,16 +49,14 @@ public abstract class DeviceHostedService : BackgroundService
     protected IPluginService PluginService;
     public DeviceHostedService()
     {
-        DeviceService = NetCoreApp.RootServices.GetRequiredService<IDeviceService>();
-        ChannelService = NetCoreApp.RootServices.GetRequiredService<IChannelService>();
-        PluginService = NetCoreApp.RootServices.GetRequiredService<IPluginService>();
-        Localizer = NetCoreApp.CreateLocalizerByType(typeof(DeviceHostedService))!;
-        DispatchService = NetCoreApp.RootServices.GetService<IDispatchService<DeviceRunTime>>();
+        DeviceService = App.RootServices.GetRequiredService<IDeviceService>();
+        ChannelService = App.RootServices.GetRequiredService<IChannelService>();
+        PluginService = App.RootServices.GetRequiredService<IPluginService>();
+        Localizer = App.CreateLocalizerByType(typeof(DeviceHostedService))!;
+        DispatchService = App.RootServices.GetService<IDispatchService<DeviceRunTime>>();
     }
 
-    /// <summary>
-    /// 插件列表
-    /// </summary>
+    /// <inheritdoc/>
     public IEnumerable<DriverBase> DriverBases => ChannelThreads.SelectMany(a => a.GetDriverEnumerable()).Where(a => a.CurrentDevice != null).OrderByDescending(a => a.CurrentDevice.DeviceStatus);
 
     /// <summary>
@@ -63,12 +64,9 @@ public abstract class DeviceHostedService : BackgroundService
     /// </summary>
     protected ConcurrentList<ChannelThread> ChannelThreads { get; set; } = new();
 
-    private IStringLocalizer Localizer { get; }
+    protected IStringLocalizer Localizer { get; }
 
-
-    /// <summary>
-    /// 更新设备线程,切换为冗余通道
-    /// </summary>
+    /// <inheritdoc/>
     public async Task DeviceRedundantThreadAsync(long deviceId)
     {
         try
@@ -137,11 +135,7 @@ public abstract class DeviceHostedService : BackgroundService
         }
     }
 
-    /// <summary>
-    /// GetDebugUI
-    /// </summary>
-    /// <param name="pluginName"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public Type GetDebugUI(string pluginName)
     {
         var driverPlugin = PluginService.GetDriver(pluginName);
@@ -149,11 +143,7 @@ public abstract class DeviceHostedService : BackgroundService
         return driverPlugin?.DriverDebugUIType;
     }
 
-    /// <summary>
-    /// 获取设备方法
-    /// </summary>
-    /// <param name="deviceId"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public List<DriverMethodInfo> GetDriverMethodInfo(long deviceId)
     {
         var pluginName = (DeviceService.GetDeviceById(deviceId))?.PluginName;
@@ -168,11 +158,7 @@ public abstract class DeviceHostedService : BackgroundService
         }
     }
 
-    /// <summary>
-    /// GetDriverUI
-    /// </summary>
-    /// <param name="pluginName"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     public Type GetDriverUI(string pluginName)
     {
         var driverPlugin = PluginService.GetDriver(pluginName);
@@ -180,18 +166,13 @@ public abstract class DeviceHostedService : BackgroundService
         return driverPlugin?.DriverUIType;
     }
 
-    /// <summary>
-    /// 控制设备线程启停
-    /// </summary>
-    /// <param name="deviceId">传入0时全部设备都会执行</param>
-    /// <param name="isStart"></param>
-    /// <returns></returns>
-    public void PasueThread(long deviceId, bool isStart)
+    /// <inheritdoc/>
+    public void PauseThread(long deviceId, bool isStart)
     {
         if (deviceId == 0)
-            DriverBases.ForEach(a => a.PasueThread(isStart));
+            DriverBases.ForEach(a => a.PauseThread(isStart));
         else
-            DriverBases.FirstOrDefault(it => it.DeviceId == deviceId)?.PasueThread(isStart);
+            DriverBases.FirstOrDefault(it => it.DeviceId == deviceId)?.PauseThread(isStart);
     }
 
 
@@ -227,10 +208,10 @@ public abstract class DeviceHostedService : BackgroundService
             var driverBase = DriverBases.FirstOrDefault(a => a.CurrentDevice.Id == deviceData.Id);
             if (driverBase != null)
             {
-                if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && (driverBase.IsInitSuccess == false || driverBase.IsBeforStarted))
+                if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && (driverBase.IsInitSuccess == false || driverBase.IsBeforStarted) && !driverBase.DisposedValue)
                 {
                     await Task.Delay(10000).ConfigureAwait(false);//10s后再次检测
-                    if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && (driverBase.IsInitSuccess == false || driverBase.IsBeforStarted))
+                    if (driverBase.CurrentDevice.DeviceStatus == DeviceStatusEnum.OffLine && (driverBase.IsInitSuccess == false || driverBase.IsBeforStarted) && !driverBase.DisposedValue)
                     {
                         //冗余切换
                         if (driverBase.CurrentDevice.RedundantEnable && DeviceService.GetAll().Any(a => a.Id == driverBase.CurrentDevice.RedundantDeviceId))
@@ -309,7 +290,7 @@ public abstract class DeviceHostedService : BackgroundService
             // 创建新的通道线程，并将驱动程序添加到其中
             ChannelThread channelThread = new ChannelThread(channel, (a =>
             {
-                return ChannelService.GetChannel(channel, a);
+                return a.GetChannel(channel.ChannelType, channel.RemoteUrl, channel.BindUrl, channel.Adapt<SerialPortOption>());
             }));
             channelThread.AddDriver(driverBase);
             channelThread.Channel?.Setup(channelThread.FoundataionConfig.Clone());
@@ -375,12 +356,12 @@ public abstract class DeviceHostedService : BackgroundService
         if (item.IsCollectChannel)
         {
             // 启动通道线程
-            if (HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable)
+            if (GlobalData.CollectDeviceHostedService.StartCollectDeviceEnable)
                 await item.StartThreadAsync().ConfigureAwait(false);
         }
         else
         {
-            if (HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
+            if (GlobalData.BusinessDeviceHostedService.StartBusinessDeviceEnable)
             {
                 // 启动通道线程
                 await item.StartThreadAsync().ConfigureAwait(false);
@@ -400,7 +381,6 @@ public abstract class DeviceHostedService : BackgroundService
     #region 重写
 
     protected abstract Task<IEnumerable<DeviceRunTime>> GetDeviceRunTimeAsync(long deviceId);
-
 
     /// <summary>
     /// 更新设备线程

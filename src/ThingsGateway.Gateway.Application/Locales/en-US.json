@@ -1,4 +1,29 @@
 ﻿{
+
+
+  "ThingsGateway.Gateway.Application.ConfigInfoControler": {
+    "ConfigInfoControler": "Get configuration information",
+    "GetChannelList": "Get channel information",
+    "GetCollectDeviceList": "Get device information",
+    "GetVariableList": "Get variable information"
+  },
+  "ThingsGateway.Gateway.Application.ControlControler": {
+    "ControlControler": "Device control",
+    "PauseCollectThread": "Control collection thread start/stop",
+    "PauseBusinessThread": "Control business thread start/stop",
+    "RestartCollectDeviceThread": "Restart collection thread",
+    "RestartBusinessDeviceThread": "Restart business thread",
+    "WriteDeviceMethods": "Write variables"
+  },
+  "ThingsGateway.Gateway.Application.RuntimeInfoControler": {
+    "RuntimeInfoControler": "Get runtime information",
+    "GetCollectDeviceList": "Get device information",
+    "GetVariableList": "Get variable information",
+    "GetRealAlarmList": "Get real-time alarm information",
+    "CheckRealAlarm": "Confirm real-time alarm"
+  },
+
+
   "ThingsGateway.Gateway.Application.VariableSearchInput": {
     "Name": "Name",
     "DeviceId": "Device",
@@ -165,13 +190,11 @@
   },
   "ThingsGateway.Gateway.Application.BusinessDeviceHostedService": {
     "DeviceRuntimeGeting": "Getting business device configuration information",
-    "DeviceRuntimeGeted": "Business device configuration information obtained",
-    "InitError": "{0} creation error"
+    "DeviceRuntimeGeted": "Business device configuration information obtained"
   },
   "ThingsGateway.Gateway.Application.CollectDeviceHostedService": {
     "DeviceRuntimeGeting": "Getting collection device configuration information",
-    "DeviceRuntimeGeted": "Collection device configuration information obtained",
-    "InitError": "{0} creation error"
+    "DeviceRuntimeGeted": "Collection device configuration information obtained"
   },
   "ThingsGateway.Gateway.Application.DriverBase": {
     "DeviceTaskStart": "Device {0} thread started",

@@ -26,6 +26,7 @@ using System.Text;
 
 using ThingsGateway.Extension.Generic;
 using ThingsGateway.Foundation.Extension.Dynamic;
+using ThingsGateway.FriendlyException;
 
 using TouchSocket.Core;
 
@@ -33,7 +34,7 @@ using Yitter.IdGenerator;
 
 namespace ThingsGateway.Gateway.Application;
 
-public class VariableService : BaseService<Variable>, IVariableService
+internal class VariableService : BaseService<Variable>, IVariableService
 {
     protected readonly IChannelService _channelService;
     protected readonly IDeviceService _deviceService;
@@ -47,9 +48,9 @@ public class VariableService : BaseService<Variable>, IVariableService
    IDispatchService<bool> allDispatchService
         )
     {
-        _channelService = NetCoreApp.RootServices.GetRequiredService<IChannelService>();
-        _pluginService = NetCoreApp.RootServices.GetRequiredService<IPluginService>();
-        _deviceService = NetCoreApp.RootServices.GetRequiredService<IDeviceService>();
+        _channelService = App.RootServices.GetRequiredService<IChannelService>();
+        _pluginService = App.RootServices.GetRequiredService<IPluginService>();
+        _deviceService = App.RootServices.GetRequiredService<IDeviceService>();
         _dispatchService = dispatchService;
         _allDispatchService = allDispatchService;
     }

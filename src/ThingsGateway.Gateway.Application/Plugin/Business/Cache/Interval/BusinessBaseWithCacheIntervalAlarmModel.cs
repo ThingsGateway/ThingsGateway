@@ -52,8 +52,8 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
         _exTTimerTick = new(_businessPropertyWithCacheInterval.BusinessInterval);
         _exT2TimerTick = new(_businessPropertyWithCacheInterval.BusinessInterval);
 
-        HostedServiceUtil.AlarmHostedService.OnAlarmChanged -= AlarmValueChange;
-        HostedServiceUtil.AlarmHostedService.OnAlarmChanged += AlarmValueChange;
+        GlobalData.AlarmHostedService.OnAlarmChanged -= AlarmValueChange;
+        GlobalData.AlarmHostedService.OnAlarmChanged += AlarmValueChange;
 
         // 根据业务属性的缓存是否为间隔上传来决定事件绑定
         if (!_businessPropertyWithCacheInterval.IsInterval)
@@ -67,8 +67,16 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
             GlobalData.VariableValueChangeEvent += VariableValueChange;
 
             // 触发一次设备状态变化和变量值变化事件
-            CollectDevices.ForEach(a => { DeviceStatusChange(a.Value, a.Value.Adapt<DeviceBasicData>()); });
-            CurrentDevice.VariableRunTimes.ForEach(a => { VariableValueChange(a.Value, a.Value.Adapt<VariableBasicData>()); });
+            CollectDevices.ForEach(a =>
+            {
+                if (a.Value.DeviceStatus == DeviceStatusEnum.OnLine)
+                    DeviceStatusChange(a.Value, a.Value.Adapt<DeviceBasicData>());
+            });
+            CurrentDevice.VariableRunTimes.ForEach(a =>
+            {
+                if (a.Value.IsOnline)
+                    VariableValueChange(a.Value, a.Value.Adapt<VariableBasicData>());
+            });
         }
     }
 
@@ -82,7 +90,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     }
 
     /// <summary>
-    /// 当设备状态变化时触发此方法。如果不需要进行设备上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheDevModel{T,T2}.AddQueueDevModel(CacheDBItem{T2})"/> 方法。
+    /// 当设备状态变化时触发此方法。如果不需要进行设备上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheDeviceModel{T,T2}.AddQueueDevModel(CacheDBItem{T2})"/> 方法。
     /// </summary>
     /// <param name="deviceRunTime">设备运行时信息</param>
     /// <param name="deviceData">设备数据</param>
@@ -97,7 +105,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     protected override void Dispose(bool disposing)
     {
         // 解绑事件
-        HostedServiceUtil.AlarmHostedService.OnAlarmChanged -= AlarmValueChange;
+        GlobalData.AlarmHostedService.OnAlarmChanged -= AlarmValueChange;
         GlobalData.VariableValueChangeEvent -= VariableValueChange;
         GlobalData.DeviceStatusChangeEvent -= DeviceStatusChange;
 
@@ -171,7 +179,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     }
 
     /// <summary>
-    /// 当变量状态变化时触发此方法。如果不需要进行变量上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheVarModel{T}.AddQueueVarModel(CacheDBItem{T})"/> 方法。
+    /// 当变量状态变化时触发此方法。如果不需要进行变量上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheVariableModel{T}.AddQueueVarModel(CacheDBItem{T})"/> 方法。
     /// </summary>
     /// <param name="variableRunTime">变量运行时信息</param>
     /// <param name="variable">变量数据</param>

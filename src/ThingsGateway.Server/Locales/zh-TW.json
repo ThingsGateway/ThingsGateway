@@ -54,7 +54,7 @@
     "HardwareInfoChart": "硬體資訊歷史曲線",
     "DateTime": "時間",
     "Data": "資料",
-    "HisHardwareInfo": "歷史曲線"
+    "HistoryHardwareInfo": "歷史曲線"
   },
   "ThingsGateway.Gateway.Razor.GatewayIndex": {
     "CollectDevice": "採集設備",
@@ -71,7 +71,7 @@
     "HardwareInfoChart": "硬體資訊歷史曲線",
     "DateTime": "時間",
     "Data": "資料",
-    "HisHardwareInfo": "歷史曲線"
+    "HistoryHardwareInfo": "歷史曲線"
   },
   "BootstrapBlazor.Components.AutoComplete": {
     "NoDataTip": "無匹配資料",

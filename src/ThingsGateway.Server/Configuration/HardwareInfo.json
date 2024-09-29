@@ -1,0 +1,7 @@
+{
+  "HardwareInfo": {
+    "HistoryInterval": 300, //历史更新间隔s
+    "DaysAgo": 1, //保留1天数据
+    "Enable": true //启用硬件信息获取
+  }
+}

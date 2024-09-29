@@ -10,7 +10,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-using ThingsGateway.Razor;
+using ThingsGateway.Debug;
 
 namespace ThingsGateway.Gateway.Razor;
 

@@ -37,9 +37,9 @@ public partial class DeviceStatus
         }
     }
 
-    private void PasueThread(long devId, bool? isStart)
+    private void PauseThread(long devId, bool? isStart)
     {
-        DeviceHostedService.PasueThread(devId, isStart == true);
+        DeviceHostedService.PauseThread(devId, isStart == true);
     }
 
     private async Task RestartAsync(long deviceId)

@@ -43,7 +43,7 @@ A cross-platform, high-performance edge data collection gateway based on net8, c
 | KafkaProducer    | Script-customizable upload content                                                                |
 | RabbitMQProducer | Script-customizable upload content                                                                |
 | SqlDB            | Relational database storage, supports historical storage and real-time data updates               |
-| SqlHisAlarm      | Alarm historical data relational database storage                                                 |
+| SqlHistoryAlarm      | Alarm historical data relational database storage                                                 |
 | TDengineDB       | Time-series database storage                                                                      |
 | QuestDB          | Time-series database storage                                                                      |
 

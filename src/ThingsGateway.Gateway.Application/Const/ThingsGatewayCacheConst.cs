@@ -13,17 +13,18 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// Cache常量
 /// </summary>
+[ThingsGateway.DependencyInjection.SuppressSniffer]
 public class ThingsGatewayCacheConst
 {
     /// <summary>
     /// 通道
     /// </summary>
-    public const string Cache_Channel = Cache_Prefix + "Cache_Channel:";
+    public const string Cache_Channel = $"{Cache_Prefix}Cache_Channel:";
 
     /// <summary>
     /// device
     /// </summary>
-    public const string Cache_Device = Cache_Prefix + "Cache_Device:";
+    public const string Cache_Device = $"{Cache_Prefix}Cache_Device:";
 
     /// <summary>
     /// 前缀

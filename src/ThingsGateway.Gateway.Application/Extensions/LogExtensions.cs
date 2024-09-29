@@ -17,6 +17,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 扩展
 /// </summary>
+[ThingsGateway.DependencyInjection.SuppressSniffer]
 public static class LogExtensions
 {
     /// <summary>

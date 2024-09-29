@@ -18,7 +18,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 业务插件，实现实体VarModel,AlarmModel缓存
 /// </summary>
-public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmModel> : BusinessBaseWithCacheDevModel<VarModel, DevModel>
+public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmModel> : BusinessBaseWithCacheDeviceModel<VarModel, DevModel>
 {
     protected ConcurrentQueue<CacheDBItem<AlarmModel>> _memoryAlarmModelQueue = new();
 

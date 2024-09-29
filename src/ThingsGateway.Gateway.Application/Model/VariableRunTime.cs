@@ -14,7 +14,6 @@ using Mapster;
 
 using System.Diagnostics.CodeAnalysis;
 
-using ThingsGateway.Json.Extension;
 using ThingsGateway.Gateway.Application.Extensions;
 
 namespace ThingsGateway.Gateway.Application;
@@ -132,7 +131,7 @@ public class VariableRunTime : Variable, IVariable
         get
         {
             if (_isOnline == false)
-                return VariableSource?.LastErrorMessage ?? VariableMethod?.LastErrorMessage ?? lastErrorMessage;
+                return lastErrorMessage ?? VariableSource?.LastErrorMessage ?? VariableMethod?.LastErrorMessage;
             else
                 return null;
         }
@@ -216,7 +215,10 @@ public class VariableRunTime : Variable, IVariable
                 }
                 else
                 {
-                    changed = data?.ToSystemTextJsonString(new()) != _value?.ToSystemTextJsonString(new());
+                    if (_value != null)
+                        changed = System.Text.Json.JsonSerializer.Serialize(data) != System.Text.Json.JsonSerializer.Serialize(_value);
+                    else
+                        changed = true;
                 }
             }
             else
@@ -248,10 +250,9 @@ public class VariableRunTime : Variable, IVariable
         return data.Values.FirstOrDefault();
     }
 
-    internal void SetErrorMessage(string value)
+    public void SetErrorMessage(string value)
     {
-        if (VariableSource != null)
-            VariableSource.LastErrorMessage = value;
+        lastErrorMessage = value;
     }
 
     #region LoadSourceRead

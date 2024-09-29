@@ -10,8 +10,8 @@
 
 using Mapster;
 
-using ThingsGateway.Json.Extension;
 using ThingsGateway.Foundation;
+using ThingsGateway.Foundation.Json.Extension;
 using ThingsGateway.Gateway.Application;
 
 using TouchSocket.Core;
@@ -76,7 +76,7 @@ public partial class TcpServicePage : IDriverUIBase
                     }
                     return data;
                 }).ToList();
-                data[i].PluginInfos = pluginInfos.ToSystemTextJsonString();
+                data[i].PluginInfos = pluginInfos.ToJsonNetString();
             }
 
             var query = data.GetQueryData(options);

@@ -17,10 +17,10 @@
                 ShowExportButton="true" ShowAdvancedSearch=false SearchModel=SearchModel
                 OnQueryAsync="OnQueryAsync">
 
-        <TableToolbarTemplate>
+@*         <TableToolbarTemplate>
             <TableToolbarButton TItem="PluginOutput" Color="Color.Info" Icon="fa fa-plus" Text="@DefaultLocalizer["Add"]"
                                 OnClickCallback="OnAdd" IsShow=@(AuthorizeButton("添加")) />
-        </TableToolbarTemplate>
+        </TableToolbarTemplate> *@
 
         <ExportButtonDropdownTemplate Context="ExportContext">
             <div class="dropdown-item" @onclick="() => ExcelExportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导出"))>

@@ -35,7 +35,7 @@
 | KafkaProducer    | 脚本自定义上传内容                                         |
 | RabbitMQProducer | 脚本自定义上传内容                                         |
 | SqlDB            | 关系数据库存储，支持历史存储和实时数据更新                 |
-| SqlHisAlarm      | 报警历史数据关系数据库存储                                 |
+| SqlHistoryAlarm      | 报警历史数据关系数据库存储                                 |
 | TDengineDB       | 时序数据库存储                                             |
 | QuestDB          | 时序数据库存储                                             |
 

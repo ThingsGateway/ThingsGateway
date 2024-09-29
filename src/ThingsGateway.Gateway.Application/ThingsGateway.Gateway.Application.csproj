@@ -6,36 +6,35 @@
   <ItemGroup>
     <PackageReference Include="SqlSugar.TDengineCore" Version="4.18.0" />
     <PackageReference Include="Rougamo.Fody" Version="4.0.3" />
-    <PackageReference Include="TouchSocket.Dmtp" Version="2.1.3" />
-    
   </ItemGroup>
 
   <ItemGroup>
-    <!--kafka在某些系统中出现无法动态加载资源的情况，需要手动拷贝到主程序下，所以这里直接引用native内容，发布会自动生成-->
-    <PackageReference Include="Confluent.Kafka" Version="2.5.3">
-      <Private>false</Private>
-      <IncludeAssets> native; </IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="ThingsGateway.Admin.Application" Version="7.0.*" />
+    <PackageReference Include="ThingsGateway.Foundation" Version="9.0.*" />
+    <PackageReference Include="ThingsGateway.CSScript" Version="9.0.*" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Admin.Application\ThingsGateway.Admin.Application.csproj" />
-    <ProjectReference Include="$(SolutionDir)\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
-    <ProjectReference Include="$(SolutionDir)\tools\ThingsGateway.CSScript\ThingsGateway.CSScript.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="SeedData\Json\seed_gateway_resource.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="SeedData\Json\seed_gateway_resourcebutton.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <ItemGroup>
     <Content Remove="Locales\*.json" />
     <EmbeddedResource Include="Locales\*.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="SeedData\Gateway\*.json" />
+    <Content Include="SeedData\Gateway\*.json" Pack="true" PackagePath="\Content\SeedData\Gateway\">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+
+  <!--<ItemGroup>
+    <Content Remove="SeedData\Json\*.json" />
+    <Content Include="SeedData\Json\*.json" Pack="true" PackagePath="\SeedData\Json\" >
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>-->
+
+
 </Project>

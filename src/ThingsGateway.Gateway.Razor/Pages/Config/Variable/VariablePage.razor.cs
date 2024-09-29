@@ -15,7 +15,6 @@ using Microsoft.AspNetCore.Components.Forms;
 using System.Data;
 
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.Razor;
 
 namespace ThingsGateway.Gateway.Razor;
 

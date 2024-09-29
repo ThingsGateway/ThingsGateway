@@ -1,30 +1,26 @@
 <Project>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+	<PropertyGroup>
 
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <!--<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>-->
-    <PackageOutputPath>$(SolutionDir)nupkgs</PackageOutputPath>
-    <PackageVersion>$(Version)</PackageVersion>
-    <PackageTags>ThingsGateway;Diego;Blazor;设备采集;边缘网关;物联网</PackageTags>
-    <PackageProjectUrl>https://gitee.com/diego2098/ThingsGateway</PackageProjectUrl>
-    <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageOutputPath>$(SolutionDir)..\..\nupkgs</PackageOutputPath>
+		<PackageVersion>$(Version)</PackageVersion>
+		<PackageTags>ThingsGateway;Diego;Blazor;IOT;设备采集;边缘网关;物联网</PackageTags>
+		<PackageProjectUrl>https://gitee.com/diego2098/ThingsGateway</PackageProjectUrl>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageReadmeFile>README.zh-CN.md</PackageReadmeFile>
+		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>Embedded</DebugType>
-    <EmbedAllSources>True</EmbedAllSources>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Include="$(SolutionDir)PackNuget.props" Pack="true" PackagePath="\" />
-  </ItemGroup>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Include="$(SolutionDir)PackNuget.props" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <None Include="$(SolutionDir)..\README.md" Pack="true" PackagePath="\" />
-    <None Include="$(SolutionDir)..\LICENSE" Pack="true" PackagePath="\" />
-    <None Include="$(SolutionDir)..\icon.png" Pack="true" PackagePath="\" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="$(SolutionDir)..\README.md" Pack="true" PackagePath="\" />
+		<None Include="$(SolutionDir)..\README.zh-CN.md" Pack="true" PackagePath="\" />
+		<None Include="$(SolutionDir)..\LICENSE" Pack="true" PackagePath="\" />
+		<None Include="$(SolutionDir)..\icon.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
 </Project>

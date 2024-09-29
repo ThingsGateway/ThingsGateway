@@ -12,9 +12,8 @@ using Microsoft.JSInterop;
 
 using ThingsGateway.Extension;
 using ThingsGateway.Foundation;
-using ThingsGateway.Razor;
 
-namespace ThingsGateway.Gateway.Razor;
+namespace ThingsGateway.Debug;
 
 public class PlatformService : IPlatformService
 {

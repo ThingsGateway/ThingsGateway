@@ -1,0 +1,40 @@
+﻿{
+  "$schema": "null",
+
+  "AllowedHosts": "*",
+
+  "AppSettings": {
+    "InjectSpecificationDocument": true, // 生产环境是否开启Swagger
+    "ExternalAssemblies": [ "Plugins" ], // 插件目录
+
+    // nuget动态加载的程序集
+    "SupportPackageNamePrefixs": [
+
+      "ThingsGateway.Foundation.Razor",
+      "ThingsGateway.Debug.Razor",
+      "ThingsGateway.Core",
+      "ThingsGateway.Razor"
+
+    ]
+  },
+
+  "DynamicApiControllerSettings": {
+    //"DefaultRoutePrefix": "api", // 默认路由前缀
+    "CamelCaseSeparator": "", // 驼峰命名分隔符
+    "SplitCamelCase": false, // 切割骆驼(驼峰)/帕斯卡命名
+    "LowercaseRoute": false, // 小写路由格式
+    "AsLowerCamelCase": true, // 小驼峰命名（首字母小写）
+    "KeepVerb": false, // 保留动作方法请求谓词
+    "KeepName": false // 保持原有名称不处理
+  },
+  "FriendlyExceptionSettings": {
+    "DefaultErrorMessage": "系统异常，请联系管理员",
+    "ThrowBah": true, // 是否将 Oops.Oh 默认抛出为业务异常
+    "LogError": false // 是否输出异常日志
+  },
+  "CorsAccessorSettings": {
+    "PolicyName": "ThingsGateway",
+    "WithExposedHeaders": [ "Content-Disposition", "X-Pagination", "access-token", "x-access-token" ], // 如果前端不代理且是axios请求
+    "SignalRSupport": true // 启用 SignalR 跨域支持
+  }
+}

@@ -12,6 +12,7 @@ using BootstrapBlazor.Components;
 
 namespace ThingsGateway.Gateway.Application;
 
+[ThingsGateway.DependencyInjection.SuppressSniffer]
 public static class ResourceExtensions
 {
     /// <summary>

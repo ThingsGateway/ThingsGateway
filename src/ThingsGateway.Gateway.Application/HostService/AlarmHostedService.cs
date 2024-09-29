@@ -17,7 +17,7 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 
 using ThingsGateway.Gateway.Application.Extensions;
-using ThingsGateway.NewLife.X;
+using ThingsGateway.NewLife.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -29,15 +29,16 @@ public delegate void VariableAlarmEventHandler(AlarmVariable alarmVariable);
 /// <summary>
 /// 设备采集报警后台服务
 /// </summary>
-public class AlarmHostedService : BackgroundService
+internal class AlarmHostedService : BackgroundService, IAlarmHostedService
 {
     private readonly ILogger _logger;
-
+    private readonly ICollectDeviceHostedService _collectDeviceHostedService;
     /// <inheritdoc cref="AlarmHostedService"/>
-    public AlarmHostedService(ILogger<AlarmHostedService> logger, IStringLocalizer<AlarmHostedService> localizer)
+    public AlarmHostedService(ILogger<AlarmHostedService> logger, IStringLocalizer<AlarmHostedService> localizer, ICollectDeviceHostedService collectDeviceHostedService)
     {
         _logger = logger;
         Localizer = localizer;
+        _collectDeviceHostedService = collectDeviceHostedService;
     }
 
     /// <summary>
@@ -45,6 +46,10 @@ public class AlarmHostedService : BackgroundService
     /// </summary>
     public event VariableAlarmEventHandler OnAlarmChanged;
 
+    /// <summary>
+    /// 实时报警列表
+    /// </summary>
+    public IReadOnlyDictionary<string, VariableRunTime> ReadOnlyRealAlarmVariables => RealAlarmVariables;
     /// <summary>
     /// 实时报警列表
     /// </summary>
@@ -294,24 +299,25 @@ public class AlarmHostedService : BackgroundService
         // 更新变量的报警信息和事件时间
         if (eventEnum == EventTypeEnum.Alarm)
         {
+            var now = DateTime.Now;
             //添加报警延时策略
             if (delay > 0)
             {
                 if (item.EventType != EventTypeEnum.Alarm && item.EventType != EventTypeEnum.Prepare)
                 {
                     item.EventType = EventTypeEnum.Prepare;//准备报警
-                    item.PrepareEventTime = DateTime.Now;
+                    item.PrepareEventTime = now;
                 }
                 else
                 {
                     if (item.EventType == EventTypeEnum.Prepare)
                     {
-                        if ((DateTime.Now - item.PrepareEventTime!.Value).TotalSeconds > delay)
+                        if ((now - item.PrepareEventTime!.Value).TotalSeconds > delay)
                         {
                             //超过延时时间，触发报警
                             item.EventType = EventTypeEnum.Alarm;
-                            item.AlarmTime = DateTime.Now;
-                            item.EventTime = DateTime.Now;
+                            item.AlarmTime = now;
+                            item.EventTime = now;
                             item.AlarmType = alarmEnum;
                             item.AlarmLimit = limit.ToString();
                             item.AlarmCode = item.Value.ToString();
@@ -325,13 +331,13 @@ public class AlarmHostedService : BackgroundService
                     {
                         //报警类型改变，重新计时
                         if (item.PrepareEventTime == null)
-                            item.PrepareEventTime = DateTime.Now;
-                        if ((DateTime.Now - item.PrepareEventTime!.Value).TotalSeconds > delay)
+                            item.PrepareEventTime = now;
+                        if ((now - item.PrepareEventTime!.Value).TotalSeconds > delay)
                         {
                             //超过延时时间，触发报警
                             item.EventType = EventTypeEnum.Alarm;
-                            item.AlarmTime = DateTime.Now;
-                            item.EventTime = DateTime.Now;
+                            item.AlarmTime = now;
+                            item.EventTime = now;
                             item.AlarmType = alarmEnum;
                             item.AlarmLimit = limit.ToString();
                             item.AlarmCode = item.Value.ToString();
@@ -351,8 +357,8 @@ public class AlarmHostedService : BackgroundService
             {
                 // 如果是触发报警事件
                 item.EventType = eventEnum;
-                item.AlarmTime = DateTime.Now;
-                item.EventTime = DateTime.Now;
+                item.AlarmTime = now;
+                item.EventTime = now;
                 item.AlarmType = alarmEnum;
                 item.AlarmLimit = limit.ToString();
                 item.AlarmCode = item.Value.ToString();
@@ -450,8 +456,8 @@ public class AlarmHostedService : BackgroundService
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-        HostedServiceUtil.CollectDeviceHostedService.Started += CollectDeviceHostedService_Started;
-        HostedServiceUtil.CollectDeviceHostedService.Stoping += CollectDeviceHostedService_Stoping;
+        _collectDeviceHostedService.Started += CollectDeviceHostedService_Started;
+        _collectDeviceHostedService.Stoping += CollectDeviceHostedService_Stoping;
         return base.StartAsync(cancellationToken);
     }
 
@@ -506,30 +512,17 @@ public class AlarmHostedService : BackgroundService
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         return Task.CompletedTask;
-        //try
-        //{
-        //    while (!stoppingToken.IsCancellationRequested)
-        //    {
-        //        _logger.LogInformation("BytePool.Default.Capacity：" + BytePool.Default.Capacity);
-        //        _logger.LogInformation("BytePool.Default.GetPoolSize：" + BytePool.Default.GetPoolSize());
-        //        _logger.LogInformation("ChannelThread.CycleInterval：" + ChannelThread.CycleInterval);
-        //        await Task.Delay(10000, stoppingToken);
-        //    }
-        //}
-        //catch (OperationCanceledException)
-        //{
-        //}
     }
 
     private async Task CollectDeviceHostedService_Started()
     {
-        if (HostedServiceUtil.ManagementHostedService.StartCollectDeviceEnable || HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
+        if (GlobalData.CollectDeviceHostedService.StartCollectDeviceEnable || GlobalData.BusinessDeviceHostedService.StartBusinessDeviceEnable)
             await StartAsync().ConfigureAwait(false);
     }
 
     private async Task CollectDeviceHostedService_Stoping()
     {
-        if (!HostedServiceUtil.ManagementHostedService.StartBusinessDeviceEnable)
+        if (!GlobalData.BusinessDeviceHostedService.StartBusinessDeviceEnable)
             await StopAsync();
     }
 

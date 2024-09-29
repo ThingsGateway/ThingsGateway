@@ -12,8 +12,6 @@ using BootstrapBlazor.Components;
 
 using Microsoft.AspNetCore.Components.Forms;
 
-using TouchSocket.Core;
-
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
@@ -64,14 +62,6 @@ public interface IChannelService
     /// </summary>
     /// <returns>通道列表</returns>
     List<Channel> GetAll();
-
-    /// <summary>
-    /// 通过配置获取通道
-    /// </summary>
-    /// <param name="channel">通道对象</param>
-    /// <param name="config">配置信息</param>
-    /// <returns>通道</returns>
-    IChannel GetChannel(Channel channel, TouchSocketConfig config);
 
     /// <summary>
     /// 通过ID获取通道

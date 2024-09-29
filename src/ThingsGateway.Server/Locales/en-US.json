@@ -56,7 +56,7 @@
     "HardwareInfoChart": "Hardware Information Historical Chart",
     "DateTime": "Date Time",
     "Data": "Data",
-    "HisHardwareInfo": "Historical Chart"
+    "HistoryHardwareInfo": "Historical Chart"
   },
   "ThingsGateway.Gateway.Razor.GatewayIndex": {
     "CollectDevice": "Collect Device",
@@ -73,6 +73,7 @@
     "HardwareInfoChart": "Hardware Information Historical Chart",
     "DateTime": "Date Time",
     "Data": "Data",
-    "HisHardwareInfo": "Historical Chart"
+    "HistoryHardwareInfo": "Historical Chart"
   }
+
 }

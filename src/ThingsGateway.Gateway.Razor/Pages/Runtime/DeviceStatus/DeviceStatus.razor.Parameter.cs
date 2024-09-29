@@ -18,7 +18,7 @@ public partial class DeviceStatus
     public IEnumerable<SelectedItem> Channels { get; set; }
 
     [Parameter, EditorRequired]
-    public DeviceHostedService DeviceHostedService { get; set; }
+    public IDeviceHostedService DeviceHostedService { get; set; }
 
     [Parameter, EditorRequired]
     public EventCallback DeviceQuery { get; set; }

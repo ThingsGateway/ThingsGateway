@@ -1,0 +1,101 @@
+<Project>
+
+  <ItemGroup>
+    <!--Management 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.Management" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+
+    <!--AllenBradleyCip 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.AllenBradleyCip" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--DCON 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.DCON" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--EDPF_NT 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.EDPF_NT" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--KELID2008 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.KELID2008" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--LKSIS 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.LKSIS" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--Melsec 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.Melsec" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--Omron 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.Omron" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--DKQ_A16D 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.DKQ_A16D" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--IDR210 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.IDR210" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--URF_R330 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.URF_R330" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--USBScaner 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.USBScaner" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+
+  </ItemGroup>
+
+  <Target Name="CopyCustomPluginNugetPackages" AfterTargets="Build">
+    <ItemGroup>
+      <!-- setting up the variable for convenience -->
+      <PkgThingsGateway_Plugin_ManagementPackageFiles Include="$(PkgThingsGateway_Plugin_Management)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_AllenBradleyCipPackageFiles Include="$(PkgThingsGateway_Plugin_AllenBradleyCip)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_DCONPackageFiles Include="$(PkgThingsGateway_Plugin_DCON)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_EDPF_NTPackageFiles Include="$(PkgThingsGateway_Plugin_EDPF_NT)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_KELID2008PackageFiles Include="$(PkgThingsGateway_Plugin_KELID2008)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_LKSISPackageFiles Include="$(PkgThingsGateway_Plugin_LKSIS)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_MelsecPackageFiles Include="$(PkgThingsGateway_Plugin_Melsec)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_OmronPackageFiles Include="$(PkgThingsGateway_Plugin_Omron)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_DKQ_A16DPackageFiles Include="$(PkgThingsGateway_Plugin_DKQ_A16D)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_IDR210PackageFiles Include="$(PkgThingsGateway_Plugin_IDR210)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_URF_R330PackageFiles Include="$(PkgThingsGateway_Plugin_URF_R330)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_USBScanerPackageFiles Include="$(PkgThingsGateway_Plugin_USBScaner)\Content\net6.0\**\*.*" />
+
+      <MainFile1 Include="$(PkgThingsGateway_Plugin_IDR210)\Main\**" />
+      <MainFile2 Include="$(PkgThingsGateway_Plugin_DKQ_A16D)\Main\**" />
+      <MainFile3 Include="$(PkgThingsGateway_Plugin_URF_R330)\Main\**" />
+      <MainFile4 Include="$(PkgThingsGateway_Plugin_Management)\Content\SeedData\Management\*.*" />
+    </ItemGroup>
+    <PropertyGroup>
+      <PluginFolder>$(TargetDir)Plugins\</PluginFolder>
+    </PropertyGroup>
+    <Message Text="将插件复制到插件目录 $(PluginFolder)" Importance="high" />
+    
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_ManagementPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+
+    
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_AllenBradleyCipPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_DCONPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_EDPF_NTPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_KELID2008PackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_LKSISPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_MelsecPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_OmronPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_DKQ_A16DPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_IDR210PackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_URF_R330PackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_USBScanerPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    
+    <Copy SourceFiles="@(MainFile1)" DestinationFolder="$(TargetDir)%(RecursiveDir)" />
+    <Copy SourceFiles="@(MainFile2)" DestinationFolder="$(TargetDir)%(RecursiveDir)" />
+    <Copy SourceFiles="@(MainFile3)" DestinationFolder="$(TargetDir)%(RecursiveDir)" />
+
+
+    
+    <PropertyGroup>
+      <MainFile4ApplicationFolder>$(TargetDir)SeedData\Management\</MainFile4ApplicationFolder>
+    </PropertyGroup>
+    <RemoveDir Directories="$(MainFile4ApplicationFolder)" />
+    <Copy SourceFiles="@(MainFile4)" DestinationFolder="$(MainFile4ApplicationFolder)%(RecursiveDir)" />
+
+    
+  </Target>
+
+  <Target Name="MainDLLPostPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <!-- setting up the variable for convenience -->
+      <MainFile1 Include="$(PkgThingsGateway_Plugin_IDR210)\Main\**" />
+      <MainFile2 Include="$(PkgThingsGateway_Plugin_DKQ_A16D)\Main\**" />
+      <MainFile3 Include="$(PkgThingsGateway_Plugin_URF_R330)\Main\**" />
+    </ItemGroup>
+    <PropertyGroup>
+    </PropertyGroup>
+    <Copy SourceFiles="@(MainFile1)" DestinationFolder="$(PublishDir)%(RecursiveDir)" />
+    <Copy SourceFiles="@(MainFile2)" DestinationFolder="$(PublishDir)%(RecursiveDir)" />
+    <Copy SourceFiles="@(MainFile3)" DestinationFolder="$(PublishDir)%(RecursiveDir)" />
+  </Target>
+</Project>

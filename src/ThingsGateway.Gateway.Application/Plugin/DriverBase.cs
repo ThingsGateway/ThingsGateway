@@ -13,7 +13,7 @@ using BootstrapBlazor.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using ThingsGateway.NewLife.X.Threading;
+using ThingsGateway.NewLife.Threading;
 
 using TouchSocket.Core;
 
@@ -27,11 +27,12 @@ public abstract class DriverBase : DisposableObject
     /// <inheritdoc cref="DriverBase"/>
     public DriverBase()
     {
-        PluginService = NetCoreApp.RootServices.GetRequiredService<IPluginService>();
-        RpcService = NetCoreApp.RootServices.GetRequiredService<IRpcService>();
-        Localizer = NetCoreApp.CreateLocalizerByType(typeof(DriverBase))!;
+        PluginService = App.RootServices.GetRequiredService<IPluginService>();
+        RpcService = App.RootServices.GetRequiredService<IRpcService>();
+        Localizer = App.CreateLocalizerByType(typeof(DriverBase))!;
     }
 
+    #region 属性
     /// <summary>
     /// 当前设备
     /// </summary>
@@ -53,6 +54,11 @@ public abstract class DriverBase : DisposableObject
     public virtual Type DriverDebugUIType { get; }
 
     /// <summary>
+    /// 插件UI Type，继承<see cref="IDriverUIBase"/>如果不存在，返回null
+    /// </summary>
+    public virtual Type DriverUIType { get; }
+
+    /// <summary>
     /// 插件属性UI Type，如果不存在，返回null
     /// </summary>
     public virtual Type DriverPropertyUIType { get; }
@@ -63,24 +69,19 @@ public abstract class DriverBase : DisposableObject
     public abstract object DriverProperties { get; }
 
     /// <summary>
-    /// 插件UI Type，继承<see cref="IDriverUIBase"/>如果不存在，返回null
-    /// </summary>
-    public virtual Type DriverUIType { get; }
-
-    /// <summary>
     /// 是否执行了BeforStart方法
     /// </summary>
     public bool IsBeforStarted { get; protected set; } = false;
 
     /// <summary>
-    /// 是否采集插件
-    /// </summary>
-    public virtual bool IsCollectDevice => CurrentDevice.PluginType == PluginTypeEnum.Collect;
-
-    /// <summary>
     /// 是否初始化成功
     /// </summary>
     public bool IsInitSuccess { get; internal set; } = true;
+
+    /// <summary>
+    /// 是否采集插件
+    /// </summary>
+    public virtual bool IsCollectDevice => CurrentDevice.PluginType == PluginTypeEnum.Collect;
 
     /// <summary>
     /// 是否继续运行
@@ -117,9 +118,14 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 全局插件服务
     /// </summary>
-    protected IPluginService PluginService { get; private set; }
+    protected IPluginService PluginService { get; }
 
     private IStringLocalizer Localizer { get; }
+
+
+    #endregion 属性
+
+    #region 方法
 
     /// <summary>
     /// 配置底层的通道插件,通常在使用前都执行一次获取新的插件管理器
@@ -144,7 +150,7 @@ public abstract class DriverBase : DisposableObject
     /// 暂停
     /// </summary>
     /// <param name="keepRun">是否继续</param>
-    internal void PasueThread(bool keepRun)
+    internal void PauseThread(bool keepRun)
     {
         lock (this)
         {
@@ -159,6 +165,9 @@ public abstract class DriverBase : DisposableObject
     {
         return Protocol?.ToString() ?? base.ToString();
     }
+
+
+    #endregion 方法
 
     #region 任务管理器传入
 
@@ -215,9 +224,6 @@ public abstract class DriverBase : DisposableObject
                 {
                     // 执行资源释放操作
                     this.SafeDispose();
-
-                    IsInitSuccess = true;
-                    IsBeforStarted = false;
                 }
                 catch (Exception ex)
                 {
@@ -236,7 +242,7 @@ public abstract class DriverBase : DisposableObject
     /// </summary>
     /// <param name="cancellationToken">取消操作的令牌。</param>
     /// <returns>表示异步操作的任务。</returns>
-    internal virtual async ValueTask BeforStartAsync(CancellationToken cancellationToken)
+    internal async ValueTask BeforStartAsync(CancellationToken cancellationToken)
     {
         // 如果已经执行过初始化，则直接返回
         if (IsBeforStarted)
@@ -273,13 +279,13 @@ public abstract class DriverBase : DisposableObject
             }
 
             // 设置设备状态为当前时间
-            CurrentDevice.SetDeviceStatus(DateTime.Now);
+            CurrentDevice.SetDeviceStatus(TimerX.Now);
         }
         catch (Exception ex)
         {
             // 记录执行过程中的异常信息，并设置设备状态为异常
             Logger?.LogWarning(ex, "BeforStart Fail");
-            CurrentDevice.SetDeviceStatus(DateTime.Now, 999, ex.Message);
+            CurrentDevice.SetDeviceStatus(TimerX.Now, 999, ex.Message);
         }
         finally
         {
@@ -293,7 +299,7 @@ public abstract class DriverBase : DisposableObject
     /// </summary>
     /// <param name="cancellationToken">取消操作的令牌。</param>
     /// <returns>表示异步操作结果的枚举。</returns>
-    internal protected virtual async ValueTask<ThreadRunReturnTypeEnum> ExecuteAsync(CancellationToken cancellationToken)
+    internal protected async ValueTask<ThreadRunReturnTypeEnum> ExecuteAsync(CancellationToken cancellationToken)
     {
         try
         {

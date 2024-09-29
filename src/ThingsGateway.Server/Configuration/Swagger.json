@@ -1,0 +1,32 @@
+{
+
+  //swagger设置
+  "SpecificationDocumentSettings": {
+    "DocumentTitle": "ThingsGateway",
+    "DocExpansionState": "None",
+    "GroupOpenApiInfos": [
+      {
+        "Group": "ThingsGateway.OpenApi", //分组唯一标识，string 类型，必填
+        "Order": 99, //分组排序，int 类型，数字越大排前面，默认 0
+        "Title": "ThingsGateway物联网关接口", //配置分组标题，string 类型
+        "Description": "物联网关Swagger",
+        "Version": "1.0.0", //配置分组版本，默认 1.0
+        "TermsOfService": "https://gitee.com/diego2098/ThingsGateway", //配置相关链接地址，Uri 类型
+        "Contact": {
+          //配置联系方式
+          "Name": "Diego",
+          "Url": "https://gitee.com/diego2098/ThingsGateway",
+          "Email": "2248356998@qq.com"
+        },
+        "License": {
+          //配置协议，OpenApiLicense 类型
+          "Name": "Apache-2.0",
+          "Url": "https://gitee.com/diego2098/ThingsGateway/blob/master/LICENSE.txt"
+        }
+      }
+
+    ],
+    "EnableEnumSchemaFilter": true
+  }
+
+}

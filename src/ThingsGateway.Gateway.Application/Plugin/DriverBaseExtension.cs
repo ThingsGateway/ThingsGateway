@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 using ThingsGateway.Foundation.Extension.Collection;
-using ThingsGateway.NewLife.X.Extension;
+using ThingsGateway.NewLife.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -87,25 +87,17 @@ public static class DriverBaseExtension
         return value; // 返回属性值
     }
 
-    /// <summary>
-    /// 获取变量的业务属性值
-    /// </summary>
-    /// <param name="variableRunTime">当前变量</param>
-    /// <param name="businessId">对应业务设备Id</param>
-    /// <param name="propertyName">属性名称</param>
-    /// <returns>属性值，如果不存在则返回null</returns>
-    public static string? GetPropertyValue(this VariableRunTime variableRunTime, long businessId, string propertyName)
-    {
-        if (variableRunTime == null || propertyName.IsNullOrWhiteSpace())
-            return null;
 
-        // 检查是否存在对应的业务设备Id
-        if (variableRunTime.VariablePropertys?.ContainsKey(businessId) == true)
-        {
-            variableRunTime.VariablePropertys[businessId].TryGetValue(propertyName, out var value);
-            return value; // 返回属性值
-        }
 
-        return null; // 未找到对应的业务设备Id，返回null
-    }
+}
+
+
+public interface IDynamicModel
+{
+    IEnumerable<dynamic> GetList(IEnumerable<object> datas);
+}
+
+public interface IDynamicModelData
+{
+    dynamic GeData(object datas);
 }

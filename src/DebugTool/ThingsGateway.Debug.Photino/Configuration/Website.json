@@ -1,0 +1,13 @@
+{
+  //网站配置
+  "Website": {
+    "Copyright": "版权所有 © 2023-present Diego",
+    "IsShowAbout": true, //是否显示关于页面
+    "SourceUrl": "https://gitee.com/diego2098/ThingsGateway",
+    "WikiUrl": "https://thingsgateway.cn/",
+    "QQGroup1Link": "http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=NnBjPO-8kcNFzo_RzSbdICflb97u2O1i&authKey=V1MI3iJtpDMHc08myszP262kDykbx2Yev6ebE4Me0elTe0P0IFAmtU5l7Sy5w0jx&noverify=0&group_code=605534569",
+    "QQGroup1Number": "605534569",
+    "Title": "ThingsGateway",
+    "Demo": false
+  }
+}

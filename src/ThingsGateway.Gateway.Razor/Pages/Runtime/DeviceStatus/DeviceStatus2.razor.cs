@@ -18,7 +18,7 @@ public partial class DeviceStatus2
     public Func<DeviceRunTime, Task> DeleteCacheAsync { get; set; }
 
     [Parameter, EditorRequired]
-    public DeviceHostedService? DeviceHostedService { get; set; }
+    public IDeviceHostedService? DeviceHostedService { get; set; }
 
     [Parameter, EditorRequired]
     public EventCallback DeviceQuery { get; set; }
@@ -30,7 +30,7 @@ public partial class DeviceStatus2
     public DriverBase? Item { get; set; }
 
     [Parameter, EditorRequired]
-    public Action<long, bool?> PasueThread { get; set; }
+    public Action<long, bool?> PauseThread { get; set; }
 
     [Parameter, EditorRequired]
     public Func<long, Task> RestartAsync { get; set; }

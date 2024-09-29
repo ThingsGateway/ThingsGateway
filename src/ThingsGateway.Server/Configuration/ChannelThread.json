@@ -1,0 +1,9 @@
+﻿{
+  "ChannelThread": {
+    "MinCycleInterval": 10, //最小循环间隔
+    "MaxCycleInterval": 200, //最大循环间隔
+    "MaxVariableCount": 4000000, //最大变量数量
+    "MaxCount": 4000 //最大通道数量(每个通道为一个循环任务)
+  }
+
+}

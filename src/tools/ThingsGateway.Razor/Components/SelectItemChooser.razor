@@ -1,9 +1,0 @@
-﻿@namespace ThingsGateway.Razor
-<div class="selectItem-chooser">
-    @foreach (var item in Items)
-    {
-        <div @key="@item" class="@GetItemClass(item)" @onclick="@(e => OnClickItem(item))">
-            @ItemTemplate(item)
-        </div>
-    }
-</div>

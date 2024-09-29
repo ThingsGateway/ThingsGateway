@@ -39,7 +39,6 @@ public delegate void VariableCollectEventHandler(VariableRunTime variableRunTime
 /// </summary>
 public static class GlobalData
 {
-    private static IRpcService rpcService;
 
     /// <summary>
     /// 设备状态变化事件，当设备状态发生变化时触发该事件
@@ -69,25 +68,76 @@ public static class GlobalData
     /// <summary>
     /// 实时报警列表
     /// </summary>
-    public static IReadOnlyDictionary<string, VariableRunTime> ReadOnlyRealAlarmVariables => HostedServiceUtil.AlarmHostedService.RealAlarmVariables;
+    public static IReadOnlyDictionary<string, VariableRunTime> ReadOnlyRealAlarmVariables => AlarmHostedService.ReadOnlyRealAlarmVariables;
 
     /// <summary>
     /// 只读的变量字典，提供对变量的只读访问
     /// </summary>
     public static IEnumerable<KeyValuePair<string, VariableRunTime>> ReadOnlyVariables => Variables;
 
+    #region 单例服务
+
+    private static IRpcService rpcService;
     public static IRpcService RpcService
     {
         get
         {
             if (rpcService == null)
             {
-                rpcService = NetCoreApp.RootServices.GetRequiredService<IRpcService>();
+                rpcService = App.RootServices.GetRequiredService<IRpcService>();
             }
             return rpcService;
         }
     }
 
+    private static IAlarmHostedService alarmHostedService;
+    public static IAlarmHostedService AlarmHostedService
+    {
+        get
+        {
+            if (alarmHostedService == null)
+            {
+                alarmHostedService = App.RootServices.GetRequiredService<IAlarmHostedService>();
+            }
+            return alarmHostedService;
+        }
+    }
+
+    private static IBusinessDeviceHostedService? businessDeviceHostedService;
+
+    private static ICollectDeviceHostedService? collectDeviceHostedService;
+
+    private static IHardwareJob? hardwareJob;
+
+    public static IBusinessDeviceHostedService BusinessDeviceHostedService
+    {
+        get
+        {
+            businessDeviceHostedService ??= App.RootServices.GetRequiredService<IBusinessDeviceHostedService>();
+            return businessDeviceHostedService;
+        }
+    }
+
+    public static ICollectDeviceHostedService CollectDeviceHostedService
+    {
+        get
+        {
+            collectDeviceHostedService ??= App.RootServices.GetRequiredService<ICollectDeviceHostedService>();
+            return collectDeviceHostedService;
+        }
+    }
+
+    public static IHardwareJob HardwareJob
+    {
+        get
+        {
+            hardwareJob ??= App.RootServices.GetRequiredService<IHardwareJob>();
+            return hardwareJob;
+        }
+    }
+
+
+    #endregion
     /// <summary>
     /// 内部使用的业务设备字典，用于存储业务设备对象
     /// </summary>

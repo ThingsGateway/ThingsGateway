@@ -1,14 +1,14 @@
 <Project>
-  <PropertyGroup>
-    <TargetFrameworks>net462;netstandard2.0;net8.0;net6.0;</TargetFrameworks>
-  </PropertyGroup>
-  <ItemGroup>
-    <Content Remove="Locales\*.json" />
-    <EmbeddedResource Include="Locales\*.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="$(SolutionDir)Foundation.props" Pack="true" PackagePath="\" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFrameworks>net462;netstandard2.0;net8.0;net6.0;</TargetFrameworks>
+	</PropertyGroup>
+	<ItemGroup>
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="$(SolutionDir)Foundation.props" Pack="true" PackagePath="\" />
+	</ItemGroup>
 </Project>

@@ -11,8 +11,7 @@
 using ThingsGateway.Extension;
 using ThingsGateway.Foundation.Json.Extension;
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.NewLife.X.Extension;
-using ThingsGateway.Razor;
+using ThingsGateway.NewLife.Extension;
 
 namespace ThingsGateway.Gateway.Razor;
 
