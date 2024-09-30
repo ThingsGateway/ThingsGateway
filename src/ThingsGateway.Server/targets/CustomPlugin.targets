@@ -2,30 +2,30 @@
 
   <ItemGroup>
     <!--Management 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.Management" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.Management" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
 
     <!--AllenBradleyCip 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.AllenBradleyCip" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.AllenBradleyCip" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--DCON 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.DCON" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.DCON" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--EDPF_NT 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.EDPF_NT" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.EDPF_NT" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--KELID2008 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.KELID2008" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.KELID2008" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--LKSIS 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.LKSIS" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.LKSIS" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--Melsec 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.Melsec" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.Melsec" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--Omron 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.Omron" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.Omron" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--DKQ_A16D 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.DKQ_A16D" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.DKQ_A16D" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--IDR210 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.IDR210" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.IDR210" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--URF_R330 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.URF_R330" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.URF_R330" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--USBScaner 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.USBScaner" Version="9.0.*" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.USBScaner" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
 
   </ItemGroup>
 

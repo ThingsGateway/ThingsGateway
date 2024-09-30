@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
   <Import Project="$(SolutionDir)Version.props" />
 
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
@@ -33,11 +34,11 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="ThingsGateway.Razor" Version="7.0.*" />
-    <PackageReference Include="ThingsGateway.Debug.Razor" Version="9.0.*" />
+    <PackageReference Include="ThingsGateway.Razor" Version="$(AdminVersion)" />
+    <PackageReference Include="ThingsGateway.Debug.Razor" Version="$(PluginVersion)" />
     <PackageReference Include="Photino.NET" Version="3.1.18" />
   </ItemGroup>
-  
+
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="6.0.33" />
   </ItemGroup>
@@ -46,14 +47,14 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="8.0.8" />
   </ItemGroup>
 
-  
+
   <ItemGroup>
     <Compile Include="..\..\ThingsGateway.Photino\Photino\**" LinkBase="Photino">
     </Compile>
-    
+
   </ItemGroup>
 
-  
+
   <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

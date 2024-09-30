@@ -3,8 +3,8 @@
 <!--Admin-->
 
   <ItemGroup>
-    <PackageReference Include="ThingsGateway.Admin.Razor" Version="7.0.*" />
-    <PackageReference Include="ThingsGateway.Admin.Application" Version="7.0.*" GeneratePathProperty="true"/>
+    <PackageReference Include="ThingsGateway.Admin.Razor" Version="$(AdminVersion)" />
+    <PackageReference Include="ThingsGateway.Admin.Application" Version="$(AdminVersion)" GeneratePathProperty="true"/>
   </ItemGroup>
   
   <Target Name="CopyAdminNugetPackages" AfterTargets="Build">

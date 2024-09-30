@@ -9,9 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ThingsGateway.Admin.Application" Version="7.0.*" />
-    <PackageReference Include="ThingsGateway.Foundation" Version="9.0.*" />
-    <PackageReference Include="ThingsGateway.CSScript" Version="9.0.*" />
+    <PackageReference Include="ThingsGateway.Admin.Application" Version="$(AdminVersion)" />
+    <PackageReference Include="ThingsGateway.Foundation" Version="$(PluginVersion)" />
+    <PackageReference Include="ThingsGateway.CSScript" Version="$(PluginVersion)" />
   </ItemGroup>
 
   <ItemGroup>

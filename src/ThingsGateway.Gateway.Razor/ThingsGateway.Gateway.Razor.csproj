@@ -5,8 +5,8 @@
   <ItemGroup>
     <ProjectReference Include="..\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
     <PackageReference Include="BootstrapBlazor.WinBox" Version="8.0.3" />
-    <PackageReference Include="ThingsGateway.Foundation.Razor" Version="9.0.*" />
-    <PackageReference Include="ThingsGateway.Admin.Razor" Version="7.0.*" />
+    <PackageReference Include="ThingsGateway.Foundation.Razor" Version="$(PluginVersion)" />
+    <PackageReference Include="ThingsGateway.Admin.Razor" Version="$(AdminVersion)" />
   </ItemGroup>
 
   <ItemGroup>

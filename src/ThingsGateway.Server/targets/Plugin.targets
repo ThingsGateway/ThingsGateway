@@ -16,62 +16,62 @@
 
   <ItemGroup>
     <!--Modbus 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.Modbus" Version="9.0.*" GeneratePathProperty="true">
+    <PackageReference Include="ThingsGateway.Plugin.Modbus" Version="$(PluginVersion)" GeneratePathProperty="true">
       <Private>false</Private>
       <IncludeAssets> native;</IncludeAssets>
     </PackageReference>
 
     <!--SiemensS7 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.SiemensS7" Version="9.0.*" GeneratePathProperty="true">
+    <PackageReference Include="ThingsGateway.Plugin.SiemensS7" Version="$(PluginVersion)" GeneratePathProperty="true">
       <Private>false</Private>
       <IncludeAssets> native;</IncludeAssets>
     </PackageReference>
 
     <!--Dlt645 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.Dlt645" Version="9.0.*" GeneratePathProperty="true">
+    <PackageReference Include="ThingsGateway.Plugin.Dlt645" Version="$(PluginVersion)" GeneratePathProperty="true">
       <Private>false</Private>
       <IncludeAssets> native;</IncludeAssets>
     </PackageReference>
     
     <!--OpcDa 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.OpcDa" Version="9.0.*" GeneratePathProperty="true">
+    <PackageReference Include="ThingsGateway.Plugin.OpcDa" Version="$(PluginVersion)" GeneratePathProperty="true">
       <Private>false</Private>
       <IncludeAssets> native;</IncludeAssets>
     </PackageReference>
 
     <!--OpcUa 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.OpcUa" Version="9.0.*" GeneratePathProperty="true">
+    <PackageReference Include="ThingsGateway.Plugin.OpcUa" Version="$(PluginVersion)" GeneratePathProperty="true">
       <Private>false</Private>
       <IncludeAssets> native;</IncludeAssets>
     </PackageReference>
 
 
     <!--DB 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.DB" Version="9.0.*" GeneratePathProperty="true">
+    <PackageReference Include="ThingsGateway.Plugin.DB" Version="$(PluginVersion)" GeneratePathProperty="true">
       <Private>false</Private>
       <IncludeAssets> native;</IncludeAssets>
     </PackageReference>
 
     <!--Kafka 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.Kafka" Version="9.0.*" GeneratePathProperty="true">
+    <PackageReference Include="ThingsGateway.Plugin.Kafka" Version="$(PluginVersion)" GeneratePathProperty="true">
       <Private>false</Private>
       <IncludeAssets> native;</IncludeAssets>
     </PackageReference>
 
     <!--Mqtt 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.Mqtt" Version="9.0.*" GeneratePathProperty="true">
+    <PackageReference Include="ThingsGateway.Plugin.Mqtt" Version="$(PluginVersion)" GeneratePathProperty="true">
       <Private>false</Private>
       <IncludeAssets> native;</IncludeAssets>
     </PackageReference>
 
     <!--RabbitMQ 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.RabbitMQ" Version="9.0.*" GeneratePathProperty="true">
+    <PackageReference Include="ThingsGateway.Plugin.RabbitMQ" Version="$(PluginVersion)" GeneratePathProperty="true">
       <Private>false</Private>
       <IncludeAssets> native;</IncludeAssets>
     </PackageReference>
 
     <!--VariableExpression 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.VariableExpression" Version="9.0.*" GeneratePathProperty="true">
+    <PackageReference Include="ThingsGateway.Plugin.VariableExpression" Version="$(PluginVersion)" GeneratePathProperty="true">
       <Private>false</Private>
       <IncludeAssets> native;</IncludeAssets>
     </PackageReference>
