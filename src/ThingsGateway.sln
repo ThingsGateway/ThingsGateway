@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# 17
+# Visual Studio Version 17
 VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Server", "ThingsGateway.Server\ThingsGateway.Server.csproj", "{22875EFB-DADF-4612-A572-33BCC092F644}"
@@ -17,6 +17,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Debug.Photino", "DebugTool\ThingsGateway.Debug.Photino\ThingsGateway.Debug.Photino.csproj", "{01B09604-C7CB-4E00-97CE-C8CC8F2EEAC4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Debug.Winform", "DebugTool\ThingsGateway.Debug.Winform\ThingsGateway.Debug.Winform.csproj", "{F7A5913C-246A-4C9F-9BCD-0B60CE27B958}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "other", "other", "{0B748352-5D27-4F14-8A20-364034C72867}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		Version.props = Version.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,8 +67,8 @@ Global
 		{F7A5913C-246A-4C9F-9BCD-0B60CE27B958} = {0D76CE00-967B-4C08-AA47-6C50A6B2DDCC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
-		RESX_NeutralResourcesLanguage = zh-Hans
 		RESX_Rules = {"EnabledRules":[]}
+		RESX_NeutralResourcesLanguage = zh-Hans
+		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
 	EndGlobalSection
 EndGlobal
