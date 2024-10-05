@@ -54,6 +54,12 @@ public class PluginOutput
     public string Name { get; set; }
 
     /// <summary>
+    /// 关联设备数量
+    /// </summary>
+    [AutoGenerateColumn(Filterable = true, Sortable = true)]
+    public int DeviceCount { get; set; }
+
+    /// <summary>
     /// 插件版本
     /// </summary>
     [AutoGenerateColumn(Filterable = true, Sortable = true)]

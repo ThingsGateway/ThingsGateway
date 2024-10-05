@@ -488,21 +488,25 @@ internal class PluginService : IPluginService
                 {
                     FileInfo fileInfo = new FileInfo(item.Value.Assembly.Location); //文件信息
                     DateTime lastWriteTime = fileInfo.LastWriteTime;//作为编译时间
-                    plugins.Add(
-                        new PluginOutput()
-                        {
-                            Name = item.Value.Name,//插件名称
-                            FileName = Path.GetFileNameWithoutExtension(fileInfo.Name),//插件文件名称（分类）
-                            PluginType = (typeof(CollectBase).IsAssignableFrom(item.Value)) ? PluginTypeEnum.Collect : PluginTypeEnum.Business, //插件类型
-                            EducationPlugin = PluginServiceUtil.IsEducation(item.Value),
-                            Version = item.Value.Assembly.GetName().Version.ToString(), //插件版本
-                            LastWriteTime = lastWriteTime, //编译时间
-                        }
-                    );
+
+                    var pluginOutput = new PluginOutput()
+                    {
+                        Name = item.Value.Name,//插件名称
+                        FileName = Path.GetFileNameWithoutExtension(fileInfo.Name),//插件文件名称（分类）
+                        PluginType = (typeof(CollectBase).IsAssignableFrom(item.Value)) ? PluginTypeEnum.Collect : PluginTypeEnum.Business, //插件类型
+                        EducationPlugin = PluginServiceUtil.IsEducation(item.Value),
+                        Version = item.Value.Assembly.GetName().Version.ToString(), //插件版本
+
+
+                        LastWriteTime = lastWriteTime, //编译时间
+                    };
+                    pluginOutput.DeviceCount = App.GetService<IDeviceService>().GetAll().Count(a => a.PluginName == pluginOutput.FullName);//关联设备数量
+                    plugins.Add(pluginOutput);
+
                 }
             }
 
-            return plugins.OrderBy(a => a.EducationPlugin).ToList();
+            return plugins.OrderBy(a => a.EducationPlugin).ThenByDescending(a => a.DeviceCount).ToList();
         }
     }
 }
