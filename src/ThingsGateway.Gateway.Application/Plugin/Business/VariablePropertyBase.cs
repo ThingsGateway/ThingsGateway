@@ -17,4 +17,9 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public abstract class VariablePropertyBase
 {
+    /// <summary>
+    /// 启用
+    /// </summary>
+    [DynamicProperty()]
+    public bool Enable { get; set; } = true;
 }
