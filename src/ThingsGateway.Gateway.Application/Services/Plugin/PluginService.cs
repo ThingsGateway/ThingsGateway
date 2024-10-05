@@ -66,6 +66,8 @@ internal class PluginService : IPluginService
         _driverBaseDict = new(App.EffectiveTypes
             .Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(BusinessBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract)
             .ToDictionary(a => $"{Path.GetFileNameWithoutExtension(new FileInfo(a.Assembly.Location).Name)}.{a.Name}"));
+
+        DeleteBackup(DirName);
     }
 
     /// <summary>
@@ -383,9 +385,10 @@ internal class PluginService : IPluginService
 
     private async Task MarkSave(string fullPath, MemoryStream stream)
     {
-        MarkDeletePlugin(fullPath);
+        var has = MarkDeletePlugin(fullPath);
+        var saveEx = string.Empty;
         stream.Seek(0, SeekOrigin.Begin);
-        using FileStream fs = new($"{fullPath}{SaveEx}", FileMode.Create);
+        using FileStream fs = new($"{fullPath}{saveEx}", FileMode.Create);
         await stream.CopyToAsync(fs).ConfigureAwait(false);
         await stream.DisposeAsync().ConfigureAwait(false);
     }
@@ -393,10 +396,31 @@ internal class PluginService : IPluginService
     /// 标记删除插件
     /// </summary>
     /// <param name="path">主程序集文件名称</param>
-    private void MarkDeletePlugin(string path)
+    private bool MarkDeletePlugin(string path)
     {
         var fileInfo = new FileInfo(path);
-        fileInfo.CopyTo($"{path}{DelEx}", true);
+        if (fileInfo.Exists)
+            fileInfo.MoveTo($"{path}{DelEx}", true);
+        else
+            return false;
+        return true;
+    }
+
+    /// <summary>删除备份文件</summary>
+    /// <param name="dest">目标目录</param>
+    public void DeleteBackup(String dest)
+    {
+        // 删除备份
+        var di = dest.AsDirectory();
+        var fs = di.GetAllFiles($"*{DelEx}", true);
+        foreach (var item in fs)
+        {
+            try
+            {
+                item.Delete();
+            }
+            catch { }
+        }
     }
 
     /// <summary>

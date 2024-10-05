@@ -35,7 +35,7 @@ public partial class SavePlugin
                 await OnSavePlugin.Invoke(Model);
             if (OnCloseAsync != null)
                 await OnCloseAsync();
-            await ToastService.Default();
+            await ToastService.Success(content: Localizer["SavePlugin1"]);
         }
         catch (Exception ex)
         {

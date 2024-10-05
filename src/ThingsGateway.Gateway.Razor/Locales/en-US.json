@@ -59,7 +59,9 @@
     "ReloadServiceConfirmText": "Are you sure you want to restart the runtime?"
   },
   "ThingsGateway.Gateway.Razor.SavePlugin": {
-    "SavePlugin": "Note: Plugins with the same file name will be overwritten"
+    "SavePlugin": "Note: Plugins with the same file name will be overwritten",
+    "SavePlugin1": "Plugin changes will take effect after restarting the software"
+
   },
   "ThingsGateway.Gateway.Razor.BackendLogPage": {
     "BackendLog": "Gateway Backend Log",

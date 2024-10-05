@@ -59,8 +59,9 @@
     "ReloadServiceConfirmText": "确定重启运行时?"
   },
   "ThingsGateway.Gateway.Razor.SavePlugin": {
-    "SavePlugin": "注意：文件名称相同的插件将被覆盖"
-  },
+    "SavePlugin": "注意：文件名称相同的插件将被覆盖",
+    "SavePlugin1": "插件变动需重启软件后生效"
+  },  
 
   "ThingsGateway.Gateway.Razor.BackendLogPage": {
     "BackendLog": "网关后台日志",
