@@ -245,9 +245,10 @@ internal class VariableService : BaseService<Variable>, IVariableService
     /// 报表查询
     /// </summary>
     /// <param name="option">查询条件</param>
-    public Task<QueryData<Variable>> PageAsync(QueryPageOptions option)
+    /// <param name="businessDeviceId">业务设备id</param>
+    public Task<QueryData<Variable>> PageAsync(QueryPageOptions option, long? businessDeviceId)
     {
-        return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)));
+        return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)).WhereIF(businessDeviceId > 0, u => SqlFunc.JsonLike(u.VariablePropertys, businessDeviceId.ToString())));
     }
 
     /// <summary>

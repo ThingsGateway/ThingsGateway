@@ -22,6 +22,7 @@ namespace ThingsGateway.Gateway.Razor;
 
 public abstract partial class DevicePage : IDisposable
 {
+    protected IEnumerable<SelectedItem> ChannelNames;
     protected IEnumerable<SelectedItem> PluginNames;
     protected Dictionary<string, PluginOutput> PluginDcit { get; set; }
     protected abstract PluginTypeEnum PluginType { get; }
@@ -55,7 +56,7 @@ public abstract partial class DevicePage : IDisposable
     [NotNull]
     private IPluginService? PluginService { get; set; }
 
-    private Device? SearchModel { get; set; } = new();
+    private DeviceSearchInput? SearchModel { get; set; } = new();
 
     public void Dispose()
     {
@@ -78,13 +79,31 @@ public abstract partial class DevicePage : IDisposable
         return base.OnInitializedAsync();
     }
 
+
+
     protected override Task OnParametersSetAsync()
     {
         ChannelDict = ChannelService.GetAll().ToDictionary(a => a.Id);
+        ChannelNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat(ChannelService.GetAll().BuildChannelSelectList());
+
         DeviceDict = DeviceService.GetAll().ToDictionary(a => a.Id, a => a.Name);
         PluginNames = PluginService.GetList(PluginType).BuildPluginSelectList();
         PluginDcit = PluginService.GetList(PluginType).ToDictionary(a => a.FullName);
         return base.OnParametersSetAsync();
+    }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+
+    private async Task RelationVariableAsync(long id)
+    {
+        await Task.CompletedTask;
+        if (PluginType == PluginTypeEnum.Collect)
+            NavigationManager.NavigateTo("/gateway/variable?deviceid=" + id);
+        else
+            NavigationManager.NavigateTo("/gateway/variable?businessdeviceid=" + id);
+
     }
 
     private async Task Notify(DispatchEntry<PluginOutput> entry)

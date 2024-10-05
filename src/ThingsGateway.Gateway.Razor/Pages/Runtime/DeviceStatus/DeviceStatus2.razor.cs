@@ -40,4 +40,17 @@ public partial class DeviceStatus2
 
     [Parameter, EditorRequired]
     public Func<Task> ShowDriverUI { get; set; }
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+
+    private void RelationVariable(long id)
+    {
+        if (DeviceHostedService is ICollectDeviceHostedService)
+            NavigationManager.NavigateTo("/gateway/variableruntime?deviceid=" + id);
+        else
+            NavigationManager.NavigateTo("/gateway/variableruntime?businessdeviceid=" + id);
+
+    }
 }

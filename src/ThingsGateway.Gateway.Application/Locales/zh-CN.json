@@ -26,6 +26,7 @@
   "ThingsGateway.Gateway.Application.VariableSearchInput": {
     "Name": "变量名称",
     "DeviceId": "采集设备",
+    "BusinessDeviceId": "业务设备",
     "RegisterAddress": "寄存器地址"
   },
 
@@ -280,6 +281,7 @@
     "FileName": "插件文件",
     "PluginType": "插件类型",
     "Name": "插件名称",
+    "DeviceCount": "关联设备数量",
     "Version": "插件版本",
     "LastWriteTime": "插件编译时间"
   },
@@ -311,6 +313,14 @@
 
     "DeleteRpc": "删除RPC日志"
   },
+
+  "ThingsGateway.Gateway.Application.DeviceSearchInput": {
+    "ChannelId": "通道",
+    "Name": "名称",
+    "PluginName": "插件名称",
+    "PluginType": "插件类型"
+  },
+
   "ThingsGateway.Gateway.Application.Device": {
     "Name": "名称",
     "Name.Required": " {0} 不可为空",

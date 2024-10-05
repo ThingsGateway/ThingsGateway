@@ -9,10 +9,10 @@
 
 <div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
 
-    <AdminTable @ref=table TItem="Device" AutoGenerateColumns="true" ShowAdvancedSearch=false
-                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true SearchModel=SearchModel
-                ShowExtendButtons=true ShowExportButton ScrollingDialogContent
-                ShowDefaultButtons=true ExtendButtonColumnWidth=150
+    <AdminTable @ref=table TItem="Device" AutoGenerateColumns="true" ShowAdvancedSearch=true
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true CustomerSearchModel=SearchModel
+                ShowExtendButtons=true ShowExportButton ScrollingDialogContent SearchMode=SearchMode.Top
+                ShowDefaultButtons=true ExtendButtonColumnWidth=250
                 OnQueryAsync="OnQueryAsync" IsPagination=true
                 OnSaveAsync="Save" OnDeleteAsync="Delete">
 
@@ -46,7 +46,7 @@
 
         </TableColumns>
         <EditTemplate Context="context">
-            <DeviceEditComponent Model=context PluginType=PluginType PluginNames="PluginNames"  PluginDcit="PluginDcit" DeviceDict=DeviceDict RedundantDevicesQuery="OnRedundantDevicesQuery"></DeviceEditComponent>
+            <DeviceEditComponent Model=context PluginType=PluginType PluginNames="PluginNames" PluginDcit="PluginDcit" DeviceDict=DeviceDict RedundantDevicesQuery="OnRedundantDevicesQuery"></DeviceEditComponent>
         </EditTemplate>
 
 
@@ -68,10 +68,39 @@
             <TableToolbarPopConfirmButton TItem="Device"
                                           Color=Color.Warning Text="@Localizer["Clear"]" IsShow=@(AuthorizeButton("清空"))
                                           IsAsync OnConfirm=@(ClearDeviceAsync) />
+
+
+
         </TableToolbarTemplate>
+        <RowButtonTemplate>
+            <TableCellButton Size="Size.ExtraSmall" Color="Color.Success" Icon="fa-solid fa-people-roof" Text="@Localizer["RelationVariable"]" OnClick="()=>RelationVariableAsync(context.Id)" />
+        </RowButtonTemplate>
+        <CustomerSearchTemplate>
+            @if (context is DeviceSearchInput model)
+            {
+                @Render(model)
+            }
+        </CustomerSearchTemplate>
+
+
     </AdminTable>
 </div>
 
 @code {
     AdminTable<Device> table;
+}
+@code {
+    RenderFragment Render(DeviceSearchInput model) =>
+    @<div class="row form-inline g-2">
+        <div class="col-12 col-md-6">
+            <Select IsVirtualize @bind-Value="model.ChannelId" Items="@ChannelNames" ShowSearch="true" ShowLabel="true" IsClearable DisableItemChangedWhenFirstRender=true IsPopover />
+        </div>
+        <div class="col-12 col-md-6">
+            <BootstrapInput @bind-Value="model.Name" ShowLabel="true" />
+        </div>
+        <div class="col-12 col-md-6">
+            <BootstrapInput @bind-Value="model.PluginName" ShowLabel="true" />
+        </div>
+    </div>;
+
 }

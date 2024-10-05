@@ -15,44 +15,45 @@ using ThingsGateway.Extension;
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
-/// 变量分页查询参数
+/// 设备分页查询DTO
 /// </summary>
-public class VariablePageInput : BasePageInput
+public class DevicePageInput : BasePageInput
 {
     /// <inheritdoc/>
-    public long? BusinessDeviceId { get; set; }
+    public long? ChannelId { get; set; }
 
     /// <inheritdoc/>
-    public long? DeviceId { get; set; }
+    public string? Name { get; set; }
 
     /// <inheritdoc/>
-    public string Name { get; set; }
+    public string? PluginName { get; set; }
 
     /// <inheritdoc/>
-    public string RegisterAddress { get; set; }
+    public PluginTypeEnum PluginType { get; set; }
 }
 
-public class VariableSearchInput : ITableSearchModel
+
+
+public class DeviceSearchInput : ITableSearchModel
 {
     /// <inheritdoc/>
-    public long? DeviceId { get; set; }
+    public long? ChannelId { get; set; }
 
     /// <inheritdoc/>
-    public long? BusinessDeviceId { get; set; }
+    public string? Name { get; set; }
 
     /// <inheritdoc/>
-    public string Name { get; set; }
-
+    public string? PluginName { get; set; }
     /// <inheritdoc/>
-    public string RegisterAddress { get; set; }
+    public PluginTypeEnum PluginType { get; set; }
 
     /// <inheritdoc/>
     public IEnumerable<IFilterAction> GetSearches()
     {
         var ret = new List<IFilterAction>();
-        ret.AddIF(!string.IsNullOrEmpty(Name), () => new SearchFilterAction(nameof(Variable.Name), Name));
-        ret.AddIF(!string.IsNullOrEmpty(RegisterAddress), () => new SearchFilterAction(nameof(Variable.RegisterAddress), RegisterAddress));
-        ret.AddIF(DeviceId > 0, () => new SearchFilterAction(nameof(Variable.DeviceId), DeviceId, FilterAction.Equal));
+        ret.AddIF(!string.IsNullOrEmpty(Name), () => new SearchFilterAction(nameof(Device.Name), Name));
+        ret.AddIF(!string.IsNullOrEmpty(PluginName), () => new SearchFilterAction(nameof(Device.PluginName), PluginName));
+        ret.AddIF(ChannelId > 0, () => new SearchFilterAction(nameof(Device.ChannelId), ChannelId, FilterAction.Equal));
         return ret;
     }
 
@@ -60,9 +61,7 @@ public class VariableSearchInput : ITableSearchModel
     public void Reset()
     {
         Name = null;
-        RegisterAddress = null;
-        DeviceId = null;
-        BusinessDeviceId = null;
+        PluginName = null;
+        ChannelId = null;
     }
 }
-

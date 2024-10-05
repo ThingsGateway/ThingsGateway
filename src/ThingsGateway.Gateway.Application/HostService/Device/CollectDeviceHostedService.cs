@@ -54,7 +54,7 @@ internal class CollectDeviceHostedService : DeviceHostedService, ICollectDeviceH
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Yield();
-        await Task.Delay(30000);
+        await Task.Delay(5000);
         if (StartCollectDeviceEnable)
             await StartAsync().ConfigureAwait(false);
         GlobalData.DeviceStatusChangeEvent += DeviceRedundantThread;

@@ -87,10 +87,12 @@ public interface IVariableService
     Task InsertTestDataAsync(int count);
 
     /// <summary>
-    /// 表格查询。
+    /// 表格查询
     /// </summary>
-    /// <param name="option">查询分页选项。</param>
-    Task<QueryData<Variable>> PageAsync(QueryPageOptions option);
+    /// <param name="option">查询分页选项</param>
+    /// <param name="businessDeviceId">业务设备id</param>
+    Task<QueryData<Variable>> PageAsync(QueryPageOptions option, long? businessDeviceId);
+
 
     /// <summary>
     /// API查询

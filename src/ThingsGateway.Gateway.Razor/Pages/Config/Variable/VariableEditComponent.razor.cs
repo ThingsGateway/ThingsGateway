@@ -103,7 +103,7 @@ public partial class VariableEditComponent
             if (CollectDeviceDict.TryGetValue(selectedItem.Value.ToLong(), out var device))
             {
                 var data = PluginService.GetDriverMethodInfos(device.PluginName);
-                OtherMethods = data.Select(a => new SelectedItem(a.Name, a.Description)).Append(new SelectedItem(string.Empty, "none"));
+                OtherMethods = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat(data.Select(a => new SelectedItem(a.Name, a.Description)));
             }
         }
         catch (Exception ex)

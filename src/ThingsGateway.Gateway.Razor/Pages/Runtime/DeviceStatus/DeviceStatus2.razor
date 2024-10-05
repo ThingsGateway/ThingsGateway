@@ -42,7 +42,10 @@
                     <PopConfirmButton OnConfirm=@(()=>DeleteCacheAsync(Item.CurrentDevice)) IsDisabled=@(!AuthorizeButton("删除缓存")) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("fa-solid fa-rotate") />
                 </Tooltip>
             }
+            <Tooltip Title="@Localizer["RelationVariable"]" Placement="Placement.Bottom">
 
+                <Button OnClick=@(()=>RelationVariable(Item.DeviceId)) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon="fa-solid fa-people-roof" />
+            </Tooltip>
             <Tooltip Title="@Localizer["GatewayDeviceLog"]" Placement="Placement.Bottom">
 
                 <Button OnClick=@(SetLogEnable) IsDisabled=@(!AuthorizeButton("通道日志")) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@(Item.ChannelThread.LogEnable?"fa fa-pause":"fa fa-play") />

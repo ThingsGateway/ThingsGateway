@@ -12,23 +12,16 @@
 <div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
 
     <AdminTable @ref=table TItem="VariableRunTime" AutoGenerateColumns="false" ShowAdvancedSearch=true
-                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false SearchModel=SearchModel SearchMode=SearchMode.Top
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false CustomerSearchModel=CustomerSearchModel SearchMode=SearchMode.Top
                 ShowExtendButtons=true ShowExportButton=false ShowExtendDeleteButton=false ShowExtendEditButton=false
                 ShowDefaultButtons=false ExtendButtonColumnWidth=150 AutoRefreshInterval="10000" IsAutoRefresh
                 OnQueryAsync="OnQueryAsync" IsPagination=true>
-        <SearchTemplate>
-            <div class="row form-inline g-2">
-                <div class="col-12 col-md-6">
-                    <Select IsVirtualize @bind-Value="context.DeviceName" Items="@CollectDeviceNames" ShowSearch="true" ShowLabel="true" IsClearable DisableItemChangedWhenFirstRender=true IsPopover />
-                </div>
-                <div class="col-12 col-md-6">
-                    <BootstrapInput @bind-Value="context.Name" ShowLabel="true" />
-                </div>
-                <div class="col-12 col-md-6">
-                    <BootstrapInput @bind-Value="context.RegisterAddress" ShowLabel="true" />
-                </div>
-            </div>
-        </SearchTemplate>
+        <CustomerSearchTemplate>
+            @if (context is VariableSearchInput model)
+            {
+                @Render(model)
+            }
+        </CustomerSearchTemplate>
         <TableColumns>
             <TableColumn @bind-Field="@context.DeviceName" ShowTips=true Filterable=true Sortable=true Visible=true />
             <TableColumn @bind-Field="@context.Name" ShowTips=true Filterable=true Sortable=true Visible=true />
@@ -108,4 +101,23 @@
 
 @code {
     AdminTable<VariableRunTime> table;
+}
+@code {
+    RenderFragment Render(VariableSearchInput model) =>
+
+    @<div class="row form-inline g-2">
+        <div class="col-12 col-md-6">
+            <Select IsVirtualize @bind-Value="model.DeviceId" Items="@CollectDeviceNames" ShowSearch="true" ShowLabel="true" IsClearable DisableItemChangedWhenFirstRender=true IsPopover />
+        </div>
+        <div class="col-12 col-md-6">
+            <Select IsVirtualize @bind-Value="model.BusinessDeviceId" Items="@BusinessDeviceNames" ShowSearch="true" ShowLabel="true" IsClearable DisableItemChangedWhenFirstRender=true IsPopover />
+        </div>
+        <div class="col-12 col-md-6">
+            <BootstrapInput @bind-Value="model.Name" ShowLabel="true" />
+        </div>
+        <div class="col-12 col-md-6">
+            <BootstrapInput @bind-Value="model.RegisterAddress" ShowLabel="true" />
+        </div>
+    </div>;
+
 }

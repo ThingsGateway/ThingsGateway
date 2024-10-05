@@ -858,21 +858,3 @@ internal class DeviceService : BaseService<Device>, IDeviceService
 
     #endregion 导入
 }
-
-/// <summary>
-/// 设备分页查询DTO
-/// </summary>
-public class DevicePageInput : BasePageInput
-{
-    /// <inheritdoc/>
-    public long? ChannelId { get; set; }
-
-    /// <inheritdoc/>
-    public string? Name { get; set; }
-
-    /// <inheritdoc/>
-    public string? PluginName { get; set; }
-
-    /// <inheritdoc/>
-    public PluginTypeEnum PluginType { get; set; }
-}

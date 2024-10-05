@@ -18,6 +18,7 @@ namespace ThingsGateway.Gateway.Razor;
 public partial class VariableRuntimePage : IDisposable
 {
     protected IEnumerable<SelectedItem> CollectDeviceNames;
+    protected IEnumerable<SelectedItem> BusinessDeviceNames;
 
     public bool Disposed { get; set; }
 
@@ -25,7 +26,7 @@ public partial class VariableRuntimePage : IDisposable
     [NotNull]
     private IDispatchService<DeviceRunTime>? DeviceDispatchService { get; set; }
 
-    private VariableRunTime? SearchModel { get; set; } = new();
+    private VariableSearchInput? CustomerSearchModel { get; set; } = new();
 
     public void Dispose()
     {
@@ -46,10 +47,41 @@ public partial class VariableRuntimePage : IDisposable
         return base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// 设备
+    /// </summary>
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public long? DeviceId { get; set; }
+    /// <summary>
+    /// 上传设备
+    /// </summary>
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public long? BusinessDeviceId { get; set; }
+
+    [CascadingParameter]
+    [NotNull]
+    private TabItem? TabItem { get; set; }
     protected override Task OnParametersSetAsync()
     {
-        CollectDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(GlobalData.ReadOnlyCollectDevices.Keys.Select(a => new SelectedItem(a, a)));
+        CollectDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(GlobalData.ReadOnlyCollectDevices.Select(a => new SelectedItem(a.Value.Id.ToString(), a.Key)));
+        BusinessDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(GlobalData.ReadOnlyBusinessDevices.Select(a => new SelectedItem(a.Value.Id.ToString(), a.Key)));
+
+        if (DeviceId != null)
+            if (CustomerSearchModel.DeviceId != DeviceId)
+                CustomerSearchModel.DeviceId = DeviceId;
+        if (BusinessDeviceId != null)
+            if (CustomerSearchModel.BusinessDeviceId != BusinessDeviceId)
+                CustomerSearchModel.BusinessDeviceId = BusinessDeviceId;
+
         return base.OnParametersSetAsync();
+    }
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            TabItem?.SetHeader(AppContext.TitleLocalizer["实时数据"]);
+        return base.OnAfterRenderAsync(firstRender);
     }
 
     /// <summary>
@@ -100,9 +132,10 @@ public partial class VariableRuntimePage : IDisposable
     {
         var data = GlobalData.ReadOnlyVariables.Select(a => a.Value)
             .WhereIF(!options.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(options.SearchText))
-            .WhereIF(!SearchModel.Name.IsNullOrWhiteSpace(), a => a.Name.Contains(SearchModel.Name))
-            .WhereIF(!SearchModel.RegisterAddress.IsNullOrWhiteSpace(), a => a.RegisterAddress.Contains(SearchModel.RegisterAddress))
-            .WhereIF(!SearchModel.DeviceName.IsNullOrWhiteSpace(), a => a.DeviceName.Contains(SearchModel.DeviceName))
+            .WhereIF(!CustomerSearchModel.Name.IsNullOrWhiteSpace(), a => a.Name.Contains(CustomerSearchModel.Name))
+            .WhereIF(!CustomerSearchModel.RegisterAddress.IsNullOrWhiteSpace(), a => a.RegisterAddress.Contains(CustomerSearchModel.RegisterAddress))
+            .WhereIF(CustomerSearchModel.DeviceId > 0, a => a.DeviceId == CustomerSearchModel.DeviceId)
+                 .WhereIF(CustomerSearchModel.BusinessDeviceId > 0, a => a.VariablePropertys?.ContainsKey(CustomerSearchModel.BusinessDeviceId.Value) == true)
 
             .GetQueryData(options);
         return Task.FromResult(data);

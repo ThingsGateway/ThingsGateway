@@ -40,6 +40,8 @@ public partial class VariablePage : IDisposable
 
     private int TestCount { get; set; }
 
+
+
     [Inject]
     [NotNull]
     private IVariableService? VariableService { get; set; }
@@ -57,15 +59,46 @@ public partial class VariablePage : IDisposable
         return base.OnInitializedAsync();
     }
 
+    /// <summary>
+    /// 设备
+    /// </summary>
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public long? DeviceId { get; set; }
+    /// <summary>
+    /// 上传设备
+    /// </summary>
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public long? BusinessDeviceId { get; set; }
+    [CascadingParameter]
+    [NotNull]
+    private TabItem? TabItem { get; set; }
+
     protected override Task OnParametersSetAsync()
     {
+
         CollectDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).ToDictionary(a => a.Id);
         BusinessDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).ToDictionary(a => a.Id);
 
-        CollectDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
-        BusinessDeviceNames = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList().Concat(new List<SelectedItem>() { new SelectedItem(string.Empty, "none") });
+        CollectDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat(DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList());
+        BusinessDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat(DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList());
+
+        if (DeviceId != null)
+            if (CustomerSearchModel.DeviceId != DeviceId)
+                CustomerSearchModel.DeviceId = DeviceId;
+        if (BusinessDeviceId != null)
+            if (CustomerSearchModel.BusinessDeviceId != BusinessDeviceId)
+                CustomerSearchModel.BusinessDeviceId = BusinessDeviceId;
 
         return base.OnParametersSetAsync();
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            TabItem?.SetHeader(AppContext.TitleLocalizer["变量管理"]);
+        return base.OnAfterRenderAsync(firstRender);
     }
 
     private async Task Change()
@@ -93,7 +126,7 @@ public partial class VariablePage : IDisposable
     {
         return await Task.Run(async () =>
         {
-            var data = await VariableService.PageAsync(options);
+            var data = await VariableService.PageAsync(options, CustomerSearchModel.BusinessDeviceId);
             return data;
         });
     }

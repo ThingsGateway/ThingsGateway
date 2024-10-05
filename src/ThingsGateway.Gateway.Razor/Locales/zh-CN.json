@@ -11,6 +11,7 @@
     "DeviceRedundantThread": "切换冗余",
     "DeleteCache": "删除缓存",
     "GatewayDeviceLog": "通道日志",
+    "RelationVariable": "关联变量",
     "GatewayDevicePause": "暂停/运行",
     "GatewayDeviceRestart": "重启设备"
   },
@@ -77,11 +78,13 @@
   },
   "ThingsGateway.Gateway.Razor.CollectDevicePage": {
     "ImportExcel": "导入采集设备",
-    "Clear": "清空"
+    "Clear": "清空",
+    "RelationVariable": "关联变量"
   },
   "ThingsGateway.Gateway.Razor.BusinessDevicePage": {
     "ImportExcel": "导入业务设备",
-    "Clear": "清空"
+    "Clear": "清空",
+    "RelationVariable": "关联变量"
   },
   "ThingsGateway.Gateway.Razor.VariablePage": {
     "ImportExcel": "导入变量",

@@ -27,6 +27,7 @@
   "ThingsGateway.Gateway.Application.VariableSearchInput": {
     "Name": "Name",
     "DeviceId": "Device",
+    "BusinessDeviceId": "BusinessDevice",
     "RegisterAddress": "RegisterAddress"
   },
   "ThingsGateway.Gateway.Application.RpcLogPageInput": {
@@ -241,6 +242,7 @@
     "FileName": "FileName",
     "PluginType": "PluginType",
     "Name": "Name",
+    "DeviceCount": "DeviceCount",
     "Version": "Version",
     "LastWriteTime": "CompilationTime"
   },
@@ -267,6 +269,13 @@
     "ResultJson": "ReturnResults",
     "OperateMessage": "SpecificMessage",
     "DeleteRpc": "DeleteRPCLog"
+  },
+
+  "ThingsGateway.Gateway.Application.DeviceSearchInput": {
+    "ChannelId": "ChannelId",
+    "Name": "Name",
+    "PluginName": "PluginName",
+    "PluginType": "PluginType"
   },
   "ThingsGateway.Gateway.Application.Device": {
     "Name": "Name",
