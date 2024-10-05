@@ -17,10 +17,26 @@
                 ShowExportButton="true" ShowAdvancedSearch=false SearchModel=SearchModel
                 OnQueryAsync="OnQueryAsync">
 
-@*         <TableToolbarTemplate>
-            <TableToolbarButton TItem="PluginOutput" Color="Color.Info" Icon="fa fa-plus" Text="@DefaultLocalizer["Add"]"
-                                OnClickCallback="OnAdd" IsShow=@(AuthorizeButton("添加")) />
+        @*         <TableToolbarTemplate>
+        <TableToolbarButton TItem="PluginOutput" Color="Color.Info" Icon="fa fa-plus" Text="@DefaultLocalizer["Add"]"
+        OnClickCallback="OnAdd" IsShow=@(AuthorizeButton("添加")) />
         </TableToolbarTemplate> *@
+        <TableColumns>
+            <TableColumn @bind-Field="@context.Name">
+                <Template Context="name">
+                    @if (name.Row.EducationPlugin)
+                    {
+                        <span>@name.Value</span>
+                        <div style="flex-grow: 1;"></div>
+                        <Tag Color="Color.Primary">PRO</Tag>
+                    }
+                    else
+                    {
+                        <span>@name.Value</span>
+                    }
+                </Template>
+            </TableColumn>
+        </TableColumns>
 
         <ExportButtonDropdownTemplate Context="ExportContext">
             <div class="dropdown-item" @onclick="() => ExcelExportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导出"))>

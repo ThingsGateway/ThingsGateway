@@ -23,6 +23,7 @@ namespace ThingsGateway.Gateway.Razor;
 public abstract partial class DevicePage : IDisposable
 {
     protected IEnumerable<SelectedItem> PluginNames;
+    protected Dictionary<string, PluginOutput> PluginDcit { get; set; }
     protected abstract PluginTypeEnum PluginType { get; }
     protected abstract string RolePrex { get; }
 
@@ -82,6 +83,7 @@ public abstract partial class DevicePage : IDisposable
         ChannelDict = ChannelService.GetAll().ToDictionary(a => a.Id);
         DeviceDict = DeviceService.GetAll().ToDictionary(a => a.Id, a => a.Name);
         PluginNames = PluginService.GetList(PluginType).BuildPluginSelectList();
+        PluginDcit = PluginService.GetList(PluginType).ToDictionary(a => a.FullName);
         return base.OnParametersSetAsync();
     }
 

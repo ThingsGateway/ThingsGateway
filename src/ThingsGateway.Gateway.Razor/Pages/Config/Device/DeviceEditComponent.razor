@@ -45,7 +45,29 @@
                         <div class="col-12  col-md-6">
                             <Select @bind-Value="@value.PluginName"
                                     Items="@PluginNames" OnSelectedItemChanged=OnPluginNameChanged
-                                    ShowSearch="true" IsPopover />
+                                    ShowSearch="true" IsPopover>
+                                <ItemTemplate Context="name">
+                                    @if (PluginDcit.TryGetValue(name.Value, out var pluginOutput))
+                                    {
+                                        if (pluginOutput.EducationPlugin)
+                                        {
+                                            <div class="d-flex">
+                                                <span>@name.Text</span>
+                                                <div style="flex-grow: 1;"></div>
+                                                <Tag Color="Color.Primary">PRO</Tag>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span>@name.Value</span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>@name.Value</span>
+                                    }
+                                </ItemTemplate>
+                            </Select>
                         </div>
                     </EditTemplate>
                 </EditorItem>
@@ -152,7 +174,29 @@ else
                             <div class="col-12  col-md-6">
                                 <Select @bind-Value="@value.PluginName"
                                         Items="@PluginNames" OnSelectedItemChanged=OnPluginNameChanged
-                                        ShowSearch="true" IsPopover />
+                                        ShowSearch="true" IsPopover>
+                                    <ItemTemplate Context="name">
+                                        @if (PluginDcit.TryGetValue(name.Value, out var pluginOutput))
+                                        {
+                                            if (pluginOutput.EducationPlugin)
+                                            {
+                                                <div class="d-flex">
+                                                    <span>@name.Text</span>
+                                                    <div style="flex-grow: 1;"></div>
+                                                    <Tag Color="Color.Primary">PRO</Tag>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <span>@name.Text</span>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <span>@name.Text</span>
+                                        }
+                                    </ItemTemplate>
+                                </Select>
                             </div>
                         </EditTemplate>
                     </EditorItem>
@@ -212,52 +256,52 @@ else
         <TabItem Text=@Localizer["PluginInformation"]>
             @if (Model.PluginPropertyModel != null)
             {
-                if (PropertyUIType==null)
+                if (PropertyUIType == null)
                 {
 
-                <ValidateForm Model="Model.PluginPropertyModel.Value" @ref=Model.PluginPropertyModel.ValidateForm Id="@Model.Id.ToString()">
+                    <ValidateForm Model="Model.PluginPropertyModel.Value" @ref=Model.PluginPropertyModel.ValidateForm Id="@Model.Id.ToString()">
 
-                    <EditorFormObject class="p-2" Items=PluginPropertyEditorItems AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="Model.PluginPropertyModel.Value" @key=Model.PluginPropertyModel.Value.GetType().TypeHandle.Value>
+                        <EditorFormObject class="p-2" Items=PluginPropertyEditorItems AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="Model.PluginPropertyModel.Value" @key=Model.PluginPropertyModel.Value.GetType().TypeHandle.Value>
 
-                        <FieldItems>
-                            @if (Model.PluginPropertyModel.Value is BusinessPropertyWithCacheIntervalScript businessProperty)
-                            {
-                                <EditorItem FieldExpression=@(()=>context) Field=@(context)>
+                            <FieldItems>
+                                @if (Model.PluginPropertyModel.Value is BusinessPropertyWithCacheIntervalScript businessProperty)
+                                {
+                                    <EditorItem FieldExpression=@(()=>context) Field=@(context)>
 
-                                    <EditTemplate Context="value">
-                                        <div class="col-12  col-md-12">
-                                            <Textarea @bind-Value=@businessProperty.BigTextScriptDeviceModel ShowLabelTooltip="true"
-                                                      rows="5" ShowLabel="true" />
-                                            <div class="ms-2 d-flex justify-content-center align-items-center">
-                                                <Button OnClick="()=>CheckScript(businessProperty,nameof(businessProperty.BigTextScriptDeviceModel))">
-                                                    @Localizer["Check"]
-                                                </Button>
+                                        <EditTemplate Context="value">
+                                            <div class="col-12  col-md-12">
+                                                <Textarea @bind-Value=@businessProperty.BigTextScriptDeviceModel ShowLabelTooltip="true"
+                                                          rows="5" ShowLabel="true" />
+                                                <div class="ms-2 d-flex justify-content-center align-items-center">
+                                                    <Button OnClick="()=>CheckScript(businessProperty,nameof(businessProperty.BigTextScriptDeviceModel))">
+                                                        @Localizer["Check"]
+                                                    </Button>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-12  col-md-12">
-                                            <Textarea @bind-Value=@businessProperty.BigTextScriptVariableModel ShowLabelTooltip="true"
-                                                      rows="5" ShowLabel="true" />
-                                            <div class="ms-2 d-flex justify-content-center align-items-center">
-                                                <Button OnClick="()=>CheckScript(businessProperty,nameof(businessProperty.BigTextScriptVariableModel))">
-                                                    @Localizer["Check"]
-                                                </Button>
+                                            <div class="col-12  col-md-12">
+                                                <Textarea @bind-Value=@businessProperty.BigTextScriptVariableModel ShowLabelTooltip="true"
+                                                          rows="5" ShowLabel="true" />
+                                                <div class="ms-2 d-flex justify-content-center align-items-center">
+                                                    <Button OnClick="()=>CheckScript(businessProperty,nameof(businessProperty.BigTextScriptVariableModel))">
+                                                        @Localizer["Check"]
+                                                    </Button>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-12  col-md-12">
-                                            <Textarea @bind-Value=@businessProperty.BigTextScriptAlarmModel ShowLabelTooltip="true"
-                                                      rows="5" ShowLabel="true" />
-                                            <div class="ms-2 d-flex justify-content-center align-items-center">
-                                                <Button OnClick="()=>CheckScript(businessProperty,nameof(businessProperty.BigTextScriptAlarmModel))">
-                                                    @Localizer["Check"]
-                                                </Button>
+                                            <div class="col-12  col-md-12">
+                                                <Textarea @bind-Value=@businessProperty.BigTextScriptAlarmModel ShowLabelTooltip="true"
+                                                          rows="5" ShowLabel="true" />
+                                                <div class="ms-2 d-flex justify-content-center align-items-center">
+                                                    <Button OnClick="()=>CheckScript(businessProperty,nameof(businessProperty.BigTextScriptAlarmModel))">
+                                                        @Localizer["Check"]
+                                                    </Button>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                    </EditTemplate>
-                                </EditorItem>
-                            }
-                        </FieldItems>
-                    </EditorFormObject>
+                                        </EditTemplate>
+                                    </EditorItem>
+                                }
+                            </FieldItems>
+                        </EditorFormObject>
                     </ValidateForm>
                 }
                 else

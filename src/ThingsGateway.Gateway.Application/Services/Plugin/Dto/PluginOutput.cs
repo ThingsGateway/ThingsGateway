@@ -42,6 +42,12 @@ public class PluginOutput
     public PluginTypeEnum PluginType { get; set; }
 
     /// <summary>
+    /// 专业版插件
+    /// </summary>
+    [AutoGenerateColumn(Visible = false)]
+    public bool EducationPlugin { get; set; }
+
+    /// <summary>
     /// 插件名称
     /// </summary>
     [AutoGenerateColumn(Filterable = true, Sortable = true)]

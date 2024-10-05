@@ -494,6 +494,7 @@ internal class PluginService : IPluginService
                             Name = item.Value.Name,//插件名称
                             FileName = Path.GetFileNameWithoutExtension(fileInfo.Name),//插件文件名称（分类）
                             PluginType = (typeof(CollectBase).IsAssignableFrom(item.Value)) ? PluginTypeEnum.Collect : PluginTypeEnum.Business, //插件类型
+                            EducationPlugin = PluginServiceUtil.IsEducation(item.Value),
                             Version = item.Value.Assembly.GetName().Version.ToString(), //插件版本
                             LastWriteTime = lastWriteTime, //编译时间
                         }
@@ -501,7 +502,7 @@ internal class PluginService : IPluginService
                 }
             }
 
-            return plugins;
+            return plugins.OrderBy(a => a.EducationPlugin).ToList();
         }
     }
 }

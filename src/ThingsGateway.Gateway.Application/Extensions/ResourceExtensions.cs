@@ -58,7 +58,7 @@ public static class ResourceExtensions
         .Select((item, index) =>
             new SelectedItem(item.FullName, item.Name)
             {
-                GroupName = item.FileName,
+                //GroupName = item.FileName,
             }
         ).ToList();
         return data;

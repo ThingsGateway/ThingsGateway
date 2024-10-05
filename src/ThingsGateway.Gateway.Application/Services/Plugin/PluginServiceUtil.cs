@@ -200,6 +200,15 @@ public static class PluginServiceUtil
     }
 
     /// <summary>
+    /// 插件是否专业版
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static bool IsEducation(Type type)
+    {
+        return Attribute.IsDefined(type, typeof(EducationPluginAttribute));
+    }
+    /// <summary>
     /// 通过实体赋值到字典中
     /// </summary>
     public static ConcurrentDictionary<long, Dictionary<string, string>> SetDict(ConcurrentDictionary<long, ModelValueValidateForm>? models)

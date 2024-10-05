@@ -48,6 +48,12 @@ public partial class DeviceEditComponent
     [Parameter]
     [EditorRequired]
     [NotNull]
+    public Dictionary<string, PluginOutput> PluginDcit { get; set; }
+
+
+    [Parameter]
+    [EditorRequired]
+    [NotNull]
     public PluginTypeEnum PluginType { get; set; }
 
     [Parameter]
