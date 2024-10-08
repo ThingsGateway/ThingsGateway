@@ -51,7 +51,7 @@
   "ThingsGateway.Gateway.Razor.QuickActions": {
     "TooltipText": "快捷操作",
     "HeaderText": "快捷操作",
-    "ReloadPluginText": "重載插件",
+    "RestartText": "重啟",
     "ReloadServiceText": "重启運行時",
     "ReloadPluginConfirmText": "確定重載插件?",
     "ReloadServiceConfirmText": "確定重启運行時?"

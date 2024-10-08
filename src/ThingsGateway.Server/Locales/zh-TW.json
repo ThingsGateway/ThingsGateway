@@ -37,8 +37,7 @@
     "后台日志": "後台記錄",
     "RPC日志": "RPC記錄",
     "物联网关": "物聯閘道",
-    "系统管理": "系統管理",
-    "网关冗余": "閘道冗餘"
+    "系统管理": "系統管理"
   },
   "ThingsGateway.Admin.Razor.AdminIndex": {
     "CollectDevice": "採集設備",

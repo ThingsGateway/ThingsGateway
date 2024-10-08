@@ -10,6 +10,7 @@
             <div class="flex-fill">@HeaderText</div>
             <button class="btn-close btn-close-white" type="button" aria-label="Close" onclick=@(async ()=>await ToggleOpen())></button>
         </div>
+
         <PopConfirmButton Placement="Placement.Top"
                           class="m-2"
                           Color="Color.Danger"
@@ -21,5 +22,17 @@
                           IsAsync="true"
                           OnConfirm="OnReloadService" IsDisabled=@(!AuthorizeButton("重启"))/>
 
+
+        @* <PopConfirmButton Placement="Placement.Top"
+                          class="m-2"
+                          Color="Color.Danger"
+                          ConfirmIcon="fa-solid fa-triangle-exclamation text-danger"
+                          ConfirmButtonColor="Color.Danger"
+                          Text=@(RestartText)
+                          Content=@(ReloadPluginConfirmText)
+                          Icon="fas fa-rotate"
+                          IsAsync="true"
+                          OnConfirm="OnRestart" IsDisabled=@(!AuthorizeButton("重启")) />
+ *@
     </div>
 </div>

@@ -53,7 +53,7 @@
   "ThingsGateway.Gateway.Razor.QuickActions": {
     "TooltipText": "Quick Actions",
     "HeaderText": "Quick Actions",
-    "ReloadPluginText": "Reload Plugin",
+    "RestartText": "Restart",
     "ReloadServiceText": "Restart Runtime",
     "ReloadPluginConfirmText": "Are you sure you want to reload the plugin?",
     "ReloadServiceConfirmText": "Are you sure you want to restart the runtime?"
