@@ -38,7 +38,8 @@
     "后台日志": "Backend",
     "RPC日志": "RPC",
     "物联网关": "Gateway",
-    "系统管理": "Admin"
+    "系统管理": "Admin",
+    "网关冗余": "Redundancy"
   },
 
   "ThingsGateway.Admin.Razor.AdminIndex": {
