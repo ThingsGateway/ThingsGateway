@@ -16,18 +16,18 @@
                 <EditorItem FieldExpression=@(()=>context) Field=@(context)>
 
                     <EditTemplate Context="value">
-                        <div class="col-12  col-md-12">
+                        <div class="col-12  col-md-12" style="min-height: 500px;">
                             <BootstrapLabel Value=@BusinessPropertyWithCacheIntervalScriptLocalizer["BigTextScriptDeviceModel"] ShowLabelTooltip="true" />
-                            <CodeEditor @bind-Value=@businessProperty.BigTextScriptDeviceModel Language="csharp" Theme="vs-dark" />
+                            <CodeEditor ShowLineNo @bind-Value=@businessProperty.BigTextScriptDeviceModel Language="csharp" Theme="vs-dark" />
                             <div class="ms-2 d-flex justify-content-center align-items-center">
                                 <Button OnClick="()=>CheckScript(businessProperty,nameof(businessProperty.BigTextScriptDeviceModel))">
                                     @Localizer["Check"]
                                 </Button>
                             </div>
                         </div>
-                        <div class="col-12  col-md-12">
+                        <div class="col-12  col-md-12" style="min-height: 500px;">
                             <BootstrapLabel Value=@BusinessPropertyWithCacheIntervalScriptLocalizer["BigTextScriptVariableModel"] ShowLabelTooltip="true" />
-                            <CodeEditor @bind-Value=@businessProperty.BigTextScriptVariableModel Language="csharp" Theme="vs-dark" />
+                            <CodeEditor ShowLineNo @bind-Value=@businessProperty.BigTextScriptVariableModel Language="csharp" Theme="vs-dark" />
 
                             <div class="ms-2 d-flex justify-content-center align-items-center">
                                 <Button OnClick="()=>CheckScript(businessProperty,nameof(businessProperty.BigTextScriptVariableModel))">
@@ -35,9 +35,9 @@
                                 </Button>
                             </div>
                         </div>
-                        <div class="col-12  col-md-12">
+                        <div class="col-12  col-md-12" style="min-height: 500px;">
                             <BootstrapLabel Value=@BusinessPropertyWithCacheIntervalScriptLocalizer["BigTextScriptAlarmModel"] ShowLabelTooltip="true" />
-                            <CodeEditor @bind-Value=@businessProperty.BigTextScriptAlarmModel Language="csharp" Theme="vs-dark" />
+                            <CodeEditor ShowLineNo @bind-Value=@businessProperty.BigTextScriptAlarmModel Language="csharp" Theme="vs-dark" />
 
                             <div class="ms-2 d-flex justify-content-center align-items-center">
                                 <Button OnClick="()=>CheckScript(businessProperty,nameof(businessProperty.BigTextScriptAlarmModel))">

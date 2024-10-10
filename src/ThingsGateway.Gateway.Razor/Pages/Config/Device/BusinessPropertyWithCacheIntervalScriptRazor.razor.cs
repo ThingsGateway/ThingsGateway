@@ -18,17 +18,16 @@ public partial class BusinessPropertyWithCacheIntervalScriptRazor
     public Device Model { get; set; }
     [Parameter, EditorRequired]
     public IEnumerable<IEditorItem> PluginPropertyEditorItems { get; set; }
-    IStringLocalizer BusinessPropertyWithCacheIntervalScriptLocalizer { get; set; }
-    protected override void OnInitialized()
+    private IStringLocalizer BusinessPropertyWithCacheIntervalScriptLocalizer { get; set; }
+
+    protected override Task OnParametersSetAsync()
     {
-        base.OnInitialized();
         BusinessPropertyWithCacheIntervalScriptLocalizer = App.CreateLocalizerByType(Model.PluginPropertyModel.Value.GetType());
+        return base.OnParametersSetAsync();
     }
 
-
-
     [Inject]
-    IStringLocalizer<DeviceEditComponent> Localizer { get; set; }
+    private IStringLocalizer<DeviceEditComponent> Localizer { get; set; }
     private async Task CheckScript(BusinessPropertyWithCacheIntervalScript businessProperty, string pname)
     {
         IEnumerable<object> data = null;
@@ -166,5 +165,5 @@ public partial class BusinessPropertyWithCacheIntervalScriptRazor
 
 
     [Inject]
-    DialogService DialogService { get; set; }
+    private DialogService DialogService { get; set; }
 }
