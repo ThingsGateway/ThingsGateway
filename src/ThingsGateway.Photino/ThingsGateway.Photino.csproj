@@ -11,7 +11,6 @@
     <SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
     <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
-    <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
     <!--<PublishAot>true</PublishAot>-->
 
     <!--动态适用GC-->
@@ -24,7 +23,11 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
-  
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0-rc.2.24474.1" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.10" />
   </ItemGroup>
@@ -32,14 +35,20 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.20" />
   </ItemGroup>
 
+
+  <!--安装服务守护-->
+  <ItemGroup Condition=" '$(TargetFramework)' != 'net9.0' ">
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.0.0-rc.2.24473.5" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.0-rc.2.24473.5" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
     <ProjectReference Include="..\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
-  </ItemGroup>
-  <!--安装服务守护-->
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
   </ItemGroup>
 
 
@@ -50,7 +59,10 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="8.0.10" />
   </ItemGroup>
-
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="9.0.0-rc.2.24474.3" />
+  </ItemGroup>
+ 
   <ItemGroup>
     <PackageReference Include="Photino.NET" Version="3.1.18" />
   </ItemGroup>
