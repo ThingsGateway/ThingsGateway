@@ -3,20 +3,26 @@
 @using ThingsGateway.Admin.Razor
 @using ThingsGateway.Gateway.Application
 
+<div class="me-4">
 <div class="col-12  col-md-12">
-    <Textarea Value=@Script ValueChanged=@Change ValueExpression="()=>Script" ShowLabelTooltip="true"
-              rows="10" ShowLabel="true" />
+
+    <BootstrapLabel Value=@Localizer["Script"] ShowLabelTooltip="true" />
+    <CodeEditor ShowLineNo Value=@Script ValueChanged=@Change Language="csharp" Theme="vs-dark" />
+
 </div>
 <div class="col-12  col-md-12">
-    <Textarea @bind-Value=@Input ShowLabelTooltip="true"
-              rows="10" ShowLabel="true" />
+    <BootstrapLabel Value=@Localizer["Input"] ShowLabelTooltip="true" />
+    <CodeEditor ShowLineNo @bind-Value=@Input Language="csharp" Theme="vs-dark" />
+
 </div>
 <div class="col-12  col-md-12">
-    <Textarea @bind-Value=@Output ShowLabelTooltip="true"
-              rows="10" ShowLabel="true" />
+    <BootstrapLabel Value=@Localizer["Output"] ShowLabelTooltip="true" />
+    <CodeEditor ShowLineNo @bind-Value=@Output Language="csharp" Theme="vs-dark" />
+
 </div>
 <div class="col-12  col-md-12">
     <Button IsAsync OnClick="CheckScript" class="  mt-3">
         @Localizer["Check"]
     </Button>
+    </div>
 </div>
