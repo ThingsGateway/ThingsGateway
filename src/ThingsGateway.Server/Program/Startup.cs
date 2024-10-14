@@ -34,6 +34,7 @@ public class Startup : AppStartup
 {
     public void ConfigBlazorServer(IServiceCollection services)
     {
+
         // 增加中文编码支持网页源码显示汉字
         services.AddSingleton(HtmlEncoder.Create(UnicodeRanges.All));
         //并发启动/停止host
@@ -153,15 +154,7 @@ public class Startup : AppStartup
         {
             options.WriteFilter = (logMsg) =>
             {
-                //如果不是LoggingMonitor日志才格式化
-                if (logMsg.LogName != "System.Logging.LoggingMonitor")
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return true;
             };
 
             options.MessageFormat = (logMsg) =>

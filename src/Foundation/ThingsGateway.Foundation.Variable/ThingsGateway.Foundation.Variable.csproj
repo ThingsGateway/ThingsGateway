@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="$(SolutionDir)PackNuget.props" />
+  <Import Project="$(SolutionDir)FoundationVersion.props" />
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net8.0;net6.0;</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ThingsGateway.Foundation.SourceGenerator\ThingsGateway.Foundation.SourceGenerator.csproj" >
+      <Private>false</Private>
+      <IncludeAssets> none;</IncludeAssets>
+    </ProjectReference>
+    <PackageReference Include="ThingsGateway.Foundation" Version="9.0.1" />
+    <PackageReference Include="ThingsGateway.CSScript" Version="9.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\ThingsGateway.Foundation.SourceGenerator\tools\*.ps1" PackagePath="tools" Pack="true" Visible="false" />
+    <None Include="..\ThingsGateway.Foundation.SourceGenerator\bin\$(Configuration)\netstandard2.0\ThingsGateway.Foundation.SourceGenerator.dll" PackagePath="analyzers\dotnet\cs" Pack="true" Visible="false" />
+  </ItemGroup>
+
+
+</Project>

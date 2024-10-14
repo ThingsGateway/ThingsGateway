@@ -1,0 +1,75 @@
+﻿{
+  "ThingsGateway.Debug.ChannelDataDebugComponent": {
+    "Name": "名称",
+    "Name.Required": " {0} 不可为空",
+    "ChannelType": "通道类型",
+    "Enable": "启用",
+    "LogEnable": "启用调试日志",
+
+    "RemoteUrl": "远程IP地址",
+    "BindUrl": "本地绑定IP地址",
+
+    "PortName": "COM口",
+    "BaudRate": "波特率",
+    "DataBits": "数据位",
+    "Parity": "校验位",
+    "StopBits": "停止位",
+    "DtrEnable": "Dtr",
+    "RtsEnable": "Rts",
+
+    "RemoteUrlNotNull": "远程IP地址不可为空",
+    "BindUrlNotNull": "本地绑定IP地址不可为空",
+    "BindUrlOrRemoteUrlNotNull": "远程IP地址或本地绑定IP地址不可为空",
+    "PortNameNotNull": "COM口不可为空",
+    "BaudRateNotNull": "波特率不可为空",
+    "DataBitsNotNull": "数据位可为空",
+    "ParityNotNull": "校验位不可为空",
+    "StopBitsNotNull": "停止位不可为空",
+
+    "SaveChannel": "添加/修改通道",
+    "DeleteChannel": "删除通道",
+    "ClearChannel": "清空通道",
+    "ExportChannel": "导出通道",
+    "ImportChannel": "导入通道",
+
+    "ImportNullError": "无法识别",
+
+    "NotOther": "不支持其他通道类型",
+    "Connect": "连接",
+    "Confim": "创建",
+    "Disconnect": "断开",
+    "Channel": "通道"
+  },
+
+  "ThingsGateway.Debug.AdapterDebugBase": {
+    "WriteSuccess": "写入成功",
+    "DefaultSend": "直接发送",
+    "Send": "发送",
+    "DataType": "数据类型",
+    "RegisterAddress": "寄存器地址",
+    "ArrayLength": "数组长度",
+    "WriteValue": "写入值",
+    "SendValue": "发送原始报文"
+  },
+  "ThingsGateway.Debug.AdapterDebugComponent": {
+    "HeaderText": "通道日志",
+    "WriteSuccess": "写入成功",
+    "DefaultSend": "直接发送",
+    "Send": "发送",
+    "DataType": "数据类型",
+    "RegisterAddress": "寄存器地址",
+    "ArrayLength": "数组长度",
+    "WriteValue": "写入值",
+    "SendValue": "发送原始报文",
+    "CommonFunctions": "常用功能",
+    "SpecialFunctions": "特殊功能",
+    "Read": "读取",
+    "Write": "写入",
+    "MulRead": "多读"
+  },
+  "ThingsGateway.Debug.ChannelDataEditComponent": {
+    "BasicInformation": "基础信息",
+    "Connection": "连接"
+  }
+
+}
