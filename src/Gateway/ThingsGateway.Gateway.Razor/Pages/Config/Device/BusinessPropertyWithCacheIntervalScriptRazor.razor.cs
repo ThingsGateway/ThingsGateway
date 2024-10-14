@@ -126,12 +126,12 @@ public partial class BusinessPropertyWithCacheIntervalScriptRazor
 
         var op = new DialogOption()
         {
-            IsScrolling = false,
+            IsScrolling = true,
             Title = Localizer["Check"],
             ShowFooter = false,
-
             ShowCloseButton = false,
             Size = Size.ExtraLarge,
+            FullScreenSize = FullScreenSize.None
         };
 
         op.Component = BootstrapDynamicComponent.CreateComponent<ScriptCheck>(new Dictionary<string, object?>
