@@ -12,9 +12,7 @@
       "ThingsGateway.Admin.Application",
       "ThingsGateway.Admin.Razor",
       "ThingsGateway.Core",
-      "ThingsGateway.Razor",
-      "ThingsGateway.Foundation.Razor"
-
+      "ThingsGateway.Razor"
     ]
   },
 
@@ -30,7 +28,7 @@
   "FriendlyExceptionSettings": {
     "DefaultErrorMessage": "系统异常，请联系管理员",
     "ThrowBah": true, // 是否将 Oops.Oh 默认抛出为业务异常
-    "LogError": false // 是否输出异常日志
+    "LogError": true // 是否输出异常日志
   },
   "CorsAccessorSettings": {
     "PolicyName": "ThingsGateway",

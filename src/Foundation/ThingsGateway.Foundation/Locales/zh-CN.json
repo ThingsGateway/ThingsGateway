@@ -1,0 +1,57 @@
+﻿{
+  "ThingsGateway.Foundation.DefaultResource": {
+    "CannotSendIRequestInfo": "当前适配器不支持对象发送",
+    "CannotSet": "不允许自由调用 {0} 进行赋值",
+    "CannotSplicingSend": "该适配器不支持拼接发送",
+    "CannotUseAdapterAgain": "此适配器已被其他终端使用，请重新创建对象",
+    "ConfigNotNull": "配置文件不能为空",
+    "Connected": "连接成功",
+    "Connecting": "正在连接",
+    "ConnectTimeout": "连接超时",
+    "DataLengthError": "数据长度错误 {0}",
+    "DataTypeNotSupported": "{0} 数据类型未实现",
+    "DefaultAddressDes": "————————————————————\n    4字节数据转换格式：data=ABCD;可选ABCD=>Big-Endian;BADC=>Big-Endian Byte Swap;CDAB=>Little-Endian Byte Swap;DCBA=>Little-Endian。\n    字符串长度：len=1。\n    数组长度：arraylen=1。\n    Bcd格式：bcd=C8421，可选C8421;C5421;C2421;C3;Gray。\n    字符格式：encoding=UTF-8，可选UTF-8;ASCII;Default;Unicode等。\n————————————————————",
+    "Disconnected": "断开连接",
+    "Disconnecting": "正在断开连接",
+    "DtuConnected": "Dtu标识 {0} 连接成功",
+    "DtuNoConnectedWaining": "客户端(Dtu)未连接，id：{0}",
+    "ErrorMessage": "错误信息",
+    "EventError": "在事件 {0} 中发生错误",
+    "Exception": "异常堆栈",
+    "LengthShortError": "数据长度不足，原始数据：{0}",
+    "NotActiveQueryError": "接收数据正确，但主机并没有主动请求数据",
+    "ProactivelyDisconnect": " {0} 主动断开",
+    "ProcessReceiveError": "接收出现错误 {0}，错误代码 {1}",
+    "Receive": "接收",
+    "ReceiveError": "在处理数据时发生错误",
+    "RemoteClose": "远程终端已关闭",
+    "Send": "发送",
+    "SerialPortNotClient": "新的SerialPort必须在连接状态",
+    "ServiceStarted": "启动",
+    "ServiceStoped": "停止",
+    "StringAddressError": "字符串读写必须在寄存器地址中指定长度，例如 len=10;",
+    "TransBytesError": "转换失败-原始字节数组  {0}，长度 {1}",
+    "UnknownError": "未知错误，错误代码：{0}",
+    "StringTypePackError": "数据类型为字符串时，必须指定字符串长度，才能进行打包"
+  },
+
+  "ThingsGateway.Foundation.ChannelData": {
+    "Name": "名称",
+    "Name.Required": " {0} 不可为空",
+    "ChannelType": "通道类型",
+
+    "RemoteUrl": "远程IP地址",
+    "BindUrl": "本地绑定IP地址",
+
+    "PortName": "COM口",
+    "BaudRate": "波特率",
+    "DataBits": "数据位",
+    "Parity": "校验位",
+    "StopBits": "停止位",
+    "DtrEnable": "Dtr",
+    "RtsEnable": "Rts"
+  },
+  "ThingsGateway.Foundation.VariableClass": {
+    "RegisterAddress": "寄存器地址"
+  }
+}

@@ -1,0 +1,44 @@
+﻿@using Microsoft.AspNetCore.Components.Web;
+@using Microsoft.AspNetCore.Components.Web.Virtualization
+@using Microsoft.JSInterop;
+@using ThingsGateway.NewLife.Threading
+@using ThingsGateway.Extension;
+@using BootstrapBlazor.Components
+@namespace ThingsGateway.Debug
+
+<Card HeaderText=@HeaderText class="mt-2" style="width:100%">
+    <HeaderTemplate>
+        <div class="flex-fill">
+        </div>
+        @if (Logger!=null)
+        {
+            <Select @bind-Value="@Logger.LogLevel" IsPopover></Select>
+        }
+        <Button Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@(IsPause?"fa fa-play":"fa fa-pause") OnClick="Pause" />
+        <Button IsAsync Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("fa fa-sign-out") OnClick="HandleOnExportClick" />
+        <Button IsAsync Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("far fa-trash-alt") OnClick="Delete" />
+
+    </HeaderTemplate>
+    <BodyTemplate>
+        <div style=@($"height:{HeightText};overflow-y:scroll")>
+            <Virtualize Items="CurrentMessages??new  List<LogMessage>()" Context="itemMessage" ItemSize="60" OverscanCount=2>
+                <ItemContent>
+              @*       <Tooltip Placement="Placement.Bottom" Title=@itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 500))> *@
+                        <div class=@(itemMessage.Level<(byte)Microsoft.Extensions.Logging.LogLevel.Information?"":
+                             itemMessage.Level>=(byte)Microsoft.Extensions.Logging.LogLevel.Warning? " red--text ":"green--text ")
+                             style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;"
+                             title=@itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 500))>
+
+                            @itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 150))
+
+                        </div>
+                    @* </Tooltip> *@
+                </ItemContent>
+            </Virtualize>
+        </div>
+
+    </BodyTemplate>
+</Card>
+
+
+

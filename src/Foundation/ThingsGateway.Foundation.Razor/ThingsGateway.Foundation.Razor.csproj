@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <Import Project="$(SolutionDir)FoundationVersion.props" />
+  <Import Project="$(SolutionDir)PackNuget.props" />
+
+  <ItemGroup>
+    <Content Remove="Locales\*.json" />
+    <EmbeddedResource Include="Locales\*.json">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+  </ItemGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="BootstrapBlazor" Version="8.10.2" />
+		<PackageReference Include="ThingsGateway.Razor" Version="$(AdminVersion)" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+
+</Project>
+
+
