@@ -11,7 +11,7 @@
 
     <Layout SideWidth="0" IsPage="true" IsFullSide="true" IsFixedHeader="true"
             ShowGotoTop="true" ShowCollapseBar="true" Menus="@MenuService.MenuItems"
-            AllowDragTab=true AdditionalAssemblies="@_assemblyList"
+            AllowDragTab=true AdditionalAssemblies="@App.RazorAssemblies"
             UseTabSet="false" TabDefaultUrl="/">
         <Header>
 
@@ -56,7 +56,7 @@
         <Main>
 
             <Tab ClickTabToNavigation="true" ShowExtendButtons="false" ShowClose="true" AllowDrag=true
-                 Menus="@MenuService.MenuItems" AdditionalAssemblies="@_assemblyList"
+                 Menus="@MenuService.MenuItems" AdditionalAssemblies="@App.RazorAssemblies"
                  DefaultUrl=@("/") Body=@(Body!) OnCloseTabItemAsync=@((a)=>
                  {
                  return Task.FromResult(!(a.Url=="/"||a.Url.IsNullOrEmpty()));

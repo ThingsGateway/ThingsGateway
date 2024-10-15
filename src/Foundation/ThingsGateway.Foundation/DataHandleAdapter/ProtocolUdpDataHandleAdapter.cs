@@ -27,12 +27,12 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
     /// <summary>
     /// 报文输出时采用字符串还是HexString
     /// </summary>
-    public virtual bool IsHexData { get; set; } = true;
+    public virtual bool IsHexData { get; init; } = true;
 
     /// <summary>
     /// 是否非并发协议
     /// </summary>
-    public virtual bool IsSingleThread { get; } = true;
+    public virtual bool IsSingleThread { get; init; } = true;
 
     /// <summary>
     /// 非并发协议中，每次交互的对象，会在发送时重新获取

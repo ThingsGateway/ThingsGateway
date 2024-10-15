@@ -15,7 +15,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 
 using ThingsGateway.Razor;
 
@@ -23,7 +22,6 @@ namespace ThingsGateway.Debug;
 
 public partial class MainLayout
 {
-    private List<Assembly> _assemblyList = new();
 
     private string _versionString = string.Empty;
 
@@ -46,16 +44,6 @@ public partial class MainLayout
     [Inject]
     [NotNull]
     private IOptions<WebsiteOptions>? WebsiteOption { get; set; }
-
-    protected override void OnInitialized()
-    {
-        _assemblyList = AppDomain.CurrentDomain.GetAssemblies().SelectMany(a =>
- a.GetTypes()).Where(u => !u.IsInterface && !u.IsAbstract && u.IsClass
-&& u.IsDefined(typeof(Microsoft.AspNetCore.Components.RouteAttribute), true)).Select(a => a.Assembly)
-//.Where(a => a != typeof(BlazorApp).Assembly)
-.Distinct().ToList();
-        base.OnInitialized();
-    }
 
     protected override Task OnInitializedAsync()
     {

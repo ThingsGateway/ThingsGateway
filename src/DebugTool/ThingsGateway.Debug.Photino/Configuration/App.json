@@ -10,8 +10,8 @@
     // nuget动态加载的程序集
     "SupportPackageNamePrefixs": [
 
-      "ThingsGateway.Admin.Application",
-      "ThingsGateway.Admin.Razor",
+      "ThingsGateway.Foundation.Razor",
+      "ThingsGateway.Debug.Razor",
       "ThingsGateway.Core",
       "ThingsGateway.Razor"
 
