@@ -14,6 +14,7 @@ using Mapster;
 
 using System.Diagnostics.CodeAnalysis;
 
+using ThingsGateway.Foundation.Json.Extension;
 using ThingsGateway.Gateway.Application.Extensions;
 
 namespace ThingsGateway.Gateway.Application;
@@ -216,7 +217,7 @@ public class VariableRunTime : Variable, IVariable
                 else
                 {
                     if (_value != null)
-                        changed = System.Text.Json.JsonSerializer.Serialize(data) != System.Text.Json.JsonSerializer.Serialize(_value);
+                        changed = data.ToJsonNetString() != _value.ToJsonNetString();
                     else
                         changed = true;
                 }
