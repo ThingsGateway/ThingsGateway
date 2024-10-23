@@ -19,12 +19,12 @@ public class CacheDBItem<T> : IPrimaryIdEntity
 {
     public CacheDBItem()
     {
-        Id = YitIdHelper.NextId();
+        Id = CommonUtils.GetSingleId();
     }
 
     public CacheDBItem(T value)
     {
-        Id = YitIdHelper.NextId();
+        Id = CommonUtils.GetSingleId();
         Value = value;
     }
 

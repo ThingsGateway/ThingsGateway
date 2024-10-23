@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ThingsGateway.Foundation.SourceGenerator\ThingsGateway.Foundation.SourceGenerator.csproj" >
+    <ProjectReference Include="..\ThingsGateway.Foundation.SourceGenerator\ThingsGateway.Foundation.SourceGenerator.csproj">
       <Private>false</Private>
       <IncludeAssets> none;</IncludeAssets>
     </ProjectReference>
-    <PackageReference Include="ThingsGateway.Foundation" Version="9.0.1" />
-    <PackageReference Include="ThingsGateway.CSScript" Version="9.0.1" />
+    <ProjectReference Include="..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+    <ProjectReference Include="..\ThingsGateway.CSScript\ThingsGateway.CSScript.csproj" />
   </ItemGroup>
 
   <ItemGroup>

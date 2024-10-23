@@ -16,7 +16,7 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="BootstrapBlazor" Version="8.10.2" />
+		<PackageReference Include="BootstrapBlazor" Version="8.10.4" />
 		<PackageReference Include="ThingsGateway.Razor" Version="$(AdminVersion)" />
 	</ItemGroup>
 
