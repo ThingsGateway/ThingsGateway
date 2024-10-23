@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Components.Forms;
 
 using System.Data;
 
-using ThingsGateway.Extension;
+using ThingsGateway.Extension.Generic;
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.NewLife.Extension;
 

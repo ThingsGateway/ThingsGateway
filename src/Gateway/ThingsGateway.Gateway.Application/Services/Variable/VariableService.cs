@@ -70,7 +70,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
             Channel channel = new Channel();
             Device device = new Device();
             {
-                var id = YitIdHelper.NextId();
+                var id = CommonUtils.GetSingleId();
                 var name = $"testChannel{id}";
                 channel.ChannelType = ChannelTypeEnum.TcpClient;
                 channel.Name = name;
@@ -80,7 +80,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
                 newChannels.Add(channel);
             }
             {
-                var id = YitIdHelper.NextId();
+                var id = CommonUtils.GetSingleId();
                 var name = $"testDevice{id}";
                 device.Name = name;
                 device.Id = id;
@@ -99,7 +99,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
                 if (addressNum >= 65500)
                     addressNum = 1;
                 var address = $"4{addressNum}";
-                var id = YitIdHelper.NextId();
+                var id = CommonUtils.GetSingleId();
                 var name = $"testVariable{id}";
                 Variable variable = new Variable();
                 variable.DataType = DataTypeEnum.Int16;
@@ -115,7 +115,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
         Device serviceDevice = new Device();
 
         {
-            var id = YitIdHelper.NextId();
+            var id = CommonUtils.GetSingleId();
             var name = $"testChannel{id}";
             serviceChannel.ChannelType = ChannelTypeEnum.TcpService;
             serviceChannel.Name = name;
@@ -124,7 +124,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
             newChannels.Add(serviceChannel);
         }
         {
-            var id = YitIdHelper.NextId();
+            var id = CommonUtils.GetSingleId();
             var name = $"testDevice{id}";
             serviceDevice.Name = name;
             serviceDevice.PluginType = PluginTypeEnum.Business;
@@ -648,7 +648,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
                     foreach (var item in variables.OrderBy(a => a.Row))
                     {
                         if (!item.IsUp)
-                            item.Id = YitIdHelper.NextId();
+                            item.Id = CommonUtils.GetSingleId();
                     }
 
                     // 将变量列表转换为字典，并赋值给导入预览输出对象的 Data 属性

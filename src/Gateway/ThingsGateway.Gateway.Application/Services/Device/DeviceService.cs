@@ -690,7 +690,7 @@ internal class DeviceService : BaseService<Device>, IDeviceService
                             }
                             else
                             {
-                                device.Id = YitIdHelper.NextId();
+                                device.Id = CommonUtils.GetSingleId();
                                 device.IsUp = false;
                             }
 

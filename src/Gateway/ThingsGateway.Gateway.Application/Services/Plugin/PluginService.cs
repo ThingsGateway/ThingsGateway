@@ -20,13 +20,11 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Loader;
 
-using ThingsGateway.Extension;
+using ThingsGateway.Extension.Generic;
 
 using TouchSocket.Core;
 
 using UAParser;
-
-using Yitter.IdGenerator;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -301,7 +299,7 @@ internal class PluginService : IPluginService
             _locker.Wait();
 
             // 创建程序集加载上下文
-            var assemblyLoadContext = new AssemblyLoadContext(YitIdHelper.NextId().ToString(), true);
+            var assemblyLoadContext = new AssemblyLoadContext(CommonUtils.GetSingleId().ToString(), true);
             // 存储其他文件的内存流列表
             List<(string Name, MemoryStream MemoryStream)> otherFilesStreams = new();
             var maxFileSize = 100 * 1024 * 1024; // 最大100MB

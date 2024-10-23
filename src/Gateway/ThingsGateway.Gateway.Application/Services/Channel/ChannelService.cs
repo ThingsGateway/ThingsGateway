@@ -411,7 +411,7 @@ internal class ChannelService : BaseService<Channel>, IChannelService
                             }
                             else
                             {
-                                channel.Id = YitIdHelper.NextId();
+                                channel.Id = CommonUtils.GetSingleId();
                                 channel.IsUp = false;
                             }
 
