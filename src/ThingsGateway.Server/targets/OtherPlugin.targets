@@ -8,7 +8,7 @@
 
   </ItemGroup>
 
-  <Target Name="CopyCustomPluginNugetPackages" AfterTargets="Build">
+  <Target Name="CopyOtherPluginNugetPackages" AfterTargets="Build">
     <ItemGroup>
       <!-- setting up the variable for convenience -->
       <PkgThingsGateway_Plugin_MqttYINGKEPackageFiles Include="$(PkgThingsGateway_Plugin_MqttYINGKE)\Content\net6.0\**\*.*" />
