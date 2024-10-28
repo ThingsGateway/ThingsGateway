@@ -35,7 +35,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="ThingsGateway.Razor" Version="$(AdminVersion)" />
     <PackageReference Include="ThingsGateway.Debug.Razor" Version="$(PluginVersion)" />
-    <PackageReference Include="Photino.NET" Version="3.1.18" />
+    <PackageReference Include="Photino.NET" Version="3.2.3" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
