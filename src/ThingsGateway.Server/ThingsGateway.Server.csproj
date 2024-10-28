@@ -4,6 +4,7 @@
   <Import Project="targets\Admin.targets" />
   <Import Project="targets\Plugin.targets" />
   <Import Project="targets\CustomPlugin.targets" />
+  <Import Project="targets\OtherPlugin.targets" />
   <PropertyGroup>
     <CustomTargetFramework>$(TargetFramework)</CustomTargetFramework>
     <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
