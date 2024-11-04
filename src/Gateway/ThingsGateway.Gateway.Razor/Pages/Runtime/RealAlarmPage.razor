@@ -8,13 +8,27 @@
 @inherits ComponentDefault
 
 
-<div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
+<div style="height: var(--table-height);padding: 1px;margin:auto;">
 
-    <AdminTable @ref=table TItem="VariableRunTime" AutoGenerateColumns="false" ShowAdvancedSearch=false
-                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false SearchModel=SearchModel  
-                ShowExtendButtons=false ShowExportButton=false ShowExtendDeleteButton=false ShowExtendEditButton=false
-                ShowDefaultButtons=false ExtendButtonColumnWidth=150 AutoRefreshInterval="2000" IsAutoRefresh
-                OnQueryAsync="OnQueryAsync" IsPagination=true>
+    <AdminTable @ref=table TItem="VariableRunTime"
+                AutoGenerateColumns="false"
+                ShowAdvancedSearch=false
+                EditDialogSize="Size.Large"
+                AllowResizing="true"
+                IsFixedHeader=true
+                IsMultipleSelect=false
+                SearchModel=SearchModel
+                ShowExtendButtons=false
+                ShowExportButton=false
+                ShowExtendDeleteButton=false
+                ShowExtendEditButton=false
+                ShowSearch="false"
+                ShowDefaultButtons=false
+                ExtendButtonColumnWidth=150
+                AutoRefreshInterval="2000"
+                IsAutoRefresh
+                OnQueryAsync="OnQueryAsync"
+                IsPagination=true>
 
         <TableColumns>
             <TableColumn @bind-Field="@context.DeviceName" Filterable=true Sortable=true Visible=true />
@@ -29,7 +43,7 @@
             <TableColumn @bind-Field="@context.EventTime" Filterable=true Sortable=true Visible=true />
             <TableColumn @bind-Field="@context.EventType" Filterable=true Sortable=true Visible=true />
 
-@* 
+            @*
             <TableColumn @bind-Field="@context.DeviceId" Filterable Sortable="false" Visible="false" />
             <TableColumn @bind-Field="@context.Unit" Filterable Sortable="false" Visible="false" />
             <TableColumn @bind-Field="@context.ReadExpressions" Filterable Sortable="false" Visible="false" />

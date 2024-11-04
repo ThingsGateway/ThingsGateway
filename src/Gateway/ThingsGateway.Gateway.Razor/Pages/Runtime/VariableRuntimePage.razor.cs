@@ -8,6 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using ThingsGateway.Admin.Application;
 using ThingsGateway.Extension.Generic;
 using ThingsGateway.Foundation.Json.Extension;
 using ThingsGateway.Gateway.Application;
@@ -34,17 +35,36 @@ public partial class VariableRuntimePage : IDisposable
         DeviceDispatchService.UnSubscribe(Notify);
         GC.SuppressFinalize(this);
     }
-
+    private List<long>? DataScope;
+    [Inject]
+    private ISysUserService SysUserService { get; set; }
     protected override void OnInitialized()
     {
         _ = RunTimerAsync();
         base.OnInitialized();
     }
-
-    protected override Task OnInitializedAsync()
+    private ExecutionContext? context;
+    protected override async Task OnInitializedAsync()
     {
+        DataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        context = ExecutionContext.Capture();
         DeviceDispatchService.Subscribe(Notify);
-        return base.OnInitializedAsync();
+        await base.OnInitializedAsync();
+    }
+    private async Task Notify()
+    {
+        var current = ExecutionContext.Capture();
+        try
+        {
+            ExecutionContext.Restore(context);
+            await Change();
+            await InvokeAsync(table.QueryAsync);
+            await InvokeAsync(StateHasChanged);
+        }
+        finally
+        {
+            ExecutionContext.Restore(current);
+        }
     }
 
     /// <summary>
@@ -65,8 +85,13 @@ public partial class VariableRuntimePage : IDisposable
     private TabItem? TabItem { get; set; }
     protected override Task OnParametersSetAsync()
     {
-        CollectDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(GlobalData.ReadOnlyCollectDevices.Select(a => new SelectedItem(a.Value.Id.ToString(), a.Key)));
-        BusinessDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(GlobalData.ReadOnlyBusinessDevices.Select(a => new SelectedItem(a.Value.Id.ToString(), a.Key)));
+        CollectDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(GlobalData.ReadOnlyCollectDevices
+                       .WhereIf(DataScope != null && DataScope?.Count > 0, u => DataScope.Contains(u.Value.CreateOrgId))//在指定机构列表查询
+         .WhereIf(DataScope?.Count == 0, u => u.Value.CreateUserId == UserManager.UserId)
+            .Select(a => new SelectedItem(a.Value.Id.ToString(), a.Key)));
+        BusinessDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(GlobalData.ReadOnlyBusinessDevices
+            .WhereIf(DataScope != null && DataScope?.Count > 0, u => DataScope.Contains(u.Value.CreateOrgId))//在指定机构列表查询
+         .WhereIf(DataScope?.Count == 0, u => u.Value.CreateUserId == UserManager.UserId).Select(a => new SelectedItem(a.Value.Id.ToString(), a.Key)));
 
         if (DeviceId != null)
             if (CustomerSearchModel.DeviceId != DeviceId)
@@ -106,8 +131,7 @@ public partial class VariableRuntimePage : IDisposable
 
     private async Task Notify(DispatchEntry<DeviceRunTime> entry)
     {
-        await Change();
-        await InvokeAsync(StateHasChanged);
+        await Notify();
     }
 
     private async Task RunTimerAsync()
@@ -130,12 +154,13 @@ public partial class VariableRuntimePage : IDisposable
 
     private Task<QueryData<VariableRunTime>> OnQueryAsync(QueryPageOptions options)
     {
-        var data = GlobalData.ReadOnlyVariables.Select(a => a.Value)
-            .WhereIF(!options.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(options.SearchText))
-            .WhereIF(!CustomerSearchModel.Name.IsNullOrWhiteSpace(), a => a.Name.Contains(CustomerSearchModel.Name))
-            .WhereIF(!CustomerSearchModel.RegisterAddress.IsNullOrWhiteSpace(), a => a.RegisterAddress.Contains(CustomerSearchModel.RegisterAddress))
-            .WhereIF(CustomerSearchModel.DeviceId > 0, a => a.DeviceId == CustomerSearchModel.DeviceId)
-                 .WhereIF(CustomerSearchModel.BusinessDeviceId > 0, a => a.VariablePropertys?.ContainsKey(CustomerSearchModel.BusinessDeviceId.Value) == true)
+        var data = GlobalData.ReadOnlyVariables.WhereIf(DataScope != null && DataScope?.Count > 0, u => DataScope.Contains(u.Value.CreateOrgId))//在指定机构列表查询
+         .WhereIf(DataScope?.Count == 0, u => u.Value.CreateUserId == UserManager.UserId).Select(a => a.Value)
+            .WhereIf(!options.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(options.SearchText))
+            .WhereIf(!CustomerSearchModel.Name.IsNullOrWhiteSpace(), a => a.Name.Contains(CustomerSearchModel.Name))
+            .WhereIf(!CustomerSearchModel.RegisterAddress.IsNullOrWhiteSpace(), a => a.RegisterAddress.Contains(CustomerSearchModel.RegisterAddress))
+            .WhereIf(CustomerSearchModel.DeviceId > 0, a => a.DeviceId == CustomerSearchModel.DeviceId)
+                 .WhereIf(CustomerSearchModel.BusinessDeviceId > 0, a => a.VariablePropertys?.ContainsKey(CustomerSearchModel.BusinessDeviceId.Value) == true)
 
             .GetQueryData(options);
         return Task.FromResult(data);

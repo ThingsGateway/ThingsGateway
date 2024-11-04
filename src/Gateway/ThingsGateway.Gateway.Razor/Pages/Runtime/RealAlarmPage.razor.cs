@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using ThingsGateway.Admin.Application;
+using ThingsGateway.Extension.Generic;
 using ThingsGateway.Gateway.Application;
 
 namespace ThingsGateway.Gateway.Razor;
@@ -15,12 +17,22 @@ namespace ThingsGateway.Gateway.Razor;
 public partial class RealAlarmPage
 {
     private VariableRunTime? SearchModel { get; set; } = new();
-
+    private List<long>? DataScope;
+    [Inject]
+    private ISysUserService SysUserService { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        DataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        await base.OnInitializedAsync();
+    }
     #region 查询
 
     private Task<QueryData<VariableRunTime>> OnQueryAsync(QueryPageOptions options)
     {
-        var data = GlobalData.ReadOnlyRealAlarmVariables.Select(a => a.Value).GetQueryData(options);
+        var data = GlobalData.ReadOnlyRealAlarmVariables
+           .WhereIf(DataScope != null && DataScope?.Count > 0, u => DataScope.Contains(u.Value.CreateOrgId))//在指定机构列表查询
+         .WhereIf(DataScope?.Count == 0, u => u.Value.CreateUserId == UserManager.UserId)
+            .Select(a => a.Value).GetQueryData(options);
         return Task.FromResult(data);
     }
 

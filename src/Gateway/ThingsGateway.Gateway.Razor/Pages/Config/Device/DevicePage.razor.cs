@@ -22,6 +22,9 @@ namespace ThingsGateway.Gateway.Razor;
 
 public abstract partial class DevicePage : IDisposable
 {
+    [Inject]
+    private IStringLocalizer<ThingsGateway.Gateway.Razor._Imports> GatewayLocalizer { get; set; }
+
     protected IEnumerable<SelectedItem> ChannelNames;
     protected IEnumerable<SelectedItem> PluginNames;
     protected Dictionary<string, PluginOutput> PluginDcit { get; set; }
@@ -70,9 +73,10 @@ public abstract partial class DevicePage : IDisposable
         SearchModel.PluginType = PluginType;
         base.OnInitialized();
     }
-
+    private ExecutionContext? context;
     protected override Task OnInitializedAsync()
     {
+        context = ExecutionContext.Capture();
         ChannelDispatchService.Subscribe(Notify);
         PluginDispatchService.Subscribe(Notify);
         DispatchService.Subscribe(Notify);
@@ -81,15 +85,15 @@ public abstract partial class DevicePage : IDisposable
 
 
 
-    protected override Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        ChannelDict = ChannelService.GetAll().ToDictionary(a => a.Id);
-        ChannelNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat(ChannelService.GetAll().BuildChannelSelectList());
+        ChannelDict = (await ChannelService.GetAllByOrgAsync()).ToDictionary(a => a.Id);
+        ChannelNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat((await ChannelService.GetAllByOrgAsync()).BuildChannelSelectList());
 
-        DeviceDict = DeviceService.GetAll().ToDictionary(a => a.Id, a => a.Name);
+        DeviceDict = (await DeviceService.GetAllByOrgAsync()).ToDictionary(a => a.Id, a => a.Name);
         PluginNames = PluginService.GetList(PluginType).BuildPluginSelectList();
         PluginDcit = PluginService.GetList(PluginType).ToDictionary(a => a.FullName);
-        return base.OnParametersSetAsync();
+        await base.OnParametersSetAsync();
     }
 
     [Inject]
@@ -108,26 +112,35 @@ public abstract partial class DevicePage : IDisposable
 
     private async Task Notify(DispatchEntry<PluginOutput> entry)
     {
-        await OnParametersSetAsync();
-        await InvokeAsync(table.QueryAsync);
-        await InvokeAsync(StateHasChanged);
+        await Notify();
     }
 
     private async Task Notify(DispatchEntry<Channel> entry)
     {
-        await OnParametersSetAsync();
-        await InvokeAsync(table.QueryAsync);
-        await InvokeAsync(StateHasChanged);
+        await Notify();
+    }
+    private async Task Notify()
+    {
+        var current = ExecutionContext.Capture();
+        try
+        {
+            ExecutionContext.Restore(context);
+            await OnParametersSetAsync();
+            await InvokeAsync(table.QueryAsync);
+            await InvokeAsync(StateHasChanged);
+        }
+        finally
+        {
+            ExecutionContext.Restore(current);
+        }
     }
 
     private async Task Notify(DispatchEntry<bool> entry)
     {
-        await OnParametersSetAsync();
-        await InvokeAsync(table.QueryAsync);
-        await InvokeAsync(StateHasChanged);
+        await Notify();
     }
 
-    private Task<QueryData<SelectedItem>> OnRedundantDevicesQuery(VirtualizeQueryOption option, Device device)
+    private async Task<QueryData<SelectedItem>> OnRedundantDevicesQuery(VirtualizeQueryOption option, Device device)
     {
         var ret = new QueryData<SelectedItem>()
         {
@@ -136,13 +149,13 @@ public abstract partial class DevicePage : IDisposable
             IsAdvanceSearch = false,
             IsSearch = !option.SearchText.IsNullOrWhiteSpace()
         };
-        var items = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat(DeviceService.GetAll().WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText))
+        var items = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat((await DeviceService.GetAllByOrgAsync()).WhereIf(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText))
             .Where(a => a.PluginName == device.PluginName && a.Id != device.Id).BuildDeviceSelectList()
             );
 
         ret.TotalCount = items.Count();
         ret.Items = items;
-        return Task.FromResult(ret);
+        return ret;
     }
 
     #region 查询
@@ -164,16 +177,17 @@ public abstract partial class DevicePage : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = false,
-            Title = DefaultLocalizer["BatchEdit"],
+            IsScrolling = true,
+            ShowMaximizeButton = true,
+            Size = Size.ExtraLarge,
+            Title = RazorLocalizer["BatchEdit"],
             ShowFooter = false,
             ShowCloseButton = false,
-            Size = Size.ExtraLarge
         };
         var oldmodel = devices.FirstOrDefault();//默认值显示第一个
         if (oldmodel == null)
         {
-            await ToastService.Warning(null, DefaultLocalizer["PleaseSelect"]);
+            await ToastService.Warning(null, GatewayLocalizer["PleaseSelect"]);
             return;
         }
         var model = oldmodel.Adapt<Device>();//默认值显示第一个
@@ -271,7 +285,9 @@ public abstract partial class DevicePage : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = false,
+            IsScrolling = true,
+            ShowMaximizeButton = true,
+            Size = Size.ExtraLarge,
             Title = Localizer["ImportExcel"],
             ShowFooter = false,
             ShowCloseButton = false,
@@ -280,7 +296,6 @@ public abstract partial class DevicePage : IDisposable
                 await InvokeAsync(table.QueryAsync);
                 await Change();
             },
-            Size = Size.ExtraLarge
         };
 
         Func<IBrowserFile, Task<Dictionary<string, ImportPreviewOutputBase>>> preview = (a => DeviceService.PreviewAsync(a));

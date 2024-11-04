@@ -30,8 +30,6 @@ using ThingsGateway.FriendlyException;
 
 using TouchSocket.Core;
 
-using Yitter.IdGenerator;
-
 namespace ThingsGateway.Gateway.Application;
 
 internal class VariableService : BaseService<Variable>, IVariableService
@@ -41,7 +39,18 @@ internal class VariableService : BaseService<Variable>, IVariableService
     protected readonly IPluginService _pluginService;
     private readonly IDispatchService<bool> _allDispatchService;
     private readonly IDispatchService<Variable> _dispatchService;
-
+    private ISysUserService _sysUserService;
+    private ISysUserService SysUserService
+    {
+        get
+        {
+            if (_sysUserService == null)
+            {
+                _sysUserService = App.GetService<ISysUserService>();
+            }
+            return _sysUserService;
+        }
+    }
     /// <inheritdoc cref="IVariableService"/>
     public VariableService(
    IDispatchService<Variable> dispatchService,
@@ -75,6 +84,8 @@ internal class VariableService : BaseService<Variable>, IVariableService
                 channel.ChannelType = ChannelTypeEnum.TcpClient;
                 channel.Name = name;
                 channel.Id = id;
+                channel.CreateUserId = UserManager.UserId;
+                channel.CreateOrgId = UserManager.OrgId;
                 channel.RemoteUrl = "127.0.0.1:502";
                 //动态插件属性默认
                 newChannels.Add(channel);
@@ -87,6 +98,8 @@ internal class VariableService : BaseService<Variable>, IVariableService
                 device.PluginType = PluginTypeEnum.Collect;
                 device.ChannelId = channel.Id;
                 device.IntervalTime = 1000;
+                device.CreateUserId = UserManager.UserId;
+                device.CreateOrgId = UserManager.OrgId;
                 device.PluginName = "ThingsGateway.Plugin.Modbus.ModbusMaster";
                 //动态插件属性默认
                 newDevices.Add(device);
@@ -105,6 +118,8 @@ internal class VariableService : BaseService<Variable>, IVariableService
                 variable.DataType = DataTypeEnum.Int16;
                 variable.Name = name;
                 variable.Id = id;
+                variable.CreateOrgId = UserManager.OrgId;
+                variable.CreateUserId = UserManager.UserId;
                 variable.DeviceId = device.Id;
                 variable.RegisterAddress = address;
                 newVariables.Add(variable);
@@ -119,6 +134,8 @@ internal class VariableService : BaseService<Variable>, IVariableService
             var name = $"testChannel{id}";
             serviceChannel.ChannelType = ChannelTypeEnum.TcpService;
             serviceChannel.Name = name;
+            serviceChannel.CreateUserId = UserManager.UserId;
+            serviceChannel.CreateOrgId = UserManager.OrgId;
             serviceChannel.Id = id;
             serviceChannel.BindUrl = "127.0.0.1:502";
             newChannels.Add(serviceChannel);
@@ -129,6 +146,8 @@ internal class VariableService : BaseService<Variable>, IVariableService
             serviceDevice.Name = name;
             serviceDevice.PluginType = PluginTypeEnum.Business;
             serviceDevice.Id = id;
+            serviceDevice.CreateUserId = UserManager.UserId;
+            serviceDevice.CreateOrgId = UserManager.OrgId;
             serviceDevice.ChannelId = serviceChannel.Id;
             serviceDevice.IntervalTime = 1000;
             serviceDevice.PluginName = "ThingsGateway.Plugin.Modbus.ModbusSlave";
@@ -161,10 +180,6 @@ internal class VariableService : BaseService<Variable>, IVariableService
     [OperDesc("SaveVariable", isRecordPar: false, localizerType: typeof(Variable))]
     public async Task AddBatchAsync(List<Variable> input)
     {
-        foreach (var item in input)
-        {
-            CheckInput(item);
-        }
         using var db = GetDB();
         await db.Insertable(input).ExecuteCommandAsync().ConfigureAwait(false);
         _dispatchService.Dispatch(new());
@@ -194,8 +209,12 @@ internal class VariableService : BaseService<Variable>, IVariableService
     [OperDesc("ClearVariable", localizerType: typeof(Variable), isRecordPar: false)]
     public async Task ClearVariableAsync(SqlSugarClient db = null)
     {
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
         db ??= GetDB();
-        await db.Deleteable<Variable>().ExecuteCommandAsync().ConfigureAwait(false);
+        await db.Deleteable<Variable>()
+            .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+            .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+          .ExecuteCommandAsync().ConfigureAwait(false);
         _dispatchService.Dispatch(new());
     }
 
@@ -246,9 +265,15 @@ internal class VariableService : BaseService<Variable>, IVariableService
     /// </summary>
     /// <param name="option">查询条件</param>
     /// <param name="businessDeviceId">业务设备id</param>
-    public Task<QueryData<Variable>> PageAsync(QueryPageOptions option, long? businessDeviceId)
+    public async Task<QueryData<Variable>> PageAsync(QueryPageOptions option, long? businessDeviceId)
     {
-        return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)).WhereIF(businessDeviceId > 0, u => SqlFunc.JsonLike(u.VariablePropertys, businessDeviceId.ToString())));
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        return await QueryAsync(option, a => a
+        .WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!))
+        .WhereIF(businessDeviceId > 0, u => SqlFunc.JsonLike(u.VariablePropertys, businessDeviceId.ToString()))
+        .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+        .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+        );
     }
 
     /// <summary>
@@ -260,6 +285,10 @@ internal class VariableService : BaseService<Variable>, IVariableService
     public async Task<bool> SaveVariableAsync(Variable input, ItemChangedType type)
     {
         CheckInput(input);
+
+        if (type == ItemChangedType.Update)
+            await SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId);
+
         if (await base.SaveAsync(input, type).ConfigureAwait(false))
         {
             _dispatchService.Dispatch(new());
@@ -270,25 +299,31 @@ internal class VariableService : BaseService<Variable>, IVariableService
 
     private void CheckInput(Variable input)
     {
+
         if (string.IsNullOrEmpty(input.RegisterAddress) && string.IsNullOrEmpty(input.OtherMethod))
             throw Oops.Bah(Localizer["AddressOrOtherMethodNotNull"]);
     }
 
     #region API查询
 
-    public Task<SqlSugarPagedList<Variable>> PageAsync(VariablePageInput input)
+    public async Task<SqlSugarPagedList<Variable>> PageAsync(VariablePageInput input)
     {
         using var db = GetDB();
-        var query = GetPage(db, input);
-        return query.ToPagedListAsync(input.Current, input.Size);//分页
+        var query = await GetPageAsync(db, input);
+        return await query.ToPagedListAsync(input.Current, input.Size);//分页
+
     }
 
     /// <inheritdoc/>
-    private ISugarQueryable<Variable> GetPage(SqlSugarClient db, VariablePageInput input)
+    private async Task<ISugarQueryable<Variable>> GetPageAsync(SqlSugarClient db, VariablePageInput input)
     {
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
         ISugarQueryable<Variable> query = db.Queryable<Variable>()
          .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
          .WhereIF(!string.IsNullOrEmpty(input.RegisterAddress), u => u.RegisterAddress.Contains(input.RegisterAddress))
+         .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+         .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+
          .WhereIF(input.DeviceId > 0, u => u.DeviceId == input.DeviceId)
          .WhereIF(input.BusinessDeviceId > 0, u => SqlFunc.JsonLike(u.VariablePropertys, input.BusinessDeviceId.ToString()));
 
@@ -531,6 +566,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
 
         try
         {
+            var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
             // 获取Excel文件中所有工作表的名称
             var sheetNames = MiniExcel.GetSheetNames(path);
 
@@ -540,7 +576,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
             using var db = GetDB();
 
             // 从数据库中获取所有变量，并转换为字典，以变量名称作为键
-            var dbVariables = await db.Queryable<Variable>().Select(it => new { it.Id, it.Name }).ToListAsync().ConfigureAwait(false);
+            var dbVariables = await db.Queryable<Variable>().Select(it => new { it.Id, it.Name, it.CreateOrgId, it.CreateUserId }).ToListAsync().ConfigureAwait(false);
             var dbVariableDicts = dbVariables.ToDictionary(a => a.Name);
 
             // 存储导入检验结果的字典
@@ -626,6 +662,8 @@ internal class VariableService : BaseService<Variable>, IVariableService
                             if (dbVariableDicts.TryGetValue(variable.Name, out var dbvar1))
                             {
                                 variable.Id = dbvar1.Id;
+                                variable.CreateOrgId = dbvar1.CreateOrgId;
+                                variable.CreateUserId = dbvar1.CreateUserId;
                                 variable.IsUp = true;
                             }
                             else
@@ -633,8 +671,16 @@ internal class VariableService : BaseService<Variable>, IVariableService
                                 variable.IsUp = false;
                             }
 
-                            variables.Add(variable);
-                            importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), true, null));
+                            if (device.IsUp && ((dataScope != null && dataScope?.Count > 0 && !dataScope.Contains(variable.CreateOrgId)) || dataScope?.Count == 0 && variable.CreateUserId != UserManager.UserId))
+                            {
+                                importPreviewOutput.Results.Add((row++, false, "Operation not permitted"));
+                            }
+                            else
+                            {
+                                variables.Add(variable);
+                                importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), true, null));
+                            }
+
                         }
                         catch (Exception ex)
                         {

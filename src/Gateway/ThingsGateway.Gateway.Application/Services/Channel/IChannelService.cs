@@ -62,27 +62,17 @@ public interface IChannelService
     /// </summary>
     /// <returns>通道列表</returns>
     List<Channel> GetAll();
-
+    /// <summary>
+    /// 从缓存/数据库获取全部信息
+    /// </summary>
+    /// <returns>通道列表</returns>
+    Task<List<Channel>> GetAllByOrgAsync();
     /// <summary>
     /// 通过ID获取通道
     /// </summary>
     /// <param name="id">通道ID</param>
     /// <returns>通道对象</returns>
     Channel? GetChannelById(long id);
-
-    /// <summary>
-    /// 通过名称获取通道ID
-    /// </summary>
-    /// <param name="name">通道名称</param>
-    /// <returns>通道ID</returns>
-    long? GetIdByName(string name);
-
-    /// <summary>
-    /// 通过ID获取通道名称
-    /// </summary>
-    /// <param name="id">通道ID</param>
-    /// <returns>通道名称</returns>
-    string? GetNameById(long id);
 
     /// <summary>
     /// 导入通道数据

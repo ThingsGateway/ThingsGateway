@@ -8,6 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using SqlSugar;
+
+using ThingsGateway.Admin.Application;
 using ThingsGateway.Gateway.Application;
 
 namespace ThingsGateway.Gateway.Razor;
@@ -43,45 +46,73 @@ public partial class DeviceStatusPage : IDisposable
         DeviceRunTimeDispatchService.UnSubscribe(Notify);
         PluginDispatchService.UnSubscribe(Notify);
     }
+    private ExecutionContext? context;
 
-    protected override Task OnInitializedAsync()
+    [Inject]
+    private ISysUserService SysUserService { get; set; }
+    protected override async Task OnInitializedAsync()
     {
+        DataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        context = ExecutionContext.Capture();
         DeviceRunTimeDispatchService.Subscribe(Notify);
         PluginDispatchService.Subscribe(Notify);
-        return base.OnInitializedAsync();
+        await base.OnInitializedAsync();
     }
 
-    protected override Task OnParametersSetAsync()
+    private List<long>? DataScope;
+    protected override async Task OnParametersSetAsync()
     {
-        Channels = new List<SelectedItem>() { new SelectedItem("0", "All") }.Concat(ChannelService.GetAll().BuildChannelSelectList());
-        CollectDevices = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList());
-        BusinessDevices = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList());
+        Channels = new List<SelectedItem>() { new SelectedItem("0", "All") }.Concat((await ChannelService.GetAllByOrgAsync()).BuildChannelSelectList());
+        CollectDevices = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat((await DeviceService.GetAllByOrgAsync()).Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList());
+        BusinessDevices = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat((await DeviceService.GetAllByOrgAsync()).Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList());
         //获取插件信息
         Plugins = new List<SelectedItem>() { new SelectedItem(string.Empty, "All") }.Concat(PluginService.GetList().BuildPluginSelectList());
-        CollectBases = GlobalData.CollectDeviceHostedService?.DriverBases.Select(a => (CollectBase)a)!;
-        BusinessBases = GlobalData.BusinessDeviceHostedService?.DriverBases.Select(a => (BusinessBase)a)!;
-        return base.OnParametersSetAsync();
+        CollectBases = GlobalData.CollectDeviceHostedService?.DriverBases
+             .WhereIF(DataScope != null && DataScope?.Count > 0, u => DataScope.Contains(u.CurrentDevice.CreateOrgId))//在指定机构列表查询
+         .WhereIF(DataScope?.Count == 0, u => u.CurrentDevice.CreateUserId == UserManager.UserId)
+            .Select(a => (CollectBase)a)!;
+        BusinessBases = GlobalData.BusinessDeviceHostedService?.DriverBases
+                     .WhereIF(DataScope != null && DataScope?.Count > 0, u => DataScope.Contains(u.CurrentDevice.CreateOrgId))//在指定机构列表查询
+         .WhereIF(DataScope?.Count == 0, u => u.CurrentDevice.CreateUserId == UserManager.UserId)
+         .Select(a => (BusinessBase)a)!;
+        await base.OnParametersSetAsync();
     }
 
     private void BusinessDeviceQuery()
     {
-        BusinessBases = GlobalData.BusinessDeviceHostedService?.DriverBases.Select(a => (BusinessBase)a)!;
+        BusinessBases = GlobalData.BusinessDeviceHostedService?.DriverBases
+            .WhereIF(DataScope != null && DataScope?.Count > 0, u => DataScope.Contains(u.CurrentDevice.CreateOrgId))//在指定机构列表查询
+         .WhereIF(DataScope?.Count == 0, u => u.CurrentDevice.CreateUserId == UserManager.UserId).Select(a => (BusinessBase)a)!;
     }
 
     private void CollectDeviceQuery()
     {
-        CollectBases = GlobalData.CollectDeviceHostedService?.DriverBases.Select(a => (CollectBase)a)!;
+        CollectBases = GlobalData.CollectDeviceHostedService?.DriverBases
+            .WhereIF(DataScope != null && DataScope?.Count > 0, u => DataScope.Contains(u.CurrentDevice.CreateOrgId))//在指定机构列表查询
+         .WhereIF(DataScope?.Count == 0, u => u.CurrentDevice.CreateUserId == UserManager.UserId).Select(a => (CollectBase)a)!;
+    }
+    private async Task Notify()
+    {
+        var current = ExecutionContext.Capture();
+        try
+        {
+            ExecutionContext.Restore(context);
+            await OnParametersSetAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+        finally
+        {
+            ExecutionContext.Restore(current);
+        }
     }
 
     private async Task Notify(DispatchEntry<PluginOutput> entry)
     {
-        await OnParametersSetAsync();
-        await InvokeAsync(StateHasChanged);
+        await Notify();
     }
 
     private async Task Notify(DispatchEntry<DeviceRunTime> entry)
     {
-        await OnParametersSetAsync();
-        await InvokeAsync(StateHasChanged);
+        await Notify();
     }
 }

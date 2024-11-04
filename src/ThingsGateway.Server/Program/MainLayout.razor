@@ -45,12 +45,13 @@
                         <CultureChooser />
                     </div>
 
-                    <Logout ImageUrl="@(AppContext.CurrentUser.Avatar??$"{WebsiteConst.DefaultResourceUrl}images/defaultUser.svg")" ShowUserName=false DisplayName="@UserManager.UserAccount" UserName="@UserManager.UserAccount">
+                         <Logout ImageUrl="@(AppContext.CurrentUser.Avatar??$"{WebsiteConst.DefaultResourceUrl}images/defaultUser.svg")" ShowUserName=false DisplayName="@UserManager.UserAccount" UserName="@UserManager.VerificatId.ToString()" PrefixUserNameText=@AdminLocalizer["CurrentVerificat"]>
                         <LinkTemplate>
                             @* 切换模块 *@
-                            <a @onclick="ChoiceModule"><i class="fas fa-arrow-right-arrow-left me-2" />@Localizer["ChoiceModule"]</a>
-                            <a @onclick="@OnUserInfoDialog"><i class="fa-solid fa-suitcase me-2"></i>@Localizer["UserCenter"]</a>
-                            <a @onclick="@LogoutAsync"><i class="fa-solid fa-key me-2"></i>@Localizer["Logout"]</a>
+                            <a @onclick="ChoiceModule" class="h6"><i class="fas fa-arrow-right-arrow-left me-2" />@Localizer["ChoiceModule"]</a>
+                            <a @onclick="@OnUserInfoDialog" class="h6"><i class="fa-solid fa-suitcase me-2"></i>@Localizer["UserCenter"]</a>
+                            <a @onclick="@LogoutAsync" class="h6"><i class="fa-solid fa-key me-2"></i>@Localizer["Logout"]</a>
+
 
                         </LinkTemplate>
                     </Logout>

@@ -30,8 +30,6 @@ using ThingsGateway.FriendlyException;
 
 using TouchSocket.Core;
 
-using Yitter.IdGenerator;
-
 namespace ThingsGateway.Gateway.Application;
 
 internal class DeviceService : BaseService<Device>, IDeviceService
@@ -39,7 +37,18 @@ internal class DeviceService : BaseService<Device>, IDeviceService
     protected readonly IChannelService _channelService;
     protected readonly IPluginService _pluginService;
     private readonly IDispatchService<Device> _dispatchService;
-
+    private ISysUserService _sysUserService;
+    private ISysUserService SysUserService
+    {
+        get
+        {
+            if (_sysUserService == null)
+            {
+                _sysUserService = App.GetService<ISysUserService>();
+            }
+            return _sysUserService;
+        }
+    }
     public DeviceService(
     IDispatchService<Device> dispatchService
         )
@@ -75,13 +84,19 @@ internal class DeviceService : BaseService<Device>, IDeviceService
     public async Task ClearDeviceAsync(PluginTypeEnum pluginType)
     {
         var variableService = App.RootServices.GetRequiredService<IVariableService>();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
         using var db = GetDB();
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            await db.Deleteable<Device>().Where(a => a.PluginType == pluginType).ExecuteCommandAsync().ConfigureAwait(false);
+            var data = GetAll()
+            .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+             .WhereIf(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+             .Where(a => a.PluginType == pluginType)
+             .Select(a => a.Id).ToList();
+            await db.Deleteable<Device>(data).ExecuteCommandAsync().ConfigureAwait(false);
             if (pluginType == PluginTypeEnum.Collect)
-                await variableService.ClearVariableAsync(db).ConfigureAwait(false);
+                await variableService.DeleteByDeviceIdAsync(data, db).ConfigureAwait(false);
         }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
@@ -98,12 +113,16 @@ internal class DeviceService : BaseService<Device>, IDeviceService
     public async Task DeleteByChannelIdAsync(IEnumerable<long> ids, SqlSugarClient db)
     {
         var variableService = App.RootServices.GetRequiredService<IVariableService>();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            var deviceIds = await db.Queryable<Device>().Where(a => ids.Contains(a.ChannelId)).Select(a => a.Id).ToListAsync().ConfigureAwait(false);
-            await db.Deleteable<Device>().Where(a => deviceIds.Contains(a.Id)).ExecuteCommandAsync().ConfigureAwait(false);
-            await variableService.DeleteByDeviceIdAsync(deviceIds, db).ConfigureAwait(false);
+            var data = GetAll().Where(a => ids.Contains(a.ChannelId))
+              .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+             .WhereIf(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+            .Select(a => a.Id).ToList();
+            await db.Deleteable<Device>(data).ExecuteCommandAsync().ConfigureAwait(false);
+            await variableService.DeleteByDeviceIdAsync(data, db).ConfigureAwait(false);
         }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
@@ -163,7 +182,17 @@ internal class DeviceService : BaseService<Device>, IDeviceService
         }
         return devices;
     }
-
+    /// <summary>
+    /// 从缓存/数据库获取全部信息
+    /// </summary>
+    /// <returns>列表</returns>
+    public async Task<List<Device>> GetAllByOrgAsync()
+    {
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        return GetAll()
+              .WhereIF(dataScope != null && dataScope?.Count > 0, b => dataScope.Contains(b.CreateOrgId))
+              .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId).ToList();
+    }
     public async Task<List<DeviceRunTime>> GetBusinessDeviceRuntimeAsync(long? devId = null)
     {
         await Task.CompletedTask.ConfigureAwait(false);
@@ -259,26 +288,20 @@ internal class DeviceService : BaseService<Device>, IDeviceService
         return data?.FirstOrDefault(x => x.Id == id);
     }
 
-    public long? GetIdByName(string name)
-    {
-        var data = GetAll();
-        return data?.FirstOrDefault(x => x.Name == name)?.Id;
-    }
-
-    public string? GetNameById(long id)
-    {
-        var data = GetAll();
-        return data?.FirstOrDefault(x => x.Id == id)?.Name;
-    }
-
     /// <summary>
     /// 报表查询
     /// </summary>
     /// <param name="option">查询条件</param>
     /// <param name="pluginType">查询条件</param>
-    public Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType)
+    public async Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType)
     {
-        return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)).Where(a => a.PluginType == pluginType));
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        return await QueryAsync(option, a => a
+         .WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)).Where(a => a.PluginType == pluginType)
+         .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+         .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+        );
+
     }
 
     /// <summary>
@@ -290,6 +313,10 @@ internal class DeviceService : BaseService<Device>, IDeviceService
     public async Task<bool> SaveDeviceAsync(Device input, ItemChangedType type)
     {
         CheckInput(input);
+
+        if (type == ItemChangedType.Update)
+            await SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId);
+
         if (await base.SaveAsync(input, type).ConfigureAwait(false))
         {
             DeleteDeviceFromCache();
@@ -300,6 +327,7 @@ internal class DeviceService : BaseService<Device>, IDeviceService
 
     private void CheckInput(Device input)
     {
+
         if (input.RedundantEnable && input.RedundantDeviceId == null)
         {
             throw Oops.Bah(Localizer["RedundantDeviceNotNull"]);
@@ -308,18 +336,21 @@ internal class DeviceService : BaseService<Device>, IDeviceService
 
     #region API查询
 
-    public Task<SqlSugarPagedList<Device>> PageAsync(DevicePageInput input)
+    public async Task<SqlSugarPagedList<Device>> PageAsync(DevicePageInput input)
     {
         using var db = GetDB();
-        var query = GetPage(db, input);
-        return query.ToPagedListAsync(input.Current, input.Size);//分页
+        var query = await GetPageAsync(db, input);
+        return await query.ToPagedListAsync(input.Current, input.Size);//分页
     }
 
     /// <inheritdoc/>
-    private ISugarQueryable<Device> GetPage(SqlSugarClient db, DevicePageInput input)
+    private async Task<ISugarQueryable<Device>> GetPageAsync(SqlSugarClient db, DevicePageInput input)
     {
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
         ISugarQueryable<Device> query = db.Queryable<Device>()
          .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
+         .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+         .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
          .WhereIF(input.ChannelId != null, u => u.ChannelId == input.ChannelId)
          .WhereIF(!string.IsNullOrEmpty(input.PluginName), u => u.PluginName == input.PluginName)
          .Where(u => u.PluginType == input.PluginType);
@@ -548,6 +579,7 @@ internal class DeviceService : BaseService<Device>, IDeviceService
 
         try
         {
+            var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
             // 获取 Excel 文件中所有工作表的名称
             var sheetNames = MiniExcel.GetSheetNames(path);
 
@@ -686,6 +718,8 @@ internal class DeviceService : BaseService<Device>, IDeviceService
                             if (deviceDicts.TryGetValue(device.Name, out var existingDevice))
                             {
                                 device.Id = existingDevice.Id;
+                                device.CreateOrgId = existingDevice.CreateOrgId;
+                                device.CreateUserId = existingDevice.CreateUserId;
                                 device.IsUp = true;
                             }
                             else
@@ -695,8 +729,15 @@ internal class DeviceService : BaseService<Device>, IDeviceService
                             }
 
                             // 将设备添加到设备列表中，并添加成功信息到导入预览结果
-                            devices.Add(device);
-                            importPreviewOutput.Results.Add((row++, true, null));
+                            if (device.IsUp && ((dataScope != null && dataScope?.Count > 0 && !dataScope.Contains(device.CreateOrgId)) || dataScope?.Count == 0 && device.CreateUserId != UserManager.UserId))
+                            {
+                                importPreviewOutput.Results.Add((row++, false, "Operation not permitted"));
+                            }
+                            else
+                            {
+                                devices.Add(device);
+                                importPreviewOutput.Results.Add((row++, true, null));
+                            }
                             return;
                         }
                         catch (Exception ex)

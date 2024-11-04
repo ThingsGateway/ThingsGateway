@@ -17,6 +17,8 @@
     "用户管理": "User",
     "角色管理": "Role",
     "菜单管理": "Menu",
+    "机构管理": "Organization",
+    "职位管理": "Position",
     "系统运维": "SystemOperation",
     "系统配置": "System",
     "字典管理": "Dictionary",
@@ -75,5 +77,4 @@
     "Data": "Data",
     "HistoryHardwareInfo": "Historical Chart"
   }
-
 }

@@ -25,8 +25,10 @@ namespace ThingsGateway.Gateway.Application;
 [Authorize(AuthenticationSchemes = "Bearer")]
 public class ControlControler : ControllerBase
 {
-    public ControlControler(IRpcService rpcService)
+    private ISysUserService _sysUserService;
+    public ControlControler(IRpcService rpcService, ISysUserService sysUserService)
     {
+        _sysUserService = sysUserService;
         _rpcService = rpcService;
     }
 
@@ -38,8 +40,11 @@ public class ControlControler : ControllerBase
     /// <returns></returns>
     [HttpPost("pauseBusinessThread")]
     [DisplayName("控制业务线程启停")]
-    public void PauseBusinessThread(long id, bool isStart)
+    public async Task PauseBusinessThread(long id, bool isStart)
     {
+        var data = GlobalData.BusinessDevices.FirstOrDefault(a => a.Value.Id == id).Value;
+        if (data != null)
+            await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId);
         GlobalData.BusinessDeviceHostedService.PauseThread(id, isStart);
     }
 
@@ -49,8 +54,11 @@ public class ControlControler : ControllerBase
     /// <returns></returns>
     [HttpPost("pauseCollectThread")]
     [DisplayName("控制采集线程启停")]
-    public void PauseCollectThread(long id, bool isStart)
+    public async Task PauseCollectThread(long id, bool isStart)
     {
+        var data = GlobalData.CollectDevices.FirstOrDefault(a => a.Value.Id == id).Value;
+        if (data != null)
+            await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId);
         GlobalData.CollectDeviceHostedService.PauseThread(id, isStart);
     }
 
@@ -60,15 +68,18 @@ public class ControlControler : ControllerBase
     /// <returns></returns>
     [HttpPost("restartBusinessThread")]
     [DisplayName("重启业务线程")]
-    public Task RestartBusinessDeviceThread(long id)
+    public async Task RestartBusinessDeviceThread(long id)
     {
         if (id <= 0)
         {
-            return GlobalData.BusinessDeviceHostedService.RestartAsync();
+            await GlobalData.BusinessDeviceHostedService.RestartAsync();
         }
         else
         {
-            return GlobalData.BusinessDeviceHostedService.RestartChannelThreadAsync(id, true);
+            var data = GlobalData.BusinessDevices.FirstOrDefault(a => a.Value.Id == id).Value;
+            if (data != null)
+                await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId);
+            await GlobalData.BusinessDeviceHostedService.RestartChannelThreadAsync(id, true);
         }
     }
 
@@ -78,15 +89,18 @@ public class ControlControler : ControllerBase
     /// <returns></returns>
     [HttpPost("restartCollectThread")]
     [DisplayName("重启采集线程")]
-    public Task RestartCollectDeviceThread(long id)
+    public async Task RestartCollectDeviceThread(long id)
     {
         if (id <= 0)
         {
-            return GlobalData.CollectDeviceHostedService.RestartAsync();
+            await GlobalData.CollectDeviceHostedService.RestartAsync();
         }
         else
         {
-            return GlobalData.CollectDeviceHostedService.RestartChannelThreadAsync(id, true);
+            var data = GlobalData.CollectDevices.FirstOrDefault(a => a.Value.Id == id).Value;
+            if (data != null)
+                await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId);
+            await GlobalData.CollectDeviceHostedService.RestartChannelThreadAsync(id, true);
         }
     }
 
@@ -95,9 +109,14 @@ public class ControlControler : ControllerBase
     /// </summary>
     [HttpPost("writeVariables")]
     [DisplayName("写入变量")]
-    public Task<Dictionary<string, OperResult>> WriteDeviceMethods(Dictionary<string, string> objs)
+    public async Task<Dictionary<string, OperResult>> WriteDeviceMethods(Dictionary<string, string> objs)
     {
-        return _rpcService.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", objs);
+
+        var data = GlobalData.ReadOnlyVariables.Where(a => objs.ContainsKey(a.Key));
+        if (data != null)
+            await _sysUserService.CheckApiDataScopeAsync(data.Select(a => a.Value.CreateOrgId), data.Select(a => a.Value.CreateUserId));
+
+        return await _rpcService.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", objs);
 
     }
 }

@@ -282,7 +282,7 @@ internal class PluginService : IPluginService
     public QueryData<PluginOutput> Page(QueryPageOptions options, PluginTypeEnum? pluginTypeEnum = null)
     {
         //指定关键词搜索为插件FullName
-        var query = GetList(pluginTypeEnum).WhereIF(!options.SearchText.IsNullOrWhiteSpace(), a => a.FullName.Contains(options.SearchText)).GetQueryData(options);
+        var query = GetList(pluginTypeEnum).WhereIf(!options.SearchText.IsNullOrWhiteSpace(), a => a.FullName.Contains(options.SearchText)).GetQueryData(options);
         return query;
     }
 

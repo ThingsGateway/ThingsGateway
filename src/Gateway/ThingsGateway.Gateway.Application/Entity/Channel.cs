@@ -25,7 +25,7 @@ namespace ThingsGateway.Gateway.Application;
 [SugarTable("channel", TableDescription = "通道表")]
 [Tenant(SqlSugarConst.DB_Custom)]
 [SugarIndex("unique_channel_name", nameof(Channel.Name), OrderByType.Asc, true)]
-public class Channel : PrimaryIdEntity
+public class Channel : BaseDataEntity
 {
     /// <summary>
     /// 通道名称

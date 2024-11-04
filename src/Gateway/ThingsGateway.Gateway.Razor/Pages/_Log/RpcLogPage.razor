@@ -8,12 +8,21 @@
 @inherits ComponentDefault
 
 <Chart @ref=LineChart OnInitAsync="OnInit" Height="var(--line-chart-height)" Width="100%" />
-<div style="height: var(--line-chart-table-height);padding: 2px 5px 10px 5px;">
-    <AdminTable TItem="RpcLog" AutoGenerateColumns="true" ShowDefaultButtons=false 
-                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
-                ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
+<div style="height: var(--line-chart-table-height);padding: 1px;margin:auto;">
+    <AdminTable TItem="RpcLog"
+                AutoGenerateColumns="true"
+                ShowDefaultButtons=false
+                AllowResizing="true"
+                IsFixedHeader=true
+                IsMultipleSelect=false
+                ShowExtendEditButton=false
+                ShowExtendDeleteButton=false
+                ShowExtendButtons=false
                 ShowExportButton="true"
-                OnQueryAsync="OnQueryAsync" IsPagination=true CustomerSearchModel="@CustomerSearchModel">
+                EditDialogSize="Size.Large"
+                OnQueryAsync="OnQueryAsync"
+                IsPagination=true
+                CustomerSearchModel="@CustomerSearchModel">
         <CustomerSearchTemplate>
             @if (context is RpcLogPageInput model)
             {
@@ -23,7 +32,7 @@
         <ExportButtonDropdownTemplate Context="ExportContext">
             <div class="dropdown-item" @onclick="() => ExcelExportAsync(ExportContext)">
                 <i class="fas fa-file-export"></i>
-                <span>@DefaultLocalizer["TablesExportButtonExcelText"]</span>
+                <span>@RazorLocalizer["TablesExportButtonExcelText"]</span>
             </div>
         </ExportButtonDropdownTemplate>
     </AdminTable>

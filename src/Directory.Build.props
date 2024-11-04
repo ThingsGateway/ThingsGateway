@@ -1,34 +1,34 @@
 <Project>
 
   <PropertyGroup>
-    <AdminVersion>7.0.1.6</AdminVersion>
-    <PluginVersion>9.0.1.4</PluginVersion>
-    <ProPluginVersion>9.0.1.4</ProPluginVersion>
+    <AdminVersion>7.1.0.11</AdminVersion>
+    <PluginVersion>9.0.1.5</PluginVersion>
+    <ProPluginVersion>9.0.1.5</ProPluginVersion>
   </PropertyGroup>
-  
-	<PropertyGroup>
-    <NoWarn>CS8603;CS8618;CS1591;CS8625;CS8602;CS8604;CS8600;CS8601;CS8714;CS8619;CS8629;CS8765;CS8634;CS8621;CS8767;CS8633;CS8620;CS8610;CS8631;CS8605;CS8622;CS8613;NU5100;NU5104;NU1903;NU1902;</NoWarn>
-		<TargetFrameworks>net8.0;net6.0;</TargetFrameworks>
-		<LangVersion>12.0</LangVersion>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<Authors>Diego</Authors>
-		<Company>Diego</Company>
-		<Product>Diego</Product>
-		<Copyright>版权所有 © 2023-present Diego</Copyright>
-		<RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
-		<RepositoryType>Gitee</RepositoryType>
-		<GenerateResxSourceIncludeDefaultValues>true</GenerateResxSourceIncludeDefaultValues>
-	</PropertyGroup>
 
-	<ItemGroup>
-		<None Include="$(SolutionDir)Directory.Build.props" Pack="true" PackagePath="\" />
-	</ItemGroup>
-	
-	<PropertyGroup>
-		<DebugSymbols>True</DebugSymbols>
-		<DebugType>Embedded</DebugType>
-		<EmbedAllSources>True</EmbedAllSources>
-	</PropertyGroup>
+  <PropertyGroup>
+    <NoWarn>CS8603;CS8618;CS1591;CS8625;CS8602;CS8604;CS8600;CS8601;CS8714;CS8619;CS8629;CS8765;CS8634;CS8621;CS8767;CS8633;CS8620;CS8610;CS8631;CS8605;CS8622;CS8613;NU5100;NU5104;NU1903;NU1902;</NoWarn>
+    <TargetFrameworks>net8.0;net6.0;</TargetFrameworks>
+    <LangVersion>12.0</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Authors>Diego</Authors>
+    <Company>Diego</Company>
+    <Product>Diego</Product>
+    <Copyright>版权所有 © 2023-present Diego</Copyright>
+    <RepositoryUrl>https://gitee.com/diego2098/ThingsGateway</RepositoryUrl>
+    <RepositoryType>Gitee</RepositoryType>
+    <GenerateResxSourceIncludeDefaultValues>true</GenerateResxSourceIncludeDefaultValues>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(SolutionDir)Directory.Build.props" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>Embedded</DebugType>
+    <EmbedAllSources>True</EmbedAllSources>
+  </PropertyGroup>
 
 </Project>

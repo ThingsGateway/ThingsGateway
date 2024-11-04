@@ -25,7 +25,7 @@ namespace ThingsGateway.Gateway.Application;
 [Tenant(SqlSugarConst.DB_Custom)]
 [SugarIndex("index_device", nameof(Variable.DeviceId), OrderByType.Asc)]
 [SugarIndex("unique_variable_name", nameof(Variable.Name), OrderByType.Asc, true)]
-public class Variable : PrimaryIdEntity
+public class Variable : BaseDataEntity
 {
     /// <summary>
     /// 设备

@@ -4,6 +4,7 @@
   <Import Project="targets\Admin.targets" />
   <Import Project="targets\Plugin.targets" />
   <Import Project="targets\CustomPlugin.targets" />
+  <!--<Import Project="targets\OtherPlugin.targets" />-->
   <PropertyGroup>
     <CustomTargetFramework>$(TargetFramework)</CustomTargetFramework>
     <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
@@ -36,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Locales\*.json" />
     <EmbeddedResource Include="Locales\*.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>

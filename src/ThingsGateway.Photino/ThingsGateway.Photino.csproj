@@ -4,6 +4,7 @@
   <Import Project="..\ThingsGateway.Server\targets\Admin.targets" />
   <Import Project="..\ThingsGateway.Server\targets\Plugin.targets" />
   <Import Project="..\ThingsGateway.Server\targets\CustomPlugin.targets" />
+  <!--<Import Project="..\ThingsGateway.Server\targets\OtherPlugin.targets" />-->
   <PropertyGroup>
     <CustomTargetFramework>$(TargetFramework)</CustomTargetFramework>
     <OutputType>WinExe</OutputType>

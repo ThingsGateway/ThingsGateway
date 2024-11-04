@@ -58,7 +58,9 @@ public partial class PluginPage
     {
         var op = new DialogOption()
         {
-            IsScrolling = false,
+            IsScrolling = true,
+            ShowMaximizeButton = true,
+            Size = Size.ExtraLarge,
             Title = PluginAddInputLoaclozer["SavePlugin"],
             ShowFooter = false,
             ShowCloseButton = false,
@@ -66,7 +68,6 @@ public partial class PluginPage
             {
                 await InvokeAsync(table.QueryAsync);
             },
-            Size = Size.ExtraLarge
         };
         op.Component = BootstrapDynamicComponent.CreateComponent<SavePlugin>(new Dictionary<string, object?>
         {

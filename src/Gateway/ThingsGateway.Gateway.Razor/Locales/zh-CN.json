@@ -1,4 +1,14 @@
 ﻿{
+
+
+  "ThingsGateway.Gateway.Razor._Imports": {
+    "PleaseSelect": "请选择需要操作的数据",
+    "TablesExportButtonExcelText": "导出Excel",
+    "TablesImportButtonExcelText": "导入Excel"
+  },
+
+
+
   "ThingsGateway.Gateway.Razor.TcpSessionClientDto": {
     "Id": "Id",
     "IP": "IP",
@@ -61,7 +71,7 @@
   "ThingsGateway.Gateway.Razor.SavePlugin": {
     "SavePlugin": "注意：文件名称相同的插件将被覆盖",
     "SavePlugin1": "插件变动需重启软件后生效"
-  },  
+  },
 
   "ThingsGateway.Gateway.Razor.BackendLogPage": {
     "BackendLog": "网关后台日志",
@@ -121,4 +131,6 @@
     "BasicInformation": "基础信息",
     "Connection": "连接"
   }
+
+
 }

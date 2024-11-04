@@ -37,6 +37,8 @@ public partial class VariablePage : IDisposable
     [Inject]
     [NotNull]
     private IDispatchService<bool>? DispatchService { get; set; }
+    [Inject]
+    private IStringLocalizer<ThingsGateway.Gateway.Razor._Imports> GatewayLocalizer { get; set; }
 
     private int TestCount { get; set; }
 
@@ -52,8 +54,10 @@ public partial class VariablePage : IDisposable
         DispatchService.UnSubscribe(Notify);
     }
 
+    private ExecutionContext? context;
     protected override Task OnInitializedAsync()
     {
+        context = ExecutionContext.Capture();
         DeviceDispatchService.Subscribe(Notify);
         DispatchService.Subscribe(Notify);
         return base.OnInitializedAsync();
@@ -75,14 +79,14 @@ public partial class VariablePage : IDisposable
     [NotNull]
     private TabItem? TabItem { get; set; }
 
-    protected override Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
 
-        CollectDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).ToDictionary(a => a.Id);
-        BusinessDeviceDict = DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).ToDictionary(a => a.Id);
+        CollectDeviceDict = (await DeviceService.GetAllByOrgAsync()).Where(a => a.PluginType == PluginTypeEnum.Collect).ToDictionary(a => a.Id);
+        BusinessDeviceDict = (await DeviceService.GetAllByOrgAsync()).Where(a => a.PluginType == PluginTypeEnum.Business).ToDictionary(a => a.Id);
 
-        CollectDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat(DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList());
-        BusinessDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat(DeviceService.GetAll().Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList());
+        CollectDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat((await DeviceService.GetAllByOrgAsync()).Where(a => a.PluginType == PluginTypeEnum.Collect).BuildDeviceSelectList());
+        BusinessDeviceNames = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat((await DeviceService.GetAllByOrgAsync()).Where(a => a.PluginType == PluginTypeEnum.Business).BuildDeviceSelectList());
 
         if (DeviceId != null)
             if (CustomerSearchModel.DeviceId != DeviceId)
@@ -91,7 +95,7 @@ public partial class VariablePage : IDisposable
             if (CustomerSearchModel.BusinessDeviceId != BusinessDeviceId)
                 CustomerSearchModel.BusinessDeviceId = BusinessDeviceId;
 
-        return base.OnParametersSetAsync();
+        await base.OnParametersSetAsync();
     }
 
     protected override Task OnAfterRenderAsync(bool firstRender)
@@ -105,19 +109,30 @@ public partial class VariablePage : IDisposable
     {
         await OnParametersSetAsync();
     }
+    private async Task Notify()
+    {
+        var current = ExecutionContext.Capture();
+        try
+        {
+            ExecutionContext.Restore(context);
+            await Change();
+            await InvokeAsync(table.QueryAsync);
+            await InvokeAsync(StateHasChanged);
+        }
+        finally
+        {
+            ExecutionContext.Restore(current);
+        }
+    }
 
     private async Task Notify(DispatchEntry<Device> entry)
     {
-        await Change();
-        await InvokeAsync(table.QueryAsync);
-        await InvokeAsync(StateHasChanged);
+        await Notify();
     }
 
     private async Task Notify(DispatchEntry<bool> entry)
     {
-        await Change();
-        await InvokeAsync(table.QueryAsync);
-        await InvokeAsync(StateHasChanged);
+        await Notify();
     }
 
     #region 查询
@@ -139,16 +154,17 @@ public partial class VariablePage : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = false,
-            Title = DefaultLocalizer["BatchEdit"],
+            IsScrolling = true,
+            ShowMaximizeButton = true,
+            Size = Size.ExtraLarge,
+            Title = RazorLocalizer["BatchEdit"],
             ShowFooter = false,
             ShowCloseButton = false,
-            Size = Size.ExtraLarge
         };
         var oldmodel = variables.FirstOrDefault();//默认值显示第一个
         if (oldmodel == null)
         {
-            await ToastService.Warning(null, DefaultLocalizer["PleaseSelect"]);
+            await ToastService.Warning(null, GatewayLocalizer["PleaseSelect"]);
             return;
         }
 
@@ -240,7 +256,9 @@ public partial class VariablePage : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = false,
+            IsScrolling = true,
+            ShowMaximizeButton = true,
+            Size = Size.ExtraLarge,
             Title = Localizer["ImportExcel"],
             ShowFooter = false,
             ShowCloseButton = false,
@@ -249,7 +267,6 @@ public partial class VariablePage : IDisposable
                 await InvokeAsync(table.QueryAsync);
                 await Change();
             },
-            Size = Size.ExtraLarge
         };
 
         Func<IBrowserFile, Task<Dictionary<string, ImportPreviewOutputBase>>> preview = (a => VariableService.PreviewAsync(a));

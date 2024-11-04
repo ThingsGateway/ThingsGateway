@@ -92,9 +92,9 @@ public partial class DeviceEditComponent
         }
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        Channels = ChannelService.GetAll().BuildChannelSelectList();
+        Channels = (await ChannelService.GetAllByOrgAsync()).BuildChannelSelectList();
         base.OnParametersSet();
     }
 
@@ -104,11 +104,12 @@ public partial class DeviceEditComponent
 
         var op = new DialogOption()
         {
-            IsScrolling = false,
+            IsScrolling = true,
+            ShowMaximizeButton = true,
+            Size = Size.ExtraLarge,
             Title = ChannelLocalizer["SaveChannel"],
             ShowFooter = false,
             ShowCloseButton = false,
-            Size = Size.ExtraLarge
         };
         op.Component = BootstrapDynamicComponent.CreateComponent<ChannelEditComponent>(new Dictionary<string, object?>
         {

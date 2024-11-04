@@ -116,7 +116,7 @@
     --line-chart-height: 350px;
     --bb-layout-body-height: calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - 20px);
     --line-chart-table-height: calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - var(--line-chart-height) - 30px);
-    --table-height: calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - 30px);
+    --table-height: calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - 40px);
     --bs-header-height: 30px;
 }
 
