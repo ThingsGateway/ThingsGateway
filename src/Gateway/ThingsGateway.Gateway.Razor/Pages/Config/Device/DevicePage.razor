@@ -7,14 +7,26 @@
 @inherits ComponentDefault
 
 
-<div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
+<div style="height: var(--table-height);padding: 1px;margin:auto;">
 
-    <AdminTable @ref=table TItem="Device" AutoGenerateColumns="true" ShowAdvancedSearch=true
-                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true CustomerSearchModel=SearchModel
-                ShowExtendButtons=true ShowExportButton ScrollingDialogContent SearchMode=SearchMode.Top
-                ShowDefaultButtons=true ExtendButtonColumnWidth=250
-                OnQueryAsync="OnQueryAsync" IsPagination=true
-                OnSaveAsync="Save" OnDeleteAsync="Delete">
+    <AdminTable @ref=table TItem="Device"
+                AutoGenerateColumns="true"
+                ShowAdvancedSearch=true
+                EditDialogSize="Size.ExtraExtraLarge"
+                AllowResizing="true"
+                IsFixedHeader=true
+                IsMultipleSelect=true
+                CustomerSearchModel=SearchModel
+                ShowExtendButtons=true
+                ShowExportButton
+                ScrollingDialogContent
+                SearchMode=SearchMode.Top
+                ShowDefaultButtons=true
+                ExtendButtonColumnWidth=250
+                OnQueryAsync="OnQueryAsync"
+                IsPagination=true
+                OnSaveAsync="Save"
+                OnDeleteAsync="Delete">
 
         <TableColumns>
             <TableColumn @bind-Field="@context.PluginName" Align="Alignment.Center" Filterable=true Sortable=true>
@@ -53,16 +65,16 @@
         <ExportButtonDropdownTemplate Context="ExportContext">
             <Button class="dropdown-item" OnClick="() => ExcelExportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导出"))>
                 <i class="fas fa-file-export"></i>
-                <span>@DefaultLocalizer["TablesExportButtonExcelText"]</span>
+                <span>@GatewayLocalizer["TablesExportButtonExcelText"]</span>
             </Button>
             <Button class="dropdown-item" OnClick="() => ExcelImportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导入"))>
                 <i class="fas fa-file-import"></i>
-                <span>@DefaultLocalizer["TablesImportButtonExcelText"]</span>
+                <span>@GatewayLocalizer["TablesImportButtonExcelText"]</span>
             </Button>
         </ExportButtonDropdownTemplate>
         <TableToolbarTemplate>
             <TableToolbarButton TItem="Device" IsShow=@(AuthorizeButton(AdminOperConst.Edit))
-                                Color=Color.Info Text="@DefaultLocalizer["BatchEdit"]"
+                                Color=Color.Info Text="@RazorLocalizer["BatchEdit"]"
                                 OnClickCallback=@(BatchEdit) />
 
             <TableToolbarPopConfirmButton TItem="Device"
@@ -93,7 +105,7 @@
     RenderFragment Render(DeviceSearchInput model) =>
     @<div class="row form-inline g-2">
         <div class="col-12 col-md-6">
-            <Select IsVirtualize @bind-Value="model.ChannelId" Items="@ChannelNames" ShowSearch="true" ShowLabel="true" IsClearable DisableItemChangedWhenFirstRender=true IsPopover />
+            <Select IsVirtualize @bind-Value="model.ChannelId" Items="@ChannelNames" ShowSearch="true" ShowLabel="true" IsClearable DisableItemChangedWhenFirstRender=true  />
         </div>
         <div class="col-12 col-md-6">
             <BootstrapInput @bind-Value="model.Name" ShowLabel="true" />

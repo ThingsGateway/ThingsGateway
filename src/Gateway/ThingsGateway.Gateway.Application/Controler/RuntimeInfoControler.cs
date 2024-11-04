@@ -17,6 +17,7 @@ using SqlSugar;
 
 using System.ComponentModel;
 
+using ThingsGateway.Extension.Generic;
 using ThingsGateway.NewLife.Extension;
 namespace ThingsGateway.Gateway.Application;
 
@@ -31,15 +32,24 @@ namespace ThingsGateway.Gateway.Application;
 [Authorize(AuthenticationSchemes = "Bearer")]
 public class RuntimeInfoControler : ControllerBase
 {
+    private ISysUserService _sysUserService;
+    public RuntimeInfoControler(ISysUserService sysUserService)
+    {
+        _sysUserService = sysUserService;
+    }
     /// <summary>
     /// 获取设备信息
     /// </summary>
     /// <returns></returns>
     [HttpGet("deviceList")]
     [DisplayName("获取设备信息")]
-    public SqlSugarPagedList<DeviceData> GetCollectDeviceList([FromQuery] DevicePageInput input)
+    public async Task<SqlSugarPagedList<DeviceData>> GetCollectDeviceListAsync([FromQuery] DevicePageInput input)
     {
-        var data = GlobalData.ReadOnlyCollectDevices.Select(a => a.Value)
+        var dataScope = await _sysUserService.GetCurrentUserDataScopeAsync();
+        var data = GlobalData.ReadOnlyCollectDevices
+            .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.Value.CreateOrgId))//在指定机构列表查询
+         .WhereIf(dataScope?.Count == 0, u => u.Value.CreateUserId == UserManager.UserId)
+         .Select(a => a.Value)
          .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
          .WhereIF(input.ChannelId != null, u => u.ChannelId == input.ChannelId)
          .WhereIF(!string.IsNullOrEmpty(input.PluginName), u => u.PluginName == input.PluginName)
@@ -54,9 +64,13 @@ public class RuntimeInfoControler : ControllerBase
     /// <returns></returns>
     [HttpGet("realAlarmList")]
     [DisplayName("获取实时报警信息")]
-    public SqlSugarPagedList<AlarmVariable> GetRealAlarmList([FromQuery] VariablePageInput input)
+    public async Task<SqlSugarPagedList<AlarmVariable>> GetRealAlarmList([FromQuery] VariablePageInput input)
     {
-        var data = GlobalData.ReadOnlyRealAlarmVariables.Select(a => a.Value)
+        var dataScope = await _sysUserService.GetCurrentUserDataScopeAsync();
+        var data = GlobalData.ReadOnlyRealAlarmVariables
+                        .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.Value.CreateOrgId))//在指定机构列表查询
+         .WhereIf(dataScope?.Count == 0, u => u.Value.CreateUserId == UserManager.UserId)
+         .Select(a => a.Value)
             .WhereIF(!input.RegisterAddress.IsNullOrEmpty(), a => a.RegisterAddress == input.RegisterAddress)
             .WhereIF(!input.Name.IsNullOrEmpty(), a => a.Name == input.Name)
             .WhereIF(input.DeviceId != null, a => a.DeviceId == input.DeviceId)
@@ -69,10 +83,11 @@ public class RuntimeInfoControler : ControllerBase
     /// <returns></returns>
     [HttpPost("checkRealAlarm")]
     [DisplayName("确认实时报警")]
-    public void CheckRealAlarm(string variableName)
+    public async Task CheckRealAlarm(string variableName)
     {
         if (GlobalData.ReadOnlyRealAlarmVariables.TryGetValue(variableName, out var variable))
         {
+            await _sysUserService.CheckApiDataScopeAsync(variable.CreateOrgId, variable.CreateUserId);
             GlobalData.AlarmHostedService.ConfirmAlarm(variable);
         }
     }
@@ -83,10 +98,14 @@ public class RuntimeInfoControler : ControllerBase
     /// <returns></returns>
     [HttpGet("variableList")]
     [DisplayName("获取变量信息")]
-    public SqlSugarPagedList<VariableData> GetVariableList([FromQuery] VariablePageInput input)
+    public async Task<SqlSugarPagedList<VariableData>> GetVariableList([FromQuery] VariablePageInput input)
     {
-        var data = GlobalData.ReadOnlyVariables.Select(a => a.Value)
-            .WhereIF(!input.Name.IsNullOrWhiteSpace(), a => a.Name == input.Name)
+        var dataScope = await _sysUserService.GetCurrentUserDataScopeAsync();
+        var data = GlobalData.ReadOnlyVariables
+        .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.Value.CreateOrgId))//在指定机构列表查询
+        .WhereIf(dataScope?.Count == 0, u => u.Value.CreateUserId == UserManager.UserId)
+        .Select(a => a.Value)
+        .WhereIF(!input.Name.IsNullOrWhiteSpace(), a => a.Name == input.Name)
             .WhereIF(input.DeviceId != null, a => a.DeviceId == input.DeviceId)
             .WhereIF(!input.RegisterAddress.IsNullOrWhiteSpace(), a => a.RegisterAddress == input.RegisterAddress)
             .ToPagedList(input);

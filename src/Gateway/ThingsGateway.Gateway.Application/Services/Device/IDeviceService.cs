@@ -80,6 +80,7 @@ public interface IDeviceService
     /// </summary>
     /// <returns>所有设备信息</returns>
     List<Device> GetAll();
+    Task<List<Device>> GetAllByOrgAsync();
 
     /// <summary>
     /// 获取业务设备的运行时信息。
@@ -101,20 +102,6 @@ public interface IDeviceService
     /// <param name="id">设备ID</param>
     /// <returns>设备信息</returns>
     Device? GetDeviceById(long id);
-
-    /// <summary>
-    /// 根据设备名称获取设备ID。
-    /// </summary>
-    /// <param name="name">设备名称</param>
-    /// <returns>设备ID</returns>
-    long? GetIdByName(string name);
-
-    /// <summary>
-    /// 根据设备ID获取设备名称。
-    /// </summary>
-    /// <param name="id">设备ID</param>
-    /// <returns>设备名称</returns>
-    string? GetNameById(long id);
 
     /// <summary>
     /// 导入设备信息。

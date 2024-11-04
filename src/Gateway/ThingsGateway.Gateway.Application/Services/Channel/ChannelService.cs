@@ -30,14 +30,23 @@ using ThingsGateway.FriendlyException;
 
 using TouchSocket.Core;
 
-using Yitter.IdGenerator;
-
 namespace ThingsGateway.Gateway.Application;
 
 internal class ChannelService : BaseService<Channel>, IChannelService
 {
     private readonly IDispatchService<Channel> _dispatchService;
-
+    private ISysUserService _sysUserService;
+    private ISysUserService SysUserService
+    {
+        get
+        {
+            if (_sysUserService == null)
+            {
+                _sysUserService = App.GetService<ISysUserService>();
+            }
+            return _sysUserService;
+        }
+    }
     /// <inheritdoc cref="IChannelService"/>
     public ChannelService(
     IDispatchService<Channel>? dispatchService
@@ -72,13 +81,17 @@ internal class ChannelService : BaseService<Channel>, IChannelService
     public async Task ClearChannelAsync()
     {
         var deviceService = App.RootServices.GetRequiredService<IDeviceService>();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+
         using var db = GetDB();
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            var data = GetAll();
-            await db.Deleteable<Channel>().ExecuteCommandAsync().ConfigureAwait(false);
-            await deviceService.DeleteByChannelIdAsync(data.Select(a => a.Id), db).ConfigureAwait(false);
+            var data = GetAll()
+            .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+            .WhereIf(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId).Select(a => a.Id).ToList();
+            await db.Deleteable<Channel>(data).ExecuteCommandAsync().ConfigureAwait(false);
+            await deviceService.DeleteByChannelIdAsync(data, db).ConfigureAwait(false);
         }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
@@ -95,6 +108,7 @@ internal class ChannelService : BaseService<Channel>, IChannelService
     public async Task<bool> DeleteChannelAsync(IEnumerable<long> ids)
     {
         var deviceService = App.RootServices.GetRequiredService<IDeviceService>();
+
         using var db = GetDB();
         //事务
         var result = await db.UseTranAsync(async () =>
@@ -138,31 +152,36 @@ internal class ChannelService : BaseService<Channel>, IChannelService
         return channels;
     }
 
+    /// <summary>
+    /// 从缓存/数据库获取全部信息
+    /// </summary>
+    /// <returns>列表</returns>
+    public async Task<List<Channel>> GetAllByOrgAsync()
+    {
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        return GetAll()
+              .WhereIF(dataScope != null && dataScope?.Count > 0, b => dataScope.Contains(b.CreateOrgId))
+              .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId).ToList();
+    }
+
     public Channel? GetChannelById(long id)
     {
         var data = GetAll();
         return data?.FirstOrDefault(x => x.Id == id);
     }
 
-    public long? GetIdByName(string name)
-    {
-        var data = GetAll();
-        return data?.FirstOrDefault(x => x.Name == name)?.Id;
-    }
-
-    public string? GetNameById(long id)
-    {
-        var data = GetAll();
-        return data?.FirstOrDefault(x => x.Id == id)?.Name;
-    }
-
     /// <summary>
     /// 报表查询
     /// </summary>
     /// <param name="option">查询条件</param>
-    public Task<QueryData<Channel>> PageAsync(QueryPageOptions option)
+    public async Task<QueryData<Channel>> PageAsync(QueryPageOptions option)
     {
-        return QueryAsync(option, a => a.WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)));
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        return await QueryAsync(option, a => a
+        .WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!))
+         .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+         .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+        );
     }
 
     /// <summary>
@@ -173,8 +192,13 @@ internal class ChannelService : BaseService<Channel>, IChannelService
     [OperDesc("SaveChannel", localizerType: typeof(Channel))]
     public async Task<bool> SaveChannelAsync(Channel input, ItemChangedType type)
     {
+
         //验证
         CheckInput(input);
+
+        if (type == ItemChangedType.Update)
+            await SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId);
+
         if (await base.SaveAsync(input, type).ConfigureAwait(false))
         {
             DeleteChannelFromCache();
@@ -185,6 +209,7 @@ internal class ChannelService : BaseService<Channel>, IChannelService
 
     private void CheckInput(Channel input)
     {
+
         if (input.ChannelType == ChannelTypeEnum.TcpClient)
         {
             if (string.IsNullOrEmpty(input.RemoteUrl))
@@ -217,18 +242,21 @@ internal class ChannelService : BaseService<Channel>, IChannelService
 
     #region API查询
 
-    public Task<SqlSugarPagedList<Channel>> PageAsync(ChannelPageInput input)
+    public async Task<SqlSugarPagedList<Channel>> PageAsync(ChannelPageInput input)
     {
         using var db = GetDB();
-        var query = GetPage(db, input);
-        return query.ToPagedListAsync(input.Current, input.Size);//分页
+        var query = await GetPageAsync(db, input);
+        return await query.ToPagedListAsync(input.Current, input.Size);//分页
     }
 
     /// <inheritdoc/>
-    private ISugarQueryable<Channel> GetPage(SqlSugarClient db, ChannelPageInput input)
+    private async Task<ISugarQueryable<Channel>> GetPageAsync(SqlSugarClient db, ChannelPageInput input)
     {
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
         ISugarQueryable<Channel> query = db.Queryable<Channel>()
          .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
+                .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+                .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
          .WhereIF(input.ChannelType != null, u => u.ChannelType == input.ChannelType);
         for (int i = input.SortField.Count - 1; i >= 0; i--)
         {
@@ -345,6 +373,8 @@ internal class ChannelService : BaseService<Channel>, IChannelService
         var path = await browserFile.StorageLocal().ConfigureAwait(false);
         try
         {
+            var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+
             var sheetNames = MiniExcel.GetSheetNames(path);
             var channelDicts = GetAll().ToDictionary(a => a.Name);
             //导入检验结果
@@ -407,6 +437,8 @@ internal class ChannelService : BaseService<Channel>, IChannelService
                             if (channelDicts.TryGetValue(channel.Name, out var collectChannel))
                             {
                                 channel.Id = collectChannel.Id;
+                                channel.CreateOrgId = collectChannel.CreateOrgId;
+                                channel.CreateUserId = collectChannel.CreateUserId;
                                 channel.IsUp = true;
                             }
                             else
@@ -415,8 +447,15 @@ internal class ChannelService : BaseService<Channel>, IChannelService
                                 channel.IsUp = false;
                             }
 
-                            channels.Add(channel);
-                            importPreviewOutput.Results.Add((row++, true, null));
+                            if (channel.IsUp && ((dataScope != null && dataScope?.Count > 0 && !dataScope.Contains(channel.CreateOrgId)) || dataScope?.Count == 0 && channel.CreateUserId != UserManager.UserId))
+                            {
+                                importPreviewOutput.Results.Add((row++, false, "Operation not permitted"));
+                            }
+                            else
+                            {
+                                channels.Add(channel);
+                                importPreviewOutput.Results.Add((row++, true, null));
+                            }
                             return;
                         }
                         catch (Exception ex)

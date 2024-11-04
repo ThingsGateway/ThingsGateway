@@ -18,6 +18,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
+using ThingsGateway.NewLife.Extension;
 
 namespace ThingsGateway.Razor;
 
@@ -33,18 +34,23 @@ public partial class MainLayout : IDisposable
     {
         if (entry.Entry != null)
         {
-            await ToastService.Show(new ToastOption()
+            await InvokeAsync(async () =>
             {
-                Title = $"{entry.Entry.Title} ",
-                Content = $"{entry.Entry.Message}",
-                Category = entry.Entry.Category,
-                Delay = 10 * 1000,
-                ForceDelay = true
+                await ToastService.Show(new ToastOption()
+                {
+                    Title = $"{entry.Entry.Title} ",
+                    Content = $"{entry.Entry.Message}",
+                    Category = entry.Entry.Category,
+                    Delay = 10 * 1000,
+                    ForceDelay = true
+                });
             });
         }
     }
 
     #endregion 全局通知
+    [Inject]
+    private IStringLocalizer<ThingsGateway.Admin.Razor._Imports> AdminLocalizer { get; set; }
 
     #region 切换模块
 
@@ -66,17 +72,24 @@ public partial class MainLayout : IDisposable
             Title = Localizer["ChoiceModule"],
             BodyTemplate = BootstrapDynamicComponent.CreateComponent<ChoiceModuleComponent>(new Dictionary<string, object?>
             {
-                [nameof(ChoiceModuleComponent.ModuleList)] = AppContext.AllResource.Where(a => AppContext.CurrentUser.ModuleList.Select(b => b.Id).Contains(a.Id)).ToList(),
-                [nameof(ChoiceModuleComponent.Value)] = AppContext.CurrentUser.DefaultModule,
-                [nameof(ChoiceModuleComponent.OnSave)] = new Func<long, Task>(async v =>
+                [nameof(ChoiceModuleComponent.ModuleList)] = AppContext.CurrentUser.ModuleList.ToList(),
+                [nameof(ChoiceModuleComponent.Value)] = AppContext.CurrentModuleId,
+                [nameof(ChoiceModuleComponent.OnSave)] = async (long v, bool s) =>
                 {
                     if (op != null)
                     {
                         await op.CloseDialogAsync();
                     }
-                    await UserCenterService.SetDefaultModule(v);
-                    NavigationManager.NavigateTo("/", true);
-                })
+                    if (s)
+                    {
+                        await UserCenterService.SetDefaultModule(v);
+                        NavigationManager.NavigateTo("/", true);
+                    }
+                    else
+                    {
+                        NavigationManager.NavigateTo(AppContext.AllMenus.FirstOrDefault(a => a.Module == v && !a.Href.IsNullOrEmpty())?.Href ?? "/", true);
+                    }
+                }
             }).Render(),
         };
         await DialogService.Show(op);

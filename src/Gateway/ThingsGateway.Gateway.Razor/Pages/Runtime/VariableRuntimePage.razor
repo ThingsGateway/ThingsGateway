@@ -9,13 +9,27 @@
 @inherits ComponentDefault
 
 
-<div style="height: var(--table-height);padding: 2px 5px 10px 5px;">
+<div style="height: var(--table-height);padding: 1px;margin:auto;">
 
-    <AdminTable @ref=table TItem="VariableRunTime" AutoGenerateColumns="false" ShowAdvancedSearch=true
-                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false CustomerSearchModel=CustomerSearchModel SearchMode=SearchMode.Top
-                ShowExtendButtons=true ShowExportButton=false ShowExtendDeleteButton=false ShowExtendEditButton=false
-                ShowDefaultButtons=false ExtendButtonColumnWidth=150 AutoRefreshInterval="10000" IsAutoRefresh
-                OnQueryAsync="OnQueryAsync" IsPagination=true>
+    <AdminTable @ref=table
+                TItem="VariableRunTime"
+                AutoGenerateColumns="false"
+                ShowAdvancedSearch=true
+                AllowResizing="true"
+                IsFixedHeader=true
+                IsMultipleSelect=false
+                CustomerSearchModel=CustomerSearchModel
+                SearchMode=SearchMode.Top
+                ShowExtendButtons=true
+                ShowExportButton=false
+                ShowExtendDeleteButton=false
+                ShowExtendEditButton=false
+                ShowDefaultButtons=false
+                ExtendButtonColumnWidth=150
+                AutoRefreshInterval="10000"
+                IsAutoRefresh
+                OnQueryAsync="OnQueryAsync"
+                IsPagination=true>
         <CustomerSearchTemplate>
             @if (context is VariableSearchInput model)
             {
@@ -31,10 +45,10 @@
             <TableColumn Field="@context.IsOnline" FieldExpression=@(()=>context.IsOnline) Filterable=true Sortable=true Visible=true />
             <TableColumn Field="@context.LastErrorMessage" ShowTips=true FieldExpression=@(()=>context.LastErrorMessage) Filterable=true Sortable=true Visible=true />
 
-            <TableColumn Field="@context.LastSetValue" FieldExpression=@(()=>context.LastSetValue)  Visible=true ShowTips=true Formatter=@(JsonFormatter) />
+            <TableColumn Field="@context.LastSetValue" FieldExpression=@(()=>context.LastSetValue) Visible=true ShowTips=true Formatter=@(JsonFormatter) />
 
-            <TableColumn Field="@context.RawValue" FieldExpression=@(()=>context.RawValue)  Visible=true ShowTips=true Formatter=@(JsonFormatter) />
-            <TableColumn Field="@context.Value" FieldExpression=@(()=>context.Value)  Visible=true ShowTips=true Formatter=@(JsonFormatter) />
+            <TableColumn Field="@context.RawValue" FieldExpression=@(()=>context.RawValue) Visible=true ShowTips=true Formatter=@(JsonFormatter) />
+            <TableColumn Field="@context.Value" FieldExpression=@(()=>context.Value) Visible=true ShowTips=true Formatter=@(JsonFormatter) />
 
 
             <TableColumn @bind-Field="@context.DataType" Filterable=true Sortable=true Visible=true />
@@ -107,10 +121,10 @@
 
     @<div class="row form-inline g-2">
         <div class="col-12 col-md-6">
-            <Select IsVirtualize @bind-Value="model.DeviceId" Items="@CollectDeviceNames" ShowSearch="true" ShowLabel="true" IsClearable DisableItemChangedWhenFirstRender=true IsPopover />
+            <Select IsVirtualize @bind-Value="model.DeviceId" Items="@CollectDeviceNames" ShowSearch="true" ShowLabel="true" IsClearable DisableItemChangedWhenFirstRender=true  />
         </div>
         <div class="col-12 col-md-6">
-            <Select IsVirtualize @bind-Value="model.BusinessDeviceId" Items="@BusinessDeviceNames" ShowSearch="true" ShowLabel="true" IsClearable DisableItemChangedWhenFirstRender=true IsPopover />
+            <Select IsVirtualize @bind-Value="model.BusinessDeviceId" Items="@BusinessDeviceNames" ShowSearch="true" ShowLabel="true" IsClearable DisableItemChangedWhenFirstRender=true  />
         </div>
         <div class="col-12 col-md-6">
             <BootstrapInput @bind-Value="model.Name" ShowLabel="true" />

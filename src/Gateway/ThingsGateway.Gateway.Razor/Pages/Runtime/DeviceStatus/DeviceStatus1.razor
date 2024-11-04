@@ -9,8 +9,8 @@
 
 <div class="device">
 
-    <Virtualize Items="DriverBases.WhereIF(!string.IsNullOrEmpty(DeviceInput.Name), u => u.CurrentDevice.Name.Contains(DeviceInput.Name)).WhereIF(DeviceInput.ChannelId >0, u => u.CurrentDevice.ChannelId == DeviceInput.ChannelId)
-                                                         .WhereIF(!string.IsNullOrEmpty(DeviceInput.PluginName), u => u.CurrentDevice.PluginName == DeviceInput.PluginName).ToList()" Context="item" ItemSize="60" OverscanCount=2>
+    <Virtualize Items="DriverBases.WhereIf(!string.IsNullOrEmpty(DeviceInput.Name), u => u.CurrentDevice.Name.Contains(DeviceInput.Name)).WhereIf(DeviceInput.ChannelId >0, u => u.CurrentDevice.ChannelId == DeviceInput.ChannelId)
+                                                         .WhereIf(!string.IsNullOrEmpty(DeviceInput.PluginName), u => u.CurrentDevice.PluginName == DeviceInput.PluginName).ToList()" Context="item" ItemSize="60" OverscanCount=2>
         <ItemContent>
             <Card IsShadow="true" @onclick=@(()=>DriverBaseOnClick.InvokeAsync(item)) class="m-1 deviceVirtualize">
                 <BodyTemplate>

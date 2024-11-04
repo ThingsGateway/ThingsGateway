@@ -22,7 +22,7 @@ namespace ThingsGateway.Gateway.Application;
 [SugarTable("device", TableDescription = "设备表")]
 [Tenant(SqlSugarConst.DB_Custom)]
 [SugarIndex("unique_device_name", nameof(Device.Name), OrderByType.Asc, true)]
-public class Device : PrimaryIdEntity
+public class Device : BaseDataEntity
 {
     /// <summary>
     /// 名称

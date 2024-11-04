@@ -37,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Remove="Locales\*.json" />
     <EmbeddedResource Include="Locales\*.json">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>

@@ -8,7 +8,7 @@
 @inherits ComponentDefault
 
 <Chart @ref=LineChart OnInitAsync="OnInit" Height="var(--line-chart-height)" Width="100%" />
-<div style="height: var(--line-chart-table-height);padding: 2px 5px 10px 5px;">
+<div style="height: var(--line-chart-table-height);padding: 1px;margin:auto;">
     <AdminTable TItem="BackendLog" AutoGenerateColumns="true" ShowDefaultButtons=false 
                 AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
                 ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
@@ -23,7 +23,7 @@
         <ExportButtonDropdownTemplate Context="ExportContext">
             <div class="dropdown-item" @onclick="() => ExcelExportAsync(ExportContext)">
                 <i class="fas fa-file-export"></i>
-                <span>@DefaultLocalizer["TablesExportButtonExcelText"]</span>
+                <span>@RazorLocalizer["TablesExportButtonExcelText"]</span>
             </div>
         </ExportButtonDropdownTemplate>
     </AdminTable>
@@ -38,7 +38,7 @@
             <DateTimeRange @bind-Value="model.SearchDate" ShowLabel="true" />
         </div>
         <div class="col-12 ">
-            <Select @bind-Value="model.LogLevel" ShowLabel="true" PlaceHolder="All" IsPopover />
+            <Select @bind-Value="model.LogLevel" ShowLabel="true" PlaceHolder="All"  />
         </div>
     </div>;
 

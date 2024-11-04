@@ -21,6 +21,9 @@ namespace ThingsGateway.Gateway.Razor;
 public partial class ChannelPage : IDisposable
 {
     [Inject]
+    private IStringLocalizer<ThingsGateway.Gateway.Razor._Imports> GatewayLocalizer { get; set; }
+
+    [Inject]
     [NotNull]
     private IChannelService? ChannelService { get; set; }
 
@@ -35,16 +38,28 @@ public partial class ChannelPage : IDisposable
         DispatchService.UnSubscribe(Notify);
     }
 
+    private ExecutionContext? context;
     protected override Task OnInitializedAsync()
     {
+        context = ExecutionContext.Capture();
         DispatchService.Subscribe(Notify);
         return base.OnInitializedAsync();
     }
 
     private async Task Notify(DispatchEntry<bool> entry)
     {
-        await InvokeAsync(table.QueryAsync);
-        await InvokeAsync(StateHasChanged);
+        var current = ExecutionContext.Capture();
+        try
+        {
+            ExecutionContext.Restore(context);
+            await InvokeAsync(table.QueryAsync);
+            await InvokeAsync(StateHasChanged);
+        }
+        finally
+        {
+            ExecutionContext.Restore(current);
+        }
+
     }
 
 
@@ -67,11 +82,12 @@ public partial class ChannelPage : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = false,
-            Title = DefaultLocalizer["BatchEdit"],
+            IsScrolling = true,
+            ShowMaximizeButton = true,
+            Size = Size.ExtraLarge,
+            Title = RazorLocalizer["BatchEdit"],
             ShowFooter = false,
             ShowCloseButton = false,
-            Size = Size.ExtraLarge
         };
         var oldmodel = channels.FirstOrDefault();//默认值显示第一个
         var model = channels.FirstOrDefault().Adapt<Channel>();//默认值显示第一个
@@ -151,7 +167,9 @@ public partial class ChannelPage : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = false,
+            IsScrolling = true,
+            ShowMaximizeButton = true,
+            Size = Size.ExtraLarge,
             Title = Localizer["ImportExcel"],
             ShowFooter = false,
             ShowCloseButton = false,
@@ -159,7 +177,6 @@ public partial class ChannelPage : IDisposable
             {
                 await InvokeAsync(table.QueryAsync);
             },
-            Size = Size.ExtraLarge
         };
 
         Func<IBrowserFile, Task<Dictionary<string, ImportPreviewOutputBase>>> preview = (a => ChannelService.PreviewAsync(a));
