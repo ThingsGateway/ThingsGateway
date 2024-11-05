@@ -18,7 +18,6 @@ using System.Diagnostics.CodeAnalysis;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
-using ThingsGateway.NewLife.Extension;
 
 namespace ThingsGateway.Razor;
 
@@ -87,7 +86,23 @@ public partial class MainLayout : IDisposable
                     }
                     else
                     {
-                        NavigationManager.NavigateTo(AppContext.AllMenus.FirstOrDefault(a => a.Module == v && !a.Href.IsNullOrEmpty())?.Href ?? "/", true);
+                        var filteredByA = AppContext.AllMenus.Where(p => p.Module != v);
+                        var filteredByB = AppContext.AllMenus.Where(p => p.Module == v);
+                        var uniqueAValues = new HashSet<string>();
+                        string finalResult = null;
+                        foreach (var pair in filteredByA)
+                        {
+                            uniqueAValues.Add(pair.Href);
+                        }
+                        foreach (var pair in filteredByB)
+                        {
+                            if (uniqueAValues.Add(pair.Href)) // 如果添加成功，说明a值没有重复
+                            {
+                                finalResult = pair.Href;
+                                break;
+                            }
+                        }
+                        NavigationManager.NavigateTo(finalResult ?? "/", true);
                     }
                 }
             }).Render(),
