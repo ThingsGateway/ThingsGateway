@@ -445,6 +445,8 @@ internal class ChannelService : BaseService<Channel>, IChannelService
                             {
                                 channel.Id = CommonUtils.GetSingleId();
                                 channel.IsUp = false;
+                                channel.CreateOrgId = UserManager.OrgId;
+                                channel.CreateUserId = UserManager.UserId;
                             }
 
                             if (channel.IsUp && ((dataScope != null && dataScope?.Count > 0 && !dataScope.Contains(channel.CreateOrgId)) || dataScope?.Count == 0 && channel.CreateUserId != UserManager.UserId))
