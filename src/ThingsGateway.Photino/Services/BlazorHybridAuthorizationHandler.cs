@@ -33,5 +33,4 @@ public class BlazorHybridAuthorizationHandler : BlazorAuthenticationStateProvide
         return base.HandleAsync(context, httpContext);
     }
 
-
 }

@@ -290,12 +290,11 @@ public class Startup : AppStartup
 
         services.AddScoped<BlazorAppContext>(a =>
         {
-            var sysResourceService = a.GetService<ISysResourceService>();
-            var userCenterService = a.GetService<IUserCenterService>();
-            var userService = a.GetService<ISysUserService>();
-            var appContext = new BlazorAppContext(sysResourceService, userCenterService, userService);
+            var appContext = new BlazorAppContext(
+                      a.GetService<ISysResourceService>(),
+                      a.GetService<IUserCenterService>(),
+                      a.GetService<ISysUserService>());
             appContext.TitleLocalizer = a.GetRequiredService<IStringLocalizer<ThingsGateway.Razor.MainLayout>>();
-
             return appContext;
         });
 

@@ -12,27 +12,15 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 using System.Security.Claims;
 
-using ThingsGateway.Admin.Application;
-
 namespace ThingsGateway.Photino;
 
 /// <inheritdoc/>
 public class BlazorHybridAuthenticationStateProvider : AuthenticationStateProvider
 {
-    private readonly ISysDictService _sysDictService;
-    private readonly ISysRoleService _sysRoleService;
-    private readonly ISysUserService _sysUserService;
-    private readonly IVerificatInfoService _verificatInfoService;
     private readonly IAppService _appService;
 
-    public BlazorHybridAuthenticationStateProvider(IVerificatInfoService verificatInfoService,
-        IAppService appService,
-        ISysUserService sysUserService, ISysRoleService sysRoleService, ISysDictService sysDictService)
+    public BlazorHybridAuthenticationStateProvider(IAppService appService)
     {
-        _sysUserService = sysUserService;
-        _sysRoleService = sysRoleService;
-        _sysDictService = sysDictService;
-        _verificatInfoService = verificatInfoService;
         _appService = appService;
     }
 
@@ -46,6 +34,4 @@ public class BlazorHybridAuthenticationStateProvider : AuthenticationStateProvid
     {
         return Task.FromResult(currentUser);
     }
-
-
 }
