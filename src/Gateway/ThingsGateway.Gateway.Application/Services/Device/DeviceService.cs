@@ -726,6 +726,8 @@ internal class DeviceService : BaseService<Device>, IDeviceService
                             {
                                 device.Id = CommonUtils.GetSingleId();
                                 device.IsUp = false;
+                                device.CreateOrgId = UserManager.OrgId;
+                                device.CreateUserId = UserManager.UserId;
                             }
 
                             // 将设备添加到设备列表中，并添加成功信息到导入预览结果

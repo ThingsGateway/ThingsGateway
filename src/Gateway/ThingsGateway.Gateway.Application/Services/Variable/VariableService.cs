@@ -669,6 +669,8 @@ internal class VariableService : BaseService<Variable>, IVariableService
                             else
                             {
                                 variable.IsUp = false;
+                                variable.CreateOrgId = UserManager.OrgId;
+                                variable.CreateUserId = UserManager.UserId;
                             }
 
                             if (device.IsUp && ((dataScope != null && dataScope?.Count > 0 && !dataScope.Contains(variable.CreateOrgId)) || dataScope?.Count == 0 && variable.CreateUserId != UserManager.UserId))
