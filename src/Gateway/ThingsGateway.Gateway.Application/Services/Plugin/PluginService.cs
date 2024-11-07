@@ -487,6 +487,11 @@ internal class PluginService : IPluginService
                 App.CacheService.Set(_cacheKeyGetPluginOutputs, pluginOutputs);
                 return pluginOutputs;
             }
+            var devices = App.GetService<IDeviceService>().GetAll();
+            foreach (var pluginOutput in data)
+            {
+                pluginOutput.DeviceCount = devices.Count(a => a.PluginName == pluginOutput.FullName);//关联设备数量
+            }
 
             // 如果缓存中有数据，则直接返回
             return data;
