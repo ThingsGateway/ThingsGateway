@@ -16,7 +16,7 @@
       "IsAutoCloseConnection": true, //是否自动释放
       "InitTable": true, //是否初始化数据库,适用于codefirst
       "InitSeedData": true, //是否初始化种子数据
-      "IsUpdateSeedData": true, //是否更新种子数据
+      "IsUpdateSeedData": false, //是否更新种子数据
       "IsShowSql": false //是否控制台显示Sql语句
     },
     {
@@ -29,7 +29,7 @@
       "IsAutoCloseConnection": true, //是否自动释放
       "InitTable": true, //是否初始化数据库,适用于codefirst
       "InitSeedData": true, //是否初始化种子数据
-      "IsUpdateSeedData": true, //是否更新种子数据
+      "IsUpdateSeedData": false, //是否更新种子数据
       "IsShowSql": false //是否控制台显示Sql语句
     },
     {
@@ -42,7 +42,7 @@
       "IsAutoCloseConnection": true, //是否自动释放
       "InitTable": true, //是否初始化数据库,适用于codefirst
       "InitSeedData": true, //是否初始化种子数据
-      "IsUpdateSeedData": true, //是否更新种子数据
+      "IsUpdateSeedData": false, //是否更新种子数据
       "IsShowSql": false //是否控制台显示Sql语句
     },
     {
@@ -55,7 +55,7 @@
       "IsAutoCloseConnection": true, //是否自动释放
       "InitTable": true, //是否初始化数据库,适用于codefirst
       "InitSeedData": true, //是否初始化种子数据
-      "IsUpdateSeedData": true, //是否更新种子数据
+      "IsUpdateSeedData": false, //是否更新种子数据
       "IsShowSql": false //是否控制台显示Sql语句
     },
     {
@@ -68,7 +68,7 @@
       "IsAutoCloseConnection": true, //是否自动释放
       "InitTable": true, //是否初始化数据库,适用于codefirst
       "InitSeedData": true, //是否初始化种子数据
-      "IsUpdateSeedData": true, //是否更新种子数据
+      "IsUpdateSeedData": false, //是否更新种子数据
       "IsShowSql": false //是否控制台显示Sql语句
     }
 
