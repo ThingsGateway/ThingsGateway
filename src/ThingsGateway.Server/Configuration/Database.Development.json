@@ -5,7 +5,7 @@
   // 数据库连接字符串参考地址：https://www.connectionstrings.com/
 
   //Sqlsugar数据库配置
-  "SqlSugarOptions": [
+  "SqlSugar": [
     {
       "ConfigId": "DB_Admin", //ID
       //"ConnectionString": "server=.;uid=sa;pwd=111111;database=test;Encrypt=True;TrustServerCertificate=True;", //连接字符串
