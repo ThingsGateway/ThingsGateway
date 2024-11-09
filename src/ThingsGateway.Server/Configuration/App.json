@@ -3,6 +3,8 @@
 
   "AllowedHosts": "*",
 
+  "Startway": "", // 启动方式： WindowsService, PM2, Systemctl  等等，对应文件夹下的命令文件
+
   "AppSettings": {
     "InjectSpecificationDocument": true, // 生产环境是否开启Swagger
     "ExternalAssemblies": [ "Plugins" ], // 插件目录

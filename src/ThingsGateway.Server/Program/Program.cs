@@ -23,7 +23,7 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
-
+        await Task.Delay(2000);
         //当前工作目录设为程序集的基目录
         System.IO.Directory.SetCurrentDirectory(AppContext.BaseDirectory);
         // 增加中文编码支持

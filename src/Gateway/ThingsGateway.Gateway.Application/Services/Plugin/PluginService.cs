@@ -26,6 +26,8 @@ using TouchSocket.Core;
 
 using UAParser;
 
+using Yitter.IdGenerator;
+
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
@@ -398,7 +400,7 @@ internal class PluginService : IPluginService
     {
         var fileInfo = new FileInfo(path);
         if (fileInfo.Exists)
-            fileInfo.MoveTo($"{path}{DelEx}", true);
+            fileInfo.MoveTo($"{path}{YitIdHelper.NextId()}{DelEx}", true);
         else
             return false;
         return true;

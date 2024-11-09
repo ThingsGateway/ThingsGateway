@@ -94,7 +94,6 @@ public static class ExpressionEvaluatorExtension
             {
                 source = $"return {source}";//只判断简单脚本中可省略return字符串
             }
-
             var src = source.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             var _using = new StringBuilder();
             var _body = new StringBuilder();
@@ -108,7 +107,6 @@ public static class ExpressionEvaluatorExtension
                 {
                     _body.AppendLine(l);
                 }
-
             });
             // 动态加载并执行代码
             runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<ReadWriteExpressions>(
@@ -116,6 +114,8 @@ public static class ExpressionEvaluatorExtension
         using System;
         using System.Linq;
         using System.Collections.Generic;
+        using Newtonsoft.Json;
+        using Newtonsoft.Json.Linq;
         using ThingsGateway.Gateway.Application;
         using ThingsGateway.NewLife;
         using ThingsGateway.NewLife.Extension;

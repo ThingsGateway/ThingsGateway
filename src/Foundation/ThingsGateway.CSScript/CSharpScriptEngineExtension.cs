@@ -12,6 +12,7 @@ using CSScripting;
 
 using CSScriptLib;
 
+
 using System.Reflection;
 using System.Text;
 
@@ -109,6 +110,8 @@ public static class CSharpScriptEngineExtension
         using System;
         using System.Linq;
         using System.Collections.Generic;
+        using Newtonsoft.Json;
+        using Newtonsoft.Json.Linq;
         using ThingsGateway.Gateway.Application;
         using ThingsGateway.NewLife;
         using ThingsGateway.NewLife.Extension;

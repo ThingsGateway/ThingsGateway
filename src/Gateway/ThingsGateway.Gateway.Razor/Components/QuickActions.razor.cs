@@ -8,13 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using Microsoft.Extensions.Hosting;
-
-using System.Diagnostics;
-
 using ThingsGateway.Admin.Razor;
 using ThingsGateway.Gateway.Application;
-using ThingsGateway.NewLife;
 
 namespace ThingsGateway.Gateway.Razor;
 
@@ -73,36 +68,6 @@ public partial class QuickActions
         }
     }
 
-
-    [Inject]
-    private IHostApplicationLifetime ApplicationLifetime { get; set; }
-    private async Task OnRestart()
-    {
-        try
-        {
-            await Task.Run(async () =>
-            {
-
-                // 启动进程
-                var process = Process.GetCurrentProcess();
-                Process.Start(
-                    new ProcessStartInfo
-                    {
-                        FileName = ProcessHelper.GetCommandLine(process.Id),
-                    });
-                ApplicationLifetime.StopApplication();
-                await Task.Delay(1000);
-
-                //if (!Runtime.IsConsole) process.CloseMainWindow();
-                Environment.Exit(0);
-                //process.Kill();
-            });
-
-        }
-        finally
-        {
-        }
-    }
     private async Task ToggleOpen()
     {
         await Module!.InvokeVoidAsync("toggle", Id);

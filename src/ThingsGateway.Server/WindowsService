@@ -1,0 +1,2 @@
+net stop ThingsGateway
+Net Start ThingsGateway

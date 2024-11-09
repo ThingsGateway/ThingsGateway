@@ -8,6 +8,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="CS-Script" Version="4.8.19" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
