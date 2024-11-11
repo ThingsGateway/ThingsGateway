@@ -26,9 +26,6 @@
     </Content>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Remove="SeedData\Gateway\seed_gateway_relation.json" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Foundation\ThingsGateway.CSScript\ThingsGateway.CSScript.csproj" />

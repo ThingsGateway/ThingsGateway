@@ -25,7 +25,7 @@
 
                     <EditTemplate Context="value">
                         <div class="col-12 col-sm-6">
-                            <Select SkipValidate="true" @bind-Value="@value.ChannelType" OnSelectedItemChanged=@((a)=>InvokeAsync(StateHasChanged)) />
+                            <Select SkipValidate="true" @bind-Value="@value.ChannelType" IsPopover OnSelectedItemChanged=@((a)=>InvokeAsync(StateHasChanged)) />
                         </div>
                     </EditTemplate>
 

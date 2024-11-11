@@ -105,7 +105,7 @@ public class Startup : AppStartup
          .AddHubOptions(options =>
          {
              //单个传入集线器消息的最大大小。默认 32 KB
-             options.MaximumReceiveMessageSize = null;
+             options.MaximumReceiveMessageSize = 1024 * 1024;
              //可为客户端上载流缓冲的最大项数。 如果达到此限制，则会阻止处理调用，直到服务器处理流项。
              options.StreamBufferCapacity = 30;
              options.ClientTimeoutInterval = TimeSpan.FromMinutes(2);
@@ -124,7 +124,7 @@ public class Startup : AppStartup
         }).AddHubOptions(options =>
         {
             //单个传入集线器消息的最大大小。默认 32 KB
-            options.MaximumReceiveMessageSize = null;
+            options.MaximumReceiveMessageSize = 1024 * 1024;
             //可为客户端上载流缓冲的最大项数。 如果达到此限制，则会阻止处理调用，直到服务器处理流项。
             options.StreamBufferCapacity = 30;
             options.ClientTimeoutInterval = TimeSpan.FromMinutes(2);

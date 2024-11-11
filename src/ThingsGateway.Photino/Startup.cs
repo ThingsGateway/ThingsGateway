@@ -114,53 +114,6 @@ public class Startup : AppStartup
             .AddInjectWithUnifyResult<UnifyResultProvider>();
 
 
-
-
-        //#if NET8_0_OR_GREATER
-        //        services
-        //         .AddRazorComponents(options =>
-        //         {
-        //             options.TemporaryRedirectionUrlValidityDuration = TimeSpan.FromMinutes(10);
-        //         })
-        //         .AddInteractiveServerComponents(options =>
-        //         {
-        //             options.RootComponents.MaxJSRootComponents = 500;
-        //             options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(2);
-        //             options.MaxBufferedUnacknowledgedRenderBatches = 20;
-        //             options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(10);
-        //         })
-        //         .AddHubOptions(options =>
-        //         {
-        //             //单个传入集线器消息的最大大小。默认 32 KB
-        //             options.MaximumReceiveMessageSize = null;
-        //             //可为客户端上载流缓冲的最大项数。 如果达到此限制，则会阻止处理调用，直到服务器处理流项。
-        //             options.StreamBufferCapacity = 30;
-        //             options.ClientTimeoutInterval = TimeSpan.FromMinutes(2);
-        //             options.KeepAliveInterval = TimeSpan.FromSeconds(15);
-        //             options.HandshakeTimeout = TimeSpan.FromSeconds(30);
-        //         });
-
-        //#else
-
-        //        services.AddServerSideBlazor(options =>
-        //        {
-        //            options.RootComponents.MaxJSRootComponents = 500;
-        //            options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(2);
-        //            options.MaxBufferedUnacknowledgedRenderBatches = 20;
-        //            options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(10);
-        //        }).AddHubOptions(options =>
-        //        {
-        //            //单个传入集线器消息的最大大小。默认 32 KB
-        //            options.MaximumReceiveMessageSize = null;
-        //            //可为客户端上载流缓冲的最大项数。 如果达到此限制，则会阻止处理调用，直到服务器处理流项。
-        //            options.StreamBufferCapacity = 30;
-        //            options.ClientTimeoutInterval = TimeSpan.FromMinutes(2);
-        //            options.KeepAliveInterval = TimeSpan.FromSeconds(15);
-        //            options.HandshakeTimeout = TimeSpan.FromSeconds(30);
-        //        });
-
-        //#endif
-
         // 配置Nginx转发获取客户端真实IP
         // 注1：如果负载均衡不是在本机通过 Loopback 地址转发请求的，一定要加上options.KnownNetworks.Clear()和options.KnownProxies.Clear()
         // 注2：如果设置环境变量 ASPNETCORE_FORWARDEDHEADERS_ENABLED 为 True，则不需要下面的配置代码
