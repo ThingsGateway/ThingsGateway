@@ -1,0 +1,7 @@
+﻿{
+  "UpgradeServer": {
+    //"UpgradeServerIP": "127.0.0.1",
+    "UpgradeServerIP": "47.119.161.158",
+    "UpgradeServerPort": 17789
+  }
+}

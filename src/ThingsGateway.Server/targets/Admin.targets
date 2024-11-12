@@ -7,6 +7,12 @@
     <PackageReference Include="ThingsGateway.Admin.Application" Version="$(AdminVersion)" GeneratePathProperty="true"/>
   </ItemGroup>
   
+  <Target Name="_ResolveCopyLocalNuGetPkgXmls" AfterTargets="ResolveReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)'=='ThingsGateway.Admin.Application' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
+    </ItemGroup>
+  </Target>
+  
   <Target Name="CopyAdminNugetPackages" AfterTargets="Build">
     <ItemGroup>
       <!-- setting up the variable for convenience -->

@@ -24,6 +24,7 @@ using Microsoft.Extensions.Options;
 
 using Newtonsoft.Json;
 
+using System.Reflection;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
@@ -254,7 +255,7 @@ public class Startup : AppStartup
         services.AddHttpContextAccessor();
 
         //添加cookie授权
-        var authenticationBuilder = services.AddAuthentication(nameof(ThingsGateway)).AddCookie(nameof(ThingsGateway), a =>
+        var authenticationBuilder = services.AddAuthentication(Assembly.GetEntryAssembly().GetName().Name).AddCookie(Assembly.GetEntryAssembly().GetName().Name, a =>
         {
             a.AccessDeniedPath = "/Account/AccessDenied/";
             a.LogoutPath = "/Account/Logout/";
