@@ -18,7 +18,7 @@
     <Split Basis="20%">
         <FirstPaneTemplate>
                 <ContextMenuZone>
-                    <TreeView TItem="PluginOutput" Items="PluginTreeViewItems"  ClickToggleNode />
+                <TreeView TItem="PluginOutput" Items="PluginTreeViewItems" ClickToggleNode IsVirtualize="true" />
                     <ContextMenu>
                     <ContextMenuItem Text=@Localizer["New"] OnClick="NewPluginRender"></ContextMenuItem>
                     <ContextMenuItem Text=@Localizer["NewWinbox"] OnClick="NewPluginWinboxRender"></ContextMenuItem>
