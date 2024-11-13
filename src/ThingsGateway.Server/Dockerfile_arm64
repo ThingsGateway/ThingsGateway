@@ -4,8 +4,8 @@
 #拉取：docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway_arm64
 #推送：docker push registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway_arm64
 
-#aspnetcore8.0环境
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-jammy-arm64v8  AS base
+#aspnetcore9.0环境
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine-arm64v8  AS base
 COPY .  /app
 WORKDIR /app
 #默认web

@@ -14,16 +14,21 @@ using BootstrapBlazor.Components;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+
 using ThingsGateway.Gateway.Application;
 
 namespace ThingsGateway.Gateway.Razor;
 
 public partial class GatewayIndexComponent : IDisposable
 {
-    public bool Disposed { get; set; }
+    public bool Disposed;
 
     [Parameter]
     [EditorRequired]
+    [NotNull]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public IStringLocalizer Localizer { get; set; }
 
     private Chart AlarmPie { get; set; }

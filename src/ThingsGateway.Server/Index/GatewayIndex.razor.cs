@@ -45,7 +45,7 @@ public partial class GatewayIndex : IDisposable
         base.OnInitialized();
     }
 
-    public bool Disposed { get; set; }
+    public bool Disposed;
 
     public void Dispose()
     {

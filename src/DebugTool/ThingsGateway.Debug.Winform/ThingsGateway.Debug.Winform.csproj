@@ -7,7 +7,7 @@
     <SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
     <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
-    <TargetFrameworks>net8.0-windows;</TargetFrameworks>
+    <TargetFrameworks>net9.0-windows;</TargetFrameworks>
 
     <!--动态适用GC-->
     <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="8.0.93" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>

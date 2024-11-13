@@ -1,14 +1,14 @@
 <Project>
 
   <PropertyGroup>
-    <AdminVersion>7.2.0.0</AdminVersion>
-    <PluginVersion>9.0.2.0</PluginVersion>
-    <ProPluginVersion>9.0.2.0</ProPluginVersion>
+    <AdminVersion>7.2.0.2</AdminVersion>
+    <PluginVersion>9.0.2.6</PluginVersion>
+    <ProPluginVersion>9.0.2.3</ProPluginVersion>
   </PropertyGroup>
 
   <PropertyGroup>
     <NoWarn>CS8603;CS8618;CS1591;CS8625;CS8602;CS8604;CS8600;CS8601;CS8714;CS8619;CS8629;CS8765;CS8634;CS8621;CS8767;CS8633;CS8620;CS8610;CS8631;CS8605;CS8622;CS8613;NU5100;NU5104;NU1903;NU1902;</NoWarn>
-    <TargetFrameworks>net8.0;net6.0;</TargetFrameworks>
+    <TargetFrameworks>net9.0;net8.0;net6.0;</TargetFrameworks>
     <LangVersion>12.0</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>

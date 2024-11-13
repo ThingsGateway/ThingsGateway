@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<TargetFrameworks>net462;netstandard2.0;net8.0;net6.0;</TargetFrameworks>
+		<TargetFrameworks>net462;netstandard2.0;net9.0;net8.0;net6.0;</TargetFrameworks>
 	</PropertyGroup>
 	<ItemGroup>
 		<Content Remove="Locales\*.json" />

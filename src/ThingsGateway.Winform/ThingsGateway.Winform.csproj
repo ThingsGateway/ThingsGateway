@@ -6,13 +6,14 @@
   <Import Project="..\ThingsGateway.Server\targets\CustomPlugin.targets" />
   <!--<Import Project="..\ThingsGateway.Server\targets\OtherPlugin.targets" />-->
   <PropertyGroup>
-    <CustomTargetFramework>net8.0</CustomTargetFramework>
+    <CustomTargetFramework>net9.0</CustomTargetFramework>
+    <TargetFrameworks>net9.0-windows;</TargetFrameworks>
     <OutputType>WinExe</OutputType>
     <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
     <SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
     <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
-    <TargetFrameworks>net8.0-windows;</TargetFrameworks>
+    <TargetFrameworks>net9.0-windows;</TargetFrameworks>
 
     <!--动态适用GC-->
     <GarbageCollectionAdaptationMode>1</GarbageCollectionAdaptationMode>
@@ -23,11 +24,11 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="8.0.92" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="9.0.0" />
 
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0-rc.2.24474.1" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
@@ -44,8 +45,8 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
-    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.0.0-rc.2.24473.5" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.0-rc.2.24473.5" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.0" />
   </ItemGroup>
 
   
