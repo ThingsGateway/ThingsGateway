@@ -1,4 +1,23 @@
 ﻿{
+
+  "ThingsGateway.Admin.Razor.NotFound404": {
+    "404": "抱歉，您访问的页面不存在。",
+    "401": "抱歉，您无权限访问该页面。",
+    "Home": "回到首页",
+    "Login": "重新登录"
+  },
+  "ThingsGateway.Admin.Razor.Login": {
+    "LoginErrorh1": "登录异常",
+    "LoginSuccessh1": "登录成功",
+    "LoginSuccessc1": "即将跳转页面",
+    "LoginErrorh2": "登录失败",
+    "LoginErrorc2": "请联系管理员!",
+    "Remark1": "边缘采集网关",
+    "Remark2": "数据集中，多路转发",
+    "Remark3": "边缘计算，高效处理",
+    "Welcome": "欢迎使用"
+  },
+
   "ThingsGateway.Razor.MainLayout": {
     "About": "关于",
     "FullScreenButton": "全屏",

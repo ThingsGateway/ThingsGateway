@@ -62,9 +62,16 @@
     <Content Include="..\ThingsGateway.Server\Index\GatewayIndex.razor" Link="Index\GatewayIndex.razor" />
     <Compile Include="..\ThingsGateway.Server\Index\GatewayIndex.razor.cs" Link="Index\GatewayIndex.razor.cs" />
     <None Include="..\ThingsGateway.Server\Index\GatewayIndex.razor.css" Link="Index\GatewayIndex.razor.css" />
-    <Content Include="..\ThingsGateway.Server\Program\MainLayout.razor" Link="Program\MainLayout.razor" />
-    <Compile Include="..\ThingsGateway.Server\Program\MainLayout.razor.cs" Link="Program\MainLayout.razor.cs" />
-    <Content Include="..\ThingsGateway.Server\Program\MainLayout.razor.css" Link="Program\MainLayout.razor.css" />
+    <Content Include="..\ThingsGateway.Server\Layout\MainLayout.razor" Link="Layout\MainLayout.razor" />
+    <Compile Include="..\ThingsGateway.Server\Layout\MainLayout.razor.cs" Link="Layout\MainLayout.razor.cs" />
+    <Content Include="..\ThingsGateway.Server\Layout\MainLayout.razor.css" Link="Layout\MainLayout.razor.css" />
+    <Content Include="..\ThingsGateway.Server\Layout\AccessDenied.razor" Link="Layout\AccessDenied.razor" />
+    <Compile Include="..\ThingsGateway.Server\Layout\AccessDenied.razor.cs" Link="Layout\AccessDenied.razor.cs" />
+    <Content Include="..\ThingsGateway.Server\Layout\Login.razor" Link="Layout\Login.razor" />
+    <Compile Include="..\ThingsGateway.Server\Layout\Login.razor.cs" Link="Layout\Login.razor.cs" />
+    <Content Include="..\ThingsGateway.Server\Layout\Login.razor.css" Link="Layout\Login.razor.css" />
+    <Content Include="..\ThingsGateway.Server\Layout\NotFound404.razor" Link="Layout\NotFound404.razor" />
+    <Compile Include="..\ThingsGateway.Server\Layout\NotFound404.razor.cs" Link="Layout\NotFound404.razor.cs" />
     <Content Include="..\ThingsGateway.Server\Index\GatewayIndexComponent.razor" Link="Index\GatewayIndexComponent.razor" />
     <Compile Include="..\ThingsGateway.Server\Index\GatewayIndexComponent.razor.cs" Link="Index\GatewayIndexComponent.razor.cs" />
 

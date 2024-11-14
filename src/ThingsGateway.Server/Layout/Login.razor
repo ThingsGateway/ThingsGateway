@@ -1,0 +1,54 @@
+﻿@page "/Account/Login"
+@layout BaseLayout
+@namespace ThingsGateway.Admin.Razor
+@using BootstrapBlazor.Components
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Extension;
+@using ThingsGateway.Razor
+
+<div class="login h-100">
+    @* 左侧说明 *@
+    <div class="row form-inline h-100">
+        <div class="col-0 col-xl-8 p-5 login-left">
+
+            <div style="width:100%; height:100%;" class="d-flex align-items-start flex-column mb-6">
+                <div class="d-flex align-items-center  justify-content-center ms-5 mt-5">
+                    <span class="avatar">
+                        @WebsiteOption.Value.Title?.GetNameLen2()
+                    </span>
+                    <h4>@($"{WebsiteOption.Value.Title}   {_versionString}")</h4>
+                </div>
+                <div class="d-flex flex-column align-items-start ms-5 mt-5 mb-auto">
+                    <div class="mb-3">
+                        <h5>@Localizer["Remark1"]</h5>
+                    </div>
+                    <div class="mb-3">
+                        <h5>@Localizer["Remark2"]</h5>
+                    </div>
+                    <div class="mb-3">
+                        <h5>@Localizer["Remark3"]</h5>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center p-2" style="width:100%;height:100%;">
+                    <img src=@($"{WebsiteConst.DefaultResourceUrl}images/login-left.svg") />
+                </div>
+            </div>
+
+
+
+        </div>
+
+        @* 右侧登录 *@
+        <div class="col-12 col-xl-4">
+            <div style="width:100%; height:100%;" class="d-flex align-items-center  justify-content-center">
+                <div class="login-form d-flex align-items-center flex-column">
+                    <img src=@($"{WebsiteConst.DefaultResourceUrl}images/defaultUser.svg") style="width:36px;height:36px;" />
+                    <h5 class="mt-2 mb-12 ">@Localizer["Welcome"] 👋</h5>
+                    <UserLogin Model="loginModel" OnLogin="LoginAsync"></UserLogin>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

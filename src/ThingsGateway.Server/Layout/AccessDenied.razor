@@ -1,0 +1,26 @@
+﻿@page "/Account/AccessDenied"
+@layout BaseLayout
+@namespace ThingsGateway.Admin.Razor
+@using BootstrapBlazor.Components
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Extension;
+@using ThingsGateway.Razor
+<div class="d-flex flex-column justify-content-center align-items-center" style="height:100vh;">
+    <div>
+        <img alt="401" src="@($"{WebsiteConst.DefaultResourceUrl}images/401.png")" style="max-width: 100%;" />
+    </div>
+    <h5>@Localizer["401"]</h5>
+    <div>
+
+        <Button class="mx-2" Color="Color.Primary" OnClick=@(()=>
+                {
+                var url = AppService.GetReturnUrl(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+                NavigationManager.NavigateTo(url,true);
+                }
+                )>
+            @Localizer["Login"]
+        </Button>
+        <Button class="mx-2" Color="Color.Primary" OnClick=@(()=>NavigationManager.NavigateTo("/",true))>@Localizer["Home"]</Button>
+    </div>
+</div>
+

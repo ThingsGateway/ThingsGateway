@@ -1,0 +1,38 @@
+﻿.login {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+}
+
+.login-form {
+    padding: 5rem 5rem 3rem 5rem;
+    font-size: 0.875rem;
+    box-shadow: 0px 20px 40px 0px rgba(0,0,0,0.3);
+    border-radius: 6px;
+}
+
+.login-left {
+    box-shadow: 0 0px 3px 0 rgba(0,0,0,0.1),0 0 4px 0 rgba(0,0,0,0.1);
+}
+
+@media (max-width: 1200px) {
+    .login-left {
+        display: none
+    }
+}
+
+::deep .avatar {
+    border-radius: 1.5rem;
+    width: 36px;
+    height: 36px;
+    background-color: var(--bs-green);
+    color: #fff;
+}
+
+::deep .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 0;
+}

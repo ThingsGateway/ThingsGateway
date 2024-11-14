@@ -1,0 +1,15 @@
+﻿@page "/404"
+@layout BaseLayout
+@namespace ThingsGateway.Admin.Razor
+@using BootstrapBlazor.Components
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Extension;
+@using ThingsGateway.Razor
+<div class="d-flex flex-column justify-content-center align-items-center" style="height:100vh;">
+    <div>
+        <img alt="404" src="@($"{WebsiteConst.DefaultResourceUrl}images/404.png")" style="max-width: 100%;" />
+    </div>
+    <h5>@Localizer["404"]</h5>
+    <Button class="mt-2" Color="Color.Primary" OnClick=@(()=>NavigationManager.NavigateTo("/"))>@Localizer["Home"]</Button>
+</div>
+
