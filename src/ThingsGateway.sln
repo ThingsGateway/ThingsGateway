@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# 17
+# Visual Studio Version 17
 VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Server", "ThingsGateway.Server\ThingsGateway.Server.csproj", "{22875EFB-DADF-4612-A572-33BCC092F644}"
@@ -38,6 +38,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Gateway.Application", "Gateway\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj", "{A1163B55-31D8-4F58-872F-1DD5E0F14490}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Gateway.Razor", "Gateway\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj", "{6B92AF2D-0997-4887-B1C5-31861F298238}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Gateway.Management", "Gateway\ThingsGateway.Gateway.Management\ThingsGateway.Gateway.Management.csproj", "{49711019-AE2F-46F0-B05A-72576AB20EA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -93,6 +95,10 @@ Global
 		{6B92AF2D-0997-4887-B1C5-31861F298238}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B92AF2D-0997-4887-B1C5-31861F298238}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B92AF2D-0997-4887-B1C5-31861F298238}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49711019-AE2F-46F0-B05A-72576AB20EA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49711019-AE2F-46F0-B05A-72576AB20EA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49711019-AE2F-46F0-B05A-72576AB20EA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49711019-AE2F-46F0-B05A-72576AB20EA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -107,10 +113,11 @@ Global
 		{8EE037EC-ED21-42A0-BE1F-219E9886E43A} = {2AC600BB-4325-4E0A-93A7-B1F53C8E2CA7}
 		{A1163B55-31D8-4F58-872F-1DD5E0F14490} = {5948EA23-4B42-4C22-A266-2E0AE5FA575F}
 		{6B92AF2D-0997-4887-B1C5-31861F298238} = {5948EA23-4B42-4C22-A266-2E0AE5FA575F}
+		{49711019-AE2F-46F0-B05A-72576AB20EA6} = {5948EA23-4B42-4C22-A266-2E0AE5FA575F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
-		RESX_NeutralResourcesLanguage = zh-Hans
 		RESX_Rules = {"EnabledRules":[]}
+		RESX_NeutralResourcesLanguage = zh-Hans
 	EndGlobalSection
 EndGlobal

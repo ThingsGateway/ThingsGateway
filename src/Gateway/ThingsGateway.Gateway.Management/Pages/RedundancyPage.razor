@@ -1,0 +1,24 @@
+﻿@inherits ComponentDefault
+@using BootstrapBlazor.Components
+@using Microsoft.AspNetCore.Authorization
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.AutoUpdate
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Razor
+@namespace ThingsGateway.Gateway.Management
+
+
+<span class=@("text-h6 mx-1") style="overflow:auto;">
+    <span style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;">
+        @RedundancyLocalizer["Status"]：@(GlobalData.CollectDeviceHostedService.StartCollectDeviceEnable ? RedundancyLocalizer["Primary"] : RedundancyLocalizer["Standby"])
+    </span>
+</span>
+
+<div style="flex-grow: 1;"></div>
+
+<Tooltip Title="@RedundancyLocalizer["Switch"]" Placement="Placement.Bottom">
+
+    <Button OnClick=@(OnSwitch) class="mx-2" Color="Color.None" style="color: var(--bs-card-titlecolor);" Icon=@("fas fa-exchange-alt") />
+</Tooltip>
+

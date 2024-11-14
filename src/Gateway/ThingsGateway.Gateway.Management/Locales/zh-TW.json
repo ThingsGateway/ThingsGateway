@@ -1,0 +1,49 @@
+﻿{
+
+  "ThingsGateway.Gateway.Management.RedundancyHostedService": {
+    "Start": "網關管理服務啟動",
+    "Stop": "網關管理服務停止",
+    "RedundancyDup": "主備站設置重複",
+    "SwitchPrimaryState": "無法連接冗餘站點，本機將切換到正常狀態",
+    "SwitchStandbyState": "主站已恢復，本機(從站)將切換到備用狀態",
+    "SwitchNormalState": "本機(主站)將切換到正常狀態",
+    "ErrorSynchronizingData": "同步資料到從站錯誤",
+    "RedundancyDisable": "不啟用網關冗餘站點"
+  },
+  "ThingsGateway.Gateway.Management.RedundancyOptions": {
+    "Enable": "啟用雙機備份",
+    "PrimaryUri": "主節點 Url",
+    "IsPrimary": "是否為主節點",
+    "VerifyToken": "驗證 Token",
+    "HeartbeatInterval": "心跳間隔",
+    "MaxErrorCount": "最大錯誤次數",
+    "IsStartBusinessDevice": "備用站點啟用業務設備",
+    "SyncInterval": "資料同步間隔",
+    "Redundancy": "雙機備份",
+    "Status": "當前站點狀態",
+    "Primary": "活動節點",
+    "Standby": "備用節點",
+    "Switch": "切換",
+
+    "Restart": "即將重新啟動冗餘服務",
+    "Confirm": "確認切換冗餘狀態"
+  },
+
+  "ThingsGateway.AutoUpdate.UpdateZipFile": {
+    "AppName": "應用名稱",
+    "Version": "版本",
+    "FileSize": "檔案大小",
+    "MinimumCompatibleVersion": "最小相容版本",
+    "DotNetVersion": ".NET 版本",
+    "OSPlatform": "系統版本",
+    "Architecture": "架構",
+    "FilePath": "檔案路徑"
+  },
+  "ThingsGateway.Gateway.Management._Imports": {
+    "CheckUpdate": "檢查更新",
+    "Update": "下載更新",
+    "Restart": "重新啟動網關",
+    "HeaderText": "通訊日誌",
+    "Info": "詳細資料"
+  }
+}

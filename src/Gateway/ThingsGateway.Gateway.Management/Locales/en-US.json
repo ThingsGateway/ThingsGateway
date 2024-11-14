@@ -1,0 +1,50 @@
+﻿{
+  "ThingsGateway.Gateway.Management.RedundancyHostedService": {
+    "Start": "Gateway management service started",
+    "Stop": "Gateway management service stopped",
+    "RedundancyDup": "Redundant station settings duplicated",
+    "SwitchPrimaryState": "Cannot connect to redundant site, local machine will switch to normal state",
+    "SwitchStandbyState": "Primary site has recovered, local machine (standby) will switch to standby state",
+    "SwitchNormalState": "Local machine (primary site) will switch to normal state",
+    "ErrorSynchronizingData": "Synchronize data to standby site error",
+    "RedundancyDisable": "Redundant gateway site not enabled"
+  },
+  "ThingsGateway.Gateway.Management.RedundancyOptions": {
+    "Enable": "Enable Dual-Machine Redundancy",
+    "PrimaryUri": "Primary Node URL",
+    "IsPrimary": "IsPrimary",
+    "VerifyToken": "Verification Token",
+    "HeartbeatInterval": "Heartbeat Interval",
+    "MaxErrorCount": "Maximum Error Count",
+    "IsStartBusinessDevice": "Enable Business Device in Standby Site",
+    "SyncInterval": "Data Synchronization Interval",
+    "Redundancy": "Dual-Machine Redundancy",
+    "Status": "Current Site Status",
+    "Primary": "Active Node",
+    "Standby": "Standby Node",
+    "Switch": "Switch",
+
+    "Restart": "The redundant service will be restarted soon",
+    "Confirm": "Confirm switching to redundant state"
+
+
+  },
+
+  "ThingsGateway.AutoUpdate.UpdateZipFile": {
+    "AppName": "AppName",
+    "Version": "Version",
+    "FileSize": "FileSize",
+    "MinimumCompatibleVersion": "MinimumCompatibleVersion",
+    "DotNetVersion": "DotNetVersion",
+    "OSPlatform": "OSPlatform",
+    "Architecture": "Architecture",
+    "FilePath": "FilePath"
+  },
+  "ThingsGateway.Gateway.Management._Imports": {
+    "CheckUpdate": "CheckUpdates",
+    "Update": "Download Update",
+    "Restart": "Restart Gateway",
+    "HeaderText": "Communication Log",
+    "Info": "Details"
+  }
+}
