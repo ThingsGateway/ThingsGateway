@@ -11,8 +11,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.0" />
     <PackageReference Include="ThingsGateway.NewLife.X" Version="$(AdminVersion)" />
-    <PackageReference Include="TouchSocket" Version="3.0.0" />
-    <PackageReference Include="TouchSocket.SerialPorts" Version="3.0.0" />
+    <PackageReference Include="TouchSocket" Version="3.0.1" />
+    <PackageReference Include="TouchSocket.SerialPorts" Version="3.0.1" />
   </ItemGroup>
 
 </Project>

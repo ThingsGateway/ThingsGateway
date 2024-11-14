@@ -234,17 +234,6 @@
     "Stoped": "{0} 已停止"
   },
 
-  "ThingsGateway.Gateway.Application.ManagementHostedService": {
-    "Start": "網關管理服務啟動",
-    "Stop": "網關管理服務停止",
-    "RedundancyDup": "主備站設置重複",
-    "SwitchPrimaryState": "無法連接冗餘站點，本機將切換到正常狀態",
-    "SwitchStandbyState": "主站已恢復，本機(從站)將切換到備用狀態",
-    "SwitchNormalState": "本機(主站)將切換到正常狀態",
-    "ErrorSynchronizingData": "同步資料到從站錯誤",
-    "RedundancyDisable": "不啟用網關冗餘站點"
-  },
-
   "ThingsGateway.Gateway.Application.AlarmHostedService": {
     "RealAlarmTask": "即時警報執行緒",
     "RealAlarmTaskStart": "即時警報執行緒啟動"

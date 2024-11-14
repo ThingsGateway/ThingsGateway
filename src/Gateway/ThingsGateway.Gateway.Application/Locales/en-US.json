@@ -214,16 +214,7 @@
     "Stoping": "{0} stopping",
     "Stoped": "{0} stopped"
   },
-  "ThingsGateway.Gateway.Application.ManagementHostedService": {
-    "Start": "Gateway management service started",
-    "Stop": "Gateway management service stopped",
-    "RedundancyDup": "Redundant station settings duplicated",
-    "SwitchPrimaryState": "Cannot connect to redundant site, local machine will switch to normal state",
-    "SwitchStandbyState": "Primary site has recovered, local machine (standby) will switch to standby state",
-    "SwitchNormalState": "Local machine (primary site) will switch to normal state",
-    "ErrorSynchronizingData": "Synchronize data to standby site error",
-    "RedundancyDisable": "Redundant gateway site not enabled"
-  },
+
   "ThingsGateway.Gateway.Application.AlarmHostedService": {
     "RealAlarmTask": "Real-time alarm thread",
     "RealAlarmTaskStart": "Real-time alarm thread start"

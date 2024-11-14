@@ -37,7 +37,7 @@ public partial class LogConsole : IDisposable
     public string HeaderText { get; set; } = "Log";
 
     [Parameter]
-    public string HeightText { get; set; } = "400px";
+    public string HeightString { get; set; } = "400px";
 
     [Parameter, EditorRequired]
     public string LogPath { get; set; }

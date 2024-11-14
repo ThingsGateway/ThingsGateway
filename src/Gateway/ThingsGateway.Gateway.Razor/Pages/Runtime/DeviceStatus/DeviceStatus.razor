@@ -43,7 +43,7 @@
 
         @if (_driverBaseItem != null && _driverBaseItem?.CurrentDevice != null && _driverBaseItem.CurrentDevice.Channel.LogEnable == true)
         {
-            <LogConsole Logger=@_driverBaseItem.LogMessage LogPath=@_driverBaseItem.LogPath HeaderText="@Localizer["LogConsole"]" HeightText="var(--logconsle-height)"></LogConsole>
+            <LogConsole Logger=@_driverBaseItem.LogMessage LogPath=@_driverBaseItem.LogPath HeaderText="@Localizer["LogConsole"]" HeightString="var(--logconsle-height)"></LogConsole>
         }
 
 

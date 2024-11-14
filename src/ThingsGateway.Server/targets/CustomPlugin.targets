@@ -3,7 +3,6 @@
   <ItemGroup>
     <!--Management 插件-->
     <PackageReference Include="ThingsGateway.Plugin.Management" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
-
     <!--AllenBradleyCip 插件-->
     <PackageReference Include="ThingsGateway.Plugin.AllenBradleyCip" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--DCON 插件-->
@@ -54,10 +53,9 @@
       <PluginFolder>$(TargetDir)Plugins\</PluginFolder>
     </PropertyGroup>
     <Message Text="将插件复制到插件目录 $(PluginFolder)" Importance="high" />
-    
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_ManagementPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
 
-    
+
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_ManagementPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_AllenBradleyCipPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_DCONPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_EDPF_NTPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
@@ -75,14 +73,13 @@
     <Copy SourceFiles="@(MainFile3)" DestinationFolder="$(TargetDir)%(RecursiveDir)" />
 
 
-    
+
+
     <PropertyGroup>
       <MainFile4ApplicationFolder>$(TargetDir)SeedData\Management\</MainFile4ApplicationFolder>
     </PropertyGroup>
     <RemoveDir Directories="$(MainFile4ApplicationFolder)" />
     <Copy SourceFiles="@(MainFile4)" DestinationFolder="$(MainFile4ApplicationFolder)%(RecursiveDir)" />
-
-    
   </Target>
 
   <Target Name="MainDLLPostPublish" AfterTargets="Publish">
