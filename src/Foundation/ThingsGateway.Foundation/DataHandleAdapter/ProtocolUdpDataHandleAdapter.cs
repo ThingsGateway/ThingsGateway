@@ -117,7 +117,8 @@ public class ProtocolUdpDataHandleAdapter<TRequest> : UdpDataHandlingAdapter whe
                 }
                 else if (result == FilterResult.GoOn)
                 {
-                    byteBlock.Position = pos + 1;
+                    byteBlock.Position = pos + request.BodyLength + request.HeaderLength;
+                    Logger?.Trace($"{ToString()}-{request?.ToString()}");
                     request.OperCode = -1;
                 }
                 else if (result == FilterResult.Success)
