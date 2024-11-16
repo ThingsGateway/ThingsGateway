@@ -2,11 +2,6 @@
 @using ThingsGateway.Debug
 @namespace ThingsGateway
 
-@{
-    #if NET6_0
-}
-<Microsoft.AspNetCore.Components.Authorization.CascadingAuthenticationState>
-
 <Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="App.RazorAssemblies.Where(a=>a!=typeof(Routes).Assembly)">
 <Found Context="routeData">
 
@@ -21,27 +16,3 @@
     </NotFound>
 </Router>
 
-
-</Microsoft.AspNetCore.Components.Authorization.CascadingAuthenticationState>
-
-
-@{
-    #else
-}
-<Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="App.RazorAssemblies.Where(a=>a!=typeof(Routes).Assembly)">
-<Found Context="routeData">
-
-    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-
-
-</Found>
-<NotFound>
-    <LayoutView Layout="@typeof(Razor.BaseLayout)">
-              <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
-
-@{
-    #endif
-}
