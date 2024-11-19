@@ -64,8 +64,7 @@ public interface IVariableService
     /// <summary>
     /// 异步导出变量数据到文件流中。
     /// </summary>
-    /// <param name="options">查询分页选项。</param>
-    Task<Dictionary<string, object>> ExportVariableAsync(QueryPageOptions options);
+    Task<Dictionary<string, object>> ExportVariableAsync(QueryPageOptions options, FilterKeyValueAction filterKeyValueAction = null);
 
     /// <summary>
     /// 异步获取变量的运行时信息。

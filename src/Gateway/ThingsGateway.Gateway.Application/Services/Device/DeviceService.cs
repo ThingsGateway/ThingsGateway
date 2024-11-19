@@ -293,14 +293,15 @@ internal class DeviceService : BaseService<Device>, IDeviceService
     /// </summary>
     /// <param name="option">查询条件</param>
     /// <param name="pluginType">查询条件</param>
-    public async Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType)
+    /// <param name="filterKeyValueAction">查询条件</param>
+    public async Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType, FilterKeyValueAction filterKeyValueAction = null)
     {
         var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
         return await QueryAsync(option, a => a
          .WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)).Where(a => a.PluginType == pluginType)
          .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
          .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
-        );
+       , filterKeyValueAction);
 
     }
 
@@ -372,10 +373,10 @@ internal class DeviceService : BaseService<Device>, IDeviceService
     /// </summary>
     /// <returns></returns>
     [OperDesc("ExportDevice", isRecordPar: false, localizerType: typeof(Device))]
-    public async Task<Dictionary<string, object>> ExportDeviceAsync(QueryPageOptions options, PluginTypeEnum pluginType)
+    public async Task<Dictionary<string, object>> ExportDeviceAsync(QueryPageOptions options, PluginTypeEnum pluginType, FilterKeyValueAction filterKeyValueAction = null)
     {
         //导出
-        var data = await PageAsync(options, pluginType).ConfigureAwait(false);
+        var data = await PageAsync(options, pluginType, filterKeyValueAction).ConfigureAwait(false);
         string fileName;
         Dictionary<string, object> sheets;
         ExportCore(data.Items, pluginType, out fileName, out sheets);

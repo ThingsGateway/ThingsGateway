@@ -174,14 +174,15 @@ internal class ChannelService : BaseService<Channel>, IChannelService
     /// 报表查询
     /// </summary>
     /// <param name="option">查询条件</param>
-    public async Task<QueryData<Channel>> PageAsync(QueryPageOptions option)
+    /// <param name="filterKeyValueAction">查询条件</param>
+    public async Task<QueryData<Channel>> PageAsync(QueryPageOptions option, FilterKeyValueAction filterKeyValueAction = null)
     {
         var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
         return await QueryAsync(option, a => a
         .WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!))
          .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
          .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
-        );
+       , filterKeyValueAction);
     }
 
     /// <summary>
@@ -273,9 +274,9 @@ internal class ChannelService : BaseService<Channel>, IChannelService
 
     /// <inheritdoc/>
     [OperDesc("ExportChannel", isRecordPar: false, localizerType: typeof(Channel))]
-    public async Task<Dictionary<string, object>> ExportChannelAsync(QueryPageOptions options)
+    public async Task<Dictionary<string, object>> ExportChannelAsync(QueryPageOptions options, FilterKeyValueAction filterKeyValueAction = null)
     {
-        var data = await PageAsync(options).ConfigureAwait(false);
+        var data = await PageAsync(options, filterKeyValueAction).ConfigureAwait(false);
         return ExportChannelCore(data.Items);
     }
 

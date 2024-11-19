@@ -20,6 +20,7 @@
       "SortCode": 0,
       "ExtJson": null
     },
+
     {
       "Id": 61100022003,
       "ParentId": 6100001,
@@ -1005,6 +1006,27 @@
       "UpdateUser": null,
       "UpdateUserId": null,
       "SortCode": 102,
+      "ExtJson": null
+    },
+    {
+      "Id": 11000022001002,
+      "ParentId": 0,
+      "Module": 6,
+      "Title": "重启",
+      "Icon": null,
+      "Code": "System",
+      "Category": 2,
+      "Target": null,
+      "NavLinkMatch": null,
+      "Href": null,
+      "CreateTime": "5/11/2024 04:08:09.92",
+      "CreateUser": "SuperAdmin",
+      "CreateUserId": 212725263002001,
+      "IsDelete": "0",
+      "UpdateTime": "5/11/2024 04:28:42.83",
+      "UpdateUser": null,
+      "UpdateUserId": null,
+      "SortCode": null,
       "ExtJson": null
     },
     {

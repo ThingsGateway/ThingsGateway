@@ -358,9 +358,9 @@ internal class VariableService : BaseService<Variable>, IVariableService
     /// 导出文件
     /// </summary>
     [OperDesc("ExportVariable", isRecordPar: false, localizerType: typeof(Variable))]
-    public async Task<Dictionary<string, object>> ExportVariableAsync(QueryPageOptions options)
+    public async Task<Dictionary<string, object>> ExportVariableAsync(QueryPageOptions options, FilterKeyValueAction filterKeyValueAction = null)
     {
-        var data = (await QueryAsync(options).ConfigureAwait(false));
+        var data = (await QueryAsync(options, null, filterKeyValueAction).ConfigureAwait(false));
         Dictionary<string, object> sheets = ExportCore(data.Items);
         return sheets;
     }

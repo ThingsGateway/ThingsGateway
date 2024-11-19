@@ -48,7 +48,7 @@ public interface IChannelService
     /// 导出通道为文件流结果
     /// </summary>
     /// <returns>文件流结果</returns>
-    Task<Dictionary<string, object>> ExportChannelAsync(QueryPageOptions options);
+    Task<Dictionary<string, object>> ExportChannelAsync(QueryPageOptions options, FilterKeyValueAction filterKeyValueAction = null);
 
     /// <summary>
     /// 导出通道为内存流
@@ -84,7 +84,8 @@ public interface IChannelService
     /// 报表查询
     /// </summary>
     /// <param name="option">查询条件</param>
-    Task<QueryData<Channel>> PageAsync(QueryPageOptions option);
+    /// <param name="filterKeyValueAction">查询条件</param>
+    Task<QueryData<Channel>> PageAsync(QueryPageOptions option, FilterKeyValueAction filterKeyValueAction = null);
 
     /// <summary>
     /// API查询

@@ -98,8 +98,10 @@
                 </NotAuthorized>
             </Layout>
 
-
-            <ThingsGateway.Gateway.Razor.QuickActions></ThingsGateway.Gateway.Razor.QuickActions>
+            @if(AppContext.IsHasButtonWithRole("", "重启"))
+            {
+                <ThingsGateway.Gateway.Razor.QuickActions/>
+            }
 
         </div>
 

@@ -64,7 +64,7 @@ public interface IDeviceService
     /// 导出设备信息到文件流。
     /// </summary>
     /// <returns>导出的文件流</returns>
-    Task<Dictionary<string, object>> ExportDeviceAsync(QueryPageOptions options, PluginTypeEnum pluginType);
+    Task<Dictionary<string, object>> ExportDeviceAsync(QueryPageOptions options, PluginTypeEnum pluginType, FilterKeyValueAction filterKeyValueAction = null);
 
     /// <summary>
     /// 导出设备信息到内存流。
@@ -115,8 +115,9 @@ public interface IDeviceService
     /// </summary>
     /// <param name="option">查询条件</param>
     /// <param name="pluginType">查询条件</param>
+    /// <param name="filterKeyValueAction">查询条件</param>
     /// <returns>查询结果</returns>
-    Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType);
+    Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType, FilterKeyValueAction filterKeyValueAction = null);
 
     /// <summary>
     /// API查询

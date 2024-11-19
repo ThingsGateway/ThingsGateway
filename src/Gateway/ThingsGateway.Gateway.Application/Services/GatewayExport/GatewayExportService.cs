@@ -10,9 +10,13 @@
 
 using BootstrapBlazor.Components;
 
+using Mapster;
+
 using Microsoft.JSInterop;
 
 using ThingsGateway.Extension;
+
+using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -30,7 +34,7 @@ internal class GatewayExportService : IGatewayExportService
         await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Razor/js/downloadFile.js");
         string url = "api/gatewayExport/channel";
         string fileName = DateTime.Now.ToFileDateTimeFormat();
-        await ajaxJS.InvokeVoidAsync("blazor_downloadFile", url, fileName, dtoObject);
+        await ajaxJS.InvokeVoidAsync("postJson_downloadFile", url, fileName, new ExportDto() { FilterKeyValueAction = dtoObject.ToFilter(), QueryPageOptions = dtoObject.Adapt<QueryPageOptionsDto>() }.ToJsonString());
     }
 
     public async Task OnDeviceExport(QueryPageOptions dtoObject, bool collect)
@@ -38,7 +42,7 @@ internal class GatewayExportService : IGatewayExportService
         await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Razor/js/downloadFile.js");
         string url = collect ? "api/gatewayExport/collectdevice" : "api/gatewayExport/businessdevice";
         string fileName = DateTime.Now.ToFileDateTimeFormat();
-        await ajaxJS.InvokeVoidAsync("blazor_downloadFile", url, fileName, dtoObject);
+        await ajaxJS.InvokeVoidAsync("postJson_downloadFile", url, fileName, new ExportDto() { FilterKeyValueAction = dtoObject.ToFilter(), QueryPageOptions = dtoObject.Adapt<QueryPageOptionsDto>() }.ToJsonString());
     }
 
     public async Task OnVariableExport(QueryPageOptions dtoObject)
@@ -46,6 +50,7 @@ internal class GatewayExportService : IGatewayExportService
         await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Razor/js/downloadFile.js");
         string url = "api/gatewayExport/variable";
         string fileName = DateTime.Now.ToFileDateTimeFormat();
-        await ajaxJS.InvokeVoidAsync("blazor_downloadFile", url, fileName, dtoObject);
+        await ajaxJS.InvokeVoidAsync("postJson_downloadFile", url, fileName, new ExportDto() { FilterKeyValueAction = dtoObject.ToFilter(), QueryPageOptions = dtoObject.Adapt<QueryPageOptionsDto>() }.ToJsonString());
+
     }
 }
