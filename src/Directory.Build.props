@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AdminVersion>7.2.0.18</AdminVersion>
     <PluginVersion>9.0.2.12</PluginVersion>
-    <ProPluginVersion>9.0.2.18</ProPluginVersion>
+    <ProPluginVersion>9.0.2.21</ProPluginVersion>
   </PropertyGroup>
 
   <PropertyGroup>
