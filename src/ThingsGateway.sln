@@ -109,8 +109,8 @@ Global
 		{6B92AF2D-0997-4887-B1C5-31861F298238} = {5948EA23-4B42-4C22-A266-2E0AE5FA575F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
 		RESX_NeutralResourcesLanguage = zh-Hans
 		RESX_Rules = {"EnabledRules":[]}
-		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
 	EndGlobalSection
 EndGlobal
