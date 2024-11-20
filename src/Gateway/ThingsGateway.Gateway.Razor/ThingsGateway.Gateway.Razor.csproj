@@ -8,6 +8,7 @@
     <PackageReference Include="BootstrapBlazor.CodeEditor" Version="9.0.0" />
     <PackageReference Include="ThingsGateway.Admin.Razor" Version="$(AdminVersion)" />
     <ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj" />
+
   </ItemGroup>
 
   <ItemGroup>
@@ -17,10 +18,11 @@
     </EmbeddedResource>
   </ItemGroup>
 
+
   <PropertyGroup>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
-  
+
 </Project>
 
 
