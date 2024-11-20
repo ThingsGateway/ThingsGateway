@@ -54,7 +54,7 @@ public class MessageBase : OperResultClass<byte[]>, IResultMessage, IWaitHandle
     }
 
     /// <inheritdoc/>
-    public virtual void SendInfo(ISendMessage sendMessage)
+    public virtual void SendInfo(ISendMessage sendMessage, ref TouchSocket.Core.ValueByteBlock byteBlock)
     {
     }
 }

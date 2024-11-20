@@ -54,7 +54,5 @@ public interface IResultMessage : IOperResult, IRequestInfo
     /// <summary>
     /// 发送前的信息处理，例如存储某些特征信息：站号/功能码等等用于验证后续的返回信息是否合法
     /// </summary>
-    /// <param name="sendMessage"></param>
-    /// <returns></returns>
-    void SendInfo(ISendMessage sendMessage);
+    void SendInfo(ISendMessage sendMessage, ref ValueByteBlock byteBlock);
 }

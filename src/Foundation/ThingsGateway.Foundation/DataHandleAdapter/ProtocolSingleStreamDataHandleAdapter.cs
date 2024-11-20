@@ -45,11 +45,10 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
     public TRequest Request { get; set; }
 
     /// <inheritdoc />
-    public void SetRequest(int sign, ISendMessage sendMessage)
+    public void SetRequest(ISendMessage sendMessage, ref ValueByteBlock byteBlock)
     {
         var request = GetInstance();
-        request.Sign = sign;
-        request.SendInfo(sendMessage);
+        request.SendInfo(sendMessage, ref byteBlock);
         Request = request;
     }
 
@@ -175,18 +174,16 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
             throw new Exception($"Unable to convert {nameof(requestInfo)} to {nameof(ISendMessage)}");
         }
 
-        var requestInfoBuilder = (ISendMessage)requestInfo;
-
-        var byteBlock = new ValueByteBlock(requestInfoBuilder.MaxLength);
+        var byteBlock = new ValueByteBlock(sendMessage.MaxLength);
         try
         {
-            requestInfoBuilder.Build(ref byteBlock);
+            sendMessage.Build(ref byteBlock);
             if (Logger?.LogLevel <= LogLevel.Trace)
                 Logger?.Trace($"{ToString()}- Send:{(IsHexData ? byteBlock.Span.ToHexString() : (byteBlock.Span.ToString(Encoding.UTF8)))}");
             //非并发主从协议
             if (IsSingleThread)
             {
-                SetRequest(sendMessage.Sign, requestInfoBuilder);
+                SetRequest(sendMessage, ref byteBlock);
             }
             await GoSendAsync(byteBlock.Memory).ConfigureAwait(false);
         }

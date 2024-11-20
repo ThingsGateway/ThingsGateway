@@ -376,7 +376,29 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
     }
 
     /// <inheritdoc/>
-    public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage command, IClientChannel channel = default, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default)
+    protected virtual async ValueTask<MessageBase> SendThenReturnMessageAsync(ISendMessage sendMessage, string socketId, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default)
+    {
+        var channelResult = await GetChannelAsync(socketId).ConfigureAwait(false);
+        if (!channelResult.IsSuccess) return new MessageBase(channelResult);
+        return await SendThenReturnMessageBaseAsync(sendMessage, channelResult.Content, waitData, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public virtual async ValueTask<OperResult<byte[]>> SendThenReturnAsync(ISendMessage sendMessage, IClientChannel channel = default, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var result = await SendThenReturnMessageBaseAsync(sendMessage, channel, waitData, cancellationToken).ConfigureAwait(false);
+            return new OperResult<byte[]>(result) { Content = result.Content };
+        }
+        catch (Exception ex)
+        {
+            return new(ex);
+        }
+    }
+
+    /// <inheritdoc/>
+    protected virtual async ValueTask<MessageBase> SendThenReturnMessageBaseAsync(ISendMessage command, IClientChannel channel = default, WaitDataAsync<MessageBase> waitData = default, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -415,7 +437,7 @@ public abstract class ProtocolBase : DisposableObject, IProtocol
                 result = await GetResponsedDataAsync(command, channel, waitData, Timeout, cancellationToken).ConfigureAwait(false);
             }
 
-            return new OperResult<byte[]>(result) { Content = result.Content };
+            return result;
         }
         catch (Exception ex)
         {

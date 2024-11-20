@@ -26,6 +26,11 @@
     <!--USBScaner 插件-->
     <PackageReference Include="ThingsGateway.Plugin.USBScaner" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
 
+    
+    <PackageReference Include="ThingsGateway.Plugin.SECS" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.TS550" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.Vigor" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+
   </ItemGroup>
 
   <Target Name="CopyCustomPluginNugetPackages" AfterTargets="Build">
@@ -43,6 +48,9 @@
       <PkgThingsGateway_Plugin_IDR210PackageFiles Include="$(PkgThingsGateway_Plugin_IDR210)\Content\net6.0\**\*.*" />
       <PkgThingsGateway_Plugin_URF_R330PackageFiles Include="$(PkgThingsGateway_Plugin_URF_R330)\Content\net6.0\**\*.*" />
       <PkgThingsGateway_Plugin_USBScanerPackageFiles Include="$(PkgThingsGateway_Plugin_USBScaner)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_SECSPackageFiles Include="$(PkgThingsGateway_Plugin_SECS)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_TS550PackageFiles Include="$(PkgThingsGateway_Plugin_TS550)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_VigorPackageFiles Include="$(PkgThingsGateway_Plugin_Vigor)\Content\net6.0\**\*.*" />
 
       <MainFile1 Include="$(PkgThingsGateway_Plugin_IDR210)\Main\**" />
       <MainFile2 Include="$(PkgThingsGateway_Plugin_DKQ_A16D)\Main\**" />
@@ -67,6 +75,9 @@
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_IDR210PackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_URF_R330PackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_USBScanerPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_SECSPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_TS550PackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_VigorPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     
     <Copy SourceFiles="@(MainFile1)" DestinationFolder="$(TargetDir)%(RecursiveDir)" />
     <Copy SourceFiles="@(MainFile2)" DestinationFolder="$(TargetDir)%(RecursiveDir)" />

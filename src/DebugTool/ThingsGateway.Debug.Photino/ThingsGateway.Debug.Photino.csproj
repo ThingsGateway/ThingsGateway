@@ -5,6 +5,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
 
     <!--动态适用GC-->
     <GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
