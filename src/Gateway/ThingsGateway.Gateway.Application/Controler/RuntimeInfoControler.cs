@@ -28,7 +28,6 @@ namespace ThingsGateway.Gateway.Application;
 [DisplayName("数据状态")]
 [Route("openApi/runtimeInfo")]
 [RolePermission]
-[LoggingMonitor]
 [Authorize(AuthenticationSchemes = "Bearer")]
 public class RuntimeInfoControler : ControllerBase
 {

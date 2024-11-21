@@ -22,7 +22,6 @@ namespace ThingsGateway.Gateway.Application;
 [DisplayName("获取配置信息")]
 [Route("openApi/configInfo")]
 [RolePermission]
-[LoggingMonitor]
 [Authorize(AuthenticationSchemes = "Bearer")]
 public class ConfigInfoControler : ControllerBase
 {

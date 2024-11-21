@@ -92,7 +92,6 @@ public class ExportDto
 [Route("api/gatewayExport")]
 [IgnoreRolePermission]
 [Authorize]
-[LoggingMonitor]
 public class GatewayExportController : ControllerBase
 {
     private readonly IChannelService _channelService;
