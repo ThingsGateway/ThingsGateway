@@ -47,6 +47,8 @@ public class SingleFilePublish : ISingleFilePublish
             "ThingsGateway.Admin.Razor"   ,
             "ThingsGateway.Admin.Application",
 
+            "ThingsGateway.Management",
+
             "ThingsGateway.CSScript",
             "ThingsGateway.Foundation"   ,
             "ThingsGateway.Gateway.Application",

@@ -1,8 +1,6 @@
 <Project>
 
   <ItemGroup>
-    <!--Management 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.Management" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--AllenBradleyCip 插件-->
     <PackageReference Include="ThingsGateway.Plugin.AllenBradleyCip" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--DCON 插件-->
@@ -36,7 +34,6 @@
   <Target Name="CopyCustomPluginNugetPackages" AfterTargets="Build">
     <ItemGroup>
       <!-- setting up the variable for convenience -->
-      <PkgThingsGateway_Plugin_ManagementPackageFiles Include="$(PkgThingsGateway_Plugin_Management)\Content\net6.0\**\*.*" />
       <PkgThingsGateway_Plugin_AllenBradleyCipPackageFiles Include="$(PkgThingsGateway_Plugin_AllenBradleyCip)\Content\net6.0\**\*.*" />
       <PkgThingsGateway_Plugin_DCONPackageFiles Include="$(PkgThingsGateway_Plugin_DCON)\Content\net6.0\**\*.*" />
       <PkgThingsGateway_Plugin_EDPF_NTPackageFiles Include="$(PkgThingsGateway_Plugin_EDPF_NT)\Content\net6.0\**\*.*" />
@@ -55,7 +52,6 @@
       <MainFile1 Include="$(PkgThingsGateway_Plugin_IDR210)\Main\**" />
       <MainFile2 Include="$(PkgThingsGateway_Plugin_DKQ_A16D)\Main\**" />
       <MainFile3 Include="$(PkgThingsGateway_Plugin_URF_R330)\Main\**" />
-      <MainFile4 Include="$(PkgThingsGateway_Plugin_Management)\Content\SeedData\Management\*.*" />
     </ItemGroup>
     <PropertyGroup>
       <PluginFolder>$(TargetDir)Plugins\</PluginFolder>
@@ -63,7 +59,6 @@
     <Message Text="将插件复制到插件目录 $(PluginFolder)" Importance="high" />
 
 
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_ManagementPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_AllenBradleyCipPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_DCONPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_EDPF_NTPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
@@ -84,13 +79,6 @@
     <Copy SourceFiles="@(MainFile3)" DestinationFolder="$(TargetDir)%(RecursiveDir)" />
 
 
-
-
-    <PropertyGroup>
-      <MainFile4ApplicationFolder>$(TargetDir)SeedData\Management\</MainFile4ApplicationFolder>
-    </PropertyGroup>
-    <RemoveDir Directories="$(MainFile4ApplicationFolder)" />
-    <Copy SourceFiles="@(MainFile4)" DestinationFolder="$(MainFile4ApplicationFolder)%(RecursiveDir)" />
   </Target>
 
   <Target Name="MainDLLPostPublish" AfterTargets="Publish">

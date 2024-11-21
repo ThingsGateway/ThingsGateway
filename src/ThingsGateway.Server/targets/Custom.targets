@@ -1,0 +1,71 @@
+<Project>
+
+
+  <ItemGroup>
+    <PackageReference Include="ThingsGateway.Management" Version="$(ProPluginVersion)" GeneratePathProperty="true"/>
+    <PackageReference Include="ThingsGateway.RulesEngine" Version="$(ProPluginVersion)" GeneratePathProperty="true"/>
+  </ItemGroup>
+
+  <Target Name="_ResolveCopyManagementLocalNuGetPkgXmls" AfterTargets="ResolveReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)'=='ThingsGateway.Management' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
+    </ItemGroup>
+  </Target>
+  <Target Name="_ResolveCopyRulesEngineLocalNuGetPkgXmls" AfterTargets="ResolveReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)'=='ThingsGateway.RulesEngine' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
+    </ItemGroup>
+  </Target>
+
+  
+  <Target Name="CopyManagementNugetPackages" AfterTargets="Build">
+    <ItemGroup>
+      <!-- setting up the variable for convenience -->
+      <ManagementApplicationPackageFiles Include="$(PkgThingsGateway_Management)\Content\SeedData\Management\*.*" />
+    </ItemGroup>
+    <PropertyGroup>
+      <ManagementApplicationFolder>$(TargetDir)SeedData\Management\</ManagementApplicationFolder>
+    </PropertyGroup>
+    <RemoveDir Directories="$(ManagementApplicationFolder)" />
+    <Copy SourceFiles="@(ManagementApplicationPackageFiles)" DestinationFolder="$(ManagementApplicationFolder)%(RecursiveDir)" />
+
+  </Target>
+  <Target Name="CopyRulesEngineNugetPackages" AfterTargets="Build">
+    <ItemGroup>
+      <!-- setting up the variable for convenience -->
+      <RulesEngineApplicationPackageFiles Include="$(PkgThingsGateway_RulesEngine)\Content\SeedData\RulesEngine\*.*" />
+    </ItemGroup>
+    <PropertyGroup>
+      <RulesEngineApplicationFolder>$(TargetDir)SeedData\RulesEngine\</RulesEngineApplicationFolder>
+    </PropertyGroup>
+    <RemoveDir Directories="$(RulesEngineApplicationFolder)" />
+    <Copy SourceFiles="@(RulesEngineApplicationPackageFiles)" DestinationFolder="$(RulesEngineApplicationFolder)%(RecursiveDir)" />
+
+  </Target>
+
+  
+  <Target Name="ManagementPostPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <!-- setting up the variable for convenience -->
+      <ManagementFiles Include="bin\$(Configuration)\$(TargetFramework)\SeedData\**" />
+    </ItemGroup>
+    <PropertyGroup>
+    </PropertyGroup>
+    <Copy SourceFiles="@(ManagementFiles)" DestinationFolder="$(PublishDir)SeedData\%(RecursiveDir)" />
+
+  </Target>
+
+  
+  <Target Name="RulesEnginePostPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <!-- setting up the variable for convenience -->
+      <RulesEngineFiles Include="bin\$(Configuration)\$(TargetFramework)\SeedData\**" />
+    </ItemGroup>
+    <PropertyGroup>
+    </PropertyGroup>
+    <Copy SourceFiles="@(RulesEngineFiles)" DestinationFolder="$(PublishDir)SeedData\%(RecursiveDir)" />
+
+  </Target>
+
+
+</Project>
