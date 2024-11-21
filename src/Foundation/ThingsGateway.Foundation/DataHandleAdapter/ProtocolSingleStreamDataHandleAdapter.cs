@@ -48,6 +48,7 @@ public class ProtocolSingleStreamDataHandleAdapter<TRequest> : CustomDataHandlin
     public void SetRequest(ISendMessage sendMessage, ref ValueByteBlock byteBlock)
     {
         var request = GetInstance();
+        request.Sign = sendMessage.Sign;
         request.SendInfo(sendMessage, ref byteBlock);
         Request = request;
     }
