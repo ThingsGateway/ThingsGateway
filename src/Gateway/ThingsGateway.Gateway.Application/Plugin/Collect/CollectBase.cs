@@ -233,11 +233,11 @@ public abstract class CollectBase : DriverBase
         // 如果所有方法和变量读取都成功，则清零错误计数器
         if (readResultCount.deviceMethodsVariableFailedNum == 0 && readResultCount.deviceSourceVariableFailedNum == 0 && (readResultCount.deviceMethodsVariableSuccessNum != 0 || readResultCount.deviceSourceVariableSuccessNum != 0))
         {
-            ScriptVariableRun(cancellationToken);
-
             //只有成功读取一次，失败次数都会清零
             CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
         }
+
+        ScriptVariableRun(cancellationToken);
 
 
         #region 执行方法

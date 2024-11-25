@@ -1,6 +1,8 @@
 <Project>
 
   <ItemGroup>
+    <PackageReference Include="ThingsGateway.Plugin.HJ212" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.BACnet" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--AllenBradleyCip 插件-->
     <PackageReference Include="ThingsGateway.Plugin.AllenBradleyCip" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
     <!--DCON 插件-->
@@ -34,6 +36,8 @@
   <Target Name="CopyCustomPluginNugetPackages" AfterTargets="Build">
     <ItemGroup>
       <!-- setting up the variable for convenience -->
+      <PkgThingsGateway_Plugin_HJ212PackageFiles Include="$(PkgThingsGateway_Plugin_HJ212)\Content\net6.0\**\*.*" />
+      <PkgThingsGateway_Plugin_BACnetPackageFiles Include="$(PkgThingsGateway_Plugin_BACnet)\Content\net6.0\**\*.*" />
       <PkgThingsGateway_Plugin_AllenBradleyCipPackageFiles Include="$(PkgThingsGateway_Plugin_AllenBradleyCip)\Content\net6.0\**\*.*" />
       <PkgThingsGateway_Plugin_DCONPackageFiles Include="$(PkgThingsGateway_Plugin_DCON)\Content\net6.0\**\*.*" />
       <PkgThingsGateway_Plugin_EDPF_NTPackageFiles Include="$(PkgThingsGateway_Plugin_EDPF_NT)\Content\net6.0\**\*.*" />
@@ -58,7 +62,9 @@
     </PropertyGroup>
     <Message Text="将插件复制到插件目录 $(PluginFolder)" Importance="high" />
 
-
+    
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_HJ212PackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_BACnetPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_AllenBradleyCipPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_DCONPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_EDPF_NTPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
