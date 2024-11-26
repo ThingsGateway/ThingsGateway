@@ -16,6 +16,7 @@ using CSScriptLib;
 using System.Reflection;
 using System.Text;
 
+using ThingsGateway.NewLife;
 using ThingsGateway.NewLife.Caching;
 using ThingsGateway.NewLife.Threading;
 
@@ -55,6 +56,7 @@ public static class CSharpScriptEngineExtension
                     if (item.Value!.ExpiredTime < item.Value.VisitTime + 1800_000)
                     {
                         Instance.Remove(item.Key);
+                        item.Value?.Value?.TryDispose();
                         item.Value?.Value?.GetType().Assembly.Unload();
                         GC.Collect();
                     }
