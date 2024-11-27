@@ -5,7 +5,7 @@
 #推送：docker push registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway
 
 #aspnetcore9.0环境
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-noble AS base
 COPY .  /app
 WORKDIR /app
 #默认web
