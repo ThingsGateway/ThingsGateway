@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <AdminVersion>7.2.0.24</AdminVersion>
+    <AdminVersion>7.2.0.25</AdminVersion>
     <PluginVersion>9.0.2.19</PluginVersion>
     <ProPluginVersion>9.0.2.47</ProPluginVersion>
   </PropertyGroup>

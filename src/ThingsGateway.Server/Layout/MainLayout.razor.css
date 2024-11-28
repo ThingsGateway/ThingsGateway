@@ -123,6 +123,15 @@
     --table-height: calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - 40px);
     --bs-header-height: 30px;
 }
+@media (min-width: 768px) {
+    .mainlayout ::deep .layout-menu .scroll {
+        overflow-x: hidden;
+    }
+
+    .mainlayout ::deep .layout-right {
+        width: calc(100vw - var(--bb-layout-sidebar-width));
+    }
+}
 
 .mainlayout ::deep .layout-header .dropdown-logout {
     --bb-logout-avatar-width: 32px;
