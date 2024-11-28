@@ -38,7 +38,11 @@
       <Private>false</Private>
       <IncludeAssets> native;</IncludeAssets>
     </PackageReference>
-
+    <!--OpcDa 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.OpcDaNetApi" Version="$(PluginVersion)" GeneratePathProperty="true">
+      <Private>false</Private>
+      <IncludeAssets> native;</IncludeAssets>
+    </PackageReference>
     <!--OpcUa 插件-->
     <PackageReference Include="ThingsGateway.Plugin.OpcUa" Version="$(PluginVersion)" GeneratePathProperty="true">
       <Private>false</Private>
@@ -88,6 +92,9 @@
       <PkgThingsGateway_Plugin_KafkaPackageFiles Include="$(PkgThingsGateway_Plugin_Kafka)\Content\$(CustomTargetFramework)\**\*.*" />
       <PkgThingsGateway_Plugin_MqttPackageFiles Include="$(PkgThingsGateway_Plugin_Mqtt)\Content\$(CustomTargetFramework)\**\*.*" />
       <PkgThingsGateway_Plugin_OpcDaPackageFiles Include="$(PkgThingsGateway_Plugin_OpcDa)\Content\$(CustomTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_OpcDaNetApiPackageFiles Include="$(PkgThingsGateway_Plugin_OpcDaNetApi)\Content\$(CustomTargetFramework)\**\*.*" />
+
+      
       <PkgThingsGateway_Plugin_OpcUaPackageFiles Include="$(PkgThingsGateway_Plugin_OpcUa)\Content\$(CustomTargetFramework)\**\*.*" />
       <PkgThingsGateway_Plugin_RabbitMQPackageFiles Include="$(PkgThingsGateway_Plugin_RabbitMQ)\Content\$(CustomTargetFramework)\**\*.*" />
       <PkgThingsGateway_Plugin_VariableExpressionPackageFiles Include="$(PkgThingsGateway_Plugin_VariableExpression)\Content\$(CustomTargetFramework)\**\*.*" />
@@ -104,6 +111,7 @@
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_KafkaPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_MqttPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_OpcDaPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_OpcDaNetApiPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_OpcUaPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_RabbitMQPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
     <Copy SourceFiles="@(PkgThingsGateway_Plugin_VariableExpressionPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />

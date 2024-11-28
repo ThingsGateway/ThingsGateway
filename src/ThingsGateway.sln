@@ -8,12 +8,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Photino", "Th
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Winform", "ThingsGateway.Winform\ThingsGateway.Winform.csproj", "{F7FFA750-A80B-493D-8F7A-1B9078CE5618}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DebugTool", "DebugTool", "{0D76CE00-967B-4C08-AA47-6C50A6B2DDCC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Debug.Photino", "DebugTool\ThingsGateway.Debug.Photino\ThingsGateway.Debug.Photino.csproj", "{01B09604-C7CB-4E00-97CE-C8CC8F2EEAC4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Debug.Winform", "DebugTool\ThingsGateway.Debug.Winform\ThingsGateway.Debug.Winform.csproj", "{F7A5913C-246A-4C9F-9BCD-0B60CE27B958}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "other", "other", "{0B748352-5D27-4F14-8A20-364034C72867}"
 	ProjectSection(SolutionItems) = preProject
 		Directory.Build.props = Directory.Build.props
@@ -57,14 +51,6 @@ Global
 		{F7FFA750-A80B-493D-8F7A-1B9078CE5618}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F7FFA750-A80B-493D-8F7A-1B9078CE5618}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F7FFA750-A80B-493D-8F7A-1B9078CE5618}.Release|Any CPU.Build.0 = Release|Any CPU
-		{01B09604-C7CB-4E00-97CE-C8CC8F2EEAC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{01B09604-C7CB-4E00-97CE-C8CC8F2EEAC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{01B09604-C7CB-4E00-97CE-C8CC8F2EEAC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{01B09604-C7CB-4E00-97CE-C8CC8F2EEAC4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F7A5913C-246A-4C9F-9BCD-0B60CE27B958}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F7A5913C-246A-4C9F-9BCD-0B60CE27B958}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F7A5913C-246A-4C9F-9BCD-0B60CE27B958}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F7A5913C-246A-4C9F-9BCD-0B60CE27B958}.Release|Any CPU.Build.0 = Release|Any CPU
 		{506232CE-0FB6-4ACB-96DE-C8C8D075A642}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{506232CE-0FB6-4ACB-96DE-C8C8D075A642}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{506232CE-0FB6-4ACB-96DE-C8C8D075A642}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -98,8 +84,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{01B09604-C7CB-4E00-97CE-C8CC8F2EEAC4} = {0D76CE00-967B-4C08-AA47-6C50A6B2DDCC}
-		{F7A5913C-246A-4C9F-9BCD-0B60CE27B958} = {0D76CE00-967B-4C08-AA47-6C50A6B2DDCC}
 		{506232CE-0FB6-4ACB-96DE-C8C8D075A642} = {2AC600BB-4325-4E0A-93A7-B1F53C8E2CA7}
 		{9D49F8E2-A82C-4E36-8F54-4F45BF3E47C0} = {2AC600BB-4325-4E0A-93A7-B1F53C8E2CA7}
 		{70665B3C-5E43-4A2B-B032-30986A16DE67} = {2AC600BB-4325-4E0A-93A7-B1F53C8E2CA7}
@@ -110,7 +94,7 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
-		RESX_NeutralResourcesLanguage = zh-Hans
 		RESX_Rules = {"EnabledRules":[]}
+		RESX_NeutralResourcesLanguage = zh-Hans
 	EndGlobalSection
 EndGlobal
