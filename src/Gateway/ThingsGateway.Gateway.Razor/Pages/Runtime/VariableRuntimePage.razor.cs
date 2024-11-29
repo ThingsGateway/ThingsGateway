@@ -10,7 +10,7 @@
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Extension.Generic;
-using ThingsGateway.Foundation.Json.Extension;
+using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.NewLife.Extension;
 

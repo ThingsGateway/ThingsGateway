@@ -17,7 +17,7 @@ using System.Collections.Concurrent;
 
 using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Extension;
-using ThingsGateway.Foundation.Extension.Collection;
+using ThingsGateway.Extension.Generic;
 
 using TouchSocket.Core;
 

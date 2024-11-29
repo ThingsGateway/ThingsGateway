@@ -12,6 +12,7 @@ using Microsoft.JSInterop;
 
 using ThingsGateway.Extension;
 using ThingsGateway.Foundation;
+using ThingsGateway.Razor;
 
 namespace ThingsGateway.Debug;
 

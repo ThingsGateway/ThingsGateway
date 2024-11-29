@@ -23,8 +23,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.CSScript", "F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Foundation", "Foundation\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj", "{9D49F8E2-A82C-4E36-8F54-4F45BF3E47C0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Foundation.Razor", "Foundation\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj", "{70665B3C-5E43-4A2B-B032-30986A16DE67}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Foundation.SourceGenerator", "Foundation\ThingsGateway.Foundation.SourceGenerator\ThingsGateway.Foundation.SourceGenerator.csproj", "{E325A64C-2B72-4DD0-8A6C-229B29FB95EB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Foundation.Variable", "Foundation\ThingsGateway.Foundation.Variable\ThingsGateway.Foundation.Variable.csproj", "{8EE037EC-ED21-42A0-BE1F-219E9886E43A}"
@@ -32,6 +30,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Gateway.Application", "Gateway\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj", "{A1163B55-31D8-4F58-872F-1DD5E0F14490}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Gateway.Razor", "Gateway\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj", "{6B92AF2D-0997-4887-B1C5-31861F298238}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Foundation.Razor", "Foundation\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj", "{569F229F-FB10-4789-B00B-D9D12383177A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,10 +59,6 @@ Global
 		{9D49F8E2-A82C-4E36-8F54-4F45BF3E47C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D49F8E2-A82C-4E36-8F54-4F45BF3E47C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D49F8E2-A82C-4E36-8F54-4F45BF3E47C0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{70665B3C-5E43-4A2B-B032-30986A16DE67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{70665B3C-5E43-4A2B-B032-30986A16DE67}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{70665B3C-5E43-4A2B-B032-30986A16DE67}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{70665B3C-5E43-4A2B-B032-30986A16DE67}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E325A64C-2B72-4DD0-8A6C-229B29FB95EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E325A64C-2B72-4DD0-8A6C-229B29FB95EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E325A64C-2B72-4DD0-8A6C-229B29FB95EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -79,6 +75,10 @@ Global
 		{6B92AF2D-0997-4887-B1C5-31861F298238}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B92AF2D-0997-4887-B1C5-31861F298238}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B92AF2D-0997-4887-B1C5-31861F298238}.Release|Any CPU.Build.0 = Release|Any CPU
+		{569F229F-FB10-4789-B00B-D9D12383177A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{569F229F-FB10-4789-B00B-D9D12383177A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{569F229F-FB10-4789-B00B-D9D12383177A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{569F229F-FB10-4789-B00B-D9D12383177A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,15 +86,15 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{506232CE-0FB6-4ACB-96DE-C8C8D075A642} = {2AC600BB-4325-4E0A-93A7-B1F53C8E2CA7}
 		{9D49F8E2-A82C-4E36-8F54-4F45BF3E47C0} = {2AC600BB-4325-4E0A-93A7-B1F53C8E2CA7}
-		{70665B3C-5E43-4A2B-B032-30986A16DE67} = {2AC600BB-4325-4E0A-93A7-B1F53C8E2CA7}
 		{E325A64C-2B72-4DD0-8A6C-229B29FB95EB} = {2AC600BB-4325-4E0A-93A7-B1F53C8E2CA7}
 		{8EE037EC-ED21-42A0-BE1F-219E9886E43A} = {2AC600BB-4325-4E0A-93A7-B1F53C8E2CA7}
 		{A1163B55-31D8-4F58-872F-1DD5E0F14490} = {5948EA23-4B42-4C22-A266-2E0AE5FA575F}
 		{6B92AF2D-0997-4887-B1C5-31861F298238} = {5948EA23-4B42-4C22-A266-2E0AE5FA575F}
+		{569F229F-FB10-4789-B00B-D9D12383177A} = {2AC600BB-4325-4E0A-93A7-B1F53C8E2CA7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
-		RESX_Rules = {"EnabledRules":[]}
 		RESX_NeutralResourcesLanguage = zh-Hans
+		RESX_Rules = {"EnabledRules":[]}
 	EndGlobalSection
 EndGlobal

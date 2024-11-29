@@ -13,8 +13,8 @@ namespace ThingsGateway.Debug;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 
+using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Foundation;
-using ThingsGateway.Foundation.Json.Extension;
 
 using TouchSocket.Core;
 

@@ -10,8 +10,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-using ThingsGateway.Debug;
-
 namespace ThingsGateway.Gateway.Razor;
 
 [AppStartup(-1000)]
@@ -19,7 +17,6 @@ public class Startup : AppStartup
 {
     public void ConfigureAdminApp(IServiceCollection services)
     {
-        services.AddScoped<IPlatformService, PlatformService>();
         services.AddBootstrapBlazorWinBoxService();
     }
 }
