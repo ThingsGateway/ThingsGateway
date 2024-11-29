@@ -24,6 +24,7 @@ using System.Dynamic;
 using System.Reflection;
 using System.Text;
 
+using ThingsGateway.ClayObject.Extensions;
 using ThingsGateway.Extension.Generic;
 using ThingsGateway.Foundation.Extension.Dynamic;
 using ThingsGateway.FriendlyException;
@@ -167,6 +168,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
             _channelService.DeleteChannelFromCache();//刷新缓存
             _deviceService.DeleteDeviceFromCache();
             _allDispatchService.Dispatch(new());
+                DeleteCache();
         }
         else
         {
@@ -181,7 +183,10 @@ internal class VariableService : BaseService<Variable>, IVariableService
     public async Task AddBatchAsync(List<Variable> input)
     {
         using var db = GetDB();
-        await db.Insertable(input).ExecuteCommandAsync().ConfigureAwait(false);
+        var result=    await db.Insertable(input).ExecuteCommandAsync().ConfigureAwait(false);
+
+        if (result>0)
+            DeleteCache();
         _dispatchService.Dispatch(new());
     }
 
@@ -197,6 +202,8 @@ internal class VariableService : BaseService<Variable>, IVariableService
 
             var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
             _dispatchService.Dispatch(new());
+            if (result )
+                DeleteCache();
             return result;
         }
         else
@@ -211,10 +218,13 @@ internal class VariableService : BaseService<Variable>, IVariableService
     {
         var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
         db ??= GetDB();
-        await db.Deleteable<Variable>()
+      var result=  await db.Deleteable<Variable>()
             .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
             .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
           .ExecuteCommandAsync().ConfigureAwait(false);
+
+        if (result > 0)
+            DeleteCache();
         _dispatchService.Dispatch(new());
     }
 
@@ -222,7 +232,10 @@ internal class VariableService : BaseService<Variable>, IVariableService
     public async Task DeleteByDeviceIdAsync(IEnumerable<long> input, SqlSugarClient db)
     {
         var ids = input.ToList();
-        await db.Deleteable<Variable>().Where(a => ids.Contains(a.DeviceId.Value)).ExecuteCommandAsync().ConfigureAwait(false);
+        var result = await db.Deleteable<Variable>().Where(a => ids.Contains(a.DeviceId.Value)).ExecuteCommandAsync().ConfigureAwait(false);
+
+        if (result>0)
+            DeleteCache();
         _dispatchService.Dispatch(new());
     }
 
@@ -233,6 +246,9 @@ internal class VariableService : BaseService<Variable>, IVariableService
         var ids = input.ToList();
         var result = (await db.Deleteable<Variable>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
         _dispatchService.Dispatch(new());
+
+        if(result)
+            DeleteCache();
         return result;
     }
 
@@ -292,9 +308,15 @@ internal class VariableService : BaseService<Variable>, IVariableService
         if (await base.SaveAsync(input, type).ConfigureAwait(false))
         {
             _dispatchService.Dispatch(new());
+            DeleteCache();
             return true;
         }
         return false;
+    }
+
+    private void DeleteCache()
+    {
+        App.CacheService.Remove(ThingsGatewayCacheConst.Cache_Variable);
     }
 
     private void CheckInput(Variable input)
@@ -557,9 +579,58 @@ internal class VariableService : BaseService<Variable>, IVariableService
         await db.Fastest<Variable>().PageSize(100000).BulkCopyAsync(insertData).ConfigureAwait(false);
         await db.Fastest<Variable>().PageSize(100000).BulkUpdateAsync(upData).ConfigureAwait(false);
         _dispatchService.Dispatch(new());
+        DeleteCache();
+
     }
 
-    public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile)
+    private static readonly WaitLock _cacheLock = new ();
+
+    private async Task<Dictionary<string, VariableImportData>> GetVariableImportData()
+    {
+        var key = ThingsGatewayCacheConst.Cache_Variable;
+        var datas = App.CacheService.Get<Dictionary<string, VariableImportData>>(key);
+
+        if (datas == null)
+        {
+            try
+            {
+                await _cacheLock.WaitAsync();
+                datas = App.CacheService.Get<Dictionary<string, VariableImportData>>(key);
+                if (datas == null)
+                {
+                    using var db = GetDB();
+                    datas = (await db.Queryable<Variable>().Select(it => new VariableImportData()
+                    {
+                        Id = it.Id,
+                        Name = it.Name,
+                        CreateOrgId = it.CreateOrgId,
+                        CreateUserId = it.CreateUserId
+                    }).ToListAsync()).ToDictionary(a => a.Name);
+
+                    App.CacheService.Set(key, datas);
+                }
+            }
+            finally
+            {
+                _cacheLock.Release();
+            }
+        }
+        return datas;
+    }
+
+    public async Task PreheatCache()
+    {
+        await GetVariableImportData();
+    }
+
+    private class VariableImportData
+    {
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public long CreateOrgId { get; set; }
+        public long CreateUserId { get; set; }
+    }
+        public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile)
     {
         // 上传文件并获取文件路径
         var path = await browserFile.StorageLocal().ConfigureAwait(false);
@@ -572,12 +643,6 @@ internal class VariableService : BaseService<Variable>, IVariableService
 
             // 获取所有设备的字典，以设备名称作为键
             var deviceDicts = _deviceService.GetAll().ToDictionary(a => a.Name);
-
-            using var db = GetDB();
-
-            // 从数据库中获取所有变量，并转换为字典，以变量名称作为键
-            var dbVariables = await db.Queryable<Variable>().Select(it => new { it.Id, it.Name, it.CreateOrgId, it.CreateUserId }).ToListAsync().ConfigureAwait(false);
-            var dbVariableDicts = dbVariables.ToDictionary(a => a.Name);
 
             // 存储导入检验结果的字典
             Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
@@ -610,6 +675,8 @@ internal class VariableService : BaseService<Variable>, IVariableService
                     // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
                     var variableProperties = type.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
                                                 .ToDictionary(a => type.GetPropertyDisplayName(a.Name));
+
+                    var dbVariableDicts = await GetVariableImportData();
 
                     // 并行处理每一行数据
                     rows.ParallelForEach((item, state, index) =>

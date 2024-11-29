@@ -277,6 +277,8 @@ public partial class VariablePage : IDisposable
             {nameof(ImportExcel.Preview),preview },
         });
         await DialogService.Show(op);
+
+        _ = Task.Run(VariableService.PreheatCache);
     }
 
     #endregion 导出

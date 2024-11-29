@@ -99,6 +99,7 @@ public interface IVariableService
     /// <param name="input"></param>
     /// <returns></returns>
     Task<SqlSugarPagedList<Variable>> PageAsync(VariablePageInput input);
+    Task PreheatCache();
 
     /// <summary>
     /// 异步预览导入的数据。

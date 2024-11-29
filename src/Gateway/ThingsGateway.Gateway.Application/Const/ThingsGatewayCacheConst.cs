@@ -27,6 +27,11 @@ public class ThingsGatewayCacheConst
     public const string Cache_Device = $"{Cache_Prefix}Cache_Device:";
 
     /// <summary>
+    /// variable
+    /// </summary>
+    public const string Cache_Variable = $"{Cache_Prefix}Cache_Variable:";
+
+    /// <summary>
     /// 前缀
     /// </summary>
     public const string Cache_Prefix = "ThingsGateway:";
