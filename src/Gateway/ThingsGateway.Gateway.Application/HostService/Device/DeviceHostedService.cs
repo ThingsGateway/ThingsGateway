@@ -287,6 +287,9 @@ internal abstract class DeviceHostedService : BackgroundService, IDeviceHostedSe
                 throw new Exception($"Exceeded maximum number of variables：{ChannelThread.MaxVariableCount}");
             }
 
+            var wts = Math.Max(ChannelThreads.Count, 10) * 10;
+            ThreadPool.SetMaxThreads(wts, wts); 
+
             // 创建新的通道线程，并将驱动程序添加到其中
             ChannelThread channelThread = new ChannelThread(channel, (a =>
             {
