@@ -398,7 +398,7 @@
     "AddressOrOtherMethodNotNull": " 变量地址或特殊方法不能同时为空 ",
     "SaveVariable": "添加/修改变量",
     "CopyVariable": "复制变量",
-    "DeleteVariable": "复制变量",
+    "DeleteVariable": "删除变量",
     "ClearVariable": "清空变量",
     "ExportVariable": "导出变量",
     "ImportVariable": "导入变量",

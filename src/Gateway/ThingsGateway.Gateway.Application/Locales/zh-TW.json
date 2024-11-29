@@ -365,7 +365,7 @@
     "AddressOrOtherMethodNotNull": " 變數地址或特殊方法不能同時為空 ",
     "SaveVariable": "新增/修改變數",
     "CopyVariable": "複製變數",
-    "DeleteVariable": "複製變數",
+    "DeleteVariable": "刪除變數",
     "ClearVariable": "清空變數",
     "ExportVariable": "匯出變數",
     "ImportVariable": "匯入變數",
