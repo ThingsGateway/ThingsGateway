@@ -73,7 +73,6 @@
   <ItemGroup>
     <Content Include="..\ThingsGateway.Server\Index\GatewayIndex.razor" Link="Index\GatewayIndex.razor" />
     <Compile Include="..\ThingsGateway.Server\Index\GatewayIndex.razor.cs" Link="Index\GatewayIndex.razor.cs" />
-    <None Include="..\ThingsGateway.Server\Index\GatewayIndex.razor.css" Link="Index\GatewayIndex.razor.css" />
     <Content Include="..\ThingsGateway.Server\Layout\MainLayout.razor" Link="Layout\MainLayout.razor" />
     <Compile Include="..\ThingsGateway.Server\Layout\MainLayout.razor.cs" Link="Layout\MainLayout.razor.cs" />
     <Content Include="..\ThingsGateway.Server\Layout\MainLayout.razor.css" Link="Layout\MainLayout.razor.css" />
