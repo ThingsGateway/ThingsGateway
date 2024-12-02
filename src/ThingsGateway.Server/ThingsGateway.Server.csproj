@@ -115,18 +115,4 @@
     <ProjectReference Include="..\Gateway\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
   </ItemGroup>
 
-
-  <ItemGroup>
-    <Content Update="Layout\BlazorApp.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-    <Content Update="Layout\MainLayout.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-    <Content Update="Layout\Routes.razor">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-    </Content>
-  </ItemGroup>
-
-
 </Project>
