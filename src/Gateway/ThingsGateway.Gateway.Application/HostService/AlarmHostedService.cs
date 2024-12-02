@@ -29,7 +29,7 @@ public delegate void VariableAlarmEventHandler(AlarmVariable alarmVariable);
 /// <summary>
 /// 设备采集报警后台服务
 /// </summary>
-internal class AlarmHostedService : BackgroundService, IAlarmHostedService
+internal sealed class AlarmHostedService : BackgroundService, IAlarmHostedService
 {
     private readonly ILogger _logger;
     private readonly ICollectDeviceHostedService _collectDeviceHostedService;
@@ -55,7 +55,7 @@ internal class AlarmHostedService : BackgroundService, IAlarmHostedService
     /// </summary>
     internal ConcurrentDictionary<string, VariableRunTime> RealAlarmVariables { get; } = new();
 
-    private IEnumerable<VariableRunTime> _deviceVariables => GlobalData.Variables.Select(a => a.Value).Where(a => a.IsOnline && a.AlarmEnable);
+    private static IEnumerable<VariableRunTime> _deviceVariables => GlobalData.Variables.Select(a => a.Value).Where(a => a.IsOnline && a.AlarmEnable);
 
     private IStringLocalizer Localizer { get; }
 
@@ -523,7 +523,7 @@ internal class AlarmHostedService : BackgroundService, IAlarmHostedService
     private async Task CollectDeviceHostedService_Stoping()
     {
         if (!GlobalData.BusinessDeviceHostedService.StartBusinessDeviceEnable)
-            await StopAsync();
+            await StopAsync().ConfigureAwait(false);
     }
 
     #endregion worker服务

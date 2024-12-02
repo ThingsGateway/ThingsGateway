@@ -14,6 +14,6 @@ namespace ThingsGateway.Gateway.Application;
 /// 专业版插件
 /// </summary>
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-public class EducationPluginAttribute : Attribute
+public sealed class EducationPluginAttribute : Attribute
 {
 }

@@ -13,7 +13,7 @@ using ThingsGateway.Foundation.Extension.String;
 namespace ThingsGateway.Foundation;
 
 [PluginOption(Singleton = true)]
-internal class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcpReceivingPlugin
+internal sealed class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcpReceivingPlugin
 {
     public string DtuId { get; set; } = "DtuId";
     public string HeartbeatHexString { get; set; } = "HeartbeatHexString";

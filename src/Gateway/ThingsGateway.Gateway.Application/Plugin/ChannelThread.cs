@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 using System.Collections.Concurrent;
+using System.Threading;
 
 using ThingsGateway.NewLife.Extension;
 
@@ -287,7 +288,7 @@ public class ChannelThread
     /// <param name="driverBase">要添加的驱动程序对象。</param>
     internal void AddDriver(DriverBase driverBase)
     {
-        if (DriverBases.Any())
+        if (DriverBases.Count > 0)
         {
             if (DriverBases[0].IsCollectDevice != driverBase.IsCollectDevice)
             {
@@ -374,7 +375,7 @@ public class ChannelThread
                         };
                     }).ToList();
 
-                    if (saveVariable.Any())
+                    if (saveVariable.Count > 0)
                     {
                         var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<JToken>), nameof(VariableRunTime), nameof(VariableRunTime.SaveValue));
                         var varList = await cacheDb.DBProvider.Storageable(saveVariable).ExecuteCommandAsync().ConfigureAwait(false);
@@ -593,7 +594,7 @@ public class ChannelThread
                             }
                         });
                     }
-                }
+                }, stoppingToken
                 );
                 tasks.Add(task);
             }

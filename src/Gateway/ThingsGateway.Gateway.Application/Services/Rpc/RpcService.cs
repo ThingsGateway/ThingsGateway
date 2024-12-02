@@ -26,7 +26,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 变量写入/执行变量方法
 /// </summary>
-internal class RpcService : IRpcService
+internal sealed class RpcService : IRpcService
 {
     private readonly ConcurrentQueue<RpcLog> _logQueues = new();
 
@@ -95,9 +95,9 @@ internal class RpcService : IRpcService
                 {
                     // 写入变量值
                     JToken tagValue = JTokenUtil.GetJTokenFromString(item.Value);
-                    if (WriteVariables.ContainsKey(dev))
+                    if (WriteVariables.TryGetValue(dev, out var value))
                     {
-                        WriteVariables[dev].Add(tag, tagValue);
+                        value.Add(tag, tagValue);
                     }
                     else
                     {
@@ -109,9 +109,9 @@ internal class RpcService : IRpcService
                 {
                     JToken tagValue = JTokenUtil.GetJTokenFromString(item.Value);
                     // 执行方法
-                    if (WriteMethods.ContainsKey(dev))
+                    if (WriteMethods.TryGetValue(dev, out var value))
                     {
-                        WriteMethods[dev].Add(tag, tagValue);
+                        value.Add(tag, tagValue);
                     }
                     else
                     {

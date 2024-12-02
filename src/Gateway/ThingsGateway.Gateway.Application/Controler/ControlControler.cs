@@ -44,7 +44,7 @@ public class ControlControler : ControllerBase
     {
         var data = GlobalData.BusinessDevices.FirstOrDefault(a => a.Value.Id == id).Value;
         if (data != null)
-            await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId);
+            await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId).ConfigureAwait(false);
         GlobalData.BusinessDeviceHostedService.PauseThread(id, isStart);
     }
 
@@ -58,7 +58,7 @@ public class ControlControler : ControllerBase
     {
         var data = GlobalData.CollectDevices.FirstOrDefault(a => a.Value.Id == id).Value;
         if (data != null)
-            await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId);
+            await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId).ConfigureAwait(false);
         GlobalData.CollectDeviceHostedService.PauseThread(id, isStart);
     }
 
@@ -72,14 +72,14 @@ public class ControlControler : ControllerBase
     {
         if (id <= 0)
         {
-            await GlobalData.BusinessDeviceHostedService.RestartAsync();
+            await GlobalData.BusinessDeviceHostedService.RestartAsync().ConfigureAwait(false);
         }
         else
         {
             var data = GlobalData.BusinessDevices.FirstOrDefault(a => a.Value.Id == id).Value;
             if (data != null)
-                await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId);
-            await GlobalData.BusinessDeviceHostedService.RestartChannelThreadAsync(id, true);
+                await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId).ConfigureAwait(false);
+            await GlobalData.BusinessDeviceHostedService.RestartChannelThreadAsync(id, true).ConfigureAwait(false);
         }
     }
 
@@ -93,14 +93,14 @@ public class ControlControler : ControllerBase
     {
         if (id <= 0)
         {
-            await GlobalData.CollectDeviceHostedService.RestartAsync();
+            await GlobalData.CollectDeviceHostedService.RestartAsync().ConfigureAwait(false);
         }
         else
         {
             var data = GlobalData.CollectDevices.FirstOrDefault(a => a.Value.Id == id).Value;
             if (data != null)
-                await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId);
-            await GlobalData.CollectDeviceHostedService.RestartChannelThreadAsync(id, true);
+                await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId).ConfigureAwait(false);
+            await GlobalData.CollectDeviceHostedService.RestartChannelThreadAsync(id, true).ConfigureAwait(false);
         }
     }
 
@@ -114,9 +114,9 @@ public class ControlControler : ControllerBase
 
         var data = GlobalData.ReadOnlyVariables.Where(a => objs.ContainsKey(a.Key));
         if (data != null)
-            await _sysUserService.CheckApiDataScopeAsync(data.Select(a => a.Value.CreateOrgId), data.Select(a => a.Value.CreateUserId));
+            await _sysUserService.CheckApiDataScopeAsync(data.Select(a => a.Value.CreateOrgId), data.Select(a => a.Value.CreateUserId)).ConfigureAwait(false);
 
-        return await _rpcService.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", objs);
+        return await _rpcService.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", objs).ConfigureAwait(false);
 
     }
 }

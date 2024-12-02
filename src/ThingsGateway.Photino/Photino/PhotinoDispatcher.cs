@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace Photino.Blazor
 {
-    internal class PhotinoDispatcher : Dispatcher
+    internal sealed class PhotinoDispatcher : Dispatcher
     {
         private readonly PhotinoSynchronizationContext _context;
 

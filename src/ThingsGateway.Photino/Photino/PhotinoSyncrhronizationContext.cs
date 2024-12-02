@@ -1,6 +1,7 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+#pragma warning disable CA2007 // 考虑对等待的任务调用 ConfigureAwait
 using Photino.NET;
 
 using System.Reflection;
@@ -20,7 +21,7 @@ namespace Photino.Blazor
     // relying on that for single-threadedness. Maybe also in the future Photino could consider having its own
     // built-in SyncContext/Dispatcher like other UI platforms.
 
-    internal class PhotinoSynchronizationContext : SynchronizationContext
+    internal sealed class PhotinoSynchronizationContext : SynchronizationContext
     {
         private static readonly ContextCallback ExecutionContextThunk = (object state) =>
         {
@@ -305,7 +306,7 @@ namespace Photino.Blazor
             }
         }
 
-        private class State
+        private sealed class State
         {
             public bool IsBusy; // Just for debugging
             public object Lock = new object();
@@ -317,7 +318,7 @@ namespace Photino.Blazor
             }
         }
 
-        private class WorkItem
+        private sealed class WorkItem
         {
             public PhotinoSynchronizationContext SynchronizationContext;
             public ExecutionContext ExecutionContext;
@@ -325,7 +326,7 @@ namespace Photino.Blazor
             public object State;
         }
 
-        private class PhotinoSynchronizationTaskCompletionSource<TCallback, TResult> : TaskCompletionSource<TResult>
+        private sealed class PhotinoSynchronizationTaskCompletionSource<TCallback, TResult> : TaskCompletionSource<TResult>
         {
             public PhotinoSynchronizationTaskCompletionSource(TCallback callback)
             {

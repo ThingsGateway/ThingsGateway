@@ -155,8 +155,8 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
                         using var cache = LocalDBCacheAlarmModel();
 
                         //循环获取，固定读最大行数量，执行完成需删除行
-                        var varList = await cache.DBProvider.Queryable<CacheDBItem<AlarmModel>>().Take(_businessPropertyWithCache.SplitSize).ToListAsync().ConfigureAwait(false);
-                        if (varList.Any())
+                        var varList = await cache.DBProvider.Queryable<CacheDBItem<AlarmModel>>().Take(_businessPropertyWithCache.SplitSize).ToListAsync(cancellationToken).ConfigureAwait(false);
+                        if (varList.Count > 0)
                         {
                             try
                             {
@@ -166,7 +166,7 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
                                     if (result.IsSuccess)
                                     {
                                         //删除缓存
-                                        await cache.DBProvider.Deleteable<CacheDBItem<AlarmModel>>(varList).ExecuteCommandAsync().ConfigureAwait(false);
+                                        await cache.DBProvider.Deleteable<CacheDBItem<AlarmModel>>(varList).ExecuteCommandAsync(cancellationToken).ConfigureAwait(false);
                                     }
                                     else
                                         break;
@@ -209,7 +209,7 @@ public abstract class BusinessBaseWithCacheAlarmModel<VarModel, DevModel, AlarmM
         try
         {
             var list = _memoryAlarmModelQueue.ToListWithDequeue();
-            if (list?.Count != 0)
+            if (list?.Count > 0)
             {
                 var data = list.ChunkBetter(_businessPropertyWithCache.SplitSize);
                 foreach (var item in data)

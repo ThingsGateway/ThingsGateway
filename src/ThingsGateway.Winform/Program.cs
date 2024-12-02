@@ -22,7 +22,7 @@ using ThingsGateway.NewLife.Log;
 
 namespace ThingsGateway.Winform;
 
-internal class Program
+internal sealed class Program
 {
     internal static void Closing(object? sender, FormClosingEventArgs e)
     {
@@ -73,7 +73,7 @@ internal class Program
                 builder.Services.AddResponseCompression(
                     opts =>
                     {
-                        opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+                        opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(second);
                     });
             }
 
@@ -120,5 +120,5 @@ internal class Program
 
 
     private static WebApplication webApplication;
-
+    internal static readonly string[] second = new[] { "application/octet-stream" };
 }

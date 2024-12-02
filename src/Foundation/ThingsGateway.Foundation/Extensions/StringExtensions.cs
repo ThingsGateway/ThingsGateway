@@ -179,16 +179,16 @@ public static class StringExtensions
 
     /// <see cref="DataTransUtil.HexStringToBytes(string)"/>
     public static byte[] HexStringToBytes(this string str) => DataTransUtil.HexStringToBytes(str);
-
+    private static readonly char[] DotSeparator = new char[] { '.' };
+    private static readonly char[] CommaSeparator = new char[] { ',' };
+    private static readonly char[] SemicolonSeparator = new char[] { ';' };
+    private static readonly char[] Separator = new char[] { '-' };
     /// <summary>
     /// 根据英文逗号分割字符串，去除空白的字符
     /// </summary>
     public static string[]? SplitAndTrim(this string? str)
     {
-        return str.Split(new char[1]
-{
-  ','
-}, StringSplitOptions.RemoveEmptyEntries);
+        return str.Split(CommaSeparator, StringSplitOptions.RemoveEmptyEntries);
     }
 
     /// <summary>
@@ -196,10 +196,7 @@ public static class StringExtensions
     /// </summary>
     public static string[]? SplitByHyphen(this string? str)
     {
-        return str.Split(new char[1]
-{
-  '-'
-}, StringSplitOptions.RemoveEmptyEntries);
+        return str.Split(Separator, StringSplitOptions.RemoveEmptyEntries);
     }
 
     /// <summary>
@@ -230,10 +227,7 @@ public static class StringExtensions
     /// </summary>
     public static string[]? SplitStringByDelimiter(this string? str)
     {
-        return str?.Split(new char[1]
-{
-  '.'
-}, StringSplitOptions.RemoveEmptyEntries);
+        return str?.Split(DotSeparator, StringSplitOptions.RemoveEmptyEntries);
     }
 
     /// <summary>
@@ -241,10 +235,7 @@ public static class StringExtensions
     /// </summary>
     public static string[]? SplitStringBySemicolon(this string? str)
     {
-        return str.Split(new char[1]
-{
-  ';'
-}, StringSplitOptions.RemoveEmptyEntries);
+        return str.Split(SemicolonSeparator, StringSplitOptions.RemoveEmptyEntries);
     }
 
     /// <summary>

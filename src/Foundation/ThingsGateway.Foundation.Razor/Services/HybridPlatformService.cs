@@ -18,7 +18,7 @@ public class HybridPlatformService : IPlatformService
         return Task.CompletedTask;
     }
 
-    private void OpenFolder(string path)
+    private static void OpenFolder(string path)
     {
         // Normalize the path for the current operating system
         path = System.IO.Path.GetFullPath(path); // Ensure the path is absolute

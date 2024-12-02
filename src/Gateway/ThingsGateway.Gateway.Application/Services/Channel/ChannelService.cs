@@ -32,7 +32,7 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Application;
 
-internal class ChannelService : BaseService<Channel>, IChannelService
+internal sealed class ChannelService : BaseService<Channel>, IChannelService
 {
     private readonly IDispatchService<Channel> _dispatchService;
     private ISysUserService _sysUserService;
@@ -81,7 +81,7 @@ internal class ChannelService : BaseService<Channel>, IChannelService
     public async Task ClearChannelAsync()
     {
         var deviceService = App.RootServices.GetRequiredService<IDeviceService>();
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
 
         using var db = GetDB();
         //事务
@@ -158,7 +158,7 @@ internal class ChannelService : BaseService<Channel>, IChannelService
     /// <returns>列表</returns>
     public async Task<List<Channel>> GetAllByOrgAsync()
     {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         return GetAll()
               .WhereIF(dataScope != null && dataScope?.Count > 0, b => dataScope.Contains(b.CreateOrgId))
               .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId).ToList();
@@ -177,12 +177,12 @@ internal class ChannelService : BaseService<Channel>, IChannelService
     /// <param name="filterKeyValueAction">查询条件</param>
     public async Task<QueryData<Channel>> PageAsync(QueryPageOptions option, FilterKeyValueAction filterKeyValueAction = null)
     {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         return await QueryAsync(option, a => a
         .WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!))
          .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
          .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
-       , filterKeyValueAction);
+       , filterKeyValueAction).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -198,7 +198,7 @@ internal class ChannelService : BaseService<Channel>, IChannelService
         CheckInput(input);
 
         if (type == ItemChangedType.Update)
-            await SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId);
+            await SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId).ConfigureAwait(false);
 
         if (await base.SaveAsync(input, type).ConfigureAwait(false))
         {
@@ -246,14 +246,14 @@ internal class ChannelService : BaseService<Channel>, IChannelService
     public async Task<SqlSugarPagedList<Channel>> PageAsync(ChannelPageInput input)
     {
         using var db = GetDB();
-        var query = await GetPageAsync(db, input);
-        return await query.ToPagedListAsync(input.Current, input.Size);//分页
+        var query = await GetPageAsync(db, input).ConfigureAwait(false);
+        return await query.ToPagedListAsync(input.Current, input.Size).ConfigureAwait(false);//分页
     }
 
     /// <inheritdoc/>
     private async Task<ISugarQueryable<Channel>> GetPageAsync(SqlSugarClient db, ChannelPageInput input)
     {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         ISugarQueryable<Channel> query = db.Queryable<Channel>()
          .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
                 .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
@@ -374,7 +374,7 @@ internal class ChannelService : BaseService<Channel>, IChannelService
         var path = await browserFile.StorageLocal().ConfigureAwait(false);
         try
         {
-            var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+            var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
 
             var sheetNames = MiniExcel.GetSheetNames(path);
             var channelDicts = GetAll().ToDictionary(a => a.Name);

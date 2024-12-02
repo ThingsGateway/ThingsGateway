@@ -336,7 +336,7 @@ public class Startup : AppStartup
         app.Use(async (context, next) =>
         {
             context.Response.Headers.Append("ThingsGateway", "ThingsGateway");
-            await next();
+            await next().ConfigureAwait(false);
         });
 
 

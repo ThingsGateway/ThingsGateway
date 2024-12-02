@@ -108,15 +108,14 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
     /// <summary>
     /// 执行间隔插入任务的方法，用于定期上传设备和变量信息。
     /// </summary>
-    /// <param name="cancellationToken">取消令牌</param>
     /// <returns>异步任务</returns>
-    protected virtual async Task IntervalInsert(CancellationToken cancellationToken = default)
+    protected virtual async Task IntervalInsert()
     {
         while (!DisposedValue)
         {
             if (CurrentDevice?.KeepRun == false)
             {
-                await Delay(cancellationToken).ConfigureAwait(false);
+                await Delay(default).ConfigureAwait(false);
                 continue;
             }
 
@@ -156,7 +155,7 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
                 }
             }
 
-            await Delay(cancellationToken).ConfigureAwait(false);
+            await Delay(default).ConfigureAwait(false);
         }
     }
 

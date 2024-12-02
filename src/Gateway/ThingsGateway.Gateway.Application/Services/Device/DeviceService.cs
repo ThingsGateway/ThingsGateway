@@ -32,10 +32,10 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Application;
 
-internal class DeviceService : BaseService<Device>, IDeviceService
+internal sealed class DeviceService : BaseService<Device>, IDeviceService
 {
-    protected readonly IChannelService _channelService;
-    protected readonly IPluginService _pluginService;
+    private readonly IChannelService _channelService;
+    private readonly IPluginService _pluginService;
     private readonly IDispatchService<Device> _dispatchService;
     private ISysUserService _sysUserService;
     private ISysUserService SysUserService
@@ -84,7 +84,7 @@ internal class DeviceService : BaseService<Device>, IDeviceService
     public async Task ClearDeviceAsync(PluginTypeEnum pluginType)
     {
         var variableService = App.RootServices.GetRequiredService<IVariableService>();
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         using var db = GetDB();
         //事务
         var result = await db.UseTranAsync(async () =>
@@ -113,7 +113,7 @@ internal class DeviceService : BaseService<Device>, IDeviceService
     public async Task DeleteByChannelIdAsync(IEnumerable<long> ids, SqlSugarClient db)
     {
         var variableService = App.RootServices.GetRequiredService<IVariableService>();
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         //事务
         var result = await db.UseTranAsync(async () =>
         {
@@ -188,7 +188,7 @@ internal class DeviceService : BaseService<Device>, IDeviceService
     /// <returns>列表</returns>
     public async Task<List<Device>> GetAllByOrgAsync()
     {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         return GetAll()
               .WhereIF(dataScope != null && dataScope?.Count > 0, b => dataScope.Contains(b.CreateOrgId))
               .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId).ToList();
@@ -296,12 +296,12 @@ internal class DeviceService : BaseService<Device>, IDeviceService
     /// <param name="filterKeyValueAction">查询条件</param>
     public async Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType, FilterKeyValueAction filterKeyValueAction = null)
     {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         return await QueryAsync(option, a => a
          .WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)).Where(a => a.PluginType == pluginType)
          .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
          .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
-       , filterKeyValueAction);
+       , filterKeyValueAction).ConfigureAwait(false);
 
     }
 
@@ -316,7 +316,7 @@ internal class DeviceService : BaseService<Device>, IDeviceService
         CheckInput(input);
 
         if (type == ItemChangedType.Update)
-            await SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId);
+            await SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId).ConfigureAwait(false);
 
         if (await base.SaveAsync(input, type).ConfigureAwait(false))
         {
@@ -340,14 +340,14 @@ internal class DeviceService : BaseService<Device>, IDeviceService
     public async Task<SqlSugarPagedList<Device>> PageAsync(DevicePageInput input)
     {
         using var db = GetDB();
-        var query = await GetPageAsync(db, input);
-        return await query.ToPagedListAsync(input.Current, input.Size);//分页
+        var query = await GetPageAsync(db, input).ConfigureAwait(false);
+        return await query.ToPagedListAsync(input.Current, input.Size).ConfigureAwait(false);//分页
     }
 
     /// <inheritdoc/>
     private async Task<ISugarQueryable<Device>> GetPageAsync(SqlSugarClient db, DevicePageInput input)
     {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         ISugarQueryable<Device> query = db.Queryable<Device>()
          .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
          .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
@@ -482,7 +482,7 @@ internal class DeviceService : BaseService<Device>, IDeviceService
                 propertysDict.TryAdd(device.PluginName, propertys);
             }
 
-            if (propertys.Item2.Any())
+            if (propertys.Item2.Count > 0)
             {
                 //没有包含设备名称，手动插入
                 driverInfo.Add(ExportString.DeviceName, device.Name);
@@ -580,7 +580,7 @@ internal class DeviceService : BaseService<Device>, IDeviceService
 
         try
         {
-            var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+            var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
             // 获取 Excel 文件中所有工作表的名称
             var sheetNames = MiniExcel.GetSheetNames(path);
 

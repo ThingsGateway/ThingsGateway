@@ -54,7 +54,7 @@ public partial class QuickActions
         base.OnInitialized();
     }
 
-    private async Task OnReloadService()
+    private static async Task OnReloadService()
     {
         try
         {

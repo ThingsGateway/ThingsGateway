@@ -161,9 +161,9 @@ public partial class LogConsole : IDisposable
                 using StreamWriter writer = new(memoryStream);
                 foreach (var item in PauseMessagesText)
                 {
-                    writer.WriteLine(item.Message);
+                    await writer.WriteLineAsync(item.Message);
                 }
-                writer.Flush();
+                await writer.FlushAsync();
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
                 // 定义文件名称规则的正则表达式模式

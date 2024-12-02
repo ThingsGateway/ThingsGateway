@@ -12,7 +12,10 @@ global using BootstrapBlazor.Components;
 
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.Extensions.Localization;
+global using Microsoft.Extensions.Options;
 
 global using System.Diagnostics.CodeAnalysis;
 
 global using ThingsGateway.Razor;
+
+[assembly: SuppressMessage("Reliability", "CA2007", Justification = "<挂起>", Scope = "module")]

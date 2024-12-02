@@ -87,7 +87,7 @@ public static class DynamicModelExtension
                   .AsEnumerable();
 
             // 检查是否找到了所有指定名称的属性，如果没有找到，则抛出异常
-            if (names.Count() != properties.Count())
+            if (names.Length != properties.Count())
             {
                 throw new InvalidOperationException($"Couldn't find properties on type：{type.Name}，{Environment.NewLine}names：{namesStr}");
             }

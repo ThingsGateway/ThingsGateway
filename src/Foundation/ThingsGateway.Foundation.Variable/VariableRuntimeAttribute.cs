@@ -14,7 +14,7 @@ namespace ThingsGateway.Foundation;
 /// 变量特性
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
-public class VariableRuntimeAttribute : Attribute
+public sealed class VariableRuntimeAttribute : Attribute
 {
     /// <summary>
     /// 数据类型，默认不填时会使用属性的Type

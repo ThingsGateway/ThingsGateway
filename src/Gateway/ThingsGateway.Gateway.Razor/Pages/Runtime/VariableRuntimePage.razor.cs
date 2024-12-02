@@ -9,8 +9,8 @@
 //------------------------------------------------------------------------------
 
 using ThingsGateway.Admin.Application;
-using ThingsGateway.Extension.Generic;
 using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Extension.Generic;
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.NewLife.Extension;
 

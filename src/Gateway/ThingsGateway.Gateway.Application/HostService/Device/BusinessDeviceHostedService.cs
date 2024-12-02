@@ -18,19 +18,19 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 业务设备服务
 /// </summary>
-internal class BusinessDeviceHostedService : DeviceHostedService, IBusinessDeviceHostedService
+internal sealed class BusinessDeviceHostedService : DeviceHostedService, IBusinessDeviceHostedService
 {
     /// <summary>
     /// 线程检查时间，10分钟
     /// </summary>
     public const int CheckIntervalTime = 600;
 
-    protected WaitLock _easyLock = new(false);
+    private WaitLock _easyLock = new(false);
 
     /// <summary>
     /// 已执行CreatThreads
     /// </summary>
-    protected volatile bool started = false;
+    private volatile bool started = false;
 
     private IStringLocalizer BusinessDeviceHostedServiceLocalizer { get; }
 
@@ -288,7 +288,7 @@ internal class BusinessDeviceHostedService : DeviceHostedService, IBusinessDevic
     /// 读取数据库，创建全部设备
     /// </summary>
     /// <returns></returns>
-    protected async Task CreatAllChannelThreadsAsync()
+    private async Task CreatAllChannelThreadsAsync()
     {
         if (!_stoppingToken.IsCancellationRequested)
         {

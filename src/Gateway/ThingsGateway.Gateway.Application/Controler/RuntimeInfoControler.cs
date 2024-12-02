@@ -44,7 +44,7 @@ public class RuntimeInfoControler : ControllerBase
     [DisplayName("获取设备信息")]
     public async Task<SqlSugarPagedList<DeviceData>> GetCollectDeviceListAsync([FromQuery] DevicePageInput input)
     {
-        var dataScope = await _sysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await _sysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         var data = GlobalData.ReadOnlyCollectDevices
             .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.Value.CreateOrgId))//在指定机构列表查询
          .WhereIf(dataScope?.Count == 0, u => u.Value.CreateUserId == UserManager.UserId)
@@ -65,7 +65,7 @@ public class RuntimeInfoControler : ControllerBase
     [DisplayName("获取实时报警信息")]
     public async Task<SqlSugarPagedList<AlarmVariable>> GetRealAlarmList([FromQuery] VariablePageInput input)
     {
-        var dataScope = await _sysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await _sysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         var data = GlobalData.ReadOnlyRealAlarmVariables
                         .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.Value.CreateOrgId))//在指定机构列表查询
          .WhereIf(dataScope?.Count == 0, u => u.Value.CreateUserId == UserManager.UserId)
@@ -86,7 +86,7 @@ public class RuntimeInfoControler : ControllerBase
     {
         if (GlobalData.ReadOnlyRealAlarmVariables.TryGetValue(variableName, out var variable))
         {
-            await _sysUserService.CheckApiDataScopeAsync(variable.CreateOrgId, variable.CreateUserId);
+            await _sysUserService.CheckApiDataScopeAsync(variable.CreateOrgId, variable.CreateUserId).ConfigureAwait(false);
             GlobalData.AlarmHostedService.ConfirmAlarm(variable);
         }
     }
@@ -99,7 +99,7 @@ public class RuntimeInfoControler : ControllerBase
     [DisplayName("获取变量信息")]
     public async Task<SqlSugarPagedList<VariableData>> GetVariableList([FromQuery] VariablePageInput input)
     {
-        var dataScope = await _sysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await _sysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         var data = GlobalData.ReadOnlyVariables
         .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.Value.CreateOrgId))//在指定机构列表查询
         .WhereIf(dataScope?.Count == 0, u => u.Value.CreateUserId == UserManager.UserId)

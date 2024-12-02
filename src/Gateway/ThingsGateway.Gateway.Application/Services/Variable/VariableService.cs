@@ -33,11 +33,11 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Application;
 
-internal class VariableService : BaseService<Variable>, IVariableService
+internal sealed class VariableService : BaseService<Variable>, IVariableService
 {
-    protected readonly IChannelService _channelService;
-    protected readonly IDeviceService _deviceService;
-    protected readonly IPluginService _pluginService;
+    private readonly IChannelService _channelService;
+    private readonly IDeviceService _deviceService;
+    private readonly IPluginService _pluginService;
     private readonly IDispatchService<bool> _allDispatchService;
     private readonly IDispatchService<Variable> _dispatchService;
     private ISysUserService _sysUserService;
@@ -168,7 +168,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
             _channelService.DeleteChannelFromCache();//刷新缓存
             _deviceService.DeleteDeviceFromCache();
             _allDispatchService.Dispatch(new());
-                DeleteCache();
+            DeleteCache();
         }
         else
         {
@@ -183,9 +183,9 @@ internal class VariableService : BaseService<Variable>, IVariableService
     public async Task AddBatchAsync(List<Variable> input)
     {
         using var db = GetDB();
-        var result=    await db.Insertable(input).ExecuteCommandAsync().ConfigureAwait(false);
+        var result = await db.Insertable(input).ExecuteCommandAsync().ConfigureAwait(false);
 
-        if (result>0)
+        if (result > 0)
             DeleteCache();
         _dispatchService.Dispatch(new());
     }
@@ -202,7 +202,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
 
             var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
             _dispatchService.Dispatch(new());
-            if (result )
+            if (result)
                 DeleteCache();
             return result;
         }
@@ -216,12 +216,12 @@ internal class VariableService : BaseService<Variable>, IVariableService
     [OperDesc("ClearVariable", localizerType: typeof(Variable), isRecordPar: false)]
     public async Task ClearVariableAsync(SqlSugarClient db = null)
     {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         db ??= GetDB();
-      var result=  await db.Deleteable<Variable>()
-            .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
-            .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
-          .ExecuteCommandAsync().ConfigureAwait(false);
+        var result = await db.Deleteable<Variable>()
+              .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+              .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+            .ExecuteCommandAsync().ConfigureAwait(false);
 
         if (result > 0)
             DeleteCache();
@@ -234,7 +234,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
         var ids = input.ToList();
         var result = await db.Deleteable<Variable>().Where(a => ids.Contains(a.DeviceId.Value)).ExecuteCommandAsync().ConfigureAwait(false);
 
-        if (result>0)
+        if (result > 0)
             DeleteCache();
         _dispatchService.Dispatch(new());
     }
@@ -247,7 +247,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
         var result = (await db.Deleteable<Variable>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
         _dispatchService.Dispatch(new());
 
-        if(result)
+        if (result)
             DeleteCache();
         return result;
     }
@@ -283,13 +283,13 @@ internal class VariableService : BaseService<Variable>, IVariableService
     /// <param name="businessDeviceId">业务设备id</param>
     public async Task<QueryData<Variable>> PageAsync(QueryPageOptions option, long? businessDeviceId)
     {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         return await QueryAsync(option, a => a
         .WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!))
         .WhereIF(businessDeviceId > 0, u => SqlFunc.JsonLike(u.VariablePropertys, businessDeviceId.ToString()))
         .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
         .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
-        );
+        ).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -303,7 +303,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
         CheckInput(input);
 
         if (type == ItemChangedType.Update)
-            await SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId);
+            await SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId).ConfigureAwait(false);
 
         if (await base.SaveAsync(input, type).ConfigureAwait(false))
         {
@@ -314,7 +314,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
         return false;
     }
 
-    private void DeleteCache()
+    private static void DeleteCache()
     {
         App.CacheService.Remove(ThingsGatewayCacheConst.Cache_Variable);
     }
@@ -331,15 +331,15 @@ internal class VariableService : BaseService<Variable>, IVariableService
     public async Task<SqlSugarPagedList<Variable>> PageAsync(VariablePageInput input)
     {
         using var db = GetDB();
-        var query = await GetPageAsync(db, input);
-        return await query.ToPagedListAsync(input.Current, input.Size);//分页
+        var query = await GetPageAsync(db, input).ConfigureAwait(false);
+        return await query.ToPagedListAsync(input.Current, input.Size).ConfigureAwait(false);//分页
 
     }
 
     /// <inheritdoc/>
     private async Task<ISugarQueryable<Variable>> GetPageAsync(SqlSugarClient db, VariablePageInput input)
     {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         ISugarQueryable<Variable> query = db.Queryable<Variable>()
          .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
          .WhereIF(!string.IsNullOrEmpty(input.RegisterAddress), u => u.RegisterAddress.Contains(input.RegisterAddress))
@@ -583,7 +583,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
 
     }
 
-    private static readonly WaitLock _cacheLock = new ();
+    private static readonly WaitLock _cacheLock = new();
 
     private async Task<Dictionary<string, VariableImportData>> GetVariableImportData()
     {
@@ -594,7 +594,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
         {
             try
             {
-                await _cacheLock.WaitAsync();
+                await _cacheLock.WaitAsync().ConfigureAwait(false);
                 datas = App.CacheService.Get<Dictionary<string, VariableImportData>>(key);
                 if (datas == null)
                 {
@@ -605,7 +605,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
                         Name = it.Name,
                         CreateOrgId = it.CreateOrgId,
                         CreateUserId = it.CreateUserId
-                    }).ToListAsync()).ToDictionary(a => a.Name);
+                    }).ToListAsync().ConfigureAwait(false)).ToDictionary(a => a.Name);
 
                     App.CacheService.Set(key, datas);
                 }
@@ -620,24 +620,24 @@ internal class VariableService : BaseService<Variable>, IVariableService
 
     public async Task PreheatCache()
     {
-        await GetVariableImportData();
+        await GetVariableImportData().ConfigureAwait(false);
     }
 
-    private class VariableImportData
+    private sealed class VariableImportData
     {
         public long Id { get; set; }
         public string Name { get; set; }
         public long CreateOrgId { get; set; }
         public long CreateUserId { get; set; }
     }
-        public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile)
+    public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile)
     {
         // 上传文件并获取文件路径
         var path = await browserFile.StorageLocal().ConfigureAwait(false);
 
         try
         {
-            var dataScope = await SysUserService.GetCurrentUserDataScopeAsync();
+            var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
             // 获取Excel文件中所有工作表的名称
             var sheetNames = MiniExcel.GetSheetNames(path);
 
@@ -676,7 +676,7 @@ internal class VariableService : BaseService<Variable>, IVariableService
                     var variableProperties = type.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
                                                 .ToDictionary(a => type.GetPropertyDisplayName(a.Name));
 
-                    var dbVariableDicts = await GetVariableImportData();
+                    var dbVariableDicts = await GetVariableImportData().ConfigureAwait(false);
 
                     // 并行处理每一行数据
                     rows.ParallelForEach((item, state, index) =>

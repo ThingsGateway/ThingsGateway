@@ -33,7 +33,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 驱动插件服务
 /// </summary>
-internal class PluginService : IPluginService
+internal sealed class PluginService : IPluginService
 {
     /// <summary>
     /// 插件驱动文件夹名称
@@ -96,9 +96,9 @@ internal class PluginService : IPluginService
             var dir = AppContext.BaseDirectory.CombinePathWithOs(DirName);
 
             // 先判断是否已经拥有插件模块
-            if (_driverBaseDict.ContainsKey(pluginName))
+            if (_driverBaseDict.TryGetValue(pluginName, out var value))
             {
-                var driver = (DriverBase)Activator.CreateInstance(_driverBaseDict[pluginName]);
+                var driver = (DriverBase)Activator.CreateInstance(value);
                 driver.Directory = dir;
                 return driver;
             }
@@ -383,7 +383,7 @@ internal class PluginService : IPluginService
         }
     }
 
-    private async Task MarkSave(string fullPath, MemoryStream stream)
+    private static async Task MarkSave(string fullPath, MemoryStream stream)
     {
         var has = MarkDeletePlugin(fullPath);
         var saveEx = string.Empty;
@@ -396,7 +396,7 @@ internal class PluginService : IPluginService
     /// 标记删除插件
     /// </summary>
     /// <param name="path">主程序集文件名称</param>
-    private bool MarkDeletePlugin(string path)
+    private static bool MarkDeletePlugin(string path)
     {
         var fileInfo = new FileInfo(path);
         if (fileInfo.Exists)
@@ -408,7 +408,7 @@ internal class PluginService : IPluginService
 
     /// <summary>删除备份文件</summary>
     /// <param name="dest">目标目录</param>
-    public void DeleteBackup(String dest)
+    private static void DeleteBackup(String dest)
     {
         // 删除备份
         var di = dest.AsDirectory();

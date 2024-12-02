@@ -141,7 +141,7 @@ public partial class DeviceEditComponent
                 });
                 UIRenderFragment = component.Render();
             }
-            if (Model.DevicePropertys?.Any() == true)
+            if (Model.DevicePropertys?.Count > 0)
             {
                 PluginServiceUtil.SetModel(Model.PluginPropertyModel.Value, Model.DevicePropertys);
             }

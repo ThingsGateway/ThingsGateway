@@ -195,7 +195,7 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
     protected override async Task OnTcpClosing(TcpSessionClientChannel socketClient, ClosingEventArgs e)
     {
         await socketClient.OnChannelEvent(Stoping).ConfigureAwait(false);
-        await base.OnTcpClosing(socketClient, e);
+        await base.OnTcpClosing(socketClient, e).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

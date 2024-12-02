@@ -288,7 +288,7 @@ internal abstract class DeviceHostedService : BackgroundService, IDeviceHostedSe
             }
 
             var wts = Math.Max(ChannelThreads.Count, 10) * 10;
-            ThreadPool.SetMaxThreads(wts, wts); 
+            ThreadPool.SetMaxThreads(wts, wts);
 
             // 创建新的通道线程，并将驱动程序添加到其中
             ChannelThread channelThread = new ChannelThread(channel, (a =>
@@ -371,7 +371,7 @@ internal abstract class DeviceHostedService : BackgroundService, IDeviceHostedSe
             }
         }
     }
-    private void SetRedundantDevice(DeviceRunTime? dev, Device? newDev)
+    private static void SetRedundantDevice(DeviceRunTime? dev, Device? newDev)
     {
         dev.DevicePropertys = newDev.DevicePropertys;
         dev.Description = newDev.Description;

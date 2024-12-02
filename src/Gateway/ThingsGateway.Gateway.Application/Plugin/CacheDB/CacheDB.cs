@@ -59,7 +59,7 @@ public class CacheDB : DisposeBase
         }
     }
 
-    private SqlSugarClient GetConnection(CacheDBOption options)
+    private static SqlSugarClient GetConnection(CacheDBOption options)
     {
         SqlSugarClient sqlSugarClient = new SqlSugarClient(new ConnectionConfig()
         {

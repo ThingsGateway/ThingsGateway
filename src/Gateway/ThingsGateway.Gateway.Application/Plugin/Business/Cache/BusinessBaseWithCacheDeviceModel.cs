@@ -152,8 +152,8 @@ public abstract class BusinessBaseWithCacheDeviceModel<VarModel, DevModel> : Bus
                         using var cache = LocalDBCacheDevModel();
 
                         //循环获取
-                        var varList = await cache.DBProvider.Queryable<CacheDBItem<DevModel>>().Take(_businessPropertyWithCache.SplitSize).ToListAsync().ConfigureAwait(false);
-                        if (varList.Any())
+                        var varList = await cache.DBProvider.Queryable<CacheDBItem<DevModel>>().Take(_businessPropertyWithCache.SplitSize).ToListAsync(cancellationToken).ConfigureAwait(false);
+                        if (varList.Count > 0)
                         {
                             try
                             {
@@ -163,7 +163,7 @@ public abstract class BusinessBaseWithCacheDeviceModel<VarModel, DevModel> : Bus
                                     if (result.IsSuccess)
                                     {
                                         //删除缓存
-                                        await cache.DBProvider.Deleteable<CacheDBItem<DevModel>>(varList).ExecuteCommandAsync().ConfigureAwait(false);
+                                        await cache.DBProvider.Deleteable<CacheDBItem<DevModel>>(varList).ExecuteCommandAsync(cancellationToken).ConfigureAwait(false);
                                     }
                                     else
                                         break;
@@ -206,7 +206,7 @@ public abstract class BusinessBaseWithCacheDeviceModel<VarModel, DevModel> : Bus
         try
         {
             var list = _memoryDevModelQueue.ToListWithDequeue();
-            if (list?.Count != 0)
+            if (list?.Count > 0)
             {
                 var data = list.ChunkBetter(_businessPropertyWithCache.SplitSize);
                 foreach (var item in data)

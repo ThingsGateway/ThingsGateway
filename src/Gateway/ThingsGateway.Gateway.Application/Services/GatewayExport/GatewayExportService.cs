@@ -8,6 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+#pragma warning disable CA2007 // 考虑对等待的任务调用 ConfigureAwait
 using BootstrapBlazor.Components;
 
 using Mapster;
@@ -20,7 +21,7 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Application;
 
-internal class GatewayExportService : IGatewayExportService
+internal sealed class GatewayExportService : IGatewayExportService
 {
     public GatewayExportService(IJSRuntime jSRuntime)
     {

@@ -11,6 +11,6 @@
 namespace ThingsGateway.Gateway.Application;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-public class OnlyWindowsSupportAttribute : Attribute
+public sealed class OnlyWindowsSupportAttribute : Attribute
 {
 }

@@ -22,8 +22,9 @@ using ThingsGateway.NewLife.Log;
 
 namespace ThingsGateway.Photino;
 
-internal class Program
+internal sealed class Program
 {
+    internal static readonly string[] second = new[] { "application/octet-stream" };
 
     [STAThread]
     private static void Main(string[] args)
@@ -72,7 +73,7 @@ internal class Program
                 builder.Services.AddResponseCompression(
                     opts =>
                     {
-                        opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+                        opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(second);
                     });
             }
 

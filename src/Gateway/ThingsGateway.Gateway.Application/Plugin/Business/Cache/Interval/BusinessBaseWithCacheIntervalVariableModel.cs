@@ -83,21 +83,20 @@ public abstract class BusinessBaseWithCacheIntervalVariableModel<T> : BusinessBa
     /// <summary>
     /// 间隔插入操作，用于周期性地插入变量。
     /// </summary>
-    /// <param name="cancellationToken">取消令牌</param>
     /// <returns>表示异步操作的任务</returns>
-    protected virtual async Task IntervalInsert(CancellationToken cancellationToken = default)
+    protected virtual async Task IntervalInsert()
     {
         while (!DisposedValue)
         {
             if (CurrentDevice?.KeepRun == false)
             {
-                await Delay(cancellationToken).ConfigureAwait(false);
+                await Delay(default).ConfigureAwait(false);
                 continue;
             }
             //间隔上传
             IntervalInsertVariable();
 
-            await Delay(cancellationToken).ConfigureAwait(false);
+            await Delay(default).ConfigureAwait(false);
         }
     }
 

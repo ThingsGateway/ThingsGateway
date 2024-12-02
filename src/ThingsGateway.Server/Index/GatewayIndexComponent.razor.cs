@@ -8,6 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+#pragma warning disable CA2007 // 考虑对等待的任务调用 ConfigureAwait
 
 using BootstrapBlazor.Components;
 
@@ -94,12 +95,12 @@ public partial class GatewayIndexComponent : IDisposable
             AlarmChartDataSource.Labels = data.Select(a => Localizer["AlarmCount"].Value);
             AlarmChartDataSource.Data.Add(new ChartDataset()
             {
-                Data = new List<object>() { GlobalData.ReadOnlyRealAlarmVariables.Count() }
+                Data = new List<object>() { GlobalData.ReadOnlyRealAlarmVariables.Count }
             });
         }
         else
         {
-            AlarmChartDataSource.Data[0].Data = new List<object>() { GlobalData.ReadOnlyRealAlarmVariables.Count() };
+            AlarmChartDataSource.Data[0].Data = new List<object>() { GlobalData.ReadOnlyRealAlarmVariables.Count };
         }
         return Task.FromResult(AlarmChartDataSource!);
     }

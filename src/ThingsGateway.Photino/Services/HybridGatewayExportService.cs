@@ -14,7 +14,7 @@ using ThingsGateway.Admin.Application;
 
 namespace ThingsGateway.Gateway.Application;
 
-internal class HybridGatewayExportService : IGatewayExportService
+internal sealed class HybridGatewayExportService : IGatewayExportService
 {
 
     private readonly IChannelService _channelService;

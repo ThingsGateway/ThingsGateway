@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
 
+#pragma warning disable CA2007 // 考虑对等待的任务调用 ConfigureAwait
 namespace Photino.Blazor
 {
     public class PhotinoHttpHandler : DelegatingHandler

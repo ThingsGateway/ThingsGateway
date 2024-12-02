@@ -449,7 +449,7 @@ public abstract class CollectBase : DriverBase
                             item.Variable.SetValue(null, time, isOnline: false);
                         }
 
-                        await Task.Delay(10000).ConfigureAwait(false);
+                        await Task.Delay(10000, cancellationToken).ConfigureAwait(false);
                         return true;
                     }
                 }
@@ -500,7 +500,7 @@ public abstract class CollectBase : DriverBase
             {
                 while (WriteLock.IsWaitting)
                 {
-                    await Task.Delay(100).ConfigureAwait(false);//写优先，直接等待一段时间
+                    await Task.Delay(100, cancellationToken).ConfigureAwait(false);//写优先，直接等待一段时间
                 }
             }
 
@@ -574,7 +574,7 @@ public abstract class CollectBase : DriverBase
         }
     }
 
-    private class ReadResultCount
+    private sealed class ReadResultCount
     {
         public int deviceMethodsVariableFailedNum = 0;
         public int deviceMethodsVariableSuccessNum = 0;

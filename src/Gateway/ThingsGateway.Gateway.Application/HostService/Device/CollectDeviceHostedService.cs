@@ -22,7 +22,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 采集设备服务
 /// </summary>
-internal class CollectDeviceHostedService : DeviceHostedService, ICollectDeviceHostedService
+internal sealed class CollectDeviceHostedService : DeviceHostedService, ICollectDeviceHostedService
 {
     /// <summary>
     /// 线程检查时间，10分钟
@@ -54,7 +54,7 @@ internal class CollectDeviceHostedService : DeviceHostedService, ICollectDeviceH
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Yield();
-        await Task.Delay(5000);
+        await Task.Delay(5000, stoppingToken).ConfigureAwait(false);
         if (StartCollectDeviceEnable)
             await StartAsync().ConfigureAwait(false);
         GlobalData.DeviceStatusChangeEvent += DeviceRedundantThread;
@@ -210,7 +210,7 @@ internal class CollectDeviceHostedService : DeviceHostedService, ICollectDeviceH
                                 //添加保存数据变量读取操作
                                 var saveVariable = dev.VariableRunTimes.Where(a => a.Value.SaveValue).ToDictionary(a => a.Value.Id, a => a.Value);
 
-                                if (saveVariable.Any())
+                                if (saveVariable.Count > 0)
                                 {
                                     var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<JToken>), nameof(VariableRunTime), nameof(VariableRunTime.SaveValue));
                                     var varList = await cacheDb.DBProvider.Queryable<CacheDBItem<JToken>>().ToListAsync().ConfigureAwait(false);
@@ -358,7 +358,7 @@ internal class CollectDeviceHostedService : DeviceHostedService, ICollectDeviceH
                 for (int i = 0; i < varList.Count; i++)
                 {
                     var varValue = varList[i];
-                    var has = saveVariable.Any();
+                    var has = saveVariable.Count > 0;
                     if (has && saveVariable.TryGetValue(varValue.Id, out var variable))
                     {
                         if (varValue.Value is JValue jValue)
@@ -376,7 +376,7 @@ internal class CollectDeviceHostedService : DeviceHostedService, ICollectDeviceH
                     }
                 }
 
-                if (ids.Any())
+                if (ids.Count > 0)
                 {
                     await cacheDb.DBProvider.Deleteable<CacheDBItem<JToken>>(ids).ExecuteCommandAsync().ConfigureAwait(false);
                 }
@@ -445,7 +445,7 @@ internal class CollectDeviceHostedService : DeviceHostedService, ICollectDeviceH
                 };
             }).ToList();
 
-            if (saveVariable.Any())
+            if (saveVariable.Count > 0)
             {
                 var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<JToken>), nameof(VariableRunTime), nameof(VariableRunTime.SaveValue));
 
@@ -464,7 +464,7 @@ internal class CollectDeviceHostedService : DeviceHostedService, ICollectDeviceH
     /// 读取数据库，创建全部设备
     /// </summary>
     /// <returns></returns>
-    protected async Task CreatAllChannelThreadsAsync()
+    private async Task CreatAllChannelThreadsAsync()
     {
         if (!_stoppingToken.IsCancellationRequested)
         {
@@ -533,7 +533,7 @@ collectDeviceRunTimes.SelectMany(a =>
     }
 
     #region 事件通知
-    protected virtual async Task OnCollectDeviceStarted()
+    private async Task OnCollectDeviceStarted()
     {
         try
         {
@@ -550,7 +550,7 @@ collectDeviceRunTimes.SelectMany(a =>
         }
     }
 
-    protected virtual async Task OnCollectDeviceStarting()
+    private async Task OnCollectDeviceStarting()
     {
         try
         {
@@ -564,7 +564,7 @@ collectDeviceRunTimes.SelectMany(a =>
 
     }
 
-    protected virtual async Task OnCollectDeviceStoped()
+    private async Task OnCollectDeviceStoped()
     {
         try
         {
@@ -581,7 +581,7 @@ collectDeviceRunTimes.SelectMany(a =>
         }
     }
 
-    protected virtual async Task OnCollectDeviceStoping()
+    private async Task OnCollectDeviceStoping()
     {
         try
         {

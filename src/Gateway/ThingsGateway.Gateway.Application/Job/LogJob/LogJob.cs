@@ -33,13 +33,13 @@ public class LogJob : IJob
     }
 
 
-    private async Task DeleteRpcLog(int daysAgo, CancellationToken stoppingToken)
+    private static async Task DeleteRpcLog(int daysAgo, CancellationToken stoppingToken)
     {
         using var db = DbContext.Db.GetConnectionScopeWithAttr<RpcLog>().CopyNew();
         await db.DeleteableWithAttr<RpcLog>().Where(u => u.LogTime < DateTime.Now.AddDays(-daysAgo)).ExecuteCommandAsync(stoppingToken).ConfigureAwait(false); // 删除操作日志
     }
 
-    private async Task DeleteBackendLog(int daysAgo, CancellationToken stoppingToken)
+    private static async Task DeleteBackendLog(int daysAgo, CancellationToken stoppingToken)
     {
         using var db = DbContext.Db.GetConnectionScopeWithAttr<BackendLog>().CopyNew();
         await db.DeleteableWithAttr<BackendLog>().Where(u => u.LogTime < DateTime.Now.AddDays(-daysAgo)).ExecuteCommandAsync(stoppingToken).ConfigureAwait(false); // 删除操作日志
@@ -47,7 +47,7 @@ public class LogJob : IJob
 
 
 
-    private Task DeleteTextLog(CancellationToken stoppingToken)
+    private static Task DeleteTextLog(CancellationToken stoppingToken)
     {
         //网关通道日志以通道id命名
         var channelService = App.RootServices.GetService<IChannelService>();

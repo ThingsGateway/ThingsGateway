@@ -102,14 +102,14 @@ public class TextFileLogger : ThingsGateway.NewLife.Log.TextFileLog, TouchSocket
 
         var stringBuilder = new StringBuilder();
         stringBuilder.Append(DateTime.Now.ToString(TimeFormat));
-        stringBuilder.Append(",");
+        stringBuilder.Append(',');
         stringBuilder.Append(logLevel.ToString());
-        stringBuilder.Append(",");
+        stringBuilder.Append(',');
         stringBuilder.Append($"\"{message}\"");
 
         if (exception != null)
         {
-            stringBuilder.Append(",");
+            stringBuilder.Append(',');
             stringBuilder.Append($"\"{exception}\"");
         }
 

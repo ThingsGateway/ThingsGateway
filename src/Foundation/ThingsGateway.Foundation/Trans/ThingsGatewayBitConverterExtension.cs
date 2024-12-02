@@ -58,36 +58,36 @@ public static class ThingsGatewayBitConverterExtension
         foreach (var str in strs)
         {
             // 解析 dataFormat
-            if (str.ToLower().StartsWith("data="))
+            if (str.StartsWith("data=", StringComparison.OrdinalIgnoreCase))
             {
                 var dataFormatName = str.Substring(5);
                 try { if (Enum.TryParse<DataFormatEnum>(dataFormatName, true, out var dataFormat1)) dataFormat = dataFormat1; } catch { }
             }
-            else if (str.ToLower().StartsWith("w="))
+            else if (str.StartsWith("w=", StringComparison.OrdinalIgnoreCase))
             {
                 var wstringName = str.Substring(2);
                 try { if (bool.TryParse(wstringName, out var wstring1)) wstring = wstring1; } catch { }
             }
             // 解析 encoding
-            else if (str.ToLower().StartsWith("encoding="))
+            else if (str.StartsWith("encoding=", StringComparison.OrdinalIgnoreCase))
             {
                 var encodingName = str.Substring(9);
                 try { encoding = Encoding.GetEncoding(encodingName); } catch { }
             }
             // 解析 length
-            else if (str.ToLower().StartsWith("len="))
+            else if (str.StartsWith("len=", StringComparison.OrdinalIgnoreCase))
             {
                 var lenStr = str.Substring(4);
                 stringlength = lenStr.IsNullOrEmpty() ? null : Convert.ToUInt16(lenStr);
             }
             // 解析 array length
-            else if (str.ToLower().StartsWith("arraylen="))
+            else if (str.StartsWith("arraylen=", StringComparison.OrdinalIgnoreCase))
             {
                 var lenStr = str.Substring(9);
                 length = lenStr.IsNullOrEmpty() ? null : Convert.ToUInt16(lenStr);
             }
             // 解析 bcdFormat
-            else if (str.ToLower().StartsWith("bcd="))
+            else if (str.StartsWith("bcd=", StringComparison.OrdinalIgnoreCase))
             {
                 var bcdName = str.Substring(4);
                 try { if (Enum.TryParse<BcdFormatEnum>(bcdName, true, out var bcdFormat1)) bcdFormat = bcdFormat1; } catch { }

@@ -119,13 +119,13 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     /// <summary>
     /// 间隔上传数据的方法
     /// </summary>
-    protected virtual async Task IntervalInsert(CancellationToken cancellationToken = default)
+    protected virtual async Task IntervalInsert()
     {
         while (!DisposedValue)
         {
             if (CurrentDevice?.KeepRun == false)
             {
-                await Delay(cancellationToken).ConfigureAwait(false);
+                await Delay(default).ConfigureAwait(false);
                 continue;
             }
 
@@ -164,7 +164,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
                 }
             }
 
-            await Delay(cancellationToken).ConfigureAwait(false);
+            await Delay(default).ConfigureAwait(false);
         }
     }
 

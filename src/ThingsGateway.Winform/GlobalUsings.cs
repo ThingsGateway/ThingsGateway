@@ -8,23 +8,10 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Gateway.Application;
+global using Microsoft.Extensions.DependencyInjection;
 
-/// <summary>
-/// 动态属性的特性说明
-/// <br></br>
-/// 在需主动暴露的配置属性中加上这个特性<see cref="DynamicPropertyAttribute"/>
-/// </summary>
-[AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
-public sealed class DynamicPropertyAttribute : Attribute
-{
-    /// <summary>
-    /// 名称
-    /// </summary>
-    public string? Description { get; set; }
+global using ThingsGateway.Admin.Application;
+global using ThingsGateway.Foundation;
 
-    /// <summary>
-    /// 描述
-    /// </summary>
-    public string? Remark { get; set; }
-}
+using System.Diagnostics.CodeAnalysis;
+[assembly: SuppressMessage("Reliability", "CA2007", Justification = "<挂起>", Scope = "module")]

@@ -119,9 +119,8 @@ public static class PluginServiceUtil
             var autoGenerateColumnAttribute = prop.GetCustomAttribute<AutoGenerateColumnAttribute>(true);
             if (classAttribute == null) continue;//删除不需要显示的属性
 
-            IEditorItem? tc;
             var displayName = classAttribute.Description ?? BootstrapBlazor.Components.Utility.GetDisplayName(type, prop.Name);
-            tc = new InternalTableColumn(prop.Name, prop.PropertyType, displayName);
+            InternalTableColumn tc = new InternalTableColumn(prop.Name, prop.PropertyType, displayName);
             if (autoGenerateColumnAttribute != null)
                 CopyValue(tc, autoGenerateColumnAttribute);
             tc.ComponentParameters ??= new Dictionary<string, object>();

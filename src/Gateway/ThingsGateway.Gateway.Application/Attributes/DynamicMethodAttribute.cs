@@ -15,7 +15,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <br></br>
 /// </summary>
 [AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
-public class DynamicMethodAttribute : Attribute
+public sealed class DynamicMethodAttribute : Attribute
 {
     /// <inheritdoc cref="DynamicMethodAttribute"/>
     public DynamicMethodAttribute(string desc, string? remark = null)
