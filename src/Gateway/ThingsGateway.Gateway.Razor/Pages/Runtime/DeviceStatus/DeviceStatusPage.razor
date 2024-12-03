@@ -18,3 +18,7 @@
         <DeviceStatus Channels=Channels Devices=BusinessDevices Plugins=Plugins DeviceQuery="BusinessDeviceQuery" DeviceHostedService=@GlobalData.BusinessDeviceHostedService DriverBases="BusinessBases"></DeviceStatus>
     </TabItem>
 </Tab>
+@if (AuthorizeButton("重启"))
+{
+      <ThingsGateway.Gateway.Razor.QuickActions/>
+}
