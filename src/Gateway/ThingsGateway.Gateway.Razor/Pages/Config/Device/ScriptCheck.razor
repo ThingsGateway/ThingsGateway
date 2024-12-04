@@ -4,18 +4,18 @@
 @using ThingsGateway.Gateway.Application
 
 <div class="row me-4">
-<div class="col-12  col-md-6">
+<div class="col-12  col-md-12">
 
     <BootstrapLabel Value=@Localizer["Script"] ShowLabelTooltip="true" />
     <CodeEditor ShowLineNo Value=@Script ValueChanged=@Change Language="csharp" Theme="vs-dark" />
 
 </div>
-<div class="col-6  col-md-3">
+<div class="col-6  col-md-6">
     <BootstrapLabel Value=@Localizer["Input"] ShowLabelTooltip="true" />
     <CodeEditor ShowLineNo @bind-Value=@Input Language="csharp" Theme="vs-dark" />
 
 </div>
-<div class="col-6  col-md-3">
+<div class="col-6  col-md-6">
     <BootstrapLabel Value=@Localizer["Output"] ShowLabelTooltip="true" />
     <CodeEditor ShowLineNo @bind-Value=@Output Language="csharp" Theme="vs-dark" />
 

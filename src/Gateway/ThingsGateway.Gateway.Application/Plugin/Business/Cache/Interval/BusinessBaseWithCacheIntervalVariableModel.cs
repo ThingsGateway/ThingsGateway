@@ -44,7 +44,7 @@ public abstract class BusinessBaseWithCacheIntervalVariableModel<T> : BusinessBa
         // 如果业务属性指定了全部变量，则设置当前设备的变量运行时列表和采集设备列表
         if (_businessPropertyWithCacheInterval.IsAllVariable)
         {
-            CurrentDevice.VariableRunTimes = GlobalData.Variables.ToDictionary(a => a.Key, a => a.Value);
+            CurrentDevice.VariableRunTimes = GlobalData.Variables;
             CollectDevices = GlobalData.CollectDevices;
         }
 

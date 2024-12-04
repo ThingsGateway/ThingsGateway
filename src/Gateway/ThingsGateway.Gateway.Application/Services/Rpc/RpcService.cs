@@ -47,7 +47,7 @@ internal sealed class RpcService : IRpcService
         Dictionary<CollectBase, Dictionary<VariableRunTime, JToken>> WriteMethods = new();
         // 用于存储结果的并发字典
         ConcurrentDictionary<string, OperResult> results = new();
-        var dict = GlobalData.Variables.ToDictionary(a => a.Key, a => a.Value);
+        var dict = GlobalData.Variables;
 
         // 对每个要操作的变量进行检查和处理
         foreach (var item in items)

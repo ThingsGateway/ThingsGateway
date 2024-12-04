@@ -40,7 +40,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
         // 如果业务属性的缓存要求上传所有变量，则设置当前设备的变量运行时间和采集设备列表
         if (_businessPropertyWithCacheInterval.IsAllVariable)
         {
-            CurrentDevice.VariableRunTimes = GlobalData.Variables.ToDictionary(a => a.Key, a => a.Value);
+            CurrentDevice.VariableRunTimes = GlobalData.Variables;
             CollectDevices = GlobalData.CollectDevices;
         }
 

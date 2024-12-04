@@ -101,7 +101,10 @@
 
     </AdminTable>
 </div>
-
+@if (AuthorizeButton("重启"))
+{
+          <ThingsGateway.Gateway.Razor.QuickActions/>
+}
 @code {
     AdminTable<VariableRunTime> table;
 }

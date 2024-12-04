@@ -38,9 +38,14 @@ public static class DriverBaseExtension
     {
         // 从全局设备字典中移除具有相同 Id 的设备
         GlobalData.CollectDevices.RemoveWhere(it => it.Value.Id == oldDeviceId);
+        GlobalData.Variables.RemoveWhere(it => it.Value.DeviceId == oldDeviceId);
 
         // 尝试向全局设备字典中添加当前设备，使用设备名称作为键
         GlobalData.CollectDevices.TryAdd(newDevice.Name, newDevice);
+        foreach (var item in newDevice.VariableRunTimes)
+        {
+            GlobalData.Variables.TryAdd(item.Key, item.Value);
+        }
 
     }
     public static void RefreshBusinessDeviceRuntime(this DeviceRunTime newDevice, long oldDeviceId)
@@ -56,10 +61,15 @@ public static class DriverBaseExtension
     {
         GlobalData.CollectDevices.RemoveWhere(it => driverBases.Any(a => a.DeviceId == it.Value.Id));
 
+        GlobalData.Variables.RemoveWhere(it => driverBases.Any(a => a.DeviceId == it.Value.DeviceId));
+
     }
     public static void RemoveBusinessDeviceRuntime(this IEnumerable<DriverBase> driverBases)
     {
         GlobalData.BusinessDevices.RemoveWhere(it => driverBases.Any(a => a.DeviceId == it.Value.Id));
+
+        GlobalData.Variables.RemoveWhere(it => driverBases.Any(a => a.DeviceId == it.Value.DeviceId));
+
     }
     public static void RemoveCollectDeviceRuntime(this DriverBase driverBase)
     {

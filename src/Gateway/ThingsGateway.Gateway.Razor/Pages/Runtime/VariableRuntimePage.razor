@@ -102,7 +102,7 @@
         <RowButtonTemplate>
 
 
-            <PopConfirmButton IsShow=@AuthorizeButton("写入变量") Size="Size.ExtraSmall" Color="Color.Warning" Icon="fa-solid fa-bars" Text="@Localizer["WriteVariable"]" IsAsync OnConfirm="()=>OnWriteVariable(context)">
+            <PopConfirmButton IsDisabled=@(!AuthorizeButton("写入变量")) Size="Size.ExtraSmall" Color="Color.Warning" Icon="fa-solid fa-bars" Text="@Localizer["WriteVariable"]" IsAsync OnConfirm="()=>OnWriteVariable(context)">
 
                 <BodyTemplate>
                     <Textarea @bind-Value=WriteValue ShowLabel="true" ShowLabelTooltip="true" />
@@ -112,7 +112,10 @@
         </RowButtonTemplate>
     </AdminTable>
 </div>
-
+@if (AuthorizeButton("重启"))
+{
+      <ThingsGateway.Gateway.Razor.QuickActions/>
+}
 @code {
     AdminTable<VariableRunTime> table;
 }

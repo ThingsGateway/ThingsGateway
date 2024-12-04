@@ -10,7 +10,8 @@
 
 using Mapster;
 
-using System.Collections.Concurrent; // 引入Mapster命名空间，用于对象映射
+using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -71,9 +72,15 @@ public static class GlobalData
     public static IReadOnlyDictionary<string, VariableRunTime> ReadOnlyRealAlarmVariables => AlarmHostedService.ReadOnlyRealAlarmVariables;
 
     /// <summary>
-    /// 只读的变量字典，提供对变量的只读访问
+    /// 只读的变量字典
     /// </summary>
-    public static IEnumerable<KeyValuePair<string, VariableRunTime>> ReadOnlyVariables => Variables;
+    public static IReadOnlyDictionary<string, VariableRunTime> ReadOnlyVariables => Variables;
+
+
+    public static bool TryGetVariable(string key, [MaybeNullWhen(false)] out VariableRunTime value) => Variables.TryGetValue(key ,out value);
+    public static bool TryGetCollectDevice(string key, [MaybeNullWhen(false)] out CollectDeviceRunTime value) => CollectDevices.TryGetValue(key, out value);
+    public static bool TryGetBusinessDevice(string key, [MaybeNullWhen(false)] out DeviceRunTime value) => BusinessDevices.TryGetValue(key, out value);
+
 
     #region 单例服务
 
@@ -138,6 +145,7 @@ public static class GlobalData
 
 
     #endregion
+
     /// <summary>
     /// 内部使用的业务设备字典，用于存储业务设备对象
     /// </summary>
@@ -151,7 +159,7 @@ public static class GlobalData
     /// <summary>
     /// 内部使用的变量字典，用于存储变量对象
     /// </summary>
-    internal static IEnumerable<KeyValuePair<string, VariableRunTime>> Variables => CollectDevices.SelectMany(a => a.Value.VariableRunTimes);
+    internal static ConcurrentDictionary<string, VariableRunTime> Variables { get; } = new();
 
     /// <summary>
     /// 设备状态变化处理方法，用于处理设备状态变化时的逻辑
