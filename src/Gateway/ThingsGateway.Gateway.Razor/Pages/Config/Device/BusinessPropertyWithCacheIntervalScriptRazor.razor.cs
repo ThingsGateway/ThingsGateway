@@ -130,7 +130,7 @@ public partial class BusinessPropertyWithCacheIntervalScriptRazor
             Title = Localizer["Check"],
             ShowFooter = false,
             ShowCloseButton = false,
-            Size = Size.ExtraLarge,
+            Size = Size.ExtraExtraLarge,
             FullScreenSize = FullScreenSize.None
         };
 
