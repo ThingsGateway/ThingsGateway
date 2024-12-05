@@ -18,7 +18,7 @@
                 <NotAuthorized>
                     @if (UserManager.UserId > 0)
                     {
-                        <LayoutView Layout="typeof(Razor.MainLayout)">
+                        <LayoutView Layout="typeof(Razor.BaseLayout)">
                             <ThingsGateway.Admin.Razor.AccessDenied/>
                         </LayoutView>
                     }

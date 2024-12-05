@@ -10,7 +10,26 @@
 <Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="App.RazorAssemblies.Where(a=>a!=typeof(Routes).Assembly)">
 <Found Context="routeData">
 
-    <RouteView RouteData="@routeData" DefaultLayout="@typeof(Razor.MainLayout)" />
+    <Microsoft.AspNetCore.Components.Authorization.AuthorizeView Resource="routeData">
+                <Authorized>
+                    <RouteView RouteData="routeData" DefaultLayout="typeof(Razor.MainLayout)">
+                    </RouteView>
+                </Authorized>
+                <NotAuthorized>
+                    @if (UserManager.UserId > 0)
+                    {
+                        <LayoutView Layout="typeof(Razor.BaseLayout)">
+                            <ThingsGateway.Admin.Razor.AccessDenied/>
+                        </LayoutView>
+                    }
+                    else
+                    {
+                        <LayoutView Layout="typeof(Razor.BaseLayout)">
+                            <ThingsGateway.Admin.Razor.Login/>
+                        </LayoutView>
+                    }
+                </NotAuthorized>
+            </Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
 
 
 </Found>
@@ -20,6 +39,7 @@
         </LayoutView>
     </NotFound>
 </Router>
+
 
 
 </Microsoft.AspNetCore.Components.Authorization.CascadingAuthenticationState>
