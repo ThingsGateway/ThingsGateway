@@ -35,7 +35,7 @@ public class Startup : AppStartup
                 return (
                 !logMsg.LogName.StartsWith("System") &&
                 !logMsg.LogName.StartsWith("Microsoft") &&
-                !logMsg.LogName.StartsWith("Blazor")&&
+                !logMsg.LogName.StartsWith("Blazor") &&
                 !logMsg.LogName.StartsWith("BootstrapBlazor")
                 );
             };

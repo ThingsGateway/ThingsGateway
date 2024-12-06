@@ -77,7 +77,7 @@ public static class GlobalData
     public static IReadOnlyDictionary<string, VariableRunTime> ReadOnlyVariables => Variables;
 
 
-    public static bool TryGetVariable(string key, [MaybeNullWhen(false)] out VariableRunTime value) => Variables.TryGetValue(key ,out value);
+    public static bool TryGetVariable(string key, [MaybeNullWhen(false)] out VariableRunTime value) => Variables.TryGetValue(key, out value);
     public static bool TryGetCollectDevice(string key, [MaybeNullWhen(false)] out CollectDeviceRunTime value) => CollectDevices.TryGetValue(key, out value);
     public static bool TryGetBusinessDevice(string key, [MaybeNullWhen(false)] out DeviceRunTime value) => BusinessDevices.TryGetValue(key, out value);
 

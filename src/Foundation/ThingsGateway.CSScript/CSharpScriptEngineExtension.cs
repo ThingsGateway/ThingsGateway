@@ -111,6 +111,8 @@ public static class CSharpScriptEngineExtension
                        $@"
         using System;
         using System.Linq;
+        using System.Threading.Tasks;
+        using System.Threading;
         using System.Collections.Generic;
         using Newtonsoft.Json;
         using Newtonsoft.Json.Linq;
