@@ -28,6 +28,10 @@ public class VariableData : IPrimaryIdEntity
 
     /// <inheritdoc cref="VariableRunTime.Value"/>
     public object Value { get; set; }
+    /// <inheritdoc cref="VariableRunTime.RawValue"/>
+    public object RawValue { get; set; }
+    /// <inheritdoc cref="VariableRunTime.LastSetValue"/>
+    public object LastSetValue { get; set; }
 
     /// <inheritdoc cref="VariableRunTime.ChangeTime"/>
     public DateTime ChangeTime { get; set; }
@@ -74,6 +78,11 @@ public class VariableData : IPrimaryIdEntity
 /// </summary>
 public class VariableBasicData : VariableData
 {
+    /// <inheritdoc cref="Variable.RegisterAddress"/>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public string? RegisterAddress { get; set; }
+
     /// <inheritdoc cref="Variable.Unit"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
