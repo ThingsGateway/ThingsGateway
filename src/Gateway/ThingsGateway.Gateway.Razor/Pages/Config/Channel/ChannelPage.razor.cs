@@ -20,8 +20,6 @@ namespace ThingsGateway.Gateway.Razor;
 
 public partial class ChannelPage : IDisposable
 {
-    [Inject]
-    private IStringLocalizer<ThingsGateway.Gateway.Razor._Imports> GatewayLocalizer { get; set; }
 
     [Inject]
     [NotNull]

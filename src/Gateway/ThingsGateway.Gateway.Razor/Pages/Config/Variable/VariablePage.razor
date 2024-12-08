@@ -56,11 +56,11 @@
         <ExportButtonDropdownTemplate Context="ExportContext">
             <Button class="dropdown-item" OnClick="() => ExcelExportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导出"))>
                 <i class="fas fa-file-export"></i>
-                <span>@GatewayLocalizer["TablesExportButtonExcelText"]</span>
+                <span>@RazorLocalizer["TablesExportButtonExcelText"]</span>
             </Button>
             <Button class="dropdown-item" OnClick="() => ExcelImportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导入"))>
                 <i class="fas fa-file-import"></i>
-                <span>@GatewayLocalizer["TablesImportButtonExcelText"]</span>
+                <span>@RazorLocalizer["TablesImportButtonExcelText"]</span>
             </Button>
         </ExportButtonDropdownTemplate>
         <TableToolbarTemplate>

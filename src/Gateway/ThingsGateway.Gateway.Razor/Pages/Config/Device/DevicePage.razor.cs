@@ -22,8 +22,6 @@ namespace ThingsGateway.Gateway.Razor;
 
 public abstract partial class DevicePage : IDisposable
 {
-    [Inject]
-    private IStringLocalizer<ThingsGateway.Gateway.Razor._Imports> GatewayLocalizer { get; set; }
 
     protected IEnumerable<SelectedItem> ChannelNames;
     protected IEnumerable<SelectedItem> PluginNames;
@@ -187,7 +185,7 @@ public abstract partial class DevicePage : IDisposable
         var oldmodel = devices.FirstOrDefault();//默认值显示第一个
         if (oldmodel == null)
         {
-            await ToastService.Warning(null, GatewayLocalizer["PleaseSelect"]);
+            await ToastService.Warning(null, RazorLocalizer["PleaseSelect"]);
             return;
         }
         var model = oldmodel.Adapt<Device>();//默认值显示第一个

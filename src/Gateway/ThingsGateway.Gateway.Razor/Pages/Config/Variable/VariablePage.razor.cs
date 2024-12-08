@@ -37,8 +37,6 @@ public partial class VariablePage : IDisposable
     [Inject]
     [NotNull]
     private IDispatchService<bool>? DispatchService { get; set; }
-    [Inject]
-    private IStringLocalizer<ThingsGateway.Gateway.Razor._Imports> GatewayLocalizer { get; set; }
 
     private int TestCount { get; set; }
 
@@ -164,7 +162,7 @@ public partial class VariablePage : IDisposable
         var oldmodel = variables.FirstOrDefault();//默认值显示第一个
         if (oldmodel == null)
         {
-            await ToastService.Warning(null, GatewayLocalizer["PleaseSelect"]);
+            await ToastService.Warning(null, RazorLocalizer["PleaseSelect"]);
             return;
         }
 

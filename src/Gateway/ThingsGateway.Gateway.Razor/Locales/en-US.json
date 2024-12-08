@@ -1,13 +1,6 @@
 ﻿{
 
 
-  "ThingsGateway.Gateway.Razor._Imports": {
-    "PleaseSelect": "Please select the data",
-    "TablesExportButtonExcelText": "Export Excel",
-    "TablesImportButtonExcelText": "Import Excel"
-  },
-
-
   "ThingsGateway.Gateway.Razor.TcpSessionClientDto": {
     "Id": "Id",
     "IP": "IP",

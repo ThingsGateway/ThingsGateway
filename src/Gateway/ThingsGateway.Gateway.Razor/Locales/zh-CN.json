@@ -1,14 +1,5 @@
 ﻿{
 
-
-  "ThingsGateway.Gateway.Razor._Imports": {
-    "PleaseSelect": "请选择需要操作的数据",
-    "TablesExportButtonExcelText": "导出Excel",
-    "TablesImportButtonExcelText": "导入Excel"
-  },
-
-
-
   "ThingsGateway.Gateway.Razor.TcpSessionClientDto": {
     "Id": "Id",
     "IP": "IP",
