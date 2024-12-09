@@ -60,6 +60,13 @@ public partial class LogConsole : IDisposable
     [Inject]
     private IPlatformService PlatformService { get; set; }
 
+    protected override async Task OnParametersSetAsync()
+    {
+        Messages = new List<LogMessage>();
+        await ExecuteAsync();
+        await base.OnParametersSetAsync();
+    }
+
     [Inject]
     private ToastService ToastService { get; set; }
 
