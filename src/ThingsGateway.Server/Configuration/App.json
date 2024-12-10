@@ -3,7 +3,7 @@
 
   "AllowedHosts": "*",
 
-  "Startway": "", // 启动方式： WindowsService, PM2, Systemctl  等等，对应文件夹下的命令文件
+  "Startway": "DOTNET", // 启动方式：DOTNET： （直接启动） ；WindowsService：（windows服务）  PM2, Systemctl等不需要配置。对应文件夹下的命令文件
 
   "AppSettings": {
     "InjectSpecificationDocument": true, // 生产环境是否开启Swagger
@@ -13,6 +13,8 @@
     "SupportPackageNamePrefixs": [
       "ThingsGateway.Admin.Application",
       "ThingsGateway.Admin.Razor",
+      "ThingsGateway.Gateway.Application",
+      "ThingsGateway.Gateway.Razor",
       "ThingsGateway.Management",
       "ThingsGateway.RulesEngine",
 
