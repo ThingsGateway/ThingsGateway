@@ -86,6 +86,7 @@ public abstract class BusinessBaseWithCacheIntervalVariableModel<T> : BusinessBa
     /// <returns>表示异步操作的任务</returns>
     protected virtual async Task IntervalInsert()
     {
+        var vardatas = CurrentDevice.VariableRunTimes.Values.ToList();
         while (!DisposedValue)
         {
             if (CurrentDevice?.KeepRun == false)
@@ -94,36 +95,31 @@ public abstract class BusinessBaseWithCacheIntervalVariableModel<T> : BusinessBa
                 continue;
             }
             //间隔上传
-            IntervalInsertVariable();
+            if (_businessPropertyWithCacheInterval.IsInterval)
+            {
+                try
+                {
+                    if (_exTTimerTick.IsTickHappen())
+                    {
+                        //间隔推送全部变量
+                        foreach (var variableRuntime in vardatas)
+                        {
+                            VariableChange(variableRuntime, variableRuntime.Adapt<VariableData>());
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogMessage.LogWarning(ex, BusinessBaseLocalizer["IntervalInsertVariableFail"]);
+                }
+            }
+
 
             await Delay(default).ConfigureAwait(false);
         }
     }
 
-    /// <summary>
-    /// 执行间隔插入变量的操作。
-    /// </summary>
-    protected virtual void IntervalInsertVariable()
-    {
-        if (_businessPropertyWithCacheInterval.IsInterval)
-        {
-            try
-            {
-                if (_exTTimerTick.IsTickHappen())
-                {
-                    //间隔推送全部变量
-                    foreach (var variableRuntime in CurrentDevice.VariableRunTimes)
-                    {
-                        VariableChange(variableRuntime.Value, variableRuntime.Value.Adapt<VariableData>());
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                LogMessage.LogWarning(ex, BusinessBaseLocalizer["IntervalInsertVariableFail"]);
-            }
-        }
-    }
+ 
 
     /// <summary>
     /// 在启动前执行的异步操作。

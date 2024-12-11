@@ -19,12 +19,10 @@ public class CacheDBItem<T> : IPrimaryIdEntity
 {
     public CacheDBItem()
     {
-        Id = CommonUtils.GetSingleId();
     }
 
     public CacheDBItem(T value)
     {
-        Id = CommonUtils.GetSingleId();
         Value = value;
     }
 

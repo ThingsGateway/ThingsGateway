@@ -111,6 +111,8 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
     /// <returns>异步任务</returns>
     protected virtual async Task IntervalInsert()
     {
+        var vardatas = CurrentDevice.VariableRunTimes.Values.ToList();
+        var devdatas = CollectDevices.Values.ToList();
         while (!DisposedValue)
         {
             if (CurrentDevice?.KeepRun == false)
@@ -127,9 +129,9 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
                     if (_exTTimerTick.IsTickHappen())
                     {
                         // 上传所有变量信息
-                        foreach (var variableRuntime in CurrentDevice.VariableRunTimes)
+                        foreach (var variableRuntime in vardatas)
                         {
-                            VariableChange(variableRuntime.Value, variableRuntime.Value.Adapt<VariableData>());
+                            VariableChange(variableRuntime, variableRuntime.Adapt<VariableData>());
                         }
                     }
                 }
@@ -143,9 +145,9 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
                     if (_exT2TimerTick.IsTickHappen())
                     {
                         // 上传所有设备信息
-                        foreach (var deviceRuntime in CollectDevices)
+                        foreach (var deviceRuntime in devdatas)
                         {
-                            DeviceChange(deviceRuntime.Value, deviceRuntime.Value.Adapt<DeviceBasicData>());
+                            DeviceChange(deviceRuntime, deviceRuntime.Adapt<DeviceBasicData>());
                         }
                     }
                 }

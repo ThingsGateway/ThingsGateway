@@ -30,10 +30,16 @@ public abstract class BusinessBaseWithCacheDeviceModel<VarModel, DevModel> : Bus
     /// <param name="data"></param>
     protected virtual void AddCache(List<CacheDBItem<DevModel>> data)
     {
+
         if (_businessPropertyWithCache.CacheEnable && data?.Count > 0)
         {
+
             try
             {
+                foreach (var item in data)
+                {
+                    item.Id = CommonUtils.GetSingleId();
+                }
                 var dir = CacheDBUtil.GetFilePath(CurrentDevice.Id.ToString());
                 var fileStart = CacheDBUtil.GetFileName($"{CurrentDevice.PluginName}_{typeof(DevModel).FullName}_{nameof(DevModel)}");
                 var fullName = dir.CombinePathWithOs($"{fileStart}{CacheDBUtil.EX}");
