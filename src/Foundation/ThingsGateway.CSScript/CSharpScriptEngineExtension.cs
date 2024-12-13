@@ -134,7 +134,11 @@ public static class CSharpScriptEngineExtension
         return runScript;
     }
 
-
+    public static void SetExpire(string source, TimeSpan? timeSpan = null)
+    {
+        var field = $"{CacheKey}-{source}";
+        Instance.SetExpire(field, timeSpan ?? TimeSpan.FromHours(1));
+    }
 
 }
 

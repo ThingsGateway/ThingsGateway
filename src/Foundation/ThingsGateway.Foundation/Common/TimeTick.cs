@@ -45,10 +45,10 @@ public class TimeTick
         var diffMilliseconds = (currentTime - nextTime).TotalMilliseconds;
         if (diffMilliseconds < 0)
             return false;
-        else if (diffMilliseconds > intervalMilliseconds)
-            LastTime = currentTime; //选择当前时间
-        else
+        else if (diffMilliseconds * 2 < intervalMilliseconds)
             LastTime = nextTime;
+        else
+            LastTime = currentTime;//选择当前时间
         return true;
     }
 

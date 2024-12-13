@@ -70,7 +70,8 @@ public abstract class CollectBase : DriverBase
             Func<VariableRunTime, bool> source = (a =>
             {
                 return a.RegisterAddress != nameof(DeviceRunTime.DeviceStatus) &&
-                a.RegisterAddress != "Script"
+                a.RegisterAddress != "Script"&&
+                a.RegisterAddress != "ScriptRead"
                 ;
 
             });
@@ -473,7 +474,7 @@ public abstract class CollectBase : DriverBase
             {
                 variableRunTime.SetValue(variableRunTime.CollectDeviceRunTime.DeviceStatus, dateTime);
             }
-            else
+            else if (variableRunTime.RegisterAddress == "ScriptRead")
             {
                 variableRunTime.SetValue(default, dateTime);
             }
@@ -667,6 +668,7 @@ public abstract class CollectBase : DriverBase
         // 初始化结果字典
         Dictionary<string, OperResult> results = new Dictionary<string, OperResult>();
 
+
         // 遍历写入信息列表
         foreach (var (deviceVariable, jToken) in writeInfoLists)
         {
@@ -690,8 +692,18 @@ public abstract class CollectBase : DriverBase
             }
         }
 
+
+        var writePList = writeInfoLists.Where(a => !CurrentDevice.OtherVariableRunTimes.Contains(a.Key));
+        var writeSList = writeInfoLists.Where(a => CurrentDevice.OtherVariableRunTimes.Contains(a.Key));
+
+        DateTime now = DateTime.Now;
+        foreach (var item in writeSList)
+        {
+            results.TryAdd(item.Key.Name, item.Key.SetValue(item.Value, now));
+        }
+
         // 过滤掉转换失败的变量，只保留写入成功的变量进行写入操作
-        var results1 = await WriteValuesAsync(writeInfoLists
+        var results1 = await WriteValuesAsync(writePList
             .Where(a => !results.Any(b => b.Key == a.Key.Name))
             .ToDictionary(item => item.Key, item => item.Value),
             cancellationToken).ConfigureAwait(false);
