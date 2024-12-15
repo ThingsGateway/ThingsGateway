@@ -52,6 +52,16 @@ public static class LoggerExtensions
     }
 
     /// <summary>
+    /// 获取DEBUG日志路径
+    /// </summary>
+    /// <param name="channelId"></param>
+    /// <returns></returns>
+    public static string GetDebugLogPath(this string channelId)
+    {
+        return GetDebugLogBasePath().CombinePath(channelId.ToString()).FileNameReplace();
+    }
+
+    /// <summary>
     /// GetLogBasePath
     /// </summary>
     public static string GetLogBasePath()

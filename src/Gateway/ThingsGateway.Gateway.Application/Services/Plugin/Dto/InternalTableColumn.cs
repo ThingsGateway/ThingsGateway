@@ -54,6 +54,11 @@ public class InternalTableColumn(string fieldName, Type fieldType, string? field
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
+    public ILookupService? LookupService { get; set; }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
     public bool? Readonly { get; set; }
 
     public int Rows { get; set; }

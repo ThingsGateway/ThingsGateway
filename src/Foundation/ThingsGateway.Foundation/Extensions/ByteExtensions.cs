@@ -17,6 +17,10 @@ namespace ThingsGateway.Foundation;
 /// <inheritdoc/>
 public static class ByteExtensions
 {
+    public static T[] SpliceArray<T>(this T[] array, params T[] values)
+    {
+        return DataTransUtil.SpliceArray<T>(array, values);
+    }
     /// <summary>
     /// 获取byte数据类型的第offset位，是否为True<br />
     /// </summary>
