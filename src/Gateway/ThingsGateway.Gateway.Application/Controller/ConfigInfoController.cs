@@ -23,9 +23,9 @@ namespace ThingsGateway.Gateway.Application;
 [Route("openApi/configInfo")]
 [RolePermission]
 [Authorize(AuthenticationSchemes = "Bearer")]
-public class ConfigInfoControler : ControllerBase
+public class ConfigInfoController : ControllerBase
 {
-    public ConfigInfoControler(
+    public ConfigInfoController(
         IChannelService channelService,
         IVariableService variableService,
         IDeviceService deviceService)

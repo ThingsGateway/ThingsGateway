@@ -205,7 +205,7 @@ public abstract class VariableObject
         if (DeviceVariableSourceReads == null)
         {
             List<VariableClass> variableClasss = GetVariableClass();
-            DeviceVariableSourceReads = Protocol.LoadSourceRead<VariableSourceClass>(variableClasss, MaxPack, 1000);
+            DeviceVariableSourceReads = Protocol.LoadSourceRead<VariableSourceClass>(variableClasss, MaxPack, "1000");
         }
     }
 }

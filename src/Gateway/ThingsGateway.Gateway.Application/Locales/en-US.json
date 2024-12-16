@@ -1,22 +1,22 @@
 ﻿{
 
 
-  "ThingsGateway.Gateway.Application.ConfigInfoControler": {
-    "ConfigInfoControler": "Get configuration information",
+  "ThingsGateway.Gateway.Application.ConfigInfoController": {
+    "ConfigInfoController": "Get configuration information",
     "GetChannelList": "Get channel information",
     "GetCollectDeviceList": "Get device information",
     "GetVariableList": "Get variable information"
   },
-  "ThingsGateway.Gateway.Application.ControlControler": {
-    "ControlControler": "Device control",
+  "ThingsGateway.Gateway.Application.ControlController": {
+    "ControlController": "Device control",
     "PauseCollectThread": "Control collection thread start/stop",
     "PauseBusinessThread": "Control business thread start/stop",
     "RestartCollectDeviceThread": "Restart collection thread",
     "RestartBusinessDeviceThread": "Restart business thread",
     "WriteDeviceMethods": "Write variables"
   },
-  "ThingsGateway.Gateway.Application.RuntimeInfoControler": {
-    "RuntimeInfoControler": "Get runtime information",
+  "ThingsGateway.Gateway.Application.RuntimeInfoController": {
+    "RuntimeInfoController": "Get runtime information",
     "GetCollectDeviceList": "Get device information",
     "GetVariableList": "Get variable information",
     "GetRealAlarmList": "Get real-time alarm information",

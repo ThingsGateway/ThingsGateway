@@ -29,10 +29,10 @@ namespace ThingsGateway.Gateway.Application;
 [Route("openApi/runtimeInfo")]
 [RolePermission]
 [Authorize(AuthenticationSchemes = "Bearer")]
-public class RuntimeInfoControler : ControllerBase
+public class RuntimeInfoController : ControllerBase
 {
     private ISysUserService _sysUserService;
-    public RuntimeInfoControler(ISysUserService sysUserService)
+    public RuntimeInfoController(ISysUserService sysUserService)
     {
         _sysUserService = sysUserService;
     }

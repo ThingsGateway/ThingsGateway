@@ -23,10 +23,10 @@ namespace ThingsGateway.Gateway.Application;
 [RolePermission]
 [LoggingMonitor]
 [Authorize(AuthenticationSchemes = "Bearer")]
-public class ControlControler : ControllerBase
+public class ControlController : ControllerBase
 {
     private ISysUserService _sysUserService;
-    public ControlControler(IRpcService rpcService, ISysUserService sysUserService)
+    public ControlController(IRpcService rpcService, ISysUserService sysUserService)
     {
         _sysUserService = sysUserService;
         _rpcService = rpcService;

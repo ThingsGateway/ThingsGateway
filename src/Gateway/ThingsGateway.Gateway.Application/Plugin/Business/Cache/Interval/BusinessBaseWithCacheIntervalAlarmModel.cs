@@ -11,7 +11,6 @@
 using Mapster;
 
 using TouchSocket.Core;
-using UAParser;
 
 namespace ThingsGateway.Gateway.Application;
 

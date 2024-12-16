@@ -70,7 +70,7 @@ public abstract class CollectBase : DriverBase
             Func<VariableRunTime, bool> source = (a =>
             {
                 return a.RegisterAddress != nameof(DeviceRunTime.DeviceStatus) &&
-                a.RegisterAddress != "Script"&&
+                a.RegisterAddress != "Script" &&
                 a.RegisterAddress != "ScriptRead"
                 ;
 
@@ -126,7 +126,7 @@ public abstract class CollectBase : DriverBase
                 if (method != null)
                 {
                     // 构建 VariableMethod 对象
-                    var methodResult = new VariableMethod(new Method(method.MethodInfo), item, string.IsNullOrWhiteSpace( item.IntervalTime) ? item.CollectDeviceRunTime.IntervalTime: item.IntervalTime);
+                    var methodResult = new VariableMethod(new Method(method.MethodInfo), item, string.IsNullOrWhiteSpace(item.IntervalTime) ? item.CollectDeviceRunTime.IntervalTime : item.IntervalTime);
                     variablesMethodResult.Add(methodResult);
                 }
                 else

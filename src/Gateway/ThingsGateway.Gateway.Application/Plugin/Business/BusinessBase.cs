@@ -81,7 +81,7 @@ public abstract class BusinessBase : DriverBase
         CurrentDevice.RefreshBusinessDeviceRuntime(device.Id);
 
         // 如果设备的采集间隔小于等于50毫秒，则将其设置为50毫秒
-        if(int.TryParse(device.IntervalTime,out int delay))
+        if (int.TryParse(device.IntervalTime, out int delay))
         {
             if (delay <= 50)
                 device.IntervalTime = "50";

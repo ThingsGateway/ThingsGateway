@@ -15,7 +15,7 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// 时间刻度器,最小时间间隔10毫秒
 /// </summary>
-public class TimeTick 
+public class TimeTick
 {
     /// <summary>
     /// 时间间隔（毫秒）
@@ -40,7 +40,7 @@ public class TimeTick
     /// <summary>
     /// 上次触发时间
     /// </summary>
-    public DateTime LastTime { get; private set; }
+    public DateTime LastTime { get; private set; } = DateTime.Now;
 
     /// <summary>
     /// 是否触发时间刻度
@@ -53,20 +53,29 @@ public class TimeTick
         if (cron == null)
         {
             nextTime = LastTime.AddMilliseconds(intervalMilliseconds);
-
+            var diffMilliseconds = (currentTime - nextTime).TotalMilliseconds;
+            if (diffMilliseconds < 0)
+                return false;
+            else if (diffMilliseconds * 2 < intervalMilliseconds)
+                LastTime = nextTime;
+            else
+                LastTime = nextTime;//选择当前时间
+            return true;
         }
         else
         {
             nextTime = cron.GetNext(LastTime);
+            if (currentTime >= nextTime)
+            {
+                LastTime = nextTime;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-        var diffMilliseconds = (currentTime - nextTime).TotalMilliseconds;
-        if (diffMilliseconds < 0)
-            return false;
-        else if (diffMilliseconds * 2 < intervalMilliseconds)
-            LastTime = nextTime;
-        else
-            LastTime = currentTime;//选择当前时间
-        return true;
+
 
     }
 

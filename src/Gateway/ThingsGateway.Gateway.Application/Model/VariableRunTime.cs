@@ -259,13 +259,13 @@ public class VariableRunTime : Variable, IVariable
     #region LoadSourceRead
 
     /// <summary>
-    /// 这个参数值由自动打包方法写入<see cref="IProtocol.LoadSourceRead{T}(IEnumerable{IVariable}, int, int)"/>
+    /// 这个参数值由自动打包方法写入<see cref="IProtocol.LoadSourceRead{T}(IEnumerable{IVariable}, int, string)"/>
     /// </summary>
     [AutoGenerateColumn(Visible = false)]
     public int Index { get; set; }
 
     /// <summary>
-    /// 这个参数值由自动打包方法写入<see cref="IProtocol.LoadSourceRead{T}(IEnumerable{IVariable}, int, int)"/>
+    /// 这个参数值由自动打包方法写入<see cref="IProtocol.LoadSourceRead{T}(IEnumerable{IVariable}, int, string)"/>
     /// </summary>
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]

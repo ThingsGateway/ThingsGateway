@@ -122,7 +122,7 @@ public abstract class BusinessBaseWithCacheIntervalVariableModel<T> : BusinessBa
         }
     }
 
- 
+
 
     /// <summary>
     /// 在启动前执行的异步操作。

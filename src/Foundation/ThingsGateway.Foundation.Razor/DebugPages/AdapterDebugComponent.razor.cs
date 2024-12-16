@@ -71,7 +71,7 @@ public partial class AdapterDebugComponent : AdapterDebugBase
     {
         if (Plc != null)
         {
-            var deviceVariableSourceReads = Plc.LoadSourceRead<VariableSourceClass>(VariableRunTimes, MaxPack, 1000);
+            var deviceVariableSourceReads = Plc.LoadSourceRead<VariableSourceClass>(VariableRunTimes, MaxPack, "1000");
             foreach (var item in deviceVariableSourceReads)
             {
                 var result = await Plc.ReadAsync(item.RegisterAddress, item.Length);
