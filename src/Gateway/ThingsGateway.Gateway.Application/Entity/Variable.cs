@@ -137,7 +137,10 @@ public class Variable : BaseDataEntity
         }
         set
         {
-            _value = JToken.Parse(value.ToString());
+            if (value != null)
+                _value = JToken.Parse(value?.ToString());
+            else
+                _value = null;
         }
 
     }
