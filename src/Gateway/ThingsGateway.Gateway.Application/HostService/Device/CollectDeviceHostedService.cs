@@ -205,46 +205,8 @@ internal sealed class CollectDeviceHostedService : DeviceHostedService, ICollect
                         // 如果设备已更改，则执行启动前的操作
                         if (isChanged)
                         {
-                            try
-                            {
-                                //添加保存数据变量读取操作
-                                var saveVariable = dev.VariableRunTimes.Where(a => a.Value.SaveValue).ToDictionary(a => a.Value.Id, a => a.Value);
-
-                                if (saveVariable.Count > 0)
-                                {
-                                    var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<JToken>), nameof(VariableRunTime), nameof(VariableRunTime.SaveValue));
-                                    var varList = await cacheDb.DBProvider.Queryable<CacheDBItem<JToken>>().ToListAsync().ConfigureAwait(false);
-
-                                    for (int i = 0; i < varList.Count; i++)
-                                    {
-                                        var varValue = varList[i];
-                                        if (saveVariable.TryGetValue(varValue.Id, out var variable))
-                                        {
-                                            if (varValue.Value is JValue jValue)
-                                            {
-                                                variable.Value = jValue.Value;
-                                            }
-                                            else
-                                            {
-                                                variable.Value = varValue.Value;
-                                            }
-                                        }
-                                    }
-                                    cacheDb.SafeDispose();
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.LogWarning(ex, "SaveValue");
-                            }
-
                             await OnCollectDeviceStarting().ConfigureAwait(false);
-
                         }
-
-
-
-
 
                         try
                         {
@@ -323,7 +285,6 @@ internal sealed class CollectDeviceHostedService : DeviceHostedService, ICollect
                 await OnCollectDeviceStarting().ConfigureAwait(false);
             }
 
-            await ReadValue().ConfigureAwait(false);
             await StartAllChannelThreadsAsync().ConfigureAwait(false);
             await OnCollectDeviceStarted().ConfigureAwait(false);
             _ = Task.Run(() =>
@@ -340,52 +301,6 @@ internal sealed class CollectDeviceHostedService : DeviceHostedService, ICollect
             started = true;
             singleRestartLock.Release();
             restartLock.Release();
-        }
-    }
-
-    private async Task ReadValue()
-    {
-        try
-        {
-            //添加保存数据变量读取操作
-            var saveVariable = GlobalData.ReadOnlyVariables.Where(a => a.Value.SaveValue).ToDictionary(a => a.Value.Id, a => a.Value);
-            var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<JToken>), nameof(VariableRunTime), nameof(VariableRunTime.SaveValue));
-            cacheDb.InitDb();
-
-            {
-                var varList = await cacheDb.DBProvider.Queryable<CacheDBItem<JToken>>().ToListAsync().ConfigureAwait(false);
-                List<long> ids = new List<long>();
-                for (int i = 0; i < varList.Count; i++)
-                {
-                    var varValue = varList[i];
-                    var has = saveVariable.Count > 0;
-                    if (has && saveVariable.TryGetValue(varValue.Id, out var variable))
-                    {
-                        if (varValue.Value is JValue jValue)
-                        {
-                            variable.Value = jValue.Value;
-                        }
-                        else
-                        {
-                            variable.Value = varValue.Value;
-                        }
-                    }
-                    else
-                    {
-                        ids.Add(varValue.Id);
-                    }
-                }
-
-                if (ids.Count > 0)
-                {
-                    await cacheDb.DBProvider.Deleteable<CacheDBItem<JToken>>(ids).ExecuteCommandAsync().ConfigureAwait(false);
-                }
-                cacheDb.SafeDispose();
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "SaveValue");
         }
     }
 
@@ -436,22 +351,12 @@ internal sealed class CollectDeviceHostedService : DeviceHostedService, ICollect
         try
         {
             //添加保存数据变量读取操作
-            var saveVariable = DriverBases.SelectMany(a => a.CurrentDevice.VariableRunTimes).Where(a => a.Value.SaveValue).Select(a =>
-            {
-                return new CacheDBItem<JToken>()
-                {
-                    Id = a.Value.Id,
-                    Value = JToken.FromObject(a.Value.Value)
-                };
-            }).ToList();
+            var saveVariable = DriverBases.SelectMany(a => a.CurrentDevice.VariableRunTimes).Where(a => a.Value.SaveValue).Select(a => (Variable)a.Value).ToList();
 
             if (saveVariable.Count > 0)
             {
-                var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<JToken>), nameof(VariableRunTime), nameof(VariableRunTime.SaveValue));
-
-                await cacheDb.DBProvider.Fastest<CacheDBItem<JToken>>().PageSize(100000).BulkMergeAsync(saveVariable).ConfigureAwait(false);
-
-                cacheDb.SafeDispose();
+                using var db = DbContext.Db.GetConnectionScopeWithAttr<Variable>().CopyNew();
+                var result = await db.Updateable<Variable>(saveVariable).UpdateColumns(a => a.Value).ExecuteCommandAsync().ConfigureAwait(false);
             }
         }
         catch (Exception ex)

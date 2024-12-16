@@ -10,6 +10,8 @@
 
 using BootstrapBlazor.Components;
 
+using Newtonsoft.Json.Linq;
+
 using SqlSugar;
 
 using System.Collections.Concurrent;
@@ -122,11 +124,29 @@ public class Variable : BaseDataEntity
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public virtual bool RpcWriteEnable { get; set; } = true;
 
+    /// <summary>
+    /// 初始值
+    /// </summary>
+    [SugarColumn(IsJson = true, ColumnDataType = StaticConfig.CodeFirst_BigString, ColumnDescription = "初始值", IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public virtual object? Value
+    {
+        get
+        {
+            return _value;
+        }
+        set
+        {
+            _value = JToken.Parse(value.ToString());
+        }
+
+    }
+    private object? _value;
 
     /// <summary>
-    /// 保存值
+    /// 保存初始值
     /// </summary>
-    [SugarColumn(ColumnDescription = "保存值", IsNullable = true)]
+    [SugarColumn(ColumnDescription = "保存初始值", IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public virtual bool SaveValue { get; set; } = false;
 

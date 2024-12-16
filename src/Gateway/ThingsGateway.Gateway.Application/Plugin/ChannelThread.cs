@@ -366,21 +366,12 @@ public class ChannelThread
                 try
                 {
                     //添加保存数据变量读取操作
-                    var saveVariable = driverBase.CurrentDevice.VariableRunTimes.Where(a => a.Value.SaveValue).Select(a =>
-                    {
-                        return new CacheDBItem<JToken>()
-                        {
-                            Id = a.Value.Id,
-                            Value = JToken.FromObject(a.Value.Value)
-                        };
-                    }).ToList();
+                    var saveVariable = driverBase.CurrentDevice.VariableRunTimes.Where(a => a.Value.SaveValue).Select(a=> (Variable)a.Value).ToList();
 
-                    if (saveVariable.Count > 0)
+                    if (saveVariable.Count>0)
                     {
-                        var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<JToken>), nameof(VariableRunTime), nameof(VariableRunTime.SaveValue));
-                        var varList = await cacheDb.DBProvider.Storageable(saveVariable).ExecuteCommandAsync().ConfigureAwait(false);
-
-                        cacheDb.SafeDispose();
+                        using var db = DbContext.Db.GetConnectionScopeWithAttr<Variable>().CopyNew();
+                        var result = await db.Updateable<Variable>(saveVariable).UpdateColumns(a=>a.Value).ExecuteCommandAsync().ConfigureAwait(false);
                     }
                 }
                 catch (Exception ex)

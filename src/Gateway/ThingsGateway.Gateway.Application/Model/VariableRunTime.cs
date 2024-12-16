@@ -154,7 +154,7 @@ public class VariableRunTime : Variable, IVariable
     /// 实时值
     /// </summary>
     [AutoGenerateColumn(Visible = true, Order = 6)]
-    public object? Value { get => _value; internal set => _value = value; }
+    public override object? Value { get => _value;  set => _value = value; }
 
     /// <summary>
     /// 设置变量值与时间/质量戳
