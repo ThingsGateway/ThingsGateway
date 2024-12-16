@@ -44,7 +44,7 @@ public class VariableRunTime : Variable, IVariable
     public override bool Enable { get; set; }
 
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public override int? IntervalTime { get; set; }
+    public override string? IntervalTime { get; set; }
 
     #endregion 重写
 

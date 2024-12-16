@@ -126,7 +126,7 @@ public abstract class CollectBase : DriverBase
                 if (method != null)
                 {
                     // 构建 VariableMethod 对象
-                    var methodResult = new VariableMethod(new Method(method.MethodInfo), item, item.IntervalTime ?? item.CollectDeviceRunTime.IntervalTime);
+                    var methodResult = new VariableMethod(new Method(method.MethodInfo), item, string.IsNullOrWhiteSpace( item.IntervalTime) ? item.CollectDeviceRunTime.IntervalTime: item.IntervalTime);
                     variablesMethodResult.Add(methodResult);
                 }
                 else

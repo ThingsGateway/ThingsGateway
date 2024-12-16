@@ -51,8 +51,11 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
         }
 
         // 设置业务间隔时间的最小值为100毫秒
-        if (_businessPropertyWithCacheInterval.BusinessInterval <= 100)
-            _businessPropertyWithCacheInterval.BusinessInterval = 100;
+        if (int.TryParse(_businessPropertyWithCacheInterval.BusinessInterval, out int delay))
+        {
+            if (delay <= 100)
+                _businessPropertyWithCacheInterval.BusinessInterval = "100";
+        }
 
         // 初始化设备和变量上传的定时器
         _exTTimerTick = new(_businessPropertyWithCacheInterval.BusinessInterval);

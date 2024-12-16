@@ -49,8 +49,11 @@ public abstract class BusinessBaseWithCacheIntervalVariableModel<T> : BusinessBa
         }
 
         // 如果业务间隔小于等于100毫秒，则将业务间隔设置为100毫秒
-        if (_businessPropertyWithCacheInterval.BusinessInterval <= 100)
-            _businessPropertyWithCacheInterval.BusinessInterval = 100;
+        if (int.TryParse(_businessPropertyWithCacheInterval.BusinessInterval, out int delay))
+        {
+            if (delay <= 100)
+                _businessPropertyWithCacheInterval.BusinessInterval = "100";
+        }
 
         // 初始化定时器
         _exTTimerTick = new TimeTick(_businessPropertyWithCacheInterval.BusinessInterval);

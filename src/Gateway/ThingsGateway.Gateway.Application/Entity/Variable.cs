@@ -60,11 +60,11 @@ public class Variable : BaseDataEntity
     public virtual string? Unit { get; set; }
 
     /// <summary>
-    /// 执行间隔
+    /// 间隔时间
     /// </summary>
-    [SugarColumn(ColumnDescription = "执行间隔", IsNullable = true)]
+    [SugarColumn(ColumnDescription = "间隔时间", IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public virtual int? IntervalTime { get; set; }
+    public virtual string? IntervalTime { get; set; }
 
     /// <summary>
     /// 变量地址，可能带有额外的信息，比如<see cref="DataFormatEnum"/> ，以;分割

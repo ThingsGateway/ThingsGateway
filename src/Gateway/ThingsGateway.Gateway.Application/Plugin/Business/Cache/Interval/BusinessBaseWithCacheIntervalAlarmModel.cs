@@ -11,6 +11,7 @@
 using Mapster;
 
 using TouchSocket.Core;
+using UAParser;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -45,8 +46,11 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
         }
 
         // 如果业务属性的缓存要求的业务间隔小于等于100，则设置为100
-        if (_businessPropertyWithCacheInterval.BusinessInterval <= 100)
-            _businessPropertyWithCacheInterval.BusinessInterval = 100;
+        if (int.TryParse(_businessPropertyWithCacheInterval.BusinessInterval, out int delay))
+        {
+            if (delay <= 100)
+                _businessPropertyWithCacheInterval.BusinessInterval = "100";
+        }
 
         // 初始化
         _exTTimerTick = new(_businessPropertyWithCacheInterval.BusinessInterval);

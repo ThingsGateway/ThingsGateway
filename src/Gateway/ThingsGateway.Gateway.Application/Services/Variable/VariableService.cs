@@ -98,7 +98,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
                 device.Id = id;
                 device.PluginType = PluginTypeEnum.Collect;
                 device.ChannelId = channel.Id;
-                device.IntervalTime = 1000;
+                device.IntervalTime = "1000";
                 device.CreateUserId = UserManager.UserId;
                 device.CreateOrgId = UserManager.OrgId;
                 device.PluginName = "ThingsGateway.Plugin.Modbus.ModbusMaster";
@@ -150,7 +150,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
             serviceDevice.CreateUserId = UserManager.UserId;
             serviceDevice.CreateOrgId = UserManager.OrgId;
             serviceDevice.ChannelId = serviceChannel.Id;
-            serviceDevice.IntervalTime = 1000;
+            serviceDevice.IntervalTime = "1000";
             serviceDevice.PluginName = "ThingsGateway.Plugin.Modbus.ModbusSlave";
             newDevices.Add(serviceDevice);
         }

@@ -61,8 +61,7 @@ public class Device : BaseDataEntity
     /// </summary>
     [SugarColumn(ColumnDescription = "默认执行间隔")]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    [MinValue(10)]
-    public virtual int IntervalTime { get; set; } = 1000;
+    public virtual string IntervalTime { get; set; } = "1000";
 
     /// <summary>
     /// 插件名称

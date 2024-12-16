@@ -93,7 +93,7 @@ public abstract class VariableObject
             {
                 DataType = dataType,
                 RegisterAddress = pair.Value.Attribute.RegisterAddress,
-                IntervalTime = 1000,
+                IntervalTime = "1000",
             };
             pair.Value.VariableClass = variableClass;
             variableClasss.Add(variableClass);

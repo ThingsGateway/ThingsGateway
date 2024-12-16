@@ -28,5 +28,5 @@ public class BusinessPropertyWithCacheInterval : BusinessPropertyWithCache
     /// 间隔上传时间
     /// </summary>
     [DynamicProperty]
-    public virtual int BusinessInterval { get; set; } = 1000;
+    public virtual string BusinessInterval { get; set; } = "1000";
 }

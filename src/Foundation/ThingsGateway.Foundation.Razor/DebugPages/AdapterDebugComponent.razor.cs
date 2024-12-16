@@ -113,13 +113,13 @@ public partial class AdapterDebugComponent : AdapterDebugBase
                                 {
                                     DataType=DataTypeEnum.Int16,
                                     RegisterAddress="40001",
-                                    IntervalTime=1000,
+                                    IntervalTime="1000",
                                 },
                                    new VariableClass()
                                 {
                                     DataType=DataTypeEnum.Int32,
                                     RegisterAddress="40011",
-                                    IntervalTime=1000,
+                                    IntervalTime="1000",
                                 },
             };
 

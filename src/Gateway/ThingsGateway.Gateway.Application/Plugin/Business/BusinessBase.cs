@@ -81,8 +81,11 @@ public abstract class BusinessBase : DriverBase
         CurrentDevice.RefreshBusinessDeviceRuntime(device.Id);
 
         // 如果设备的采集间隔小于等于50毫秒，则将其设置为50毫秒
-        if (device.IntervalTime <= 50)
-            device.IntervalTime = 50;
+        if(int.TryParse(device.IntervalTime,out int delay))
+        {
+            if (delay <= 50)
+                device.IntervalTime = "50";
+        }
     }
 
     /// <summary>
@@ -90,7 +93,7 @@ public abstract class BusinessBase : DriverBase
     /// </summary>
     protected async Task Delay(CancellationToken cancellationToken)
     {
-        await Task.Delay(Math.Max(CurrentDevice.IntervalTime - ChannelThread.CycleInterval, ChannelThread.CycleInterval), cancellationToken).ConfigureAwait(false);
+        await Task.Delay(ChannelThread.CycleInterval, cancellationToken).ConfigureAwait(false);
     }
 
     protected override void Dispose(bool disposing)

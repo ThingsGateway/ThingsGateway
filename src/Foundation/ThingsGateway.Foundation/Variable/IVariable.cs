@@ -28,7 +28,7 @@ public interface IVariable
     /// <summary>
     /// 执行间隔
     /// </summary>
-    int? IntervalTime { get; set; }
+    string? IntervalTime { get; set; }
 
     /// <summary>
     /// 寄存器地址

@@ -31,7 +31,7 @@ public class VariableClass : IVariable
     /// <summary>
     /// 执行间隔
     /// </summary>
-    public virtual int? IntervalTime { get; set; }
+    public virtual string? IntervalTime { get; set; }
 
     /// <inheritdoc/>
     public bool IsOnline { get; set; }

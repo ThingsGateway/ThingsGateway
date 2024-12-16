@@ -8,25 +8,33 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using ThingsGateway.NewLife.Threading;
+
 namespace ThingsGateway.Foundation;
 
 /// <summary>
 /// 时间刻度器,最小时间间隔10毫秒
 /// </summary>
-public class TimeTick
+public class TimeTick 
 {
     /// <summary>
     /// 时间间隔（毫秒）
     /// </summary>
     private readonly int intervalMilliseconds = 1000;
-
+    private readonly Cron cron;
     /// <inheritdoc cref="TimeTick"/>
-    public TimeTick(int intervalMilliseconds = 1000)
+    public TimeTick(string delay)
     {
-        if (intervalMilliseconds < 10)
-            intervalMilliseconds = 10;
-        LastTime = DateTime.Now.AddMilliseconds(-intervalMilliseconds);
-        this.intervalMilliseconds = intervalMilliseconds;
+        if (int.TryParse(delay, out intervalMilliseconds))
+        {
+            if (intervalMilliseconds < 10)
+                intervalMilliseconds = 10;
+            LastTime = DateTime.Now.AddMilliseconds(-intervalMilliseconds);
+        }
+        else
+        {
+            cron = new Cron(delay);
+        }
     }
 
     /// <summary>
@@ -41,7 +49,16 @@ public class TimeTick
     /// <returns>是否触发时间刻度</returns>
     public bool IsTickHappen(DateTime currentTime)
     {
-        var nextTime = LastTime.AddMilliseconds(intervalMilliseconds);
+        DateTime nextTime = DateTime.MinValue;
+        if (cron == null)
+        {
+            nextTime = LastTime.AddMilliseconds(intervalMilliseconds);
+
+        }
+        else
+        {
+            nextTime = cron.GetNext(LastTime);
+        }
         var diffMilliseconds = (currentTime - nextTime).TotalMilliseconds;
         if (diffMilliseconds < 0)
             return false;
@@ -50,6 +67,7 @@ public class TimeTick
         else
             LastTime = currentTime;//选择当前时间
         return true;
+
     }
 
     /// <summary>

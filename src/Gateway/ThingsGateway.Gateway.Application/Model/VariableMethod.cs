@@ -24,9 +24,9 @@ public class VariableMethod
 
     private object?[]? OS;
 
-    public VariableMethod(Method method, VariableRunTime variable, int milliSeconds = 1000)
+    public VariableMethod(Method method, VariableRunTime variable, string delay)
     {
-        _timeTick = new TimeTick(milliSeconds);
+        _timeTick = new TimeTick(delay);
         MethodInfo = method;
         Variable = variable;
         variable.VariableMethod = this;
