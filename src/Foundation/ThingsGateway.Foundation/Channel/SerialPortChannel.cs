@@ -117,8 +117,9 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     /// <inheritdoc/>
     public override string? ToString()
     {
-        if (ProtectedMainSerialPort != null)
-            return $"{ProtectedMainSerialPort.PortName}[{ProtectedMainSerialPort.BaudRate},{ProtectedMainSerialPort.DataBits},{ProtectedMainSerialPort.StopBits},{ProtectedMainSerialPort.Parity}]";
+        var port = this.Config?.GetValue(SerialPortConfigExtension.SerialPortOptionProperty);
+        if (port != null)
+            return $"{port.PortName}[{port.BaudRate},{port.DataBits},{port.StopBits},{port.Parity}]";
         return base.ToString();
     }
 

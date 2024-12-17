@@ -11,6 +11,8 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+using System.Linq.Expressions;
+
 using ThingsGateway.Gateway.Application.Extensions;
 using ThingsGateway.NewLife.Reflection;
 
@@ -76,6 +78,38 @@ public abstract class VariableObject
         }
 
         return jToken;
+    }
+
+    /// <summary>
+    /// GetBytes
+    /// </summary>
+    /// <returns></returns>
+    public virtual byte[] GetBytes(Expression<Func<object>> accessor)
+    {
+        if (accessor.Body == null)
+        {
+            throw new ArgumentNullException(nameof(accessor));
+        }
+
+        var expression = accessor.Body;
+        if (expression is UnaryExpression unaryExpression && unaryExpression.NodeType == ExpressionType.Convert && unaryExpression.Type == typeof(object))
+        {
+            expression = unaryExpression.Operand;
+        }
+
+        if (expression is not MemberExpression memberExpression)
+        {
+            throw new ArgumentException("Can only access properties");
+        }
+        // 从字典中获取与属性对应的变量信息
+        if (!this.VariableRuntimePropertyDict.TryGetValue(memberExpression.Member.Name, out var variable))
+        {
+            throw new KeyNotFoundException($"Variable for {memberExpression.Member.Name} not found.");
+        }
+
+        var func = accessor.Compile();
+
+        return variable.VariableClass.ThingsGatewayBitConverter.GetBytesFormData(GetExpressionsValue(func(), variable), variable.VariableClass.DataType);
     }
 
     /// <summary>
