@@ -167,8 +167,11 @@ public static class StringExtensions
             objResult = value;
         else if (propertyType == typeof(IPAddress))
             objResult = IPAddress.Parse(value);
+        else if (propertyType == typeof(object))
+            objResult = value.GetJTokenFromString();
         else if (propertyType.IsEnum)
             objResult = Enum.Parse(propertyType, value);
+
         else
         {
             objResult = null;
