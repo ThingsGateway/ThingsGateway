@@ -37,6 +37,10 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     public bool Online { get; }
 
     /// <summary>
+    /// MaxSign
+    /// </summary>
+    public int MaxSign { get; set; }
+    /// <summary>
     /// 通道启动成功后
     /// </summary>
     public ChannelEventHandler Started { get; set; }

@@ -22,6 +22,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     {
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
+    public int MaxSign { get => WaitHandlePool.MaxSign; set => WaitHandlePool.MaxSign = value; }
 
     /// <inheritdoc/>
     public ChannelReceivedEventHandler ChannelReceived { get; set; } = new();
@@ -52,7 +53,7 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     /// <summary>
     /// 等待池
     /// </summary>
-    public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
+    public WaitHandlePool<MessageBase> WaitHandlePool { get; set; } = new();
 
     /// <inheritdoc/>
     public WaitLock WaitLock { get; } = new WaitLock();

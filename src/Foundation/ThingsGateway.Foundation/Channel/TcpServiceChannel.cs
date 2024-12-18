@@ -188,9 +188,11 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
     /// <inheritdoc/>
     protected override TcpSessionClientChannel NewClient()
     {
-        return new TcpSessionClientChannel();
+        var data = new TcpSessionClientChannel();
+        data.WaitHandlePool.MaxSign = MaxSign;
+        return data;
     }
-
+    public int MaxSign { get; set; }
     /// <inheritdoc/>
     protected override async Task OnTcpClosing(TcpSessionClientChannel socketClient, ClosingEventArgs e)
     {

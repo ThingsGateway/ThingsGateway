@@ -22,6 +22,7 @@ public class TcpClientChannel : TcpClient, IClientChannel
     {
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
+    public int MaxSign { get => WaitHandlePool.MaxSign; set => WaitHandlePool.MaxSign = value; } 
 
     /// <inheritdoc/>
     public ChannelReceivedEventHandler ChannelReceived { get; set; } = new();

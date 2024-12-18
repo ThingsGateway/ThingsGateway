@@ -1,35 +1,38 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="$(SolutionDir)Version.props" />
-  <Import Project="$(SolutionDir)PackNuget.props" />
+	<Import Project="$(SolutionDir)Version.props" />
+	<Import Project="$(SolutionDir)PackNuget.props" />
 
-  <ItemGroup>
-    <PackageReference Include="SqlSugar.TDengineCore" Version="4.18.0" />
-    <PackageReference Include="Rougamo.Fody" Version="5.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="SqlSugar.TDengineCore" Version="4.18.0" />
+		<PackageReference Include="Rougamo.Fody" Version="5.0.0" />
+		<PackageReference Include="TouchSocket.Dmtp" Version="3.0.8" />
+		<PackageReference Include="TouchSocket.WebApi.Swagger" Version="3.0.8" />
 
-  <ItemGroup>
-    <PackageReference Include="ThingsGateway.Admin.Application" Version="$(AdminVersion)" />
-  </ItemGroup>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Remove="Locales\*.json" />
-    <EmbeddedResource Include="Locales\*.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="ThingsGateway.Admin.Application" Version="$(AdminVersion)" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Content Remove="SeedData\Gateway\*.json" />
-    <Content Include="SeedData\Gateway\*.json" Pack="true" PackagePath="\Content\SeedData\Gateway\">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+	<ItemGroup>
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Remove="SeedData\Gateway\*.json" />
+		<Content Include="SeedData\Gateway\*.json" Pack="true" PackagePath="\Content\SeedData\Gateway\">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Foundation\ThingsGateway.CSScript\ThingsGateway.CSScript.csproj" />
-    <ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Foundation\ThingsGateway.CSScript\ThingsGateway.CSScript.csproj" />
+		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+	</ItemGroup>
 
 </Project>
