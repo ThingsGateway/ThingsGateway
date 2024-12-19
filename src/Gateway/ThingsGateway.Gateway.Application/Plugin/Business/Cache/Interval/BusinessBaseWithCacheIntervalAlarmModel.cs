@@ -57,30 +57,30 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
 
         GlobalData.AlarmHostedService.OnAlarmChanged -= AlarmValueChange;
         GlobalData.AlarmHostedService.OnAlarmChanged += AlarmValueChange;
+        // 解绑全局数据的事件
+        GlobalData.VariableValueChangeEvent -= VariableValueChange;
+        GlobalData.DeviceStatusChangeEvent -= DeviceStatusChange;
 
         // 根据业务属性的缓存是否为间隔上传来决定事件绑定
-        if (!_businessPropertyWithCacheInterval.IsInterval)
+        if (_businessPropertyWithCacheInterval.BusinessUpdateEnum!= BusinessUpdateEnum.Interval)
         {
-            // 解绑全局数据的事件
-            GlobalData.VariableValueChangeEvent -= VariableValueChange;
-            GlobalData.DeviceStatusChangeEvent -= DeviceStatusChange;
-
             // 绑定全局数据的事件
             GlobalData.DeviceStatusChangeEvent += DeviceStatusChange;
             GlobalData.VariableValueChangeEvent += VariableValueChange;
 
-            // 触发一次设备状态变化和变量值变化事件
-            CollectDevices.ForEach(a =>
-            {
-                if (a.Value.DeviceStatus == DeviceStatusEnum.OnLine)
-                    DeviceStatusChange(a.Value, a.Value.Adapt<DeviceBasicData>());
-            });
-            CurrentDevice.VariableRunTimes.ForEach(a =>
-            {
-                if (a.Value.IsOnline)
-                    VariableValueChange(a.Value, a.Value.Adapt<VariableBasicData>());
-            });
         }
+
+        // 触发一次设备状态变化和变量值变化事件
+        CollectDevices.ForEach(a =>
+        {
+            if (a.Value.DeviceStatus == DeviceStatusEnum.OnLine)
+                DeviceStatusChange(a.Value, a.Value.Adapt<DeviceBasicData>());
+        });
+        CurrentDevice.VariableRunTimes.ForEach(a =>
+        {
+            if (a.Value.IsOnline)
+                VariableValueChange(a.Value, a.Value.Adapt<VariableBasicData>());
+        });
     }
 
     /// <summary>
@@ -101,7 +101,15 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     {
         // 在设备状态变化时执行的自定义逻辑
     }
-
+    /// <summary>
+    /// 当设备状态定时变化时触发此方法。如果不需要进行设备上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheDeviceModel{T,T2}.AddQueueDevModel(CacheDBItem{T2})"/> 方法。
+    /// </summary>
+    /// <param name="deviceRunTime">设备运行时信息</param>
+    /// <param name="deviceData">设备数据</param>
+    protected virtual void DeviceTimeInterval(DeviceRunTime deviceRunTime, DeviceBasicData deviceData)
+    {
+        // 在设备状态变化时执行的自定义逻辑
+    }
     /// <summary>
     /// 释放资源方法
     /// </summary>
@@ -135,7 +143,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
             }
 
             // 如果业务属性的缓存为间隔上传，则根据定时器间隔执行相应操作
-            if (_businessPropertyWithCacheInterval.IsInterval)
+            if (_businessPropertyWithCacheInterval.BusinessUpdateEnum != BusinessUpdateEnum.Change)
             {
                 try
                 {
@@ -144,7 +152,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
                         // 间隔推送全部变量
                         foreach (var variableRuntime in vardatas)
                         {
-                            VariableChange(variableRuntime, variableRuntime.Adapt<VariableBasicData>());
+                            VariableTimeInterval(variableRuntime, variableRuntime.Adapt<VariableBasicData>());
                         }
                     }
                 }
@@ -159,7 +167,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
                         // 间隔推送全部设备
                         foreach (var deviceRuntime in devdatas)
                         {
-                            DeviceChange(deviceRuntime, deviceRuntime.Adapt<DeviceBasicData>());
+                            DeviceTimeInterval(deviceRuntime, deviceRuntime.Adapt<DeviceBasicData>());
                         }
                     }
                 }
@@ -192,7 +200,15 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
     {
         // 在变量状态变化时执行的自定义逻辑
     }
-
+    /// <summary>
+    /// 当变量定时变化时触发此方法。如果不需要进行变量上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheVariableModel{T}.AddQueueVarModel(CacheDBItem{T})"/> 方法。
+    /// </summary>
+    /// <param name="variableRunTime">变量运行时信息</param>
+    /// <param name="variable">变量数据</param>
+    protected virtual void VariableTimeInterval(VariableRunTime variableRunTime, VariableBasicData variable)
+    {
+        // 在变量状态变化时执行的自定义逻辑
+    }
     /// <summary>
     /// 当报警值发生变化时触发此事件处理方法。该方法内部会检查是否需要进行报警上传，如果需要，则调用 <see cref="AlarmChange(AlarmVariable)"/> 方法。
     /// </summary>
@@ -202,7 +218,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
         if (!CurrentDevice.KeepRun)
             return;
         // 如果业务属性的缓存为间隔上传，则不执行后续操作
-        if (_businessPropertyWithCacheInterval?.IsInterval != true)
+        //if (_businessPropertyWithCacheInterval?.IsInterval != true)
         {
             // 检查当前设备的变量是否包含此报警变量，如果包含，则触发报警变量的变化处理方法
             if (CurrentDevice.VariableRunTimes.ContainsKey(alarmVariable.Name))
@@ -220,7 +236,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
         if (!CurrentDevice.KeepRun)
             return;
         // 如果业务属性的缓存为间隔上传，则不执行后续操作
-        if (_businessPropertyWithCacheInterval?.IsInterval != true)
+        //if (_businessPropertyWithCacheInterval?.IsInterval != true)
         {
             // 检查当前设备的设备列表是否包含此设备，如果包含，则触发设备的状态变化处理方法
             if (CollectDevices.ContainsKey(deviceData.Name))
@@ -238,7 +254,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
         if (!CurrentDevice.KeepRun)
             return;
         // 如果业务属性的缓存为间隔上传，则不执行后续操作
-        if (_businessPropertyWithCacheInterval?.IsInterval != true)
+        //if (_businessPropertyWithCacheInterval?.IsInterval != true)
         {
             // 检查当前设备的变量是否包含此变量，如果包含，则触发变量的变化处理方法
             if (CurrentDevice.VariableRunTimes.ContainsKey(variable.Name))

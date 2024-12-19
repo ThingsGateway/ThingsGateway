@@ -10,6 +10,12 @@
 
 namespace ThingsGateway.Gateway.Application;
 
+public enum BusinessUpdateEnum
+{
+    Change,
+    Interval,
+    IntervalOrChange,
+}
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
@@ -19,10 +25,10 @@ public class BusinessPropertyWithCacheInterval : BusinessPropertyWithCache
     public virtual bool IsAllVariable { get; set; } = false;
 
     /// <summary>
-    /// 是否间隔上传
+    /// 上传模式
     /// </summary>
     [DynamicProperty]
-    public virtual bool IsInterval { get; set; } = false;
+    public virtual BusinessUpdateEnum BusinessUpdateEnum { get; set; }
 
     /// <summary>
     /// 间隔上传时间

@@ -1,8 +1,8 @@
 <Project>
 
   <PropertyGroup>
-    <PluginVersion>9.0.2.54</PluginVersion>
-    <ProPluginVersion>9.0.2.75</ProPluginVersion>
+    <PluginVersion>9.0.2.57</PluginVersion>
+    <ProPluginVersion>9.0.2.76</ProPluginVersion>
   </PropertyGroup>
 
   <PropertyGroup>

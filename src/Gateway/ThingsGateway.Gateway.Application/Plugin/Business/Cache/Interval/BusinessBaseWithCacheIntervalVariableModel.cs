@@ -60,16 +60,17 @@ public abstract class BusinessBaseWithCacheIntervalVariableModel<T> : BusinessBa
 
         // 注册变量值变化事件处理程序
         GlobalData.VariableValueChangeEvent -= VariableValueChange;
-        if (!_businessPropertyWithCacheInterval.IsInterval)
+        if (_businessPropertyWithCacheInterval.BusinessUpdateEnum!= BusinessUpdateEnum.Interval)
         {
             GlobalData.VariableValueChangeEvent += VariableValueChange;
-            // 触发一次变量值变化事件
-            CurrentDevice.VariableRunTimes.ForEach(a =>
-            {
-                if (a.Value.IsOnline)
-                    VariableValueChange(a.Value, a.Value.Adapt<VariableData>());
-            });
+          
         }
+        // 触发一次变量值变化事件
+        CurrentDevice.VariableRunTimes.ForEach(a =>
+        {
+            if (a.Value.IsOnline)
+                VariableValueChange(a.Value, a.Value.Adapt<VariableBasicData>());
+        });
     }
 
     /// <summary>
@@ -98,7 +99,7 @@ public abstract class BusinessBaseWithCacheIntervalVariableModel<T> : BusinessBa
                 continue;
             }
             //间隔上传
-            if (_businessPropertyWithCacheInterval.IsInterval)
+            if (_businessPropertyWithCacheInterval.BusinessUpdateEnum != BusinessUpdateEnum.Change)
             {
                 try
                 {
@@ -107,7 +108,7 @@ public abstract class BusinessBaseWithCacheIntervalVariableModel<T> : BusinessBa
                         //间隔推送全部变量
                         foreach (var variableRuntime in vardatas)
                         {
-                            VariableChange(variableRuntime, variableRuntime.Adapt<VariableData>());
+                            VariableTimeInterval(variableRuntime, variableRuntime.Adapt<VariableBasicData>());
                         }
                     }
                 }
@@ -141,20 +142,28 @@ public abstract class BusinessBaseWithCacheIntervalVariableModel<T> : BusinessBa
     /// </summary>
     /// <param name="variableRunTime">变量运行时对象</param>
     /// <param name="variable">变量运行时对象</param>
-    protected virtual void VariableChange(VariableRunTime variableRunTime, VariableData variable)
+    protected virtual void VariableChange(VariableRunTime variableRunTime, VariableBasicData variable)
     {
     }
-
+    /// <summary>
+    /// 当变量定时变化时触发此方法。如果不需要进行变量上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCacheVariableModel{T}.AddQueueVarModel(CacheDBItem{T})"/> 方法。
+    /// </summary>
+    /// <param name="variableRunTime">变量运行时信息</param>
+    /// <param name="variable">变量数据</param>
+    protected virtual void VariableTimeInterval(VariableRunTime variableRunTime, VariableBasicData variable)
+    {
+        // 在变量状态变化时执行的自定义逻辑
+    }
     /// <summary>
     /// 当变量值发生变化时调用的方法。
     /// </summary>
     /// <param name="variableRunTime">变量运行时对象</param>
     /// <param name="variable">变量数据</param>
-    private void VariableValueChange(VariableRunTime variableRunTime, VariableData variable)
+    private void VariableValueChange(VariableRunTime variableRunTime, VariableBasicData variable)
     {
         if (!CurrentDevice.KeepRun)
             return;
-        if (_businessPropertyWithCacheInterval?.IsInterval != true)
+        //if (_businessPropertyWithCacheInterval?.IsInterval != true)
         {
             //筛选
             if (CurrentDevice.VariableRunTimes.ContainsKey(variableRunTime.Name))

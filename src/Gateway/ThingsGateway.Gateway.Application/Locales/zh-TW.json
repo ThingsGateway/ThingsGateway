@@ -1,5 +1,9 @@
 ﻿{
-
+  "ThingsGateway.Gateway.Application.BusinessUpdateEnum": {
+    "Change": "變化",
+    "Interval": "定時",
+    "IntervalOrChange": "定時或變化"
+  },
   "ThingsGateway.Gateway.Application.ConfigInfoController": {
     "ConfigInfoController": "獲取配置資訊",
     "GetChannelList": "獲取通道資訊",

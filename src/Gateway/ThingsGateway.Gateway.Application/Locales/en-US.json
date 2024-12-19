@@ -1,5 +1,9 @@
 ﻿{
-
+  "ThingsGateway.Gateway.Application.BusinessUpdateEnum": {
+    "Change": "Change",
+    "Interval": "Interval",
+    "IntervalOrChange": "IntervalOrChange"
+  },
 
   "ThingsGateway.Gateway.Application.ConfigInfoController": {
     "ConfigInfoController": "Get configuration information",
