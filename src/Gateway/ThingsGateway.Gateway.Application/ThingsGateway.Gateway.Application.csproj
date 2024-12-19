@@ -12,7 +12,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="ThingsGateway.Admin.Application" Version="$(AdminVersion)" />
+		<ProjectReference Include="..\..\..\Admin\src\ThingsGateway.Admin.Application\ThingsGateway.Admin.Application.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

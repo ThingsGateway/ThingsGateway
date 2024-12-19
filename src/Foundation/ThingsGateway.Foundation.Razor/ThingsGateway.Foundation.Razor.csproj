@@ -16,7 +16,7 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="ThingsGateway.Razor" Version="$(AdminVersion)" />
+		<ProjectReference Include="..\..\..\Admin\src\ThingsGateway.Razor\ThingsGateway.Razor.csproj" />
 	</ItemGroup>
 
 

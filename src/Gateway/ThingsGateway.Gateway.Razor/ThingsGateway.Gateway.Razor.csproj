@@ -6,7 +6,7 @@
     <ProjectReference Include="..\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
     <PackageReference Include="BootstrapBlazor.WinBox" Version="9.0.7" />
     <PackageReference Include="BootstrapBlazor.CodeEditor" Version="9.0.1" />
-    <PackageReference Include="ThingsGateway.Admin.Razor" Version="$(AdminVersion)" />
+	  <ProjectReference Include="..\..\..\Admin\src\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
     <ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj" />
   </ItemGroup>
 

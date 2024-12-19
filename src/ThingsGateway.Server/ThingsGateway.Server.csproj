@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <Import Project="$(SolutionDir)Version.props" />
-  <Import Project="targets\Admin.targets" />
   <Import Project="targets\Plugin.targets" />
   <Import Project="targets\CustomPlugin.targets" />
   <Import Project="targets\Custom.targets" />
+  <!--<Import Project="targets\Admin.targets" />-->
   <!--<Import Project="targets\OtherPlugin.targets" />-->
   <!--<Import Project="targets\OtherPlugin1.targets" />-->
   <PropertyGroup>

@@ -34,6 +34,29 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Gateway.Razor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Foundation.Razor", "Foundation\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj", "{569F229F-FB10-4789-B00B-D9D12383177A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Admin", "Admin", "{72C65578-92A5-4E99-9779-27835B12B32F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Admin.Application", "..\Admin\src\ThingsGateway.Admin.Application\ThingsGateway.Admin.Application.csproj", "{C4C01993-DB12-49D9-BDDB-C312042A6C29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Admin.Razor", "..\Admin\src\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj", "{BC3AE9E7-7B56-4894-9514-52A493A0D724}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Core", "..\Admin\src\ThingsGateway.Core\ThingsGateway.Core.csproj", "{D473E69E-FDBE-4A8E-A835-7F380C8E6D86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Furion", "..\Admin\src\ThingsGateway.Furion\ThingsGateway.Furion.csproj", "{3759E861-BA1E-498A-85CF-48A0BE6B00BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.NewLife.X", "..\Admin\src\ThingsGateway.NewLife.X\ThingsGateway.NewLife.X.csproj", "{42928B73-237A-4483-935E-E7FAAC52F288}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Razor", "..\Admin\src\ThingsGateway.Razor\ThingsGateway.Razor.csproj", "{015DD6B7-325F-45B5-B69E-CBD62DC6235A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.AdminServer", "..\Admin\src\ThingsGateway.AdminServer\ThingsGateway.AdminServer.csproj", "{BE13F278-C153-4CB8-A4EF-59BEFAE54CF8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "other", "other", "{568A28E1-6CAE-461C-8578-C28BEAC81945}"
+	ProjectSection(SolutionItems) = preProject
+		..\Admin\src\Admin.props = ..\Admin\src\Admin.props
+		..\Admin\src\PackNuget.props = ..\Admin\src\PackNuget.props
+		..\Admin\src\Version.props = ..\Admin\src\Version.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +103,34 @@ Global
 		{569F229F-FB10-4789-B00B-D9D12383177A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{569F229F-FB10-4789-B00B-D9D12383177A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{569F229F-FB10-4789-B00B-D9D12383177A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4C01993-DB12-49D9-BDDB-C312042A6C29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4C01993-DB12-49D9-BDDB-C312042A6C29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4C01993-DB12-49D9-BDDB-C312042A6C29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4C01993-DB12-49D9-BDDB-C312042A6C29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC3AE9E7-7B56-4894-9514-52A493A0D724}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC3AE9E7-7B56-4894-9514-52A493A0D724}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC3AE9E7-7B56-4894-9514-52A493A0D724}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC3AE9E7-7B56-4894-9514-52A493A0D724}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D473E69E-FDBE-4A8E-A835-7F380C8E6D86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D473E69E-FDBE-4A8E-A835-7F380C8E6D86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D473E69E-FDBE-4A8E-A835-7F380C8E6D86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D473E69E-FDBE-4A8E-A835-7F380C8E6D86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3759E861-BA1E-498A-85CF-48A0BE6B00BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3759E861-BA1E-498A-85CF-48A0BE6B00BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3759E861-BA1E-498A-85CF-48A0BE6B00BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3759E861-BA1E-498A-85CF-48A0BE6B00BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42928B73-237A-4483-935E-E7FAAC52F288}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42928B73-237A-4483-935E-E7FAAC52F288}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42928B73-237A-4483-935E-E7FAAC52F288}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42928B73-237A-4483-935E-E7FAAC52F288}.Release|Any CPU.Build.0 = Release|Any CPU
+		{015DD6B7-325F-45B5-B69E-CBD62DC6235A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{015DD6B7-325F-45B5-B69E-CBD62DC6235A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{015DD6B7-325F-45B5-B69E-CBD62DC6235A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{015DD6B7-325F-45B5-B69E-CBD62DC6235A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE13F278-C153-4CB8-A4EF-59BEFAE54CF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE13F278-C153-4CB8-A4EF-59BEFAE54CF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE13F278-C153-4CB8-A4EF-59BEFAE54CF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE13F278-C153-4CB8-A4EF-59BEFAE54CF8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,10 +143,18 @@ Global
 		{A1163B55-31D8-4F58-872F-1DD5E0F14490} = {5948EA23-4B42-4C22-A266-2E0AE5FA575F}
 		{6B92AF2D-0997-4887-B1C5-31861F298238} = {5948EA23-4B42-4C22-A266-2E0AE5FA575F}
 		{569F229F-FB10-4789-B00B-D9D12383177A} = {2AC600BB-4325-4E0A-93A7-B1F53C8E2CA7}
+		{C4C01993-DB12-49D9-BDDB-C312042A6C29} = {72C65578-92A5-4E99-9779-27835B12B32F}
+		{BC3AE9E7-7B56-4894-9514-52A493A0D724} = {72C65578-92A5-4E99-9779-27835B12B32F}
+		{D473E69E-FDBE-4A8E-A835-7F380C8E6D86} = {72C65578-92A5-4E99-9779-27835B12B32F}
+		{3759E861-BA1E-498A-85CF-48A0BE6B00BB} = {72C65578-92A5-4E99-9779-27835B12B32F}
+		{42928B73-237A-4483-935E-E7FAAC52F288} = {72C65578-92A5-4E99-9779-27835B12B32F}
+		{015DD6B7-325F-45B5-B69E-CBD62DC6235A} = {72C65578-92A5-4E99-9779-27835B12B32F}
+		{BE13F278-C153-4CB8-A4EF-59BEFAE54CF8} = {72C65578-92A5-4E99-9779-27835B12B32F}
+		{568A28E1-6CAE-461C-8578-C28BEAC81945} = {72C65578-92A5-4E99-9779-27835B12B32F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
 		RESX_Rules = {"EnabledRules":[]}
 		RESX_NeutralResourcesLanguage = zh-Hans
-		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
 	EndGlobalSection
 EndGlobal

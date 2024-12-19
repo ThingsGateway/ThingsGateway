@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="ThingsGateway.NewLife.X" Version="$(AdminVersion)" />
+	  <ProjectReference Include="..\..\..\Admin\src\ThingsGateway.NewLife.X\ThingsGateway.NewLife.X.csproj" />
   </ItemGroup>
+
 </Project>
