@@ -1,0 +1,4 @@
+[submodule "Admin"]
+	url  = https://gitee.com/ThingsGateway/BlazorAdmin
+	path = Admin
+
