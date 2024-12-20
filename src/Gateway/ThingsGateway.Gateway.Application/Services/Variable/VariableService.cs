@@ -67,15 +67,15 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
 
     #region 测试
 
-    public async Task InsertTestDataAsync(int count)
+    public async Task InsertTestDataAsync(int variableCount, int deviceCount,string slaveUrl="127.0.0.1:502")
     {
+        if (deviceCount > variableCount) variableCount = deviceCount;
         List<Channel> newChannels = new();
         List<Device> newDevices = new();
         List<Variable> newVariables = new();
         var addressNum = 1;
-        var variableCount = 10000;
-        var channelCount = Math.Max(count / variableCount, 1);
-        for (int i = 0; i < channelCount; i++)
+        var groupVariableCount =(int)Math.Ceiling((decimal) variableCount / deviceCount);
+        for (int i = 0; i < deviceCount; i++)
         {
             Channel channel = new Channel();
             Device device = new Device();
@@ -87,7 +87,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
                 channel.Id = id;
                 channel.CreateUserId = UserManager.UserId;
                 channel.CreateOrgId = UserManager.OrgId;
-                channel.RemoteUrl = "127.0.0.1:502";
+                channel.RemoteUrl = slaveUrl;
                 //动态插件属性默认
                 newChannels.Add(channel);
             }
@@ -105,14 +105,16 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
                 //动态插件属性默认
                 newDevices.Add(device);
             }
-            if (channelCount == i + 1 && (count % 10000) != 0)
-                variableCount = Math.Min(count % 10000, 10000);
-            for (int i1 = 0; i1 < variableCount; i1++)
+            if(i == deviceCount - 1)
             {
-                addressNum++;
+                groupVariableCount = variableCount - deviceCount * (groupVariableCount - 1);
+            }
+            for (int i1 = 0; i1 < groupVariableCount; i1++)
+            {
                 if (addressNum >= 65500)
                     addressNum = 1;
                 var address = $"4{addressNum}";
+                addressNum++;
                 var id = CommonUtils.GetSingleId();
                 var name = $"testVariable{id}";
                 Variable variable = new Variable();
@@ -135,6 +137,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
             var name = $"testChannel{id}";
             serviceChannel.ChannelType = ChannelTypeEnum.TcpService;
             serviceChannel.Name = name;
+            serviceChannel.Enable = false;
             serviceChannel.CreateUserId = UserManager.UserId;
             serviceChannel.CreateOrgId = UserManager.OrgId;
             serviceChannel.Id = id;
@@ -155,6 +158,37 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
             newDevices.Add(serviceDevice);
         }
 
+        Channel mqttChannel = new Channel();
+        Device mqttDevice = new Device();
+
+        {
+            var id = CommonUtils.GetSingleId();
+            var name = $"testChannel{id}";
+            mqttChannel.ChannelType = ChannelTypeEnum.TcpService;
+            mqttChannel.Name = name;
+            mqttChannel.CreateUserId = UserManager.UserId;
+            mqttChannel.CreateOrgId = UserManager.OrgId;
+            mqttChannel.Id = id;
+            mqttChannel.BindUrl = "127.0.0.1:502";
+            newChannels.Add(mqttChannel);
+        }
+        {
+            var id = CommonUtils.GetSingleId();
+            var name = $"testDevice{id}";
+            mqttDevice.Name = name;
+            mqttDevice.PluginType = PluginTypeEnum.Business;
+            mqttDevice.Id = id;
+            mqttDevice.CreateUserId = UserManager.UserId;
+            mqttDevice.CreateOrgId = UserManager.OrgId;
+            mqttDevice.ChannelId = mqttChannel.Id;
+            mqttDevice.IntervalTime = "1000";
+            mqttDevice.PluginName = "ThingsGateway.Plugin.Mqtt.MqttServer";
+            mqttDevice.DevicePropertys = new Dictionary<string, string>
+            {
+              {"IsAllVariable", "true"}
+            };
+            newDevices.Add(mqttDevice);
+        }
         using var db = GetDB();
 
         var result = await db.UseTranAsync(async () =>

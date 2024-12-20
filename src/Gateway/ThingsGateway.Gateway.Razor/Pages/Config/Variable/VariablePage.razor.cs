@@ -38,7 +38,10 @@ public partial class VariablePage : IDisposable
     [NotNull]
     private IDispatchService<bool>? DispatchService { get; set; }
 
-    private int TestCount { get; set; }
+    private int TestVariableCount { get; set; }
+    private int TestDeviceCount { get; set; }
+
+    private string SlaveUrl { get; set; }
 
 
 
@@ -315,7 +318,7 @@ public partial class VariablePage : IDisposable
         {
             await Task.Run(async () =>
              {
-                 await VariableService.InsertTestDataAsync(TestCount);
+                 await VariableService.InsertTestDataAsync(TestVariableCount,TestDeviceCount, SlaveUrl);
                  await InvokeAsync(async () =>
                 {
                     await ToastService.Default();

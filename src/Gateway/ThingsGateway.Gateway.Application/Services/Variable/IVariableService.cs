@@ -79,11 +79,9 @@ public interface IVariableService
     Task ImportVariableAsync(Dictionary<string, ImportPreviewOutputBase> input);
 
     /// <summary>
-    /// 创建n个modbus变量，n/1000个设备，n/1000个通道，1个modbus 模拟服务端
+    /// 创建n个modbus变量
     /// </summary>
-    /// <param name="count"></param>
-    /// <returns></returns>
-    Task InsertTestDataAsync(int count);
+    Task InsertTestDataAsync(int variableCount, int deviceCount,string slaveUrl="127.0.0.1:502");
 
     /// <summary>
     /// 表格查询

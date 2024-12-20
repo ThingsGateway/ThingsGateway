@@ -92,7 +92,9 @@
   "ThingsGateway.Gateway.Razor.VariablePage": {
     "ImportExcel": "Import Variable",
     "Clear": "Clear",
-    "TestCount": "TestVariableCount",
+    "TestVariableCount": "TestVariableCount",
+    "TestDeviceCount": "TestDeviceCount",
+    "SlaveUrl": "SlaveUrl",
     "Test": "AddTestVariable"
   },
   "ThingsGateway.Gateway.Razor.DeviceEditComponent": {

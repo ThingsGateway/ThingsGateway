@@ -78,7 +78,9 @@
                               IsAsync OnConfirm=@(InsertTestDataAsync)>
 
                 <BodyTemplate>
-                    <BootstrapInput @bind-Value=TestCount ShowLabel="true" ShowLabelTooltip="true" />
+                    <BootstrapInput @bind-Value=TestVariableCount ShowLabel="true" ShowLabelTooltip="true" />
+                    <BootstrapInput @bind-Value=TestDeviceCount ShowLabel="true" ShowLabelTooltip="true" />
+                    <BootstrapInput @bind-Value=SlaveUrl ShowLabel="true" ShowLabelTooltip="true" />
                 </BodyTemplate>
 
             </PopConfirmButton>

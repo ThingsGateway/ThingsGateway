@@ -88,7 +88,9 @@
   "ThingsGateway.Gateway.Razor.VariablePage": {
     "ImportExcel": "導入變量",
     "Clear": "清空",
-    "TestCount": "測試變量數量",
+    "TestVariableCount": "變量數量",
+    "TestDeviceCount": "採集設備數量",
+    "SlaveUrl": "服務端Url",
     "Test": "一鍵添加測試變量"
   },
   "ThingsGateway.Gateway.Razor.DeviceEditComponent": {
