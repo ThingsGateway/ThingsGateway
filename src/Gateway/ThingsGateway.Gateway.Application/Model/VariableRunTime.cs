@@ -154,7 +154,7 @@ public class VariableRunTime : Variable, IVariable
     /// 实时值
     /// </summary>
     [AutoGenerateColumn(Visible = true, Order = 6)]
-    public override object? Value { get => _value;  set => _value = value; }
+    public override object? Value { get => _value; set => _value = value; }
 
     /// <summary>
     /// 设置变量值与时间/质量戳
@@ -201,7 +201,10 @@ public class VariableRunTime : Variable, IVariable
         bool changed = false;
         if (data == null)
         {
-            changed = (_value != null);
+            if (IsOnline)
+            {
+                changed = (_value != null);
+            }
         }
         else
         {
