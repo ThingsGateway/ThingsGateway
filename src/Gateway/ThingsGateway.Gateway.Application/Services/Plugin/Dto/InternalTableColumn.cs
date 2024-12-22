@@ -96,7 +96,7 @@ public class InternalTableColumn(string fieldName, Type fieldType, string? field
     public RenderFragment<ITableColumn>? ToolboxTemplate { get; set; }
     public IFilter? Filter { get; set; }
     public string? FormatString { get; set; }
-    public Func<object?, Task<string?>>? Formatter { get; set; }
+    public Func<object, Task<string?>>? Formatter { get; set; }
     public Alignment? Align { get; set; }
     public bool? ShowTips { get; set; }
     public Func<object?, Task<string?>>? GetTooltipTextCallback { get; set; }
