@@ -241,13 +241,26 @@ else
                         <Select SkipValidate IsVirtualize @bind-Value="@ChoiceBusinessDeviceId" Items="@BusinessDevices" ShowSearch="true" ShowLabel="false" />
                     </div>
                     <div class="col-12 col-md-4">
-                        <Button OnClick="() => RefreshBusinessPropertyClickAsync(ChoiceBusinessDeviceId)">@Localizer["RefreshBusinessProperty"]</Button>
+                                <Button OnClick="async() =>{ 
+
+await RefreshBusinessPropertyClickAsync(ChoiceBusinessDeviceId);
+foreach (var item in Model.VariablePropertyModels)
+                                                    {
+if(item.Value!=null)
+{
+                                                   item.Value.ValidateForm=null;     
+}
+                                                    }
+}">@Localizer["RefreshBusinessProperty"]</Button>
                     </div>
                 </div>
                 @if (Model.VariablePropertyModels != null)
                 {
-                    @foreach (var item in Model.VariablePropertyModels)
+                    @foreach (var a in Model.VariablePropertyModels)
                     {
+
+                        var item = a;
+
                         var custom = VariablePropertyRenderFragments.TryGetValue(item.Key, out var renderFragment);
 
                         if (!custom)
@@ -255,6 +268,7 @@ else
                             var has = VariablePropertyEditors.TryGetValue(item.Key, out var items);
                             if (has)
                             {
+
 
                                 <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
                                     <HeaderTemplate>
@@ -266,20 +280,23 @@ else
                                         </div>
 
                                         <Button OnClick=@((a)=>
-                            {
-                            Model.VariablePropertyModels.Remove(item.Key);
-                            }) class="mx-2" Color="Color.None" style="color: var(--bs-card-titlecolor);" Icon=@("fas fa-delete-left") />
+{
+Model.VariablePropertyModels.Remove(item.Key);
+}) class="mx-2" Color="Color.None" style="color: var(--bs-card-titlecolor);" Icon=@("fas fa-delete-left") />
 
                                     </HeaderTemplate>
 
                                     <BodyTemplate>
-                                        <ValidateForm Model="item.Value.Value" Id=@((item.Key+Model.Id).ToString()) @ref=item.Value.ValidateForm>
 
-                                            <EditorFormObject class="p-2" Items=items AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="item.Value.Value" @key=item.Value.Value.GetType().TypeHandle.Value>
+                                                        <ValidateForm Model="item.Value.Value" @ref=item.Value.ValidateForm 
+                                                                                                   @key=@($"VariableEditValidateForm{item.Key}{Model.Id}{item.Value.Value.GetType().TypeHandle.Value}")
+                                                                                                Id=@($"VariableEditValidateForm{item.Key}{Model.Id}{item.Value.Value.GetType().TypeHandle.Value}")>
 
-                                            </EditorFormObject>
-                                        </ValidateForm>
-                                    </BodyTemplate>
+                                                                        <EditorFormObject class="p-2" Items=items AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="item.Value.Value" @key=@($"VariableEditEditorFormObject{item.Key}{Model.Id}{item.Value.Value.GetType().TypeHandle.Value}")>
+
+                                    </EditorFormObject>
+                                </ValidateForm>
+                            </BodyTemplate>
                                 </Card>
                             }
                         }

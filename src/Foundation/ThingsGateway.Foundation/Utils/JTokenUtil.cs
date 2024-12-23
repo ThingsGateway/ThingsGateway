@@ -28,15 +28,17 @@ public static class JTokenUtil
     {
         try
         {
+            if (item.IsNullOrWhiteSpace())
+                return JValue.CreateNull();
+
+            if (bool.TryParse(item, out bool parseBool))
+                return new JValue(parseBool);
+
             // 尝试解析字符串为 JToken 对象
             return JToken.Parse(item);
         }
         catch
         {
-            if (bool.TryParse(item, out bool parseBool))
-            {
-                return new JValue(parseBool);
-            }
             // 解析失败时，将其转为 String 类型的 JValue
             return new JValue(item);
         }
