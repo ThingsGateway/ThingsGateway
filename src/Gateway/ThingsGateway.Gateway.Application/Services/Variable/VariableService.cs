@@ -67,14 +67,15 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
 
     #region 测试
 
-    public async Task InsertTestDataAsync(int variableCount, int deviceCount,string slaveUrl="127.0.0.1:502")
+    public async Task InsertTestDataAsync(int variableCount, int deviceCount, string slaveUrl = "127.0.0.1:502")
     {
+        if (slaveUrl.IsNullOrWhiteSpace()) slaveUrl = "127.0.0.1:502";
         if (deviceCount > variableCount) variableCount = deviceCount;
         List<Channel> newChannels = new();
         List<Device> newDevices = new();
         List<Variable> newVariables = new();
         var addressNum = 1;
-        var groupVariableCount =(int)Math.Ceiling((decimal) variableCount / deviceCount);
+        var groupVariableCount = (int)Math.Ceiling((decimal)variableCount / deviceCount);
         for (int i = 0; i < deviceCount; i++)
         {
             Channel channel = new Channel();
@@ -105,7 +106,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
                 //动态插件属性默认
                 newDevices.Add(device);
             }
-            if(i == deviceCount - 1)
+            if (i != 0 && i == deviceCount - 1)
             {
                 groupVariableCount = variableCount - deviceCount * (groupVariableCount - 1);
             }
