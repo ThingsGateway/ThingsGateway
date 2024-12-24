@@ -85,6 +85,11 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
         return EasyTask.CompletedTask;
     }
 
+    public override async Task ResetIdAsync(string newId)
+    {
+        await base.ResetIdAsync(newId).ConfigureAwait(false);
+    }
+
     /// <inheritdoc/>
     public override string ToString()
     {

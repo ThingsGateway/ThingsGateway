@@ -36,6 +36,7 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
                     {
                         oldClient.TryShutdown();
                         await oldClient.CloseAsync().ConfigureAwait(false);
+                        oldClient.Dispose();
                     }
                     catch
                     {
@@ -52,6 +53,7 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
                 {
                     socket.TryShutdown();
                     await socket.CloseAsync().ConfigureAwait(false);
+                    socket.Dispose();
                 }
                 catch
                 {

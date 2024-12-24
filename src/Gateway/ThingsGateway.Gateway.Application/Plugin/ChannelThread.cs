@@ -13,10 +13,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 
-using Newtonsoft.Json.Linq;
-
 using System.Collections.Concurrent;
-using System.Threading;
 
 using ThingsGateway.NewLife.Extension;
 
@@ -112,9 +109,10 @@ public class ChannelThread
     /// <summary>
     /// 通道线程构造函数，用于初始化通道线程实例。
     /// </summary>
-    /// <param name="channel">通道实例</param>
-    /// <param name="getChannel">获取通道的方法</param>
-    public ChannelThread(Channel channel, Func<TouchSocketConfig, IChannel> getChannel)
+    /// <param name="channel">通道表</param>
+    /// <param name="foundataionConfig">通道设置实例</param>
+    /// <param name="ichannel">通道实例</param>
+    public ChannelThread(Channel channel, TouchSocketConfig foundataionConfig, IChannel ichannel)
     {
         Localizer = App.CreateLocalizerByType(typeof(ChannelThread))!;
         // 初始化日志记录器，使用通道名称作为日志记录器的名称
@@ -130,14 +128,11 @@ public class ChannelThread
         // 添加默认日志记录器
         LogMessage.AddLogger(new EasyLogger(Log_Out) { LogLevel = TouchSocket.Core.LogLevel.Trace });
 
-        // 初始化基础配置容器
-        var foundataionConfig = new TouchSocketConfig();
-
         // 配置容器中注册日志记录器实例
         foundataionConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
 
         // 根据配置获取通道实例
-        Channel = getChannel(foundataionConfig);
+        Channel = ichannel;
 
         // 设置日志路径为通道ID对应的日志路径
         LogPath = channel.Id.GetLogPath();
@@ -366,12 +361,12 @@ public class ChannelThread
                 try
                 {
                     //添加保存数据变量读取操作
-                    var saveVariable = driverBase.CurrentDevice.VariableRunTimes.Where(a => a.Value.SaveValue).Select(a=> (Variable)a.Value).ToList();
+                    var saveVariable = driverBase.CurrentDevice.VariableRunTimes.Where(a => a.Value.SaveValue).Select(a => (Variable)a.Value).ToList();
 
-                    if (saveVariable.Count>0)
+                    if (saveVariable.Count > 0)
                     {
                         using var db = DbContext.Db.GetConnectionScopeWithAttr<Variable>().CopyNew();
-                        var result = await db.Updateable<Variable>(saveVariable).UpdateColumns(a=>a.Value).ExecuteCommandAsync().ConfigureAwait(false);
+                        var result = await db.Updateable<Variable>(saveVariable).UpdateColumns(a => a.Value).ExecuteCommandAsync().ConfigureAwait(false);
                     }
                 }
                 catch (Exception ex)
@@ -466,7 +461,7 @@ public class ChannelThread
                     driver?.ConfigurePlugins();
                 }
                 // 设置通道的底层配置
-                Channel?.Setup(FoundataionConfig?.Clone());
+                await Channel.SetupAsync(FoundataionConfig?.Clone()).ConfigureAwait(false);
             }
             else
             {

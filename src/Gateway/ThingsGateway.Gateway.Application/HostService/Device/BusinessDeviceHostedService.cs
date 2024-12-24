@@ -173,7 +173,7 @@ internal sealed class BusinessDeviceHostedService : DeviceHostedService, IBusine
                 {
                     // 创建新的设备驱动并获取对应的通道线程
                     DriverBase newDriverBase = dev.CreateDriver(PluginService);
-                    var newChannelThread = GetChannelThread(newDriverBase);
+                    var newChannelThread = await GetChannelThreadAsync(newDriverBase).ConfigureAwait(false);
 
                     // 如果找到了对应的通道线程
                     if (newChannelThread != null)
@@ -297,21 +297,21 @@ internal sealed class BusinessDeviceHostedService : DeviceHostedService, IBusine
             _logger.LogInformation(BusinessDeviceHostedServiceLocalizer["DeviceRuntimeGeted"]);
             var idSet = deviceRunTimes.Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet().ToDictionary(a => a);
             var result = deviceRunTimes.Where(a => !idSet.ContainsKey(a.Id));
-            result.ParallelForEach(businessDeviceRunTime =>
-            {
-                if (!_stoppingToken.IsCancellationRequested)
-                {
-                    try
-                    {
-                        DriverBase driverBase = businessDeviceRunTime.CreateDriver(PluginService);
-                        GetChannelThread(driverBase);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, Localizer["InitError", businessDeviceRunTime.Name]);
-                    }
-                }
-            });
+            await result.ParallelForEachAsync(async (businessDeviceRunTime, token) =>
+             {
+                 if (!token.IsCancellationRequested)
+                 {
+                     try
+                     {
+                         DriverBase driverBase = businessDeviceRunTime.CreateDriver(PluginService);
+                         await GetChannelThreadAsync(driverBase).ConfigureAwait(false);
+                     }
+                     catch (Exception ex)
+                     {
+                         _logger.LogError(ex, Localizer["InitError", businessDeviceRunTime.Name]);
+                     }
+                 }
+             }, Environment.ProcessorCount / 2 == 0 ? 1 : Environment.ProcessorCount / 2, _stoppingToken).ConfigureAwait(false);
         }
         for (int i = 0; i < 3; i++)
         {

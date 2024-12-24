@@ -31,7 +31,9 @@ public partial class LogConsole : IDisposable
     public bool Disposed { get; set; }
 
     [Parameter, EditorRequired]
-    public ILog Logger { get; set; }
+    public LogLevel LogLevel { get; set; }
+    [Parameter, EditorRequired]
+    public EventCallback<LogLevel> LogLevelChanged { get; set; }
 
     [Parameter]
     public string HeaderText { get; set; } = "Log";
@@ -96,7 +98,7 @@ public partial class LogConsole : IDisposable
                         var result = TextFileReader.LastLog(files.FirstOrDefault().FullName, 0);
                         if (result.IsSuccess)
                         {
-                            Messages = result.Content.Where(a => a.LogLevel >= Logger?.LogLevel).Select(a => new LogMessage((int)a.LogLevel, $"{a.LogTime} - {a.Message}{(a.ExceptionString.IsNullOrWhiteSpace() ? null : $"{Environment.NewLine}{a.ExceptionString}")}")).ToList();
+                            Messages = result.Content.Where(a => a.LogLevel >= LogLevel).Select(a => new LogMessage((int)a.LogLevel, $"{a.LogTime} - {a.Message}{(a.ExceptionString.IsNullOrWhiteSpace() ? null : $"{Environment.NewLine}{a.ExceptionString}")}")).ToList();
                         }
                         else
                         {

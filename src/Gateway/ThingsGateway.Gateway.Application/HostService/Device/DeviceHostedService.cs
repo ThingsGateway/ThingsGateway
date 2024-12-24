@@ -122,7 +122,7 @@ internal abstract class DeviceHostedService : BackgroundService, IDeviceHostedSe
 
                 //初始化
                 DriverBase newDriverBase = dev.CreateDriver(PluginService);
-                var newChannelThread = GetChannelThread(newDriverBase);
+                var newChannelThread = await GetChannelThreadAsync(newDriverBase).ConfigureAwait(false);
                 if (newChannelThread != null)
                 {
                     await StartChannelThreadAsync(newChannelThread).ConfigureAwait(false);
@@ -224,17 +224,18 @@ internal abstract class DeviceHostedService : BackgroundService, IDeviceHostedSe
         });
     }
 
+    private WaitLock NewChannelLock = new();
     /// <summary>
     /// 根据设备生成或获取通道线程管理器
     /// </summary>
     /// <param name="driverBase">驱动程序实例</param>
     /// <returns>通道线程管理器</returns>
-    protected ChannelThread GetChannelThread(DriverBase driverBase)
+    protected async ValueTask<ChannelThread> GetChannelThreadAsync(DriverBase driverBase)
     {
         try
         {
             var channelId = driverBase.CurrentDevice.ChannelId;
-            lock (ChannelThreads)
+            await NewChannelLock.WaitAsync().ConfigureAwait(false);
             {
                 // 尝试从现有的通道线程管理器列表中查找匹配的通道线程
                 var channelThread = ChannelThreads.FirstOrDefault(t => t.ChannelId == channelId);
@@ -242,22 +243,26 @@ internal abstract class DeviceHostedService : BackgroundService, IDeviceHostedSe
                 {
                     // 如果找到了匹配的通道线程，则将驱动程序添加到该线程中
                     channelThread.AddDriver(driverBase);
-                    channelThread.Channel?.Setup(channelThread.FoundataionConfig.Clone());
+                    await channelThread.Channel.SetupAsync(channelThread.FoundataionConfig.Clone()).ConfigureAwait(false);
                     return channelThread;
                 }
 
                 // 如果未找到匹配的通道线程，则创建一个新的通道线程
-                return NewChannelThread(driverBase, channelId);
+                return await NewChannelThreadAsync(driverBase, channelId).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
         {
             driverBase.SafeDispose();
-            _logger.LogWarning(ex, nameof(GetChannelThread));
+            _logger.LogWarning(ex, nameof(GetChannelThreadAsync));
             return null;
         }
+        finally
+        {
+            NewChannelLock.Release();
+        }
         // 创建新的通道线程的内部方法
-        ChannelThread NewChannelThread(DriverBase driverBase, long channelId)
+        async ValueTask<ChannelThread> NewChannelThreadAsync(DriverBase driverBase, long channelId)
         {
             // 根据通道ID获取通道信息
             var channel = ChannelService.GetChannelById(channelId);
@@ -290,13 +295,13 @@ internal abstract class DeviceHostedService : BackgroundService, IDeviceHostedSe
             var wts = Math.Max(ChannelThreads.Count, 10) * 10;
             ThreadPool.SetMaxThreads(wts, wts);
 
+
+            var config = new TouchSocketConfig();
+            var ichannel = await config.GetChannelAsync(channel.ChannelType, channel.RemoteUrl, channel.BindUrl, channel.Adapt<SerialPortOption>()).ConfigureAwait(false);
             // 创建新的通道线程，并将驱动程序添加到其中
-            ChannelThread channelThread = new ChannelThread(channel, (a =>
-            {
-                return a.GetChannel(channel.ChannelType, channel.RemoteUrl, channel.BindUrl, channel.Adapt<SerialPortOption>());
-            }));
+            ChannelThread channelThread = new ChannelThread(channel, config, ichannel);
             channelThread.AddDriver(driverBase);
-            channelThread.Channel?.Setup(channelThread.FoundataionConfig.Clone());
+            await channelThread.Channel.SetupAsync(channelThread.FoundataionConfig.Clone()).ConfigureAwait(false);
             ChannelThreads.Add(channelThread);
             return channelThread;
         }

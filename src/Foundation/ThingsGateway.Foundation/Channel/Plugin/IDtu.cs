@@ -17,4 +17,9 @@ public interface IDtu : ITcpService
     /// 心跳检测(大写16进制字符串)
     /// </summary>
     public string HeartbeatHexString { get; set; }
+
+    /// <summary>
+    /// 默认Dtu注册包,utf-8字符串
+    /// </summary>
+    public string DtuId { get; set; } 
 }

@@ -108,7 +108,10 @@
     <div class="col-12 col-md-7 ">
         @if (Plc?.Logger != null || Logger!=null)
         {
-            <LogConsole Logger=@(Plc?.Logger??Logger) LogPath=@LogPath HeaderText=@HeaderText></LogConsole>
+            <LogConsole LogLevel=@((Plc?.Logger??Logger).LogLevel) LogLevelChanged="(a)=>{
+var log=Plc?.Logger??Logger;
+log.LogLevel=a;
+}" LogPath=@LogPath HeaderText=@HeaderText></LogConsole>
         }
     </div>
 </div>

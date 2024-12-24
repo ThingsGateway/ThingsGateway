@@ -115,7 +115,7 @@ public partial class ChannelDataDebugComponent : ComponentBase
     {
         try
         {
-            ChannelData.CreateChannel(Model);
+            await ChannelData.CreateChannelAsync(Model);
             if (OnConfimClick.HasDelegate)
                 await OnConfimClick.InvokeAsync(Model);
         }

@@ -10,9 +10,9 @@
     <HeaderTemplate>
         <div class="flex-fill">
         </div>
-        @if (Logger!=null)
+        @if (LogLevelChanged.HasDelegate)
         {
-            <Select @bind-Value="@Logger.LogLevel" IsPopover></Select>
+            <Select Value="@LogLevel" ValueChanged="LogLevelChanged" IsPopover></Select>
         }
         <Button Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@(IsPause?"fa fa-play":"fa fa-pause") OnClick="Pause" />
         <Button IsAsync Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("fa fa-sign-out") OnClick="HandleOnExportClick" />

@@ -197,7 +197,7 @@ internal sealed class CollectDeviceHostedService : DeviceHostedService, ICollect
                 {
                     // 创建新的设备驱动并获取对应的通道线程
                     DriverBase newDriverBase = dev.CreateDriver(PluginService);
-                    var newChannelThread = GetChannelThread(newDriverBase);
+                    var newChannelThread = await GetChannelThreadAsync(newDriverBase).ConfigureAwait(false);
 
                     // 如果找到了对应的通道线程
                     if (newChannelThread != null)
@@ -391,22 +391,22 @@ collectDeviceRunTimes.SelectMany(a =>
             .Select(b => b.Value.WriteExpressions)))
 
                 .Distinct().ToList();
-            result.ParallelForEach(collectDeviceRunTime =>
-            {
-                if (!_stoppingToken.IsCancellationRequested)
-                {
-                    try
-                    {
-                        DriverBase driverBase = collectDeviceRunTime.CreateDriver(PluginService);
-                        GetChannelThread(driverBase);
+            await result.ParallelForEachAsync(async (collectDeviceRunTime, token) =>
+              {
+                  if (!token.IsCancellationRequested)
+                  {
+                      try
+                      {
+                          DriverBase driverBase = collectDeviceRunTime.CreateDriver(PluginService);
+                          await GetChannelThreadAsync(driverBase).ConfigureAwait(false);
 
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, Localizer["InitError", collectDeviceRunTime.Name]);
-                    }
-                }
-            });
+                      }
+                      catch (Exception ex)
+                      {
+                          _logger.LogError(ex, Localizer["InitError", collectDeviceRunTime.Name]);
+                      }
+                  }
+              }, Environment.ProcessorCount / 2 == 0 ? 1 : Environment.ProcessorCount / 2, _stoppingToken).ConfigureAwait(false);
 
             scripts.ParallelForEach(script =>
             {

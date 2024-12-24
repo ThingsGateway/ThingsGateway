@@ -98,7 +98,7 @@ public class ChannelData
     /// 创建通道
     /// </summary>
     /// <param name="channelData"></param>
-    public static void CreateChannel(ChannelData channelData)
+    public static async Task CreateChannelAsync(ChannelData channelData)
     {
         if (channelData.Channel != null)
         {
@@ -116,19 +116,19 @@ public class ChannelData
         switch (channelData.ChannelType)
         {
             case ChannelTypeEnum.TcpClient:
-                channelData.Channel = channelData.TouchSocketConfig.GetTcpClientWithIPHost(channelData.RemoteUrl, channelData.BindUrl);
+                channelData.Channel =await channelData.TouchSocketConfig.GetTcpClientWithIPHostAsync(channelData.RemoteUrl, channelData.BindUrl).ConfigureAwait(false);
                 break;
 
             case ChannelTypeEnum.TcpService:
-                channelData.Channel = channelData.TouchSocketConfig.GetTcpServiceWithBindIPHost(channelData.BindUrl);
+                channelData.Channel =await channelData.TouchSocketConfig.GetTcpServiceWithBindIPHostAsync(channelData.BindUrl).ConfigureAwait(false);
                 break;
 
             case ChannelTypeEnum.SerialPort:
-                channelData.Channel = channelData.TouchSocketConfig.GetSerialPortWithOption(channelData.Map<SerialPortOption>());
+                channelData.Channel =await channelData.TouchSocketConfig.GetSerialPortWithOptionAsync(channelData.Map<SerialPortOption>()).ConfigureAwait(false);
                 break;
 
             case ChannelTypeEnum.UdpSession:
-                channelData.Channel = channelData.TouchSocketConfig.GetUdpSessionWithIPHost(channelData.RemoteUrl, channelData.BindUrl);
+                channelData.Channel =await channelData.TouchSocketConfig.GetUdpSessionWithIPHostAsync(channelData.RemoteUrl, channelData.BindUrl).ConfigureAwait(false);
                 break;
         }
     }

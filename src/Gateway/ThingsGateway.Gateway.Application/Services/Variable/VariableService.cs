@@ -138,7 +138,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
             var name = $"testChannel{id}";
             serviceChannel.ChannelType = ChannelTypeEnum.TcpService;
             serviceChannel.Name = name;
-            serviceChannel.Enable = false;
+            serviceChannel.Enable = true;
             serviceChannel.CreateUserId = UserManager.UserId;
             serviceChannel.CreateOrgId = UserManager.OrgId;
             serviceChannel.Id = id;
@@ -165,12 +165,11 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         {
             var id = CommonUtils.GetSingleId();
             var name = $"testChannel{id}";
-            mqttChannel.ChannelType = ChannelTypeEnum.TcpService;
+            mqttChannel.ChannelType = ChannelTypeEnum.Other;
             mqttChannel.Name = name;
             mqttChannel.CreateUserId = UserManager.UserId;
             mqttChannel.CreateOrgId = UserManager.OrgId;
             mqttChannel.Id = id;
-            mqttChannel.BindUrl = "127.0.0.1:502";
             newChannels.Add(mqttChannel);
         }
         {
