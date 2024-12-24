@@ -13,8 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "other", "other", "{0B748352
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
 		FoundationVersion.props = FoundationVersion.props
-		..\git submodule.bat = ..\git submodule.bat
 		Version.props = Version.props
+		..\git_pull.bat = ..\git_pull.bat
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gateway", "Gateway", "{5948EA23-4B42-4C22-A266-2E0AE5FA575F}"
@@ -155,7 +155,7 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
-		RESX_NeutralResourcesLanguage = zh-Hans
 		RESX_Rules = {"EnabledRules":[]}
+		RESX_NeutralResourcesLanguage = zh-Hans
 	EndGlobalSection
 EndGlobal

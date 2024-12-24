@@ -10,6 +10,25 @@
 
 [NuGet](https://www.nuget.org/packages?q=Tags%3A%22ThingsGateway%22)
 
+## 源码获取/更新
+
+执行以下命令，或根目录下的`git_pull.bat`脚本
+
+``` shell
+
+chcp 65001
+
+rem 更新主仓库
+git pull
+
+rem 初始化并更新所有子模块
+git submodule update --init
+
+pause
+
+```
+
+
 ### 插件列表
 
 #### 采集插件
