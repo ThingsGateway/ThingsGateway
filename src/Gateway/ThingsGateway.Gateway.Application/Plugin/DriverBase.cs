@@ -134,7 +134,7 @@ public abstract class DriverBase : DisposableObject
     {
         if (Protocol != null)
         {
-            FoundataionConfig.ConfigurePlugins(Protocol.ConfigurePlugins());
+            FoundataionConfig?.ConfigurePlugins(Protocol.ConfigurePlugins());
         }
     }
 
@@ -184,7 +184,7 @@ public abstract class DriverBase : DisposableObject
     /// <summary>
     /// 底层驱动配置
     /// </summary>
-    public TouchSocketConfig FoundataionConfig => ChannelThread?.FoundataionConfig;
+    public TouchSocketConfig? FoundataionConfig => ChannelThread?.FoundataionConfig;
 
     /// <summary>
     /// 日志

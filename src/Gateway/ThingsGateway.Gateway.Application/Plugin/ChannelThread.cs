@@ -461,7 +461,10 @@ public class ChannelThread
                     driver?.ConfigurePlugins();
                 }
                 // 设置通道的底层配置
-                await Channel.SetupAsync(FoundataionConfig?.Clone()).ConfigureAwait(false);
+                if (Channel != null)
+                {
+                    await Channel.SetupAsync(FoundataionConfig?.Clone()).ConfigureAwait(false);
+                }
             }
             else
             {

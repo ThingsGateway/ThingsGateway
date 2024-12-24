@@ -243,7 +243,10 @@ internal abstract class DeviceHostedService : BackgroundService, IDeviceHostedSe
                 {
                     // 如果找到了匹配的通道线程，则将驱动程序添加到该线程中
                     channelThread.AddDriver(driverBase);
-                    await channelThread.Channel.SetupAsync(channelThread.FoundataionConfig.Clone()).ConfigureAwait(false);
+                    if (channelThread.Channel != null)
+                    {
+                        await channelThread.Channel.SetupAsync(channelThread.FoundataionConfig?.Clone()).ConfigureAwait(false);
+                    }
                     return channelThread;
                 }
 
@@ -301,7 +304,10 @@ internal abstract class DeviceHostedService : BackgroundService, IDeviceHostedSe
             // 创建新的通道线程，并将驱动程序添加到其中
             ChannelThread channelThread = new ChannelThread(channel, config, ichannel);
             channelThread.AddDriver(driverBase);
-            await channelThread.Channel.SetupAsync(channelThread.FoundataionConfig.Clone()).ConfigureAwait(false);
+            if (channelThread.Channel != null)
+            {
+                await channelThread.Channel.SetupAsync(channelThread.FoundataionConfig?.Clone()).ConfigureAwait(false);
+            }
             ChannelThreads.Add(channelThread);
             return channelThread;
         }
