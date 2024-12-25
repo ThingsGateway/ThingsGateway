@@ -27,7 +27,7 @@ namespace ThingsGateway.Gateway.Application;
 [Tenant(SqlSugarConst.DB_Custom)]
 [SugarIndex("index_device", nameof(Variable.DeviceId), OrderByType.Asc)]
 [SugarIndex("unique_variable_name", nameof(Variable.Name), OrderByType.Asc, true)]
-public class Variable : BaseDataEntity
+public class Variable : BaseDataEntity,IValidatableObject
 {
     /// <summary>
     /// 设备
@@ -418,6 +418,53 @@ public class Variable : BaseDataEntity
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
     public ConcurrentDictionary<long, ModelValueValidateForm>? VariablePropertyModels;
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+
+        if (HHAlarmEnable && HHAlarmCode == null)
+        {
+            yield return new ValidationResult("HHAlarmCode cannot be null when HHAlarmEnable is true", new[] { nameof(HHAlarmCode) });
+        }
+        if (HAlarmEnable && HAlarmCode == null)
+        {
+            yield return new ValidationResult("HAlarmCode cannot be null when HAlarmEnable is true", new[] { nameof(HAlarmCode) });
+        }
+        if (LAlarmEnable && LAlarmCode == null)
+        {
+            yield return new ValidationResult("LAlarmCode cannot be null when LAlarmEnable is true", new[] { nameof(LAlarmCode) });
+        }
+        if (LLAlarmEnable && LLAlarmCode == null)
+        {
+            yield return new ValidationResult("LLAlarmCode cannot be null when LLAlarmEnable is true", new[] { nameof(LLAlarmCode) });
+        }
+
+        if (HHAlarmEnable && HAlarmEnable && HHAlarmCode <= HAlarmCode)
+        {
+            yield return new ValidationResult("HHAlarmCode must be greater than HAlarmCode", new[] { nameof(HHAlarmCode), nameof(HAlarmCode) });
+        }
+        if (HAlarmEnable && LAlarmEnable && HAlarmCode <= LAlarmCode)
+        {
+            yield return new ValidationResult("HAlarmCode must be greater than LAlarmCode", new[] { nameof(HAlarmCode), nameof(LAlarmCode) });
+        }
+        if (LAlarmEnable && LLAlarmEnable && LAlarmCode <= LLAlarmCode)
+        {
+            yield return new ValidationResult("LAlarmCode must be greater than LLAlarmCode", new[] { nameof(LAlarmCode), nameof(LLAlarmCode) });
+        }
+
+        if (HHAlarmEnable && LAlarmEnable && HHAlarmCode <= LAlarmCode)
+        {
+            yield return new ValidationResult("HHAlarmCode should be greater than or less than LAlarmCode", new[] { nameof(HHAlarmCode), nameof(LAlarmCode) });
+        }
+        if (HHAlarmEnable && LLAlarmEnable && HHAlarmCode <= LLAlarmCode)
+        {
+            yield return new ValidationResult("HHAlarmCode should be greater than or less than LLAlarmCode", new[] { nameof(HHAlarmCode), nameof(LLAlarmCode) });
+        }
+        if (HAlarmEnable && LLAlarmEnable && HAlarmCode <= LLAlarmCode)
+        {
+            yield return new ValidationResult("HAlarmCode should be greater than or less than LLAlarmCode", new[] { nameof(HAlarmCode), nameof(LLAlarmCode) });
+        }
+    }
 }
 
 public class ModelValueValidateForm

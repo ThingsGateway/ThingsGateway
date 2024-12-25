@@ -182,14 +182,6 @@ internal sealed class AlarmHostedService : BackgroundService, IAlarmHostedServic
             return AlarmTypeEnum.H; // 返回高报警类型枚举
         }
 
-        // 检查是否启用了低报警功能，并且变量的值小于低报警的限制值
-        if (tag.LAlarmEnable && tag.Value.ToDecimal() < tag.LAlarmCode.ToDecimal())
-        {
-            limit = tag.LAlarmCode.ToString()!; // 将报警限制值设置为低报警的限制值
-            expressions = tag.LRestrainExpressions!; // 获取低报警的约束表达式
-            text = tag.LAlarmText!; // 获取低报警时的报警文本
-            return AlarmTypeEnum.L; // 返回低报警类型枚举
-        }
 
         // 检查是否启用了低低报警功能，并且变量的值小于低低报警的限制值
         if (tag.LLAlarmEnable && tag.Value.ToDecimal() < tag.LLAlarmCode.ToDecimal())
@@ -198,6 +190,16 @@ internal sealed class AlarmHostedService : BackgroundService, IAlarmHostedServic
             expressions = tag.LLRestrainExpressions!; // 获取低低报警的约束表达式
             text = tag.LLAlarmText!; // 获取低低报警时的报警文本
             return AlarmTypeEnum.LL; // 返回低低报警类型枚举
+        }
+
+
+        // 检查是否启用了低报警功能，并且变量的值小于低报警的限制值
+        if (tag.LAlarmEnable && tag.Value.ToDecimal() < tag.LAlarmCode.ToDecimal())
+        {
+            limit = tag.LAlarmCode.ToString()!; // 将报警限制值设置为低报警的限制值
+            expressions = tag.LRestrainExpressions!; // 获取低报警的约束表达式
+            text = tag.LAlarmText!; // 获取低报警时的报警文本
+            return AlarmTypeEnum.L; // 返回低报警类型枚举
         }
 
         return null; // 如果不符合任何报警条件，则返回null
