@@ -318,7 +318,7 @@ public partial class VariablePage : IDisposable
         {
             await Task.Run(async () =>
              {
-                 await VariableService.InsertTestDataAsync(TestVariableCount,TestDeviceCount, SlaveUrl);
+                 await VariableService.InsertTestDataAsync(TestVariableCount, TestDeviceCount, SlaveUrl);
                  await InvokeAsync(async () =>
                 {
                     await ToastService.Default();

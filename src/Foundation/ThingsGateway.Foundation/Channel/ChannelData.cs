@@ -116,19 +116,19 @@ public class ChannelData
         switch (channelData.ChannelType)
         {
             case ChannelTypeEnum.TcpClient:
-                channelData.Channel =await channelData.TouchSocketConfig.GetTcpClientWithIPHostAsync(channelData.RemoteUrl, channelData.BindUrl).ConfigureAwait(false);
+                channelData.Channel = await channelData.TouchSocketConfig.GetTcpClientWithIPHostAsync(channelData.RemoteUrl, channelData.BindUrl).ConfigureAwait(false);
                 break;
 
             case ChannelTypeEnum.TcpService:
-                channelData.Channel =await channelData.TouchSocketConfig.GetTcpServiceWithBindIPHostAsync(channelData.BindUrl).ConfigureAwait(false);
+                channelData.Channel = await channelData.TouchSocketConfig.GetTcpServiceWithBindIPHostAsync(channelData.BindUrl).ConfigureAwait(false);
                 break;
 
             case ChannelTypeEnum.SerialPort:
-                channelData.Channel =await channelData.TouchSocketConfig.GetSerialPortWithOptionAsync(channelData.Map<SerialPortOption>()).ConfigureAwait(false);
+                channelData.Channel = await channelData.TouchSocketConfig.GetSerialPortWithOptionAsync(channelData.Map<SerialPortOption>()).ConfigureAwait(false);
                 break;
 
             case ChannelTypeEnum.UdpSession:
-                channelData.Channel =await channelData.TouchSocketConfig.GetUdpSessionWithIPHostAsync(channelData.RemoteUrl, channelData.BindUrl).ConfigureAwait(false);
+                channelData.Channel = await channelData.TouchSocketConfig.GetUdpSessionWithIPHostAsync(channelData.RemoteUrl, channelData.BindUrl).ConfigureAwait(false);
                 break;
         }
     }

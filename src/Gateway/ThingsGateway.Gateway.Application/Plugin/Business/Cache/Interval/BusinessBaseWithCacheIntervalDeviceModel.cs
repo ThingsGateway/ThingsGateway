@@ -66,11 +66,11 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
         GlobalData.DeviceStatusChangeEvent -= DeviceStatusChange;
 
         // 如果不是间隔上传，则订阅全局变量值改变事件和设备状态改变事件，并触发一次事件处理
-        if (_businessPropertyWithCacheInterval.BusinessUpdateEnum!= BusinessUpdateEnum.Interval)
+        if (_businessPropertyWithCacheInterval.BusinessUpdateEnum != BusinessUpdateEnum.Interval)
         {
             GlobalData.DeviceStatusChangeEvent += DeviceStatusChange;
             GlobalData.VariableValueChangeEvent += VariableValueChange;
-            
+
         }
         CollectDevices.ForEach(a =>
         {
@@ -134,7 +134,7 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
             }
 
             // 如果是间隔上传，根据定时器触发事件上传设备和变量信息
-            if (_businessPropertyWithCacheInterval.BusinessUpdateEnum!= BusinessUpdateEnum.Change)
+            if (_businessPropertyWithCacheInterval.BusinessUpdateEnum != BusinessUpdateEnum.Change)
             {
                 try
                 {

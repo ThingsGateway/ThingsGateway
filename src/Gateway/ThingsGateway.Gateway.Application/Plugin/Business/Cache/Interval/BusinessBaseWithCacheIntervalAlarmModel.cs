@@ -62,7 +62,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
         GlobalData.DeviceStatusChangeEvent -= DeviceStatusChange;
 
         // 根据业务属性的缓存是否为间隔上传来决定事件绑定
-        if (_businessPropertyWithCacheInterval.BusinessUpdateEnum!= BusinessUpdateEnum.Interval)
+        if (_businessPropertyWithCacheInterval.BusinessUpdateEnum != BusinessUpdateEnum.Interval)
         {
             // 绑定全局数据的事件
             GlobalData.DeviceStatusChangeEvent += DeviceStatusChange;

@@ -81,7 +81,7 @@ public interface IVariableService
     /// <summary>
     /// 创建n个modbus变量
     /// </summary>
-    Task InsertTestDataAsync(int variableCount, int deviceCount,string slaveUrl="127.0.0.1:502");
+    Task InsertTestDataAsync(int variableCount, int deviceCount, string slaveUrl = "127.0.0.1:502");
 
     /// <summary>
     /// 表格查询

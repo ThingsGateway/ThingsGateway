@@ -60,10 +60,10 @@ public abstract class BusinessBaseWithCacheIntervalVariableModel<T> : BusinessBa
 
         // 注册变量值变化事件处理程序
         GlobalData.VariableValueChangeEvent -= VariableValueChange;
-        if (_businessPropertyWithCacheInterval.BusinessUpdateEnum!= BusinessUpdateEnum.Interval)
+        if (_businessPropertyWithCacheInterval.BusinessUpdateEnum != BusinessUpdateEnum.Interval)
         {
             GlobalData.VariableValueChangeEvent += VariableValueChange;
-          
+
         }
         // 触发一次变量值变化事件
         CurrentDevice.VariableRunTimes.ForEach(a =>

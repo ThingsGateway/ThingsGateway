@@ -21,5 +21,5 @@ public interface IDtu : ITcpService
     /// <summary>
     /// 默认Dtu注册包,utf-8字符串
     /// </summary>
-    public string DtuId { get; set; } 
+    public string DtuId { get; set; }
 }

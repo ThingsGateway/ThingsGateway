@@ -102,7 +102,7 @@ public abstract class VariableObject
             throw new ArgumentException("Can only access properties");
         }
         // 从字典中获取与属性对应的变量信息
-        if (!this.VariableRuntimePropertyDict.TryGetValue(memberExpression.Member.Name, out var variable))
+        if (!VariableRuntimePropertyDict.TryGetValue(memberExpression.Member.Name, out var variable))
         {
             throw new KeyNotFoundException($"Variable for {memberExpression.Member.Name} not found.");
         }
