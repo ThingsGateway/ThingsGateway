@@ -112,7 +112,8 @@ public class ChannelThread
     /// <param name="channel">通道表</param>
     /// <param name="foundataionConfig">通道设置实例</param>
     /// <param name="ichannel">通道实例</param>
-    public ChannelThread(Channel channel, TouchSocketConfig foundataionConfig, IChannel ichannel)
+    /// <param name="loggerGroup">日志</param>
+    public ChannelThread(Channel channel, TouchSocketConfig foundataionConfig, IChannel ichannel, LoggerGroup loggerGroup)
     {
         Localizer = App.CreateLocalizerByType(typeof(ChannelThread))!;
         // 初始化日志记录器，使用通道名称作为日志记录器的名称
@@ -123,13 +124,11 @@ public class ChannelThread
         ChannelId = channel.Id;
 
         // 初始化底层配置
-        LogMessage = new LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Warning };
+        LogMessage = loggerGroup;
 
         // 添加默认日志记录器
         LogMessage.AddLogger(new EasyLogger(Log_Out) { LogLevel = TouchSocket.Core.LogLevel.Trace });
 
-        // 配置容器中注册日志记录器实例
-        foundataionConfig.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));
 
         // 根据配置获取通道实例
         Channel = ichannel;

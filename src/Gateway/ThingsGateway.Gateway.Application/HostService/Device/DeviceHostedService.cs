@@ -300,9 +300,12 @@ internal abstract class DeviceHostedService : BackgroundService, IDeviceHostedSe
 
 
             var config = new TouchSocketConfig();
+            var log= new LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Warning };
+            // 配置容器中注册日志记录器实例
+            config.ConfigureContainer(a => a.RegisterSingleton<ILog>(log));
             var ichannel = await config.GetChannelAsync(channel.ChannelType, channel.RemoteUrl, channel.BindUrl, channel.Adapt<SerialPortOption>()).ConfigureAwait(false);
             // 创建新的通道线程，并将驱动程序添加到其中
-            ChannelThread channelThread = new ChannelThread(channel, config, ichannel);
+            ChannelThread channelThread = new ChannelThread(channel, config, ichannel, log);
             channelThread.AddDriver(driverBase);
             if (channelThread.Channel != null)
             {
