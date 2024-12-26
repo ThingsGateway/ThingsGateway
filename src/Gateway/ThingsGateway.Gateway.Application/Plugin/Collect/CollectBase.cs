@@ -177,69 +177,76 @@ public abstract class CollectBase : DriverBase
     /// <returns></returns>
     protected override async ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
     {
-        ReadResultCount readResultCount = new();
-        if (cancellationToken.IsCancellationRequested)
-            return;
-        if (await TestOnline(cancellationToken).ConfigureAwait(false))
-            return;
-
-        if (CollectProperties.ConcurrentCount > 1)
+        try
         {
-            // 并行处理每个变量读取
-            await CurrentDevice.VariableSourceReads.ParallelForEachAsync(async (variableSourceRead, cancellationToken) =>
+
+            ReadResultCount readResultCount = new();
+            if (cancellationToken.IsCancellationRequested)
+                return;
+            if (await TestOnline(cancellationToken).ConfigureAwait(false))
+                return;
+
+            if (CollectProperties.ConcurrentCount > 1)
             {
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-                if (await ReadVariableSource(readResultCount, variableSourceRead, cancellationToken, false).ConfigureAwait(false))
-                    return;
+                // 并行处理每个变量读取
+                await CurrentDevice.VariableSourceReads.ParallelForEachAsync(async (variableSourceRead, cancellationToken) =>
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
+                    if (await ReadVariableSource(readResultCount, variableSourceRead, cancellationToken, false).ConfigureAwait(false))
+                        return;
+                }
+                , CollectProperties.ConcurrentCount, cancellationToken).ConfigureAwait(false);
             }
+            else
+            {
+                for (int i = 0; i < CurrentDevice.VariableSourceReads.Count; i++)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
+                    // 每10包延迟一次
+                    if (await ReadVariableSource(readResultCount, CurrentDevice.VariableSourceReads[i], cancellationToken, i % 10 == 9).ConfigureAwait(false))
+                        return;
+                }
+            }
+
+            if (CollectProperties.ConcurrentCount > 1)
+            {
+                // 并行处理每个方法调用
+                await CurrentDevice.ReadVariableMethods.ParallelForEachAsync(async (readVariableMethods, cancellationToken) =>
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
+                    if (await ReadVariableMed(readResultCount, readVariableMethods, cancellationToken, false).ConfigureAwait(false))
+                        return;
+                }
             , CollectProperties.ConcurrentCount, cancellationToken).ConfigureAwait(false);
-        }
-        else
-        {
-            for (int i = 0; i < CurrentDevice.VariableSourceReads.Count; i++)
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-                // 每10包延迟一次
-                if (await ReadVariableSource(readResultCount, CurrentDevice.VariableSourceReads[i], cancellationToken, i % 10 == 9).ConfigureAwait(false))
-                    return;
             }
-        }
-
-        if (CollectProperties.ConcurrentCount > 1)
-        {
-            // 并行处理每个方法调用
-            await CurrentDevice.ReadVariableMethods.ParallelForEachAsync(async (readVariableMethods, cancellationToken) =>
+            else
             {
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-                if (await ReadVariableMed(readResultCount, readVariableMethods, cancellationToken, false).ConfigureAwait(false))
-                    return;
+                for (int i = 0; i < CurrentDevice.ReadVariableMethods.Count; i++)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
+                    // 每10包延迟一次
+                    if (await ReadVariableMed(readResultCount, CurrentDevice.ReadVariableMethods[i], cancellationToken, i % 10 == 9).ConfigureAwait(false))
+                        return;
+                }
             }
-        , CollectProperties.ConcurrentCount, cancellationToken).ConfigureAwait(false);
-        }
-        else
-        {
-            for (int i = 0; i < CurrentDevice.ReadVariableMethods.Count; i++)
+
+            // 如果所有方法和变量读取都成功，则清零错误计数器
+            if (readResultCount.deviceMethodsVariableFailedNum == 0 && readResultCount.deviceSourceVariableFailedNum == 0 && (readResultCount.deviceMethodsVariableSuccessNum != 0 || readResultCount.deviceSourceVariableSuccessNum != 0))
             {
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-                // 每10包延迟一次
-                if (await ReadVariableMed(readResultCount, CurrentDevice.ReadVariableMethods[i], cancellationToken, i % 10 == 9).ConfigureAwait(false))
-                    return;
+                //只有成功读取一次，失败次数都会清零
+                CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
             }
-        }
 
-        // 如果所有方法和变量读取都成功，则清零错误计数器
-        if (readResultCount.deviceMethodsVariableFailedNum == 0 && readResultCount.deviceSourceVariableFailedNum == 0 && (readResultCount.deviceMethodsVariableSuccessNum != 0 || readResultCount.deviceSourceVariableSuccessNum != 0))
+
+        }
+        finally
         {
-            //只有成功读取一次，失败次数都会清零
-            CurrentDevice.SetDeviceStatus(TimerX.Now, 0);
+            ScriptVariableRun(cancellationToken);
         }
-
-        ScriptVariableRun(cancellationToken);
-
 
         #region 执行方法
 
