@@ -1,112 +1,110 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <Import Project="$(SolutionDir)Version.props" />
-  <Import Project="targets\Plugin.targets" />
-  <Import Project="targets\CustomPlugin.targets" />
-  <Import Project="targets\Custom.targets" />
-  <!--<Import Project="targets\Admin.targets" />-->
-  <!--<Import Project="targets\OtherPlugin.targets" />-->
-  <!--<Import Project="targets\OtherPlugin1.targets" />-->
-  <PropertyGroup>
-    <CustomTargetFramework>$(TargetFramework)</CustomTargetFramework>
-    <OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
-    <SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
-    <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
-    <ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
+	<Import Project="$(SolutionDir)Version.props" />
+	<Import Project="targets\Plugin.targets" />
+	<Import Project="targets\CustomPlugin.targets" />
+	<Import Project="targets\Custom.targets" />
+	<!--<Import Project="targets\Admin.targets" />-->
+	<!--<Import Project="targets\OtherPlugin.targets" />-->
+	<!--<Import Project="targets\OtherPlugin1.targets" />-->
+	<PropertyGroup>
+		<CustomTargetFramework>$(TargetFramework)</CustomTargetFramework>
+		<OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+		<SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
+		<PublishReadyToRunComposite>true</PublishReadyToRunComposite>
+		<ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
 
-    <!--动态适用GC-->
-    <GarbageCollectionAdaptationMode>1</GarbageCollectionAdaptationMode>
-    <!--使用自托管线程池-->
-    <!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
+		<!--动态适用GC-->
+		<GarbageCollectionAdaptationMode>1</GarbageCollectionAdaptationMode>
+		<!--使用自托管线程池-->
+		<!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
 
-    <!--使用工作站GC-->
-    <!--<ServerGarbageCollection>true</ServerGarbageCollection>-->
+		<!--使用工作站GC-->
+		<!--<ServerGarbageCollection>true</ServerGarbageCollection>-->
 
-    <!--<PlatformTarget>x86</PlatformTarget>-->
-  </PropertyGroup>
-
-
- 
+		<!--<PlatformTarget>x86</PlatformTarget>-->
+	</PropertyGroup>
 
 
-  <ItemGroup>
-    <Content Include="DockerPush.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="DockerPush_arm64.ps1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Locales\*.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="wwwroot\**">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.10" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.20" />
-  </ItemGroup>
 
 
-  <!--安装服务守护-->
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net9.0' ">
-    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
-  </ItemGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
-    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.0" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="favicon.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <None Update="WindowsService">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Dockerfile">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Dockerfile_arm64">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+	<ItemGroup>
+		<Content Include="DockerPush.ps1">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="DockerPush_arm64.ps1">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 
-    <None Update="pm2-windows.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="pm2-linux.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="thingsgateway.service">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="WindowsServiceCreate.bat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="WindowsServiceDelete.bat">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Locales\*.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="wwwroot\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' != 'net6.0' ">
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.20" />
+	</ItemGroup>
 
 
-  <ItemGroup>
-    <ProjectReference Include="..\Gateway\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
-    <ProjectReference Include="..\Gateway\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
-  </ItemGroup>
+
+	<!--安装服务守护-->
+	<ItemGroup Condition=" '$(TargetFramework)' != 'net9.0' ">
+		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.1" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
+	</ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
+		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="favicon.ico">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<None Update="WindowsService">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Dockerfile">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Dockerfile_arm64">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+
+		<None Update="pm2-windows.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="pm2-linux.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="thingsgateway.service">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="WindowsServiceCreate.bat">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="WindowsServiceDelete.bat">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\Gateway\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
+		<ProjectReference Include="..\Gateway\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
+	</ItemGroup>
 
 </Project>

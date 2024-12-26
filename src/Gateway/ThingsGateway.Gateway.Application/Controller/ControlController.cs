@@ -34,6 +34,31 @@ public class ControlController : ControllerBase
 
     private IRpcService _rpcService { get; set; }
 
+
+    /// <summary>
+    /// 清空全部缓存
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost("removeAllCache")]
+    [DisplayName("清空全部缓存")]
+    public void RemoveAllCache()
+    {
+        App.CacheService.Clear();
+    }
+
+    /// <summary>
+    /// 删除通道/设备缓存
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost("removeCache")]
+    [DisplayName("删除通道/设备缓存")]
+    public void RemoveCache()
+    {
+        App.GetService<IDeviceService>().DeleteDeviceFromCache();
+        App.GetService<IChannelService>().DeleteChannelFromCache();
+    }
+
+
     /// <summary>
     /// 控制业务线程启停
     /// </summary>
