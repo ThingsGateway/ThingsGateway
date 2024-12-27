@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\..\..\Admin\src\ThingsGateway.NewLife.X\ThingsGateway.NewLife.X.csproj" />
+	  <ProjectReference Include="..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
   </ItemGroup>
 
 </Project>

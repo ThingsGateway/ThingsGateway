@@ -1,0 +1,43 @@
+<Project>
+
+<!--Gateway-->
+
+  <ItemGroup>
+    <PackageReference Include="ThingsGateway.Gateway.Razor" Version="$(GatewayVersion)" />
+    <PackageReference Include="ThingsGateway.Gateway.Application" Version="$(GatewayVersion)" GeneratePathProperty="true"/>
+  </ItemGroup>
+  
+  <Target Name="_ResolveCopyGatewayLocalNuGetPkgXmls" AfterTargets="ResolveReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths->'%(RootDir)%(Directory)%(Filename).xml')" Condition="'%(ReferenceCopyLocalPaths.NuGetPackageId)'=='ThingsGateway.Gateway.Application' and Exists('%(RootDir)%(Directory)%(Filename).xml')" />
+    </ItemGroup>
+  </Target>
+  
+  <Target Name="CopyGatewayNugetPackages" AfterTargets="Build">
+    <ItemGroup>
+      <!-- setting up the variable for convenience -->
+      <GatewayApplicationPackageFiles Include="$(PkgThingsGateway_Gateway_Application)\Content\SeedData\Gateway\*.*" />
+    </ItemGroup>
+    <PropertyGroup>
+      <GatewayApplicationFolder>$(TargetDir)SeedData\Gateway\</GatewayApplicationFolder>
+    </PropertyGroup>
+    <RemoveDir Directories="$(GatewayApplicationFolder)" />
+    <Copy SourceFiles="@(GatewayApplicationPackageFiles)" DestinationFolder="$(GatewayApplicationFolder)%(RecursiveDir)" />
+
+  </Target>
+  
+  <Target Name="GatewayPostPublish" AfterTargets="Publish">
+    <ItemGroup>
+      <!-- setting up the variable for convenience -->
+      <GatewayFiles Include="bin\$(Configuration)\$(TargetFramework)\SeedData\**" />
+    </ItemGroup>
+    <PropertyGroup>
+    </PropertyGroup>
+    <Copy SourceFiles="@(GatewayFiles)" DestinationFolder="$(PublishDir)SeedData\%(RecursiveDir)" />
+
+  </Target>
+
+  <!--Gateway-->
+
+  
+</Project>

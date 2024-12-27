@@ -18,6 +18,8 @@ using ThingsGateway.NewLife;
 using ThingsGateway.NewLife.Caching;
 using ThingsGateway.NewLife.Threading;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Gateway.Application.Extensions;
 
 /// <summary>
@@ -25,6 +27,8 @@ namespace ThingsGateway.Gateway.Application.Extensions;
 /// </summary>
 public interface ReadWriteExpressions
 {
+    public TouchSocket.Core.ILog? Logger { get; set; }
+
     /// <summary>
     /// 获取新值
     /// </summary>
@@ -125,6 +129,7 @@ public static class ExpressionEvaluatorExtension
         {_using}
         public class Script:ReadWriteExpressions
         {{
+            public TouchSocket.Core.ILog? Logger {{ get; set; }}
             public object GetNewValue(object raw)
             {{
                    {_body};
@@ -134,6 +139,7 @@ public static class ExpressionEvaluatorExtension
             GC.Collect();
             Instance.Set(field, runScript);
         }
+
         return runScript;
     }
 
@@ -147,6 +153,21 @@ public static class ExpressionEvaluatorExtension
             return rawvalue;
         }
         var readWriteExpressions = GetReadWriteExpressions(expressions);
+        var value = readWriteExpressions.GetNewValue(rawvalue);
+        return value;
+    }
+
+    /// <summary>
+    /// 计算表达式：例如：(int)raw*100，raw为原始值
+    /// </summary>
+    public static object GetExpressionsResult(this string expressions, object rawvalue, ILog logger)
+    {
+        if (string.IsNullOrWhiteSpace(expressions))
+        {
+            return rawvalue;
+        }
+        var readWriteExpressions = GetReadWriteExpressions(expressions);
+        readWriteExpressions.Logger = logger;
         var value = readWriteExpressions.GetNewValue(rawvalue);
         return value;
     }
