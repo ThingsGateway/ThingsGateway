@@ -108,5 +108,6 @@
 	</ItemGroup>
 
 	<Import Project="targets\Gateway.targets" Condition=" '$(SolutionName)' == 'ThingsGatewayRelease' " />
+	<Import Project="targets\Admin.targets"  Condition=" '$(SolutionName)' == 'ThingsGatewayRelease' " />
 
 </Project>
