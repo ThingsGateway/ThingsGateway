@@ -5,7 +5,6 @@
 	<Import Project="targets\CustomPlugin.targets" />
 	<Import Project="targets\Custom.targets" />
 	<!--<Import Project="targets\Admin.targets" />-->
-	<!--<Import Project="targets\Gateway.targets" />-->
 	<!--<Import Project="targets\OtherPlugin.targets" />-->
 	<!--<Import Project="targets\OtherPlugin1.targets" />-->
 	<PropertyGroup>
@@ -103,9 +102,11 @@
 	</ItemGroup>
 
 
-	<ItemGroup>
+	<ItemGroup Condition=" '$(SolutionName)' != 'ThingsGatewayRelease' ">
 		<ProjectReference Include="..\Gateway\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
 		<ProjectReference Include="..\Gateway\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
 	</ItemGroup>
+
+	<Import Project="targets\Gateway.targets" Condition=" '$(SolutionName)' == 'ThingsGatewayRelease' " />
 
 </Project>
