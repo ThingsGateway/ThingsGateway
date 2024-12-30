@@ -5,7 +5,7 @@
 	<Import Project="targets\CustomPlugin.targets" />
 	<Import Project="targets\Custom.targets" />
 	<!--<Import Project="targets\Admin.targets" />-->
-	<!--<Import Project="targets\OtherPlugin.targets" />-->
+	<Import Project="targets\OtherPlugin.targets" />
 	<!--<Import Project="targets\OtherPlugin1.targets" />-->
 	<PropertyGroup>
 		<CustomTargetFramework>$(TargetFramework)</CustomTargetFramework>
