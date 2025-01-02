@@ -237,8 +237,8 @@ else
                 <div class="row g-2 mx-1 form-inline">
 
                     <div class="col-12 col-md-8">
-                        <label required="true" style="width:20%">@Localizer["ChoiceBusinessDeviceId"]</label>
-                        <Select SkipValidate IsVirtualize @bind-Value="@ChoiceBusinessDeviceId" Items="@BusinessDevices" ShowSearch="true" ShowLabel="false" />
+                        @* <label required="true" style="width:20%">@Localizer["ChoiceBusinessDeviceId"]</label> *@
+                        <Select SkipValidate IsVirtualize @bind-Value="@ChoiceBusinessDeviceId" Items="@BusinessDevices" ShowSearch="true" ShowLabel="true" />
                     </div>
                     <div class="col-12 col-md-4">
                                 <Button OnClick="async() =>{ 

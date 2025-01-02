@@ -164,7 +164,7 @@ public static class PluginServiceUtil
         else
         {
             // 如果没有找到 '.'，或者 '.' 是最后一个字符，则返回默认的键和插件名称
-            return (nameof(ThingsGateway), pluginName);
+            return (PluginService.DefaultKey, pluginName);
         }
     }
 

@@ -12,6 +12,7 @@ using BootstrapBlazor.Components;
 
 using Mapster;
 
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 using ThingsGateway.Core.Json.Extension;
@@ -182,7 +183,15 @@ public class VariableRunTime : Variable, IVariable
             {
                 IsOnline = false;
                 Set(null, dateTime);
-                lastErrorMessage = $"{Name} Conversion expression failed：{ex.Message}";
+                if (ex.StackTrace != null)
+                {
+                    string stachTrace = string.Join(Environment.NewLine, ex.StackTrace.Split(new[] { Environment.NewLine }, StringSplitOptions.None).Take(3));
+                    lastErrorMessage = $"{Name} Conversion expression failed：{ex.Message}{Environment.NewLine}{stachTrace}";
+                }
+                else
+                {
+                    lastErrorMessage = $"{Name} Conversion expression failed：{ex.Message}{Environment.NewLine}";
+                }
                 return new($"{Name} Conversion expression failed", ex);
             }
         }

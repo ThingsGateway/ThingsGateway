@@ -1,5 +1,7 @@
 ﻿{
-
+  "ThingsGateway.Gateway.Razor.PluginPage": {
+    "Reload": "重載"
+  },
   "ThingsGateway.Gateway.Razor.TcpSessionClientDto": {
     "Id": "Id",
     "IP": "IP",
@@ -59,7 +61,7 @@
   },
   "ThingsGateway.Gateway.Razor.SavePlugin": {
     "SavePlugin": "注意：文件名稱相同的插件將被覆蓋",
-    "SavePlugin1": "挿件變動需重啓軟件後生效"
+    "SavePlugin1": "挿件變動可能需重啓軟件後生效"
   },
   "ThingsGateway.Gateway.Razor.BackendLogPage": {
     "BackendLog": "網關後台日誌",

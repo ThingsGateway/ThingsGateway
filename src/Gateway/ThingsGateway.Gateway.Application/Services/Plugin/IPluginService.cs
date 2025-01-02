@@ -58,6 +58,11 @@ public interface IPluginService
     public QueryData<PluginOutput> Page(QueryPageOptions options, PluginTypeEnum? pluginTypeEnum = null);
 
     /// <summary>
+    /// 重载插件
+    /// </summary>
+    void Reload();
+
+    /// <summary>
     /// 添加插件
     /// </summary>
     /// <param name="plugin"></param>

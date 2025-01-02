@@ -54,6 +54,9 @@ public partial class PluginPage
     [Inject]
     private IStringLocalizer<PluginAddInput> PluginAddInputLoaclozer { get; set; }
 
+    [Inject]
+    private IStringLocalizer<PluginPage> PluginPageLoaclozer { get; set; }
+
     private async Task OnAdd(IEnumerable<PluginOutput> pluginOutputs)
     {
         var op = new DialogOption()
@@ -76,5 +79,10 @@ public partial class PluginPage
         await DialogService.Show(op);
     }
 
+    private void OnReload()
+    {
+        PluginService.Reload();
+    }
+    
     #endregion 添加
 }

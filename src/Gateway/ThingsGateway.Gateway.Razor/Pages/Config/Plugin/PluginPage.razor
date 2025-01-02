@@ -31,6 +31,9 @@
             <TableToolbarButton TItem="PluginOutput" Color="Color.Info" Icon="fa fa-plus" Text="@RazorLocalizer["Add"]"
                                 OnClickCallback="OnAdd" IsShow=@(AuthorizeButton("添加")) />
 
+            <TableToolbarButton TItem="PluginOutput" Color="Color.Warning" Icon="fa-solid fa-rotate" Text="@PluginPageLoaclozer["Reload"]"
+                                OnClick="OnReload" IsShow=@(AuthorizeButton("添加")) />
+
         </TableToolbarTemplate>
         <TableColumns>
             <TableColumn @bind-Field="@context.Name">

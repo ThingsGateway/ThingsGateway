@@ -1,5 +1,7 @@
 ﻿{
-
+  "ThingsGateway.Gateway.Razor.PluginPage": {
+    "Reload": "Reload"
+  },
 
   "ThingsGateway.Gateway.Razor.TcpSessionClientDto": {
     "Id": "Id",
@@ -62,7 +64,7 @@
   },
   "ThingsGateway.Gateway.Razor.SavePlugin": {
     "SavePlugin": "Note: Plugins with the same file name will be overwritten",
-    "SavePlugin1": "Plugin changes will take effect after restarting the software"
+    "SavePlugin1": "Plugin changes may take effect after restarting the software"
 
   },
   "ThingsGateway.Gateway.Razor.BackendLogPage": {
