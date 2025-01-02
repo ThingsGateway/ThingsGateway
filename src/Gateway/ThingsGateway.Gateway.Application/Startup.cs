@@ -19,6 +19,23 @@ public class Startup : AppStartup
 {
     public void ConfigureAdminApp(IServiceCollection services)
     {
+
+        var tempDir = Path.Combine(AppContext.BaseDirectory, "CSSCRIPT");
+        if (Directory.Exists(tempDir))
+        {
+            try
+            {
+                Directory.Delete(tempDir);
+            }
+            catch
+            {
+
+            }
+        }
+
+        Directory.CreateDirectory(tempDir);//重新创建，防止缓存的一些目录信息错误
+        Environment.SetEnvironmentVariable("CSS_CUSTOM_TEMPDIR", tempDir); //传入变量
+
         //底层多语言配置
         //Foundation.LocalizerUtil.SetLocalizerFactory((a) => App.CreateLocalizerByType(a));
 
