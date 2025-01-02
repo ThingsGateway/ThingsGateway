@@ -5,11 +5,13 @@
     <Target Name="PostPublish" AfterTargets="Publish">
     <ItemGroup>
       <!-- setting up the variable for convenience -->
-      <PluginsFiles Include="bin\$(Configuration)\$(TargetFramework)\Plugins\**" />
+		<PluginsFiles Include="bin\$(Configuration)\$(TargetFramework)\Plugins\**" />
+		<GatewayPluginsFiles Include="bin\$(Configuration)\$(TargetFramework)\GatewayPlugins\**" />
     </ItemGroup>
     <PropertyGroup>
     </PropertyGroup>
-    <Copy SourceFiles="@(PluginsFiles)" DestinationFolder="$(PublishDir)Plugins\%(RecursiveDir)" />
+		<Copy SourceFiles="@(PluginsFiles)" DestinationFolder="$(PublishDir)Plugins\%(RecursiveDir)" />
+		<Copy SourceFiles="@(GatewayPluginsFiles)" DestinationFolder="$(PublishDir)GatewayPlugins\%(RecursiveDir)" />
 
   </Target>
 
