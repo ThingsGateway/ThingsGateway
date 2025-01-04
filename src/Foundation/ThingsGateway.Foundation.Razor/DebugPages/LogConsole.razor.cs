@@ -32,7 +32,8 @@ public partial class LogConsole : IDisposable
 
     [Parameter, EditorRequired]
     public LogLevel LogLevel { get; set; }
-    [Parameter, EditorRequired]
+
+    [Parameter]
     public EventCallback<LogLevel> LogLevelChanged { get; set; }
 
     [Parameter]

@@ -26,7 +26,7 @@
                             <div class="p-1">
 
                                 <BootstrapInputNumber @bind-Value=@ArrayLength ShowLabel="true" />
-                                <Select @bind-Value="@DataType" ShowLabel="true"  IsPopover="true"/>
+                                <Select @bind-Value="@DataType" ShowLabel="true" IsPopover="true" />
                             </div>
 
                         </div>
@@ -106,13 +106,11 @@
 
     </div>
     <div class="col-12 col-md-7 ">
-        @if (Plc?.Logger != null || Logger!=null)
-        {
-            <LogConsole LogLevel=@((Plc?.Logger??Logger).LogLevel) LogLevelChanged="(a)=>{
+        <LogConsole LogLevel=@((Plc?.Logger??Logger)?.LogLevel??TouchSocket.Core.LogLevel.Trace) LogLevelChanged="(a)=>{
 var log=Plc?.Logger??Logger;
+if(log!=null)
 log.LogLevel=a;
 }" LogPath=@LogPath HeaderText=@HeaderText></LogConsole>
-        }
     </div>
 </div>
 

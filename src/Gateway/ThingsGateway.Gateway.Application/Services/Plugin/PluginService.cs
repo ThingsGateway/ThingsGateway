@@ -36,11 +36,6 @@ namespace ThingsGateway.Gateway.Application;
 internal sealed class PluginService : IPluginService
 {
     /// <summary>
-    /// 主程序上下文驱动父名称
-    /// </summary>
-    public const string DefaultKey = nameof(ThingsGateway);
-
-    /// <summary>
     /// 插件驱动文件夹名称
     /// </summary>
     public const string DirName = "GatewayPlugins";
