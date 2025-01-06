@@ -1,22 +1,7 @@
 <Project>
+	<!--插件隔离-->
 
-
-
-    <Target Name="PostPublish" AfterTargets="Publish">
-    <ItemGroup>
-      <!-- setting up the variable for convenience -->
-		<PluginsFiles Include="bin\$(Configuration)\$(TargetFramework)\Plugins\**" />
-		<GatewayPluginsFiles Include="bin\$(Configuration)\$(TargetFramework)\GatewayPlugins\**" />
-    </ItemGroup>
-    <PropertyGroup>
-    </PropertyGroup>
-		<Copy SourceFiles="@(PluginsFiles)" DestinationFolder="$(PublishDir)Plugins\%(RecursiveDir)" />
-		<Copy SourceFiles="@(GatewayPluginsFiles)" DestinationFolder="$(PublishDir)GatewayPlugins\%(RecursiveDir)" />
-
-  </Target>
-
-
-  <ItemGroup>
+	<ItemGroup>
     <!--Modbus 插件-->
     <PackageReference Include="ThingsGateway.Plugin.Modbus" Version="$(PluginVersion)" GeneratePathProperty="true">
       <Private>false</Private>
@@ -102,7 +87,7 @@
       <PkgThingsGateway_Plugin_VariableExpressionPackageFiles Include="$(PkgThingsGateway_Plugin_VariableExpression)\Content\$(CustomTargetFramework)\**\*.*" />
     </ItemGroup>
     <PropertyGroup>
-      <PluginFolder>$(TargetDir)GatewayPlugins\</PluginFolder>
+		<PluginFolder>$(TargetDir)GatewayPlugins\</PluginFolder>
     </PropertyGroup>
     <RemoveDir Directories="$(PluginFolder)" />
     <Message Text="将插件复制到插件目录 $(PluginFolder)" Importance="high" />

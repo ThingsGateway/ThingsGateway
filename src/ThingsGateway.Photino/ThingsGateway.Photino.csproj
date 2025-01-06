@@ -2,7 +2,8 @@
 
 	<Import Project="$(SolutionDir)Version.props" />
 	<!--<Import Project="..\ThingsGateway.Server\targets\Admin.targets" />-->
-	<Import Project="..\ThingsGateway.Server\targets\Plugin.targets" />
+	<Import Project="..\ThingsGateway.Server\targets\PluginContext.targets" />
+	<!--<Import Project="..\ThingsGateway.Server\targets\Plugin.targets" />-->
 	<Import Project="..\ThingsGateway.Server\targets\CustomPlugin.targets" />
 	<Import Project="..\ThingsGateway.Server\targets\Custom.targets" />
 	<PropertyGroup>

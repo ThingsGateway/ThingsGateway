@@ -1,0 +1,113 @@
+<Project>
+
+	<!--插件直接加载到程序上下文，不隔离-->
+
+	<ItemGroup>
+		<!--Modbus 插件-->
+		<PackageReference Include="ThingsGateway.Plugin.Modbus" Version="$(PluginVersion)" GeneratePathProperty="true">
+			<Private>false</Private>
+			<IncludeAssets> native;</IncludeAssets>
+		</PackageReference>
+
+		<!--SiemensS7 插件-->
+		<PackageReference Include="ThingsGateway.Plugin.SiemensS7" Version="$(PluginVersion)" GeneratePathProperty="true">
+			<Private>false</Private>
+			<IncludeAssets> native;</IncludeAssets>
+		</PackageReference>
+
+		<!--Dlt645 插件-->
+		<PackageReference Include="ThingsGateway.Plugin.Dlt645" Version="$(PluginVersion)" GeneratePathProperty="true">
+			<Private>false</Private>
+			<IncludeAssets> native;</IncludeAssets>
+		</PackageReference>
+
+		<!--OpcDa 插件-->
+		<PackageReference Include="ThingsGateway.Plugin.OpcDa" Version="$(PluginVersion)" GeneratePathProperty="true">
+			<Private>false</Private>
+			<IncludeAssets> native;</IncludeAssets>
+		</PackageReference>
+		<!--OpcDa 插件-->
+		<PackageReference Include="ThingsGateway.Plugin.OpcDaNetApi" Version="$(PluginVersion)" GeneratePathProperty="true">
+			<Private>false</Private>
+			<IncludeAssets> native;</IncludeAssets>
+		</PackageReference>
+		<!--OpcUa 插件-->
+		<PackageReference Include="ThingsGateway.Plugin.OpcUa" Version="$(PluginVersion)" GeneratePathProperty="true">
+			<Private>false</Private>
+			<IncludeAssets> native;</IncludeAssets>
+		</PackageReference>
+
+
+		<!--DB 插件-->
+		<PackageReference Include="ThingsGateway.Plugin.DB" Version="$(PluginVersion)" GeneratePathProperty="true">
+			<Private>false</Private>
+			<IncludeAssets> native;</IncludeAssets>
+		</PackageReference>
+
+		<!--Kafka 插件-->
+		<PackageReference Include="ThingsGateway.Plugin.Kafka" Version="$(PluginVersion)" GeneratePathProperty="true">
+			<Private>false</Private>
+			<IncludeAssets> native;</IncludeAssets>
+		</PackageReference>
+
+		<!--Mqtt 插件-->
+		<PackageReference Include="ThingsGateway.Plugin.Mqtt" Version="$(PluginVersion)" GeneratePathProperty="true">
+			<Private>false</Private>
+			<IncludeAssets> native;</IncludeAssets>
+		</PackageReference>
+
+		<!--RabbitMQ 插件-->
+		<PackageReference Include="ThingsGateway.Plugin.RabbitMQ" Version="$(PluginVersion)" GeneratePathProperty="true">
+			<Private>false</Private>
+			<IncludeAssets> native;</IncludeAssets>
+		</PackageReference>
+
+		<!--VariableExpression 插件-->
+		<PackageReference Include="ThingsGateway.Plugin.VariableExpression" Version="$(PluginVersion)" GeneratePathProperty="true">
+			<Private>false</Private>
+			<IncludeAssets> native;</IncludeAssets>
+		</PackageReference>
+
+	</ItemGroup>
+
+	<Target Name="CopyPluginNugetPackages" AfterTargets="Build">
+		<ItemGroup>
+			<!-- setting up the variable for convenience -->
+			<PkgThingsGateway_Plugin_ModbusPackageFiles Include="$(PkgThingsGateway_Plugin_Modbus)\Content\$(CustomTargetFramework)\**\*.*" />
+			<PkgThingsGateway_Plugin_SiemensS7PackageFiles Include="$(PkgThingsGateway_Plugin_SiemensS7)\Content\$(CustomTargetFramework)\**\*.*" />
+			<PkgThingsGateway_Plugin_Dlt645PackageFiles Include="$(PkgThingsGateway_Plugin_Dlt645)\Content\$(CustomTargetFramework)\**\*.*" />
+			<PkgThingsGateway_Plugin_DBPackageFiles Include="$(PkgThingsGateway_Plugin_DB)\Content\$(CustomTargetFramework)\**\*.*" />
+			<PkgThingsGateway_Plugin_KafkaPackageFiles Include="$(PkgThingsGateway_Plugin_Kafka)\Content\$(CustomTargetFramework)\**\*.*" />
+			<PkgThingsGateway_Plugin_MqttPackageFiles Include="$(PkgThingsGateway_Plugin_Mqtt)\Content\$(CustomTargetFramework)\**\*.*" />
+			<PkgThingsGateway_Plugin_OpcDaPackageFiles Include="$(PkgThingsGateway_Plugin_OpcDa)\Content\$(CustomTargetFramework)\**\*.*" />
+			<PkgThingsGateway_Plugin_OpcDaNetApiPackageFiles Include="$(PkgThingsGateway_Plugin_OpcDaNetApi)\Content\$(CustomTargetFramework)\**\*.*" />
+
+
+			<PkgThingsGateway_Plugin_OpcUaPackageFiles Include="$(PkgThingsGateway_Plugin_OpcUa)\Content\$(CustomTargetFramework)\**\*.*" />
+			<PkgThingsGateway_Plugin_RabbitMQPackageFiles Include="$(PkgThingsGateway_Plugin_RabbitMQ)\Content\$(CustomTargetFramework)\**\*.*" />
+			<PkgThingsGateway_Plugin_VariableExpressionPackageFiles Include="$(PkgThingsGateway_Plugin_VariableExpression)\Content\$(CustomTargetFramework)\**\*.*" />
+		</ItemGroup>
+		<PropertyGroup>
+			<PluginFolder>$(TargetDir)Plugins\</PluginFolder>
+			<GatewayPluginFolder>$(TargetDir)GatewayPlugins\</GatewayPluginFolder>
+		</PropertyGroup>
+		<RemoveDir Directories="$(PluginFolder)" />
+		<RemoveDir Directories="$(GatewayPluginFolder)" />
+
+		<Message Text="将插件复制到插件目录 $(PluginFolder)" Importance="high" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_ModbusPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_SiemensS7PackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_Dlt645PackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_DBPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_KafkaPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_MqttPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_OpcDaPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_OpcDaNetApiPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_OpcUaPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_RabbitMQPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_VariableExpressionPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+
+	</Target>
+
+
+</Project>

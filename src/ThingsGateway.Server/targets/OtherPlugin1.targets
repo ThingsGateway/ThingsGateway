@@ -11,11 +11,11 @@
       <PkgThingsGateway_Plugin_ModbusC1PackageFiles Include="$(PkgThingsGateway_Plugin_ModbusC1)\Content\net6.0\**\*.*" />
     </ItemGroup>
     <PropertyGroup>
-      <PluginFolder>$(TargetDir)GatewayPlugins\</PluginFolder>
+      <PluginFolder>$(TargetDir)Plugins\</PluginFolder>
     </PropertyGroup>
     <Message Text="将插件复制到插件目录 $(PluginFolder)" Importance="high" />
     
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_ModbusC1PackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.ModbusC1%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_ModbusC1PackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
 
   </Target>
   

@@ -18,14 +18,14 @@
 
 		</ItemGroup>
 		<PropertyGroup>
-			<PluginFolder>$(TargetDir)GatewayPlugins\</PluginFolder>
+			<PluginFolder>$(TargetDir)Plugins\</PluginFolder>
 		</PropertyGroup>
 		<Message Text="将插件复制到插件目录 $(PluginFolder)" Importance="high" />
 
-		<Copy SourceFiles="@(PkgThingsGateway_Plugin_MqttYINGKEPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.MqttYINGKE%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_MqttYINGKEPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
 
-		<Copy SourceFiles="@(PkgThingsGateway_Plugin_HUANANSFSKPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.HUANANSFSK%(RecursiveDir)" />
-		<Copy SourceFiles="@(PkgThingsGateway_Plugin_YPSFSKPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.YPSFSK%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_HUANANSFSKPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgThingsGateway_Plugin_YPSFSKPackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
 
 	</Target>
 
