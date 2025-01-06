@@ -12,7 +12,23 @@
 
 ## 源码获取/更新
 
-执行以下命令，或根目录下的`git_pull.bat`脚本
+### 源码克隆
+
+
+注意因仓库包含子模块，直接下载zip包会导致子模块丢失，建议使用git clone命令
+
+``` shell
+
+https://gitee.com/ThingsGateway/ThingsGateway.git
+
+```
+
+### 源码更新
+
+在vs中打开powerShell窗口，执行以下命令，或根目录下的`git_pull.bat`脚本
+
+<img src="https://foruda.gitee.com/images/1736150639726525137/8ff84c29_7941935.png" width="400px" />
+
 
 ``` shell
 
@@ -27,6 +43,7 @@ git submodule update --init
 pause
 
 ```
+
 
 
 ### 插件列表
