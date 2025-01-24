@@ -33,7 +33,7 @@ public class AlarmVariable : PrimaryIdEntity, IDBHistoryAlarm
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? Description { get; set; }
 
-    /// <inheritdoc  cref="VariableRunTime.DeviceName"/>
+    /// <inheritdoc  cref="VariableRuntime.DeviceName"/>
     [SugarColumn(ColumnDescription = "设备名称", IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string DeviceName { get; set; }
@@ -50,27 +50,27 @@ public class AlarmVariable : PrimaryIdEntity, IDBHistoryAlarm
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public DataTypeEnum DataType { get; set; }
 
-    /// <inheritdoc  cref="VariableRunTime.AlarmCode"/>
+    /// <inheritdoc  cref="VariableRuntime.AlarmCode"/>
     [SugarColumn(ColumnDescription = "报警值", IsNullable = false)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string AlarmCode { get; set; }
 
-    /// <inheritdoc  cref="VariableRunTime.AlarmLimit"/>
+    /// <inheritdoc  cref="VariableRuntime.AlarmLimit"/>
     [SugarColumn(ColumnDescription = "报警限值", IsNullable = false)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string AlarmLimit { get; set; }
 
-    /// <inheritdoc  cref="VariableRunTime.AlarmText"/>
+    /// <inheritdoc  cref="VariableRuntime.AlarmText"/>
     [SugarColumn(ColumnDescription = "报警文本", IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string? AlarmText { get; set; }
 
-    /// <inheritdoc  cref="VariableRunTime.AlarmTime"/>
+    /// <inheritdoc  cref="VariableRuntime.AlarmTime"/>
     [SugarColumn(ColumnDescription = "报警时间", IsNullable = false)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public DateTime AlarmTime { get; set; }
 
-    /// <inheritdoc  cref="VariableRunTime.EventTime"/>
+    /// <inheritdoc  cref="VariableRuntime.EventTime"/>
     [SugarColumn(ColumnDescription = "事件时间", IsNullable = false)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     [TimeDbSplitField(DateType.Month)]

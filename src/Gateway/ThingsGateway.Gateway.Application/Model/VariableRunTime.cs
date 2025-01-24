@@ -12,43 +12,16 @@ using BootstrapBlazor.Components;
 
 using Mapster;
 
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-
-using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Gateway.Application.Extensions;
+using ThingsGateway.NewLife.Json.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
 /// 变量运行态
 /// </summary>
-public class VariableRunTime : Variable, IVariable
+public class VariableRuntime : Variable, IVariable, IDisposable
 {
-    #region 重写
-
-    [AutoGenerateColumn(Visible = false)]
-    [NotNull]
-    public override long? DeviceId { get; set; }
-
-
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true, Order = 3)]
-    public override string? Unit { get; set; }
-
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public override string? ReadExpressions { get; set; }
-
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public override string? WriteExpressions { get; set; }
-
-    [AutoGenerateColumn(Visible = false)]
-    public override bool Enable { get; set; }
-
-    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
-    public override string? IntervalTime { get; set; }
-
-    #endregion 重写
-
     private bool _isOnline;
     private bool? _isOnlineChanged;
     protected object? _value;
@@ -65,8 +38,8 @@ public class VariableRunTime : Variable, IVariable
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     [AdaptIgnore]
-    [AutoGenerateColumn(Visible = false)]
-    public CollectDeviceRunTime? CollectDeviceRunTime { get; set; }
+    [AutoGenerateColumn(Ignore = true)]
+    public DeviceRuntime? DeviceRuntime { get; set; }
 
     /// <summary>
     /// VariableSource
@@ -74,7 +47,7 @@ public class VariableRunTime : Variable, IVariable
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     [AdaptIgnore]
-    [AutoGenerateColumn(Visible = false)]
+    [AutoGenerateColumn(Ignore = true)]
     public IVariableSource VariableSource { get; set; }
 
     /// <summary>
@@ -83,7 +56,7 @@ public class VariableRunTime : Variable, IVariable
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     [AdaptIgnore]
-    [AutoGenerateColumn(Visible = false)]
+    [AutoGenerateColumn(Ignore = true)]
     public VariableMethod VariableMethod { get; set; }
 
     /// <summary>
@@ -96,7 +69,7 @@ public class VariableRunTime : Variable, IVariable
     /// 设备名称
     /// </summary>
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 4)]
-    public string? DeviceName { get; set; }
+    public string? DeviceName => DeviceRuntime?.Name;
 
     /// <summary>
     /// 是否在线
@@ -122,7 +95,7 @@ public class VariableRunTime : Variable, IVariable
         }
     }
 
-    private string lastErrorMessage;
+    private string _lastErrorMessage;
 
     /// <summary>
     /// <inheritdoc/>
@@ -133,7 +106,7 @@ public class VariableRunTime : Variable, IVariable
         get
         {
             if (_isOnline == false)
-                return lastErrorMessage ?? VariableSource?.LastErrorMessage ?? VariableMethod?.LastErrorMessage;
+                return _lastErrorMessage ?? VariableSource?.LastErrorMessage ?? VariableMethod?.LastErrorMessage;
             else
                 return null;
         }
@@ -176,21 +149,27 @@ public class VariableRunTime : Variable, IVariable
         {
             try
             {
-                var data = ReadExpressions.GetExpressionsResult(RawValue);
+                var data = ReadExpressions.GetExpressionsResult(RawValue, DeviceRuntime?.Driver?.LogMessage);
                 Set(data, dateTime);
             }
             catch (Exception ex)
             {
                 IsOnline = false;
                 Set(null, dateTime);
+                var oldMessage = _lastErrorMessage;
                 if (ex.StackTrace != null)
                 {
                     string stachTrace = string.Join(Environment.NewLine, ex.StackTrace.Split(new[] { Environment.NewLine }, StringSplitOptions.None).Take(3));
-                    lastErrorMessage = $"{Name} Conversion expression failed：{ex.Message}{Environment.NewLine}{stachTrace}";
+                    _lastErrorMessage = $"{Name} Conversion expression failed：{ex.Message}{Environment.NewLine}{stachTrace}";
+
                 }
                 else
                 {
-                    lastErrorMessage = $"{Name} Conversion expression failed：{ex.Message}{Environment.NewLine}";
+                    _lastErrorMessage = $"{Name} Conversion expression failed：{ex.Message}{Environment.NewLine}";
+                }
+                if (oldMessage != _lastErrorMessage)
+                {
+                    DeviceRuntime?.Driver?.LogMessage?.LogWarning(_lastErrorMessage);
                 }
                 return new($"{Name} Conversion expression failed", ex);
             }
@@ -219,12 +198,11 @@ public class VariableRunTime : Variable, IVariable
         {
             //判断变化，插件传入的Value可能是基础类型，也有可能是class，比较器无法识别是否变化，这里json处理序列化比较
             //检查IComparable
-            if (data != _value)
+            if (!data.Equals(_value))
             {
-                Type type = data?.GetType();
-                if (typeof(IComparable).IsAssignableFrom(type))
+                if (data is IComparable)
                 {
-                    changed = !(data.Equals(_value));
+                    changed = true;
                 }
                 else
                 {
@@ -252,36 +230,24 @@ public class VariableRunTime : Variable, IVariable
 
             GlobalData.VariableValueChange(this);
         }
-
         GlobalData.VariableCollectChange(this);
     }
 
-    /// <inheritdoc/>
-    public async ValueTask<OperResult> SetValueToDeviceAsync(string value, string? executive = "BLAZOR", CancellationToken cancellationToken = default)
-    {
-        var data = await GlobalData.RpcService.InvokeDeviceMethodAsync(executive, new Dictionary<string, string>() { { Name, value } }, cancellationToken).ConfigureAwait(false);
-        return data.Values.FirstOrDefault();
-    }
-
-    public void SetErrorMessage(string value)
-    {
-        lastErrorMessage = value;
-    }
 
     #region LoadSourceRead
 
     /// <summary>
-    /// 这个参数值由自动打包方法写入<see cref="IProtocol.LoadSourceRead{T}(IEnumerable{IVariable}, int, string)"/>
+    /// 这个参数值由自动打包方法写入<see cref="IDevice.LoadSourceRead{T}(IEnumerable{IVariable}, int, string)"/>
     /// </summary>
     [AutoGenerateColumn(Visible = false)]
     public int Index { get; set; }
 
     /// <summary>
-    /// 这个参数值由自动打包方法写入<see cref="IProtocol.LoadSourceRead{T}(IEnumerable{IVariable}, int, string)"/>
+    /// 这个参数值由自动打包方法写入<see cref="IDevice.LoadSourceRead{T}(IEnumerable{IVariable}, int, string)"/>
     /// </summary>
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
-    [AutoGenerateColumn(Visible = false)]
+    [AutoGenerateColumn(Ignore = true)]
     public IThingsGatewayBitConverter ThingsGatewayBitConverter { get; set; }
 
     #endregion LoadSourceRead
@@ -338,8 +304,8 @@ public class VariableRunTime : Variable, IVariable
     /// <summary>
     /// 事件时间
     /// </summary>
-    [AutoGenerateColumn(Visible = false)]
-    public DateTime? PrepareEventTime { get; set; }
+    [AutoGenerateColumn(Ignore = true)]
+    internal DateTime? PrepareEventTime { get; set; }
 
     /// <summary>
     /// 事件类型
@@ -348,4 +314,47 @@ public class VariableRunTime : Variable, IVariable
     public EventTypeEnum? EventType { get; set; }
 
     #endregion 报警
+    public void Init(DeviceRuntime deviceRuntime)
+    {
+        DeviceRuntime?.VariableRuntimes?.TryRemove(Name, out _);
+
+        DeviceRuntime = deviceRuntime;
+
+        DeviceRuntime.VariableRuntimes.TryAdd(Name, this);
+        GlobalData.IdVariables.TryRemove(Id, out _);
+        GlobalData.IdVariables.TryAdd(Id, this);
+        GlobalData.Variables.TryRemove(Name, out _);
+        GlobalData.Variables.TryAdd(Name, this);
+        if (AlarmEnable)
+        {
+            GlobalData.AlarmEnableVariables.TryRemove(Name, out _);
+            GlobalData.AlarmEnableVariables.TryAdd(Name, this);
+        }
+    }
+
+
+    public void Dispose()
+    {
+        DeviceRuntime?.VariableRuntimes?.TryRemove(Name, out _);
+
+        GlobalData.IdVariables.TryRemove(Id, out _);
+        GlobalData.Variables.TryRemove(Name, out _);
+
+        GlobalData.AlarmEnableVariables.TryRemove(Name, out _);
+
+        GC.SuppressFinalize(this);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask<OperResult> RpcAsync(string value, string? executive = "brower", CancellationToken cancellationToken = default)
+    {
+        var data = await GlobalData.RpcService.InvokeDeviceMethodAsync(executive, new Dictionary<string, string>() { { Name, value } }, cancellationToken).ConfigureAwait(false);
+        return data.FirstOrDefault().Value;
+    }
+
+    public void SetErrorMessage(string? lastErrorMessage)
+    {
+        _lastErrorMessage = lastErrorMessage;
+    }
 }
+

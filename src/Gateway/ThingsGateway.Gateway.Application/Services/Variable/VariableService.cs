@@ -24,10 +24,8 @@ using System.Dynamic;
 using System.Reflection;
 using System.Text;
 
-using ThingsGateway.ClayObject.Extensions;
 using ThingsGateway.Extension.Generic;
 using ThingsGateway.Foundation.Extension.Dynamic;
-using ThingsGateway.FriendlyException;
 
 using TouchSocket.Core;
 
@@ -40,18 +38,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
     private readonly IPluginService _pluginService;
     private readonly IDispatchService<bool> _allDispatchService;
     private readonly IDispatchService<Variable> _dispatchService;
-    private ISysUserService _sysUserService;
-    private ISysUserService SysUserService
-    {
-        get
-        {
-            if (_sysUserService == null)
-            {
-                _sysUserService = App.GetService<ISysUserService>();
-            }
-            return _sysUserService;
-        }
-    }
+
     /// <inheritdoc cref="IVariableService"/>
     public VariableService(
    IDispatchService<Variable> dispatchService,
@@ -67,7 +54,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
 
     #region 测试
 
-    public async Task InsertTestDataAsync(int variableCount, int deviceCount, string slaveUrl = "127.0.0.1:502")
+    public async Task<(List<Channel>, List<Device>, List<Variable>)> InsertTestDataAsync(int variableCount, int deviceCount, string slaveUrl = "127.0.0.1:502")
     {
         if (slaveUrl.IsNullOrWhiteSpace()) slaveUrl = "127.0.0.1:502";
         if (deviceCount > variableCount) variableCount = deviceCount;
@@ -75,49 +62,51 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         List<Device> newDevices = new();
         List<Variable> newVariables = new();
         var addressNum = 1;
+        // 计算每个设备分配的默认变量数
         var groupVariableCount = (int)Math.Ceiling((decimal)variableCount / deviceCount);
+
         for (int i = 0; i < deviceCount; i++)
         {
             Channel channel = new Channel();
             Device device = new Device();
             {
                 var id = CommonUtils.GetSingleId();
-                var name = $"testChannel{id}";
+                var name = $"modbusChannel{id}";
                 channel.ChannelType = ChannelTypeEnum.TcpClient;
                 channel.Name = name;
                 channel.Id = id;
                 channel.CreateUserId = UserManager.UserId;
                 channel.CreateOrgId = UserManager.OrgId;
                 channel.RemoteUrl = slaveUrl;
+                channel.PluginName = "ThingsGateway.Plugin.Modbus.ModbusMaster";
                 //动态插件属性默认
                 newChannels.Add(channel);
             }
             {
                 var id = CommonUtils.GetSingleId();
-                var name = $"testDevice{id}";
+                var name = $"modbusDevice{id}";
                 device.Name = name;
                 device.Id = id;
-                device.PluginType = PluginTypeEnum.Collect;
                 device.ChannelId = channel.Id;
-                device.IntervalTime = "1000";
                 device.CreateUserId = UserManager.UserId;
                 device.CreateOrgId = UserManager.OrgId;
-                device.PluginName = "ThingsGateway.Plugin.Modbus.ModbusMaster";
+                device.IntervalTime = "1000";
                 //动态插件属性默认
                 newDevices.Add(device);
             }
-            if (i != 0 && i == deviceCount - 1)
+
+            // 计算当前设备应该分配的变量数量
+            int currentGroupVariableCount = (i == deviceCount - 1)
+                ? variableCount - (deviceCount - 1) * groupVariableCount // 最后一个设备分配剩余的变量
+                : groupVariableCount;
+
+            for (int i1 = 0; i1 < currentGroupVariableCount; i1++)
             {
-                groupVariableCount = variableCount - deviceCount * (groupVariableCount - 1);
-            }
-            for (int i1 = 0; i1 < groupVariableCount; i1++)
-            {
-                if (addressNum >= 65500)
-                    addressNum = 1;
+                if (addressNum > 65535) addressNum = 1;
                 var address = $"4{addressNum}";
                 addressNum++;
                 var id = CommonUtils.GetSingleId();
-                var name = $"testVariable{id}";
+                var name = $"modbusVariable{address}_{id}";
                 Variable variable = new Variable();
                 variable.DataType = DataTypeEnum.Int16;
                 variable.Name = name;
@@ -135,27 +124,26 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
 
         {
             var id = CommonUtils.GetSingleId();
-            var name = $"testChannel{id}";
+            var name = $"modbusSlaveChannel{id}";
             serviceChannel.ChannelType = ChannelTypeEnum.TcpService;
             serviceChannel.Name = name;
             serviceChannel.Enable = true;
+            serviceChannel.Id = id;
             serviceChannel.CreateUserId = UserManager.UserId;
             serviceChannel.CreateOrgId = UserManager.OrgId;
-            serviceChannel.Id = id;
             serviceChannel.BindUrl = "127.0.0.1:502";
+            serviceChannel.PluginName = "ThingsGateway.Plugin.Modbus.ModbusSlave";
             newChannels.Add(serviceChannel);
         }
         {
             var id = CommonUtils.GetSingleId();
-            var name = $"testDevice{id}";
+            var name = $"modbusSlaveDevice{id}";
             serviceDevice.Name = name;
-            serviceDevice.PluginType = PluginTypeEnum.Business;
             serviceDevice.Id = id;
             serviceDevice.CreateUserId = UserManager.UserId;
             serviceDevice.CreateOrgId = UserManager.OrgId;
             serviceDevice.ChannelId = serviceChannel.Id;
             serviceDevice.IntervalTime = "1000";
-            serviceDevice.PluginName = "ThingsGateway.Plugin.Modbus.ModbusSlave";
             newDevices.Add(serviceDevice);
         }
 
@@ -164,25 +152,24 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
 
         {
             var id = CommonUtils.GetSingleId();
-            var name = $"testChannel{id}";
+            var name = $"mqttChannel{id}";
             mqttChannel.ChannelType = ChannelTypeEnum.Other;
             mqttChannel.Name = name;
+            mqttChannel.Id = id;
             mqttChannel.CreateUserId = UserManager.UserId;
             mqttChannel.CreateOrgId = UserManager.OrgId;
-            mqttChannel.Id = id;
+            mqttChannel.PluginName = "ThingsGateway.Plugin.Mqtt.MqttServer";
             newChannels.Add(mqttChannel);
         }
         {
             var id = CommonUtils.GetSingleId();
-            var name = $"testDevice{id}";
+            var name = $"mqttDevice{id}";
             mqttDevice.Name = name;
-            mqttDevice.PluginType = PluginTypeEnum.Business;
             mqttDevice.Id = id;
             mqttDevice.CreateUserId = UserManager.UserId;
             mqttDevice.CreateOrgId = UserManager.OrgId;
             mqttDevice.ChannelId = mqttChannel.Id;
             mqttDevice.IntervalTime = "1000";
-            mqttDevice.PluginName = "ThingsGateway.Plugin.Mqtt.MqttServer";
             mqttDevice.DevicePropertys = new Dictionary<string, string>
             {
               {"IsAllVariable", "true"}
@@ -208,9 +195,22 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         {
             throw new(result.ErrorMessage, result.ErrorException);
         }
+        return (newChannels, newDevices, newVariables);
     }
 
     #endregion 测试
+
+    /// <summary>
+    /// 保存初始值
+    /// </summary>
+    public async Task UpdateInitValueAsync(List<Variable> variables)
+    {
+        if (variables.Count > 0)
+        {
+            using var db = GetDB();
+            var result = await db.Updateable<Variable>(variables).UpdateColumns(a => a.Value).ExecuteCommandAsync().ConfigureAwait(false);
+        }
+    }
 
     /// <inheritdoc/>
     [OperDesc("SaveVariable", isRecordPar: false, localizerType: typeof(Variable))]
@@ -233,8 +233,13 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         if (differences?.Count > 0)
         {
             using var db = GetDB();
+            var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
+            var data = models
+                            .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+             .WhereIf(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+             .ToList();
 
-            var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
+            var result = (await db.Updateable(data).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
             _dispatchService.Dispatch(new());
             if (result)
                 DeleteCache();
@@ -246,27 +251,15 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         }
     }
 
-    /// <inheritdoc/>
-    [OperDesc("ClearVariable", localizerType: typeof(Variable), isRecordPar: false)]
-    public async Task ClearVariableAsync(SqlSugarClient db = null)
-    {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
-        db ??= GetDB();
-        var result = await db.Deleteable<Variable>()
-              .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
-              .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
-            .ExecuteCommandAsync().ConfigureAwait(false);
-
-        if (result > 0)
-            DeleteCache();
-        _dispatchService.Dispatch(new());
-    }
-
     [OperDesc("DeleteVariable", isRecordPar: false, localizerType: typeof(Variable))]
     public async Task DeleteByDeviceIdAsync(IEnumerable<long> input, SqlSugarClient db)
     {
+        var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         var ids = input.ToList();
-        var result = await db.Deleteable<Variable>().Where(a => ids.Contains(a.DeviceId.Value)).ExecuteCommandAsync().ConfigureAwait(false);
+        var result = await db.Deleteable<Variable>().Where(a => ids.Contains(a.DeviceId))
+                          .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+             .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+            .ExecuteCommandAsync().ConfigureAwait(false);
 
         if (result > 0)
             DeleteCache();
@@ -277,8 +270,12 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
     public async Task<bool> DeleteVariableAsync(IEnumerable<long> input)
     {
         using var db = GetDB();
+        var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         var ids = input.ToList();
-        var result = (await db.Deleteable<Variable>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
+        var result = (await db.Deleteable<Variable>().Where(a => ids.Contains(a.Id))
+                          .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+             .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+             .ExecuteCommandAsync().ConfigureAwait(false)) > 0;
         _dispatchService.Dispatch(new());
 
         if (result)
@@ -286,43 +283,49 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         return result;
     }
 
-    public async Task<List<VariableRunTime>> GetVariableRuntimeAsync(long? devId = null)
+    public async Task<List<Variable>> GetAllAsync(long? devId = null)
     {
-        try
+        using var db = GetDB();
+        if (devId == null)
         {
-            using var db = GetDB();
-            if (devId == null)
-            {
-                var deviceVariables = await db.Queryable<Variable>().Where(a => a.DeviceId > 0 && a.Enable).ToListAsync().ConfigureAwait(false);
-                var runtime = deviceVariables.Adapt<List<VariableRunTime>>();
-                return runtime;
-            }
-            else
-            {
-                var deviceVariables = await db.Queryable<Variable>().Where(a => a.DeviceId == devId && a.Enable).ToListAsync().ConfigureAwait(false);
-                var runtime = deviceVariables.Adapt<List<VariableRunTime>>();
-                return runtime;
-            }
+            var deviceVariables = await db.Queryable<Variable>().Where(a => a.DeviceId > 0).ToListAsync().ConfigureAwait(false);
+            return deviceVariables;
         }
-        finally
+        else
         {
-            GC.Collect();
+            var deviceVariables = await db.Queryable<Variable>().Where(a => a.DeviceId == devId).ToListAsync().ConfigureAwait(false);
+            return deviceVariables;
         }
     }
 
     /// <summary>
     /// 报表查询
     /// </summary>
-    /// <param name="option">查询条件</param>
-    /// <param name="businessDeviceId">业务设备id</param>
-    public async Task<QueryData<Variable>> PageAsync(QueryPageOptions option, long? businessDeviceId)
+    /// <param name="exportFilter">查询条件</param>
+    public async Task<QueryData<Variable>> PageAsync(ExportFilter exportFilter)
     {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
-        return await QueryAsync(option, a => a
-        .WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!))
-        .WhereIF(businessDeviceId > 0, u => SqlFunc.JsonLike(u.VariablePropertys, businessDeviceId.ToString()))
-        .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+        var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
+        HashSet<long>? deviceId = null;
+        if (!exportFilter.PluginName.IsNullOrWhiteSpace())
+        {
+            var channel = (await _channelService.GetAllAsync().ConfigureAwait(false)).Where(a => a.PluginName == exportFilter.PluginName).Select(a => a.Id).ToHashSet();
+            deviceId = (await _deviceService.GetAllAsync().ConfigureAwait(false)).Where(a => channel.Contains(a.ChannelId)).Select(a => a.Id).ToHashSet();
+        }
+        else if (exportFilter.ChannelId != null)
+        {
+            deviceId = (await _deviceService.GetAllAsync().ConfigureAwait(false)).Where(a => a.ChannelId == exportFilter.ChannelId).Select(a => a.Id).ToHashSet();
+        }
+        return await QueryAsync(exportFilter.QueryPageOptions, a => a
+        .WhereIF(!exportFilter.QueryPageOptions.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(exportFilter.QueryPageOptions.SearchText!))
+        .WhereIF(exportFilter.PluginType == PluginTypeEnum.Collect, a => a.DeviceId == exportFilter.DeviceId)
+        .WhereIF(deviceId != null, a => deviceId.Contains(a.DeviceId))
+
+                .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
         .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+
+
+        .WhereIF(exportFilter.PluginType == PluginTypeEnum.Business, u => SqlFunc.JsonLike(u.VariablePropertys, exportFilter.DeviceId.ToString()))
+
         ).ConfigureAwait(false);
     }
 
@@ -334,10 +337,8 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
     [OperDesc("SaveVariable", localizerType: typeof(Variable))]
     public async Task<bool> SaveVariableAsync(Variable input, ItemChangedType type)
     {
-        CheckInput(input);
-
         if (type == ItemChangedType.Update)
-            await SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId).ConfigureAwait(false);
+            await GlobalData.SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId).ConfigureAwait(false);
 
         if (await base.SaveAsync(input, type).ConfigureAwait(false))
         {
@@ -353,47 +354,6 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         App.CacheService.Remove(ThingsGatewayCacheConst.Cache_Variable);
     }
 
-    private void CheckInput(Variable input)
-    {
-
-        if (string.IsNullOrEmpty(input.RegisterAddress) && string.IsNullOrEmpty(input.OtherMethod))
-            throw Oops.Bah(Localizer["AddressOrOtherMethodNotNull"]);
-    }
-
-    #region API查询
-
-    public async Task<SqlSugarPagedList<Variable>> PageAsync(VariablePageInput input)
-    {
-        using var db = GetDB();
-        var query = await GetPageAsync(db, input).ConfigureAwait(false);
-        return await query.ToPagedListAsync(input.Current, input.Size).ConfigureAwait(false);//分页
-
-    }
-
-    /// <inheritdoc/>
-    private async Task<ISugarQueryable<Variable>> GetPageAsync(SqlSugarClient db, VariablePageInput input)
-    {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
-        ISugarQueryable<Variable> query = db.Queryable<Variable>()
-         .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
-         .WhereIF(!string.IsNullOrEmpty(input.RegisterAddress), u => u.RegisterAddress.Contains(input.RegisterAddress))
-         .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
-         .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
-
-         .WhereIF(input.DeviceId > 0, u => u.DeviceId == input.DeviceId)
-         .WhereIF(input.BusinessDeviceId > 0, u => SqlFunc.JsonLike(u.VariablePropertys, input.BusinessDeviceId.ToString()));
-
-        for (int i = input.SortField.Count - 1; i >= 0; i--)
-        {
-            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
-        }
-        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
-
-        return query;
-    }
-
-    #endregion API查询
-
     #region 导出
 
     /// <summary>
@@ -402,7 +362,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
     [OperDesc("ExportVariable", isRecordPar: false, localizerType: typeof(Variable))]
     public async Task<MemoryStream> ExportMemoryStream(IEnumerable<Variable> data, string deviceName = null)
     {
-        Dictionary<string, object> sheets = ExportCore(data, deviceName);
+        Dictionary<string, object> sheets = await ExportCoreAsync(data, deviceName).ConfigureAwait(false);
 
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(sheets).ConfigureAwait(false);
@@ -414,20 +374,21 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
     /// 导出文件
     /// </summary>
     [OperDesc("ExportVariable", isRecordPar: false, localizerType: typeof(Variable))]
-    public async Task<Dictionary<string, object>> ExportVariableAsync(QueryPageOptions options, FilterKeyValueAction filterKeyValueAction = null)
+    public async Task<Dictionary<string, object>> ExportVariableAsync(ExportFilter exportFilter)
     {
-        var data = (await QueryAsync(options, null, filterKeyValueAction).ConfigureAwait(false));
-        Dictionary<string, object> sheets = ExportCore(data.Items);
+        var data = (await PageAsync(exportFilter).ConfigureAwait(false));
+        var sheets = await ExportCoreAsync(data.Items).ConfigureAwait(false);
         return sheets;
     }
 
-    private Dictionary<string, object> ExportCore(IEnumerable<Variable> data, string deviceName = null)
+    private async Task<Dictionary<string, object>> ExportCoreAsync(IEnumerable<Variable> data, string deviceName = null)
     {
         if (data == null || !data.Any())
         {
             data = new List<Variable>();
         }
-        var deviceDicts = _deviceService.GetAll().ToDictionary(a => a.Id);
+        var deviceDicts = (await _deviceService.GetAllAsync().ConfigureAwait(false)).ToDictionary(a => a.Id);
+        var channelDicts = (await _channelService.GetAllAsync().ConfigureAwait(false)).ToDictionary(a => a.Id);
         var driverPluginDicts = _pluginService.GetList(PluginTypeEnum.Business).ToDictionary(a => a.FullName);
         //总数据
         Dictionary<string, object> sheets = new();
@@ -463,7 +424,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         data.ParallelForEach((variable, state, index) =>
         {
             Dictionary<string, object> varExport = new();
-            deviceDicts.TryGetValue(variable.DeviceId.Value, out var device);
+            deviceDicts.TryGetValue(variable.DeviceId, out var device);
             //设备实体没有包含设备名称，手动插入
             varExport.TryAdd(ExportString.DeviceName, device?.Name ?? deviceName);
             foreach (var item in propertyInfos)
@@ -491,26 +452,41 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
                 var has = deviceDicts.TryGetValue(item.Key, out var businessDevice);
                 if (!has)
                     continue;
+
+                channelDicts.TryGetValue(businessDevice.ChannelId, out var channel);
+
                 //没有包含设备名称，手动插入
                 driverInfo.TryAdd(ExportString.DeviceName, businessDevice.Name);
                 driverInfo.TryAdd(ExportString.VariableName, variable.Name);
 
                 var propDict = item.Value;
 
-                if (propertysDict.TryGetValue(businessDevice.PluginName, out var propertys))
+                if (propertysDict.TryGetValue(channel.PluginName, out var propertys))
                 {
                 }
                 else
                 {
-                    var variableProperty = ((BusinessBase)_pluginService.GetDriver(businessDevice.PluginName)).VariablePropertys;
-                    propertys.Item1 = variableProperty;
-                    var variablePropertyType = variableProperty.GetType();
-                    propertys.Item2 = variablePropertyType.GetRuntimeProperties()
-       .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
-       .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
-                    propertysDict.TryAdd(businessDevice.PluginName, propertys);
-                }
+                    try
+                    {
 
+                        var variableProperty = ((BusinessBase)_pluginService.GetDriver(channel.PluginName))?.VariablePropertys;
+                        propertys.Item1 = variableProperty;
+                        var variablePropertyType = variableProperty.GetType();
+                        propertys.Item2 = variablePropertyType.GetRuntimeProperties()
+           .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
+           .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
+                        propertysDict.TryAdd(channel.PluginName, propertys);
+
+                    }
+                    catch
+                    {
+
+                    }
+                }
+                if (propertys.Item2?.Count == null)
+                {
+                    continue;
+                }
                 //根据插件的配置属性项生成列，从数据库中获取值或者获取属性默认值
                 foreach (var item1 in propertys.Item2)
                 {
@@ -525,10 +501,10 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
                     }
                 }
 
-                if (!driverPluginDicts.ContainsKey(businessDevice.PluginName))
+                if (!driverPluginDicts.ContainsKey(channel.PluginName))
                     continue;
 
-                var pluginName = PluginServiceUtil.GetFileNameAndTypeName(businessDevice.PluginName);
+                var pluginName = PluginServiceUtil.GetFileNameAndTypeName(channel.PluginName);
                 //lock (devicePropertys)
                 {
                     if (devicePropertys.ContainsKey(pluginName.Item2))
@@ -595,7 +571,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
 
     /// <inheritdoc/>
     [OperDesc("ImportVariable", isRecordPar: false, localizerType: typeof(Variable))]
-    public async Task ImportVariableAsync(Dictionary<string, ImportPreviewOutputBase> input)
+    public async Task<HashSet<long>> ImportVariableAsync(Dictionary<string, ImportPreviewOutputBase> input)
     {
         var variables = new List<Variable>();
         foreach (var item in input)
@@ -614,7 +590,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         await db.Fastest<Variable>().PageSize(100000).BulkUpdateAsync(upData).ConfigureAwait(false);
         _dispatchService.Dispatch(new());
         DeleteCache();
-
+        return variables.Select(a => a.Id).ToHashSet();
     }
 
     private static readonly WaitLock _cacheLock = new();
@@ -652,9 +628,9 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         return datas;
     }
 
-    public async Task PreheatCache()
+    public Task PreheatCache()
     {
-        await GetVariableImportData().ConfigureAwait(false);
+        return GetVariableImportData();
     }
 
     private sealed class VariableImportData
@@ -668,15 +644,15 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
     {
         // 上传文件并获取文件路径
         var path = await browserFile.StorageLocal().ConfigureAwait(false);
+        var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
 
         try
         {
-            var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
             // 获取Excel文件中所有工作表的名称
             var sheetNames = MiniExcel.GetSheetNames(path);
 
             // 获取所有设备的字典，以设备名称作为键
-            var deviceDicts = _deviceService.GetAll().ToDictionary(a => a.Name);
+            var deviceDicts = (await _deviceService.GetAllAsync().ConfigureAwait(false)).ToDictionary(a => a.Name);
 
             // 存储导入检验结果的字典
             Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
@@ -827,25 +803,41 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
                         }
                         else
                         {
-                            var variableProperty = ((BusinessBase)_pluginService.GetDriver(driverPluginType.FullName)).VariablePropertys;
-                            var variablePropertyType = variableProperty.GetType();
-                            propertys.Item1 = variablePropertyType;
-                            propertys.Item2 = variablePropertyType.GetRuntimeProperties()
-                                .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
-                                .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
+                            try
+                            {
 
-                            // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
-                            var properties = propertys.Item1.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
-                                            .ToDictionary(a => propertys.Item1.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
 
-                            propertys.Item3 = properties;
-                            propertysDict.TryAdd(driverPluginType.FullName, propertys);
+                                var variableProperty = ((BusinessBase)_pluginService.GetDriver(driverPluginType.FullName)).VariablePropertys;
+                                var variablePropertyType = variableProperty.GetType();
+                                propertys.Item1 = variablePropertyType;
+                                propertys.Item2 = variablePropertyType.GetRuntimeProperties()
+                                    .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
+                                    .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
+
+                                // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
+                                var properties = propertys.Item1.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
+                                                .ToDictionary(a => propertys.Item1.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
+
+                                propertys.Item3 = properties;
+                                propertysDict.TryAdd(driverPluginType.FullName, propertys);
+                            }
+                            catch (Exception)
+                            {
+
+                            }
                         }
 
                         rows.ParallelForEach(item =>
                         {
                             try
                             {
+                                if (propertys.Item3?.Count == null || propertys.Item1 == null)
+                                {
+                                    importPreviewOutput.HasError = true;
+                                    importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), false, Localizer["ImportNullError"]));
+                                    return;
+                                }
+
                                 // 尝试将导入的项转换为对象
                                 var pluginProp = (item as ExpandoObject)?.ConvertToEntity(propertys.Item1, propertys.Item3);
 
@@ -917,7 +909,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
                                 if (has)
                                 {
                                     deviceVariable.VariablePropertys ??= new();
-                                    deviceVariable.VariablePropertys?.AddOrUpdate(businessDevice.Id, a => dependencyProperties, (a, b) => dependencyProperties);
+                                    deviceVariable.VariablePropertys?.AddOrUpdate(businessDevice.Id, dependencyProperties);
                                     importPreviewOutput.Results.Add((Interlocked.Add(ref row, 1), true, null));
                                 }
                                 else

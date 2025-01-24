@@ -1,0 +1,56 @@
+﻿@using ThingsGateway.Extension
+@namespace ThingsGateway.Razor
+<Button OnClick="() => step.Reset()">@Localizer["Reset"]</Button>
+<h6 class="my-3 green--text">@Localizer["Tip"] </h6>
+<Step @ref="@step" IsVertical="true">
+    <StepItem Text=@Localizer[ "First"] Title=@Localizer["Upload"]>
+        <InputUpload ShowDeleteButton="true" @bind-Value=_importFile Accept=".xlsx"></InputUpload>
+        <Button class="mt-2" IsAsync OnClick="() => DeviceImport(_importFile)">@Localizer["Validate"]</Button>
+    </StepItem>
+    <StepItem Text=@Localizer[ "Second"] Title=@Localizer[ "ValidateText"]>
+
+        <div class="overflow-y-auto">
+
+            @foreach (var item in _importPreviews)
+            {
+                <div class="mt-2">
+                    @(
+                                Localizer["UploadCount", item.Key, item.Value.DataCount]
+                                )
+                </div>
+                <div class=@((item.Value.HasError?"my-2 red--text":"my-2 green--text"))>
+                    @(
+                                (item.Value.HasError ? "Error" : "Success")
+                                )
+                </div>
+                if (item.Value.HasError)
+                {
+                    <div style="height:300px;" class="overflow-y-scroll">
+                        <Virtualize Items="item.Value.Results.Where(a=>!a.Success).OrderBy(a=>a.Row).ToList()" Context="item1" ItemSize="60" OverscanCount=2>
+                            <ItemContent>
+                                <div class="row g-0">
+                                    <span class="col mx-2">@item1.Row</span>
+                                    <span class=@((item1.Success?"green--text col-auto":"red--text col-auto"))>
+                                        <strong>@item1.ErrorMessage</strong>
+                                    </span>
+                                </div>
+                            </ItemContent>
+                        </Virtualize>
+                    </div>
+                }
+
+            }
+
+
+            <Button IsAsync class="mt-2" IsDisabled=@_importPreviews.Any(it=>it.Value.HasError) OnClick="() => step.Next()">@Localizer["Next"]</Button>
+
+        </div>
+    </StepItem>
+    <StepItem Text=@Localizer[ "Third"] Title=@Localizer[ "Import"]>
+        <PopConfirmButton IsAsync Color=Color.Warning class="mt-2" OnConfirm=@(SaveDeviceImport)>@Localizer["Import"]</PopConfirmButton>
+    </StepItem>
+</Step>
+@code {
+    [NotNull]
+    Step? step{ get; set; }
+}

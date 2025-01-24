@@ -23,13 +23,13 @@ public class DeviceData : IPrimaryIdEntity
     /// <inheritdoc cref="Device.Name"/>
     public string Name { get; set; }
 
-    /// <inheritdoc cref="DeviceRunTime.ActiveTime"/>
+    /// <inheritdoc cref="DeviceRuntime.ActiveTime"/>
     public DateTime ActiveTime { get; set; }
 
-    /// <inheritdoc cref="DeviceRunTime.DeviceStatus"/>
+    /// <inheritdoc cref="DeviceRuntime.DeviceStatus"/>
     public DeviceStatusEnum DeviceStatus { get; set; }
 
-    /// <inheritdoc cref="DeviceRunTime.LastErrorMessage"/>
+    /// <inheritdoc cref="DeviceRuntime.LastErrorMessage"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string LastErrorMessage { get; set; }
@@ -65,28 +65,11 @@ public class DeviceData : IPrimaryIdEntity
 /// </summary>
 public class DeviceBasicData : DeviceData
 {
-    /// <inheritdoc cref="Device.PluginName"/>
+    /// <inheritdoc cref="DeviceRuntime.PluginName"/>
     public string PluginName { get; set; }
 
     /// <inheritdoc cref="Device.Description"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? Description { get; set; }
-}
-
-public class DeviceDataWithValue
-{
-    /// <inheritdoc cref="Device.Name"/>
-    public string Name { get; set; }
-
-    /// <inheritdoc cref="DeviceRunTime.ActiveTime"/>
-    public DateTime ActiveTime { get; set; }
-
-    /// <inheritdoc cref="DeviceRunTime.DeviceStatus"/>
-    public DeviceStatusEnum DeviceStatus { get; set; }
-
-    /// <inheritdoc cref="DeviceRunTime.LastErrorMessage"/>
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
-    public string LastErrorMessage { get; set; }
 }

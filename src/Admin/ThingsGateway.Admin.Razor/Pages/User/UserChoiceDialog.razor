@@ -1,0 +1,30 @@
+﻿@namespace ThingsGateway.Admin.Razor
+@using ThingsGateway.Admin.Application
+
+
+<div class="row h-100">
+
+    <div class="col-12  col-md-3 h-100">
+        <Tab>
+
+            <TabItem Text=@AdminLocalizer["Role"]>
+                <RoleTree ValueChanged="RoleTreeChangedAsync"></RoleTree>
+            </TabItem>
+            <TabItem Text=@AdminLocalizer["Position"]>
+                <PositionTree ValueChanged="PositionTreeChangedAsync"></PositionTree>
+            </TabItem>
+            <TabItem Text=@AdminLocalizer["Org"]>
+                <OrgTree ValueChanged="OrgTreeChangedAsync"></OrgTree>
+            </TabItem>
+        </Tab>
+
+    </div>
+    <div class="col-12  col-md-9 h-100">
+        <ChoiceTable @ref=userChoiceTable OnChangedAsync="OnChanged" TItem="UserSelectorOutput" OnQueryAsync="OnQueryAsync" SelectedRows="@SelectedRows" MaxCount=@MaxCount></ChoiceTable>
+    </div>
+</div>
+
+@code {
+    [NotNull]
+    ChoiceTable<UserSelectorOutput>? userChoiceTable { get; set; }
+}

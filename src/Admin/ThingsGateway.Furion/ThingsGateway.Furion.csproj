@@ -1,0 +1,68 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="$(SolutionDir)Version.props" />
+	<Import Project="$(SolutionDir)PackNuget.props" />
+
+	<PropertyGroup>
+		<TargetFrameworks>net9.0;net8.0;</TargetFrameworks>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<ProjectReference Include="..\ThingsGateway.NewLife.X\ThingsGateway.NewLife.X.csproj" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<None Remove="FriendlyException\Assets\error.html" />
+		<None Remove="Schedule\Dashboard\frontend\**\*" />
+		<None Remove="SpecificationDocument\Assets\index-mini-profiler.html" />
+		<None Remove="SpecificationDocument\Assets\index.html" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="FriendlyException\Assets\error.html" />
+		<EmbeddedResource Include="Schedule\Dashboard\frontend\**\*" />
+		<EmbeddedResource Include="SpecificationDocument\Assets\index-mini-profiler.html" />
+		<EmbeddedResource Include="SpecificationDocument\Assets\index.html" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Ben.Demystifier" Version="0.4.1" />
+		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+		<PackageReference Include="Mapster" Version="7.4.0" />
+		<PackageReference Include="System.Text.Json" Version="9.*" />
+		<PackageReference Include="System.Reflection.MetadataLoadContext" Version="9.*" />
+		<PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
+		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="9.*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.*" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.*" />
+	</ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.*" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.*" />
+
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+		<None Include="README.zh-CN.md" Pack="true" PackagePath="\" />
+		<None Remove="$(SolutionDir)..\README.md" Pack="false" PackagePath="\" />
+		<None Remove="$(SolutionDir)..\README.zh-CN.md" Pack="false" PackagePath="\" />
+	</ItemGroup>
+	
+</Project>

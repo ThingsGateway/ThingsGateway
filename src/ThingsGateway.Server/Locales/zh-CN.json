@@ -1,12 +1,12 @@
 ﻿{
 
-  "ThingsGateway.Admin.Razor.NotFound404": {
+  "ThingsGateway.Server.NotFound404": {
     "404": "抱歉，您访问的页面不存在。",
     "401": "抱歉，您无权限访问该页面。",
     "Home": "回到首页",
     "Login": "重新登录"
   },
-  "ThingsGateway.Admin.Razor.Login": {
+  "ThingsGateway.Server.Login": {
     "LoginErrorh1": "登录异常",
     "LoginSuccessh1": "登录成功",
     "LoginSuccessc1": "即将跳转页面",
@@ -18,7 +18,7 @@
     "Welcome": "欢迎使用"
   },
 
-  "ThingsGateway.Razor.MainLayout": {
+  "ThingsGateway.Server.MainLayout": {
     "About": "关于",
     "FullScreenButton": "全屏",
     "UserCenter": "个人中心",
@@ -52,7 +52,7 @@
     "业务设备": "业务设备",
     "变量管理": "变量管理",
     "网关状态": "网关状态",
-    "设备状态": "设备状态",
+    "网关监控": "网关监控",
     "实时数据": "实时数据",
     "实时报警": "实时报警",
     "网关日志": "网关日志",
@@ -65,7 +65,7 @@
   },
 
 
-  "ThingsGateway.Admin.Razor.AdminIndex": {
+  "ThingsGateway.Server.AdminIndex": {
     "CollectDevice": "采集设备",
     "BusinessDevice": "业务设备",
     "Variable": "变量",
@@ -83,7 +83,7 @@
     "HistoryHardwareInfo": "历史曲线"
   },
 
-  "ThingsGateway.Gateway.Razor.GatewayIndex": {
+  "ThingsGateway.Server.GatewayIndex": {
     "CollectDevice": "采集设备",
     "BusinessDevice": "业务设备",
     "Variable": "变量",

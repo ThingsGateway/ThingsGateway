@@ -8,9 +8,6 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
 using System.Diagnostics;
@@ -18,7 +15,7 @@ using System.Text.RegularExpressions;
 
 using ThingsGateway.Extension;
 using ThingsGateway.Foundation;
-using ThingsGateway.Razor;
+using ThingsGateway.NewLife;
 
 using TouchSocket.Core;
 
@@ -26,7 +23,7 @@ namespace ThingsGateway.Debug;
 
 public partial class LogConsole : IDisposable
 {
-    private bool IsPause;
+    private bool Pause;
 
     public bool Disposed { get; set; }
 
@@ -36,11 +33,17 @@ public partial class LogConsole : IDisposable
     [Parameter]
     public EventCallback<LogLevel> LogLevelChanged { get; set; }
 
+    [Parameter, EditorRequired]
+    public bool Enable { get; set; }
+    [Parameter]
+    public EventCallback<bool> EnableChanged { get; set; }
+    [Parameter]
+    public string CardStyle { get; set; } = "height: 100%;";
     [Parameter]
     public string HeaderText { get; set; } = "Log";
 
     [Parameter]
-    public string HeightString { get; set; } = "400px";
+    public string HeightString { get; set; } = "calc(100% - 50px)";
 
     [Parameter, EditorRequired]
     public string LogPath { get; set; }
@@ -50,10 +53,12 @@ public partial class LogConsole : IDisposable
     /// </summary>
     public ICollection<LogMessage> Messages { get; set; } = new List<LogMessage>();
 
-    private ICollection<LogMessage> CurrentMessages => IsPause ? PauseMessagesText : Messages;
+    private ICollection<LogMessage> CurrentMessages => Pause ? PauseMessagesText : Messages;
 
     [Inject]
     private DownloadService DownloadService { get; set; }
+    [Inject]
+    private IStringLocalizer<ThingsGateway.Razor._Imports> RazorLocalizer { get; set; }
 
     /// <summary>
     /// 暂停缓存
@@ -86,7 +91,7 @@ public partial class LogConsole : IDisposable
             if (LogPath != null)
             {
                 var files = TextFileReader.GetFiles(LogPath);
-                if (files == null || files.FirstOrDefault() == null || !files.FirstOrDefault().IsSuccess)
+                if (!files.IsSuccess)
                 {
                     Messages = new List<LogMessage>();
                     await Task.Delay(1000);
@@ -96,7 +101,7 @@ public partial class LogConsole : IDisposable
                     await Task.Run(async () =>
                     {
                         Stopwatch sw = Stopwatch.StartNew();
-                        var result = TextFileReader.LastLog(files.FirstOrDefault().FullName, 0);
+                        var result = TextFileReader.LastLog(files.Content.FirstOrDefault());
                         if (result.IsSuccess)
                         {
                             Messages = result.Content.Where(a => a.LogLevel >= LogLevel).Select(a => new LogMessage((int)a.LogLevel, $"{a.LogTime} - {a.Message}{(a.ExceptionString.IsNullOrWhiteSpace() ? null : $"{Environment.NewLine}{a.ExceptionString}")}")).ToList();
@@ -116,7 +121,7 @@ public partial class LogConsole : IDisposable
         }
         catch (Exception ex)
         {
-            System.Console.WriteLine(ex);
+            NewLife.Log.XTrace.WriteException(ex);
         }
     }
 
@@ -131,22 +136,18 @@ public partial class LogConsole : IDisposable
         if (LogPath != null)
         {
             var files = TextFileReader.GetFiles(LogPath);
-            if (files == null || files.FirstOrDefault() == null || !files.FirstOrDefault().IsSuccess)
+            if (files.IsSuccess)
             {
-            }
-            else
-            {
-                foreach (var item in files)
+                foreach (var item in files.Content)
                 {
-                    if (File.Exists(item.FullName))
+                    if (File.Exists(item))
                     {
                         int error = 0;
                         while (error < 3)
                         {
                             try
                             {
-                                File.SetAttributes(item.FullName, FileAttributes.Normal);
-                                File.Delete(item.FullName);
+                                FileUtil.DeleteFile(item);
                                 break;
                             }
                             catch
@@ -165,7 +166,7 @@ public partial class LogConsole : IDisposable
     {
         try
         {
-            if (IsPause)
+            if (Pause)
             {
                 using var memoryStream = new MemoryStream();
                 using StreamWriter writer = new(memoryStream);
@@ -193,11 +194,18 @@ public partial class LogConsole : IDisposable
             await ToastService.Warn(ex);
         }
     }
-
-    private Task Pause()
+    private async Task OnEnable()
     {
-        IsPause = !IsPause;
-        if (IsPause)
+        if (EnableChanged.HasDelegate)
+        {
+            Enable = !Enable;
+            await EnableChanged.InvokeAsync(Enable);
+        }
+    }
+    private Task OnPause()
+    {
+        Pause = !Pause;
+        if (Pause)
             PauseMessagesText = Messages.ToList();
         return Task.CompletedTask;
     }
@@ -214,7 +222,7 @@ public partial class LogConsole : IDisposable
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine(ex);
+                NewLife.Log.XTrace.WriteException(ex);
             }
         }
     }

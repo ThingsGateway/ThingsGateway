@@ -37,18 +37,7 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
     private readonly IChannelService _channelService;
     private readonly IPluginService _pluginService;
     private readonly IDispatchService<Device> _dispatchService;
-    private ISysUserService _sysUserService;
-    private ISysUserService SysUserService
-    {
-        get
-        {
-            if (_sysUserService == null)
-            {
-                _sysUserService = App.GetService<ISysUserService>();
-            }
-            return _sysUserService;
-        }
-    }
+
     public DeviceService(
     IDispatchService<Device> dispatchService
         )
@@ -58,45 +47,17 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
         _dispatchService = dispatchService;
     }
 
-    /// <inheritdoc/>
-    [OperDesc("SaveDevice", localizerType: typeof(Device), isRecordPar: false)]
-    public async Task<bool> BatchEditAsync(IEnumerable<Device> models, Device oldModel, Device model)
+    public async Task UpdateLogAsync(long channelId, bool logEnable, LogLevel logLevel)
     {
-        var differences = models.GetDiffProperty(oldModel, model);
-        differences.Remove(nameof(Device.DevicePropertys));
-
-        if (differences?.Count > 0)
-        {
-            using var db = GetDB();
-
-            var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
-            if (result)
-                DeleteDeviceFromCache();
-            return result;
-        }
-        else
-        {
-            return true;
-        }
-    }
-
-    [OperDesc("ClearDevice", localizerType: typeof(Device))]
-    public async Task ClearDeviceAsync(PluginTypeEnum pluginType)
-    {
-        var variableService = App.RootServices.GetRequiredService<IVariableService>();
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         using var db = GetDB();
+
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            var data = GetAll()
-            .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
-             .WhereIf(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
-             .Where(a => a.PluginType == pluginType)
-             .Select(a => a.Id).ToList();
-            await db.Deleteable<Device>(data).ExecuteCommandAsync().ConfigureAwait(false);
-            if (pluginType == PluginTypeEnum.Collect)
-                await variableService.DeleteByDeviceIdAsync(data, db).ConfigureAwait(false);
+            //更新数据库
+
+            await db.Updateable<Device>().SetColumns(it => new Device() { LogEnable = logEnable, LogLevel = logLevel }).Where(a => a.Id == channelId).ExecuteCommandAsync().ConfigureAwait(false);
+
         }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
@@ -109,17 +70,44 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
         }
     }
 
+    /// <inheritdoc/>
+    [OperDesc("SaveDevice", localizerType: typeof(Device), isRecordPar: false)]
+    public async Task<bool> BatchEditAsync(IEnumerable<Device> models, Device oldModel, Device model)
+    {
+        var differences = models.GetDiffProperty(oldModel, model);
+        differences.Remove(nameof(Device.DevicePropertys));
+
+        if (differences?.Count > 0)
+        {
+            using var db = GetDB();
+            var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
+            var data = models
+                            .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+             .WhereIf(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+             .ToList();
+            var result = (await db.Updateable(data).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
+            if (result)
+                DeleteDeviceFromCache();
+            return result;
+        }
+        else
+        {
+            return true;
+        }
+    }
+
     [OperDesc("DeleteDevice", isRecordPar: false, localizerType: typeof(Device))]
     public async Task DeleteByChannelIdAsync(IEnumerable<long> ids, SqlSugarClient db)
     {
         var variableService = App.RootServices.GetRequiredService<IVariableService>();
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
+        var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            var data = GetAll().Where(a => ids.Contains(a.ChannelId))
-              .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+            var data = (await GetAllAsync(db).ConfigureAwait(false))
+                          .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
              .WhereIf(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+             .Where(a => ids.ToHashSet().Contains(a.ChannelId))
             .Select(a => a.Id).ToList();
             await db.Deleteable<Device>(data).ExecuteCommandAsync().ConfigureAwait(false);
             await variableService.DeleteByDeviceIdAsync(data, db).ConfigureAwait(false);
@@ -139,12 +127,16 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
     public async Task<bool> DeleteDeviceAsync(IEnumerable<long> ids)
     {
         var variableService = App.RootServices.GetRequiredService<IVariableService>();
+        var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
 
         using var db = GetDB();
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            await db.Deleteable<Device>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync().ConfigureAwait(false);
+            await db.Deleteable<Device>().Where(a => ids.ToHashSet().Contains(a.Id))
+                          .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+             .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+            .ExecuteCommandAsync().ConfigureAwait(false);
             await variableService.DeleteByDeviceIdAsync(ids, db).ConfigureAwait(false);
         }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
@@ -170,138 +162,49 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
     /// 从缓存/数据库获取全部信息
     /// </summary>
     /// <returns>列表</returns>
-    public List<Device> GetAll()
+    public async Task<List<Device>> GetAllAsync(SqlSugarClient db = null)
     {
         var key = ThingsGatewayCacheConst.Cache_Device;
         var devices = App.CacheService.Get<List<Device>>(key);
         if (devices == null)
         {
-            using var db = GetDB();
-            devices = db.Queryable<Device>().ToList();
+            db ??= GetDB();
+            devices = await db.Queryable<Device>().ToListAsync().ConfigureAwait(false);
             App.CacheService.Set(key, devices);
         }
         return devices;
     }
-    /// <summary>
-    /// 从缓存/数据库获取全部信息
-    /// </summary>
-    /// <returns>列表</returns>
-    public async Task<List<Device>> GetAllByOrgAsync()
+
+    public async Task<Device?> GetDeviceByIdAsync(long id)
     {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
-        return GetAll()
-              .WhereIF(dataScope != null && dataScope?.Count > 0, b => dataScope.Contains(b.CreateOrgId))
-              .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId).ToList();
-    }
-    public async Task<List<DeviceRunTime>> GetBusinessDeviceRuntimeAsync(long? devId = null)
-    {
-        await Task.CompletedTask.ConfigureAwait(false);
-        if (devId == null)
-        {
-            var devices = GetAll().Where(a => a.Enable && a.PluginType == PluginTypeEnum.Business);
-            var channels = _channelService.GetAll().Where(a => a.Enable);
-            devices = devices.Where(a => channels.Select(a => a.Id).Contains(a.ChannelId));
-
-            var runtime = devices.Adapt<List<DeviceRunTime>>();
-            runtime.ParallelForEach(device =>
-            {
-                device.Channel = channels.FirstOrDefault(a => a.Id == device.ChannelId);
-            });
-            return runtime;
-        }
-        else
-        {
-            var device = GetAll().FirstOrDefault(a => a.Enable && a.PluginType == PluginTypeEnum.Business && a.Id == devId);
-            if (device == null)
-            {
-                return new List<DeviceRunTime>() { };
-            }
-            var channels = _channelService.GetAll().Where(a => a.Enable);
-            if (!channels.Select(a => a.Id).Contains(device.ChannelId))
-            {
-                return new List<DeviceRunTime>() { };
-            }
-            var runtime = device.Adapt<DeviceRunTime>();
-            runtime.Channel = channels.FirstOrDefault(a => a.Id == runtime.ChannelId);
-            return new List<DeviceRunTime>() { runtime };
-        }
-    }
-
-    public async Task<List<CollectDeviceRunTime>> GetCollectDeviceRuntimeAsync(long? devId = null)
-    {
-        if (devId == null)
-        {
-            var variableService = App.RootServices.GetRequiredService<IVariableService>();
-            var devices = GetAll().Where(a => a.Enable && a.PluginType == PluginTypeEnum.Collect);
-            var channels = _channelService.GetAll().Where(a => a.Enable);
-            devices = devices.Where(a => channels.Select(a => a.Id).Contains(a.ChannelId));
-            var runtime = devices.Adapt<List<CollectDeviceRunTime>>().ToDictionary(a => a.Id);
-            var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync().ConfigureAwait(false);
-            runtime.Values.ParallelForEach(device =>
-            {
-                device.Channel = channels.FirstOrDefault(a => a.Id == device.ChannelId);
-
-                device.VariableRunTimes = collectVariableRunTimes.Where(a => a.DeviceId == device.Id).ToDictionary(a => a.Name);
-            });
-
-            collectVariableRunTimes.ParallelForEach(variable =>
-            {
-                if (runtime.TryGetValue(variable.DeviceId.Value, out var device))
-                {
-                    variable.CollectDeviceRunTime = device;
-                    variable.DeviceName = device.Name;
-                }
-            });
-            return runtime.Values.ToList();
-        }
-        else
-        {
-            var device = GetAll().FirstOrDefault(a => a.Enable && a.PluginType == PluginTypeEnum.Collect && a.Id == devId);
-            if (device == null)
-            {
-                return new List<CollectDeviceRunTime>() { };
-            }
-            var channels = _channelService.GetAll().Where(a => a.Enable);
-            if (!channels.Select(a => a.Id).Contains(device.ChannelId))
-            {
-                return new List<CollectDeviceRunTime>() { };
-            }
-
-            var runtime = device.Adapt<CollectDeviceRunTime>();
-            var variableService = App.RootServices.GetRequiredService<IVariableService>();
-            var collectVariableRunTimes = await variableService.GetVariableRuntimeAsync(devId).ConfigureAwait(false);
-            runtime.VariableRunTimes = collectVariableRunTimes.ToDictionary(a => a.Name);
-            runtime.Channel = channels.FirstOrDefault(a => a.Id == runtime.ChannelId);
-
-            collectVariableRunTimes.ParallelForEach(variable =>
-            {
-                variable.CollectDeviceRunTime = runtime;
-                variable.DeviceName = runtime.Name;
-            });
-            return new List<CollectDeviceRunTime>() { runtime };
-        }
-    }
-
-    public Device? GetDeviceById(long id)
-    {
-        var data = GetAll();
+        var data = await GetAllAsync().ConfigureAwait(false);
         return data?.FirstOrDefault(x => x.Id == id);
     }
 
     /// <summary>
     /// 报表查询
     /// </summary>
-    /// <param name="option">查询条件</param>
-    /// <param name="pluginType">查询条件</param>
-    /// <param name="filterKeyValueAction">查询条件</param>
-    public async Task<QueryData<Device>> PageAsync(QueryPageOptions option, PluginTypeEnum pluginType, FilterKeyValueAction filterKeyValueAction = null)
+    /// <param name="exportFilter">查询条件</param>
+    public async Task<QueryData<Device>> PageAsync(ExportFilter exportFilter)
     {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
-        return await QueryAsync(option, a => a
-         .WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!)).Where(a => a.PluginType == pluginType)
-         .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+        HashSet<long>? channel = null;
+        if (!exportFilter.PluginName.IsNullOrWhiteSpace())
+        {
+            channel = (await _channelService.GetAllAsync().ConfigureAwait(false)).Where(a => a.PluginName == exportFilter.PluginName).Select(a => a.Id).ToHashSet();
+        }
+        if (exportFilter.PluginType != null)
+        {
+            var pluginInfo = GlobalData.PluginService.GetList(exportFilter.PluginType).Select(a => a.FullName).ToHashSet();
+            channel = (await _channelService.GetAllAsync().ConfigureAwait(false)).Where(a => pluginInfo.Contains(a.PluginName)).Select(a => a.Id).ToHashSet();
+        }
+        var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
+        return await QueryAsync(exportFilter.QueryPageOptions, a => a
+     .WhereIF(channel != null, a => channel.Contains(a.ChannelId))
+     .WhereIF(exportFilter.DeviceId != null, a => a.Id == exportFilter.DeviceId)
+     .WhereIF(!exportFilter.QueryPageOptions.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(exportFilter.QueryPageOptions.SearchText!))
+              .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
          .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
-       , filterKeyValueAction).ConfigureAwait(false);
+   , exportFilter.FilterKeyValueAction).ConfigureAwait(false);
 
     }
 
@@ -313,10 +216,15 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
     [OperDesc("SaveDevice", localizerType: typeof(Device))]
     public async Task<bool> SaveDeviceAsync(Device input, ItemChangedType type)
     {
-        CheckInput(input);
-
+        if ((await GetAllAsync().ConfigureAwait(false)).ToDictionary(a => a.Name).TryGetValue(input.Name, out var device))
+        {
+            if (device.Id != input.Id)
+            {
+                throw Oops.Bah(Localizer["NameDump", device.Name]);
+            }
+        }
         if (type == ItemChangedType.Update)
-            await SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId).ConfigureAwait(false);
+            await GlobalData.SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId).ConfigureAwait(false);
 
         if (await base.SaveAsync(input, type).ConfigureAwait(false))
         {
@@ -326,46 +234,6 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
         return false;
     }
 
-    private void CheckInput(Device input)
-    {
-
-        if (input.RedundantEnable && input.RedundantDeviceId == null)
-        {
-            throw Oops.Bah(Localizer["RedundantDeviceNotNull"]);
-        }
-    }
-
-    #region API查询
-
-    public async Task<SqlSugarPagedList<Device>> PageAsync(DevicePageInput input)
-    {
-        using var db = GetDB();
-        var query = await GetPageAsync(db, input).ConfigureAwait(false);
-        return await query.ToPagedListAsync(input.Current, input.Size).ConfigureAwait(false);//分页
-    }
-
-    /// <inheritdoc/>
-    private async Task<ISugarQueryable<Device>> GetPageAsync(SqlSugarClient db, DevicePageInput input)
-    {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
-        ISugarQueryable<Device> query = db.Queryable<Device>()
-         .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
-         .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
-         .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
-         .WhereIF(input.ChannelId != null, u => u.ChannelId == input.ChannelId)
-         .WhereIF(!string.IsNullOrEmpty(input.PluginName), u => u.PluginName == input.PluginName)
-         .Where(u => u.PluginType == input.PluginType);
-        for (int i = input.SortField.Count - 1; i >= 0; i--)
-        {
-            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
-        }
-        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
-
-        return query;
-    }
-
-    #endregion API查询
-
     #region 导出
 
     /// <summary>
@@ -373,13 +241,11 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
     /// </summary>
     /// <returns></returns>
     [OperDesc("ExportDevice", isRecordPar: false, localizerType: typeof(Device))]
-    public async Task<Dictionary<string, object>> ExportDeviceAsync(QueryPageOptions options, PluginTypeEnum pluginType, FilterKeyValueAction filterKeyValueAction = null)
+    public async Task<Dictionary<string, object>> ExportDeviceAsync(ExportFilter exportFilter)
     {
         //导出
-        var data = await PageAsync(options, pluginType, filterKeyValueAction).ConfigureAwait(false);
-        string fileName;
-        Dictionary<string, object> sheets;
-        ExportCore(data.Items, pluginType, out fileName, out sheets);
+        var data = await PageAsync(exportFilter).ConfigureAwait(false);
+        var sheets = await ExportCoreAsync(data.Items).ConfigureAwait(false);
         return sheets;
     }
 
@@ -387,28 +253,25 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
     /// 导出文件
     /// </summary>
     [OperDesc("ExportDevice", isRecordPar: false, localizerType: typeof(Device))]
-    public async Task<MemoryStream> ExportMemoryStream(IEnumerable<Device>? data, PluginTypeEnum pluginType, string channelName = null)
+    public async Task<MemoryStream> ExportMemoryStream(IEnumerable<Device>? data, string channelName = null)
     {
-        string fileName;
-        Dictionary<string, object> sheets;
-        ExportCore(data, pluginType, out fileName, out sheets, channelName);
+        var sheets = await ExportCoreAsync(data, channelName).ConfigureAwait(false);
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(sheets).ConfigureAwait(false);
         memoryStream.Seek(0, SeekOrigin.Begin);
         return memoryStream;
     }
 
-    private void ExportCore(IEnumerable<Device>? data, PluginTypeEnum pluginType, out string fileName, out Dictionary<string, object> sheets, string channelName = null)
+    private async Task<Dictionary<string, object>> ExportCoreAsync(IEnumerable<Device>? data, string channelName = null)
     {
         if (data == null || !data.Any())
         {
             data = new List<Device>();
         }
-        fileName = pluginType == PluginTypeEnum.Collect ? "CollectDevice" : "BusinessDevice";
-        var deviceDicts = GetAll().ToDictionary(a => a.Id);
-        var channelDicts = _channelService.GetAll().ToDictionary(a => a.Id);
+        var deviceDicts = (await GetAllAsync().ConfigureAwait(false)).ToDictionary(a => a.Id);
+        var channelDicts = (await _channelService.GetAllAsync().ConfigureAwait(false)).ToDictionary(a => a.Id);
         //总数据
-        sheets = new();
+        Dictionary<string, object> sheets = new();
         //设备页
         List<Dictionary<string, object>> deviceExports = new();
         //设备附加属性，转成Dict<表名,List<Dict<列名，列数据>>>的形式
@@ -467,20 +330,31 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
             Dictionary<string, object> driverInfo = new();
 
             var propDict = device.DevicePropertys;
-            if (propertysDict.TryGetValue(device.PluginName, out var propertys))
+            if (propertysDict.TryGetValue(channel.PluginName, out var propertys))
             {
             }
             else
             {
-                var driverProperties = _pluginService.GetDriver(device.PluginName).DriverProperties;
-                propertys.Item1 = driverProperties;
-                var driverPropertyType = driverProperties.GetType();
-                propertys.Item2 = driverPropertyType.GetRuntimeProperties()
-.Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
-.ToDictionary(a => driverPropertyType.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description), a => a);
+                try
+                {
+                    var driverProperties = _pluginService.GetDriver(channel.PluginName).DriverProperties;
+                    propertys.Item1 = driverProperties;
+                    var driverPropertyType = driverProperties.GetType();
+                    propertys.Item2 = driverPropertyType.GetRuntimeProperties()
+    .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
+    .ToDictionary(a => driverPropertyType.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description), a => a);
+                    propertysDict.TryAdd(channel.PluginName, propertys);
 
-                propertysDict.TryAdd(device.PluginName, propertys);
+                }
+                catch (Exception)
+                {
+
+                }
+
             }
+
+            if (propertys.Item2 == null)
+                continue;
 
             if (propertys.Item2.Count > 0)
             {
@@ -501,7 +375,7 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
                 }
             }
 
-            var pluginName = PluginServiceUtil.GetFileNameAndTypeName(device.PluginName);
+            var pluginName = PluginServiceUtil.GetFileNameAndTypeName(channel.PluginName);
             if (devicePropertys.ContainsKey(pluginName.TypeName))
             {
                 if (driverInfo.Count > 0)
@@ -544,6 +418,8 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
 
             sheets.Add(item.Key, item.Value);
         }
+
+        return sheets;
     }
 
 
@@ -554,41 +430,42 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
 
     /// <inheritdoc/>
     [OperDesc("ImportDevice", isRecordPar: false, localizerType: typeof(Device))]
-    public async Task ImportDeviceAsync(Dictionary<string, ImportPreviewOutputBase> input)
+    public async Task<HashSet<long>> ImportDeviceAsync(Dictionary<string, ImportPreviewOutputBase> input)
     {
-        var collectDevices = new List<Device>();
+        var devices = new List<Device>();
         foreach (var item in input)
         {
             if (item.Key == ExportString.DeviceName)
             {
                 var collectDeviceImports = ((ImportPreviewOutput<Device>)item.Value).Data;
-                collectDevices = new List<Device>(collectDeviceImports.Values);
+                devices = new List<Device>(collectDeviceImports.Values);
                 break;
             }
         }
-        var upData = collectDevices.Where(a => a.IsUp).ToList();
-        var insertData = collectDevices.Where(a => !a.IsUp).ToList();
+        var upData = devices.Where(a => a.IsUp).ToList();
+        var insertData = devices.Where(a => !a.IsUp).ToList();
         using var db = GetDB();
         await db.Fastest<Device>().PageSize(100000).BulkCopyAsync(insertData).ConfigureAwait(false);
         await db.Fastest<Device>().PageSize(100000).BulkUpdateAsync(upData).ConfigureAwait(false);
         DeleteDeviceFromCache();
+        return devices.Select(a => a.Id).ToHashSet();
     }
 
     public async Task<Dictionary<string, ImportPreviewOutputBase>> PreviewAsync(IBrowserFile browserFile)
     {
         var path = await browserFile.StorageLocal().ConfigureAwait(false); // 上传文件并获取文件路径
+        var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
 
         try
         {
-            var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
             // 获取 Excel 文件中所有工作表的名称
             var sheetNames = MiniExcel.GetSheetNames(path);
 
             // 获取所有设备，并将设备名称作为键构建设备字典
-            var deviceDicts = GetAll().ToDictionary(a => a.Name);
+            var deviceDicts = (await GetAllAsync().ConfigureAwait(false)).ToDictionary(a => a.Name);
 
             // 获取所有通道，并将通道名称作为键构建通道字典
-            var channelDicts = _channelService.GetAll().ToDictionary(a => a.Name);
+            var channelDicts = (await _channelService.GetAllAsync().ConfigureAwait(false)).ToDictionary(a => a.Name);
 
             // 导入检验结果的预览字典，键为名称，值为导入预览对象
             Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
@@ -789,22 +666,31 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
                     }
                     else
                     {
-                        // 获取驱动插件实例
-                        var driver = _pluginService.GetDriver(driverPluginType.FullName);
-                        var type = driver.DriverProperties.GetType();
+                        try
+                        {
 
-                        propertys.Item1 = type;
 
-                        propertys.Item2 = type.GetRuntimeProperties()
-                            .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null && a.CanWrite)
-                            .ToDictionary(a => type.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
+                            // 获取驱动插件实例
+                            var driver = _pluginService.GetDriver(driverPluginType.FullName);
+                            var type = driver.DriverProperties.GetType();
 
-                        // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
-                        var properties = propertys.Item1.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
-                                        .ToDictionary(a => propertys.Item1.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
+                            propertys.Item1 = type;
 
-                        propertys.Item3 = properties;
-                        propertysDict.TryAdd(driverPluginType.FullName, propertys);
+                            propertys.Item2 = type.GetRuntimeProperties()
+                                .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null && a.CanWrite)
+                                .ToDictionary(a => type.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
+
+                            // 获取目标类型的所有属性，并根据是否需要过滤 IgnoreExcelAttribute 进行筛选
+                            var properties = propertys.Item1.GetRuntimeProperties().Where(a => (a.GetCustomAttribute<IgnoreExcelAttribute>() == null) && a.CanWrite)
+                                            .ToDictionary(a => propertys.Item1.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
+
+                            propertys.Item3 = properties;
+                            propertysDict.TryAdd(driverPluginType.FullName, propertys);
+                        }
+                        catch
+                        {
+
+                        }
                     }
 
                     // 遍历每一行数据
@@ -812,6 +698,13 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
                     {
                         try
                         {
+                            if (propertys.Item1 == null)
+                            {
+                                importPreviewOutput.HasError = true;
+                                importPreviewOutput.Results.Add((row++, false, Localizer["PluginNotNull"]));
+                                continue;
+                            }
+
                             // 获取设备名称
                             if (!item.TryGetValue(ExportString.DeviceName, out var deviceName))
                             {

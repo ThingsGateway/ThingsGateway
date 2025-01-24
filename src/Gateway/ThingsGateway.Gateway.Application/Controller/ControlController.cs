@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 
 using System.ComponentModel;
 
+using ThingsGateway.FriendlyException;
+
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
@@ -25,15 +27,6 @@ namespace ThingsGateway.Gateway.Application;
 [Authorize(AuthenticationSchemes = "Bearer")]
 public class ControlController : ControllerBase
 {
-    private ISysUserService _sysUserService;
-    public ControlController(IRpcService rpcService, ISysUserService sysUserService)
-    {
-        _sysUserService = sysUserService;
-        _rpcService = rpcService;
-    }
-
-    private IRpcService _rpcService { get; set; }
-
 
     /// <summary>
     /// 清空全部缓存
@@ -58,75 +51,54 @@ public class ControlController : ControllerBase
         App.GetService<IChannelService>().DeleteChannelFromCache();
     }
 
-
     /// <summary>
-    /// 控制业务线程启停
+    /// 控制设备线程暂停
     /// </summary>
     /// <returns></returns>
     [HttpPost("pauseBusinessThread")]
-    [DisplayName("控制业务线程启停")]
-    public async Task PauseBusinessThread(long id, bool isStart)
+    [DisplayName("控制设备线程启停")]
+    public async Task PauseDeviceThreadAsync(long id, bool pause)
     {
-        var data = GlobalData.BusinessDevices.FirstOrDefault(a => a.Value.Id == id).Value;
-        if (data != null)
-            await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId).ConfigureAwait(false);
-        GlobalData.BusinessDeviceHostedService.PauseThread(id, isStart);
+        if (GlobalData.Devices.TryGetValue(id, out var device))
+        {
+            await GlobalData.SysUserService.CheckApiDataScopeAsync(device.CreateOrgId, device.CreateUserId).ConfigureAwait(false);
+            if (device.Driver != null)
+            {
+                device.Driver.PauseThread(pause);
+                return;
+            }
+        }
+        throw Oops.Bah("device not found");
+    }
+    /// <summary>
+    /// 重启全部线程
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost("restartAllThread")]
+    [DisplayName("重启全部线程")]
+    public async Task RestartAllThread()
+    {
+        var data = await GlobalData.GetCurrentUserChannels().ConfigureAwait(false);
+        await GlobalData.ChannelThreadManage.RestartChannelAsync(data.Select(a => a.Value)).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// 控制采集线程启停
+    /// 重启设备线程
     /// </summary>
     /// <returns></returns>
-    [HttpPost("pauseCollectThread")]
-    [DisplayName("控制采集线程启停")]
-    public async Task PauseCollectThread(long id, bool isStart)
+    [HttpPost("restartThread")]
+    [DisplayName("重启设备线程")]
+    public async Task RestartDeviceThreadAsync(long deviceId)
     {
-        var data = GlobalData.CollectDevices.FirstOrDefault(a => a.Value.Id == id).Value;
-        if (data != null)
-            await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId).ConfigureAwait(false);
-        GlobalData.CollectDeviceHostedService.PauseThread(id, isStart);
-    }
-
-    /// <summary>
-    /// 重启业务线程
-    /// </summary>
-    /// <returns></returns>
-    [HttpPost("restartBusinessThread")]
-    [DisplayName("重启业务线程")]
-    public async Task RestartBusinessDeviceThread(long id)
-    {
-        if (id <= 0)
+        if (GlobalData.Devices.TryGetValue(deviceId, out var deviceRuntime))
         {
-            await GlobalData.BusinessDeviceHostedService.RestartAsync().ConfigureAwait(false);
+            await GlobalData.SysUserService.CheckApiDataScopeAsync(deviceRuntime.CreateOrgId, deviceRuntime.CreateUserId).ConfigureAwait(false);
+            if (GlobalData.TryGetDeviceThreadManage(deviceRuntime, out var deviceThreadManage))
+            {
+                await deviceThreadManage.RestartDeviceAsync(deviceRuntime, false).ConfigureAwait(false);
+            }
         }
-        else
-        {
-            var data = GlobalData.BusinessDevices.FirstOrDefault(a => a.Value.Id == id).Value;
-            if (data != null)
-                await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId).ConfigureAwait(false);
-            await GlobalData.BusinessDeviceHostedService.RestartChannelThreadAsync(id, true).ConfigureAwait(false);
-        }
-    }
-
-    /// <summary>
-    /// 重启采集线程
-    /// </summary>
-    /// <returns></returns>
-    [HttpPost("restartCollectThread")]
-    [DisplayName("重启采集线程")]
-    public async Task RestartCollectDeviceThread(long id)
-    {
-        if (id <= 0)
-        {
-            await GlobalData.CollectDeviceHostedService.RestartAsync().ConfigureAwait(false);
-        }
-        else
-        {
-            var data = GlobalData.CollectDevices.FirstOrDefault(a => a.Value.Id == id).Value;
-            if (data != null)
-                await _sysUserService.CheckApiDataScopeAsync(data.CreateOrgId, data.CreateUserId).ConfigureAwait(false);
-            await GlobalData.CollectDeviceHostedService.RestartChannelThreadAsync(id, true).ConfigureAwait(false);
-        }
+        throw Oops.Bah("device not found");
     }
 
     /// <summary>
@@ -134,14 +106,13 @@ public class ControlController : ControllerBase
     /// </summary>
     [HttpPost("writeVariables")]
     [DisplayName("写入变量")]
-    public async Task<Dictionary<string, OperResult>> WriteDeviceMethods(Dictionary<string, string> objs)
+    public async Task<Dictionary<string, OperResult>> WriteVariablesAsync(Dictionary<string, string> objs)
     {
-
         var data = GlobalData.ReadOnlyVariables.Where(a => objs.ContainsKey(a.Key));
         if (data != null)
-            await _sysUserService.CheckApiDataScopeAsync(data.Select(a => a.Value.CreateOrgId), data.Select(a => a.Value.CreateUserId)).ConfigureAwait(false);
+            await GlobalData.SysUserService.CheckApiDataScopeAsync(data.Select(a => a.Value.CreateOrgId), data.Select(a => a.Value.CreateUserId)).ConfigureAwait(false);
 
-        return await _rpcService.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", objs).ConfigureAwait(false);
+        return await GlobalData.RpcService.InvokeDeviceMethodAsync($"WebApi-{UserManager.UserAccount}-{App.HttpContext.Connection.RemoteIpAddress.MapToIPv4()}", objs).ConfigureAwait(false);
 
     }
 }

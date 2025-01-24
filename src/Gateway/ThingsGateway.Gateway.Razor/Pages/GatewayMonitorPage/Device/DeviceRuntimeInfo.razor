@@ -1,0 +1,17 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Debug
+@using ThingsGateway.Gateway.Application
+
+<DeviceRuntimeInfo1 DeviceRuntime="DeviceRuntime" />
+
+<LogConsole CardStyle="height: calc(100% - 330px);" Enable="DeviceRuntime.LogEnable" LogLevel=@((DeviceRuntime?.Driver?.LogMessage)?.LogLevel??TouchSocket.Core.LogLevel.Trace)
+            LogLevelChanged="(logLevel)=>
+        {
+                DeviceRuntime.Driver?.SetLogAsync(DeviceRuntime.LogEnable, logLevel);
+        }"
+            EnableChanged="(logEnable)=>
+        {
+                DeviceRuntime.Driver?.SetLogAsync(logEnable);
+        }"
+            LogPath=@DeviceRuntime.LogPath></LogConsole>

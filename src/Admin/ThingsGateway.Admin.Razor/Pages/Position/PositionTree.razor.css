@@ -1,0 +1,10 @@
+﻿
+.listtree-view {
+    height: 100%;
+}
+
+    .listtree-view ::deep .tree-view {
+        --bb-tree-search-height: 32px;
+        min-height: 300px;
+        height: calc(100% - var(--bb-tree-search-height) - 50px);
+    }

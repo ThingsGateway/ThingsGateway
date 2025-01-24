@@ -1,0 +1,76 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<Import Project="$(SolutionDir)Version.props" />
+
+
+	<PropertyGroup>
+		<TargetFrameworks>net9.0;net8.0;</TargetFrameworks>
+	</PropertyGroup>
+	
+	<PropertyGroup>
+		<OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
+		<SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
+		<PublishReadyToRunComposite>true</PublishReadyToRunComposite>
+		<ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
+
+		<!--动态适用GC-->
+		<GarbageCollectionAdaptationMode>1</GarbageCollectionAdaptationMode>
+		<!--使用自托管线程池-->
+		<!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
+
+		<!--使用工作站GC-->
+		<!--<ServerGarbageCollection>true</ServerGarbageCollection>-->
+
+		<!--<PlatformTarget>x86</PlatformTarget>-->
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ThingsGateway.Admin.Razor\ThingsGateway.Admin.Razor.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<Content Update="wwwroot\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<!--安装服务守护-->
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="9.*" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.*" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.*" />
+	</ItemGroup>
+
+	<ItemGroup>
+
+		<None Update="Dockerfile">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Dockerfile_arm64">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="pm2-windows.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="pm2-linux.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="thingsgateway.service">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="WindowsServiceCreate.bat">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="WindowsServiceDelete.bat">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+</Project>

@@ -13,19 +13,18 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// 自增数据类，用于自增数据，可以设置最大值，初始值，自增步长等。
 /// </summary>
-public sealed class IncrementCount : DisposableObject
+public sealed class IncrementCount
 {
-    private readonly WaitLock easyLock = new();
-    private long current = 0;
-    private long max = long.MaxValue;
-    private long start = 0;
+    private long _current = 0;
+    private long _max = long.MaxValue;
+    private long _start = 0;
 
     /// <inheritdoc cref="IncrementCount"/>
     public IncrementCount(long max, long start = 0, int tick = 1)
     {
-        this.start = start;
-        this.max = max;
-        current = start;
+        _start = start;
+        _max = max;
+        _current = start;
         IncreaseTick = tick;
     }
 
@@ -37,27 +36,28 @@ public sealed class IncrementCount : DisposableObject
     /// <summary>
     /// 获取当前的计数器的最大的设置值
     /// </summary>
-    public long MaxValue => max;
+    public long MaxValue => _max;
 
     /// <summary>
     /// 获取自增信息，获得数据之后，下一次获取将会自增，如果自增后大于最大值，则会重置为最小值，如果小于最小值，则会重置为最大值。
     /// </summary>
     public long GetCurrentValue()
     {
-        easyLock.Wait();
-        long current = this.current;
-        this.current += IncreaseTick;
-        if (this.current > max)
+        lock (this)
         {
-            this.current = start;
-        }
-        else if (this.current < start)
-        {
-            this.current = max;
-        }
+            long current = _current;
+            _current += IncreaseTick;
+            if (_current > _max)
+            {
+                _current = _start;
+            }
+            else if (_current < _start)
+            {
+                _current = _max;
+            }
 
-        easyLock.Release();
-        return current;
+            return current;
+        }
     }
 
     /// <summary>
@@ -65,9 +65,10 @@ public sealed class IncrementCount : DisposableObject
     /// </summary>
     public void ResetCurrentValue()
     {
-        easyLock.Wait();
-        current = start;
-        easyLock.Release();
+        lock (this)
+        {
+            _current = _start;
+        }
     }
 
     /// <summary>
@@ -76,9 +77,11 @@ public sealed class IncrementCount : DisposableObject
     /// <param name="value">指定值</param>
     public void ResetCurrentValue(long value)
     {
-        easyLock.Wait();
-        current = value <= max ? value >= start ? value : start : max;
-        easyLock.Release();
+        lock (this)
+        {
+            _current = value <= _max ? value >= _start ? value : _start : _max;
+
+        }
     }
 
     /// <summary>
@@ -86,17 +89,18 @@ public sealed class IncrementCount : DisposableObject
     /// </summary>
     public void ResetMaxValue(long max)
     {
-        easyLock.Wait();
-        if (max > start)
+        lock (this)
         {
-            if (max < current)
+            if (max > _start)
             {
-                current = start;
-            }
+                if (max < _current)
+                {
+                    _current = _start;
+                }
 
-            this.max = max;
+                _max = max;
+            }
         }
-        easyLock.Release();
     }
 
     /// <summary>
@@ -105,23 +109,19 @@ public sealed class IncrementCount : DisposableObject
     /// <param name="start">初始值</param>
     public void ResetStartValue(long start)
     {
-        easyLock.Wait();
-        if (start < max)
+        lock (this)
         {
-            if (current < start)
+            if (start < _max)
             {
-                current = start;
+                if (_current < start)
+                {
+                    _current = start;
+                }
+
+                _start = start;
             }
-
-            this.start = start;
         }
-        easyLock.Release();
     }
 
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
-    {
-        easyLock.SafeDispose();
-        base.Dispose(disposing);
-    }
+
 }

@@ -44,9 +44,6 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <inheritdoc/>
     public virtual int? StringLength { get; set; }
 
-    /// <inheritdoc/>
-    public virtual int? ArrayLength { get; set; }
-
     /// <summary>
     /// 构造函数
     /// </summary>
@@ -89,20 +86,6 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// 以小端
     /// </summary>
     public static readonly ThingsGatewayBitConverter LittleEndian;
-
-    /// <inheritdoc/>
-    public virtual IThingsGatewayBitConverter GetByDataFormat(DataFormatEnum dataFormat)
-    {
-        var data = new ThingsGatewayBitConverter(EndianType);
-        data.Encoding = Encoding;
-        data.DataFormat = dataFormat;
-        data.BcdFormat = BcdFormat;
-        data.StringLength = StringLength;
-        data.ArrayLength = ArrayLength;
-        data.IsStringReverseByteWord = IsStringReverseByteWord;
-
-        return data;
-    }
 
     #region GetBytes
 
@@ -712,7 +695,6 @@ public partial class ThingsGatewayBitConverter : IThingsGatewayBitConverter
     /// <returns>实际字节信息</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private byte[] ByteTransDataFormat4(byte[] value, int offset)
-
     {
         var numArray = new byte[4];
         switch (DataFormat)

@@ -40,21 +40,17 @@ internal sealed class PluginService : IPluginService
     /// </summary>
     public const string DirName = "GatewayPlugins";
 
-    private const string _cacheKeyGetPluginOutputs = $"{ThingsGatewayCacheConst.Cache_Prefix}{nameof(PluginService)}{nameof(GetList)}";
+    private const string CacheKeyGetPluginOutputs = $"{ThingsGatewayCacheConst.Cache_Prefix}{nameof(PluginService)}{nameof(GetList)}";
     private const string SaveEx = ".save";
     private const string DelEx = ".del";
 
-    private readonly IDispatchService<PluginOutput> _dispatchService;
+    private readonly IDispatchService<PluginInfo> _dispatchService;
     private readonly WaitLock _locker = new();
-
-    /// <summary>
-    /// 驱动服务日志
-    /// </summary>
     private readonly ILogger _logger;
 
     private IStringLocalizer Localizer;
 
-    public PluginService(ILogger<PluginService> logger, IStringLocalizer<PluginService> localizer, IDispatchService<PluginOutput> dispatchService)
+    public PluginService(ILogger<PluginService> logger, IStringLocalizer<PluginService> localizer, IDispatchService<PluginInfo> dispatchService)
     {
         Localizer = localizer;
         _logger = logger;
@@ -89,6 +85,18 @@ internal sealed class PluginService : IPluginService
 
     #region public
 
+    public Type GetDebugUI(string pluginName)
+    {
+        using var driver = GetDriver(pluginName);
+        return driver?.DriverDebugUIType;
+    }
+    public Type GetAddressUI(string pluginName)
+    {
+        using var driver = GetDriver(pluginName);
+        return driver?.DriverVariableAddressUIType;
+    }
+
+
     /// <summary>
     /// 根据插件名称获取对应的驱动程序。
     /// </summary>
@@ -108,8 +116,6 @@ internal sealed class PluginService : IPluginService
             if (_defaultDriverBaseDict.TryGetValue(pluginName, out var type))
             {
                 var driver = (DriverBase)Activator.CreateInstance(type);
-                if (!type.Assembly.Location.IsNullOrEmpty())
-                    driver.Directory = Path.GetDirectoryName(type.Assembly.Location);
 
                 return driver;
             }
@@ -121,7 +127,6 @@ internal sealed class PluginService : IPluginService
             if (_driverBaseDict.TryGetValue(pluginName, out var value))
             {
                 var driver = (DriverBase)Activator.CreateInstance(value);
-                driver.Directory = dir;
                 return driver;
             }
 
@@ -142,7 +147,6 @@ internal sealed class PluginService : IPluginService
                     var driver = (DriverBase)Activator.CreateInstance(driverType);
                     _logger?.LogInformation(Localizer[$"LoadTypeSuccess", pluginName]);
                     _driverBaseDict.TryAdd(pluginName, driverType);
-                    driver.Directory = dir;
                     return driver;
                 }
                 // 抛出异常，插件类型不存在
@@ -165,17 +169,16 @@ internal sealed class PluginService : IPluginService
     /// 获取指定插件的特殊方法。
     /// </summary>
     /// <param name="pluginName">插件名称。</param>
-    /// <param name="driverBase">可选参数，插件的驱动基类对象，如果未提供，则会尝试从缓存中获取。</param>
+    /// <param name="driver">可选参数，插件的驱动基类对象，如果未提供，则会尝试从缓存中获取。</param>
     /// <returns>返回列表</returns>
-    public List<DriverMethodInfo> GetDriverMethodInfos(string pluginName, DriverBase? driverBase = null)
+    public List<DriverMethodInfo> GetDriverMethodInfos(string pluginName, IDriver? driver = null)
     {
-        // 线程安全地执行方法
-        lock (this)
+        //lock (this)
         {
             string cacheKey = $"{nameof(PluginService)}_{nameof(GetDriverMethodInfos)}_{CultureInfo.CurrentUICulture.Name}";
             // 如果未提供驱动基类对象，则尝试根据插件名称获取驱动对象
-            var dispose = driverBase == null; // 标记是否需要释放驱动对象
-            driverBase ??= GetDriver(pluginName); // 如果未提供驱动对象，则根据插件名称获取驱动对象
+            var dispose = driver == null; // 标记是否需要释放驱动对象
+            driver ??= GetDriver(pluginName); // 如果未提供驱动对象，则根据插件名称获取驱动对象
 
             // 检查插件名称是否为空或null
             if (!pluginName.IsNullOrEmpty())
@@ -190,13 +193,13 @@ internal sealed class PluginService : IPluginService
             }
 
             // 如果未从缓存中获取到指定插件的属性信息，则尝试从驱动基类对象中获取
-            return SetDriverMethodInfosCache(driverBase, pluginName, cacheKey, dispose); // 获取并设置属性信息缓存
+            return SetDriverMethodInfosCache(driver, pluginName, cacheKey, dispose); // 获取并设置属性信息缓存
 
             // 用于设置驱动方法信息缓存的内部方法
-            List<DriverMethodInfo> SetDriverMethodInfosCache(DriverBase driverBase, string pluginName, string cacheKey, bool dispose)
+            List<DriverMethodInfo> SetDriverMethodInfosCache(IDriver driver, string pluginName, string cacheKey, bool dispose)
             {
                 // 获取驱动对象的方法信息，并筛选出带有 DynamicMethodAttribute 特性的方法
-                var dependencyPropertyWithInfos = driverBase.GetType().GetMethods()?.SelectMany(it =>
+                var dependencyPropertyWithInfos = driver.GetType().GetMethods()?.SelectMany(it =>
                     new[] { new { memberInfo = it, attribute = it.GetCustomAttribute<DynamicMethodAttribute>() } })
                     .Where(x => x.attribute != null).ToList()
                     .SelectMany(it => new[]
@@ -215,7 +218,7 @@ internal sealed class PluginService : IPluginService
 
                 // 如果是通过方法内部创建的驱动对象，则在方法执行完成后释放该驱动对象
                 if (dispose)
-                    driverBase.SafeDispose();
+                    driver.SafeDispose();
 
                 // 返回获取到的属性信息字典
                 return result;
@@ -223,21 +226,22 @@ internal sealed class PluginService : IPluginService
         }
     }
 
+
+
     /// <summary>
     /// 获取指定插件的属性类型及其信息，将其缓存在内存中
     /// </summary>
     /// <param name="pluginName">插件名称</param>
-    /// <param name="driverBase">驱动基类实例，可选参数</param>
+    /// <param name="driver">驱动基类实例，可选参数</param>
     /// <returns>返回包含属性名称及其信息的字典</returns>
-    public (IEnumerable<IEditorItem> EditorItems, object Model, Type PropertyUIType) GetDriverPropertyTypes(string pluginName, DriverBase? driverBase = null)
+    public (IEnumerable<IEditorItem> EditorItems, object Model, Type PropertyUIType) GetDriverPropertyTypes(string pluginName, IDriver? driver = null)
     {
-        // 使用锁确保线程安全
-        lock (this)
+        //lock (this)
         {
             string cacheKey = $"{nameof(PluginService)}_{nameof(GetDriverPropertyTypes)}_{CultureInfo.CurrentUICulture.Name}";
 
-            var dispose = driverBase == null;
-            driverBase ??= GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
+            var dispose = driver == null;
+            driver ??= GetDriver(pluginName); // 如果 driver 为 null， 获取驱动实例
             // 检查插件名称是否为空或空字符串
             if (!pluginName.IsNullOrEmpty())
             {
@@ -248,22 +252,22 @@ internal sealed class PluginService : IPluginService
                 {
                     // 返回缓存中存储的属性类型数据
                     var editorItems = data[pluginName];
-                    return (editorItems, driverBase.DriverProperties, driverBase.DriverPropertyUIType);
+                    return (editorItems, driver.DriverProperties, driver.DriverPropertyUIType);
                 }
             }
             // 如果缓存中不存在该插件的数据，则重新获取并缓存
 
-            return (SetCache(driverBase, pluginName, cacheKey, dispose), driverBase.DriverProperties, driverBase.DriverPropertyUIType); // 调用 SetCache 方法进行缓存并返回结果
+            return (SetCache(driver, pluginName, cacheKey, dispose), driver.DriverProperties, driver.DriverPropertyUIType); // 调用 SetCache 方法进行缓存并返回结果
 
             // 定义 SetCache 方法，用于设置缓存并返回
-            IEnumerable<IEditorItem> SetCache(DriverBase driverBase, string pluginName, string cacheKey, bool dispose)
+            IEnumerable<IEditorItem> SetCache(IDriver driver, string pluginName, string cacheKey, bool dispose)
             {
-                var editorItems = driverBase.PluginPropertyEditorItems;
+                var editorItems = PluginServiceUtil.GetEditorItems(driver.DriverProperties?.GetType()).ToList();
                 // 将结果存入缓存中，键为插件名称
                 App.CacheService.HashAdd(cacheKey, pluginName, editorItems);
-                // 如果 dispose 参数为 true，则释放 driverBase 对象
+                // 如果 dispose 参数为 true，则释放 driver 对象
                 if (dispose)
-                    driverBase.SafeDispose();
+                    driver.SafeDispose();
                 return editorItems;
             }
         }
@@ -274,15 +278,15 @@ internal sealed class PluginService : IPluginService
     /// </summary>
     /// <param name="pluginType">要筛选的插件类型，可选参数</param>
     /// <returns>符合条件的插件列表</returns>
-    public List<PluginOutput> GetList(PluginTypeEnum? pluginType = null)
+    public List<PluginInfo> GetList(PluginTypeEnum? pluginType = null)
     {
         // 获取完整的插件列表
-        var pluginList = GetList();
+        var pluginList = PrivateGetList();
 
         if (pluginType == null)
         {
             // 如果未指定插件类型，则返回完整的插件列表
-            return pluginList;
+            return pluginList.ToList();
         }
 
         // 筛选出指定类型的插件
@@ -296,11 +300,11 @@ internal sealed class PluginService : IPluginService
     /// </summary>
     public (IEnumerable<IEditorItem> EditorItems, object Model, Type VariablePropertyUIType) GetVariablePropertyTypes(string pluginName, BusinessBase? businessBase = null)
     {
-        lock (this)
+        //lock (this)
         {
             string cacheKey = $"{nameof(PluginService)}_{nameof(GetVariablePropertyTypes)}_{CultureInfo.CurrentUICulture.Name}";
             var dispose = businessBase == null;
-            businessBase ??= (BusinessBase)GetDriver(pluginName); // 如果 driverBase 为 null， 获取驱动实例
+            businessBase ??= (BusinessBase)GetDriver(pluginName); // 如果 driver 为 null， 获取驱动实例
 
             var data = App.CacheService.HashGetAll<List<IEditorItem>>(cacheKey);
             if (data?.ContainsKey(pluginName) == true)
@@ -316,7 +320,7 @@ internal sealed class PluginService : IPluginService
                 var editorItems = businessBase.PluginVariablePropertyEditorItems;
                 // 将结果存入缓存中，键为插件名称
                 App.CacheService.HashAdd(cacheKey, pluginName, editorItems);
-                // 如果 dispose 参数为 true，则释放 driverBase 对象
+                // 如果 dispose 参数为 true，则释放 driver 对象
                 if (dispose)
                     businessBase.SafeDispose();
                 return editorItems;
@@ -324,13 +328,14 @@ internal sealed class PluginService : IPluginService
         }
     }
 
+
     /// <summary>
     /// 分页显示插件
     /// </summary>
-    public QueryData<PluginOutput> Page(QueryPageOptions options, PluginTypeEnum? pluginTypeEnum = null)
+    public QueryData<PluginInfo> Page(QueryPageOptions options, PluginTypeEnum? pluginType = null)
     {
         //指定关键词搜索为插件FullName
-        var query = GetList(pluginTypeEnum).WhereIf(!options.SearchText.IsNullOrWhiteSpace(), a => a.FullName.Contains(options.SearchText)).GetQueryData(options);
+        var query = GetList(pluginType).WhereIf(!options.SearchText.IsNullOrWhiteSpace(), a => a.FullName.Contains(options.SearchText)).GetQueryData(options);
         return query;
     }
 
@@ -543,7 +548,7 @@ internal sealed class PluginService : IPluginService
     /// </summary>
     /// <param name="driver">插件实例。</param>
     /// <param name="deviceProperties">插件属性，检索相同名称的属性后写入。</param>
-    public void SetDriverProperties(DriverBase driver, Dictionary<string, string> deviceProperties)
+    public void SetDriverProperties(IDriver driver, Dictionary<string, string> deviceProperties)
     {
         // 获取插件的属性信息列表
         var pluginProperties = driver.DriverProperties?.GetType().GetRuntimeProperties()
@@ -570,9 +575,9 @@ internal sealed class PluginService : IPluginService
     /// </summary>
     private void ClearCache()
     {
-        lock (this)
+        //lock (this)
         {
-            App.CacheService.Remove(_cacheKeyGetPluginOutputs);
+            App.CacheService.Remove(CacheKeyGetPluginOutputs);
             App.CacheService.DelByPattern($"{nameof(PluginService)}_");
 
             //多语言缓存清理
@@ -585,12 +590,12 @@ internal sealed class PluginService : IPluginService
                 foreach (var item in _assemblyLoadContextDict)
                 {
                     // 移除特定键
-                    dictionary.RemoveWhere(a => item.Value.Assembly.ExportedTypes.Select(b => b.AssemblyQualifiedName).Contains(a.Key));
+                    dictionary.RemoveWhere(a => item.Value.Assembly.ExportedTypes.Select(b => b.AssemblyQualifiedName).ToHashSet().Contains(a.Key));
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                NewLife.Log.XTrace.WriteException(ex);
             }
             _ = Task.Run(() =>
             {
@@ -626,31 +631,40 @@ internal sealed class PluginService : IPluginService
     /// <returns></returns>
     private Assembly GetAssembly(string path, string fileName)
     {
-        Assembly assembly = null;
-        _logger?.LogInformation(Localizer["AddPluginFile", path]);
-        //全部程序集路径
-        List<string> paths = new();
-        Directory.GetFiles(Path.GetDirectoryName(path), "*.dll").ToList().ForEach(a => paths.Add(a));
+        try
+        {
 
-        if (_assemblyLoadContextDict.TryGetValue(fileName, out (AssemblyLoadContext AssemblyLoadContext, Assembly Assembly) value))
-        {
-            assembly = value.Assembly;
-        }
-        else
-        {
-            //新建插件域，并注明可卸载
-            var assemblyLoadContext = new AssemblyLoadContext(fileName, true);
-            //获取插件程序集
-            assembly = GetAssembly(path, paths, assemblyLoadContext);
-            if (assembly == null)
+            Assembly assembly = null;
+            //全部程序集路径
+            List<string> paths = new();
+            Directory.GetFiles(Path.GetDirectoryName(path), "*.dll").ToList().ForEach(a => paths.Add(a));
+
+            if (_assemblyLoadContextDict.TryGetValue(fileName, out (AssemblyLoadContext AssemblyLoadContext, Assembly Assembly) value))
             {
-                assemblyLoadContext.Unload();
-                return null;
+                assembly = value.Assembly;
             }
-            //添加到全局对象
-            _assemblyLoadContextDict.TryAdd(fileName, (assemblyLoadContext, assembly));
+            else
+            {
+                //新建插件域，并注明可卸载
+                var assemblyLoadContext = new AssemblyLoadContext(fileName, true);
+                //获取插件程序集
+                assembly = GetAssembly(path, paths, assemblyLoadContext);
+                if (assembly == null)
+                {
+                    assemblyLoadContext.Unload();
+                    return null;
+                }
+                //添加到全局对象
+                _assemblyLoadContextDict.TryAdd(fileName, (assemblyLoadContext, assembly));
+            }
+            _logger?.LogInformation(Localizer["AddPluginFile", path]);
+            return assembly;
+
         }
-        return assembly;
+        catch
+        {
+            return null;
+        }
     }
 
     /// <summary>
@@ -703,27 +717,21 @@ internal sealed class PluginService : IPluginService
     /// 获取全部插件信息
     /// </summary>
     /// <returns></returns>
-    private List<PluginOutput> GetList()
+    private IEnumerable<PluginInfo> PrivateGetList()
     {
         try
         {
-            // 等待锁可用，确保在多线程环境下不会出现并发访问问题
             _locker.Wait();
 
             // 从缓存中获取插件列表数据
-            var data = App.CacheService.Get<List<PluginOutput>>(_cacheKeyGetPluginOutputs);
+            var data = App.CacheService.Get<List<PluginInfo>>(CacheKeyGetPluginOutputs);
 
             // 如果缓存中没有数据，则调用 GetPluginOutputs 方法获取数据，并将其存入缓存
             if (data == null)
             {
-                var pluginOutputs = GetPluginOutputs();
-                App.CacheService.Set(_cacheKeyGetPluginOutputs, pluginOutputs);
-                return pluginOutputs;
-            }
-            var devices = App.GetService<IDeviceService>().GetAll();
-            foreach (var pluginOutput in data)
-            {
-                pluginOutput.DeviceCount = devices.Count(a => a.PluginName == pluginOutput.FullName);//关联设备数量
+                var pluginInfos = GetPluginOutputs();
+                App.CacheService.Set(CacheKeyGetPluginOutputs, pluginInfos);
+                return pluginInfos;
             }
 
             // 如果缓存中有数据，则直接返回
@@ -736,9 +744,9 @@ internal sealed class PluginService : IPluginService
         }
 
         // 获取插件列表数据的私有方法
-        List<PluginOutput> GetPluginOutputs()
+        IEnumerable<PluginInfo> GetPluginOutputs()
         {
-            List<PluginOutput> plugins = new List<PluginOutput>();
+            var plugins = new List<PluginInfo>();
             // 主程序上下文
 
             // 遍历程序集上下文默认驱动字典，生成默认驱动插件信息
@@ -749,7 +757,7 @@ internal sealed class PluginService : IPluginService
                     FileInfo fileInfo = new FileInfo(item.Value.Assembly.Location); //文件信息
                     DateTime lastWriteTime = fileInfo.LastWriteTime;//作为编译时间
 
-                    var pluginOutput = new PluginOutput()
+                    var pluginInfo = new PluginInfo()
                     {
                         Name = item.Value.Name,//插件名称
                         FileName = Path.GetFileNameWithoutExtension(fileInfo.Name),//插件文件名称（分类）
@@ -757,11 +765,12 @@ internal sealed class PluginService : IPluginService
                         EducationPlugin = PluginServiceUtil.IsEducation(item.Value),
                         Version = item.Value.Assembly.GetName().Version.ToString(), //插件版本
 
-
                         LastWriteTime = lastWriteTime, //编译时间
                     };
-                    pluginOutput.DeviceCount = App.GetService<IDeviceService>().GetAll().Count(a => a.PluginName == pluginOutput.FullName);//关联设备数量
-                    plugins.Add(pluginOutput);
+                    if (!item.Value.Assembly.Location.IsNullOrEmpty())
+                        pluginInfo.Directory = Path.GetDirectoryName(item.Value.Assembly.Location);
+
+                    plugins.Add(pluginInfo);
                 }
             }
 
@@ -781,7 +790,9 @@ internal sealed class PluginService : IPluginService
 
                     // 加载插件程序集并获取其中的驱动类型信息
                     var assembly = GetAssembly(folderPath.CombinePathWithOs($"{driverMainName}.dll"), driverMainName);
-                    var driverTypes = assembly.GetTypes().Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(BusinessBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract);
+
+                    if (assembly == null) continue;
+                    var driverTypes = assembly?.GetTypes().Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(BusinessBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract);
 
                     // 遍历驱动类型，生成插件信息，并将其添加到插件列表中
                     foreach (var type in driverTypes)
@@ -795,17 +806,18 @@ internal sealed class PluginService : IPluginService
                                 _driverBaseDict.TryAdd($"{driverMainName}.{type.Name}", type);
                                 _logger?.LogInformation(Localizer[$"LoadTypeSuccess", PluginServiceUtil.GetFullName(driverMainName, type.Name)]);
                             }
-                            plugins.Add(
-                                new PluginOutput()
-                                {
-                                    Name = type.Name, //类型名称
-                                    FileName = $"{driverMainName}", //主程序集名称
-                                    PluginType = (typeof(CollectBase).IsAssignableFrom(type)) ? PluginTypeEnum.Collect : PluginTypeEnum.Business,//插件类型
-                                    Version = assembly.GetName().Version.ToString(),//插件版本
-                                    LastWriteTime = lastWriteTime, //编译时间
-                                    EducationPlugin = PluginServiceUtil.IsEducation(type),
-                                }
-                            );
+                            var plugin = new PluginInfo()
+                            {
+                                Name = type.Name, //类型名称
+                                FileName = $"{driverMainName}", //主程序集名称
+                                PluginType = (typeof(CollectBase).IsAssignableFrom(type)) ? PluginTypeEnum.Collect : PluginTypeEnum.Business,//插件类型
+                                Version = assembly.GetName().Version.ToString(),//插件版本
+                                LastWriteTime = lastWriteTime, //编译时间
+                                EducationPlugin = PluginServiceUtil.IsEducation(type),
+                            };
+                            plugin.Directory = folderPath;
+
+                            plugins.Add(plugin);
                         }
                     }
                 }
@@ -815,7 +827,7 @@ internal sealed class PluginService : IPluginService
                     _logger?.LogWarning(ex, Localizer[$"LoadPluginFail", Path.GetRelativePath(AppContext.BaseDirectory.CombinePathWithOs(DirName), folderPath)]);
                 }
             }
-            return plugins.OrderBy(a => a.EducationPlugin).ThenByDescending(a => a.DeviceCount).ToList();
+            return plugins.DistinctBy(a => a.FullName).OrderBy(a => a.EducationPlugin);
         }
     }
 }

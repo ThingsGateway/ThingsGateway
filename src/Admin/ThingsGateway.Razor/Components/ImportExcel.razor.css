@@ -1,0 +1,9 @@
+﻿::deep .avatar {
+    border-radius: 1.5rem;
+    width: 24px;
+    height: 24px;
+    background-color: var(--bs-red);
+    color: #fff;
+    flex: 0 0 auto;
+    font-size: 1rem;
+}

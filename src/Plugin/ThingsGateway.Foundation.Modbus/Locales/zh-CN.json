@@ -1,0 +1,63 @@
+﻿{
+  "ThingsGateway.Foundation.Modbus.ModbusAddress": {
+    "FunctionCode": "功能码",
+    "StartAddress": "起始地址",
+    "BitIndex": "Bit",
+    "Station": "特指站号",
+    "WriteFunctionCode": "特指写入功能码"
+
+  },
+
+
+  "ThingsGateway.Foundation.Modbus.ModbusMaster": {
+    "ModbusType": "Modbus类型",
+    "Station": "站号",
+    "DtuId": "Dtu注册包(UTF8)",
+    "CheckClearTime": "连接滑动过期时间",
+    "Heartbeat": "心跳检测(UTF8)",
+    "HeartbeatTime": "心跳间隔时间",
+
+    "CacheTimeout": "组包缓存时间",
+    "SendDelayTime": "发送延时",
+    "DataFormat": "解析规则",
+    "Timeout": "读写超时",
+    "ConnectTimeout": "连接超时",
+    "IsStringReverseByteWord": "字符串反转"
+  },
+  "ThingsGateway.Foundation.Modbus.ModbusSlave": {
+    "ModbusType": "Modbus类型",
+    "Station": "默认站号",
+    "CheckClearTime": "连接滑动过期时间",
+    "MulStation": "多站点",
+    "IsWriteMemory": "立即写入内存",
+    "MaxClientCount": "最大连接数量",
+
+    "DtuId": "Dtu注册包(UTF8)",
+    "Heartbeat": "心跳检测(UTF8)",
+    "HeartbeatTime": "心跳间隔时间",
+
+    "CacheTimeout": "组包缓存时间",
+    "SendDelayTime": "发送延时",
+    "DataFormat": "解析规则",
+    "Timeout": "读写超时",
+    "ConnectTimeout": "连接超时",
+    "IsStringReverseByteWord": "字符串反转"
+  },
+  "ThingsGateway.Foundation.Modbus.ModbusResource": {
+    "AddressDes": "线圈寄存器使用从 00001 开始的地址编号。\n离散输入寄存器使用从 10001 开始的地址编号。\n输入寄存器使用从 30001 开始的地址编号。\n保持寄存器使用从 40001 开始的地址编号。\n举例：40001=>保持寄存器第一个寄存器\n额外格式\n设备站号 ，比如40001;s=2; ，代表设备地址为2的保持寄存器第一个寄存器\n写入功能码 ，比如40001;w=16; ，代表保持寄存器第一个寄存器，写入值时采用0x10功能码\nDTU模式(只在TCPService中起作用) ，比如40001;id=T123T; ，代表保持寄存器第一个寄存器，DTU注册包为T123T（UTF-8字符串）",
+    "FunctionError": "功能码错误",
+    "FunctionNotSame": "功能码不一致，请求功能码 {0}，返回功能码 {1}",
+    "ModbusError1": "不支持的功能码",
+    "ModbusError10": "网关路径不可用",
+    "ModbusError11": "网关目标设备响应失败",
+    "ModbusError2": "读取寄存器越界",
+    "ModbusError3": "读取长度超限",
+    "ModbusError4": "设备故障",
+    "ModbusError5": "设备已确认，但未执行",
+    "ModbusError6": "设备忙",
+    "ModbusError8": "存储奇偶性错误",
+    "StationNotSame": "站号不一致，请求站号 {0} ，返回站号 {1}",
+    "ValueOverlimit": "{0} 不能超过 {1}",
+    "CrcError": "Crc校验失败"
+  }
+}

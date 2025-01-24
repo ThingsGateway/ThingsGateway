@@ -13,7 +13,7 @@ namespace ThingsGateway.Foundation;
 /// <summary>
 /// 终端通道
 /// </summary>
-public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IOnlineClient, IAdapterObject
+public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IOnlineClient
 {
     /// <summary>
     /// 当前通道的数据处理适配器
@@ -25,9 +25,15 @@ public interface IClientChannel : IChannel, ISender, IClient, IClientSender, IOn
     /// </summary>
     WaitHandlePool<MessageBase> WaitHandlePool { get; }
 
+
     /// <summary>
-    /// 收发等待锁，对于大部分工业主从协议是必须的，一个通道一个实现
+    /// 通讯并发限制
     /// </summary>
     WaitLock WaitLock { get; }
 
+    /// <summary>
+    /// 设置数据处理适配器
+    /// </summary>
+    /// <param name="adapter">适配器</param>
+    void SetDataHandlingAdapter(DataHandlingAdapter adapter);
 }

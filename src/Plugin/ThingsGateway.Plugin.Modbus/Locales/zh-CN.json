@@ -1,0 +1,55 @@
+﻿{
+  "ThingsGateway.Plugin.Modbus.ModbusMasterProperty": {
+    "ModbusType": "协议类型",
+    "Heartbeat": "心跳检测(UTF8)",
+    "Station": "默认站号",
+    "DtuId": "Dtu注册包(UTF8)",
+    "DataFormat": "解析规则",
+    "IsStringReverseByteWord": "字符串反转",
+    "CheckClearTime": "客户端连接滑动过期时间",
+    "Timeout": "读写超时时间",
+    "ConnectTimeout": "连接超时时间",
+    "SendDelayTime": "发送延时",
+    "CacheTimeout": "组包缓存过期时间",
+    "MaxPack": "最大打包长度",
+    "ReIntervalTime": "离线恢复时间",
+    "RetryCount": "失败重试次数",
+    "MaxConcurrentCount": "最大并发数量"
+  },
+
+  "ThingsGateway.Plugin.Modbus.ModbusSlave": {
+    "CanStartService": "无法启动服务",
+    "NotWriteEnable": "不允许写入"
+  },
+
+  "ThingsGateway.Plugin.Modbus.ModbusSlaveProperty": {
+    "ModbusType": "协议类型",
+    "Station": "默认站号",
+    "DataFormat": "解析规则",
+    "IsStringReverseByteWord": "字符串反转",
+    "CheckClearTime": "客户端连接滑动过期时间",
+    "DeviceRpcEnable": "允许写入",
+    "IsWriteMemory": "立即写入内存",
+    "MulStation": "多站点",
+    "MaxClientCount": "最大连接数",
+
+    "DtuId": "Dtu注册包(UTF8)",
+    "HeartbeatTime": "心跳间隔时间",
+    "Heartbeat": "心跳检测(UTF8)",
+
+    "Timeout": "读写超时时间",
+    "ConnectTimeout": "连接超时时间",
+    "SendDelayTime": "发送延时",
+    "CacheTimeout": "组包缓存过期时间",
+    "MaxPack": "最大打包长度",
+    "ReIntervalTime": "离线恢复时间",
+    "RetryCount": "失败重试次数",
+    "MaxConcurrentCount": "最大并发数量"
+  },
+
+  "ThingsGateway.Plugin.Modbus.ModbusSlaveVariableProperty": {
+    "ServiceAddress": "从站寄存器地址",
+    "DataType": "数据类型",
+    "VariableRpcEnable": "允许写入"
+  }
+}

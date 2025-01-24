@@ -1,0 +1,32 @@
+﻿.menu-type {
+    width: 60px;
+    margin-left: 1rem;
+    text-align: left;
+    color: var(--bs-primary);
+}
+
+.menu-text {
+    margin-left: 1rem;
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    color: var(--bs-info);
+}
+
+.tree-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+    .tree-menu ::deep .tree {
+        flex: 1;
+        margin: -1rem;
+        padding: 1rem;
+        max-height: calc(100vh - 200px);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+.tree-menu-item {
+    padding-right: 5rem !important;
+    padding-left: 0rem !important;
+}

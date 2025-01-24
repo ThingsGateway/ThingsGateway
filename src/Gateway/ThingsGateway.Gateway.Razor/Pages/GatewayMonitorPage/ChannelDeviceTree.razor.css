@@ -1,0 +1,16 @@
+﻿
+.listtree-view {
+    height: calc(100% - 50px);
+}
+    .listtree-view ::deep .bb-cm-zone {
+        height: calc(100% -  50px);
+        margin-bottom: 2px;
+    }
+    .listtree-view ::deep .tree-view {
+        --bb-tree-search-height: 32px;
+        min-height: 300px;
+        height: calc(100% - 50px);
+    }
+.deviceEnable--text {
+    color: var(--bs-body-color);
+}

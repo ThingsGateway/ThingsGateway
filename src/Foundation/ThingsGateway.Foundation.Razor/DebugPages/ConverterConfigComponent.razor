@@ -1,0 +1,33 @@
+﻿@using BootstrapBlazor.Components
+@using ThingsGateway.Extension
+@using ThingsGateway.Foundation
+@namespace ThingsGateway.Debug
+@using TouchSocket.Core
+
+<ValidateForm Model="Model">
+
+    <div class="mt-2">@Localizer["Converter"]</div>
+    <EditorFormObject class="p-2" IsDisplay="false" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=@(3) ShowLabelTooltip=true LabelWidth=@(150) Model="Model" ShowLabel="true" @key=@($"ConverterConfigComponent{Model.GetType().TypeHandle.Value}")>
+
+        <FieldItems>
+            <EditorItem @bind-Field=Model.DataFormat />
+            <EditorItem @bind-Field=Model.Stringlength />
+            <EditorItem @bind-Field=Model.BcdFormat />
+            <EditorItem @bind-Field=Model.VariableStringLength>
+                <EditTemplate Context="value">
+                    <div class="col-12 col-sm-4">
+                        <Select @bind-Value=value.VariableStringLength Items="BoolItems" />
+                    </div>
+                </EditTemplate>
+            </EditorItem>
+            <EditorItem @bind-Field=Model.EncodingName>
+                <EditTemplate Context="value">
+                    <div class="col-12 col-sm-4">
+                        <Select @bind-Value=value.EncodingName Items="EncodingItems" />
+                    </div>
+                </EditTemplate>
+            </EditorItem>
+        </FieldItems>
+    </EditorFormObject>
+
+</ValidateForm>

@@ -1,0 +1,58 @@
+﻿@page "/admin/user"
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@namespace ThingsGateway.Admin.Razor
+
+<div class="row h-100 g-0">
+
+    <div class="col-0 col-sm-2 h-100">
+        <Card IsShadow=true class="h-100" Color="Color.Primary">
+            <BodyTemplate>
+                <OrgTree ValueChanged="TreeChangedAsync"></OrgTree>
+            </BodyTemplate>
+        </Card>
+
+    </div>
+    <div class="col-12 col-sm-10 h-100">
+    <AdminTable @ref=table TItem="SysUser"
+        AutoGenerateColumns="true"
+        ShowAdvancedSearch=false
+                AllowResizing="true"
+                IsFixedHeader=true
+                ShowSearch=false
+                EditDialogSize="Size.Large"
+                IsMultipleSelect=true
+                SearchModel=SearchModel
+                ShowExtendButtons=true
+                ShowDefaultButtons=true
+                ExtendButtonColumnWidth=500
+                OnQueryAsync="OnQueryAsync"
+                IsPagination=true
+                OnSaveAsync="Save"
+                OnDeleteAsync="Delete">
+            <EditTemplate Context="context">
+                <SysUserEdit Model=context></SysUserEdit>
+            </EditTemplate>
+        <TableColumns>
+            <TableColumn @bind-Field="@context.Avatar">
+                <Template Context="avatar">
+                        <img src=@avatar.Value class="user-avatar" />
+                </Template>
+            </TableColumn>
+        </TableColumns>
+        <RowButtonTemplate>
+            <TableCellPopConfirmButton IsShow=@AuthorizeButton("重置密码") Size="Size.ExtraSmall" Icon="fa fa-list" Text="@OperDescLocalizer["ResetPassword"]" OnConfirm="()=>ResetPassword(context.Id)" />
+            <TableCellButton IsShow=@AuthorizeButton("授权角色") Size="Size.ExtraSmall" Color="Color.Success" Icon="fa-solid fa-people-roof" Text="@OperDescLocalizer["GrantRole"]" OnClick="()=>GrantRole(context.Id)" />
+            <TableCellButton IsShow=@AuthorizeButton("授权资源") Size="Size.ExtraSmall" Color="Color.Warning" Icon="fa-solid fa-bars" Text="@OperDescLocalizer["GrantResource"]" OnClick="()=>GrantResource(context.Id)" />
+            <TableCellButton IsShow=@AuthorizeButton("授权Api") Size="Size.ExtraSmall" Icon="fa fa-list" Text="@OperDescLocalizer["GrantApi"]" OnClick="()=>GrantApi(context.Id)" />
+        </RowButtonTemplate>
+    </AdminTable>
+    </div>
+</div>
+
+@code {
+    [NotNull]
+    AdminTable<SysUser>? table { get; set; }
+}

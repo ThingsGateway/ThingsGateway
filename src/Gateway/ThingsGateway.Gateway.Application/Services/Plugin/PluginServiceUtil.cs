@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 using ThingsGateway.NewLife.Extension;
+using ThingsGateway.Razor;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -24,91 +25,15 @@ namespace ThingsGateway.Gateway.Application;
 public static class PluginServiceUtil
 {
     /// <summary>
-    /// 属性赋值方法
-    /// </summary>
-    /// <param name="dest"></param>
-    /// <param name="source"></param>
-    public static void CopyValue(this IEditorItem dest, IEditorItem source)
-    {
-        if (source.ComponentType != null) dest.ComponentType = source.ComponentType;
-        if (source.ComponentParameters != null) dest.ComponentParameters = source.ComponentParameters;
-        if (source.Ignore.HasValue) dest.Ignore = source.Ignore;
-        if (source.EditTemplate != null) dest.EditTemplate = source.EditTemplate;
-        if (source.Items != null) dest.Items = source.Items;
-        if (source.Lookup != null) dest.Lookup = source.Lookup;
-        if (source.ShowSearchWhenSelect) dest.ShowSearchWhenSelect = source.ShowSearchWhenSelect;
-        if (source.IsPopover) dest.IsPopover = source.IsPopover;
-        if (source.LookupStringComparison != StringComparison.OrdinalIgnoreCase) dest.LookupStringComparison = source.LookupStringComparison;
-        if (source.LookupServiceKey != null) dest.LookupServiceKey = source.LookupServiceKey;
-        if (source.LookupServiceData != null) dest.LookupServiceData = source.LookupServiceData;
-        if (source.Readonly.HasValue) dest.Readonly = source.Readonly;
-        if (source.Rows > 0) dest.Rows = source.Rows;
-        if (source.SkipValidate) dest.SkipValidate = source.SkipValidate;
-        if (!string.IsNullOrEmpty(source.Text)) dest.Text = source.Text;
-        if (source.ValidateRules != null) dest.ValidateRules = source.ValidateRules;
-        if (source.ShowLabelTooltip != null) dest.ShowLabelTooltip = source.ShowLabelTooltip;
-        if (!string.IsNullOrEmpty(source.GroupName)) dest.GroupName = source.GroupName;
-        if (source.GroupOrder != 0) dest.GroupOrder = source.GroupOrder;
-        if (!string.IsNullOrEmpty(source.PlaceHolder)) dest.PlaceHolder = source.PlaceHolder;
-        if (!string.IsNullOrEmpty(source.Step)) dest.Step = source.Step;
-        if (source.Order != 0) dest.Order = source.Order;
-        if (source.Required.HasValue) dest.Required = source.Required;
-        if (!string.IsNullOrEmpty(source.RequiredErrorMessage)) dest.RequiredErrorMessage = source.RequiredErrorMessage;
-
-        if (source is ITableColumn source1 && dest is ITableColumn dest1)
-        {
-            CopyValue(dest1, source1);
-        }
-    }
-    private static void CopyValue(this ITableColumn dest, ITableColumn source)
-    {
-        if (source.Align.HasValue) dest.Align = source.Align;
-        if (source.TextWrap.HasValue) dest.TextWrap = source.TextWrap;
-        if (!string.IsNullOrEmpty(source.CssClass)) dest.CssClass = source.CssClass;
-        if (source.DefaultSort) dest.DefaultSort = source.DefaultSort;
-        if (source.DefaultSortOrder != SortOrder.Unset) dest.DefaultSortOrder = source.DefaultSortOrder;
-        if (source.Filter != null) dest.Filter = source.Filter;
-        if (source.Filterable.HasValue) dest.Filterable = source.Filterable;
-        if (source.FilterTemplate != null) dest.FilterTemplate = source.FilterTemplate;
-        if (source.Fixed) dest.Fixed = source.Fixed;
-        if (source.FormatString != null) dest.FormatString = source.FormatString;
-        if (source.Formatter != null) dest.Formatter = source.Formatter;
-        if (source.HeaderTemplate != null) dest.HeaderTemplate = source.HeaderTemplate;
-        if (source.OnCellRender != null) dest.OnCellRender = source.OnCellRender;
-        if (source.Searchable.HasValue) dest.Searchable = source.Searchable;
-        if (source.SearchTemplate != null) dest.SearchTemplate = source.SearchTemplate;
-        if (source.ShownWithBreakPoint != BreakPoint.None) dest.ShownWithBreakPoint = source.ShownWithBreakPoint;
-        if (source.ShowTips.HasValue) dest.ShowTips = source.ShowTips = true;
-        if (source.Sortable.HasValue) dest.Sortable = source.Sortable;
-        if (source.Template != null) dest.Template = source.Template;
-        if (source.TextEllipsis.HasValue) dest.TextEllipsis = source.TextEllipsis;
-        if (!source.Visible.HasValue) dest.Visible = source.Visible;
-        if (source.Width != null) dest.Width = source.Width;
-        if (source.ShowCopyColumn.HasValue) dest.ShowCopyColumn = source.ShowCopyColumn;
-        if (source.HeaderTextWrap) dest.HeaderTextWrap = source.HeaderTextWrap;
-        if (!string.IsNullOrEmpty(source.HeaderTextTooltip)) dest.HeaderTextTooltip = source.HeaderTextTooltip;
-        if (source.ShowHeaderTooltip) dest.ShowHeaderTooltip = source.ShowHeaderTooltip;
-        if (source.HeaderTextEllipsis) dest.HeaderTextEllipsis = source.HeaderTextEllipsis;
-        if (source.IsMarkupString) dest.IsMarkupString = source.IsMarkupString;
-        if (source.Visible.HasValue) dest.Visible = source.Visible;
-        if (source.IsVisibleWhenAdd.HasValue) dest.IsVisibleWhenAdd = source.IsVisibleWhenAdd;
-        if (source.IsVisibleWhenEdit.HasValue) dest.IsVisibleWhenEdit = source.IsVisibleWhenEdit;
-        if (source.IsReadonlyWhenAdd.HasValue) dest.IsReadonlyWhenAdd = source.IsReadonlyWhenAdd;
-        if (source.IsReadonlyWhenEdit.HasValue) dest.IsReadonlyWhenEdit = source.IsReadonlyWhenEdit;
-        if (source.GetTooltipTextCallback != null) dest.GetTooltipTextCallback = source.GetTooltipTextCallback;
-        if (source.CustomSearch != null) dest.CustomSearch = source.CustomSearch;
-        if (source.ToolboxTemplate != null) dest.ToolboxTemplate = source.ToolboxTemplate;
-        if (source.IsRequiredWhenAdd.HasValue) dest.IsRequiredWhenAdd = source.IsRequiredWhenAdd;
-        if (source.IsRequiredWhenEdit.HasValue) dest.IsRequiredWhenEdit = source.IsRequiredWhenEdit;
-    }
-
-    /// <summary>
     /// 通过特定类型模型获取模型属性集合
     /// </summary>
     /// <param name="type">绑定模型类型</param>
     /// <returns></returns>
-    public static IEnumerable<IEditorItem> GetEditorItems(Type type)
+    public static List<IEditorItem> GetEditorItems(Type type)
     {
+        if (type == null)
+            return new();
+
         var cols = new List<IEditorItem>(50);
         //获取属性
         var props = type.GetProperties().Where(p => !p.IsStatic());
@@ -122,7 +47,7 @@ public static class PluginServiceUtil
             var displayName = classAttribute.Description ?? BootstrapBlazor.Components.Utility.GetDisplayName(type, prop.Name);
             InternalTableColumn tc = new InternalTableColumn(prop.Name, prop.PropertyType, displayName);
             if (autoGenerateColumnAttribute != null)
-                CopyValue(tc, autoGenerateColumnAttribute);
+                IEditItemExtensions.CopyValue(tc, autoGenerateColumnAttribute);
             tc.ComponentParameters ??= new Dictionary<string, object>();
             if (classAttribute.Remark != null)
             {
@@ -134,7 +59,10 @@ public static class PluginServiceUtil
                    new("title", classAttribute.Remark)
                );
             }
-
+            if (!classAttribute.GroupName.IsNullOrEmpty())
+            {
+                tc.GroupName = classAttribute.GroupName;
+            }
             cols.Add(tc);
         }
         return cols;

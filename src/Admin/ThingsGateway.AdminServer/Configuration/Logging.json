@@ -1,0 +1,48 @@
+{
+
+
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    },
+    "EventLog": {
+      "LogLevel": {
+        "Default": "Warning",
+        "Microsoft.Hosting.Lifetime": "Information"
+      } //windows事件输出日志等级
+    },
+    "Console": {
+      "LogLevel": {
+        "Default": "Information",
+        "Microsoft": "Warning",
+        "Microsoft.Hosting.Lifetime": "Information"
+      } //控制台输出日志等级
+    },
+    "BackendLog": {
+      "LogLevel": {
+        "Default": "Warning"
+      }
+    }
+  },
+
+  "Monitor": {
+    "GlobalEnabled": false, // 启用全局拦截日志
+    "IncludeOfMethods": [], // 拦截特定方法，当GlobalEnabled=false有效
+    "ExcludeOfMethods": [], // 排除特定方法，当GlobalEnabled=true有效
+    "BahLogLevel": "Information", // Oops.Oh 和 Oops.Bah 业务日志输出级别
+    "WithReturnValue": true, // 是否包含返回值，默认true
+    "ReturnValueThreshold": 500, // 返回值字符串阈值，默认0全量输出
+    "JsonBehavior": "None", // 是否输出Json，默认None(OnlyJson、All)
+    "JsonIndented": false, // 是否格式化Json
+    "UseUtcTimestamp": false // 时间格式UTC、LOCAL
+  },
+
+
+  //日志配置
+  "LogJob": {
+    "DaysAgo": 10 //清理10天前日志
+  }
+
+}

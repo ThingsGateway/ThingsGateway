@@ -1,0 +1,153 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using System.Text.Json.Nodes
+@using Mapster
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+@inherits ComponentDefault
+
+<AdminTable @ref=table
+            TItem="VariableRuntime"
+            EditDialogSize="Size.ExtraLarge"
+            AutoGenerateColumns="true"
+            ShowAdvancedSearch=false 
+            ScrollingDialogContent=true
+            AllowResizing="true"
+            IsFixedHeader=true
+            IsMultipleSelect=true
+            SearchMode=SearchMode.Top
+            ShowExtendButtons=true
+            ShowToolbar="true"
+            ShowExportButton
+            ShowDefaultButtons=true
+            ShowSearch=false
+            ShowExtendEditButton="true"
+            ShowExtendDeleteButton="true"
+            ExtendButtonColumnWidth=220
+            OnSaveAsync="Save"
+            OnDeleteAsync="Delete"
+            OnQueryAsync="OnQueryAsync"
+            IsPagination=true>
+    <TableColumns>
+        <TableColumn Field="@context.DeviceId" FieldExpression=@(()=>context.DeviceId) ShowTips=true Filterable=true Sortable=true Visible=false />
+        <TableColumn Field="@context.DeviceName" FieldExpression=@(()=>context.DeviceName) ShowTips=true Filterable=true Sortable=true Visible=true />
+        <TableColumn @bind-Field="@context.Name" ShowTips=true Filterable=true Sortable=true Visible=true />
+        <TableColumn @bind-Field="@context.Description" ShowTips=true Filterable=true Sortable=true Visible=true />
+        <TableColumn @bind-Field="@context.Enable" Filterable=true Sortable=true Visible="false" />
+        <TableColumn Field="@context.ChangeTime" ShowTips=true FieldExpression=@(()=>context.ChangeTime) Filterable=true Sortable=true Visible=false />
+        <TableColumn Field="@context.CollectTime" ShowTips=true FieldExpression=@(()=>context.CollectTime) Filterable=true Sortable=true Visible=true />
+        <TableColumn Field="@context.IsOnline" FieldExpression=@(()=>context.IsOnline) Filterable=true Sortable=true Visible=true />
+        <TableColumn Field="@context.LastErrorMessage" ShowTips=true FieldExpression=@(()=>context.LastErrorMessage) Filterable=true Sortable=true Visible=false />
+
+        <TableColumn Field="@context.LastSetValue" FieldExpression=@(()=>context.LastSetValue) Visible=false ShowTips=true Formatter=@(JsonFormatter) />
+
+        <TableColumn Field="@context.RawValue" FieldExpression=@(()=>context.RawValue) Visible=false ShowTips=true Formatter=@(JsonFormatter) />
+        <TableColumn Field="@context.Value" FieldExpression=@(()=>context.Value) Visible=true ShowTips=true Formatter=@(JsonFormatter) />
+
+        <TableColumn @bind-Field="@context.SaveValue" Filterable=true Sortable=true Visible=false />
+        <TableColumn @bind-Field="@context.DataType" Filterable=true Sortable=true Visible=true />
+        <TableColumn @bind-Field="@context.RegisterAddress" Filterable=true Sortable=true Visible=true />
+        <TableColumn @bind-Field="@context.ArrayLength" Filterable=true Sortable=true Visible=false />
+
+        <TableColumn @bind-Field="@context.ProtectType" Filterable=true Sortable=true Visible="false" />
+        <TableColumn @bind-Field="@context.IntervalTime" Filterable=true Sortable=true Visible="false" />
+        <TableColumn @bind-Field="@context.OtherMethod" Filterable=true Sortable=true Visible="false" />
+        <TableColumn @bind-Field="@context.RpcWriteEnable" Filterable=true Sortable=true Visible="false" />
+        <TableColumn @bind-Field="@context.ReadExpressions" Filterable=true Sortable=true Visible="false" />
+        <TableColumn @bind-Field="@context.WriteExpressions" Filterable=true Sortable=true Visible="false" />
+        <TableColumn @bind-Field="@context.Unit" Filterable=true Sortable=true Visible="false" />
+
+        <TableColumn @bind-Field="@context.Index" Filterable=true Sortable=true Visible="false" />
+        <TableColumn @bind-Field="@context.Id" Visible="false" Sortable=true DefaultSort=true DefaultSortOrder="SortOrder.Asc" />
+        @* <TableColumn Field="@context.AlarmEnable" FieldExpression=@(()=>context.AlarmEnable) Filterable Sortable="false" Visible="false" />
+
+            <TableColumn @bind-Field="@context.BoolOpenAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolOpenRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolOpenAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolCloseAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolCloseRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.BoolCloseAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HAlarmCode" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HHAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HHRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HHAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.HHAlarmCode" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LAlarmCode" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LLAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LLRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LLAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.LLAlarmCode" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CustomAlarmEnable" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CustomRestrainExpressions" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CustomAlarmText" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.CustomAlarmCode" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark1" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark2" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark3" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark4" Filterable Sortable="false" Visible="false" />
+            <TableColumn @bind-Field="@context.Remark5" Filterable Sortable="false" Visible="false" />  *@
+
+    </TableColumns>
+    <RowButtonTemplate>
+
+        <PopConfirmButton IsDisabled=@(!AuthorizeButton("写入变量")) Size="Size.ExtraSmall" Color="Color.Warning" Icon="fa-solid fa-bars" Text="@Localizer["WriteVariable"]" IsAsync OnConfirm="()=>OnWriteVariable(context)">
+
+            <BodyTemplate>
+                <Textarea @bind-Value=WriteValue ShowLabel="true" ShowLabelTooltip="true" />
+            </BodyTemplate>
+
+        </PopConfirmButton>
+    </RowButtonTemplate>
+
+    <EditTemplate Context="context">
+        <VariableEditComponent Model=@(context) AutoRestartThread="AutoRestartThread"></VariableEditComponent>
+    </EditTemplate>
+
+
+    <ExportButtonDropdownTemplate Context="ExportContext">
+        <Button class="dropdown-item" OnClick="() => ExcelExportAsync(ExportContext,true)" IsDisabled=@(!AuthorizeButton("导出"))>
+            <i class="fas fa-file-export"></i>
+            <span>@RazorLocalizer["ExportAll"]</span>
+        </Button>
+        <Button class="dropdown-item" OnClick="() => ExcelExportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导出"))>
+            <i class="fas fa-file-export"></i>
+            <span>@RazorLocalizer["TablesExportButtonExcelText"]</span>
+        </Button>
+        <Button class="dropdown-item" OnClick="() => ExcelImportAsync(ExportContext)" IsDisabled=@(!AuthorizeButton("导入"))>
+            <i class="fas fa-file-import"></i>
+            <span>@RazorLocalizer["TablesImportButtonExcelText"]</span>
+        </Button>
+    </ExportButtonDropdownTemplate>
+    <TableToolbarTemplate>
+
+        <TableToolbarButton TItem="VariableRuntime" IsDisabled=@(!AuthorizeButton(AdminOperConst.Edit))
+                            Color=Color.Info Text="@RazorLocalizer["BatchEdit"]"
+                            OnClickCallback=@(BatchEdit) />
+
+        <TableToolbarPopConfirmButton TItem="VariableRuntime"
+                                      Color=Color.Warning Text="@RazorLocalizer["Clear"]" IsDisabled=@(!AuthorizeButton("清空"))
+                                      IsAsync OnConfirm=@(ClearVariableAsync) />
+
+        <PopConfirmButton Color=Color.Warning Text="@Localizer["Test"]" IsDisabled=@(!AuthorizeButton(AdminOperConst.Add))
+                          IsAsync OnConfirm=@(InsertTestDataAsync)>
+
+            <BodyTemplate>
+                <BootstrapInput @bind-Value=TestVariableCount ShowLabel="true" ShowLabelTooltip="true" />
+                <BootstrapInput @bind-Value=TestDeviceCount ShowLabel="true" ShowLabelTooltip="true" />
+                <BootstrapInput @bind-Value=SlaveUrl ShowLabel="true" ShowLabelTooltip="true" />
+            </BodyTemplate>
+
+        </PopConfirmButton>
+
+    </TableToolbarTemplate>
+</AdminTable>
+
+@code {
+    AdminTable<VariableRuntime> table;
+}

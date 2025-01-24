@@ -1,0 +1,17 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Debug
+@using ThingsGateway.Gateway.Application
+
+<ChannelRuntimeInfo1 ChannelRuntime="ChannelRuntime" />
+
+<LogConsole CardStyle="height: calc(100% - 330px);" Enable="ChannelRuntime.LogEnable" LogLevel=@((ChannelRuntime?.DeviceThreadManage?.LogMessage)?.LogLevel??TouchSocket.Core.LogLevel.Trace)
+            LogLevelChanged="(logLevel)=>
+        {
+                ChannelRuntime.DeviceThreadManage?.SetLogAsync(ChannelRuntime.LogEnable, logLevel);
+        }"
+            EnableChanged="(logEnable)=>
+        {
+                ChannelRuntime.DeviceThreadManage?.SetLogAsync(logEnable);
+        }"
+            LogPath=@ChannelRuntime.LogPath></LogConsole>

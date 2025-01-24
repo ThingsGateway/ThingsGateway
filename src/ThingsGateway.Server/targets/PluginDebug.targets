@@ -1,0 +1,16 @@
+<Project>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.Modbus\ThingsGateway.Plugin.Modbus.csproj" />
+		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.Dlt645\ThingsGateway.Plugin.Dlt645.csproj" />
+		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.SiemensS7\ThingsGateway.Plugin.SiemensS7.csproj" />
+		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.DB\ThingsGateway.Plugin.DB.csproj" />
+		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.Kafka\ThingsGateway.Plugin.Kafka.csproj" />
+		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.Mqtt\ThingsGateway.Plugin.Mqtt.csproj" />
+		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.OpcDa\ThingsGateway.Plugin.OpcDa.csproj" />
+		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.OpcUa\ThingsGateway.Plugin.OpcUa.csproj" />
+		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.RabbitMQ\ThingsGateway.Plugin.RabbitMQ.csproj" />
+	</ItemGroup>
+
+  
+</Project>

@@ -34,7 +34,7 @@
 //    /// <summary>
 //    /// 在插件初始化时调用，只会执行一次，参数为插件默认的链路通道类，如未实现可忽略l
 //    /// </summary>
-//    protected override void Init(IChannel? channel = null)
+//        protected override void InitChannel(IChannel? channel = null)
 //    {
 //        //做一些初始化操作
 //    }
@@ -42,12 +42,12 @@
 //    /// <summary>
 //    /// 变量打包操作，会在Init方法后执行，参数为设备变量列表，返回源读取变量列表
 //    /// </summary>
-//    protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRunTime> deviceVariables)
+//    protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRuntime> deviceVariables)
 //    {
 //        //实现将设备变量打包成源读取变量
 //        //比如如果需要实现MC中的字多读功能，需将多个变量地址打包成一个源读取地址和读取长度，根据一系列规则，添加解析标识，然后在返回的整个字节数组中解析出原来的变量地址代表的数据字节
 
-//        //一般可操作 VariableRunTime 类中的 index, thingsgatewaybitconvter 等属性
+//        //一般可操作 VariableRuntime 类中的 index, thingsgatewaybitconvter 等属性
 //        //一般可操作 VariableSourceRead 类中的 address, length 等属性
 
 //        return new List<VariableSourceRead>();
@@ -56,18 +56,18 @@
 //    /// <summary>
 //    /// 开始前执行
 //    /// </summary>
-//    protected override Task ProtectedBeforStartAsync(CancellationToken cancellationToken)
+//    protected override Task ProtectedBeforeStartAsync(CancellationToken cancellationToken)
 //    {
 //        //一般实现PLC长连接
-//        return base.ProtectedBeforStartAsync(cancellationToken);
+//        return base.ProtectedBeforeStartAsync(cancellationToken);
 //    }
 
 //    /// <summary>
 //    /// 循环执行方法，父类会自动调用<see cref="ReadSourceAsync(VariableSourceRead, CancellationToken)"/>
 //    /// <br></br>
-//    /// 一般需要更新设备变量值，调用<see cref="VariableRunTime.SetValue(object?, DateTime, bool)"/>
+//    /// 一般需要更新设备变量值，调用<see cref="VariableRuntime.SetValue(object?, DateTime, bool)"/>
 //    /// <br></br>
-//    /// 通讯失败时，更新设备状态，调用<see cref="DeviceRunTime.SetDeviceStatus(DateTime?, int?, string)"/>
+//    /// 通讯失败时，更新设备状态，调用<see cref="DeviceRuntime.SetDeviceStatus(DateTime?, int?, string)"/>
 //    /// <br></br>
 //    /// </summary>
 //    protected override ValueTask ProtectedExecuteAsync(CancellationToken cancellationToken)
@@ -78,14 +78,14 @@
 //    /// <summary>
 //    /// 写入变量，实现设备写入操作
 //    /// </summary>
-//    protected override ValueTask<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<VariableRunTime, JToken> writeInfoLists, CancellationToken cancellationToken)
+//    protected override ValueTask<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<VariableRuntime, JToken> writeInfoLists, CancellationToken cancellationToken)
 //    {
 //        return base.WriteValuesAsync(writeInfoLists, cancellationToken);
 //    }
 
 //    /// <summary>
 //    /// 读取源变量，如重写了<see cref="ProtectedExecuteAsync"/> ，此方法可能不会执行
-//    /// 一般需要更新设备变量值，调用<see cref="VariableRunTime.SetValue(object?, DateTime, bool)"/>
+//    /// 一般需要更新设备变量值，调用<see cref="VariableRuntime.SetValue(object?, DateTime, bool)"/>
 //    /// </summary>
 //    protected override ValueTask<OperResult<byte[]>> ReadSourceAsync(VariableSourceRead variableSourceRead, CancellationToken cancellationToken)
 //    {

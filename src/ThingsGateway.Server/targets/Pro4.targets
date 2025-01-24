@@ -1,0 +1,25 @@
+<Project>
+
+  <ItemGroup>
+    <PackageReference Include="ThingsGateway.Plugin.ModbusC1" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets="native;" />
+
+  </ItemGroup>
+
+  <Target Name="CopyOtherPlugin1NugetPackages" AfterTargets="Build">
+	  <PropertyGroup>
+		  <PluginTargetFramework>net8.0</PluginTargetFramework>
+	  </PropertyGroup>
+    <ItemGroup>
+      <!-- setting up the variable for convenience -->
+      <PkgThingsGateway_Plugin_ModbusC1PackageFiles Include="$(PkgThingsGateway_Plugin_ModbusC1)\Content\$(PluginTargetFramework)\**\*.*" />
+    </ItemGroup>
+    <PropertyGroup>
+      <PluginFolder>$(TargetDir)Plugins\</PluginFolder>
+    </PropertyGroup>
+    <Message Text="将插件复制到插件目录 $(PluginFolder)" Importance="high" />
+    
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_ModbusC1PackageFiles)" DestinationFolder="$(PluginFolder)%(RecursiveDir)" />
+
+  </Target>
+  
+</Project>

@@ -11,18 +11,31 @@
 namespace ThingsGateway.Foundation;
 
 /// <summary>
-/// WaitLock，使用轻量级SemaphoreSlim锁，只允许一个并发量，并记录并发信息
+/// WaitLock，使用轻量级SemaphoreSlim锁
 /// </summary>
 public sealed class WaitLock : DisposableObject
 {
-    private readonly SemaphoreSlim m_waiterLock = new SemaphoreSlim(1, 1);
+    private readonly SemaphoreSlim _waiterLock;
 
-    /// <inheritdoc/>
-    public WaitLock(bool initialState = true)
+    /// <summary>
+    /// 构造方法
+    /// </summary>
+    /// <param name="maxCount">最大并发数</param>
+    /// <param name="initialZeroState">初始无信号量</param>
+    public WaitLock(int maxCount = 1, bool initialZeroState = false)
     {
-        if (!initialState)
-            m_waiterLock.Wait();
+        if (initialZeroState)
+            _waiterLock = new SemaphoreSlim(0, maxCount);
+        else
+            _waiterLock = new SemaphoreSlim(maxCount, maxCount);
+
+        MaxCount = maxCount;
     }
+
+    /// <summary>
+    /// 最大并发数
+    /// </summary>
+    public int MaxCount { get; }
 
     /// <inheritdoc/>
     ~WaitLock()
@@ -30,21 +43,18 @@ public sealed class WaitLock : DisposableObject
         this.SafeDispose();
     }
 
-    /// <summary>
-    /// 当前锁是否在等待当中
-    /// </summary>
-    public bool IsWaitting => m_waiterLock.CurrentCount == 0;
+    public bool Waited => _waiterLock.CurrentCount == 0;
+
+    public int CurrentCount => _waiterLock.CurrentCount;
+    public bool Waitting => _waiterLock.CurrentCount < MaxCount;
 
     /// <summary>
     /// 离开锁
     /// </summary>
     public void Release()
     {
-        lock (this)
-        {
-            if (IsWaitting)
-                m_waiterLock.Release();
-        }
+        if (DisposedValue) return;
+        _waiterLock.Release();
     }
 
     /// <summary>
@@ -52,16 +62,15 @@ public sealed class WaitLock : DisposableObject
     /// </summary>
     public void Wait(CancellationToken cancellationToken = default)
     {
-        m_waiterLock.Wait(cancellationToken);
+        _waiterLock.Wait(cancellationToken);
     }
 
     /// <summary>
     /// 进入锁
     /// </summary>
-    public bool Wait(TimeSpan timeSpan, CancellationToken cancellationToken = default)
+    public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken = default)
     {
-        var data = m_waiterLock.Wait(timeSpan, cancellationToken);
-        return data;
+        return _waiterLock.Wait(millisecondsTimeout, cancellationToken);
     }
 
     /// <summary>
@@ -69,21 +78,21 @@ public sealed class WaitLock : DisposableObject
     /// </summary>
     public Task WaitAsync(CancellationToken cancellationToken = default)
     {
-        return m_waiterLock.WaitAsync(cancellationToken);
+        return _waiterLock.WaitAsync(cancellationToken);
     }
 
     /// <summary>
     /// 进入锁
     /// </summary>
-    public Task<bool> WaitAsync(TimeSpan timeSpan, CancellationToken cancellationToken = default)
+    public Task<bool> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken = default)
     {
-        return m_waiterLock.WaitAsync(timeSpan, cancellationToken);
+        return _waiterLock.WaitAsync(millisecondsTimeout, cancellationToken);
     }
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        m_waiterLock.SafeDispose();
         base.Dispose(disposing);
+        _waiterLock.SafeDispose();
     }
 }

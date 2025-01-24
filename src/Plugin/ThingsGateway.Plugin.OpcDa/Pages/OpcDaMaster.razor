@@ -1,0 +1,102 @@
+﻿@page "/OpcDaMaster"
+@using BootstrapBlazor.Components
+@using ThingsGateway.Extension
+@using ThingsGateway.Foundation
+@namespace ThingsGateway.Debug
+@using ThingsGateway.Foundation.OpcDa
+@using TouchSocket.Core
+
+
+<div class="w-100 h-100">
+
+    @if (_plc?.OpcDaProperty != null)
+    {
+        <Card>
+            <BodyTemplate>
+
+                <EditorForm Model="_plc.OpcDaProperty" AutoGenerateAllItem=false RowType="RowType.Inline" ItemsPerRow="4" ShowLabelTooltip="true" ShowLabel="true">
+                    <FieldItems>
+
+
+                        <EditorItem @bind-Field=context.OpcIP />
+                        <EditorItem @bind-Field=context.OpcName />
+                        <EditorItem @bind-Field=context.CheckRate />
+                        <EditorItem @bind-Field=context.GroupSize />
+                        <EditorItem @bind-Field=context.ActiveSubscribe />
+                        <EditorItem @bind-Field=context.UpdateRate />
+                        <EditorItem @bind-Field=context.DeadBand />
+
+                    </FieldItems>
+                    <Buttons>
+                        <Button IsAsync Color="Color.Primary" OnClick="Connect">@OpcDaPropertyLocalizer["Connect"]</Button>
+
+                        <Button IsAsync Color="Color.Warning" OnClick="Disconnect">@OpcDaPropertyLocalizer["Disconnect"]</Button>
+                    </Buttons>
+                </EditorForm>
+
+                
+              
+            </BodyTemplate>
+        </Card>
+
+    }
+
+    <DeviceComponent DefaultAddress="" LogPath=@LogPath Logger="LogMessage" @ref=DeviceComponent ShowDefaultOtherContent=false ShowDefaultReadWriteContent=false>
+
+        <ReadWriteContent>
+
+            <BootstrapInput @bind-Value=@RegisterAddress DisplayText=@OpcDaPropertyLocalizer["RegisterAddress"]
+                            ShowLabel="true" class="w-100" />
+
+
+            <div class="row mx-1 form-inline mt-2">
+
+
+                <div class="col-12 col-md-4 p-1">
+
+                    <Button IsAsync Color="Color.Primary" OnClick="Add">@OpcDaPropertyLocalizer["Add"]</Button>
+
+                </div>
+                <div class="col-12 col-md-4 p-1">
+
+                    <Button IsAsync Color="Color.Primary" OnClick="Remove">@OpcDaPropertyLocalizer["Remove"]</Button>
+
+                </div>
+
+                <div class="col-12 col-md-4 p-1">
+
+                    <Button IsAsync Color="Color.Primary" OnClick="ReadAsync">@OpcDaPropertyLocalizer["Read"]</Button>
+
+                </div>
+            </div>
+
+            <Divider />
+
+            <div class="row mx-1 form-inline mt-2">
+
+                <div class="col-12 col-md-8 p-1">
+                    <Textarea @bind-Value=@WriteValue ShowLabelTooltip="true" DisplayText=@OpcDaPropertyLocalizer["WriteValue"]
+                              ShowLabel="true" />
+
+                </div>
+                <div class="col-12 col-md-4 p-1">
+                    <Button IsAsync Color="Color.Primary" OnClick="WriteAsync">@OpcDaPropertyLocalizer["Write"]</Button>
+                </div>
+            </div>
+
+            <div class="row mx-1 form-inline mt-2">
+
+                <div class="col-12 col-md-4 p-1">
+                    <Button IsAsync Color="Color.Primary" OnClick="ShowImport">@OpcDaPropertyLocalizer["ShowImport"]</Button>
+                </div>
+            </div>
+
+
+        </ReadWriteContent>
+
+
+    </DeviceComponent>
+</div>
+
+
+

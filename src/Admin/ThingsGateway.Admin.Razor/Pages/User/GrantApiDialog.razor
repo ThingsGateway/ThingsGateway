@@ -1,0 +1,16 @@
+﻿@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@namespace ThingsGateway.Admin.Razor
+
+<div class="tree-menu">
+    <TreeView TItem="OpenApiPermissionTreeSelector" Items="Items" ShowCheckbox="true" ShowIcon="true" AutoCheckParent="true" ClickToggleCheck AutoCheckChildren="true" IsVirtualize="true" OnTreeItemChecked="OnTreeItemChecked" ModelEqualityComparer="GrantApiDialog.ModelEqualityComparer"></TreeView>
+
+</div>
+
+@code {
+    RenderFragment<OpenApiPermissionTreeSelector> RenderTreeItem => item =>
+    @<div class="d-flex flex-fill tree-menu-item">
+        <span class="flex-fill">@item.ApiName</span>
+        <span class="mx-1 menu-text" title=@item.ApiRoute>@item.ApiRoute</span>
+    </div>;
+}

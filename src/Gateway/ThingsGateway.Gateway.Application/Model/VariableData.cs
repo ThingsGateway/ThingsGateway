@@ -23,26 +23,26 @@ public class VariableData : IPrimaryIdEntity
     /// <inheritdoc cref="Variable.Name"/>
     public string Name { get; set; }
 
-    /// <inheritdoc cref="VariableRunTime.DeviceName"/>
+    /// <inheritdoc cref="VariableRuntime.DeviceName"/>
     public string DeviceName { get; set; }
 
-    /// <inheritdoc cref="VariableRunTime.Value"/>
+    /// <inheritdoc cref="VariableRuntime.Value"/>
     public object Value { get; set; }
-    /// <inheritdoc cref="VariableRunTime.RawValue"/>
+    /// <inheritdoc cref="VariableRuntime.RawValue"/>
     public object RawValue { get; set; }
-    /// <inheritdoc cref="VariableRunTime.LastSetValue"/>
+    /// <inheritdoc cref="VariableRuntime.LastSetValue"/>
     public object LastSetValue { get; set; }
 
-    /// <inheritdoc cref="VariableRunTime.ChangeTime"/>
+    /// <inheritdoc cref="VariableRuntime.ChangeTime"/>
     public DateTime ChangeTime { get; set; }
 
-    /// <inheritdoc cref="VariableRunTime.CollectTime"/>
+    /// <inheritdoc cref="VariableRuntime.CollectTime"/>
     public DateTime CollectTime { get; set; }
 
-    /// <inheritdoc cref="VariableRunTime.IsOnline"/>
+    /// <inheritdoc cref="VariableRuntime.IsOnline"/>
     public bool IsOnline { get; set; }
 
-    /// <inheritdoc cref="VariableRunTime.LastErrorMessage"/>
+    /// <inheritdoc cref="VariableRuntime.LastErrorMessage"/>
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? LastErrorMessage { get; set; }
@@ -100,22 +100,3 @@ public class VariableBasicData : VariableData
     public DataTypeEnum DataType { get; set; }
 }
 
-public class VariableDataWithValue
-{
-    /// <inheritdoc cref="Variable.Name"/>
-    public string Name { get; set; }
-
-    /// <inheritdoc cref="VariableRunTime.Value"/>
-    public object RawValue { get; set; }
-
-    /// <inheritdoc cref="VariableRunTime.CollectTime"/>
-    public DateTime CollectTime { get; set; }
-
-    /// <inheritdoc cref="VariableRunTime.IsOnline"/>
-    public bool IsOnline { get; set; }
-
-    /// <inheritdoc cref="VariableRunTime.LastErrorMessage"/>
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
-    public string? LastErrorMessage { get; set; }
-}

@@ -1,0 +1,35 @@
+﻿@namespace ThingsGateway.Admin.Razor
+@using ThingsGateway.Admin.Application
+<div class="row g-2 mx-1 form-inline">
+
+    <div class="col-12  col-md-12">
+        <BootstrapInputGroup>
+            <SelectTree @key=Key TValue="long" Items="Items" @bind-Value=SysOrgCopyInput.TargetId ShowLabel="true" @ref=selectTree />
+            <Button Icon="fa-solid fa-xmark" Color="Color.Secondary" OnClick="CleanParentId"></Button>
+        </BootstrapInputGroup>
+    </div>
+
+    <div class="col-12  col-md-12">
+        <RadioList IsButton="true" @bind-Value="SysOrgCopyInput.ContainsChild" Items="ContainsChildBoolItems" ShowLabel="true"></RadioList>
+    </div>
+    <div class="col-12 col-sm-12">
+        <RadioList IsButton="true" @bind-Value="SysOrgCopyInput.ContainsPosition" Items="ContainsPositionBoolItems" ShowLabel="true"></RadioList>
+
+    </div>
+
+</div>
+
+<style>
+    /*弹窗表格*/
+    .dialog-select .modal-body {
+        height: 400px;
+        overflow: hidden;
+    }
+
+</style>
+
+
+@code {
+    [NotNull]
+    SelectTree<long>? selectTree { get; set; }
+}

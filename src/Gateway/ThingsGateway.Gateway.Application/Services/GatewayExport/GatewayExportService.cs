@@ -9,10 +9,6 @@
 //------------------------------------------------------------------------------
 
 #pragma warning disable CA2007 // 考虑对等待的任务调用 ConfigureAwait
-using BootstrapBlazor.Components;
-
-using Mapster;
-
 using Microsoft.JSInterop;
 
 using ThingsGateway.Extension;
@@ -30,28 +26,28 @@ internal sealed class GatewayExportService : IGatewayExportService
 
     private IJSRuntime JSRuntime { get; set; }
 
-    public async Task OnChannelExport(QueryPageOptions dtoObject)
+    public async Task OnChannelExport(ExportFilter exportFilter)
     {
         await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Razor/js/downloadFile.js");
         string url = "api/gatewayExport/channel";
-        string fileName = DateTime.Now.ToFileDateTimeFormat();
-        await ajaxJS.InvokeVoidAsync("postJson_downloadFile", url, fileName, new ExportDto() { FilterKeyValueAction = dtoObject.ToFilter(), QueryPageOptions = dtoObject.Adapt<QueryPageOptionsDto>() }.ToJsonString());
+        string fileName = $"{DateTime.Now.ToFileDateTimeFormat()}.xlsx";
+        await ajaxJS.InvokeVoidAsync("postJson_downloadFile", url, fileName, exportFilter.ToJsonString());
     }
 
-    public async Task OnDeviceExport(QueryPageOptions dtoObject, bool collect)
+    public async Task OnDeviceExport(ExportFilter exportFilter)
     {
         await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Razor/js/downloadFile.js");
-        string url = collect ? "api/gatewayExport/collectdevice" : "api/gatewayExport/businessdevice";
-        string fileName = DateTime.Now.ToFileDateTimeFormat();
-        await ajaxJS.InvokeVoidAsync("postJson_downloadFile", url, fileName, new ExportDto() { FilterKeyValueAction = dtoObject.ToFilter(), QueryPageOptions = dtoObject.Adapt<QueryPageOptionsDto>() }.ToJsonString());
+        string url = "api/gatewayExport/device";
+        string fileName = $"{DateTime.Now.ToFileDateTimeFormat()}.xlsx";
+        await ajaxJS.InvokeVoidAsync("postJson_downloadFile", url, fileName, exportFilter.ToJsonString());
     }
 
-    public async Task OnVariableExport(QueryPageOptions dtoObject)
+    public async Task OnVariableExport(ExportFilter exportFilter)
     {
         await using var ajaxJS = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Razor/js/downloadFile.js");
         string url = "api/gatewayExport/variable";
-        string fileName = DateTime.Now.ToFileDateTimeFormat();
-        await ajaxJS.InvokeVoidAsync("postJson_downloadFile", url, fileName, new ExportDto() { FilterKeyValueAction = dtoObject.ToFilter(), QueryPageOptions = dtoObject.Adapt<QueryPageOptionsDto>() }.ToJsonString());
+        string fileName = $"{DateTime.Now.ToFileDateTimeFormat()}.xlsx";
+        await ajaxJS.InvokeVoidAsync("postJson_downloadFile", url, fileName, exportFilter.ToJsonString());
 
     }
 }

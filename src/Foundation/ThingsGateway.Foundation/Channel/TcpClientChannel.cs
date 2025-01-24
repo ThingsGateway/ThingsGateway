@@ -8,6 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+
+
+
+using System.Collections.Concurrent;
+
 namespace ThingsGateway.Foundation;
 
 /// <summary>
@@ -15,68 +20,74 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public class TcpClientChannel : TcpClient, IClientChannel
 {
-    private readonly WaitLock m_semaphoreForConnect = new WaitLock();
-
     /// <inheritdoc/>
-    public TcpClientChannel()
+    public TcpClientChannel(IChannelOptions channelOptions)
     {
+        ChannelOptions = channelOptions;
+
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
+    public override TouchSocketConfig Config => base.Config ?? ChannelOptions.Config;
     public int MaxSign { get => WaitHandlePool.MaxSign; set => WaitHandlePool.MaxSign = value; }
 
     /// <inheritdoc/>
-    public ChannelReceivedEventHandler ChannelReceived { get; set; } = new();
+    public ChannelReceivedEventHandler ChannelReceived { get; } = new();
 
     /// <inheritdoc/>
-    public ChannelTypeEnum ChannelType => ChannelTypeEnum.TcpClient;
+    public IChannelOptions ChannelOptions { get; }
 
     /// <inheritdoc/>
-    public ConcurrentList<IProtocol> Collects { get; } = new();
+    public ChannelTypeEnum ChannelType => ChannelOptions.ChannelType;
+
+    /// <inheritdoc/>
+    public ConcurrentList<IDevice> Collects { get; } = new();
 
     /// <inheritdoc/>
     public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
 
     /// <inheritdoc/>
-    public ChannelEventHandler Started { get; set; } = new();
+    public ChannelEventHandler Started { get; } = new();
 
     /// <inheritdoc/>
-    public ChannelEventHandler Starting { get; set; } = new();
+    public ChannelEventHandler Starting { get; } = new();
 
     /// <inheritdoc/>
-    public ChannelEventHandler Stoped { get; set; } = new();
+    public ChannelEventHandler Stoped { get; } = new();
     /// <inheritdoc/>
-    public ChannelEventHandler Stoping { get; set; } = new();
+    public ChannelEventHandler Stoping { get; } = new();
     /// <summary>
     /// 等待池
     /// </summary>
     public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
 
-    /// <inheritdoc/>
-    public WaitLock WaitLock { get; } = new WaitLock();
 
     /// <inheritdoc/>
-    public void Close(string msg)
-    {
-        CloseAsync(msg).ConfigureAwait(false).GetAwaiter().GetResult();
-    }
+    public WaitLock WaitLock => ChannelOptions.WaitLock;
 
+    /// <inheritdoc/>
+    public ConcurrentDictionary<long, Func<IClientChannel, ReceivedDataEventArgs, bool, Task>> ChannelReceivedWaitDict { get; } = new();
 
+    private readonly WaitLock _connectLock = new WaitLock();
     /// <inheritdoc/>
     public override async Task CloseAsync(string msg)
     {
         if (Online)
         {
-            await base.CloseAsync(msg).ConfigureAwait(false);
-            Logger?.Debug($"{ToString()}  Closed{msg}");
-            await this.OnChannelEvent(Stoped).ConfigureAwait(false);
-
+            try
+            {
+                await _connectLock.WaitAsync().ConfigureAwait(false);
+                if (Online)
+                {
+                    await base.CloseAsync(msg).ConfigureAwait(false);
+                    Logger?.Debug($"{ToString()}  Closed{msg}");
+                    await this.OnChannelEvent(Stoped).ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                _connectLock.Release();
+            }
         }
-    }
-
-    /// <inheritdoc/>
-    public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
-    {
-        ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     /// <inheritdoc/>
@@ -86,10 +97,10 @@ public class TcpClientChannel : TcpClient, IClientChannel
         {
             try
             {
-                await m_semaphoreForConnect.WaitAsync(token).ConfigureAwait(false);
+                await _connectLock.WaitAsync(token).ConfigureAwait(false);
                 if (!Online)
                 {
-                    await SetupAsync(Config.Clone()).ConfigureAwait(false);
+                    //await SetupAsync(Config.Clone()).ConfigureAwait(false);
                     await base.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
                     Logger?.Debug($"{ToString()}  Connected");
                     await this.OnChannelEvent(Started).ConfigureAwait(false);
@@ -98,7 +109,7 @@ public class TcpClientChannel : TcpClient, IClientChannel
             }
             finally
             {
-                m_semaphoreForConnect.Release();
+                _connectLock.Release();
             }
         }
     }
@@ -137,7 +148,26 @@ public class TcpClientChannel : TcpClient, IClientChannel
     protected override async Task OnTcpReceived(ReceivedDataEventArgs e)
     {
         await base.OnTcpReceived(e).ConfigureAwait(false);
+        if (e.RequestInfo is MessageBase response)
+        {
+            if (ChannelReceivedWaitDict.TryRemove(response.Sign, out var func))
+            {
+                await func.Invoke(this, e, ChannelReceived.Count == 1).ConfigureAwait(false);
+                e.Handled = true;
+            }
+        }
+        if (e.Handled)
+            return;
+
+
         await this.OnChannelReceivedEvent(e, ChannelReceived).ConfigureAwait(false);
     }
 
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        WaitHandlePool.SafeDispose();
+        base.Dispose(disposing);
+    }
 }

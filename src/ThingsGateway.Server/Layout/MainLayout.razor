@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @layout BaseLayout
-@namespace ThingsGateway.Razor
+@namespace ThingsGateway.Server
 @using BootstrapBlazor.Components
 @using ThingsGateway.Admin.Application
 @using ThingsGateway.Admin.Razor
@@ -22,92 +22,89 @@
 @using System.ComponentModel.DataAnnotations
 
 @inject NavigationManager NavigationManager
-
-@if(AppContext.CurrentUser!=null&&AppContext.OwnMenus!=null)
+@if (AppContext.CurrentUser != null && AppContext.OwnMenus != null)
 {
 
-<LoginConnectionHub />
-<CascadingValue Value="ReloadMenu" Name="ReloadMenu" IsFixed="true">
-    <CascadingValue Value="ReloadUser" Name="ReloadUser" IsFixed="true">
+    <LoginConnectionHub />
+    <CascadingValue Value="ReloadMenu" Name="ReloadMenu" IsFixed="true">
+        <CascadingValue Value="ReloadUser" Name="ReloadUser" IsFixed="true">
 
-        <div class="mainlayout">
+            <div class="mainlayout">
 
-            <Layout SideWidth="0" IsPage="true" IsFullSide="true" IsFixedHeader="true"
-                    ShowGotoTop="true" ShowCollapseBar="true" Menus="@MenuService.MenuItems"
-                    AdditionalAssemblies=App.RazorAssemblies AllowDragTab=true
-                    UseTabSet="false" TabDefaultUrl="/">
-                <Header>
+                <Layout SideWidth="0" IsPage="true" IsFullSide="true" IsFixedHeader="true"
+                        ShowGotoTop="true" ShowCollapseBar="true" Menus="@MenuService.MenuItems"
+                        AdditionalAssemblies=App.RazorAssemblies AllowDragTab=true
+                        UseTabSet="false" TabDefaultUrl="/">
+                    <Header>
+                        <div class="ms-4"></div>
+                        <ChoiceModuleComponent Value=@(AppContext.CurrentModuleId) ModuleList=@(AppContext.CurrentUser.ModuleList) OnClick=@(ChoiceModule) />
 
-                    <div class="flex-fill"></div>
+                        <div class="flex-fill"></div>
 
-                    @* 搜索框 *@
-                    <GlobalSearch Menus=@(MenuService.SameLevelMenuItems) />
+                        @* 搜索框 *@
+                        <GlobalSearch Menus=@(MenuService.SameLevelMenuItems) />
 
-                    @* 语言选择 *@
-                    <div class="d-none d-xl-flex ">
-                        <CultureChooser />
-                    </div>
-
-                         <Logout ImageUrl="@(AppContext.CurrentUser.Avatar??$"{WebsiteConst.DefaultResourceUrl}images/defaultUser.svg")" ShowUserName=false DisplayName="@UserManager.UserAccount" UserName="@UserManager.VerificatId.ToString()" PrefixUserNameText=@AdminLocalizer["CurrentVerificat"]>
-                        <LinkTemplate>
-                            @* 切换模块 *@
-                            <a @onclick="ChoiceModule" class="h6"><i class="fas fa-arrow-right-arrow-left me-2" />@Localizer["ChoiceModule"]</a>
-                            <a @onclick="@OnUserInfoDialog" class="h6"><i class="fa-solid fa-suitcase me-2"></i>@Localizer["UserCenter"]</a>
-                            <a @onclick="@LogoutAsync" class="h6"><i class="fa-solid fa-key me-2"></i>@Localizer["Logout"]</a>
-
-
-                        </LinkTemplate>
-                    </Logout>
-
-                    @* 全屏按钮 *@
-                    <FullScreenButton class="layout-header-bar d-none d-lg-flex px-2" Icon="fa fa-arrows-alt"
-                                      TooltipPlacement=Placement.Bottom TooltipText="@Localizer[nameof(FullScreenButton)]" />
-
-                    @if (WebsiteOption.Value.IsShowAbout)
-                    {
-                        <Button @onclick="ShowAbout" class="layout-header-bar d-none d-lg-flex px-2" Icon="fa fa-info" Color="Color.None" TooltipText="@Localizer[nameof(About)]" />
-                    }
-                    @* 版本号 *@
-                    <div class="px-1 navbar-header-text d-none d-lg-block">@_versionString</div>
-
-                    @* 主题切换 *@
-                    @* <ThemeToggle /> *@
-                    <ThemeProvider class="layout-header-bar d-none d-lg-flex px-0"></ThemeProvider>
-
-                </Header>
-                <Side>
-                    <div class="layout-banner">
-                        <span class="avatar">
-                            @WebsiteOption.Value.Title?.GetNameLen2()
-                        </span>
-
-                        <div class="layout-title d-flex align-items-center justify-content-center">
-                            <span>@WebsiteOption.Value.Title</span>
+                        @* 语言选择 *@
+                        <div class="d-none d-xl-flex ">
+                            <CultureChooser />
                         </div>
-                    </div>
-                </Side>
-                <Main>
-                    <Tab ClickTabToNavigation="true" ShowExtendButtons="false" ShowClose="true" AllowDrag=true
-                         AdditionalAssemblies="@App.RazorAssemblies" Menus="@MenuService.MenuItems"
-                         DefaultUrl=@("/") Body=@(Body!) OnCloseTabItemAsync=@((a)=>
+
+                        <Logout ImageUrl="@(AppContext.CurrentUser.Avatar??$"{WebsiteConst.DefaultResourceUrl}images/defaultUser.svg")" ShowUserName=false DisplayName="@UserManager.UserAccount" UserName="@UserManager.VerificatId.ToString()" PrefixUserNameText=@AdminLocalizer["CurrentVerificat"]>
+                            <LinkTemplate>
+                                <a href=@("/") class="h6"><i class="fa-solid fa-suitcase me-2"></i>@Localizer["系统首页"]</a>
+
+                                <a @onclick="@OnUserInfoDialog" class="h6"><i class="fa-solid fa-suitcase me-2"></i>@Localizer["UserCenter"]</a>
+                                <a @onclick="@LogoutAsync" class="h6"><i class="fa-solid fa-key me-2"></i>@Localizer["Logout"]</a>
+
+
+                            </LinkTemplate>
+                        </Logout>
+
+                        @* 全屏按钮 *@
+                        <FullScreenButton class="layout-header-bar d-none d-lg-flex px-2" Icon="fa fa-arrows-alt"
+                                          TooltipPlacement=Placement.Bottom TooltipText="@Localizer[nameof(FullScreenButton)]" />
+
+                        @if (WebsiteOption.Value.IsShowAbout)
+                        {
+                            <Button @onclick="ShowAbout" class="layout-header-bar d-none d-lg-flex px-2" Icon="fa fa-info" Color="Color.None" TooltipText="@Localizer[nameof(About)]" />
+                        }
+                        @* 版本号 *@
+                        <div class="px-1 navbar-header-text d-none d-lg-block">@_versionString</div>
+
+                        @* 主题切换 *@
+                        @* <ThemeToggle /> *@
+                        <ThemeProvider class="layout-header-bar d-none d-lg-flex px-0"></ThemeProvider>
+
+                    </Header>
+                    <Side>
+                        <div class="layout-banner">
+                            <span class="avatar">
+                                @WebsiteOption.Value.Title?.GetNameLen2()
+                            </span>
+
+                            <div class="layout-title d-flex align-items-center justify-content-center">
+                                <span>@WebsiteOption.Value.Title</span>
+                            </div>
+                        </div>
+                    </Side>
+                    <Main>
+                        <Tab @ref=Tab ClickTabToNavigation="true" ShowExtendButtons="false" ShowClose="true" AllowDrag=true
+                             AdditionalAssemblies="@App.RazorAssemblies" Menus="@MenuService.AllOwnMenuItems"
+                             DefaultUrl=@("/") Body=@(Body!) OnCloseTabItemAsync=@((a)=>
                          {
-                           return  Task.FromResult(!(a.Url=="/"||a.Url.IsNullOrEmpty()));
+                         return Task.FromResult(!(a.Url=="/"||a.Url.IsNullOrEmpty()));
                          })>
-                    </Tab>
+                        </Tab>
 
-                </Main>
-                <NotAuthorized>
-                    <Redirect Url="/Account/Login"/>
-                 </NotAuthorized>
-            </Layout>
+                    </Main>
+                    <NotAuthorized>
+                        <Redirect Url="/Account/Login" />
+                    </NotAuthorized>
+                </Layout>
 
-        </div>
+            </div>
 
+        </CascadingValue>
     </CascadingValue>
-</CascadingValue>
 
-}
-else
-{
-    <Redirect Url="/Account/Login"/>
 }

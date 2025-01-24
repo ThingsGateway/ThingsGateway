@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.Collections.Concurrent;
+
 namespace ThingsGateway.Foundation;
 
 /// <summary>
@@ -15,23 +17,29 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public class UdpSessionChannel : UdpSession, IClientChannel
 {
-    private readonly WaitLock m_semaphoreForConnect = new WaitLock();
+    private readonly WaitLock _connectLock = new WaitLock();
 
     /// <inheritdoc/>
-    public UdpSessionChannel()
+    public UdpSessionChannel(IChannelOptions channelOptions)
     {
+        ChannelOptions = channelOptions;
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
+    public override TouchSocketConfig Config => base.Config ?? ChannelOptions.Config;
+
     public int MaxSign { get => WaitHandlePool.MaxSign; set => WaitHandlePool.MaxSign = value; }
 
     /// <inheritdoc/>
     public ChannelReceivedEventHandler ChannelReceived { get; set; } = new();
 
     /// <inheritdoc/>
-    public ChannelTypeEnum ChannelType => ChannelTypeEnum.UdpSession;
+    public IChannelOptions ChannelOptions { get; }
 
     /// <inheritdoc/>
-    public ConcurrentList<IProtocol> Collects { get; } = new();
+    public ChannelTypeEnum ChannelType => ChannelOptions.ChannelType;
+
+    /// <inheritdoc/>
+    public ConcurrentList<IDevice> Collects { get; } = new();
 
     /// <inheritdoc/>
     public bool Online => ServerState == ServerState.Running;
@@ -56,24 +64,15 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     public WaitHandlePool<MessageBase> WaitHandlePool { get; set; } = new();
 
     /// <inheritdoc/>
-    public WaitLock WaitLock { get; } = new WaitLock();
+    public WaitLock WaitLock => ChannelOptions.WaitLock;
 
     /// <inheritdoc/>
-    public void Close(string msg)
-    {
-        CloseAsync(msg).ConfigureAwait(false).GetAwaiter().GetResult();
-    }
+    public ConcurrentDictionary<long, Func<IClientChannel, ReceivedDataEventArgs, bool, Task>> ChannelReceivedWaitDict { get; } = new();
 
     /// <inheritdoc/>
     public Task CloseAsync(string msg)
     {
         return StopAsync();
-    }
-
-    /// <inheritdoc/>
-    public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
-    {
-        ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     /// <inheritdoc/>
@@ -96,28 +95,31 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     /// <inheritdoc/>
     public override async Task StartAsync()
     {
-        try
+        if (ServerState != ServerState.Running)
         {
-            await m_semaphoreForConnect.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                await _connectLock.WaitAsync().ConfigureAwait(false);
 
-            if (ServerState != ServerState.Running)
-            {
-                await base.StopAsync().ConfigureAwait(false);
-                await SetupAsync(Config.Clone()).ConfigureAwait(false);
-                await base.StartAsync().ConfigureAwait(false);
-                if (ServerState == ServerState.Running)
+                if (ServerState != ServerState.Running)
                 {
-                    Logger?.Info($"{Monitor.IPHost}{DefaultResource.Localizer["ServiceStarted"]}");
+                    if (ServerState != ServerState.Stopped)
+                    {
+                        await base.StopAsync().ConfigureAwait(false);
+                    }
+                    //await SetupAsync(Config.Clone()).ConfigureAwait(false);
+                    await base.StartAsync().ConfigureAwait(false);
+                    if (ServerState == ServerState.Running)
+                    {
+                        Logger?.Info($"{Monitor.IPHost}{DefaultResource.Localizer["ServiceStarted"]}");
+                    }
                 }
+
             }
-            else
+            finally
             {
-                await base.StartAsync().ConfigureAwait(false);
+                _connectLock.Release();
             }
-        }
-        finally
-        {
-            m_semaphoreForConnect.Release();
         }
     }
 
@@ -126,33 +128,64 @@ public class UdpSessionChannel : UdpSession, IClientChannel
     {
         if (Monitor != null)
         {
-            await this.OnChannelEvent(Stoping).ConfigureAwait(false);
-            await base.StopAsync().ConfigureAwait(false);
-            if (Monitor == null)
+            try
             {
-                await this.OnChannelEvent(Stoped).ConfigureAwait(false);
-                Logger?.Info($"{DefaultResource.Localizer["ServiceStoped"]}");
+                await _connectLock.WaitAsync().ConfigureAwait(false);
+                if (Monitor != null)
+                {
+                    await this.OnChannelEvent(Stoping).ConfigureAwait(false);
+                    await base.StopAsync().ConfigureAwait(false);
+                    if (Monitor == null)
+                    {
+                        await this.OnChannelEvent(Stoped).ConfigureAwait(false);
+                        Logger?.Info($"{DefaultResource.Localizer["ServiceStoped"]}");
+                    }
+                }
+                else
+                {
+                    await base.StopAsync().ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                _connectLock.Release();
             }
         }
         else
         {
             await base.StopAsync().ConfigureAwait(false);
         }
-
     }
-
 
     /// <inheritdoc/>
     public override string? ToString()
     {
-        return RemoteIPHost?.ToString().Replace("tcp", "udp");
+        return $"{ChannelOptions.BindUrl} {ChannelOptions.RemoteUrl}";
     }
 
     /// <inheritdoc/>
     protected override async Task OnUdpReceived(UdpReceivedDataEventArgs e)
     {
         await base.OnUdpReceived(e).ConfigureAwait(false);
-        await this.OnChannelReceivedEvent(e, ChannelReceived).ConfigureAwait(false);
 
+        if (e.RequestInfo is MessageBase response)
+        {
+            if (ChannelReceivedWaitDict.TryRemove(response.Sign, out var func))
+            {
+                await func.Invoke(this, e, ChannelReceived.Count == 1).ConfigureAwait(false);
+                e.Handled = true;
+            }
+        }
+        if (e.Handled)
+            return;
+
+        await this.OnChannelReceivedEvent(e, ChannelReceived).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        WaitHandlePool.SafeDispose();
+        base.Dispose(disposing);
     }
 }

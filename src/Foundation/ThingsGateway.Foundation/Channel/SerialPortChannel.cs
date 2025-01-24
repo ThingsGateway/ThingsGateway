@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.Collections.Concurrent;
+
 using TouchSocket.SerialPorts;
 
 namespace ThingsGateway.Foundation;
@@ -17,23 +19,30 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public class SerialPortChannel : SerialPortClient, IClientChannel
 {
-    private readonly WaitLock m_semaphoreForConnect = new WaitLock();
 
-    /// <inheritdoc/>
-    public SerialPortChannel()
+    public SerialPortChannel(IChannelOptions channelOptions)
     {
+        ChannelOptions = channelOptions;
+
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
+
+    public override TouchSocketConfig Config => base.Config ?? ChannelOptions.Config;
+
+    /// <inheritdoc/>
     public int MaxSign { get => WaitHandlePool.MaxSign; set => WaitHandlePool.MaxSign = value; }
 
     /// <inheritdoc/>
     public ChannelReceivedEventHandler ChannelReceived { get; set; } = new();
 
     /// <inheritdoc/>
-    public ChannelTypeEnum ChannelType => ChannelTypeEnum.SerialPort;
+    public IChannelOptions ChannelOptions { get; }
 
     /// <inheritdoc/>
-    public ConcurrentList<IProtocol> Collects { get; } = new();
+    public ChannelTypeEnum ChannelType => ChannelOptions.ChannelType;
+
+    /// <inheritdoc/>
+    public ConcurrentList<IDevice> Collects { get; } = new();
 
     /// <inheritdoc/>
     public DataHandlingAdapter ReadOnlyDataHandlingAdapter => ProtectedDataHandlingAdapter;
@@ -55,34 +64,37 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     public WaitHandlePool<MessageBase> WaitHandlePool { get; } = new();
 
     /// <inheritdoc/>
-    public WaitLock WaitLock { get; } = new WaitLock();
+    public WaitLock WaitLock => ChannelOptions.WaitLock;
 
     /// <inheritdoc/>
-    public void Close(string msg)
-    {
-        CloseAsync(msg).ConfigureAwait(false).GetAwaiter().GetResult();
-    }
+    public ConcurrentDictionary<long, Func<IClientChannel, ReceivedDataEventArgs, bool, Task>> ChannelReceivedWaitDict { get; } = new();
 
+    private readonly WaitLock _connectLock = new WaitLock();
     /// <inheritdoc/>
     public override async Task CloseAsync(string msg)
     {
         if (Online)
         {
-            await this.OnChannelEvent(Stoping).ConfigureAwait(false);
+            try
+            {
+                await _connectLock.WaitAsync().ConfigureAwait(false);
+                if (Online)
+                {
+                    await this.OnChannelEvent(Stoping).ConfigureAwait(false);
 
-            await base.CloseAsync(msg).ConfigureAwait(false);
-            Logger?.Debug($"{ToString()}  Closed{msg}");
+                    await base.CloseAsync(msg).ConfigureAwait(false);
+                    Logger?.Debug($"{ToString()}  Closed{msg}");
 
-            await this.OnChannelEvent(Stoped).ConfigureAwait(false);
+                    await this.OnChannelEvent(Stoped).ConfigureAwait(false);
 
 
+                }
+            }
+            finally
+            {
+                _connectLock.Release();
+            }
         }
-    }
-
-    /// <inheritdoc/>
-    public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
-    {
-        ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     /// <inheritdoc/>
@@ -92,21 +104,23 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
         {
             try
             {
-                await m_semaphoreForConnect.WaitAsync(token).ConfigureAwait(false);
+                await _connectLock.WaitAsync(token).ConfigureAwait(false);
                 if (!Online)
                 {
-                    await SetupAsync(Config.Clone()).ConfigureAwait(false);
+                    //await SetupAsync(Config.Clone()).ConfigureAwait(false);
                     await base.ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false);
-                    Logger?.Debug($"{ToString()}  Connected");
+                    Logger?.Debug($"{ToString()} Connected");
                     await this.OnChannelEvent(Started).ConfigureAwait(false);
                 }
             }
             finally
             {
-                m_semaphoreForConnect.Release();
+                _connectLock.Release();
             }
         }
     }
+
+
 
     /// <inheritdoc/>
     public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
@@ -118,9 +132,16 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     /// <inheritdoc/>
     public override string? ToString()
     {
-        var port = Config?.GetValue(SerialPortConfigExtension.SerialPortOptionProperty);
-        if (port != null)
-            return $"{port.PortName}[{port.BaudRate},{port.DataBits},{port.StopBits},{port.Parity}]";
+        if (ProtectedMainSerialPort != null)
+        {
+            return $"{ProtectedMainSerialPort.PortName}";
+        }
+        else
+        {
+            var port = Config?.GetValue(SerialPortConfigExtension.SerialPortOptionProperty);
+            if (port != null)
+                return $"{port.PortName}";
+        }
         return base.ToString();
     }
 
@@ -137,8 +158,6 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     {
         Logger?.Debug($"{ToString()}  Connecting{(e.Message.IsNullOrEmpty() ? string.Empty : $" -{e.Message}")}");
         await this.OnChannelEvent(Starting).ConfigureAwait(false);
-
-
         await base.OnSerialConnecting(e).ConfigureAwait(false);
     }
 
@@ -146,6 +165,25 @@ public class SerialPortChannel : SerialPortClient, IClientChannel
     protected override async Task OnSerialReceived(ReceivedDataEventArgs e)
     {
         await base.OnSerialReceived(e).ConfigureAwait(false);
+        if (e.RequestInfo is MessageBase response)
+        {
+            if (ChannelReceivedWaitDict.TryRemove(response.Sign, out var func))
+            {
+                await func.Invoke(this, e, ChannelReceived.Count == 1).ConfigureAwait(false);
+                e.Handled = true;
+            }
+        }
+        if (e.Handled)
+            return;
+
         await this.OnChannelReceivedEvent(e, ChannelReceived).ConfigureAwait(false);
+    }
+
+
+    /// <inheritdoc/>
+    protected override void Dispose(bool disposing)
+    {
+        WaitHandlePool.SafeDispose();
+        base.Dispose(disposing);
     }
 }

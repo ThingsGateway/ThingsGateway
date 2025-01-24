@@ -1,0 +1,27 @@
+﻿{
+  "ThingsGateway.Foundation.OpcDa.OpcDaProperty": {
+    "ActiveSubscribe": "订阅",
+    "CheckRate": "心跳间隔(min)",
+    "DeadBand": "死区",
+    "GroupSize": "最大组大小",
+    "OpcIP": "OpcIP",
+    "OpcName": "OpcName",
+    "UpdateRate": "订阅推送间隔",
+
+    "Connect": "连接",
+    "Disconnect": "断开",
+    "Add": "添加",
+    "Remove": "移除",
+    "Read": "读取",
+    "Write": "写入",
+    "ShowImport": "查看OPC空间",
+    "RegisterAddress": "地址",
+    "WriteValue": "写入值",
+
+    "NoVariablesAvailable": "无可用变量",
+    "Success": "成功",
+    "Close": "关闭",
+    "Save": "导入到系统",
+    "Export": "导出"
+  }
+}

@@ -41,7 +41,7 @@ public struct OperResult<T> : IOperResult<T>
         OperCode = operResult.OperCode;
         ErrorMessage = operResult.ErrorMessage;
         Exception = operResult.Exception;
-        ErrorCode = operResult.ErrorCode;
+        ErrorType = operResult.ErrorType;
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public struct OperResult<T> : IOperResult<T>
     {
         OperCode = 500;
         ErrorMessage = msg;
-        ErrorCode = ErrorCodeEnum.InvokeFail;
+        ErrorType = ErrorTypeEnum.InvokeFail;
     }
 
     /// <summary>
@@ -66,15 +66,15 @@ public struct OperResult<T> : IOperResult<T>
         //指定Timeout或OperationCanceled为超时取消
         if (ex is TimeoutException || ex is OperationCanceledException)
         {
-            ErrorCode = ErrorCodeEnum.Canceled;
+            ErrorType = ErrorTypeEnum.Canceled;
         }
         else if (ex is ReturnErrorException)
         {
-            ErrorCode = ErrorCodeEnum.RetuenError;
+            ErrorType = ErrorTypeEnum.DeviceError;
         }
         else
         {
-            ErrorCode = ErrorCodeEnum.InvokeFail;
+            ErrorType = ErrorTypeEnum.InvokeFail;
         }
     }
 
@@ -101,7 +101,7 @@ public struct OperResult<T> : IOperResult<T>
 #endif
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public ErrorCodeEnum? ErrorCode { get; private set; }
+    public ErrorTypeEnum? ErrorType { get; set; }
 
     /// <inheritdoc/>
     public T Content { get; set; }
@@ -156,7 +156,7 @@ public struct OperResult<T, T2> : IOperResult<T, T2>
         OperCode = operResult.OperCode;
         ErrorMessage = operResult.ErrorMessage;
         Exception = operResult.Exception;
-        ErrorCode = operResult.ErrorCode;
+        ErrorType = operResult.ErrorType;
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ public struct OperResult<T, T2> : IOperResult<T, T2>
     {
         OperCode = 500;
         ErrorMessage = msg;
-        ErrorCode = ErrorCodeEnum.InvokeFail;
+        ErrorType = ErrorTypeEnum.InvokeFail;
     }
 
     /// <summary>
@@ -181,15 +181,15 @@ public struct OperResult<T, T2> : IOperResult<T, T2>
         //指定Timeout或OperationCanceled为超时取消
         if (ex is TimeoutException || ex is OperationCanceledException)
         {
-            ErrorCode = ErrorCodeEnum.Canceled;
+            ErrorType = ErrorTypeEnum.Canceled;
         }
         else if (ex is ReturnErrorException)
         {
-            ErrorCode = ErrorCodeEnum.RetuenError;
+            ErrorType = ErrorTypeEnum.DeviceError;
         }
         else
         {
-            ErrorCode = ErrorCodeEnum.InvokeFail;
+            ErrorType = ErrorTypeEnum.InvokeFail;
         }
     }
 
@@ -216,7 +216,7 @@ public struct OperResult<T, T2> : IOperResult<T, T2>
 #endif
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public ErrorCodeEnum? ErrorCode { get; private set; }
+    public ErrorTypeEnum? ErrorType { get; set; }
 
     /// <inheritdoc/>
     public T2 Content2 { get; set; }
@@ -265,7 +265,7 @@ public struct OperResult<T, T2, T3> : IOperResult<T, T2, T3>
         OperCode = operResult.OperCode;
         ErrorMessage = operResult.ErrorMessage;
         Exception = operResult.Exception;
-        ErrorCode = operResult.ErrorCode;
+        ErrorType = operResult.ErrorType;
     }
 
     /// <summary>
@@ -276,7 +276,7 @@ public struct OperResult<T, T2, T3> : IOperResult<T, T2, T3>
     {
         OperCode = 500;
         ErrorMessage = msg;
-        ErrorCode = ErrorCodeEnum.InvokeFail;
+        ErrorType = ErrorTypeEnum.InvokeFail;
     }
 
     /// <summary>
@@ -290,15 +290,15 @@ public struct OperResult<T, T2, T3> : IOperResult<T, T2, T3>
         //指定Timeout或OperationCanceled为超时取消
         if (ex is TimeoutException || ex is OperationCanceledException)
         {
-            ErrorCode = ErrorCodeEnum.Canceled;
+            ErrorType = ErrorTypeEnum.Canceled;
         }
         else if (ex is ReturnErrorException)
         {
-            ErrorCode = ErrorCodeEnum.RetuenError;
+            ErrorType = ErrorTypeEnum.DeviceError;
         }
         else
         {
-            ErrorCode = ErrorCodeEnum.InvokeFail;
+            ErrorType = ErrorTypeEnum.InvokeFail;
         }
     }
 
@@ -325,7 +325,7 @@ public struct OperResult<T, T2, T3> : IOperResult<T, T2, T3>
 #endif
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public ErrorCodeEnum? ErrorCode { get; private set; }
+    public ErrorTypeEnum? ErrorType { get; set; }
 
     /// <inheritdoc/>
     public T Content { get; set; }
@@ -375,7 +375,7 @@ public struct OperResult : IOperResult
         OperCode = operResult.OperCode;
         ErrorMessage = operResult.ErrorMessage;
         Exception = operResult.Exception;
-        ErrorCode = operResult.ErrorCode;
+        ErrorType = operResult.ErrorType;
     }
 
     /// <summary>
@@ -386,7 +386,7 @@ public struct OperResult : IOperResult
     {
         OperCode = 500;
         ErrorMessage = msg;
-        ErrorCode = ErrorCodeEnum.InvokeFail;
+        ErrorType = ErrorTypeEnum.InvokeFail;
     }
 
     /// <summary>
@@ -400,15 +400,15 @@ public struct OperResult : IOperResult
         //指定Timeout或OperationCanceled为超时取消
         if (ex is TimeoutException || ex is OperationCanceledException)
         {
-            ErrorCode = ErrorCodeEnum.Canceled;
+            ErrorType = ErrorTypeEnum.Canceled;
         }
         else if (ex is ReturnErrorException)
         {
-            ErrorCode = ErrorCodeEnum.RetuenError;
+            ErrorType = ErrorTypeEnum.DeviceError;
         }
         else
         {
-            ErrorCode = ErrorCodeEnum.InvokeFail;
+            ErrorType = ErrorTypeEnum.InvokeFail;
         }
     }
 
@@ -435,7 +435,7 @@ public struct OperResult : IOperResult
 #endif
 
     [JsonConverter(typeof(StringEnumConverter))]
-    public ErrorCodeEnum? ErrorCode { get; private set; }
+    public ErrorTypeEnum? ErrorType { get; set; }
 
     /// <summary>
     /// 返回一个成功结果，并带有结果值
@@ -458,145 +458,3 @@ public struct OperResult : IOperResult
     }
 }
 
-/// <inheritdoc cref="IOperResult"/>
-public class OperResultClass : IOperResult
-{
-    /// <summary>
-    /// 异常堆栈
-    /// </summary>
-#if NET6_0_OR_GREATER
-    [System.Text.Json.Serialization.JsonIgnore]
-#endif
-
-    [JsonIgnore]
-    public Exception? Exception { get; set; }
-
-    /// <summary>
-    /// 从另一个操作对象中赋值信息
-    /// </summary>
-    public OperResultClass(IOperResult operResult)
-    {
-        OperCode = operResult.OperCode;
-        ErrorMessage = operResult.ErrorMessage;
-        Exception = operResult.Exception;
-        ErrorCode = operResult.ErrorCode;
-    }
-
-    /// <summary>
-    /// 传入错误信息
-    /// </summary>
-    /// <param name="msg"></param>
-    public OperResultClass(string msg)
-    {
-        OperCode = 500;
-        ErrorMessage = msg;
-        ErrorCode = ErrorCodeEnum.InvokeFail;
-    }
-
-    /// <summary>
-    /// 传入异常堆栈
-    /// </summary>
-    public OperResultClass(Exception ex)
-    {
-        OperCode = 500;
-        Exception = ex;
-        ErrorMessage = ex.Message;
-        //指定Timeout或OperationCanceled为超时取消
-        if (ex is TimeoutException || ex is OperationCanceledException)
-        {
-            ErrorCode = ErrorCodeEnum.Canceled;
-        }
-        else if (ex is ReturnErrorException)
-        {
-            ErrorCode = ErrorCodeEnum.RetuenError;
-        }
-        else
-        {
-            ErrorCode = ErrorCodeEnum.InvokeFail;
-        }
-    }
-
-    /// <summary>
-    /// 传入错误信息与异常堆栈
-    /// </summary>
-    public OperResultClass(string msg, Exception ex) : this(ex)
-    {
-        ErrorMessage = msg;
-    }
-
-    /// <summary>
-    /// 默认构造，操作结果会是成功
-    /// </summary>
-    public OperResultClass()
-    {
-    }
-
-    /// <inheritdoc/>
-    public int? OperCode { get; set; }
-
-    /// <inheritdoc/>
-    public bool IsSuccess => OperCode == null || OperCode == 0;
-
-    /// <inheritdoc/>
-    public string? ErrorMessage { get; set; }
-
-    /// <inheritdoc/>
-#if NET6_0_OR_GREATER
-    [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
-#endif
-
-    [JsonConverter(typeof(StringEnumConverter))]
-    public ErrorCodeEnum? ErrorCode { get; private set; }
-
-    /// <summary>
-    /// 返回一个成功结果，并带有结果值
-    /// </summary>
-    public static OperResult<T> CreateSuccessResult<T>(T content)
-    {
-        return new() { Content = content };
-    }
-
-    /// <summary>
-    /// 返回错误信息与异常堆栈等信息
-    /// </summary>
-    /// <returns></returns>
-    public override string ToString()
-    {
-        string messageString = ErrorMessage == null ? string.Empty : $"{DefaultResource.Localizer["ErrorMessage"]}:{ErrorMessage}";
-        string exceptionString = Exception == null ? string.Empty : ErrorMessage == null ? $"{DefaultResource.Localizer["Exception"]}:{Exception}" : $"{Environment.NewLine}{DefaultResource.Localizer["Exception"]}:{Exception}";
-
-        return $"{messageString}{exceptionString}";
-    }
-}
-
-/// <inheritdoc/>
-public class OperResultClass<T> : OperResultClass, IOperResult<T>
-{
-    /// <inheritdoc/>
-    public OperResultClass() : base()
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResultClass(IOperResult operResult) : base(operResult)
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResultClass(string msg) : base(msg)
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResultClass(Exception ex) : base(ex)
-    {
-    }
-
-    /// <inheritdoc/>
-    public OperResultClass(string msg, Exception ex) : base(msg, ex)
-    {
-    }
-
-    /// <inheritdoc/>
-    public T Content { get; set; }
-}

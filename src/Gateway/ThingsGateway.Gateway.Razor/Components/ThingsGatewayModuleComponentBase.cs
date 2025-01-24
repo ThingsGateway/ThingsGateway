@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Razor;
+namespace ThingsGateway.Gateway.Razor;
 
 public abstract class ThingsGatewayModuleComponentBase : BootstrapModuleComponentBase
 {

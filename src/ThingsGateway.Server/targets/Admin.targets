@@ -3,8 +3,8 @@
 <!--Admin-->
 
   <ItemGroup>
-    <PackageReference Include="ThingsGateway.Admin.Razor" Version="$(AdminVersion)" />
-    <PackageReference Include="ThingsGateway.Admin.Application" Version="$(AdminVersion)" GeneratePathProperty="true"/>
+    <PackageReference Include="ThingsGateway.Admin.Razor" Version="$(Version)" />
+    <PackageReference Include="ThingsGateway.Admin.Application" Version="$(Version)" GeneratePathProperty="true"/>
   </ItemGroup>
   
   <Target Name="_ResolveCopyAdminLocalNuGetPkgXmls" AfterTargets="ResolveReferences">

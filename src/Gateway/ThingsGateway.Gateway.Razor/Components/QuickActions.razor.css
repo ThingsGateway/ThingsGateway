@@ -38,7 +38,7 @@
     position: fixed;
     z-index: 100;
     bottom: 12rem;
-    right: 1rem;
+    left: calc(var(--bb-layout-sidebar-width) + 20px);
     width: 250px;
     /*//初始高度为0*/
     height: 0;
@@ -67,7 +67,7 @@
     --bs-btn-active-bg: var(--tg-quickactions-button-active-bg);
     /*阴影样式*/
     box-shadow: var(--tg-quickactions-button-shadow);
-    right: 1rem;
+    left: calc(var(--bb-layout-sidebar-width) + 20px);
     bottom: 9rem;
     --bb-button-circle-width: 40px;
     --bb-button-circle-height: 40px;

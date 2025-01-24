@@ -15,12 +15,11 @@ using Microsoft.Extensions.Hosting;
 
 using Photino.Blazor;
 
-using System.Runtime.InteropServices;
 using System.Text;
 
 using ThingsGateway.NewLife.Log;
 
-namespace ThingsGateway.Photino;
+namespace ThingsGateway.Server;
 
 internal sealed class Program
 {
@@ -62,12 +61,6 @@ internal sealed class Program
 
         var options = RunOptions.Default.ConfigureBuilder(builder =>
         {
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                builder.Host.UseWindowsService();
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                builder.Host.UseSystemd();
-
             if (!builder.Environment.IsDevelopment())
             {
                 builder.Services.AddResponseCompression(
@@ -115,8 +108,9 @@ internal sealed class Program
         hybridApp.MainWindow.SetUseOsDefaultLocation(false);
         hybridApp.MainWindow.SetUseOsDefaultSize(false);
         hybridApp.MainWindow.SetSize(new System.Drawing.Size(1920, 1080));
-        hybridApp.MainWindow.SetTitle("ThingsGateway");
+        hybridApp.MainWindow.SetTitle("ThingsGateway.Hybrid");
         hybridApp.MainWindow.SetIconFile("favicon.ico");
+
         AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
         {
         };

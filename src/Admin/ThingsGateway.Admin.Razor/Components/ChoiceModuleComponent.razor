@@ -1,0 +1,14 @@
+﻿@namespace ThingsGateway.Admin.Razor
+@using ThingsGateway.Admin.Application
+@inherits ComponentDefault
+<div class=" choice-module w-100">
+    <Tab Placement="Placement.TopCenter" class="w-100 mt-2" OnClickTabItemAsync="OnMenuClickAsync">
+
+        @foreach (var item in RibbonTabItems)
+        {
+            <TabItem Text=@item.Text Icon=@item.Icon IsActive=item.IsActive Url=@item.Id />
+        }
+
+    </Tab>
+
+</div>

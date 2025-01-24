@@ -20,7 +20,6 @@
 
       "ThingsGateway.Foundation.Razor",
       "ThingsGateway.Debug.Razor",
-      "ThingsGateway.Core",
       "ThingsGateway.Razor"
     ]
   },

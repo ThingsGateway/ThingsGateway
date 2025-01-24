@@ -14,9 +14,11 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Security.Claims;
 
+using ThingsGateway.Admin.Application;
+
 using UAParser;
 
-namespace ThingsGateway.Photino;
+namespace ThingsGateway.Server;
 
 public class HybridAppService : IAppService
 {

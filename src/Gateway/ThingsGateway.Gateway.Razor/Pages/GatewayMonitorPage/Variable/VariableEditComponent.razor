@@ -1,0 +1,236 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Foundation
+@using ThingsGateway.Gateway.Application
+@inherits ComponentDefault
+
+<div class="variable">
+
+    @if (ValidateEnable)
+    {
+        <ValidateForm Model="Model" OnValidSubmit="ValidSubmit">
+            @renderFragment
+
+            <div class="form-footer">
+
+                <Button ButtonType="ButtonType.Submit" Icon="fa-solid fa-floppy-disk" IsAsync Text=@RazorLocalizer["Save"] />
+            </div>
+        </ValidateForm>
+
+    }
+    else
+    {
+        @renderFragment
+    }
+</div>
+@code {
+    RenderFragment renderFragment =>
+    @<Tab>
+
+        <TabItem Text=@GatewayLocalizer["VariableInformation"]>
+
+            <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=200 Model="Model">
+
+                <FieldItems>
+                    <EditorItem TValue="string" TModel="Variable" @bind-Field="@context.Name">
+                        <EditTemplate Context="value">
+                            <div class="col-12">
+                                <h6>@GatewayLocalizer["BasicInformation"]</h6>
+                            </div>
+                        </EditTemplate>
+                    </EditorItem>
+
+                    <EditorItem @bind-Field="@context.Name" Readonly=BatchEditEnable />
+
+                    <EditorItem @bind-Field="@context.Description" />
+
+                    <EditorItem @bind-Field="@context.Unit" />
+                    <EditorItem @bind-Field="@context.ProtectType" />
+                    <EditorItem @bind-Field="@context.Enable" />
+                    <EditorItem @bind-Field="@context.RpcWriteEnable" />
+
+                    <EditorItem @bind-Field="@context.Value" Text="@(context.Description(a=>a.Value))" />
+                    <EditorItem @bind-Field="@context.SaveValue" />
+
+                    <EditorItem TValue="string" TModel="Variable" @bind-Field="@context.Name">
+                        <EditTemplate Context="value">
+                            <div class="col-12">
+                                <h6>@GatewayLocalizer["Connection"]</h6>
+                            </div>
+                        </EditTemplate>
+                    </EditorItem>
+
+                    <EditorItem @bind-Field="@context.DeviceId">
+                        <EditTemplate Context="value">
+                            <div class="col-12  col-md-6 ">
+                                <BootstrapInputGroup>
+                                    <Select IsVirtualize @bind-Value="@value.DeviceId" IsDisabled=BatchEditEnable Items="@CollectDeviceItems" OnSelectedItemChanged=OnDeviceChanged ShowSearch="true" ShowLabel="true" />
+                                    <Button class="text-end" Icon="fa-solid fa-plus" OnClick="AddDevice" IsDisabled=BatchEditEnable></Button>
+                                </BootstrapInputGroup>
+                            </div>
+                        </EditTemplate>
+                    </EditorItem>
+
+                    <EditorItem @bind-Field="@context.DataType" />
+                    <EditorItem @bind-Field="@context.IntervalTime" />
+
+                    <EditorItem @bind-Field="@context.OtherMethod">
+                        <EditTemplate Context="value">
+                            <div class="col-12  col-md-6">
+                                <Select IsVirtualize @bind-Value="@value.OtherMethod" Items="@OtherMethods" ShowSearch="true" />
+                            </div>
+                        </EditTemplate>
+                    </EditorItem>
+
+                    <EditorItem @bind-Field="@context.RegisterAddress">
+                        <EditTemplate Context="value">
+                            <div class="col-12">
+                                <BootstrapInputGroup>
+                                    <Textarea rows="1" @bind-Value="value.RegisterAddress" ShowLabel="true"></Textarea>
+                                    <Button IsDisabled=@(AddressUIType==null) Icon="fa-solid fa-bars" OnClick="ShowAddressUI"></Button>
+                                </BootstrapInputGroup>
+                            </div>
+                        </EditTemplate>
+                    </EditorItem>
+                    <EditorItem @bind-Field="@context.ArrayLength" />
+
+                    <EditorItem @bind-Field="@context.ReadExpressions" Rows="1" />
+                    <EditorItem @bind-Field="@context.WriteExpressions" Rows="1" />
+
+
+                    <EditorItem TValue="string" TModel="Variable" @bind-Field="@context.Description">
+                        <EditTemplate Context="value">
+                            <div class="col-12">
+                                <h6>@GatewayLocalizer["Remark"]</h6>
+                            </div>
+                        </EditTemplate>
+                    </EditorItem>
+                    <EditorItem @bind-Field="@context.Remark1" />
+                    <EditorItem @bind-Field="@context.Remark2" />
+                    <EditorItem @bind-Field="@context.Remark3" />
+                    <EditorItem @bind-Field="@context.Remark4" />
+                    <EditorItem @bind-Field="@context.Remark5" />
+
+                </FieldItems>
+
+            </EditorForm>
+        </TabItem>
+
+        <TabItem Text=@GatewayLocalizer["AlarmInformation"]>
+            <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=250 Model="Model">
+                <FieldItems>
+
+                    <EditorItem @bind-Field="@context.BoolCloseAlarmText" />
+                    <EditorItem @bind-Field="@context.BoolCloseRestrainExpressions" />
+                    <EditorItem @bind-Field="@context.BoolCloseAlarmEnable" Rows="1" />
+                    <EditorItem @bind-Field="@context.BoolOpenAlarmText" />
+                    <EditorItem @bind-Field="@context.BoolOpenRestrainExpressions" />
+                    <EditorItem @bind-Field="@context.BoolOpenAlarmEnable" Rows="1" />
+                    <EditorItem @bind-Field="@context.HHAlarmText" />
+                    <EditorItem @bind-Field="@context.HHAlarmCode" />
+                    <EditorItem @bind-Field="@context.HHRestrainExpressions" />
+                    <EditorItem @bind-Field="@context.HHAlarmEnable" />
+                    <EditorItem @bind-Field="@context.HAlarmText" />
+                    <EditorItem @bind-Field="@context.HAlarmCode" />
+                    <EditorItem @bind-Field="@context.HRestrainExpressions" />
+                    <EditorItem @bind-Field="@context.HAlarmEnable" />
+                    <EditorItem @bind-Field="@context.LAlarmText" />
+                    <EditorItem @bind-Field="@context.LAlarmCode" />
+                    <EditorItem @bind-Field="@context.LRestrainExpressions" />
+                    <EditorItem @bind-Field="@context.LAlarmEnable" />
+                    <EditorItem @bind-Field="@context.LLAlarmText" />
+                    <EditorItem @bind-Field="@context.LLAlarmCode" />
+                    <EditorItem @bind-Field="@context.LLRestrainExpressions" />
+                    <EditorItem @bind-Field="@context.LLAlarmEnable" />
+                    <EditorItem @bind-Field="@context.CustomAlarmText" />
+                    <EditorItem @bind-Field="@context.CustomAlarmCode" />
+                    <EditorItem @bind-Field="@context.CustomRestrainExpressions" />
+                    <EditorItem @bind-Field="@context.CustomAlarmEnable" />
+                    <EditorItem @bind-Field="@context.AlarmDelay" />
+                </FieldItems>
+            </EditorForm>
+        </TabItem>
+        @if(!BatchEditEnable)
+    {
+        <TabItem Text=@GatewayLocalizer["PluginInformation"]>
+            <div class="min-height-500 px-4">
+                <div class="row g-2 mx-1 form-inline">
+
+                    <div class="col-12 col-md-8">
+                        <Select SkipValidate IsVirtualize @bind-Value="@ChoiceBusinessDeviceId" Items="@BusinessDeviceItems" ShowSearch="true" ShowLabel="true" />
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <Button OnClick="async() =>{
+
+await RefreshBusinessPropertyClickAsync(ChoiceBusinessDeviceId);
+foreach (var item in Model.VariablePropertyModels)
+                                                    {
+if(item.Value!=null)
+{
+                                                   item.Value.ValidateForm=null;
+}
+                                                    }
+}">
+                            @GatewayLocalizer["RefreshBusinessProperty"]
+                        </Button>
+                    </div>
+                </div>
+                @if (Model.VariablePropertyModels != null)
+            {
+                @foreach (var a in Model.VariablePropertyModels)
+            {
+
+            var item = a;
+
+            var custom = VariablePropertyRenderFragments.TryGetValue(item.Key, out var renderFragment);
+
+            if (!custom)
+            {
+            var has = VariablePropertyEditors.TryGetValue(item.Key, out var items);
+            if (has)
+            {
+
+
+                <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+                    <HeaderTemplate>
+                        @{
+                    GlobalData.ReadOnlyDevices.TryGetValue(item.Key, out var items);
+                        }
+                        <div class="flex-fill">
+                            @($"{items.Name} - {PluginServiceUtil.GetFileNameAndTypeName(items?.PluginName).TypeName}")
+                        </div>
+
+                        <Button OnClick=@((a)=>
+                            {
+                            Model.VariablePropertyModels.TryRemove(item.Key,out _);
+                            }) class="mx-2" Color="Color.None" style="color: var(--bs-card-titlecolor);" Icon=@("fas fa-delete-left") />
+
+                    </HeaderTemplate>
+
+                    <BodyTemplate>
+
+                        <ValidateForm Model="item.Value.Value" @ref=item.Value.ValidateForm
+                                      @key=@($"VariableEditValidateForm{item.Key}{Model.Id}{item.Value.Value.GetType().TypeHandle.Value}")
+                                      Id=@($"VariableEditValidateForm{item.Key}{Model.Id}{item.Value.Value.GetType().TypeHandle.Value}")>
+
+                            <EditorFormObject class="p-2" Items=items AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="item.Value.Value" @key=@($"VariableEditEditorFormObject{item.Key}{Model.Id}{item.Value.Value.GetType().TypeHandle.Value}")>
+
+                            </EditorFormObject>
+                        </ValidateForm>
+                    </BodyTemplate>
+                </Card>
+            }
+            }
+            else
+            {
+                @renderFragment
+            }
+            }
+            }
+            </div>
+
+        </TabItem>
+    }
+    </Tab>;
+}

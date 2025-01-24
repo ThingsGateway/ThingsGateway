@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<Import Project="$(SolutionDir)Version.props" />
+	<Import Project="$(SolutionDir)PackNuget.props" />
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;</TargetFrameworks>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Include="..\ThingsGateway.Plugin.Modbus\Pages\ModbusMaster.razor.cs" Link="Pages\ModbusMaster.razor.cs" />
+		<Compile Include="..\ThingsGateway.Plugin.Modbus\Pages\ModbusSlave.razor.cs" Link="Pages\ModbusSlave.razor.cs" />
+		<Compile Include="..\ThingsGateway.Plugin.Modbus\Pages\ModbusAddressComponent.razor.cs" Link="Pages\ModbusAddressComponent.razor.cs" />
+		<Compile Include="..\ThingsGateway.Plugin.Dlt645\Pages\Dlt645_2007Master.razor.cs" Link="Pages\Dlt645_2007Master.razor.cs" />
+		<Compile Include="..\ThingsGateway.Plugin.Dlt645\Pages\Dlt645_2007AddressComponent.razor.cs" Link="Pages\Dlt645_2007AddressComponent.razor.cs" />
+		<Compile Include="..\ThingsGateway.Plugin.SiemensS7\Pages\SiemensS7Master.razor.cs" Link="Pages\SiemensS7Master.razor.cs" />
+		<Compile Include="..\ThingsGateway.Plugin.SiemensS7\Pages\SiemensS7AddressComponent.razor.cs" Link="Pages\SiemensS7AddressComponent.razor.cs" />
+		<Compile Include="..\ThingsGateway.Plugin.OpcDa\Pages\OpcDaImportVariable.razor.cs" Link="Pages\OpcDaImportVariable.razor.cs" />
+		<Compile Include="..\ThingsGateway.Plugin.OpcDa\Pages\OpcDaMaster.razor.cs" Link="Pages\OpcDaMaster.razor.cs" />
+		<Compile Include="..\ThingsGateway.Plugin.OpcUa\Pages\OpcUaImportVariable.razor.cs" Link="Pages\OpcUaImportVariable.razor.cs" />
+		<Compile Include="..\ThingsGateway.Plugin.OpcUa\Pages\OpcUaMaster.razor.cs" Link="Pages\OpcUaMaster.razor.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="..\ThingsGateway.Plugin.Modbus\Pages\ModbusMaster.razor" Link="Pages\ModbusMaster.razor" Pack="false" />
+		<Content Include="..\ThingsGateway.Plugin.Modbus\Pages\ModbusSlave.razor" Link="Pages\ModbusSlave.razor" Pack="false" />
+		<Content Include="..\ThingsGateway.Plugin.Modbus\Pages\ModbusAddressComponent.razor" Link="Pages\ModbusAddressComponent.razor" Pack="false" />
+		<Content Include="..\ThingsGateway.Plugin.Dlt645\Pages\Dlt645_2007Master.razor" Link="Pages\Dlt645_2007Master.razor" Pack="false" />
+		<Content Include="..\ThingsGateway.Plugin.Dlt645\Pages\Dlt645_2007AddressComponent.razor" Link="Pages\Dlt645_2007AddressComponent.razor" Pack="false" />
+		<Content Include="..\ThingsGateway.Plugin.SiemensS7\Pages\SiemensS7Master.razor" Link="Pages\SiemensS7Master.razor" Pack="false" />
+		<Content Include="..\ThingsGateway.Plugin.SiemensS7\Pages\SiemensS7AddressComponent.razor" Link="Pages\SiemensS7AddressComponent.razor" Pack="false" />
+		<Content Include="..\ThingsGateway.Plugin.OpcDa\Pages\OpcDaImportVariable.razor" Link="Pages\OpcDaImportVariable.razor" Pack="false" />
+		<Content Include="..\ThingsGateway.Plugin.OpcDa\Pages\OpcDaMaster.razor" Link="Pages\OpcDaMaster.razor" Pack="false" />
+		<Content Include="..\ThingsGateway.Plugin.OpcUa\Pages\OpcUaImportVariable.razor" Link="Pages\OpcUaImportVariable.razor" Pack="false" />
+		<Content Include="..\ThingsGateway.Plugin.OpcUa\Pages\OpcUaMaster.razor" Link="Pages\OpcUaMaster.razor" Pack="false" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj" />
+		<ProjectReference Include="..\ThingsGateway.Foundation.Modbus\ThingsGateway.Foundation.Modbus.csproj" />
+		<ProjectReference Include="..\ThingsGateway.Foundation.Dlt645\ThingsGateway.Foundation.Dlt645.csproj" />
+		<ProjectReference Include="..\ThingsGateway.Foundation.OpcDa\ThingsGateway.Foundation.OpcDa.csproj" />
+		<ProjectReference Include="..\ThingsGateway.Foundation.OpcUa\ThingsGateway.Foundation.OpcUa.csproj" />
+		<ProjectReference Include="..\ThingsGateway.Foundation.SiemensS7\ThingsGateway.Foundation.SiemensS7.csproj" />
+
+
+	</ItemGroup>
+
+	<ItemGroup>
+	</ItemGroup>
+
+
+
+</Project>

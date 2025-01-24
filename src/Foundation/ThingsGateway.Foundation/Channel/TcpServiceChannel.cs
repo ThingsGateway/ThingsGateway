@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.Collections.Concurrent;
+
 namespace ThingsGateway.Foundation;
 
 /// <summary>
@@ -16,10 +18,9 @@ namespace ThingsGateway.Foundation;
 /// <typeparam name="TClient"></typeparam>
 public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcpService<TClient> where TClient : TcpSessionClientChannel, new()
 {
-    private readonly WaitLock m_semaphoreForConnect = new WaitLock();
 
     /// <inheritdoc/>
-    public ConcurrentList<IProtocol> Collects { get; } = new();
+    public ConcurrentList<IDevice> Collects { get; } = new();
 
     /// <summary>
     /// 停止时是否发送ShutDown
@@ -35,6 +36,7 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
             {
                 if (ShutDownEnable)
                     client.TryShutdown();
+
                 await client.CloseAsync().ConfigureAwait(false);
                 client.SafeDispose();
             }
@@ -43,6 +45,8 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
             }
         }
     }
+
+
     public async Task ClientDisposeAsync(string id)
     {
         if (this.TryGetClient(id, out var client))
@@ -53,31 +57,36 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
             client.SafeDispose();
         }
     }
+
+    private readonly WaitLock _connectLock = new WaitLock();
     /// <inheritdoc/>
     public override async Task StartAsync()
     {
-        try
+        if (ServerState != ServerState.Running)
         {
-            await m_semaphoreForConnect.WaitAsync().ConfigureAwait(false);
-
-            if (ServerState != ServerState.Running)
+            try
             {
-                await base.StopAsync().ConfigureAwait(false);
-                await SetupAsync(Config.Clone()).ConfigureAwait(false);
-                await base.StartAsync().ConfigureAwait(false);
-                if (ServerState == ServerState.Running)
+                await _connectLock.WaitAsync().ConfigureAwait(false);
+
+                if (ServerState != ServerState.Running)
                 {
-                    Logger?.Info($"{Monitors.FirstOrDefault()?.Option.IpHost}{DefaultResource.Localizer["ServiceStarted"]}");
+                    if (ServerState != ServerState.Stopped)
+                    {
+                        await base.StopAsync().ConfigureAwait(false);
+                    }
+
+                    //await SetupAsync(Config.Clone()).ConfigureAwait(false);
+                    await base.StartAsync().ConfigureAwait(false);
+                    if (ServerState == ServerState.Running)
+                    {
+                        Logger?.Info($"{Monitors.FirstOrDefault()?.Option.IpHost}{DefaultResource.Localizer["ServiceStarted"]}");
+                    }
                 }
             }
-            else
+            finally
             {
-                await base.StartAsync().ConfigureAwait(false);
+                _connectLock.Release();
             }
-        }
-        finally
-        {
-            m_semaphoreForConnect.Release();
         }
     }
 
@@ -86,11 +95,25 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
     {
         if (Monitors.Any())
         {
-            await ClearAsync().ConfigureAwait(false);
-            var iPHost = Monitors.FirstOrDefault()?.Option.IpHost;
-            await base.StopAsync().ConfigureAwait(false);
-            if (!Monitors.Any())
-                Logger?.Info($"{iPHost}{DefaultResource.Localizer["ServiceStoped"]}");
+            try
+            {
+                await _connectLock.WaitAsync().ConfigureAwait(false);
+                if (Monitors.Any())
+                {
+
+                    await ClearAsync().ConfigureAwait(false);
+                    var iPHost = Monitors.FirstOrDefault()?.Option.IpHost;
+                    await base.StopAsync().ConfigureAwait(false);
+                    if (!Monitors.Any())
+                        Logger?.Info($"{iPHost}{DefaultResource.Localizer["ServiceStoped"]}");
+
+                }
+            }
+            finally
+            {
+                _connectLock.Release();
+            }
+
         }
         else
         {
@@ -98,11 +121,7 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
         }
     }
 
-    /// <inheritdoc/>
-    public override string? ToString()
-    {
-        return Monitors.FirstOrDefault()?.Option?.IpHost.ToString();
-    }
+
 
     /// <inheritdoc/>
     protected override Task OnTcpClosed(TClient socketClient, ClosedEventArgs e)
@@ -138,11 +157,22 @@ public abstract class TcpServiceChannelBase<TClient> : TcpService<TClient>, ITcp
 /// </summary>
 public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>, IChannel
 {
+
+    /// <inheritdoc/>
+    public TcpServiceChannel(IChannelOptions channelOptions)
+    {
+        ChannelOptions = channelOptions;
+    }
+    public override TouchSocketConfig Config => base.Config ?? ChannelOptions.Config;
+
     /// <inheritdoc/>
     public ChannelReceivedEventHandler ChannelReceived { get; set; } = new();
 
     /// <inheritdoc/>
-    public ChannelTypeEnum ChannelType => ChannelTypeEnum.TcpService;
+    public IChannelOptions ChannelOptions { get; }
+
+    /// <inheritdoc/>
+    public ChannelTypeEnum ChannelType => ChannelOptions.ChannelType;
 
     /// <inheritdoc/>
     public bool Online => ServerState == ServerState.Running;
@@ -159,21 +189,9 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
     public ChannelEventHandler Stoping { get; set; } = new();
 
     /// <inheritdoc/>
-    public void Close(string msg)
-    {
-        CloseAsync(msg).ConfigureAwait(false).GetAwaiter().GetResult();
-    }
-
-    /// <inheritdoc/>
     public Task CloseAsync(string msg)
     {
         return StopAsync();
-    }
-
-    /// <inheritdoc/>
-    public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default)
-    {
-        ConnectAsync(millisecondsTimeout, token).ConfigureAwait(false).GetAwaiter().GetResult();
     }
 
     /// <inheritdoc/>
@@ -184,7 +202,11 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
 
         return StartAsync();
     }
-
+    /// <inheritdoc/>
+    public override string? ToString()
+    {
+        return $"{ChannelOptions.BindUrl} {ChannelOptions.RemoteUrl}";
+    }
     /// <inheritdoc/>
     protected override TcpSessionClientChannel NewClient()
     {
@@ -221,11 +243,34 @@ public class TcpServiceChannel : TcpServiceChannelBase<TcpSessionClientChannel>,
         await base.OnTcpConnecting(socketClient, e).ConfigureAwait(false);
     }
 
+
+
     /// <inheritdoc/>
     protected override async Task OnTcpReceived(TcpSessionClientChannel socketClient, ReceivedDataEventArgs e)
     {
         await base.OnTcpReceived(socketClient, e).ConfigureAwait(false);
+
+        if (e.RequestInfo is MessageBase response)
+        {
+            if (ChannelReceivedWaitDict.TryRemove(response.Sign, out var func))
+            {
+                await func.Invoke(socketClient, e, ChannelReceived.Count == 1).ConfigureAwait(false);
+                e.Handled = true;
+            }
+        }
+        if (e.Handled)
+            return;
+
         await socketClient.OnChannelReceivedEvent(e, ChannelReceived).ConfigureAwait(false);
 
+    }
+
+
+    /// <inheritdoc/>
+    public ConcurrentDictionary<long, Func<IClientChannel, ReceivedDataEventArgs, bool, Task>> ChannelReceivedWaitDict { get; } = new();
+    protected override void ClientInitialized(TcpSessionClientChannel client)
+    {
+        client.ChannelOptions = ChannelOptions;
+        base.ClientInitialized(client);
     }
 }

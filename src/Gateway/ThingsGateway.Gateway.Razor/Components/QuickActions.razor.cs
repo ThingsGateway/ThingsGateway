@@ -51,23 +51,47 @@ public partial class QuickActions
         ReloadServiceText ??= Localizer[nameof(ReloadServiceText)];
         ReloadPluginConfirmText ??= Localizer[nameof(ReloadPluginConfirmText)];
         ReloadServiceConfirmText ??= Localizer[nameof(ReloadServiceConfirmText)];
+
+        AutoRestartThreadBoolItems = LocalizerUtil.GetBoolItems(GetType(), nameof(AutoRestartThread));
         base.OnInitialized();
     }
 
-    private static async Task OnReloadService()
+    #region 配置
+
+
+    [Parameter]
+    public bool AutoRestartThread { get; set; } = true;
+    [Parameter]
+    public EventCallback<bool> AutoRestartThreadChanged { get; set; }
+
+    private async Task OnAutoRestartThreadChanged(bool autoRestartThread)
     {
-        try
-        {
-            await Task.Run(async () =>
-            {
-                await GlobalData.CollectDeviceHostedService.RestartAsync();
-            });
-        }
-        finally
-        {
-        }
+        AutoRestartThread = autoRestartThread;
+        if (Module != null)
+            await Module!.InvokeVoidAsync("saveAutoRestartThread", autoRestartThread);
+        if (AutoRestartThreadChanged.HasDelegate)
+            await AutoRestartThreadChanged.InvokeAsync(autoRestartThread);
     }
 
+    private List<SelectedItem> AutoRestartThreadBoolItems;
+
+
+    private static async Task Restart()
+    {
+        await Task.Run(async () =>
+        {
+            var data = await GlobalData.GetCurrentUserChannels().ConfigureAwait(false);
+            await GlobalData.ChannelThreadManage.RestartChannelAsync(data.Select(a => a.Value));
+        });
+    }
+
+    protected override async Task InvokeInitAsync()
+    {
+        await base.InvokeInitAsync();
+        var autoRestartThread = await Module!.InvokeAsync<bool>("getAutoRestartThread");
+        await OnAutoRestartThreadChanged(autoRestartThread);
+    }
+    #endregion
     private async Task ToggleOpen()
     {
         await Module!.InvokeVoidAsync("toggle", Id);

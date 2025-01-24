@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="$(SolutionDir)Version.props" />
+	<Import Project="$(SolutionDir)PackNuget.props" />
+
+	<PropertyGroup>
+		<TargetFrameworks>net462;netstandard2.0;net6.0;net6.0-windows;net8.0;net8.0-windows;</TargetFrameworks>
+		<AssemblyName>ThingsGateway.NewLife.X</AssemblyName>
+		<RootNamespace>ThingsGateway.NewLife</RootNamespace>
+		<AssemblyTitle>工具核心库</AssemblyTitle>
+		<Description>ThingsGateway.NewLife.X</Description>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="\" />
+		<None Include="README.zh-CN.md" Pack="true" PackagePath="\" />
+		<None Remove="$(SolutionDir)..\README.md" Pack="false" PackagePath="\" />
+		<None Remove="$(SolutionDir)..\README.zh-CN.md" Pack="false" PackagePath="\" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)'=='net462' or '$(TargetFramework)'=='net5.0-windows' or '$(TargetFramework)'=='net6.0-windows' or '$(TargetFramework)'=='net7.0-windows' or '$(TargetFramework)'=='net8.0-windows'">
+		<DefineConstants>WIN</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)'=='net6.0-windows' or '$(TargetFramework)'=='net8.0-windows'">
+		<FrameworkReference Include="Microsoft.WindowsDesktop.App.WindowsForms" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+		<PackageReference Include="System.Memory" Version="4.6.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)'=='net462'">
+		<PackageReference Include="System.Memory" Version="4.6.0" />
+		<PackageReference Include="System.ValueTuple" Version="4.5.0" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)'=='net462'">
+		<Using Include="System.Net.Http" />
+		<Reference Include="Microsoft.VisualBasic" />
+		<Reference Include="System.Management" />
+		<Reference Include="System.Net.Http" />
+		<Reference Include="System.IO.Compression" />
+		<Reference Include="System.Web" />
+		<Reference Include="System.Windows.Forms" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	</ItemGroup>
+
+
+</Project>

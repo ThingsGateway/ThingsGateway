@@ -32,12 +32,15 @@ public class VariableClass : IVariable
     /// 执行间隔
     /// </summary>
     public virtual string? IntervalTime { get; set; }
-
+    /// <summary>
+    /// 数组长度
+    /// </summary>
+    public virtual int? ArrayLength { get; set; }
     /// <inheritdoc/>
     public bool IsOnline { get; set; }
 
     /// <inheritdoc/>
-    public string LastErrorMessage => VariableSource?.LastErrorMessage;
+    public virtual string LastErrorMessage => VariableSource?.LastErrorMessage;
 
     /// <summary>
     /// 寄存器地址

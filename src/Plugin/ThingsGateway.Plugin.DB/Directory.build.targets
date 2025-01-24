@@ -1,0 +1,15 @@
+<Project>
+
+
+	<!--在构建后触发的。它通过在 Nuget 包的 Content 文件夹中包含目标目录中的所有文件和子文件夹来创建 nuget 包-->
+	<Target Name="IncludeAllFilesInTargetDir" AfterTargets="Build">
+
+		<ItemGroup>
+			<Content Include="$(ProjectDir)bin\$(Configuration)\$(TargetFramework)\**\*DB*.dll">
+				<Pack>true</Pack>
+				<PackagePath>Content</PackagePath>
+			</Content>
+		</ItemGroup>
+	</Target>
+
+</Project>

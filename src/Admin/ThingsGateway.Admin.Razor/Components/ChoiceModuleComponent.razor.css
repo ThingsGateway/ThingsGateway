@@ -1,0 +1,17 @@
+﻿.choice-module ::deep .tabs .tabs-body {
+    padding: 0;
+}
+
+.choice-module ::deep .tabs-body-content {
+    overflow-y: hidden;
+    height: auto;
+}
+.choice-module ::deep .tabs.tabs-card .tabs-header .tabs-item.active {
+    border-width: 0px 0px 0px 0px;
+}
+.choice-module ::deep .tabs .tabs-active-bar {
+    height: 0px !important;
+}
+.choice-module ::deep .tabs.tabs-border-card .tabs-header .tabs-item.active {
+    border-width: 0px 0px 0px 0px;
+}

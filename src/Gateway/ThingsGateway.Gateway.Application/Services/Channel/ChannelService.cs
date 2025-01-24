@@ -35,18 +35,7 @@ namespace ThingsGateway.Gateway.Application;
 internal sealed class ChannelService : BaseService<Channel>, IChannelService
 {
     private readonly IDispatchService<Channel> _dispatchService;
-    private ISysUserService _sysUserService;
-    private ISysUserService SysUserService
-    {
-        get
-        {
-            if (_sysUserService == null)
-            {
-                _sysUserService = App.GetService<ISysUserService>();
-            }
-            return _sysUserService;
-        }
-    }
+
     /// <inheritdoc cref="IChannelService"/>
     public ChannelService(
     IDispatchService<Channel>? dispatchService
@@ -55,43 +44,20 @@ internal sealed class ChannelService : BaseService<Channel>, IChannelService
         _dispatchService = dispatchService;
     }
 
-    /// <inheritdoc/>
-    [OperDesc("SaveChannel", localizerType: typeof(Channel), isRecordPar: false)]
-    public async Task<bool> BatchEditAsync(IEnumerable<Channel> models, Channel oldModel, Channel model)
+    #region CURD
+
+
+    public async Task UpdateLogAsync(long channelId, bool logEnable, LogLevel logLevel)
     {
-        var differences = models.GetDiffProperty(oldModel, model);
-        if (differences?.Count > 0)
-        {
-            using var db = GetDB();
-
-            var result = (await db.Updateable(models.ToList()).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync().ConfigureAwait(false)) > 0;
-            if (result)
-            {
-                DeleteChannelFromCache();
-            }
-            return result;
-        }
-        else
-        {
-            return true;
-        }
-    }
-
-    [OperDesc("ClearChannel", localizerType: typeof(Channel))]
-    public async Task ClearChannelAsync()
-    {
-        var deviceService = App.RootServices.GetRequiredService<IDeviceService>();
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
-
         using var db = GetDB();
+
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            var data = GetAll()
-            .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
-            .WhereIf(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId).Select(a => a.Id).ToList();
-            await db.Deleteable<Channel>(data).ExecuteCommandAsync().ConfigureAwait(false);
-            await deviceService.DeleteByChannelIdAsync(data, db).ConfigureAwait(false);
+            //更新数据库
+
+            await db.Updateable<Channel>().SetColumns(it => new Channel() { LogEnable = logEnable, LogLevel = logLevel }).Where(a => a.Id == channelId).ExecuteCommandAsync().ConfigureAwait(false);
+
         }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
         {
@@ -104,16 +70,60 @@ internal sealed class ChannelService : BaseService<Channel>, IChannelService
         }
     }
 
-    [OperDesc("DeleteChannel", localizerType: typeof(Channel))]
+    /// <inheritdoc/>
+    [OperDesc("SaveChannel", localizerType: typeof(Channel), isRecordPar: false)]
+    public async Task<bool> BatchEditAsync(IEnumerable<Channel> models, Channel oldModel, Channel model)
+    {
+        var differences = models.GetDiffProperty(oldModel, model);
+        if (differences?.Count > 0)
+        {
+            using var db = GetDB();
+            var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
+
+            //事务
+            var result = await db.UseTranAsync(async () =>
+            {
+                var data = models
+                            .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+             .WhereIf(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+             .ToList();
+
+                //更新数据库
+                await db.Updateable(data).UpdateColumns(differences.Select(a => a.Key).ToArray()).ExecuteCommandAsync().ConfigureAwait(false);
+
+            }).ConfigureAwait(false);
+            if (result.IsSuccess)//如果成功了
+            {
+                DeleteChannelFromCache();
+                return true;
+            }
+            else
+            {
+                //写日志
+                throw new(result.ErrorMessage, result.ErrorException);
+            }
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+
+    [OperDesc("DeleteChannel", localizerType: typeof(Channel), isRecordPar: false)]
     public async Task<bool> DeleteChannelAsync(IEnumerable<long> ids)
     {
         var deviceService = App.RootServices.GetRequiredService<IDeviceService>();
+        var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
 
         using var db = GetDB();
         //事务
         var result = await db.UseTranAsync(async () =>
         {
-            await db.Deleteable<Channel>().Where(a => ids.Contains(a.Id)).ExecuteCommandAsync().ConfigureAwait(false);
+            await db.Deleteable<Channel>()
+              .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+             .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
+            .Where(a => ids.Contains(a.Id)).ExecuteCommandAsync().ConfigureAwait(false);
             await deviceService.DeleteByChannelIdAsync(ids, db).ConfigureAwait(false);
         }).ConfigureAwait(false);
         if (result.IsSuccess)//如果成功了
@@ -139,50 +149,42 @@ internal sealed class ChannelService : BaseService<Channel>, IChannelService
     /// 从缓存/数据库获取全部信息
     /// </summary>
     /// <returns>列表</returns>
-    public List<Channel> GetAll()
+    public async Task<List<Channel>> GetAllAsync(SqlSugarClient db = null)
     {
         var key = ThingsGatewayCacheConst.Cache_Channel;
         var channels = App.CacheService.Get<List<Channel>>(key);
         if (channels == null)
         {
-            using var db = GetDB();
-            channels = db.Queryable<Channel>().ToList();
+            db ??= GetDB();
+            channels = await db.Queryable<Channel>().ToListAsync().ConfigureAwait(false);
             App.CacheService.Set(key, channels);
         }
         return channels;
     }
 
     /// <summary>
-    /// 从缓存/数据库获取全部信息
-    /// </summary>
-    /// <returns>列表</returns>
-    public async Task<List<Channel>> GetAllByOrgAsync()
-    {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
-        return GetAll()
-              .WhereIF(dataScope != null && dataScope?.Count > 0, b => dataScope.Contains(b.CreateOrgId))
-              .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId).ToList();
-    }
-
-    public Channel? GetChannelById(long id)
-    {
-        var data = GetAll();
-        return data?.FirstOrDefault(x => x.Id == id);
-    }
-
-    /// <summary>
     /// 报表查询
     /// </summary>
-    /// <param name="option">查询条件</param>
-    /// <param name="filterKeyValueAction">查询条件</param>
-    public async Task<QueryData<Channel>> PageAsync(QueryPageOptions option, FilterKeyValueAction filterKeyValueAction = null)
+    /// <param name="exportFilter">查询条件</param>
+    public async Task<QueryData<Channel>> PageAsync(ExportFilter exportFilter)
     {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
-        return await QueryAsync(option, a => a
-        .WhereIF(!option.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(option.SearchText!))
-         .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
+        HashSet<long>? channel = null;
+        if (exportFilter.PluginType != null)
+        {
+            var pluginInfo = GlobalData.PluginService.GetList(exportFilter.PluginType).Select(a => a.FullName).ToHashSet();
+            channel = (await GetAllAsync().ConfigureAwait(false)).Where(a => pluginInfo.Contains(a.PluginName)).Select(a => a.Id).ToHashSet();
+        }
+        var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
+        return await QueryAsync(exportFilter.QueryPageOptions, a => a
+        .WhereIF(!exportFilter.QueryPageOptions.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(exportFilter.QueryPageOptions.SearchText!))
+                .WhereIF(!exportFilter.PluginName.IsNullOrWhiteSpace(), a => a.PluginName == exportFilter.PluginName)
+                        .WhereIF(channel != null, a => channel.Contains(a.Id))
+                        .WhereIF(exportFilter.ChannelId != null, a => a.Id == exportFilter.ChannelId)
+
+                          .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
          .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
-       , filterKeyValueAction).ConfigureAwait(false);
+
+       , exportFilter.FilterKeyValueAction).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -193,12 +195,16 @@ internal sealed class ChannelService : BaseService<Channel>, IChannelService
     [OperDesc("SaveChannel", localizerType: typeof(Channel))]
     public async Task<bool> SaveChannelAsync(Channel input, ItemChangedType type)
     {
-
-        //验证
-        CheckInput(input);
+        if ((await GetAllAsync().ConfigureAwait(false)).ToDictionary(a => a.Name).TryGetValue(input.Name, out var channel))
+        {
+            if (channel.Id != input.Id)
+            {
+                throw Oops.Bah(Localizer["NameDump", channel.Name]);
+            }
+        }
 
         if (type == ItemChangedType.Update)
-            await SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId).ConfigureAwait(false);
+            await GlobalData.SysUserService.CheckApiDataScopeAsync(input.CreateOrgId, input.CreateUserId).ConfigureAwait(false);
 
         if (await base.SaveAsync(input, type).ConfigureAwait(false))
         {
@@ -208,75 +214,15 @@ internal sealed class ChannelService : BaseService<Channel>, IChannelService
         return false;
     }
 
-    private void CheckInput(Channel input)
-    {
-
-        if (input.ChannelType == ChannelTypeEnum.TcpClient)
-        {
-            if (string.IsNullOrEmpty(input.RemoteUrl))
-                throw Oops.Bah(Localizer["RemoteUrlNotNull"]);
-        }
-        else if (input.ChannelType == ChannelTypeEnum.TcpService)
-        {
-            if (string.IsNullOrEmpty(input.BindUrl))
-                throw Oops.Bah(Localizer["BindUrlNotNull"]);
-        }
-        else if (input.ChannelType == ChannelTypeEnum.UdpSession)
-        {
-            if (string.IsNullOrEmpty(input.BindUrl) && string.IsNullOrEmpty(input.RemoteUrl))
-                throw Oops.Bah(Localizer["BindUrlOrRemoteUrlNotNull"]);
-        }
-        else if (input.ChannelType == ChannelTypeEnum.SerialPort)
-        {
-            if (string.IsNullOrEmpty(input.PortName))
-                throw Oops.Bah(Localizer["PortNameNotNull"]);
-            if (input.BaudRate == null)
-                throw Oops.Bah(Localizer["BaudRateNotNull"]);
-            if (input.DataBits == null)
-                throw Oops.Bah(Localizer["DataBitsNotNull"]);
-            if (input.Parity == null)
-                throw Oops.Bah(Localizer["ParityNotNull"]);
-            if (input.StopBits == null)
-                throw Oops.Bah(Localizer["StopBitsNotNull"]);
-        }
-    }
-
-    #region API查询
-
-    public async Task<SqlSugarPagedList<Channel>> PageAsync(ChannelPageInput input)
-    {
-        using var db = GetDB();
-        var query = await GetPageAsync(db, input).ConfigureAwait(false);
-        return await query.ToPagedListAsync(input.Current, input.Size).ConfigureAwait(false);//分页
-    }
-
-    /// <inheritdoc/>
-    private async Task<ISugarQueryable<Channel>> GetPageAsync(SqlSugarClient db, ChannelPageInput input)
-    {
-        var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
-        ISugarQueryable<Channel> query = db.Queryable<Channel>()
-         .WhereIF(!string.IsNullOrEmpty(input.Name), u => u.Name.Contains(input.Name))
-                .WhereIF(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.CreateOrgId))//在指定机构列表查询
-                .WhereIF(dataScope?.Count == 0, u => u.CreateUserId == UserManager.UserId)
-         .WhereIF(input.ChannelType != null, u => u.ChannelType == input.ChannelType);
-        for (int i = input.SortField.Count - 1; i >= 0; i--)
-        {
-            query = query.OrderByIF(!string.IsNullOrEmpty(input.SortField[i]), $"{input.SortField[i]} {(input.SortDesc[i] ? "desc" : "asc")}");
-        }
-        query = query.OrderBy(it => it.Id, OrderByType.Desc);//排序
-
-        return query;
-    }
-
-    #endregion API查询
+    #endregion
 
     #region 导出
 
     /// <inheritdoc/>
     [OperDesc("ExportChannel", isRecordPar: false, localizerType: typeof(Channel))]
-    public async Task<Dictionary<string, object>> ExportChannelAsync(QueryPageOptions options, FilterKeyValueAction filterKeyValueAction = null)
+    public async Task<Dictionary<string, object>> ExportChannelAsync(ExportFilter exportFilter)
     {
-        var data = await PageAsync(options, filterKeyValueAction).ConfigureAwait(false);
+        var data = await PageAsync(exportFilter).ConfigureAwait(false);
         return ExportChannelCore(data.Items);
     }
 
@@ -348,7 +294,7 @@ internal sealed class ChannelService : BaseService<Channel>, IChannelService
 
     /// <inheritdoc/>
     [OperDesc("ImportChannel", isRecordPar: false, localizerType: typeof(Channel))]
-    public async Task ImportChannelAsync(Dictionary<string, ImportPreviewOutputBase> input)
+    public async Task<HashSet<long>> ImportChannelAsync(Dictionary<string, ImportPreviewOutputBase> input)
     {
         var channels = new List<Channel>();
         foreach (var item in input)
@@ -366,6 +312,7 @@ internal sealed class ChannelService : BaseService<Channel>, IChannelService
         await db.Fastest<Channel>().PageSize(100000).BulkCopyAsync(insertData).ConfigureAwait(false);
         await db.Fastest<Channel>().PageSize(100000).BulkUpdateAsync(upData).ConfigureAwait(false);
         DeleteChannelFromCache();
+        return channels.Select(a => a.Id).ToHashSet();
     }
 
     /// <inheritdoc/>
@@ -374,10 +321,9 @@ internal sealed class ChannelService : BaseService<Channel>, IChannelService
         var path = await browserFile.StorageLocal().ConfigureAwait(false);
         try
         {
-            var dataScope = await SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
-
+            var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
             var sheetNames = MiniExcel.GetSheetNames(path);
-            var channelDicts = GetAll().ToDictionary(a => a.Name);
+            var channelDicts = (await GetAllAsync().ConfigureAwait(false)).ToDictionary(a => a.Name);
             //导入检验结果
             Dictionary<string, ImportPreviewOutputBase> ImportPreviews = new();
             //设备页
@@ -482,14 +428,6 @@ internal sealed class ChannelService : BaseService<Channel>, IChannelService
         }
     }
 
+
     #endregion 导入
-}
-
-public class ChannelPageInput : BasePageInput
-{
-    /// <inheritdoc/>
-    public ChannelTypeEnum? ChannelType { get; set; }
-
-    /// <inheritdoc/>
-    public string Name { get; set; }
 }

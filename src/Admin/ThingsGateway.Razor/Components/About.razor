@@ -1,0 +1,23 @@
+﻿@namespace ThingsGateway.Razor
+@using ThingsGateway
+
+<div>
+    <div class=" ps-1 mb-2">@Localizer["Docs"]</div>
+</div>
+<div class="my-2 ms-4">
+    <a target="_blank" href="@WebsiteOption.Value.WikiUrl">@WebsiteOption.Value.WikiUrl</a>
+</div>
+
+<div class="my-4">
+    <div class=" ps-1 mb-2">@Localizer["Community"]</div>
+    <div class="my-2 ms-4">
+        <span>@Localizer["QQGroup"]</span> <a target="_blank" href="@WebsiteOption.Value.QQGroup1Link">@WebsiteOption.Value.QQGroup1Number</a>
+    </div>
+</div>
+
+<div class="mt-4">
+    <span>@WebsiteOption.Value.Copyright</span>
+</div>
+
+
+

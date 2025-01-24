@@ -1,0 +1,27 @@
+﻿{
+  "ThingsGateway.Foundation.OpcDa.OpcDaProperty": {
+    "ActiveSubscribe": "ActiveSubscribe",
+    "CheckRate": "CheckRate(min)",
+    "DeadBand": "DeadBand",
+    "GroupSize": "GroupSize",
+    "OpcIP": "OpcIP",
+    "OpcName": "OpcName",
+    "UpdateRate": "UpdateRate",
+
+    "Connect": "Connect",
+    "Disconnect": "Disconnect",
+    "Add": "Add",
+    "Remove": "Remove",
+    "Read": "Read",
+    "Write": "Write",
+    "ShowImport": "View OPC space",
+    "RegisterAddress": "RegisterAddress",
+    "WriteValue": "WriteValue",
+
+    "NoVariablesAvailable": "No variables available",
+    "Success": "Success",
+    "Close": "Close",
+    "Save": "Import to system",
+    "Export": "Export"
+  }
+}

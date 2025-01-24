@@ -1,0 +1,140 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Foundation
+@using ThingsGateway.Gateway.Application
+@inherits ComponentDefault
+
+<div class="device">
+
+    @if (ValidateEnable)
+    {
+        <ValidateForm Model="Model" OnValidSubmit="ValidSubmit">
+            <Tab>
+
+                <TabItem Text=@GatewayLocalizer["DeviceInformation"]>
+
+                    <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 LabelWidth=200 Model="Model">
+
+                        <FieldItems>
+                            <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Name">
+                                <EditTemplate Context="value">
+                                    <div class="col-12">
+                                        <h6>@GatewayLocalizer["BasicInformation"]</h6>
+                                    </div>
+                                </EditTemplate>
+                            </EditorItem>
+
+                            <EditorItem @bind-Field="@context.Name" Readonly=BatchEditEnable />
+
+                            <EditorItem @bind-Field="@context.Description" />
+
+                            <EditorItem @bind-Field="@context.Enable" />
+                            <EditorItem @bind-Field="@context.LogEnable" />
+                            <EditorItem @bind-Field="@context.LogLevel" />
+
+                            <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Name">
+                                <EditTemplate Context="value">
+                                    <div class="col-12">
+                                        <h6>@GatewayLocalizer["Connection"]</h6>
+                                    </div>
+                                </EditTemplate>
+                            </EditorItem>
+
+                            <EditorItem @bind-Field="@context.ChannelId">
+                                <EditTemplate Context="value">
+                                    <div class="col-12  col-md-6 ">
+                                        <BootstrapInputGroup>
+                                            <Select IsVirtualize @bind-Value="@value.ChannelId" IsDisabled=BatchEditEnable Items="@_channelItems" OnSelectedItemChanged=OnChannelChanged ShowSearch="true" ShowLabel="true" />
+                                            <Button IsDisabled=BatchEditEnable class="text-end" Icon="fa-solid fa-plus" OnClick="AddChannel"></Button>
+                                        </BootstrapInputGroup>
+                                    </div>
+                                </EditTemplate>
+                            </EditorItem>
+
+                            <EditorItem @bind-Field="@context.IntervalTime" />
+
+                            <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Description">
+                                <EditTemplate Context="value">
+                                    <div class="col-12">
+                                        <h6>@GatewayLocalizer["Redundant"]</h6>
+                                    </div>
+                                </EditTemplate>
+                            </EditorItem>
+                            <EditorItem @bind-Field="@context.RedundantEnable" Readonly=BatchEditEnable />
+                            <EditorItem @bind-Field="@context.RedundantDeviceId">
+                                <EditTemplate Context="value">
+                                    <div class="col-12  col-md-6">
+                                        <Select IsVirtualize @bind-Value="@value.RedundantDeviceId" class="w-100"
+                                                OnQueryAsync="(a)=>OnRedundantDevicesQuery(a,value)" IsDisabled="BatchEditEnable"
+                                                ShowSearch="true" IsClearable OnClearAsync=@(()=>
+                                            {
+                                            value.RedundantDeviceId = default;
+                                            return Task.CompletedTask;
+                                            })>
+                                            <DisplayTemplate Context="display">
+                                                @{
+                                                    string device = "none";
+                                                    if (value.RedundantDeviceId != null)
+                                                    {
+                                                        if (value.RedundantDeviceId.HasValue)
+                                                            if (GlobalData.ReadOnlyDevices.TryGetValue(value.RedundantDeviceId.Value, out var deviceRuntime))
+                                                                device = deviceRuntime?.Name ?? device;
+                                                    }
+                                                    @device
+                                                }
+                                            </DisplayTemplate>
+                                        </Select>
+                                    </div>
+                                </EditTemplate>
+
+                            </EditorItem>
+
+                            <EditorItem @bind-Field="@context.RedundantSwitchType" />
+                            <EditorItem @bind-Field="@context.RedundantScanIntervalTime" />
+                            <EditorItem @bind-Field="@context.RedundantScript" Rows="1" />
+
+                            <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Description">
+                                <EditTemplate Context="value">
+                                    <div class="col-12">
+                                        <h6>@GatewayLocalizer["Remark"]</h6>
+                                    </div>
+                                </EditTemplate>
+                            </EditorItem>
+                            <EditorItem @bind-Field="@context.Remark1" />
+                            <EditorItem @bind-Field="@context.Remark2" />
+                            <EditorItem @bind-Field="@context.Remark3" />
+                            <EditorItem @bind-Field="@context.Remark4" />
+                            <EditorItem @bind-Field="@context.Remark5" />
+
+                        </FieldItems>
+
+                    </EditorForm>
+                </TabItem>
+                @if (!BatchEditEnable)
+                {
+                    <TabItem Text=@GatewayLocalizer["PluginInformation"]>
+                        @if (PluginPropertyModel != null && PluginPropertyEditorItems != null)
+                        {
+                            if (PluginPropertyRenderFragment == null)
+                            {
+                                <PropertyComponent Model="PluginPropertyModel" PluginPropertyEditorItems="PluginPropertyEditorItems" Id=@(Model.Id.ToString()) CanWrite="true" />
+                            }
+                            else
+                            {
+                                @PluginPropertyRenderFragment
+                            }
+                        }
+                    </TabItem>
+                }
+
+            </Tab>
+
+            <div class="form-footer">
+
+                <Button ButtonType="ButtonType.Submit" Icon="fa-solid fa-floppy-disk" IsAsync Text=@RazorLocalizer["Save"] />
+            </div>
+        </ValidateForm>
+
+    }
+</div>

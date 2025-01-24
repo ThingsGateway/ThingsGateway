@@ -8,15 +8,47 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Foundation.Extension.String;
+using System.Text;
 
 namespace ThingsGateway.Foundation;
 
 [PluginOption(Singleton = true)]
 internal sealed class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugin, ITcpReceivingPlugin
 {
-    public string DtuId { get; set; } = "DtuId";
-    public string HeartbeatHexString { get; set; } = "HeartbeatHexString";
+    public string DtuId
+    {
+        get
+        {
+            return _dtuId;
+        }
+        set
+        {
+            _dtuId = value;
+            DtuIdByte = new ArraySegment<byte>(Encoding.UTF8.GetBytes(value));
+        }
+    }
+    private string _dtuId;
+    private ArraySegment<byte> DtuIdByte;
+
+    /// <summary>
+    /// 心跳字符串
+    /// </summary>
+    public string Heartbeat
+    {
+        get
+        {
+            return _heartbeat;
+        }
+        set
+        {
+            _heartbeat = value;
+            HeartbeatByte = new ArraySegment<byte>(Encoding.UTF8.GetBytes(value));
+        }
+    }
+    private string _heartbeat;
+    private ArraySegment<byte> HeartbeatByte;
+
+
     public int HeartbeatTime { get; set; } = 3;
 
     public async Task OnTcpConnected(ITcpSession client, ConnectedEventArgs e)
@@ -30,14 +62,14 @@ internal sealed class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugi
 
         if (client is ITcpClient tcpClient)
         {
-            await tcpClient.SendAsync(DtuId.ToUTF8Bytes()).ConfigureAwait(false);
+            await tcpClient.SendAsync(DtuIdByte).ConfigureAwait(false);
 
-            _ = Task.Run(async () =>
+            _ = Task.Factory.StartNew(async () =>
              {
                  var failedCount = 0;
-                 while (true)
+                 while (client.Online)
                  {
-                     await Task.Delay(HeartbeatTime * 1000).ConfigureAwait(false);
+                     await Task.Delay(HeartbeatTime).ConfigureAwait(false);
                      if (!client.Online)
                      {
                          return;
@@ -50,7 +82,8 @@ internal sealed class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugi
                              await Task.Delay(200).ConfigureAwait(false);
                          }
 
-                         await tcpClient.SendAsync(HeartbeatHexString.HexStringToBytes()).ConfigureAwait(false);
+                         await tcpClient.SendAsync(HeartbeatByte).ConfigureAwait(false);
+                         tcpClient.Logger?.Trace($"{tcpClient}- Heartbeat");
                          failedCount = 0;
                      }
                      catch
@@ -79,10 +112,10 @@ internal sealed class HeartbeatAndReceivePlugin : PluginBase, ITcpConnectedPlugi
 
         if (client is ITcpClient tcpClient)
         {
-            var len = HeartbeatHexString.HexStringToBytes().Length;
+            var len = HeartbeatByte.Count;
             if (len > 0)
             {
-                if (HeartbeatHexString == e.ByteBlock.AsSegment(0, len).ToHexString(default))
+                if (HeartbeatByte.SequenceEqual(e.ByteBlock.AsSegment(0, len)))
                 {
                     e.Handled = true;
                 }

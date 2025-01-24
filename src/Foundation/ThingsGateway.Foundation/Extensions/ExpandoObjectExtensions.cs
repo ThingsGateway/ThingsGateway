@@ -28,7 +28,6 @@ public static class ExpandoObjectExtensions
     public static object ConvertToEntity(this ExpandoObject expandoObject, Type type, Dictionary<string, PropertyInfo> properties)
     {
         var entity = Activator.CreateInstance(type);
-
         // 遍历动态对象的属性
         expandoObject.ForEach(keyValuePair =>
         {

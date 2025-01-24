@@ -36,9 +36,8 @@ using ThingsGateway.Extension;
 using ThingsGateway.Gateway.Application;
 using ThingsGateway.Logging;
 using ThingsGateway.NewLife.Caching;
-using ThingsGateway.Photino;
 
-namespace ThingsGateway;
+namespace ThingsGateway.Server;
 
 [AppStartup(-999999)]
 public class Startup : AppStartup
@@ -100,8 +99,9 @@ public class Startup : AppStartup
             // setting.Converters.AddDateTimeTypeConverters(localized: true); // 时间本地化
             //setting.DateFormatString = "yyyy-MM-dd HH:mm:ss"; // 时间格式化
             setting.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; // 忽略循环引用
+
             // setting.ContractResolver = new CamelCasePropertyNamesContractResolver(); // 解决动态对象属性名大写
-            // setting.NullValueHandling = NullValueHandling.Ignore; // 忽略空值
+            setting.NullValueHandling = NullValueHandling.Ignore; // 忽略空值
             // setting.Converters.AddLongTypeConverters(); // long转string（防止js精度溢出） 超过17位开启
             // setting.MetadataPropertyHandling = MetadataPropertyHandling.Ignore; // 解决DateTimeOffset异常
             // setting.DateParseHandling = DateParseHandling.None; // 解决DateTimeOffset异常
@@ -248,7 +248,7 @@ public class Startup : AppStartup
                       a.GetService<ISysResourceService>(),
                       a.GetService<IUserCenterService>(),
                       a.GetService<ISysUserService>());
-            appContext.TitleLocalizer = a.GetRequiredService<IStringLocalizer<ThingsGateway.Razor.MainLayout>>();
+            appContext.TitleLocalizer = a.GetRequiredService<IStringLocalizer<MainLayout>>();
             return appContext;
         });
 

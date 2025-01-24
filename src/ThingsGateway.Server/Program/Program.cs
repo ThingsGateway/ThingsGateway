@@ -15,8 +15,6 @@ using System.Text;
 
 using ThingsGateway.NewLife.Log;
 
-using Console = System.Console;
-
 namespace ThingsGateway.Server;
 
 public class Program
@@ -36,6 +34,7 @@ public class Program
         Console.Write(Environment.NewLine);
         Console.ForegroundColor = ConsoleColor.Yellow;
         XTrace.WriteLine(string.Empty);
+        XTrace.UseConsole();
         Console.WriteLine(
             """
 
@@ -55,13 +54,18 @@ public class Program
         #endregion 控制台输出Logo
 
 
-        await Serve.RunAsync(RunOptions.Default.ConfigureBuilder(builder =>
-           {
+        await Serve.RunAsync(RunOptions.Default.ConfigureFirstActionBuilder(builder =>
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                builder.Host.UseWindowsService();
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                builder.Host.UseSystemd();
 
-               if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                   builder.Host.UseWindowsService();
-               else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                   builder.Host.UseSystemd();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                builder.Logging.ClearProviders(); //去除默认的事件日志提供者，某些情况下会日志输出异常，导致程序崩溃
+
+        }).ConfigureBuilder(builder =>
+           {
 
                if (!builder.Environment.IsDevelopment())
                {
@@ -81,9 +85,6 @@ public class Program
                    u.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(30);
                    u.Limits.MaxRequestBodySize = null;
                });
-
-
-
 
            })
             .Configure(app =>

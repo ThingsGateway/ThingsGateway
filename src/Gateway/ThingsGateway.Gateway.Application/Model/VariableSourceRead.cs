@@ -20,7 +20,7 @@ public class VariableSourceRead : IVariableSource
     /// </summary>
     public ulong ReadCount;
 
-    private List<IVariable> _variableRunTimes = new List<IVariable>();
+    private List<IVariable> _variableRuntimes = new List<IVariable>();
 
     /// <summary>
     /// 离线原因
@@ -33,7 +33,7 @@ public class VariableSourceRead : IVariableSource
     public int Length { get; set; }
 
     /// <summary>
-    /// 读取地址，传入时需要去除额外信息
+    /// 读取地址
     /// </summary>
     public string RegisterAddress { get; set; }
 
@@ -45,12 +45,12 @@ public class VariableSourceRead : IVariableSource
     /// <summary>
     /// 需分配的变量列表
     /// </summary>
-    public IEnumerable<IVariable> VariableRunTimes => _variableRunTimes;
+    public IEnumerable<IVariable> VariableRuntimes => _variableRuntimes;
 
     public void AddVariable(IVariable variable)
     {
         variable.VariableSource = this;
-        _variableRunTimes.Add(variable);
+        _variableRuntimes.Add(variable);
     }
 
     /// <inheritdoc/>
@@ -60,13 +60,21 @@ public class VariableSourceRead : IVariableSource
         {
             variable.VariableSource = this;
         }
-        _variableRunTimes.AddRange(variables);
+        _variableRuntimes.AddRange(variables);
     }
+
 
     /// <summary>
     /// 检测是否达到读取间隔
     /// </summary>
-    /// <param name="time"></param>
     /// <returns></returns>
-    public bool CheckIfRequestAndUpdateTime(DateTime time) => TimeTick.IsTickHappen(time);
+    public bool CheckIfRequestAndUpdateTime()
+    {
+        var result = TimeTick.IsTickHappen();
+        if (result)
+        {
+            ReadCount++;
+        }
+        return result;
+    }
 }

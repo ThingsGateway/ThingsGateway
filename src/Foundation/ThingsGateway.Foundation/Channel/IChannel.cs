@@ -8,28 +8,34 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.Collections.Concurrent;
+
 namespace ThingsGateway.Foundation;
 
 /// <summary>
 /// 通道管理
 /// </summary>
-public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
+public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient, IConnectableClient
 {
-
     /// <summary>
     /// 接收数据事件
     /// </summary>
-    public ChannelReceivedEventHandler ChannelReceived { get; set; }
+    public ChannelReceivedEventHandler ChannelReceived { get; }
+
+    /// <summary>
+    /// 通道配置
+    /// </summary>
+    public IChannelOptions ChannelOptions { get; }
 
     /// <summary>
     /// 通道类型
     /// </summary>
-    public ChannelTypeEnum ChannelType { get; }
+    ChannelTypeEnum ChannelType { get; }
 
     /// <summary>
     /// 通道下的所有设备
     /// </summary>
-    public ConcurrentList<IProtocol> Collects { get; }
+    public ConcurrentList<IDevice> Collects { get; }
 
     /// <summary>
     /// Online
@@ -39,61 +45,45 @@ public interface IChannel : ISetupConfigObject, IDisposable, IClosableClient
     /// <summary>
     /// MaxSign
     /// </summary>
-    public int MaxSign { get; set; }
+    int MaxSign { get; set; }
+
     /// <summary>
     /// 通道启动成功后
     /// </summary>
-    public ChannelEventHandler Started { get; set; }
+    public ChannelEventHandler Started { get; }
 
     /// <summary>
     /// 通道启动即将成功
     /// </summary>
-    public ChannelEventHandler Starting { get; set; }
+    public ChannelEventHandler Starting { get; }
 
     /// <summary>
     /// 通道停止
     /// </summary>
-    public ChannelEventHandler Stoped { get; set; }
+    public ChannelEventHandler Stoped { get; }
 
     /// <summary>
     /// 通道停止前
     /// </summary>
-    public ChannelEventHandler Stoping { get; set; }
+    public ChannelEventHandler Stoping { get; }
 
     /// <summary>
-    /// 关闭客户端。
+    /// 主动请求时的等待池
     /// </summary>
-    /// <param name="msg">关闭消息</param>
-    public void Close(string msg);
+    public ConcurrentDictionary<long, Func<IClientChannel, ReceivedDataEventArgs, bool, Task>> ChannelReceivedWaitDict { get; }
 
-    /// <summary>
-    /// 启动
-    /// </summary>
-    /// <param name="millisecondsTimeout">最大等待时间</param>
-    /// <param name="token">可取消令箭</param>
-    /// <exception cref="TimeoutException"></exception>
-    /// <exception cref="Exception"></exception>
-    public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default);
-
-    /// <summary>
-    /// 异步连接
-    /// </summary>
-    /// <param name="millisecondsTimeout">最大等待时间</param>
-    /// <param name="token">可取消令箭</param>
-    /// <exception cref="TimeoutException"></exception>
-    /// <exception cref="Exception"></exception>
-    public Task ConnectAsync(int millisecondsTimeout = 3000, CancellationToken token = default);
 }
 
 /// <summary>
 /// 接收事件回调类
 /// </summary>
-public class ChannelReceivedEventHandler : List<Func<IClientChannel, ReceivedDataEventArgs, Task>>
+public class ChannelReceivedEventHandler : List<Func<IClientChannel, ReceivedDataEventArgs, bool, Task>>
 {
 }
+
 /// <summary>
 /// 通道事件回调类
 /// </summary>
-public class ChannelEventHandler : List<Func<IClientChannel, Task<bool>>>
+public class ChannelEventHandler : List<Func<IClientChannel, bool, ValueTask<bool>>>
 {
 }

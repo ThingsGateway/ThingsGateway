@@ -1,0 +1,147 @@
+﻿@page "/admin/hardwareinfo"
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@namespace ThingsGateway.Admin.Razor
+<div class="row g-2 mx-1 form-inline">
+
+    <div class="col-12 col-md-4">
+
+        <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+            <HeaderTemplate>
+                @Localizer["SystemInfo"]
+            </HeaderTemplate>
+
+            <BodyTemplate>
+                <EditorFormObject IsDisplay Model="HardwareJob.HardwareInfo" ItemsPerRow="1" RowType=RowType.Inline LabelWidth="160">
+                    <FieldItems>
+                        <EditorItem @bind-Field="@context.MachineInfo">
+                            <EditTemplate Context="value">
+                                <div class="col-12  col-md-12">
+                                    <Display @bind-Value="@value.MachineInfo.OSName" DisplayText="@Localizer[nameof(value.MachineInfo.OSName)]" ShowTooltip ShowLabel=true>
+                                    </Display>
+                                </div>
+                                <div class="col-12  col-md-12">
+                                    <Display @bind-Value="@value.MachineInfo.OSVersion" DisplayText="@Localizer[nameof(value.MachineInfo.OSVersion)]" ShowTooltip ShowLabel=true>
+                                    </Display>
+                                </div>
+                            </EditTemplate>
+                        </EditorItem>
+
+                        <EditorItem @bind-Field="@context.UUID">
+                            <EditTemplate Context="value">
+                                <div class="col-12  col-md-12">
+                                    <Display @bind-Value="@value.UUID" ShowTooltip ShowLabel=true>
+                                    </Display>
+                                </div>
+
+                            </EditTemplate>
+                        </EditorItem>
+                        <EditorItem @bind-Field="@context.DriveInfo" Ignore=true>
+                        </EditorItem>
+                    </FieldItems>
+                </EditorFormObject>
+
+            </BodyTemplate>
+        </Card>
+    </div>
+    <div class="col-12 col-md-8">
+        <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+            <HeaderTemplate>
+                @Localizer["HardwareInfo"]
+            </HeaderTemplate>
+
+            <BodyTemplate>
+                <div class="d-flex align-items-center justify-content-center w-100 h-100" >
+
+                    <div class="row g-2 mx-1 form-inline d-flex justify-content-center w-100">
+                        <div class="col-12 col-md-4  justify-content-center h-100" >
+                            @{
+                                var item = HardwareJob.HardwareInfo.MachineInfo.CpuRate;
+                            }
+                            <div class="d-flex flex-column align-items-center">
+                                <Circle Width="200" class="m-3"
+                                        Value=@((int)(item*100<=100?item*100:100))
+                                        Color=@((item*100>70?Color.Warning:Color.Success))
+                                        StrokeWidth="4" ShowProgress=false>
+                                    <div class="circle-hardware">
+                                        <span>
+                                            @Localizer["CpuUsage"] <i> @((item * 100).ToString("F0") + " %")</i>
+                                        </span>
+                                    </div>
+                                </Circle>
+                                <div class="mt-1">
+                                    <span>@(HardwareJob.HardwareInfo.MachineInfo.Processor)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4 justify-content-center h-100">
+                            @{
+                                var availableMemory = HardwareJob.HardwareInfo.MachineInfo.AvailableMemory;
+                                var memory = HardwareJob.HardwareInfo.MachineInfo.Memory;
+                            }
+                            <div class="d-flex flex-column align-items-center ">
+                                <Circle Width="200" class="m-3"
+                                        Value=@((int)(memory>availableMemory?100 - (availableMemory * 100.00 / memory):100))
+                                        Color=@((availableMemory * 100.00 / memory<20?Color.Warning:Color.Success))
+                                        StrokeWidth="4">
+                                    <div class="circle-hardware">
+                                        <h6>   @((100 - (availableMemory * 100.00 / memory)).ToString("F2") + " %")  </h6>
+
+                                        <span>   @Localizer["WorkingSet"] <i> @(HardwareJob.HardwareInfo.WorkingSet + " MB")</i></span>
+                                        <span>   @Localizer["AvailableMemory"] <i> @((availableMemory / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</i></span>
+                                        <span>   @Localizer["TotalMemory"] <i> @((memory / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</i></span>
+
+                                    </div>
+                                </Circle>
+                                <div class="mt-1">
+                                    <span>  @Localizer["MemoryUsage"] </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4 justify-content-center h-100">
+                            @{
+                                var totalFreeSpace = HardwareJob.HardwareInfo.DriveInfo.TotalFreeSpace;
+                                var totalSize = HardwareJob.HardwareInfo.DriveInfo.TotalSize;
+                            }
+                            <div class="d-flex flex-column align-items-center ">
+                                <Circle Width="200" class="m-3"
+                                        Value=@((int)(totalSize>totalFreeSpace?100 - (totalFreeSpace * 100.00 / totalSize):100))
+                                        Color=@((totalFreeSpace * 100.00 / totalSize<20?Color.Warning:Color.Success))
+                                        StrokeWidth="4">
+                                    <div class="circle-hardware">
+                                        <h6>   @((100 - (totalFreeSpace * 100.00 / totalSize)).ToString("F2") + " %")</h6>
+                                        <span>   @(HardwareJob.HardwareInfo.DriveInfo.VolumeLabel) </span>
+                                        <span>   @Localizer["AvailableDisk"] <i> @((totalFreeSpace / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</i></span>
+                                        <span>   @Localizer["TotalDisk"] <i> @((totalSize / 1024.00 / 1024 / 1024).ToString("F2") + " GB")</i></span>
+                                    </div>
+                                </Circle>
+                                <div class="mt-1">
+                                    <span>  @Localizer["DiskUsage"] </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </BodyTemplate>
+        </Card>
+
+    </div>
+</div>
+<div class="row g-2 mx-1 form-inline">
+
+    <div class="col-12 col-md-12">
+
+        <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
+            <HeaderTemplate>
+                @Localizer["HardwareInfoChart"]
+            </HeaderTemplate>
+
+            <BodyTemplate>
+                <Chart @ref=LineChart OnInitAsync="OnInit" Height="var(--line-chart-height)" Width="100%" OnAfterInitAsync="()=>{chartInit=true;return Task.CompletedTask;}" />
+            </BodyTemplate>
+        </Card>
+    </div>
+</div>

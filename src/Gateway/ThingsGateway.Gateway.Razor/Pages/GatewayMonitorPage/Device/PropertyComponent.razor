@@ -1,0 +1,63 @@
+﻿@using BootstrapBlazor.Components
+@using ThingsGateway.Extension
+@using ThingsGateway.Foundation
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+@namespace ThingsGateway.Gateway.Razor
+
+
+<ValidateForm Model="Model.Value" 
+@key=@($"DeviceEditValidateForm{Id}{Model.Value.GetType().TypeHandle.Value}")
+
+@ref=Model.ValidateForm 
+Id=@($"DeviceEditValidateForm{Id}{Model.Value.GetType().TypeHandle.Value}")
+>
+
+    <EditorFormObject class="p-2" Items=PluginPropertyEditorItems IsDisplay="!CanWrite" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=@(CanWrite?2:3) ShowLabelTooltip=true LabelWidth=@(CanWrite?240:120) Model="Model.Value" ShowLabel="true" @key=@($"DeviceEditEditorFormObject{Id}{Model.Value.GetType().TypeHandle.Value}")>
+
+        <FieldItems>
+            @if (Model.Value is BusinessPropertyWithCacheIntervalScript businessProperty)
+            {
+                <EditorItem FieldExpression=@(()=>context) Field=@(context)>
+
+                    <EditTemplate Context="value">
+                        <div class="col-12  col-md-12 min-height-500">
+                            <BootstrapLabel Value=@PropertyComponentLocalizer["BigTextScriptDeviceModel"] ShowLabelTooltip="true" />
+                            <CodeEditor ShowLineNo @bind-Value=@businessProperty.BigTextScriptDeviceModel Language="csharp" Theme="vs-dark" IsReadonly=@(!CanWrite) />
+                            <div class="ms-2 d-flex justify-content-center align-items-center">
+                                <Button IsDisabled=@(!CanWrite) OnClick="()=>CheckScript(businessProperty,nameof(businessProperty.BigTextScriptDeviceModel))">
+                                    @Localizer["Check"]
+                                </Button>
+                            </div>
+                        </div>
+                        <div class="col-12  col-md-12 min-height-500">
+                            <BootstrapLabel Value=@PropertyComponentLocalizer["BigTextScriptVariableModel"] ShowLabelTooltip="true" />
+                            <CodeEditor IsReadonly=@(!CanWrite) ShowLineNo @bind-Value=@businessProperty.BigTextScriptVariableModel Language="csharp" Theme="vs-dark" />
+
+                            <div class="ms-2 d-flex justify-content-center align-items-center">
+                                <Button IsDisabled=@(!CanWrite) OnClick="()=>CheckScript(businessProperty,nameof(businessProperty.BigTextScriptVariableModel))">
+                                    @Localizer["Check"]
+                                </Button>
+                            </div>
+                        </div>
+                        <div class="col-12  col-md-12 min-height-500">
+                            <BootstrapLabel Value=@PropertyComponentLocalizer["BigTextScriptAlarmModel"] ShowLabelTooltip="true" />
+                            <CodeEditor IsReadonly=@(!CanWrite) ShowLineNo @bind-Value=@businessProperty.BigTextScriptAlarmModel Language="csharp" Theme="vs-dark" />
+
+                            <div class="ms-2 d-flex justify-content-center align-items-center">
+                                <Button IsDisabled=@(!CanWrite) OnClick="()=>CheckScript(businessProperty,nameof(businessProperty.BigTextScriptAlarmModel))">
+                                    @Localizer["Check"]
+                                </Button>
+                            </div>
+                        </div>
+
+                    </EditTemplate>
+                </EditorItem>
+            }
+        </FieldItems>
+    </EditorFormObject>
+</ValidateForm>
+
+
+

@@ -1,0 +1,101 @@
+﻿{
+  "Menu": {
+
+    "MenuItems": [
+      {
+        "Url": "/",
+        "Text": "首页"
+      },
+      {
+        "Text": "Modbus",
+        "Items": [
+          {
+            "Url": "/ModbusMaster",
+            "Text": "ModbusMaster"
+          },
+          {
+            "Url": "/ModbusSlave",
+            "Text": "ModbusSlave"
+          }
+        ]
+      },
+      {
+        "Url": "/SiemensS7Master",
+        "Text": "Siemens"
+      },
+      {
+        "Url": "/Dlt645_2007Master",
+        "Text": "Dlt645_2007Master"
+      },
+      {
+        "Url": "/OpcUaMaster",
+        "Text": "OpcUaMaster"
+      },
+      {
+        "Url": "/OpcDaMaster",
+        "Text": "OpcDaMaster"
+      },
+
+      {
+        "Url": "/AllenBradleyCipMaster",
+        "Text": "AllenBradleyCipMaster"
+      },
+      {
+        "Url": "/DCONMaster",
+        "Text": "DCONMaster"
+      },
+      {
+        "Url": "/EDPF_NTMaster",
+        "Text": "EDPF_NTMaster"
+      },
+      {
+        "Url": "/KELID2008Master",
+        "Text": "KELID2008Master"
+      },
+      {
+        "Text": "三菱Mc",
+        "Items": [
+          {
+            "Url": "/Mc3E_BinaryMaster",
+            "Text": "Mc3E_BinaryMaster"
+          },
+          {
+            "Url": "/Mc1E_BinaryMaster",
+            "Text": "Mc1E_BinaryMaster"
+          }
+        ]
+      },
+      {
+        "Url": "/LKSISMaster",
+        "Text": "LKSISMaster"
+      },
+      {
+        "Url": "/OmronFinsMaster",
+        "Text": "OmronFinsMaster"
+      },
+      {
+        "Url": "/HJ212Master",
+        "Text": "HJ212Master"
+      },
+      {
+        "Url": "/ModbusC1Master",
+        "Text": "ModbusC1Master"
+      },
+      {
+        "Url": "/SECSMaster",
+        "Text": "SECSMaster"
+      },
+      {
+        "Url": "/TS550Master",
+        "Text": "TS550Master"
+      },
+      {
+        "Url": "/VigorMaster",
+        "Text": "VigorMaster"
+      }
+
+
+
+    ]
+  }
+}

@@ -18,7 +18,7 @@ public interface IOperResult : IRequestInfo
     /// <summary>
     /// 执行错误返回类型
     /// </summary>
-    ErrorCodeEnum? ErrorCode { get; }
+    ErrorTypeEnum? ErrorType { get; }
 
     /// <summary>
     /// 返回消息

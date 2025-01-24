@@ -1,0 +1,87 @@
+﻿@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Extension
+@typeparam TItem
+@namespace ThingsGateway.Admin.Razor
+
+<div class="row h-100">
+
+    <div class="col-12  col-md-6 h-100">
+
+        <AdminTable @ref="table1" TItem="TItem"
+                    AutoGenerateColumns="true" @bind-SelectedRows="@SelectedAddRows" ClickToSelect="true"
+                    IsFixedHeader="true"
+                    ShowToolbar=true
+                    ShowDefaultButtons=false
+                    IsMultipleSelect=true
+                    ShowAdvancedSearch=false
+                    ShowExtendButtons=true
+                    ShowExtendEditButton="false"
+                    ShowAddButton="false"
+                    ShowExtendDeleteButton="false"
+                    ShowResetButton=false
+                    ShowCardView=false
+                    ShowColumnList=false
+                    OnQueryAsync="OnQueryAsync"
+                    IsPagination=true>
+            <TableToolbarTemplate>
+                <TableToolbarButton TItem="TItem" Color="Color.Info" Icon="fa-solid fa-users-gear" Text="@RazorLocalizer["Add"]"
+                  OnClickCallback="OnAddAsync" />
+            </TableToolbarTemplate>
+        <RowButtonTemplate>
+                <TableCellButton Size="Size.ExtraSmall" Icon="fa fa-list" Text="@RazorLocalizer["Add"]" OnClick="()=>OnAddAsync(context)" />
+        </RowButtonTemplate>
+        </AdminTable>
+    </div>
+    <div class="col-12  col-md-6 h-100">
+
+        <AdminTable @ref="table2" TItem="TItem"
+                    AutoGenerateColumns="true" @bind-SelectedRows="@SelectedDeleteRows"
+                    IsFixedHeader="true"
+                    ClickToSelect="true"
+                    ShowToolbar="true"
+                    ShowDefaultButtons="false"
+                    IsMultipleSelect="true"
+                    ShowAdvancedSearch=false
+                    ShowExtendButtons=true
+                    ShowExtendEditButton="false"
+                    ShowAddButton="false"
+                    ShowExtendDeleteButton="false"
+                    ShowResetButton=false
+                    ShowCardView=false
+                    ShowColumnList=false
+                    ShowSearch=false
+                    ShowRefresh=false
+                    ScrollMode=ScrollMode.Virtual
+                    Items=SelectedRows
+                    IsPagination=false>
+            <TableToolbarTemplate>
+                <TableToolbarButton TItem="TItem" Color="Color.Info" Icon="fa-solid fa-users-gear" Text="@RazorLocalizer["Remove"]"
+                                    OnClickCallback="async(a) =>
+{
+SelectedRows.RemoveWhere(b=>a.Contains(b));
+await table2.QueryAsync();
+await OnChangedAsync(SelectedRows);
+}" />
+            </TableToolbarTemplate>
+
+            <RowButtonTemplate>
+                <TableCellButton Size="Size.ExtraSmall" Icon="fa-solid fa-users-gear" Text="@RazorLocalizer["Remove"]" OnClick="async() =>
+                    {
+                    SelectedRows.RemoveWhere(b=>b.Equals(context));
+                    await table2.QueryAsync();
+                    await OnChangedAsync(SelectedRows);
+                    }" />
+            </RowButtonTemplate>
+        </AdminTable>
+    </div>
+
+
+</div>
+
+@code {
+    [NotNull]
+    AdminTable<TItem>? table1 { get; set; }
+    [NotNull]
+    AdminTable<TItem>? table2 { get; set; }
+}

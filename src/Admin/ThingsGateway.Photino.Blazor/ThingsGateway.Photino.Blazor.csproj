@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<Import Project="$(SolutionDir)Version.props" />
+	<Import Project="$(SolutionDir)PackNuget.props" />
+
+	<PropertyGroup>
+		<TargetFrameworks>net9.0;net8.0;</TargetFrameworks>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<PackageReference Include="Photino.NET" Version="4.0.16" />
+	</ItemGroup>
+
+	
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="8.*" />
+	</ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="9.*" />
+	</ItemGroup>
+
+</Project>

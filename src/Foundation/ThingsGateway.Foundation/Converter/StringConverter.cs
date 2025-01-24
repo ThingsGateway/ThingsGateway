@@ -20,7 +20,7 @@ public class StringToClassConverter<TState> : ISerializerFormatter<string, TStat
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
-    public int Order { get; set; } = -100;
+    public int Order { get; set; } = 0;
 
     /// <inheritdoc/>
     public bool TryDeserialize(TState state, in string source, Type targetType, out object target)

@@ -25,11 +25,7 @@
       <Private>false</Private>
       <IncludeAssets> native;</IncludeAssets>
     </PackageReference>
-    <!--OpcDa 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.OpcDaNetApi" Version="$(PluginVersion)" GeneratePathProperty="true">
-      <Private>false</Private>
-      <IncludeAssets> native;</IncludeAssets>
-    </PackageReference>
+
     <!--OpcUa 插件-->
     <PackageReference Include="ThingsGateway.Plugin.OpcUa" Version="$(PluginVersion)" GeneratePathProperty="true">
       <Private>false</Private>
@@ -61,47 +57,44 @@
       <IncludeAssets> native;</IncludeAssets>
     </PackageReference>
 
-    <!--VariableExpression 插件-->
-    <PackageReference Include="ThingsGateway.Plugin.VariableExpression" Version="$(PluginVersion)" GeneratePathProperty="true">
-      <Private>false</Private>
-      <IncludeAssets> native;</IncludeAssets>
-    </PackageReference>
-    
   </ItemGroup>
 
   <Target Name="CopyPluginNugetPackages" AfterTargets="Build">
+	  <PropertyGroup>
+		  <PluginFolder>$(TargetDir)Plugins\</PluginFolder>
+		  <GatewayPluginFolder>$(TargetDir)GatewayPlugins\</GatewayPluginFolder>
+	  </PropertyGroup>
+
+	  <RemoveDir Directories="$(PluginFolder)" />
+	  <RemoveDir Directories="$(GatewayPluginFolder)" />
+	  <PropertyGroup>
+		  <PluginTargetFramework>net8.0</PluginTargetFramework>
+	  </PropertyGroup>
+	  
     <ItemGroup>
       <!-- setting up the variable for convenience -->
-      <PkgThingsGateway_Plugin_ModbusPackageFiles Include="$(PkgThingsGateway_Plugin_Modbus)\Content\$(CustomTargetFramework)\**\*.*" />
-      <PkgThingsGateway_Plugin_SiemensS7PackageFiles Include="$(PkgThingsGateway_Plugin_SiemensS7)\Content\$(CustomTargetFramework)\**\*.*" />
-      <PkgThingsGateway_Plugin_Dlt645PackageFiles Include="$(PkgThingsGateway_Plugin_Dlt645)\Content\$(CustomTargetFramework)\**\*.*" />
-      <PkgThingsGateway_Plugin_DBPackageFiles Include="$(PkgThingsGateway_Plugin_DB)\Content\$(CustomTargetFramework)\**\*.*" />
-      <PkgThingsGateway_Plugin_KafkaPackageFiles Include="$(PkgThingsGateway_Plugin_Kafka)\Content\$(CustomTargetFramework)\**\*.*" />
-      <PkgThingsGateway_Plugin_MqttPackageFiles Include="$(PkgThingsGateway_Plugin_Mqtt)\Content\$(CustomTargetFramework)\**\*.*" />
-      <PkgThingsGateway_Plugin_OpcDaPackageFiles Include="$(PkgThingsGateway_Plugin_OpcDa)\Content\$(CustomTargetFramework)\**\*.*" />
-      <PkgThingsGateway_Plugin_OpcDaNetApiPackageFiles Include="$(PkgThingsGateway_Plugin_OpcDaNetApi)\Content\$(CustomTargetFramework)\**\*.*" />
-
+      <PkgThingsGateway_Plugin_ModbusPackageFiles Include="$(PkgThingsGateway_Plugin_Modbus)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_SiemensS7PackageFiles Include="$(PkgThingsGateway_Plugin_SiemensS7)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_Dlt645PackageFiles Include="$(PkgThingsGateway_Plugin_Dlt645)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_DBPackageFiles Include="$(PkgThingsGateway_Plugin_DB)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_KafkaPackageFiles Include="$(PkgThingsGateway_Plugin_Kafka)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_MqttPackageFiles Include="$(PkgThingsGateway_Plugin_Mqtt)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_OpcDaPackageFiles Include="$(PkgThingsGateway_Plugin_OpcDa)\Content\$(PluginTargetFramework)\**\*.*" />
       
-      <PkgThingsGateway_Plugin_OpcUaPackageFiles Include="$(PkgThingsGateway_Plugin_OpcUa)\Content\$(CustomTargetFramework)\**\*.*" />
-      <PkgThingsGateway_Plugin_RabbitMQPackageFiles Include="$(PkgThingsGateway_Plugin_RabbitMQ)\Content\$(CustomTargetFramework)\**\*.*" />
-      <PkgThingsGateway_Plugin_VariableExpressionPackageFiles Include="$(PkgThingsGateway_Plugin_VariableExpression)\Content\$(CustomTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_OpcUaPackageFiles Include="$(PkgThingsGateway_Plugin_OpcUa)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_RabbitMQPackageFiles Include="$(PkgThingsGateway_Plugin_RabbitMQ)\Content\$(PluginTargetFramework)\**\*.*" />
     </ItemGroup>
-    <PropertyGroup>
-		<PluginFolder>$(TargetDir)GatewayPlugins\</PluginFolder>
-    </PropertyGroup>
-    <RemoveDir Directories="$(PluginFolder)" />
-    <Message Text="将插件复制到插件目录 $(PluginFolder)" Importance="high" />
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_ModbusPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.Modbus%(RecursiveDir)" />
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_SiemensS7PackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.SiemensS7%(RecursiveDir)" />
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_Dlt645PackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.Dlt645%(RecursiveDir)" />
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_DBPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.DB%(RecursiveDir)" />
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_KafkaPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.Kafka%(RecursiveDir)" />
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_MqttPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.Mqtt%(RecursiveDir)" />
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_OpcDaPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.OpcDa%(RecursiveDir)" />
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_OpcDaNetApiPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.OpcDaNetApi%(RecursiveDir)" />
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_OpcUaPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.OpcUa%(RecursiveDir)" />
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_RabbitMQPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.RabbitMQ%(RecursiveDir)" />
-    <Copy SourceFiles="@(PkgThingsGateway_Plugin_VariableExpressionPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.VariableExpression%(RecursiveDir)" />
+
+    <Message Text="将插件复制到插件目录 $(GatewayPluginFolder)" Importance="high" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_ModbusPackageFiles)" DestinationFolder="$(GatewayPluginFolder)ThingsGateway.Plugin.Modbus%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_SiemensS7PackageFiles)" DestinationFolder="$(GatewayPluginFolder)ThingsGateway.Plugin.SiemensS7%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_Dlt645PackageFiles)" DestinationFolder="$(GatewayPluginFolder)ThingsGateway.Plugin.Dlt645%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_DBPackageFiles)" DestinationFolder="$(GatewayPluginFolder)ThingsGateway.Plugin.DB%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_KafkaPackageFiles)" DestinationFolder="$(GatewayPluginFolder)ThingsGateway.Plugin.Kafka%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_MqttPackageFiles)" DestinationFolder="$(GatewayPluginFolder)ThingsGateway.Plugin.Mqtt%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_OpcDaPackageFiles)" DestinationFolder="$(GatewayPluginFolder)ThingsGateway.Plugin.OpcDa%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_OpcUaPackageFiles)" DestinationFolder="$(GatewayPluginFolder)ThingsGateway.Plugin.OpcUa%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_RabbitMQPackageFiles)" DestinationFolder="$(GatewayPluginFolder)ThingsGateway.Plugin.RabbitMQ%(RecursiveDir)" />
 
   </Target>
 

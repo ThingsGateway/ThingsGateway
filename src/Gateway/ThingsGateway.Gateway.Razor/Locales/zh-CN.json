@@ -9,25 +9,16 @@
     "LastReceivedTime": "最近接收时间",
     "LastSentTime": "最近发送时间"
   },
-  "ThingsGateway.Gateway.Razor.DeviceStatus2": {
-    "GatewayDeviceShowDriverUI": "插件UI",
-    "DeviceRedundantThread": "切换冗余",
-    "DeleteCache": "删除缓存",
-    "GatewayDeviceLog": "通道日志",
-    "RelationVariable": "关联变量",
-    "GatewayDevicePause": "暂停/运行",
-    "GatewayDeviceRestart": "重启设备"
-  },
-  "ThingsGateway.Gateway.Razor.DeviceStatus": {
-    "LogConsole": "通道日志"
-  },
-  "ThingsGateway.Gateway.Razor.DeviceStatusPage": {
-    "CollectDevice": "采集设备",
-    "BusinessDevice": "业务设备"
-  },
-  "ThingsGateway.Gateway.Razor.VariableRuntimePage": {
+
+
+  "ThingsGateway.Gateway.Razor.VariableRuntimeInfo": {
     "WriteVariable": "写入",
-    "WriteValue": "写入值"
+    "WriteValue": "写入值",
+    "ImportExcel": "导入变量",
+    "TestVariableCount": "变量数量",
+    "TestDeviceCount": "采集设备数量",
+    "SlaveUrl": "服务端Url",
+    "Test": "一键添加测试变量"
   },
 
   "ThingsGateway.Gateway.Razor.DriverDebugPage": {
@@ -59,8 +50,20 @@
     "RestartText": "重启",
     "ReloadServiceText": "重启运行时",
     "ReloadPluginConfirmText": "确定重载插件?",
-    "ReloadServiceConfirmText": "确定重启运行时?"
+    "ReloadServiceConfirmText": "确定重启运行时?",
+
+    "AutoRestartThread": "自动重启线程"
+
   },
+  "ThingsGateway.Gateway.Razor.ChannelDeviceTree": {
+    "ShowType": "显示类型"
+  },
+
+  "ThingsGateway.Gateway.Razor.ShowTypeEnum": {
+    "Variable": "变量页面",
+    "LogInfo": "日志页面"
+  },
+
   "ThingsGateway.Gateway.Razor.SavePlugin": {
     "SavePlugin": "注意：文件名称相同的插件将被覆盖",
     "SavePlugin1": "插件变动可能需重启软件后生效"
@@ -76,55 +79,65 @@
     "Date": "日期",
     "Count": "数量"
   },
-  "ThingsGateway.Gateway.Razor.ChannelPage": {
-    "ImportExcel": "导入通道",
-    "Clear": "清空"
-  },
-  "ThingsGateway.Gateway.Razor.CollectDevicePage": {
-    "ImportExcel": "导入采集设备",
-    "Clear": "清空",
-    "RelationVariable": "关联变量"
-  },
-  "ThingsGateway.Gateway.Razor.BusinessDevicePage": {
-    "ImportExcel": "导入业务设备",
-    "Clear": "清空",
-    "RelationVariable": "关联变量"
-  },
-  "ThingsGateway.Gateway.Razor.VariablePage": {
-    "ImportExcel": "导入变量",
-    "Clear": "清空",
-    "TestVariableCount": "变量数量",
-    "TestDeviceCount": "采集设备数量",
-    "SlaveUrl": "服务端Url",
-    "Test": "一键添加测试变量"
-  },
-  "ThingsGateway.Gateway.Razor.DeviceEditComponent": {
-    "DeviceInformation": "设备信息",
-    "PluginInformation": "插件信息",
-    "BasicInformation": "基础信息",
-    "Connection": "连接",
-    "Redundant": "冗余",
-    "Remark": "备用",
-    "Check": "检查"
-  },
   "ThingsGateway.Gateway.Razor.VariableEditComponent": {
-    "VariableInformation": "变量信息",
-    "AlarmInformation": "报警信息",
-    "PluginInformation": "业务信息",
-
-    "BasicInformation": "基础信息",
-    "Connection": "连接",
-    "Remark": "备用",
-
-    "RefreshBusinessProperty": "添加/刷新业务属性",
-    "RefreshBusinessPropertyError": "需选择业务设备，再添加业务属性",
 
     "ChoiceBusinessDeviceId": "业务设备"
   },
 
-  "ThingsGateway.Gateway.Razor.ChannelEditComponent": {
+  "ThingsGateway.Gateway.Razor._Imports": {
+
+    "GatewayDeviceShowDriverUI": "插件UI",
+    "DeviceRedundantThread": "切换冗余",
+    "DeleteCache": "删除缓存",
+    "GatewayDeviceLog": "通道日志",
+    "RelationVariable": "关联变量",
+    "GatewayDevicePause": "暂停/运行",
+    "GatewayDeviceRestart": "重启设备",
+    "GatewayChannelRestart": "重启通道",
+
     "BasicInformation": "基础信息",
-    "Connection": "连接"
+    "Connection": "连接",
+    "DeviceInformation": "设备信息",
+    "PluginInformation": "插件信息",
+    "Redundant": "冗余",
+    "Remark": "备用",
+    "Check": "检查",
+    "VariableInformation": "变量信息",
+    "AlarmInformation": "报警信息",
+
+    "RefreshBusinessProperty": "添加/刷新业务属性",
+    "RefreshBusinessPropertyError": "需选择业务设备，再添加业务属性",
+    "Runtime": "运行信息",
+
+    "DeviceList": "设备节点",
+    "AddChannel": "添加通道",
+    "BatchEditChannel": "批量编辑通道",
+    "UpdateChannel": "更新通道",
+    "DeleteCurrentChannel": "删除当前节点下的通道",
+    "DeleteAllChannel": "删除全部通道",
+    "ExportCurrentChannel": "导出当前节点下的通道",
+    "ExportAllChannel": "导出全部通道",
+    "ImportChannel": "导入通道",
+    "AddDevice": "添加设备",
+    "BatchEditDevice": "批量编辑设备",
+    "UpdateDevice": "更新设备",
+    "DeleteCurrentDevice": "删除当前节点下的设备",
+    "DeleteAllDevice": "删除全部设备",
+    "ExportCurrentDevice": "导出当前节点下的设备",
+    "ExportAllDevice": "导出全部设备",
+    "ImportDevice": "导入设备",
+
+    "DeleteConfirmTitle": "删除确认",
+    "AllChannel": "全部通道",
+    "AllDevice": "全部设备",
+    "Collect": "采集",
+    "Business": "业务",
+    "Unknown": "未知",
+    "AddVariable": "添加变量",
+
+    "Script": "脚本",
+    "Input": "输入",
+    "Output": "输出"
   }
 
 

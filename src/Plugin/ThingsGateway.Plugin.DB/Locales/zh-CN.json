@@ -1,0 +1,114 @@
+﻿{
+  "ThingsGateway.Plugin.DB.RealDBProducerProperty": {
+    "BigTextConnectStr": "连接字符串",
+    "TableName": "表名称",
+    "BigTextScriptHistoryTable": "历史表动态脚本",
+    "RealTableBusinessInterval": "实时表定时上传间隔",
+
+    "BusinessUpdateEnum": "上传模式",
+    "BusinessInterval": "定时上传间隔",
+    "IsAllVariable": "选择全部变量",
+    "QueueMaxCount": "内存队列最大数量",
+    "CacheFileMaxLength": "缓存文件最大长度(mb)",
+    "SplitSize": "上传每页条数",
+    "CacheEnable": "启用缓存"
+  },
+  "ThingsGateway.Plugin.QuestDB.QuestDBHistoryValue": {
+    "Id": "变量Id",
+
+    "CollectTime": "采集时间",
+    "CreateTime": "上传时间",
+    "DeviceName": "设备名称",
+    "Name": "变量名称",
+    "IsOnline": "是否在线",
+    "Value": "变量值"
+  },
+
+  "ThingsGateway.Plugin.SqlDB.SqlDBProducerProperty": {
+    "IsReadDB": "启用实时表",
+    "IsHistoryDB": "启用历史表",
+    "ReadDBTableName": "实时表名称",
+    "HistoryDBTableName": "历史表名称",
+    "DbType": "数据库类型",
+    "BigTextConnectStr": "链接字符串",
+    "BigTextScriptHistoryTable": "历史表动态脚本",
+    "BigTextScriptRealTable": "实时表动态脚本",
+    "RealTableBusinessInterval": "实时表定时上传间隔",
+
+    "BusinessUpdateEnum": "上传模式",
+    "BusinessInterval": "定时上传间隔",
+    "IsAllVariable": "选择全部变量",
+    "QueueMaxCount": "内存队列最大数量",
+    "CacheFileMaxLength": "缓存文件最大长度(mb)",
+    "SplitSize": "上传每页条数",
+    "CacheEnable": "启用缓存"
+  },
+  "ThingsGateway.Plugin.SqlDB.SQLHistoryValue": {
+    "Id": "变量Id",
+
+    "CollectTime": "采集时间",
+    "CreateTime": "上传时间",
+    "DeviceName": "设备名称",
+    "Name": "变量名称",
+    "IsOnline": "是否在线",
+    "Value": "变量值"
+  },
+  "ThingsGateway.Plugin.SqlDB.SQLRealValue": {
+    "Id": "变量Id",
+
+    "CollectTime": "采集时间",
+    "CreateTime": "上传时间",
+    "DeviceName": "设备名称",
+    "Name": "变量名称",
+    "IsOnline": "是否在线",
+    "Value": "变量值"
+  },
+
+  "ThingsGateway.Plugin.TDengineDB.TDengineDBHistoryValue": {
+    "Id": "变量Id",
+
+    "CollectTime": "采集时间",
+    "CreateTime": "上传时间",
+    "DeviceName": "设备名称",
+    "Name": "变量名称",
+    "IsOnline": "是否在线",
+    "Value": "变量值"
+  },
+
+  "ThingsGateway.Plugin.SqlHistoryAlarm.SQLHistoryAlarmProperty": {
+    "DbType": "数据库类型",
+    "BigTextConnectStr": "链接字符串",
+    "TableName": "表名称",
+
+    "BusinessUpdateEnum": "上传模式",
+    "BusinessInterval": "定时上传间隔",
+    "IsAllVariable": "选择全部变量",
+    "QueueMaxCount": "内存队列最大数量",
+    "CacheFileMaxLength": "缓存文件最大长度(mb)",
+    "SplitSize": "上传每页条数",
+    "CacheEnable": "启用缓存"
+  },
+  "ThingsGateway.Plugin.SqlHistoryAlarm.HistoryAlarm": {
+
+    "Name": "名称",
+    "Description": "描述",
+    "DeviceName": "采集设备",
+    "DataType": "数据类型",
+    "RegisterAddress": "变量地址",
+
+
+    "AlarmCode": "报警值",
+    "AlarmLimit": "报警限值",
+    "AlarmText": "报警文本",
+    "AlarmTime": "报警时间",
+    "AlarmType": "报警类型",
+    "EventTime": "事件时间",
+    "EventType": "事件类型",
+
+    "Remark1": "备用1",
+    "Remark2": "备用2",
+    "Remark3": "备用3",
+    "Remark4": "备用4",
+    "Remark5": "备用5"
+  }
+}

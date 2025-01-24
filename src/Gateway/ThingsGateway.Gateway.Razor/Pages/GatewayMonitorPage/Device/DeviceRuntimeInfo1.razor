@@ -1,0 +1,144 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Debug
+@using ThingsGateway.Foundation
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Extension
+@inherits ComponentDefault
+
+<div class="device">
+    <Card class="mb-2">
+
+        <HeaderTemplate>
+
+            <span class=@((DeviceRuntime?.Driver!=null?"enable--text mx-1 text-h6 overflow-y-auto":"disabled--text mx-1 text-h6 overflow-y-auto"))>
+                <span class="text-truncate" title=@Name>@(Name)</span>
+            </span>
+
+            <div style="flex-grow: 1;"></div>
+            @if (DeviceRuntime.Driver != null)
+            {
+                var driver = DeviceRuntime.Driver;
+                @if (driver?.DriverUIType != null)
+                {
+                    <Tooltip Title="@GatewayLocalizer["GatewayDeviceShowDriverUI"]" Placement="Placement.Bottom">
+
+                        <Button OnClick=@(ShowDriverUI) IsDisabled=@(!AuthorizeButton("插件页面")) class="mx-2" Color="Color.None" style="color: var(--bs-card-titlecolor);" Icon=@("fab fa-simplybuilt") />
+                    </Tooltip>
+
+                }
+
+                <Tooltip Title="@GatewayLocalizer["GatewayDevicePause"]" Placement="Placement.Bottom">
+
+                    <Button OnClick=@(PauseThread) IsDisabled=@(!AuthorizeButton("暂停")) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@(!driver.CurrentDevice.Pause?"fa fa-pause":"fa fa-play") />
+                </Tooltip>
+
+
+                @if (DeviceRuntime.RedundantEnable == true && AuthorizeButton("切换冗余"))
+                {
+                    <Tooltip Title="@GatewayLocalizer["DeviceRedundantThread"]" Placement="Placement.Bottom">
+                        <PopConfirmButton OnConfirm=@(DeviceRedundantThreadAsync) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("fas fa-exchange-alt") />
+                    </Tooltip>
+
+                }
+            }
+
+            @if (DeviceRuntime.IsCollect == false && AuthorizeButton("删除缓存"))
+            {
+                <Tooltip Title="@GatewayLocalizer["DeleteCache"]" Placement="Placement.Bottom">
+                    <PopConfirmButton OnConfirm=@(()=>RestartDeviceAsync(true)) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("fa-solid fa-rotate") />
+                </Tooltip>
+            }
+
+            @if (AuthorizeButton("重启"))
+            {
+                <Tooltip Title="@GatewayLocalizer["GatewayDeviceRestart"]" Placement="Placement.Bottom">
+
+                    <PopConfirmButton OnConfirm=@(()=>RestartDeviceAsync(false)) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("fa-solid fa-rotate") />
+                </Tooltip>
+            }
+
+        </HeaderTemplate>
+
+        <BodyTemplate>
+            <div class="overflow-x-hidden overflow-y-auto" style="height:200px;">
+
+                <EditorFormObject Model=@DeviceRuntime AutoGenerateAllItem=false IsDisplay LabelWidth="300" RowType="RowType.Inline" ItemsPerRow="2" ShowLabelTooltip="true">
+
+                    <FieldItems>
+                        <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Name">
+                            <EditTemplate Context="value">
+                                <div class="col-12">
+                                    <h6>@GatewayLocalizer["BasicInformation"]</h6>
+                                </div>
+                            </EditTemplate>
+                        </EditorItem>
+
+                        <EditorItem @bind-Field="@context.Name" />
+
+                        <EditorItem Field=@context.PluginName FieldExpression=@(()=> context.PluginName ) />
+
+                        <EditorItem @bind-Field="@context.Enable" />
+                        <EditorItem @bind-Field="@context.IntervalTime" />
+                        <EditorItem @bind-Field="@context.LogEnable" />
+                        <EditorItem @bind-Field="@context.LogLevel" />
+
+                        <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Name">
+                            <EditTemplate Context="value">
+                                <div class="col-12">
+                                    <h6>@GatewayLocalizer["Connection"]</h6>
+                                </div>
+                            </EditTemplate>
+                        </EditorItem>
+
+                        <EditorItem Field=@context.ChannelName FieldExpression=@(()=> context.ChannelName ) />
+
+                        <EditorItem TValue="string" TModel="Device" @bind-Field="@context.Name">
+                            <EditTemplate Context="value">
+                                <div class="col-12">
+                                    <h6>@GatewayLocalizer["Runtime"]</h6>
+                                </div>
+                            </EditTemplate>
+                        </EditorItem>
+
+                        <EditorItem @bind-Field="@context.ActiveTime"/>
+                        <EditorItem @bind-Field="@context.DeviceStatus" />
+                        <EditorItem Field=@context.DeviceVariableCount FieldExpression=@(()=> context.DeviceVariableCount ) />
+                        @if (context.IsCollect == true)
+                        {
+                            <EditorItem Field=@context.SourceVariableCount FieldExpression=@(()=> context.SourceVariableCount ) />
+                            <EditorItem Field=@context.MethodVariableCount FieldExpression=@(()=> context.MethodVariableCount ) />
+                        }
+                        @*<EditorItem ComponentParameters=@(new Dictionary<string,object>(){
+                                    ["class"]="red--text",
+                        }
+
+                        ) Field=@context.LastErrorMessage FieldExpression=@(()=> context.LastErrorMessage ) Rows="1" ShowLabelTooltip="false">
+                             <EditTemplate Context="value">
+                                <Display Value=@value.LastErrorMessage ValueExpression=@(()=> context.LastErrorMessage ) ShowTooltip class="red--text" ShowLabel="true"  />
+                            </EditTemplate> 
+                        </EditorItem> *@
+                        <EditorItem Field=@context.LastErrorMessage FieldExpression=@(()=> context.LastErrorMessage ) ShowLabelTooltip="true">
+                            <EditTemplate Context="value">
+                                <div class="col-12">
+                                    <Display Value=@value.LastErrorMessage ValueExpression=@(()=> context.LastErrorMessage ) ShowTooltip=true class="red--text" ShowLabel="true" />
+                                </div>
+                            </EditTemplate>
+                        </EditorItem>
+
+                    </FieldItems>
+
+                </EditorFormObject>
+
+                <div class="col-12">
+                    <h6>@GatewayLocalizer["PluginInformation"]</h6>
+                </div>
+                @if (DeviceRuntime.Driver != null)
+                {
+                    <PropertyComponent CanWrite="false" @key=PluginPropertyModel.GetHashCode() Id=@(DeviceRuntime.Id.ToString()) Model=@PluginPropertyModel PluginPropertyEditorItems="DeviceRuntime.Driver.PluginPropertyEditorItems" />
+                }
+            </div>
+        </BodyTemplate>
+    </Card>
+</div>

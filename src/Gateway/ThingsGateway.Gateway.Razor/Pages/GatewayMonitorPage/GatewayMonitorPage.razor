@@ -1,0 +1,39 @@
+﻿@page "/gateway/monitor"
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+@namespace ThingsGateway.Gateway.Razor
+
+<div class="row h-100 g-0">
+
+    <div class="col-0 col-sm-3 h-100 g-0 pe-1">
+        <Card IsShadow=true class="h-100" Color="Color.Primary">
+            <BodyTemplate>
+                <ChannelDeviceTree @bind-ShowType=ShowType AutoRestartThread ="AutoRestartThread" ChannelDeviceChanged="TreeChangedAsync" Value="SelectModel"></ChannelDeviceTree>
+            </BodyTemplate>
+        </Card>
+    </div>
+    <div class="col-0 col-sm-9 h-100 g-0 ">
+        @if (ShowType == ShowTypeEnum.Variable)
+        {
+            <VariableRuntimeInfo Items="VariableRuntimes" SelectModel="SelectModel" AutoRestartThread="AutoRestartThread" />
+        }
+        else
+        {
+            if (ShowDeviceRuntime != null)
+            {
+                <DeviceRuntimeInfo DeviceRuntime="ShowDeviceRuntime" />
+            }
+            if (ShowChannelRuntime != null)
+            {
+                <ChannelRuntimeInfo ChannelRuntime="ShowChannelRuntime" />
+            }
+        }
+    </div>
+
+</div>
+<QuickActions @bind-AutoRestartThread=AutoRestartThread  />
+

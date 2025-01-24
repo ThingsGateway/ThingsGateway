@@ -12,7 +12,9 @@ using Microsoft.AspNetCore.Components.Authorization;
 
 using System.Security.Claims;
 
-namespace ThingsGateway.Photino;
+using ThingsGateway.Admin.Application;
+
+namespace ThingsGateway.Server;
 
 /// <inheritdoc/>
 public class BlazorHybridAuthenticationStateProvider : AuthenticationStateProvider

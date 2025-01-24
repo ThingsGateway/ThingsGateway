@@ -1,0 +1,84 @@
+﻿@page "/admin/resource"
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@namespace ThingsGateway.Admin.Razor
+
+
+<div class="h-100">
+    <AdminTable @ref=table TItem="SysResource" AutoGenerateColumns="true" ShowAdvancedSearch=true
+                AllowResizing="true"
+                IsFixedHeader=true
+                EditDialogSize="Size.ExtraLarge"
+                IsMultipleSelect=true
+                @bind-SelectedRows="SelectedRows"
+                ShowExtendButtons=true
+                SearchMode=SearchMode.Top
+                ShowDefaultButtons=true
+                ShowToolbar=true
+                ShowResetButton=false
+                IsTree="true"
+                OnTreeExpand="OnTreeExpand"
+                TreeNodeConverter="SysResourcePage.TreeNodeConverter"
+                ModelEqualityComparer="SysResourcePage.ModelEqualityComparer"
+                OnAfterModifyAsync="OnAfterModifyAsync"
+                OnQueryAsync="OnQueryAsync" CustomerSearchModel="@CustomerSearchModel"
+                OnSaveAsync="Save" OnDeleteAsync="Delete">
+        <TableToolbarTemplate>
+            <PopConfirmButton Color=Color.Warning IsDisabled="SelectedRows.Count<=0||!AuthorizeButton(AdminOperConst.Add)" Text=@OperDescLocalizer["CopyResource"] Icon="fa fa-copy" OnConfirm="OnCopy">
+                <BodyTemplate>
+                    <Select Items="ModuleSelectedItems" @bind-Value=CopyModule ShowLabel="false" />
+                </BodyTemplate>
+            </PopConfirmButton>
+            <PopConfirmButton Color=Color.Warning IsDisabled="SelectedRows.Count!=1||!AuthorizeButton(AdminOperConst.Edit)" Text=@OperDescLocalizer["ChangeParentResource"] Icon="fa fa-copy" OnConfirm="OnChangeParent">
+                <BodyTemplate>
+                    <div class="min-height-500 overflow-y-auto">
+                        <TreeView Items="MenuTreeItems" IsVirtualize="true" OnTreeItemClick="a=>{ChangeParentId=a.Value.Id;return Task.CompletedTask;}" />
+                    </div>
+                </BodyTemplate>
+            </PopConfirmButton>
+
+        </TableToolbarTemplate>
+
+        <CustomerSearchTemplate>
+            @if (context is ResourceTableSearchModel model)
+            {
+                @Render(model)
+            }
+        </CustomerSearchTemplate>
+        <TableColumns>
+            <TableColumn @bind-Field="@context.Icon" Width="50" Align="Alignment.Center">
+                <Template Context="icon">
+                    <i class="text-info cell-icon @icon.Value"></i>
+                </Template>
+
+            </TableColumn>
+        </TableColumns>
+        <EditTemplate Context="context">
+            <SysResourceEdit Model=context MenuItems=MenuItems ModuleId=CustomerSearchModel.Module></SysResourceEdit>
+        </EditTemplate>
+
+
+    </AdminTable>
+</div>
+
+@code {
+    [NotNull]
+    AdminTable<SysResource>? table { get; set; }
+}
+@code {
+    RenderFragment Render(ResourceTableSearchModel model) =>
+    @<div class="row form-inline g-2">
+        <div class="col-4 ">
+            <Select Items="ModuleSelectedItems" @bind-Value=model.Module ShowLabel="true" />
+        </div>
+        <div class="col-4 ">
+            <BootstrapInput @bind-Value="model.Title" ShowLabel="true" />
+        </div>
+        <div class="col-4 ">
+            <BootstrapInput @bind-Value="model.Href" ShowLabel="true" />
+        </div>
+    </div>;
+
+}

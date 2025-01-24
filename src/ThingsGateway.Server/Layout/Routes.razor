@@ -1,6 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
 @using ThingsGateway.Admin.Application
-@namespace ThingsGateway
+@using ThingsGateway.Razor
+@namespace ThingsGateway.Server
 
 @{
     #if NET6_0
@@ -19,13 +21,13 @@
                     @if (UserManager.UserId > 0)
                     {
                         <LayoutView Layout="typeof(Razor.BaseLayout)">
-                            <ThingsGateway.Admin.Razor.AccessDenied/>
+                            <AccessDenied/>
                         </LayoutView>
                     }
                     else
                     {
                         <LayoutView Layout="typeof(Razor.BaseLayout)">
-                            <ThingsGateway.Admin.Razor.Login/>
+                            <Login/>
                         </LayoutView>
                     }
                 </NotAuthorized>
@@ -35,7 +37,7 @@
 </Found>
 <NotFound>
     <LayoutView Layout="@typeof(Razor.BaseLayout)">
-    <ThingsGateway.Admin.Razor.NotFound404></ThingsGateway.Admin.Razor.NotFound404>
+    <NotFound404></NotFound404>
         </LayoutView>
     </NotFound>
 </Router>
@@ -50,13 +52,13 @@
 <Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="App.RazorAssemblies.Where(a=>a!=typeof(Routes).Assembly)">
 <Found Context="routeData">
 
-    <RouteView RouteData="@routeData" DefaultLayout="@typeof(Razor.MainLayout)" />
+    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
 
 
 </Found>
 <NotFound>
     <LayoutView Layout="@typeof(Razor.BaseLayout)">
-    <ThingsGateway.Admin.Razor.NotFound404></ThingsGateway.Admin.Razor.NotFound404>
+    <NotFound404></NotFound404>
         </LayoutView>
     </NotFound>
 </Router>

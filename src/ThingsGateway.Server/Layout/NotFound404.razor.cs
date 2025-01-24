@@ -13,7 +13,7 @@ using Microsoft.Extensions.Localization;
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace ThingsGateway.Admin.Razor;
+namespace ThingsGateway.Server;
 
 public partial class NotFound404
 {

@@ -11,32 +11,7 @@
     "LastSentTime": "LastSentTime"
   },
 
-  "ThingsGateway.Gateway.Razor.DeviceStatus2": {
-    "GatewayDeviceShowDriverUI": "DriverUI",
-    "DeviceRedundantThread": "RedundantSwitch",
-    "DeleteCache": "DeleteCache",
-    "GatewayDeviceLog": "ChannelLog",
-    "RelationVariable": "RelationVariable",
-    "GatewayDevicePause": "DevicePause",
-    "GatewayDeviceRestart": "DeviceRestart"
-  },
-  "ThingsGateway.Gateway.Razor.DeviceStatus": {
-    "LogConsole": "ChannelLog"
-  },
-  "ThingsGateway.Gateway.Razor.DeviceStatusPage": {
-    "CollectDevice": "CollectDevice",
-    "BusinessDevice": "BusinessDevice"
-  },
 
-  "ThingsGateway.Gateway.Razor.VariableRuntimePage": {
-    "WriteVariable": "Write",
-    "WriteValue": "Value"
-  },
-  "ThingsGateway.Gateway.Razor.DriverDebugPage": {
-    "PluginUINotNull": "This plugin does not implement a debug page",
-    "New": "New",
-    "NewWinbox": "NewWinbox"
-  },
   "ThingsGateway.Gateway.Razor.Index": {
     "CollectDevice": "Collect Device",
     "BusinessDevice": "Business Device",
@@ -54,14 +29,10 @@
     "Data": "Data",
     "HistoryHardwareInfo": "Historical Chart"
   },
-  "ThingsGateway.Gateway.Razor.QuickActions": {
-    "TooltipText": "Quick Actions",
-    "HeaderText": "Quick Actions",
-    "RestartText": "Restart",
-    "ReloadServiceText": "Restart Runtime",
-    "ReloadPluginConfirmText": "Are you sure you want to reload the plugin?",
-    "ReloadServiceConfirmText": "Are you sure you want to restart the runtime?"
+  "ThingsGateway.Gateway.Razor.ChannelDeviceTree": {
+    "ShowType": "ShowType"
   },
+
   "ThingsGateway.Gateway.Razor.SavePlugin": {
     "SavePlugin": "Note: Plugins with the same file name will be overwritten",
     "SavePlugin1": "Plugin changes may take effect after restarting the software"
@@ -77,50 +48,96 @@
     "Date": "Date",
     "Count": "Count"
   },
-  "ThingsGateway.Gateway.Razor.ChannelPage": {
-    "ImportExcel": "Import Channel",
-    "Clear": "Clear"
-  },
-  "ThingsGateway.Gateway.Razor.CollectDevicePage": {
-    "ImportExcel": "Import Collect Device",
-    "Clear": "Clear",
-    "RelationVariable": "RelationVariable"
-  },
-  "ThingsGateway.Gateway.Razor.BusinessDevicePage": {
-    "ImportExcel": "Import Business Device",
-    "Clear": "Clear",
-    "RelationVariable": "RelationVariable"
-  },
-  "ThingsGateway.Gateway.Razor.VariablePage": {
-    "ImportExcel": "Import Variable",
-    "Clear": "Clear",
+
+
+
+  "ThingsGateway.Gateway.Razor.VariableRuntimeInfo": {
+    "WriteVariable": "WriteVariable",
+    "WriteValue": "WriteValue",
+    "ImportExcel": "ImportExcel",
     "TestVariableCount": "TestVariableCount",
     "TestDeviceCount": "TestDeviceCount",
-    "SlaveUrl": "SlaveUrl",
-    "Test": "AddTestVariable"
+    "SlaveUrl": "SlaveUrlUrl",
+    "Test": "Addition of test variables"
   },
-  "ThingsGateway.Gateway.Razor.DeviceEditComponent": {
+
+  "ThingsGateway.Gateway.Razor.QuickActions": {
+    "TooltipText": "Quick Operation",
+    "HeaderText": "Quick Operation",
+    "RestartText": "Restart",
+    "ReloadServiceText": "Reload Service",
+    "ReloadPluginConfirmText": "Confirm the overloaded plugin?",
+    "ReloadServiceConfirmText": "Confirm when restarting the runtime?",
+
+    "AutoRestartThread": "AutoRestartThread"
+
+  },
+
+  "ThingsGateway.Gateway.Razor.ShowTypeEnum": {
+    "Variable": "Variable",
+    "LogInfo": "Info"
+  },
+
+  "ThingsGateway.Gateway.Razor.VariableEditComponent": {
+
+    "ChoiceBusinessDeviceId": "BusinessDevice"
+  },
+
+
+  "ThingsGateway.Gateway.Razor._Imports": {
+
+    "GatewayDeviceShowDriverUI": "Show driverUI",
+    "DeviceRedundantThread": "Switching redundancy",
+    "DeleteCache": "Delete cache",
+    "GatewayDeviceLog": "Channel log",
+    "RelationVariable": "Associated variables",
+    "GatewayDevicePause": "Pause/Run",
+    "GatewayDeviceRestart": "Restart device",
+    "GatewayChannelRestart": "Restart channel",
+
+    "BasicInformation": "Basic Information",
+    "Connection": "Connection",
     "DeviceInformation": "Device Information",
     "PluginInformation": "Plugin Information",
-    "BasicInformation": "Basic Information",
-    "Connection": "Connection",
     "Redundant": "Redundant",
     "Remark": "Remark",
-    "Check": "Check"
-  },
-  "ThingsGateway.Gateway.Razor.VariableEditComponent": {
+    "Check": "Check",
     "VariableInformation": "Variable Information",
     "AlarmInformation": "Alarm Information",
-    "PluginInformation": "Business Information",
-    "BasicInformation": "Basic Information",
-    "Connection": "Connection",
-    "Remark": "Remark",
+
     "RefreshBusinessProperty": "Add/Refresh Business Property",
-    "RefreshBusinessPropertyError": "You need to select a business device before adding business properties",
-    "ChoiceBusinessDeviceId": "Business Device"
-  },
-  "ThingsGateway.Gateway.Razor.ChannelEditComponent": {
-    "BasicInformation": "Basic Information",
-    "Connection": "Connection"
+    "RefreshBusinessPropertyError": "Select business equipment and add business attributes",
+    "Runtime": "Runtime",
+
+    "DeviceList": "Device List",
+    "AddChannel": "Add Channel",
+    "BatchEditChannel": "Batch Edit Channel",
+    "UpdateChannel": "Update Channel",
+    "DeleteCurrentChannel": "Delete Current Channel",
+    "DeleteAllChannel": "Delete All Channel",
+    "ExportCurrentChannel": "Export Current Channel",
+    "ExportAllChannel": "Export All Channel",
+    "ImportChannel": "Import Channel",
+    "AddDevice": "Add Device",
+    "BatchEditDevice": "Batch Edit Device",
+    "UpdateDevice": "Update Device",
+    "DeleteCurrentDevice": "Delete Current Device",
+    "DeleteAllDevice": "Delete All Device",
+    "ExportCurrentDevice": "Export Current Device",
+    "ExportAllDevice": "Export All Device",
+    "ImportDevice": "Import Device",
+
+    "DeleteConfirmTitle": "Delete Confirm",
+    "AllChannel": "All Channel",
+    "AllDevice": "All Device",
+    "Collect": "Collect",
+    "Business": "Business",
+    "Unknown": "Unknown",
+    "AddVariable": "Add Variable",
+
+    "Script": "Script",
+    "Input": "Input",
+    "Output": "Output"
   }
+
 }

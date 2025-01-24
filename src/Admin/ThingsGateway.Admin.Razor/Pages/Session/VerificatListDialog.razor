@@ -1,0 +1,42 @@
+﻿@namespace ThingsGateway.Admin.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Extension
+@using ThingsGateway.Extension.Generic
+@inherits ComponentDefault
+
+<AdminTable @ref="table" TItem="VerificatInfo" AutoGenerateColumns="true" ShowAdvancedSearch=false ShowSearch="false"
+            AllowResizing="true" IsFixedHeader=true IsMultipleSelect=true SearchModel=SearchModel
+            ShowExtendButtons=true ShowExtendDeleteButton=false ShowExtendEditButton=false
+            ShowDefaultButtons=false ExtendButtonColumnWidth=150
+            OnQueryAsync="OnQueryAsync" IsPagination=true>
+    <TableToolbarTemplate>
+        <TableToolbarButton TItem="VerificatInfo"
+                            Color=Color.Warning Text="@Localizer[ nameof(SessionService.ExitVerificat)]"
+                            IsAsync OnClickCallback=@(async(a)=>{
+                            await Task.Run(async()=>{
+                            if(a.Any())
+                            {
+                            await SessionService.ExitVerificat(new ExitVerificatInput(){ Id=UserId, VerificatIds= a.Select(b=> b.Id )});
+                            VerificatInfos.RemoveWhere(c=>a.Contains(c));
+                            await InvokeAsync(table.QueryAsync);
+                            }
+                            });
+                            }) />
+    </TableToolbarTemplate>
+    <RowButtonTemplate>
+        <TableCellPopConfirmButton IsAsync IsShow=@AuthorizeButton("强退令牌") Size="Size.ExtraSmall" Color=Color.Warning Text="@Localizer[ nameof(SessionService.ExitVerificat)]" OnConfirm="@(async()=>{
+                            await SessionService.ExitVerificat(new ExitVerificatInput(){ Id=UserId, VerificatIds=new List<long>(){ context.Id}});
+                            VerificatInfos.Remove(context);
+                            await InvokeAsync(async()=>
+                            {
+
+                            await table.QueryAsync();await ToastService.Default();
+                            });
+                            })" />
+    </RowButtonTemplate>
+</AdminTable>
+
+@code {
+    [NotNull]
+    AdminTable<VerificatInfo>? table { get; set; }
+}

@@ -1,0 +1,43 @@
+﻿@using BootstrapBlazor.Components
+@using Microsoft.Extensions.Localization
+@using ThingsGateway.Extension
+@using ThingsGateway.Foundation
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Plugin.SqlDB
+@namespace ThingsGateway.Debug
+
+
+<ValidateForm Model="Model.Value"
+              @key=@($"DeviceEditValidateForm{Id}{Model.Value.GetType().TypeHandle.Value}")
+              @ref=Model.ValidateForm
+              Id=@($"DeviceEditValidateForm{Id}{Model.Value.GetType().TypeHandle.Value}")>
+
+    <EditorFormObject class="p-2" Items=PluginPropertyEditorItems IsDisplay="!CanWrite" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=@(CanWrite?2:3) ShowLabelTooltip=true LabelWidth=@(CanWrite?240:120) Model="Model.Value" ShowLabel="true" @key=@($"DeviceEditEditorFormObject{Id}{Model.Value.GetType().TypeHandle.Value}")>
+
+        <FieldItems>
+            @if (Model.Value is SqlDBProducerProperty businessProperty)
+            {
+                <EditorItem FieldExpression=@(()=>context) Field=@(context)>
+
+                    <EditTemplate Context="value">
+                        <div class="col-12  col-md-12">
+                            <BootstrapLabel Value=@SqlDBProducerPropertyLocalizer["BigTextScriptHistoryTable"] ShowLabelTooltip="true" />
+                            <CodeEditor @bind-Value=@businessProperty.BigTextScriptHistoryTable Language="csharp" Theme="vs-dark" />
+
+                        </div>
+                        <div class="col-12  col-md-12">
+                            <BootstrapLabel Value=@SqlDBProducerPropertyLocalizer["BigTextScriptRealTable"] ShowLabelTooltip="true" />
+                            <CodeEditor @bind-Value=@businessProperty.BigTextScriptRealTable Language="csharp" Theme="vs-dark" />
+                        </div>
+                    </EditTemplate>
+                </EditorItem>
+            }
+
+        </FieldItems>
+    </EditorFormObject>
+</ValidateForm>
+
+
+

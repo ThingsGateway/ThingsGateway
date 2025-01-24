@@ -19,22 +19,9 @@ public class Startup : AppStartup
 {
     public void ConfigureAdminApp(IServiceCollection services)
     {
-
-        var tempDir = Path.Combine(AppContext.BaseDirectory, "CSSCRIPT");
-        if (Directory.Exists(tempDir))
-        {
-            try
-            {
-                Directory.Delete(tempDir);
-            }
-            catch
-            {
-
-            }
-        }
-
-        Directory.CreateDirectory(tempDir);//重新创建，防止缓存的一些目录信息错误
-        Environment.SetEnvironmentVariable("CSS_CUSTOM_TEMPDIR", tempDir); //传入变量
+        services.AddConfigurableOptions<ChannelThreadOptions>();
+        services.AddConfigurableOptions<GatewayLogOptions>();
+        services.AddConfigurableOptions<RpcLogOptions>();
 
         //底层多语言配置
         //Foundation.LocalizerUtil.SetLocalizerFactory((a) => App.CreateLocalizerByType(a));
@@ -58,19 +45,21 @@ public class Startup : AppStartup
             };
         });
 
-
+        services.AddSingleton<IChannelThreadManage, ChannelThreadManage>();
         services.AddSingleton<IChannelService, ChannelService>();
+        services.AddSingleton<IChannelRuntimeService, ChannelRuntimeService>();
         services.AddSingleton<IVariableService, VariableService>();
+        services.AddSingleton<IVariableRuntimeService, VariableRuntimeService>();
         services.AddSingleton<IDeviceService, DeviceService>();
+        services.AddSingleton<IDeviceRuntimeService, DeviceRuntimeService>();
         services.AddSingleton<IPluginService, PluginService>();
         services.AddSingleton<IBackendLogService, BackendLogService>();
         services.AddSingleton<IRpcLogService, RpcLogService>();
         services.AddSingleton<IRpcService, RpcService>();
         services.AddScoped<IGatewayExportService, GatewayExportService>();
 
-        services.AddGatewayHostedService<ICollectDeviceHostedService, CollectDeviceHostedService>();
-        services.AddGatewayHostedService<IBusinessDeviceHostedService, BusinessDeviceHostedService>();
         services.AddGatewayHostedService<IAlarmHostedService, AlarmHostedService>();
+        services.AddGatewayHostedService<IGatewayMonitorHostedService, GatewayMonitorHostedService>();
     }
 
     public void UseAdminCore(IServiceProvider serviceProvider)
@@ -86,7 +75,9 @@ public class Startup : AppStartup
         DbContext.DbConfigs?.ForEach(it =>
         {
             var connection = DbContext.Db.GetConnection(it.ConfigId);//获取数据库连接对象
-            connection.DbMaintenance.CreateDatabase();//创建数据库,如果存在则不创建
+
+            if (it.InitTable == true)
+                connection.DbMaintenance.CreateDatabase();//创建数据库,如果存在则不创建
         });
         var fullName = Assembly.GetExecutingAssembly().FullName;//获取程序集全名
         CodeFirstUtils.CodeFirst(fullName!);//CodeFirst

@@ -36,6 +36,11 @@ public interface IVariable
     string? RegisterAddress { get; set; }
 
     /// <summary>
+    /// 数组长度
+    /// </summary>
+    int? ArrayLength { get; set; }
+
+    /// <summary>
     /// 数据转换规则
     /// </summary>
     IThingsGatewayBitConverter ThingsGatewayBitConverter { get; set; }

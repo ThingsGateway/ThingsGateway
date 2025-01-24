@@ -20,7 +20,7 @@ using System.Diagnostics.CodeAnalysis;
 
 using ThingsGateway.Gateway.Application;
 
-namespace ThingsGateway.Gateway.Razor;
+namespace ThingsGateway.Server;
 
 public partial class GatewayIndexComponent : IDisposable
 {
@@ -72,7 +72,7 @@ public partial class GatewayIndexComponent : IDisposable
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine(ex);
+                NewLife.Log.XTrace.WriteException(ex);
             }
         }
     }
@@ -116,12 +116,12 @@ public partial class GatewayIndexComponent : IDisposable
             BusinessDeviceChartDataSource.Labels = data.Select(a => a.Text);
             BusinessDeviceChartDataSource.Data.Add(new ChartDataset()
             {
-                Data = data.Select(i => GlobalData.ReadOnlyBusinessDevices.Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>()
+                Data = data.Select(i => GlobalData.ReadOnlyDevices.Where(a => a.Value.IsCollect == false).Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>()
             });
         }
         else
         {
-            BusinessDeviceChartDataSource.Data[0].Data = data.Select(i => GlobalData.ReadOnlyBusinessDevices.Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>();
+            BusinessDeviceChartDataSource.Data[0].Data = data.Select(i => GlobalData.ReadOnlyDevices.Where(a => a.Value.IsCollect == false).Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>();
         }
         return Task.FromResult(BusinessDeviceChartDataSource!);
     }
@@ -137,12 +137,12 @@ public partial class GatewayIndexComponent : IDisposable
             CollectDeviceChartDataSource.Labels = data.Select(a => a.Text);
             CollectDeviceChartDataSource.Data.Add(new ChartDataset()
             {
-                Data = data.Select(i => GlobalData.ReadOnlyCollectDevices.Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>()
+                Data = data.Select(i => GlobalData.ReadOnlyDevices.Where(a => a.Value.IsCollect == true).Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>()
             });
         }
         else
         {
-            CollectDeviceChartDataSource.Data[0].Data = data.Select(i => GlobalData.ReadOnlyCollectDevices.Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>();
+            CollectDeviceChartDataSource.Data[0].Data = data.Select(i => GlobalData.ReadOnlyDevices.Where(a => a.Value.IsCollect == true).Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>();
         }
         return Task.FromResult(CollectDeviceChartDataSource!);
     }
@@ -158,12 +158,12 @@ public partial class GatewayIndexComponent : IDisposable
             VariableChartDataSource.Labels = data.Select(a => a ? Localizer["OnLine"].Value : Localizer["OffLine"].Value);
             VariableChartDataSource.Data.Add(new ChartDataset()
             {
-                Data = data.Select(i => GlobalData.ReadOnlyVariables.Count(device => device.Value.IsOnline == i)).Cast<object>()
+                Data = data.Select(i => GlobalData.ReadOnlyIdVariables.Count(device => device.Value.IsOnline == i)).Cast<object>()
             });
         }
         else
         {
-            VariableChartDataSource.Data[0].Data = data.Select(i => GlobalData.ReadOnlyVariables.Count(device => device.Value.IsOnline == i)).Cast<object>();
+            VariableChartDataSource.Data[0].Data = data.Select(i => GlobalData.ReadOnlyIdVariables.Count(device => device.Value.IsOnline == i)).Cast<object>();
         }
         return Task.FromResult(VariableChartDataSource!);
     }

@@ -1,0 +1,115 @@
+﻿{
+  "ThingsGateway.Plugin.DB.RealDBProducerProperty": {
+    "BigTextConnectStr": "ConnectString",
+    "TableName": "TableName",
+    "BigTextScriptHistoryTable": "DynamicScriptHistoryTable",
+    "RealTableBusinessInterval": "RealTableBusinessInterval",
+
+    "BusinessUpdateEnum": "BusinessUpdateEnum",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "CacheFileMaxLength": "CacheFileMaxLength(mb)",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  },
+  "ThingsGateway.Plugin.QuestDB.QuestDBHistoryValue": {
+    "Id": "Id",
+
+    "CollectTime": "CollectTime",
+    "CreateTime": "CreateTime",
+    "DeviceName": "DeviceName",
+    "Name": "Name",
+    "IsOnline": "IsOnline",
+    "Value": "Value"
+  },
+
+  "ThingsGateway.Plugin.SqlDB.SqlDBProducerProperty": {
+    "IsReadDB": "IsReadDB",
+    "IsHistoryDB": "IsHistoryDB",
+    "ReadDBTableName": "ReadDBTableName",
+    "HistoryDBTableName": "HistoryDBTableName",
+    "DbType": "DbType",
+    "BigTextConnectStr": "ConnectString",
+    "BigTextScriptHistoryTable": "DynamicScriptHistoryTable",
+    "BigTextScriptRealTable": "DynamicScriptRealTable",
+    "RealTableBusinessInterval": "RealTableBusinessInterval",
+
+    "BusinessUpdateEnum": "BusinessUpdateEnum",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "CacheFileMaxLength": "CacheFileMaxLength(mb)",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  },
+  "ThingsGateway.Plugin.SqlDB.SQLHistoryValue": {
+    "Id": "Id",
+
+    "CollectTime": "CollectTime",
+    "CreateTime": "CreateTime",
+    "DeviceName": "DeviceName",
+    "Name": "Name",
+    "IsOnline": "IsOnline",
+    "Value": "Value"
+  },
+  "ThingsGateway.Plugin.SqlDB.SQLRealValue": {
+    "Id": "Id",
+
+    "CollectTime": "CollectTime",
+    "CreateTime": "CreateTime",
+    "DeviceName": "DeviceName",
+    "Name": "Name",
+    "IsOnline": "IsOnline",
+    "Value": "Value"
+  },
+
+  "ThingsGateway.Plugin.TDengineDB.TDengineDBHistoryValue": {
+    "Id": "Id",
+
+    "CollectTime": "CollectTime",
+    "CreateTime": "CreateTime",
+    "DeviceName": "DeviceName",
+    "Name": "Name",
+    "IsOnline": "IsOnline",
+    "Value": "Value"
+  },
+
+  "ThingsGateway.Plugin.SqlHistoryAlarm.SQLHistoryAlarmProperty": {
+    "DbType": "DbType",
+    "BigTextConnectStr": "ConnectString",
+    "TableName": "TableName",
+
+    "BusinessUpdateEnum": "BusinessUpdateEnum",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "CacheFileMaxLength": "CacheFileMaxLength(mb)",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  },
+
+  "ThingsGateway.Plugin.SqlHistoryAlarm.HistoryAlarm": {
+
+    "Name": "Name",
+    "Description": "Description",
+    "DeviceName": "DeviceName",
+    "DataType": "DataType",
+    "RegisterAddress": "RegisterAddress",
+
+    "AlarmCode": "AlarmCode",
+    "AlarmLimit": "AlarmLimit",
+    "AlarmText": "AlarmText",
+    "AlarmTime": "AlarmTime",
+    "AlarmType": "AlarmType",
+    "EventTime": "EventTime",
+    "EventType": "EventType",
+
+    "Remark1": "Remark1",
+    "Remark2": "Remark2",
+    "Remark3": "Remark3",
+    "Remark4": "Remark4",
+    "Remark5": "Remark5"
+  }
+
+}

@@ -1,0 +1,109 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Debug
+@using ThingsGateway.Foundation
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Extension
+@inherits ComponentDefault
+
+<div class="channel">
+    <Card class="mb-2">
+
+        <HeaderTemplate>
+
+            <span class=@((ChannelRuntime?.DeviceThreadManage!=null?"enable--text mx-1 text-h6 overflow-y-auto":"disabled--text mx-1 text-h6 overflow-y-auto"))>
+                <span class="text-truncate" title=@Name>@(Name)</span>
+            </span>
+
+            <div style="flex-grow: 1;"></div>
+
+            @if (AuthorizeButton("重启"))
+            {
+            <Tooltip Title="@GatewayLocalizer["GatewayChannelRestart"]" Placement="Placement.Bottom">
+
+                    <PopConfirmButton OnConfirm=@(RestartChannelAsync) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("fa-solid fa-rotate") />
+
+            </Tooltip>
+            }
+
+        </HeaderTemplate>
+
+        <BodyTemplate>
+            <div class="overflow-x-hidden overflow-y-auto" style="height:200px;">
+
+                <EditorFormObject Model=@ChannelRuntime AutoGenerateAllItem=false IsDisplay LabelWidth="300" RowType="RowType.Inline" ItemsPerRow="2" ShowLabelTooltip="true">
+
+                    <FieldItems>
+                        <EditorItem TValue="string" TModel="Channel" @bind-Field="@context.Name">
+                            <EditTemplate Context="value">
+                                <div class="col-12">
+                                    <h6>@GatewayLocalizer["BasicInformation"]</h6>
+                                </div>
+                            </EditTemplate>
+                        </EditorItem>
+
+                        <EditorItem @bind-Field="@context.Name" />
+
+                        <EditorItem @bind-Field="@context.PluginName" />
+
+                        <EditorItem @bind-Field="@context.Enable" />
+                        <EditorItem @bind-Field="@context.LogEnable" />
+                        <EditorItem @bind-Field="@context.LogLevel" />
+
+                        <EditorItem TValue="string" TModel="Channel" @bind-Field="@context.Name">
+                            <EditTemplate Context="value">
+                                <div class="col-12">
+                                    <h6>@GatewayLocalizer["Connection"]</h6>
+                                </div>
+                            </EditTemplate>
+                        </EditorItem>
+
+                        <EditorItem @bind-Field="@context.ChannelType">
+
+                            <EditTemplate Context="value">
+                                <div class="col-12 col-sm-6 col-md-6">
+                                    <Select SkipValidate="true" @bind-Value="@value.ChannelType" IsDisabled OnSelectedItemChanged=@((a)=>InvokeAsync(StateHasChanged)) />
+                                </div>
+                            </EditTemplate>
+
+                        </EditorItem>
+
+
+                        <EditorItem @bind-Field="@context.RemoteUrl" Ignore=@(context.ChannelType!=ChannelTypeEnum.TcpClient&&context.ChannelType!=ChannelTypeEnum.UdpSession) />
+                        <EditorItem @bind-Field="@context.BindUrl" Ignore=@(context.ChannelType!=ChannelTypeEnum.TcpClient&&context.ChannelType!=ChannelTypeEnum.UdpSession&&context.ChannelType!=ChannelTypeEnum.TcpService) />
+
+                        <EditorItem @bind-Field="@context.PortName" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                        <EditorItem @bind-Field="@context.BaudRate" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                        <EditorItem @bind-Field="@context.DataBits" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                        <EditorItem @bind-Field="@context.Parity" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                        <EditorItem @bind-Field="@context.StopBits" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                        <EditorItem @bind-Field="@context.DtrEnable" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+                        <EditorItem @bind-Field="@context.RtsEnable" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
+
+
+                        <EditorItem @bind-Field="@context.CacheTimeout" Ignore=@(context.ChannelType==ChannelTypeEnum.UdpSession||context.ChannelType==ChannelTypeEnum.Other) />
+                        <EditorItem @bind-Field="@context.ConnectTimeout" Ignore=@(context.ChannelType==ChannelTypeEnum.UdpSession||context.ChannelType==ChannelTypeEnum.TcpService||context.ChannelType==ChannelTypeEnum.Other) />
+                        <EditorItem @bind-Field="@context.MaxConcurrentCount" Ignore=@(context.ChannelType==ChannelTypeEnum.Other) />
+
+
+
+                        <EditorItem TValue="string" TModel="Channel" @bind-Field="@context.Name">
+                            <EditTemplate Context="value">
+                                <div class="col-12">
+                                    <h6>@GatewayLocalizer["Runtime"]</h6>
+                                </div>
+                            </EditTemplate>
+                        </EditorItem>
+
+
+                        <EditorItem Field=@context.DeviceRuntimeCounts FieldExpression=@(()=> context.DeviceRuntimeCounts ) />
+
+                    </FieldItems>
+
+                </EditorFormObject>
+
+            </div>
+        </BodyTemplate>
+    </Card>
+</div>

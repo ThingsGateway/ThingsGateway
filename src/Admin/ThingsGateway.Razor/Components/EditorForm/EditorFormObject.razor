@@ -1,0 +1,84 @@
+﻿@namespace BootstrapBlazor.Components
+@typeparam TModel
+@inherits BootstrapComponentBase
+
+<div class="@ClassString">
+    <CascadingValue Value="@_editorItems" IsFixed="true">
+        @FieldItems?.Invoke(Model)
+    </CascadingValue>
+    <CascadingValue Value="this" Name="EditorForm">
+        <RenderTemplate>
+            @if (ShowUnsetGroupItemsOnTop)
+            {
+                if (UnsetGroupItems.Any())
+                {
+                    @RenderUnsetGroupItems
+                }
+                @foreach (var g in GroupItems)
+                {
+                    @RenderGroupItems(g)
+                }
+            }
+            else
+            {
+                @foreach (var g in GroupItems)
+                {
+                    @RenderGroupItems(g)
+                }
+                if (UnsetGroupItems.Any())
+                {
+                    @RenderUnsetGroupItems
+                }
+            }
+        </RenderTemplate>
+    </CascadingValue>
+
+    @if (Buttons != null)
+    {
+        <div class="bb-editor-footer form-footer">
+            @Buttons
+        </div>
+    }
+
+</div>
+
+@code
+{
+    RenderFragment RenderUnsetGroupItems =>
+    @<div class="@FormClassString" style="@FormStyleString">
+        @foreach (var item in UnsetGroupItems)
+    {
+    var render = GetRenderTemplate(item);
+        @if (render != null)
+    {
+        @render(Model)
+    }
+    else
+    {
+        <div class="@GetCssString(item)">
+            @AutoGenerateTemplate(item)
+        </div>
+    }
+    }
+    </div>;
+
+    RenderFragment<KeyValuePair<string, IOrderedEnumerable<IEditorItem>>> RenderGroupItems => g =>
+    @<GroupBox Title="@g.Key">
+        <div class="@FormClassString">
+            @foreach (var item in g.Value)
+        {
+        var render = GetRenderTemplate(item);
+            @if (render != null)
+        {
+            @render(Model)
+        }
+        else
+        {
+            <div class="@GetCssString(item)">
+                @AutoGenerateTemplate(item)
+            </div>
+        }
+        }
+        </div>
+    </GroupBox>;
+}

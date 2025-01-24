@@ -1,5 +1,5 @@
 ﻿{
-  "ThingsGateway.Debug.ChannelDataDebugComponent": {
+  "ThingsGateway.Debug.ChannelComponent": {
     "Name": "Name",
     "Name.Required": "{0} cannot be empty",
     "ChannelType": "Channel Type",
@@ -14,14 +14,7 @@
     "StopBits": "Stop Bits",
     "DtrEnable": "Dtr",
     "RtsEnable": "Rts",
-    "RemoteUrlNotNull": "Remote IP Address cannot be empty",
-    "BindUrlNotNull": "Local Bind IP Address cannot be empty",
-    "BindUrlOrRemoteUrlNotNull": "Remote IP Address or Local Bind IP Address cannot be empty",
-    "PortNameNotNull": "COM Port cannot be empty",
-    "BaudRateNotNull": "Baud Rate cannot be empty",
-    "DataBitsNotNull": "Data Bits can be empty",
-    "ParityNotNull": "Parity cannot be empty",
-    "StopBitsNotNull": "Stop Bits cannot be empty",
+
     "SaveChannel": "Add/Modify Channel",
     "DeleteChannel": "Delete Channel",
     "ClearChannel": "Clear Channel",
@@ -34,26 +27,44 @@
     "Disconnect": "Disconnect",
     "Channel": "Channel"
   },
+  "ThingsGateway.Foundation.ChannelOptionsDefault": {
+    "Name": "Name",
+    "Name.Required": "{0} cannot be empty",
+    "ChannelType": "ChannelType",
 
-  "ThingsGateway.Debug.AdapterDebugBase": {
-    "WriteSuccess": "Write Successful",
-    "DefaultSend": "Direct Send",
+    "RemoteUrl": "RemoteUrl",
+    "BindUrl": "BindUrl",
+
+    "PortName": "PortName",
+    "BaudRate": "BaudRate",
+    "DataBits": "DataBits",
+    "Parity": "Parity",
+    "StopBits": "StopBits",
+    "DtrEnable": "DtrEnable",
+    "RtsEnable": "RtsEnable",
+    "CacheTimeout": "CacheTimeout",
+    "ConnectTimeout": "ConnectTimeout",
+    "MaxConcurrentCount": "MaxConcurrentCount"
+  },
+  "ThingsGateway.Debug.DeviceComponentBase": {
+    "WriteSuccess": "WriteSuccess",
+    "DefaultSend": "DefaultSend",
     "Send": "Send",
-    "DataType": "Data Type",
-    "RegisterAddress": "Register Address",
-    "ArrayLength": "Array Length",
-    "WriteValue": "Write Value",
+    "DataType": "DataType",
+    "RegisterAddress": "RegisterAddress",
+    "ArrayLength": "ArrayLength",
+    "WriteValue": "WriteValue",
     "SendValue": "Send Raw Message"
   },
-  "ThingsGateway.Debug.AdapterDebugComponent": {
+  "ThingsGateway.Debug.DeviceComponent": {
     "HeaderText": "Channel Log",
-    "WriteSuccess": "Write Successful",
-    "DefaultSend": "Direct Send",
+    "WriteSuccess": "WriteSuccess",
+    "DefaultSend": "DefaultSend",
     "Send": "Send",
-    "DataType": "Data Type",
-    "RegisterAddress": "Register Address",
-    "ArrayLength": "Array Length",
-    "WriteValue": "Write Value",
+    "DataType": "DataType",
+    "RegisterAddress": "RegisterAddress",
+    "ArrayLength": "ArrayLength",
+    "WriteValue": "WriteValue",
     "SendValue": "Send Raw Message",
     "CommonFunctions": "Common Functions",
     "SpecialFunctions": "Special Functions",
@@ -61,8 +72,11 @@
     "Write": "Write",
     "MulRead": "Multiple Read"
   },
-  "ThingsGateway.Debug.ChannelDataEditComponent": {
+  "ThingsGateway.Debug.ChannelEditComponent": {
     "BasicInformation": "Basic Information",
     "Connection": "Connection"
+  },
+  "ThingsGateway.Debug.ConverterConfigComponent": {
+    "Converter": "Converter"
   }
 }

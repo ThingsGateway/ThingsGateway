@@ -14,12 +14,12 @@ namespace ThingsGateway.Foundation;
 public interface IDtu : ITcpService
 {
     /// <summary>
-    /// 心跳检测(大写16进制字符串)
+    /// 心跳检测(utf8)
     /// </summary>
-    public string HeartbeatHexString { get; set; }
+    public string Heartbeat { get; set; }
 
     /// <summary>
-    /// 默认Dtu注册包,utf-8字符串
+    /// 默认Dtu注册包(utf-8)
     /// </summary>
     public string DtuId { get; set; }
 }

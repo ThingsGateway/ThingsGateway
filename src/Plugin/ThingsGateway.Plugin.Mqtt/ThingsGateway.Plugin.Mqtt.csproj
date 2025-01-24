@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<Import Project="$(SolutionDir)Version.props" />
+	<Import Project="$(SolutionDir)PackNuget.props" />
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;</TargetFrameworks>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj">
+		</ProjectReference>
+		<ProjectReference Include="..\..\Gateway\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj">
+		</ProjectReference>
+
+		
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+	
+	
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' ">
+		<PackageReference Include="MQTTnet.AspNetCore" Version="4.3.7.1207" GeneratePathProperty="true">
+			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="MQTTnet" Version="4.3.7.1207" GeneratePathProperty="true">
+			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' != 'net6.0' ">
+		<PackageReference Include="MQTTnet.Server" Version="5.0.1.1416" GeneratePathProperty="true">
+			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="MQTTnet.AspNetCore" Version="5.0.1.1416" GeneratePathProperty="true">
+			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="MQTTnet" Version="5.0.1.1416" GeneratePathProperty="true">
+			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>
+
+
+ 

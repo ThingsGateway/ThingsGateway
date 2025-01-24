@@ -42,7 +42,6 @@ public class SingleFilePublish : ISingleFilePublish
         [
             "ThingsGateway.Furion",
             "ThingsGateway.NewLife.X",
-            "ThingsGateway.Core",
             "ThingsGateway.Razor",
             "ThingsGateway.Admin.Razor"   ,
             "ThingsGateway.Admin.Application",

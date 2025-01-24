@@ -1,0 +1,84 @@
+<Project>
+
+  <ItemGroup>
+    <PackageReference Include="ThingsGateway.Plugin.HJ212" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.BACnet" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--AllenBradleyCip 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.AllenBradleyCip" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--DCON 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.DCON" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--EDPF_NT 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.EDPF_NT" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--KELID2008 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.KELID2008" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--LKSIS 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.LKSIS" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--Melsec 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.Melsec" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--Omron 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.Omron" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--DKQ_A16D 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.DKQ_A16D" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--IDR210 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.IDR210" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--URF_R330 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.URF_R330" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <!--USBScaner 插件-->
+    <PackageReference Include="ThingsGateway.Plugin.USBScaner" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+
+    
+    <PackageReference Include="ThingsGateway.Plugin.SECS" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.TS550" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+    <PackageReference Include="ThingsGateway.Plugin.Vigor" Version="$(ProPluginVersion)" GeneratePathProperty="true" Private="false"  IncludeAssets=" native;" />
+
+  </ItemGroup>
+
+  <Target Name="CopyCustomPluginNugetPackages" AfterTargets="Build">
+	  <PropertyGroup>
+		  <PluginTargetFramework>net8.0</PluginTargetFramework>
+	  </PropertyGroup>
+    <ItemGroup>
+      <!-- setting up the variable for convenience -->
+      <PkgThingsGateway_Plugin_HJ212PackageFiles Include="$(PkgThingsGateway_Plugin_HJ212)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_BACnetPackageFiles Include="$(PkgThingsGateway_Plugin_BACnet)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_AllenBradleyCipPackageFiles Include="$(PkgThingsGateway_Plugin_AllenBradleyCip)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_DCONPackageFiles Include="$(PkgThingsGateway_Plugin_DCON)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_EDPF_NTPackageFiles Include="$(PkgThingsGateway_Plugin_EDPF_NT)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_KELID2008PackageFiles Include="$(PkgThingsGateway_Plugin_KELID2008)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_LKSISPackageFiles Include="$(PkgThingsGateway_Plugin_LKSIS)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_MelsecPackageFiles Include="$(PkgThingsGateway_Plugin_Melsec)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_OmronPackageFiles Include="$(PkgThingsGateway_Plugin_Omron)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_DKQ_A16DPackageFiles Include="$(PkgThingsGateway_Plugin_DKQ_A16D)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_IDR210PackageFiles Include="$(PkgThingsGateway_Plugin_IDR210)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_URF_R330PackageFiles Include="$(PkgThingsGateway_Plugin_URF_R330)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_USBScanerPackageFiles Include="$(PkgThingsGateway_Plugin_USBScaner)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_SECSPackageFiles Include="$(PkgThingsGateway_Plugin_SECS)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_TS550PackageFiles Include="$(PkgThingsGateway_Plugin_TS550)\Content\$(PluginTargetFramework)\**\*.*" />
+      <PkgThingsGateway_Plugin_VigorPackageFiles Include="$(PkgThingsGateway_Plugin_Vigor)\Content\$(PluginTargetFramework)\**\*.*" />
+
+    </ItemGroup>
+    <PropertyGroup>
+      <PluginFolder>$(TargetDir)GatewayPlugins\</PluginFolder>
+    </PropertyGroup>
+    <Message Text="将插件复制到插件目录 $(PluginFolder)" Importance="high" />
+
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_HJ212PackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.HJ212%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_BACnetPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.BACnet%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_AllenBradleyCipPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.AllenBradleyCip%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_DCONPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.DCON%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_EDPF_NTPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.EDPF_NT%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_KELID2008PackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.KELID2008%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_LKSISPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.LKSIS%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_MelsecPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.Melsec%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_OmronPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.Omron%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_DKQ_A16DPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.DKQ_A16D%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_IDR210PackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.IDR210%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_URF_R330PackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.URF_R330%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_USBScanerPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.USBScaner%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_SECSPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.SECS%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_TS550PackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.TS550%(RecursiveDir)" />
+    <Copy SourceFiles="@(PkgThingsGateway_Plugin_VigorPackageFiles)" DestinationFolder="$(PluginFolder)ThingsGateway.Plugin.Vigor%(RecursiveDir)" />
+    
+  </Target>
+
+</Project>

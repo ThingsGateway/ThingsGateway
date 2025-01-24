@@ -5,72 +5,25 @@
     "IntervalOrChange": "IntervalOrChange"
   },
 
-  "ThingsGateway.Gateway.Application.ConfigInfoController": {
-    "ConfigInfoController": "Get configuration information",
-    "GetChannelList": "Get channel information",
-    "GetCollectDeviceList": "Get device information",
-    "GetVariableList": "Get variable information"
-  },
   "ThingsGateway.Gateway.Application.ControlController": {
     "ControlController": "Device control",
-    "PauseCollectThread": "Control collection thread start/stop",
-    "PauseBusinessThread": "Control business thread start/stop",
-    "RestartCollectDeviceThread": "Restart collection thread",
-    "RestartBusinessDeviceThread": "Restart business thread",
-    "WriteDeviceMethods": "Write variables"
+    "PauseDeviceThreadAsync": "Control device thread start/stop",
+    "RestartDeviceThreadAsync": "Restart device thread",
+    "WriteVariablesAsync": "Write variables",
+    "RemoveAllCache": "Remove all cache",
+    "RemoveCache": "Remove device/channel Cache",
+    "RestartAllThread": "Restart all thread"
   },
   "ThingsGateway.Gateway.Application.RuntimeInfoController": {
     "RuntimeInfoController": "Get runtime information",
-    "GetCollectDeviceList": "Get device information",
+    "GetDeviceListAsync": "Get device information",
+    "GetChannelListAsync": "Get channel information",
     "GetVariableList": "Get variable information",
     "GetRealAlarmList": "Get real-time alarm information",
     "CheckRealAlarm": "Confirm real-time alarm"
   },
 
 
-  "ThingsGateway.Gateway.Application.VariableSearchInput": {
-    "Name": "Name",
-    "DeviceId": "Device",
-    "BusinessDeviceId": "BusinessDevice",
-    "RegisterAddress": "RegisterAddress"
-  },
-  "ThingsGateway.Gateway.Application.RpcLogPageInput": {
-    "SearchDate": "SearchDate",
-    "OperateObject": "OperateObject",
-    "OperateSource": "OperateSource"
-  },
-  "ThingsGateway.Gateway.Application.BackendLogPageInput": {
-    "SearchDate": "SearchDate",
-    "LogLevel": "LogLevel",
-    "LogSource": "LogSource"
-  },
-  "ThingsGateway.Gateway.Application.CollectDeviceRuntime": {
-    "SourceVariableCount": "SourceVariableCount",
-    "MethodVariableCount": "MethodVariableCount",
-    "ActiveTime": "ActiveTime",
-    "DeviceVariableCount": "DeviceVariableCount",
-    "LastErrorMessage": "LastErrorMessage",
-
-    "Name": "Name",
-    "Name.Required": " {0}  cannot be empty",
-    "Description": "Description",
-    "ChannelId": "Channel",
-    "ChannelName": "ChannelName",
-    "IntervalTime": "IntervalTime",
-    "IntervalTime.MinValue": " {0} value is too small",
-
-    "PluginName": "PluginName",
-    "Enable": "Enable",
-
-    "RedundantEnable": "RedundantEnable",
-    "RedundantDeviceId": "RedundantDevice",
-
-    "Remark1": "Remark1",
-    "Remark2": "Remark2",
-    "Remark3": "Remark3",
-    "Remark4": "Remark4",
-    "Remark5": "Remark5"
-  },
   "ThingsGateway.Gateway.Application.DeviceRuntime": {
     "SourceVariableCount": "SourceVariableCount",
     "MethodVariableCount": "MethodVariableCount",
@@ -87,6 +40,14 @@
     "IntervalTime.MinValue": " {0} value is too small",
 
     "PluginName": "PluginName",
+    "PluginName.Required": "{0} cannot be empty",
+
+    "LogEnable": "LogEnable",
+    "LogLevel": "LogLevel",
+    "RedundantSwitchType": "RedundantSwitchType",
+    "RedundantScanIntervalTime": "RedundantScanIntervalTime",
+    "RedundantScript": "RedundantScript",
+
     "Enable": "Enable",
 
     "RedundantEnable": "RedundantEnable",
@@ -96,8 +57,31 @@
     "Remark2": "Remark2",
     "Remark3": "Remark3",
     "Remark4": "Remark4",
-    "Remark5": "Remark5"
+    "Remark5": "Remark5",
+
+
+    "RedundantDeviceNotNull": "When enabling redundancy, you must select a redundant device",
+    "SaveDevice": "Add/Modify Device",
+    "CopyDevice": "Copy Device",
+    "DeleteDevice": "Delete Device",
+    "ClearDevice": "Clear Device",
+    "ExportDevice": "Export Device",
+    "ImportDevice": "Import Device",
+    "ImportNullError": "Unable to recognize",
+    "RedundantDeviceError": "Redundant device error",
+    "ChannelError": "Channel error",
+    "NotNull": "{0} does not exist",
+    "DeviceNotNull": "Device name does not exist",
+    "NameDump": "Duplicate device name {0}",
+
+
+
+    "DeviceStatus": "DeviceStatus",
+
+    "PluginNotNull": "Plugin name does not exist"
+
   },
+
   "ThingsGateway.Gateway.Application.VariableRuntime": {
     "ChangeTime": "ChangeTime",
     "CollectTime": "CollectTime",
@@ -123,6 +107,7 @@
     "WriteExpressions": "WriteExpressions",
     "RpcWriteEnable": "RpcWriteEnable",
     "SaveValue": "SaveValue",
+    "ArrayLength": "ArrayLength",
 
     "AlarmDelay": "AlarmDelay",
     "BoolOpenAlarmEnable": "BoolOpenAlarmEnable",
@@ -168,16 +153,6 @@
     "EventType": "EventType"
   },
 
-  "ThingsGateway.Gateway.Application.DeviceHostedService": {
-    "ChannelNotNull": "Device {0} - Channel {1} cannot be null",
-    "ChannelNotEnable": "Device {0} - Channel {1} is not enabled",
-    "UpadteDeviceIdNotFound": "Failed to update device thread, device with id {0} does not exist",
-    "DeviceSwtichMain": "Device {0} switched to main channel",
-    "DeviceSwtichBackup": "Device {0} switched to backup channel",
-    "DeviceInitFail": "Device {0} initialization failed, restarting thread",
-    "DeviceTaskDeath": "Device {0} thread died, restarting thread",
-    "InitError": "{0} creation error"
-  },
   "ThingsGateway.Gateway.Application.BusinessBase": {
     "IntervalInsertVariableFail": "Interval insert variable failed",
     "IntervalInsertDeviceFail": "Interval insert device failed",
@@ -193,14 +168,7 @@
     "MethodSuccess": "{0} - Execute method[{1}] - Succeeded {2}",
     "WriteExpressionsError": "{0} conversion write expression {1} failed {2}"
   },
-  "ThingsGateway.Gateway.Application.BusinessDeviceHostedService": {
-    "DeviceRuntimeGeting": "Getting business device configuration information",
-    "DeviceRuntimeGeted": "Business device configuration information obtained"
-  },
-  "ThingsGateway.Gateway.Application.CollectDeviceHostedService": {
-    "DeviceRuntimeGeting": "Getting collection device configuration information",
-    "DeviceRuntimeGeted": "Collection device configuration information obtained"
-  },
+
   "ThingsGateway.Gateway.Application.DriverBase": {
     "DeviceTaskStart": "Device {0} thread started",
     "DeviceTaskStartTimeout": "Device {0} thread start timeout {1} s",
@@ -208,20 +176,17 @@
     "DeviceTaskPause": "Device {0} thread paused",
     "DeviceTaskContinue": "Device {0} thread continued"
   },
-  "ThingsGateway.Gateway.Application.ChannelThread": {
-    "PluginTypeDiff": "Device {0} and channel {1} have different device types, cannot select the same channel",
-    "InitFail": "Plugin {0} device {1} initialization failed"
-  },
-  "ThingsGateway.Gateway.Application.DoTask": {
-    "Timeout": "{0} stop timeout, exiting wait block",
-    "Error": "{0} stop error",
-    "Stoping": "{0} stopping",
-    "Stoped": "{0} stopped"
+  "ThingsGateway.Gateway.Application.DeviceThreadManage": {
+    "InitFail": "Plugin {0} device {1} initialization failed",
+    "ChannelCreate": "channel {0} create",
+    "ChannelDispose": "channel {0} dispose"
+
   },
 
+
   "ThingsGateway.Gateway.Application.AlarmHostedService": {
-    "RealAlarmTask": "Real-time alarm thread",
-    "RealAlarmTaskStart": "Real-time alarm thread start"
+    "RealAlarmTask": "Realtime alarm service",
+    "RealAlarmTaskStart": "Realtime alarm service start"
   },
   "ThingsGateway.Gateway.Application.PluginService": {
     "LoadTypeSuccess": "Plugin {0} loaded successfully",
@@ -232,7 +197,7 @@
     "LoadPluginFail": "Failed to load plugin {0}",
     "AddPluginFile": "Add plugin file {0}"
   },
-  "ThingsGateway.Gateway.Application.PluginOutput": {
+  "ThingsGateway.Gateway.Application.PluginInfo": {
     "FullName": "FullName",
     "FileName": "FileName",
     "PluginType": "PluginType",
@@ -266,12 +231,6 @@
     "DeleteRpc": "DeleteRPCLog"
   },
 
-  "ThingsGateway.Gateway.Application.DeviceSearchInput": {
-    "ChannelId": "ChannelId",
-    "Name": "Name",
-    "PluginName": "PluginName",
-    "PluginType": "PluginType"
-  },
   "ThingsGateway.Gateway.Application.Device": {
     "Name": "Name",
     "Name.Required": "{0} cannot be empty",
@@ -281,12 +240,15 @@
     "ChannelId.Required": "{0} cannot be empty",
     "IntervalTime": "DefaultIntervalTime",
     "IntervalTime.MinValue": "{0} value is too small",
-    "PluginType": "PluginType",
-    "PluginName": "PluginName",
-    "PluginName.Required": "{0} cannot be empty",
+    "LogEnable": "LogEnable",
+    "LogLevel": "LogLevel",
     "Enable": "Enable",
     "RedundantEnable": "RedundantEnable",
     "RedundantDeviceId": "RedundantDevice",
+    "RedundantSwitchType": "RedundantSwitchType",
+    "RedundantScanIntervalTime": "RedundantScanIntervalTime",
+    "RedundantScript": "RedundantScript",
+
     "Remark1": "Remark1",
     "Remark2": "Remark2",
     "Remark3": "Remark3",
@@ -303,12 +265,18 @@
     "RedundantDeviceError": "Redundant device error",
     "ChannelError": "Channel error",
     "NotNull": "{0} does not exist",
-    "DeviceNotNull": "Device name does not exist"
+    "DeviceNotNull": "Device name does not exist",
+    "PluginNotNull": "Plugin name does not exist",
+    "NameDump": "Duplicate device name {0}"
   },
-  "ThingsGateway.Gateway.Application.Channel": {
+  "ThingsGateway.Gateway.Application.ChannelRuntime": {
     "Name": "Name",
     "Name.Required": "{0} cannot be empty",
     "ChannelType": "ChannelType",
+    "PluginName": "PluginName",
+    "PluginName.Required": "{0} cannot be empty",
+    "LogLevel": "LogLevel",
+
     "Enable": "Enable",
     "LogEnable": "LogEnable",
     "RemoteUrl": "RemoteUrl",
@@ -320,14 +288,9 @@
     "StopBits": "StopBits",
     "DtrEnable": "DtrEnable",
     "RtsEnable": "RtsEnable",
-    "RemoteUrlNotNull": "Remote IP Address cannot be empty",
-    "BindUrlNotNull": "Local Bind IP Address cannot be empty",
-    "BindUrlOrRemoteUrlNotNull": "Remote IP Address or Local Bind IP Address cannot be empty",
-    "PortNameNotNull": "COM Port cannot be empty",
-    "BaudRateNotNull": "Baud Rate cannot be empty",
-    "DataBitsNotNull": "Data Bits can be empty",
-    "ParityNotNull": "Parity cannot be empty",
-    "StopBitsNotNull": "Stop Bits cannot be empty",
+    "CacheTimeout": "CacheTimeout",
+    "ConnectTimeout": "ConnectTimeout",
+    "MaxConcurrentCount": "MaxConcurrentCount",
     "SaveChannel": "Add/Modify Channel",
     "DeleteChannel": "Delete Channel",
     "ClearChannel": "Clear Channel",
@@ -338,7 +301,41 @@
     "Connect": "Connect",
     "Confim": "Confim",
     "Disconnect": "Disconnect",
-    "Channel": "Channel"
+    "Channel": "Channel",
+    "NameDump": "Duplicate channel name {0}"
+  },
+  "ThingsGateway.Gateway.Application.Channel": {
+    "Name": "Name",
+    "Name.Required": "{0} cannot be empty",
+    "ChannelType": "ChannelType",
+    "PluginName": "PluginName",
+    "PluginName.Required": "{0} cannot be empty",
+    "LogLevel": "LogLevel",
+
+    "Enable": "Enable",
+    "LogEnable": "LogEnable",
+    "RemoteUrl": "RemoteUrl",
+    "BindUrl": "BindUrl",
+    "PortName": "PortName",
+    "BaudRate": "BaudRate",
+    "DataBits": "DataBits",
+    "Parity": "Parity",
+    "StopBits": "StopBits",
+    "DtrEnable": "DtrEnable",
+    "RtsEnable": "RtsEnable",
+
+    "SaveChannel": "Add/Modify Channel",
+    "DeleteChannel": "Delete Channel",
+    "ClearChannel": "Clear Channel",
+    "ExportChannel": "Export Channel",
+    "ImportChannel": "Import Channel",
+    "ImportNullError": "Unable to recognize",
+    "NotOther": "Not supporting other channel types",
+    "Connect": "Connect",
+    "Confim": "Confim",
+    "Disconnect": "Disconnect",
+    "Channel": "Channel",
+    "NameDump": "Duplicate channel name {0}"
   },
   "ThingsGateway.Gateway.Application.Variable": {
     "AddressOrOtherMethodNotNull": "Variable address or special method cannot be empty at the same time",
@@ -401,7 +398,20 @@
     "Remark2": "Remark2",
     "Remark3": "Remark3",
     "Remark4": "Remark4",
-    "Remark5": "Remark5"
+    "Remark5": "Remark5",
+    "NameDump": "Duplicate variable name {0}",
+    "PluginNotNull": "Plugin name does not exist",
+    "ArrayLength": "ArrayLength"
+  },
+  "ThingsGateway.Gateway.Application.RpcLogPageInput": {
+    "SearchDate": "SearchDate",
+    "OperateObject": "OperateObject",
+    "OperateSource": "OperateSource"
+  },
+  "ThingsGateway.Gateway.Application.BackendLogPageInput": {
+    "SearchDate": "SearchDate",
+    "LogLevel": "LogLevel",
+    "LogSource": "LogSource"
   },
   "ThingsGateway.Gateway.Application.RpcService": {
     "VariableNotNull": "{0} variable does not exist",

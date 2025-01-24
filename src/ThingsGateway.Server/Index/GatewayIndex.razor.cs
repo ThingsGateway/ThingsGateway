@@ -26,13 +26,14 @@ using ThingsGateway.Admin.Razor;
 using ThingsGateway.Extension;
 using ThingsGateway.Gateway.Application;
 
-namespace ThingsGateway.Gateway.Razor;
+namespace ThingsGateway.Server;
 
 
 [Authorize]
 [IgnoreRolePermission]
 [Route("/")]
 [Route("/index")]
+[TabItemOption(Text = "Home", Icon = "fas fa-house")]
 public partial class GatewayIndex : IDisposable
 {
     #region 曲线
@@ -68,7 +69,7 @@ public partial class GatewayIndex : IDisposable
             }
             catch (Exception ex)
             {
-                System.Console.WriteLine(ex);
+                NewLife.Log.XTrace.WriteException(ex);
             }
         }
     }

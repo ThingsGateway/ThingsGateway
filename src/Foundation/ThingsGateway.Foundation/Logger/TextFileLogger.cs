@@ -19,7 +19,7 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public class TextFileLogger : ThingsGateway.NewLife.Log.TextFileLog, TouchSocket.Core.ILog, IDisposable
 {
-    private static string separator = Environment.NewLine + "-----ThingsGateway-Log-Separator-----" + Environment.NewLine;
+    private static string separator = Environment.NewLine + "-----分隔符-----" + Environment.NewLine;
 
     /// <summary>
     /// 分隔符
@@ -36,7 +36,8 @@ public class TextFileLogger : ThingsGateway.NewLife.Log.TextFileLog, TouchSocket
             separatorBytes = Encoding.UTF8.GetBytes(separator);
         }
     }
-    private static byte[] separatorBytes = Encoding.UTF8.GetBytes(Environment.NewLine + "-----ThingsGateway-Log-Separator-----" + Environment.NewLine);
+
+    private static byte[] separatorBytes = Encoding.UTF8.GetBytes(Environment.NewLine + "-----分隔符-----" + Environment.NewLine);
 
     internal static byte[] SeparatorBytes
     {
@@ -60,27 +61,27 @@ public class TextFileLogger : ThingsGateway.NewLife.Log.TextFileLog, TouchSocket
         _headEnable = false;
     }
 
+
+    /// <summary>每个目录的日志实例应该只有一个，所以采用静态创建</summary>
+    /// <param name="path">日志目录或日志文件路径</param>
+    /// <returns></returns>
+    public static TextFileLogger CreateSingleFileLogger(String path)
+    {
+        if (path.IsNullOrEmpty()) throw new ArgumentNullException(nameof(path));
+
+        return cache.GetOrAdd(path, k => new TextFileLogger(k, true));
+    }
     /// <summary>每个目录的日志实例应该只有一个，所以采用静态创建</summary>
     /// <param name="path">日志目录或日志文件路径</param>
     /// <param name="fileFormat"></param>
     /// <returns></returns>
-    public static TextFileLogger CreateTextLogger(String path, String? fileFormat = null)
+    public static TextFileLogger GetMultipleFileLogger(String path, String? fileFormat = null)
     {
         //if (path.IsNullOrEmpty()) path = XTrace.LogPath;
         if (path.IsNullOrEmpty()) path = "Log";
 
         var key = (path + fileFormat).ToLower();
         return cache.GetOrAdd(key, k => new TextFileLogger(path, false, fileFormat));
-    }
-
-    /// <summary>每个目录的日志实例应该只有一个，所以采用静态创建</summary>
-    /// <param name="path">日志目录或日志文件路径</param>
-    /// <returns></returns>
-    public static TextFileLogger CreateTextFileLogger(String path)
-    {
-        if (path.IsNullOrEmpty()) throw new ArgumentNullException(nameof(path));
-
-        return cache.GetOrAdd(path, k => new TextFileLogger(k, true));
     }
 
 

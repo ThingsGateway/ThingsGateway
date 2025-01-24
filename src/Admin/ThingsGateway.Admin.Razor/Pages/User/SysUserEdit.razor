@@ -1,0 +1,41 @@
+﻿@namespace ThingsGateway.Admin.Razor
+@using ThingsGateway.Admin.Application
+<div class="row g-2 mx-1 form-inline">
+
+    <div class="col-12  col-md-12">
+        <SysUserAvatarEdit Model="Model"></SysUserAvatarEdit>
+    </div>
+
+    <div class="col-12  col-md-6">
+        <BootstrapInput @bind-Value="Model.Account"></BootstrapInput>
+    </div>
+
+
+    <div class="col-12  col-md-6">
+        <RadioList IsButton="true" @bind-Value="Model.Status" Items="BoolItems"></RadioList>
+    </div>
+
+    <div class="col-12  col-md-6">
+        <BootstrapInput @bind-Value="Model.Phone"></BootstrapInput>
+    </div>
+    <div class="col-12  col-md-6">
+        <BootstrapInput @bind-Value="Model.Email"></BootstrapInput>
+    </div>
+
+    <div class="col-12  col-md-12">
+        <Cascader @bind-Value="Model.PositionId" Items="@Items" ParentSelectable="false" OnSelectedItemChanged="OnSelectedItemChanged"></Cascader>
+    </div>
+
+    <div class="col-12  col-md-12">
+        <UserChoice DisplayText=@Model.Description(a=>a.DirectorId) Values="new HashSet<long>(){Model.DirectorId??0}"
+                    ValuesChanged="(a)=>Model.DirectorId=a.FirstOrDefault()"></UserChoice>
+    </div>
+
+    <div class="col-12 col-sm-10">
+        <Slider @bind-Value="@Model.SortCode" Step="1" UseInputEvent="true" Max="999" Min="-999"></Slider>
+    </div>
+    <div class="col-12 col-sm-2">
+        <BootstrapInput @bind-Value="Model.SortCode" ShowLabel="false"></BootstrapInput>
+    </div>
+</div>
+

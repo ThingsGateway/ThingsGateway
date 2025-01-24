@@ -23,23 +23,30 @@ namespace ThingsGateway.Foundation;
 public static class ThingsGatewayBitConverterExtension
 {
     /// <summary>
-    /// 从设备地址中解析附加信息，包括 dataFormat=XX;4字节数据解析规则、encoding=XX;字符串解析规则、len=XX;读写长度、bcdFormat=XX; bcd解析规则等。
-    /// 这个方法获取<see cref="IThingsGatewayBitConverter"/>，并去掉地址中的所有额外信息。
+    /// 从设备地址中解析附加信息
+    /// 这个方法获取<see cref="IThingsGatewayBitConverter"/>
     /// 解析步骤将被缓存。
     /// </summary>
     /// <param name="registerAddress">设备地址</param>
     /// <param name="defaultBitConverter">默认的数据转换器</param>
     /// <returns><see cref="IThingsGatewayBitConverter"/> 实例</returns>
-    public static IThingsGatewayBitConverter GetTransByAddress(this IThingsGatewayBitConverter defaultBitConverter, ref string? registerAddress)
+    public static IThingsGatewayBitConverter GetTransByAddress(this IThingsGatewayBitConverter defaultBitConverter, string? registerAddress)
     {
         if (registerAddress.IsNullOrEmpty()) return defaultBitConverter;
 
         var type = defaultBitConverter.GetType();
         // 尝试从缓存中获取解析结果
-        var cacheKey = $"{nameof(ThingsGatewayBitConverterExtension)}_{nameof(GetTransByAddress)}_{type.FullName}_{defaultBitConverter.ToJsonString()}_{registerAddress}";
+        var cacheKey = $"{nameof(ThingsGatewayBitConverterExtension)}_{nameof(GetTransByAddress)}_{type.FullName}_{type.TypeHandle.Value}_{defaultBitConverter.ToJsonString()}_{registerAddress}";
         if (MemoryCache.Instance.TryGetValue(cacheKey, out IThingsGatewayBitConverter cachedConverter))
         {
-            return cachedConverter!;
+            if (cachedConverter.Equals(defaultBitConverter))
+            {
+                return defaultBitConverter;
+            }
+            else
+            {
+                return (IThingsGatewayBitConverter)cachedConverter.Map(type);
+            }
         }
 
         // 去除设备地址两端的空格
@@ -50,7 +57,6 @@ public static class ThingsGatewayBitConverterExtension
 
         DataFormatEnum? dataFormat = null;
         Encoding? encoding = null;
-        int? length = null;
         bool? wstring = null;
         int? stringlength = null;
         BcdFormatEnum? bcdFormat = null;
@@ -63,9 +69,9 @@ public static class ThingsGatewayBitConverterExtension
                 var dataFormatName = str.Substring(5);
                 try { if (Enum.TryParse<DataFormatEnum>(dataFormatName, true, out var dataFormat1)) dataFormat = dataFormat1; } catch { }
             }
-            else if (str.StartsWith("w=", StringComparison.OrdinalIgnoreCase))
+            else if (str.StartsWith("vsl=", StringComparison.OrdinalIgnoreCase))
             {
-                var wstringName = str.Substring(2);
+                var wstringName = str.Substring(4);
                 try { if (bool.TryParse(wstringName, out var wstring1)) wstring = wstring1; } catch { }
             }
             // 解析 encoding
@@ -79,12 +85,6 @@ public static class ThingsGatewayBitConverterExtension
             {
                 var lenStr = str.Substring(4);
                 stringlength = lenStr.IsNullOrEmpty() ? null : Convert.ToUInt16(lenStr);
-            }
-            // 解析 array length
-            else if (str.StartsWith("arraylen=", StringComparison.OrdinalIgnoreCase))
-            {
-                var lenStr = str.Substring(9);
-                length = lenStr.IsNullOrEmpty() ? null : Convert.ToUInt16(lenStr);
             }
             // 解析 bcdFormat
             else if (str.StartsWith("bcd=", StringComparison.OrdinalIgnoreCase))
@@ -107,8 +107,9 @@ public static class ThingsGatewayBitConverterExtension
         registerAddress = sb.ToString();
 
         // 如果没有解析出任何附加信息，则直接返回默认的数据转换器
-        if (bcdFormat == null && length == null && stringlength == null && encoding == null && dataFormat == null && wstring == null)
+        if (bcdFormat == null && stringlength == null && encoding == null && dataFormat == null && wstring == null)
         {
+            MemoryCache.Instance.Set(cacheKey, defaultBitConverter!, 3600);
             return defaultBitConverter;
         }
 
@@ -123,10 +124,6 @@ public static class ThingsGatewayBitConverterExtension
         if (bcdFormat != null)
         {
             converter.BcdFormat = bcdFormat.Value;
-        }
-        if (length != null)
-        {
-            converter.ArrayLength = length.Value;
         }
         if (wstring != null)
         {
@@ -151,9 +148,9 @@ public static class ThingsGatewayBitConverterExtension
     /// <summary>
     /// 根据数据类型获取字节数组
     /// </summary>
-    public static byte[] GetBytesFormData(this IThingsGatewayBitConverter byteConverter, JToken value, DataTypeEnum dataType)
+    public static byte[] GetBytesFormData(this IThingsGatewayBitConverter byteConverter, JToken value, DataTypeEnum dataType, int arrayLength = 1)
     {
-        if (byteConverter.ArrayLength > 1)
+        if (arrayLength > 1)
         {
             switch (dataType)
             {
@@ -191,7 +188,7 @@ public static class ThingsGatewayBitConverterExtension
                 default:
                     List<byte> bytes = new();
                     String[] strings = value.ToObject<String[]>();
-                    for (int i = 0; i < byteConverter.ArrayLength; i++)
+                    for (int i = 0; i < arrayLength; i++)
                     {
                         var data = byteConverter.GetBytes(strings[i]);
                         bytes.AddRange(data);
@@ -243,75 +240,75 @@ public static class ThingsGatewayBitConverterExtension
     /// <summary>
     /// 根据数据类型获取实际值
     /// </summary>
-    public static object GetDataFormBytes(this IThingsGatewayBitConverter byteConverter, IProtocol protocol, string address, byte[] buffer, int index, DataTypeEnum dataType)
+    public static object GetDataFormBytes(this IThingsGatewayBitConverter byteConverter, IDevice device, string address, byte[] buffer, int index, DataTypeEnum dataType, int arrayLength)
     {
         switch (dataType)
         {
             case DataTypeEnum.Boolean:
-                return byteConverter.ArrayLength > 1 ?
-                byteConverter.ToBoolean(buffer, index, byteConverter.ArrayLength.Value, protocol.BitReverse(address)) :
-                byteConverter.ToBoolean(buffer, index, protocol.BitReverse(address));
+                return arrayLength > 1 ?
+                byteConverter.ToBoolean(buffer, index, arrayLength, device.BitReverse(address)) :
+                byteConverter.ToBoolean(buffer, index, device.BitReverse(address));
 
             case DataTypeEnum.Byte:
                 return
-                byteConverter.ArrayLength > 1 ?
-                byteConverter.ToByte(buffer, index, byteConverter.ArrayLength.Value) :
+                arrayLength > 1 ?
+                byteConverter.ToByte(buffer, index, arrayLength) :
                 byteConverter.ToByte(buffer, index);
 
             case DataTypeEnum.Int16:
                 return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToInt16(buffer, index, byteConverter.ArrayLength.Value) :
+                 arrayLength > 1 ?
+                byteConverter.ToInt16(buffer, index, arrayLength) :
                 byteConverter.ToInt16(buffer, index);
 
             case DataTypeEnum.UInt16:
                 return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToUInt16(buffer, index, byteConverter.ArrayLength.Value) :
+                 arrayLength > 1 ?
+                byteConverter.ToUInt16(buffer, index, arrayLength) :
                 byteConverter.ToUInt16(buffer, index);
 
             case DataTypeEnum.Int32:
                 return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToInt32(buffer, index, byteConverter.ArrayLength.Value) :
+                 arrayLength > 1 ?
+                byteConverter.ToInt32(buffer, index, arrayLength) :
                 byteConverter.ToInt32(buffer, index);
 
             case DataTypeEnum.UInt32:
                 return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToUInt32(buffer, index, byteConverter.ArrayLength.Value) :
+                 arrayLength > 1 ?
+                byteConverter.ToUInt32(buffer, index, arrayLength) :
                 byteConverter.ToUInt32(buffer, index);
 
             case DataTypeEnum.Int64:
                 return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToInt64(buffer, index, byteConverter.ArrayLength.Value) :
+                 arrayLength > 1 ?
+                byteConverter.ToInt64(buffer, index, arrayLength) :
                 byteConverter.ToInt64(buffer, index);
 
             case DataTypeEnum.UInt64:
                 return
-                byteConverter.ArrayLength > 1 ?
-                byteConverter.ToUInt64(buffer, index, byteConverter.ArrayLength.Value) :
+                arrayLength > 1 ?
+                byteConverter.ToUInt64(buffer, index, arrayLength) :
                 byteConverter.ToUInt64(buffer, index);
 
             case DataTypeEnum.Single:
                 return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToSingle(buffer, index, byteConverter.ArrayLength.Value) :
+                 arrayLength > 1 ?
+                byteConverter.ToSingle(buffer, index, arrayLength) :
                 byteConverter.ToSingle(buffer, index);
 
             case DataTypeEnum.Double:
                 return
-                 byteConverter.ArrayLength > 1 ?
-                byteConverter.ToDouble(buffer, index, byteConverter.ArrayLength.Value) :
+                 arrayLength > 1 ?
+                byteConverter.ToDouble(buffer, index, arrayLength) :
                 byteConverter.ToDouble(buffer, index);
 
             case DataTypeEnum.String:
             default:
-                if (byteConverter.ArrayLength > 1)
+                if (arrayLength > 1)
                 {
                     List<String> strings = new();
-                    for (int i = 0; i < byteConverter.ArrayLength; i++)
+                    for (int i = 0; i < arrayLength; i++)
                     {
                         var data = byteConverter.ToString(buffer, index + i * byteConverter.StringLength ?? 1, byteConverter.StringLength ?? 1);
                         strings.Add(data);

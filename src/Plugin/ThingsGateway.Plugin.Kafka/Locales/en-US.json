@@ -1,0 +1,28 @@
+﻿{
+  "ThingsGateway.Plugin.Kafka.KafkaProducerProperty": {
+    "BootStrapServers": "BootStrapServers",
+    "DetailLog": "DetailLog",
+    "Timeout": "Timeout",
+    "SaslUsername": "SaslUsername",
+    "SaslPassword": "SaslPassword",
+    "SecurityProtocol": "SecurityProtocol",
+    "SaslMechanism": "SaslMechanism",
+
+    "BigTextScriptDeviceModel": "BigTextScriptDeviceModel",
+    "BigTextScriptVariableModel": "BigTextScriptVariableModel",
+    "BigTextScriptAlarmModel": "BigTextScriptAlarmModel",
+    "IsDeviceList": "IsDeviceList",
+    "IsVariableList": "IsVariableList",
+    "IsAlarmList": "IsAlarmList",
+    "DeviceTopic": "DeviceTopic",
+    "VariableTopic": "VariableTopic",
+    "AlarmTopic": "AlarmTopic",
+    "BusinessUpdateEnum": "BusinessUpdateEnum",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "CacheFileMaxLength": "CacheFileMaxLength(mb)",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  }
+}

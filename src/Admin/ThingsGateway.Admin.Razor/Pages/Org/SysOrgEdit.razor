@@ -1,0 +1,54 @@
+﻿@namespace ThingsGateway.Admin.Razor
+@using ThingsGateway.Admin.Application
+<div class="row g-2 mx-1 form-inline">
+
+
+    <div class="col-12  col-md-12">
+        <BootstrapInputGroup>
+            <SelectTree @key=Key TValue="long" Items="Items" @bind-Value=Model.ParentId ShowRequired="!AppContext.CurrentUser.IsGlobal" ShowLabel="true" @ref=selectTree />
+            @if (AppContext.CurrentUser.IsGlobal)
+            {
+                <Button Icon="fa-solid fa-xmark" Color="Color.Secondary" OnClick="CleanParentId"></Button>
+            }
+
+        </BootstrapInputGroup>
+    </div>
+
+    <div class="col-12  col-md-12">
+        <BootstrapInput @bind-Value="Model.Name"></BootstrapInput>
+    </div>
+    <div class="col-12  col-md-12">
+        <BootstrapInput @bind-Value="Model.Code"></BootstrapInput>
+    </div>
+
+
+    <div class="col-12  col-md-12">
+        @if (AppContext.CurrentUser.IsGlobal)
+        {
+            <RadioList IsButton="true" @bind-Value="Model.Category"></RadioList>
+        }
+    </div>
+
+    <div class="col-12  col-md-12">
+        <UserChoice DisplayText=@Model.Description(a=>a.DirectorId) Values="new HashSet<long>(){Model.DirectorId??0}"
+            ValuesChanged="(a)=>Model.DirectorId=a.FirstOrDefault()"></UserChoice>
+    </div>
+    
+    <div class="col-12  col-md-12">
+        <RadioList IsButton="true" @bind-Value="Model.Status" Items="BoolItems"></RadioList>
+    </div>
+    <div class="col-12 col-sm-10">
+        <Slider @bind-Value="@Model.SortCode" Step="1" UseInputEvent="true" Max="999" Min="-999"></Slider>
+    </div>
+    <div class="col-12 col-sm-2">
+        <BootstrapInput @bind-Value="Model.SortCode" ShowLabel="false"></BootstrapInput>
+    </div>
+</div>
+
+
+
+
+@code{
+    [NotNull]
+    SelectTree<long>? selectTree { get; set; }
+}

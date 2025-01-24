@@ -4,86 +4,32 @@
     "Interval": "定时",
     "IntervalOrChange": "定时或变化"
   },
-  "ThingsGateway.Gateway.Application.ConfigInfoController": {
-    "ConfigInfoController": "获取配置信息",
-    "GetChannelList": "获取通道信息",
-    "GetCollectDeviceList": "获取设备信息",
-    "GetVariableList": "获取变量信息"
-  },
+
   "ThingsGateway.Gateway.Application.ControlController": {
     "ControlController": "设备控制",
-    "PauseCollectThread": "控制采集线程启停",
-    "PauseBusinessThread": "控制业务线程启停",
-    "RestartCollectDeviceThread": "重启采集线程",
-    "RestartBusinessDeviceThread": "重启业务线程",
-    "WriteDeviceMethods": "写入变量"
+    "RemoveAllCache": "清空全部缓存",
+    "RemoveCache": "删除通道/设备缓存",
+    "PauseDeviceThreadAsync": "控制设备线程启停",
+    "RestartAllThread": "重启全部线程",
+    "RestartDeviceThreadAsync": "重启设备线程",
+    "WriteVariablesAsync": "写入变量"
   },
   "ThingsGateway.Gateway.Application.RuntimeInfoController": {
     "RuntimeInfoController": "获取运行态信息",
-    "GetCollectDeviceList": "获取设备信息",
+    "GetChannelListAsync": "获取通道信息",
+    "GetDeviceListAsync": "获取设备信息",
     "GetVariableList": "获取变量信息",
     "GetRealAlarmList": "获取实时报警信息",
     "CheckRealAlarm": "确认实时报警"
   },
 
-  "ThingsGateway.Gateway.Application.VariableSearchInput": {
-    "Name": "变量名称",
-    "DeviceId": "采集设备",
-    "BusinessDeviceId": "业务设备",
-    "RegisterAddress": "寄存器地址"
-  },
-
-  "ThingsGateway.Gateway.Application.CollectDeviceRuntime": {
-    "SourceVariableCount": "打包数量",
-    "MethodVariableCount": "方法数量",
-    "ActiveTime": "活跃时间",
-    "DeviceVariableCount": "变量数量",
-    "LastErrorMessage": "离线原因",
-
-    "Name": "名称",
-    "Name.Required": " {0} 不可为空",
-    "Description": "描述",
-    "ChannelId": "通道",
-    "ChannelName": "通道",
-    "ChannelId.MinValue": " {0} 不可为空",
-    "ChannelId.Required": " {0} 不可为空",
-    "IntervalTime": "默认执行间隔",
-    "IntervalTime.MinValue": " {0} 值太小",
-
-    "PluginName": "插件名称",
-    "PluginName.Required": " {0} 不可为空",
-    "Enable": "设备使能",
-
-    "RedundantEnable": "启用冗余",
-    "RedundantDeviceId": "冗余设备",
-
-    "Remark1": "备用1",
-    "Remark2": "备用2",
-    "Remark3": "备用3",
-    "Remark4": "备用4",
-    "Remark5": "备用5",
-
-    "RedundantDeviceNotNull": "启用冗余时，必须选择备用设备",
-
-    "SaveDevice": "添加/修改设备",
-    "CopyDevice": "复制设备",
-    "DeleteDevice": "删除设备",
-    "ClearDevice": "清空设备",
-    "ExportDevice": "导出设备",
-    "ImportDevice": "导入设备",
-
-    "ImportNullError": "无法识别",
-    "RedundantDeviceError": "冗余设备错误",
-    "ChannelError": "通道错误",
-    "NotNull": " {0} 不存在",
-    "DeviceNotNull": "设备名称不存在"
-  },
   "ThingsGateway.Gateway.Application.DeviceRuntime": {
     "SourceVariableCount": "打包数量",
     "MethodVariableCount": "方法数量",
     "ActiveTime": "活跃时间",
     "DeviceVariableCount": "变量数量",
     "LastErrorMessage": "离线原因",
+
     "Name": "名称",
     "Name.Required": " {0} 不可为空",
     "Description": "描述",
@@ -93,14 +39,17 @@
     "ChannelId.Required": " {0} 不可为空",
     "IntervalTime": "默认执行间隔",
     "IntervalTime.MinValue": " {0} 值太小",
-
     "PluginName": "插件名称",
-    "PluginName.Required": " {0} 不可为空",
-    "Enable": "设备使能",
+    "PluginName.Required": "{0} 插件名称不可为空",
 
+    "Enable": "设备使能",
+    "LogEnable": "启用调试日志",
+    "LogLevel": "日志等级",
     "RedundantEnable": "启用冗余",
     "RedundantDeviceId": "冗余设备",
-
+    "RedundantSwitchType": "冗余操作模式",
+    "RedundantScanIntervalTime": "冗余检测时间",
+    "RedundantScript": "冗余检测脚本",
     "Remark1": "备用1",
     "Remark2": "备用2",
     "Remark3": "备用3",
@@ -116,11 +65,14 @@
     "ExportDevice": "导出设备",
     "ImportDevice": "导入设备",
 
+    "DeviceStatus": "设备状态",
+
     "ImportNullError": "无法识别",
     "RedundantDeviceError": "冗余设备错误",
     "ChannelError": "通道错误",
     "NotNull": " {0} 不存在",
-    "DeviceNotNull": "设备名称不存在"
+    "DeviceNotNull": "设备名称不存在",
+    "PluginNotNull": "插件不存在"
   },
   "ThingsGateway.Gateway.Application.VariableRuntime": {
     "ChangeTime": "变化时间",
@@ -142,6 +94,7 @@
     "IntervalTime": "执行间隔",
     "IntervalTime.MinValue": " {0} 值太小",
 
+    "ArrayLength": "数组长度",
     "Enable": "变量使能",
     "ProtectType": "读写权限",
     "DataType": "数据类型",
@@ -203,17 +156,6 @@
     "EventType": "事件类型"
   },
 
-  "ThingsGateway.Gateway.Application.DeviceHostedService": {
-    "ChannelNotNull": "设备 {0} -通道 {1} 不能为空",
-    "ChannelNotEnable": "设备 {0} -通道 {1} 未启用",
-    "UpadteDeviceIdNotFound": "更新设备线程失败，不存在id为 {0} 的设备",
-    "DeviceSwtichMain": "设备 {0} 切换到主通道",
-    "DeviceSwtichBackup": "设备 {0} 切换到备用通道",
-    "DeviceInitFail": "设备 {0} 初始化失败，重启线程",
-    "DeviceTaskDeath": "设备 {0} 线程假死，重启线程",
-    "InitError": " {0} 创建错误"
-  },
-
   "ThingsGateway.Gateway.Application.BusinessBase": {
     "IntervalInsertVariableFail": "间隔上传变量失败",
     "IntervalInsertDeviceFail": "间隔上传设备失败",
@@ -229,14 +171,6 @@
     "MethodSuccess": "{0} - 执行方法[{1}] - 成功  {2}",
     "WriteExpressionsError": " {0} 转换写入表达式 {1} 失败 {2} "
   },
-  "ThingsGateway.Gateway.Application.BusinessDeviceHostedService": {
-    "DeviceRuntimeGeting": "正在获取业务设备组态信息",
-    "DeviceRuntimeGeted": "已获取业务设备组态信息"
-  },
-  "ThingsGateway.Gateway.Application.CollectDeviceHostedService": {
-    "DeviceRuntimeGeting": "正在获取采集设备组态信息",
-    "DeviceRuntimeGeted": "已获取采集设备组态信息"
-  },
 
   "ThingsGateway.Gateway.Application.DriverBase": {
     "DeviceTaskStart": "设备 {0} 线程开始",
@@ -245,21 +179,16 @@
     "DeviceTaskPause": "设备 {0} 线程暂停",
     "DeviceTaskContinue": "设备 {0} 线程继续"
   },
-  "ThingsGateway.Gateway.Application.ChannelThread": {
-    "PluginTypeDiff": "设备 {0} 与通道 {1} 的其他设备类型不相同，不能选择同一个通道",
-    "InitFail": "插件 {0} 设备 {1} 初始化失败"
-  },
 
-  "ThingsGateway.Gateway.Application.DoTask": {
-    "Timeout": " {0} 停止超时，退出等待阻塞",
-    "Error": "{0} 停止错误",
-    "Stoping": "{0} 停止中",
-    "Stoped": "{0} 已停止"
+  "ThingsGateway.Gateway.Application.DeviceThreadManage": {
+    "InitFail": "插件 {0} 设备 {1} 初始化失败",
+    "ChannelCreate": "通道 {0} 创建",
+    "ChannelDispose": "通道 {0} 销毁"
   },
 
   "ThingsGateway.Gateway.Application.AlarmHostedService": {
-    "RealAlarmTask": "实时报警线程",
-    "RealAlarmTaskStart": "实时报警线程启动"
+    "RealAlarmTask": "实时报警服务",
+    "RealAlarmTaskStart": "实时报警服务启动"
   },
   "ThingsGateway.Gateway.Application.PluginService": {
     "LoadTypeSuccess": "加载插件 {0} 成功",
@@ -270,7 +199,7 @@
     "LoadPluginFail": "加载插件 {0} 失败",
     "AddPluginFile": "添加插件文件 {0}"
   },
-  "ThingsGateway.Gateway.Application.PluginOutput": {
+  "ThingsGateway.Gateway.Application.PluginInfo": {
     "FullName": "插件全名称",
     "FileName": "插件文件",
     "PluginType": "插件类型",
@@ -308,13 +237,6 @@
     "DeleteRpc": "删除RPC日志"
   },
 
-  "ThingsGateway.Gateway.Application.DeviceSearchInput": {
-    "ChannelId": "通道",
-    "Name": "名称",
-    "PluginName": "插件名称",
-    "PluginType": "插件类型"
-  },
-
   "ThingsGateway.Gateway.Application.Device": {
     "Name": "名称",
     "Name.Required": " {0} 不可为空",
@@ -324,14 +246,15 @@
     "ChannelId.Required": " {0} 不可为空",
     "IntervalTime": "默认执行间隔",
     "IntervalTime.MinValue": " {0} 值太小",
-
-    "PluginType": "插件类型",
-    "PluginName": "插件名称",
-    "PluginName.Required": " {0} 不可为空",
+    "LogEnable": "启用调试日志",
+    "LogLevel": "日志等级",
     "Enable": "设备使能",
 
     "RedundantEnable": "启用冗余",
     "RedundantDeviceId": "冗余设备",
+    "RedundantSwitchType": "冗余操作模式",
+    "RedundantScanIntervalTime": "冗余检测时间",
+    "RedundantScript": "冗余检测脚本",
 
     "Remark1": "备用1",
     "Remark2": "备用2",
@@ -352,15 +275,19 @@
     "RedundantDeviceError": "冗余设备错误",
     "ChannelError": "通道错误",
     "NotNull": " {0} 不存在",
-    "DeviceNotNull": "设备名称不存在"
+    "DeviceNotNull": "设备名称不存在",
+    "PluginNotNull": "插件不存在",
+    "NameDump": "设备名称 {0} 重复"
   },
-
-  "ThingsGateway.Gateway.Application.Channel": {
+  "ThingsGateway.Gateway.Application.ChannelRuntime": {
     "Name": "名称",
     "Name.Required": " {0} 不可为空",
     "ChannelType": "通道类型",
     "Enable": "启用",
     "LogEnable": "启用调试日志",
+    "LogLevel": "日志等级",
+    "PluginName": "插件名称",
+    "PluginName.Required": "{0} 插件名称不可为空",
 
     "RemoteUrl": "远程IP地址",
     "BindUrl": "本地绑定IP地址",
@@ -372,15 +299,9 @@
     "StopBits": "停止位",
     "DtrEnable": "Dtr",
     "RtsEnable": "Rts",
-
-    "RemoteUrlNotNull": "远程IP地址不可为空",
-    "BindUrlNotNull": "本地绑定IP地址不可为空",
-    "BindUrlOrRemoteUrlNotNull": "远程IP地址或本地绑定IP地址不可为空",
-    "PortNameNotNull": "COM口不可为空",
-    "BaudRateNotNull": "波特率不可为空",
-    "DataBitsNotNull": "数据位可为空",
-    "ParityNotNull": "校验位不可为空",
-    "StopBitsNotNull": "停止位不可为空",
+    "CacheTimeout": "接收缓存超时",
+    "ConnectTimeout": "连接超时",
+    "MaxConcurrentCount": "最大并发数",
 
     "SaveChannel": "添加/修改通道",
     "DeleteChannel": "删除通道",
@@ -394,7 +315,50 @@
     "Connect": "连接",
     "Confim": "创建",
     "Disconnect": "断开",
-    "Channel": "通道"
+    "Channel": "通道",
+    "NameDump": "通道名称 {0} 重复",
+
+    "DeviceRuntimeCounts": "设备数量"
+  },
+
+  "ThingsGateway.Gateway.Application.Channel": {
+    "Name": "名称",
+    "Name.Required": " {0} 不可为空",
+    "ChannelType": "通道类型",
+    "Enable": "启用",
+    "LogEnable": "启用调试日志",
+    "PluginName": "插件名称",
+    "PluginName.Required": "{0} 插件名称不可为空",
+    "LogLevel": "日志等级",
+
+    "RemoteUrl": "远程IP地址",
+    "BindUrl": "本地绑定IP地址",
+
+    "PortName": "COM口",
+    "BaudRate": "波特率",
+    "DataBits": "数据位",
+    "Parity": "校验位",
+    "StopBits": "停止位",
+    "DtrEnable": "Dtr",
+    "RtsEnable": "Rts",
+    "CacheTimeout": "接收缓存超时",
+    "ConnectTimeout": "连接超时",
+    "MaxConcurrentCount": "最大并发数",
+
+    "SaveChannel": "添加/修改通道",
+    "DeleteChannel": "删除通道",
+    "ClearChannel": "清空通道",
+    "ExportChannel": "导出通道",
+    "ImportChannel": "导入通道",
+
+    "ImportNullError": "无法识别",
+
+    "NotOther": "不支持其他通道类型",
+    "Connect": "连接",
+    "Confim": "创建",
+    "Disconnect": "断开",
+    "Channel": "通道",
+    "NameDump": "通道名称 {0} 重复"
   },
 
   "ThingsGateway.Gateway.Application.Variable": {
@@ -408,6 +372,7 @@
 
     "NotNull": " {0} 不存在",
     "DeviceNotNull": "设备名称不存在",
+    "PluginNotNull": "插件不存在",
     "VariableNotNull": "变量名称不存在",
 
     "Name": "名称",
@@ -418,6 +383,7 @@
     "DeviceId.Required": " {0} 不可为空",
     "IntervalTime": "执行间隔",
     "IntervalTime.MinValue": " {0} 值太小",
+    "ArrayLength": "数组长度",
 
     "Enable": "变量使能",
     "ProtectType": "读写权限",
@@ -470,8 +436,11 @@
     "Remark2": "备用2",
     "Remark3": "备用3",
     "Remark4": "备用4",
-    "Remark5": "备用5"
+    "Remark5": "备用5",
+
+    "NameDump": "变量名称 {0} 重复"
   },
+
   "ThingsGateway.Gateway.Application.RpcLogPageInput": {
     "SearchDate": "时间区间",
     "OperateObject": "操作对象",

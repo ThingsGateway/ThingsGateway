@@ -10,13 +10,15 @@
 
 using BootstrapBlazor.Components;
 
-using Newtonsoft.Json.Linq;
+using Mapster;
 
 using SqlSugar;
 
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
+
+using ThingsGateway.Razor;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -37,7 +39,7 @@ public class Variable : BaseDataEntity, IValidatableObject
     [IgnoreExcel]
     [Required]
     [NotNull]
-    public virtual long? DeviceId { get; set; }
+    public virtual long DeviceId { get; set; }
 
     /// <summary>
     /// 变量名称
@@ -74,6 +76,13 @@ public class Variable : BaseDataEntity, IValidatableObject
     [SugarColumn(ColumnDescription = "变量地址", Length = 200, IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public string? RegisterAddress { get; set; }
+
+    /// <summary>
+    /// 数组长度
+    /// </summary>
+    [SugarColumn(ColumnDescription = "数组长度", IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public int? ArrayLength { get; set; }
 
     /// <summary>
     /// 其他方法，若不为空，此时RegisterAddress为方法参数
@@ -138,11 +147,10 @@ public class Variable : BaseDataEntity, IValidatableObject
         set
         {
             if (value != null)
-                _value = value?.ToString().GetJTokenFromString();
+                _value = value?.ToString()?.GetJTokenFromString();
             else
                 _value = null;
         }
-
     }
     private object? _value;
 
@@ -158,7 +166,7 @@ public class Variable : BaseDataEntity, IValidatableObject
     /// </summary>
     [SugarColumn(IsJson = true, ColumnDataType = StaticConfig.CodeFirst_BigString, ColumnDescription = "变量属性Json", IsNullable = true)]
     [IgnoreExcel]
-    [AutoGenerateColumn(Visible = false)]
+    [AutoGenerateColumn(Ignore = true)]
     public ConcurrentDictionary<long, Dictionary<string, string>>? VariablePropertys { get; set; }
 
     #region 报警
@@ -417,11 +425,15 @@ public class Variable : BaseDataEntity, IValidatableObject
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
+    [AdaptIgnore]
     public ConcurrentDictionary<long, ModelValueValidateForm>? VariablePropertyModels;
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-
+        if (string.IsNullOrEmpty(RegisterAddress) && string.IsNullOrEmpty(OtherMethod))
+        {
+            yield return new ValidationResult("Both RegisterAddress and OtherMethod cannot be empty or null.", new[] { nameof(RegisterAddress), nameof(OtherMethod) });
+        }
         if (HHAlarmEnable && HHAlarmCode == null)
         {
             yield return new ValidationResult("HHAlarmCode cannot be null when HHAlarmEnable is true", new[] { nameof(HHAlarmCode) });
@@ -465,10 +477,6 @@ public class Variable : BaseDataEntity, IValidatableObject
             yield return new ValidationResult("HAlarmCode should be greater than or less than LLAlarmCode", new[] { nameof(HAlarmCode), nameof(LLAlarmCode) });
         }
     }
-}
 
-public class ModelValueValidateForm
-{
-    public object Value { get; set; }
-    public ValidateForm ValidateForm { get; set; }
+
 }

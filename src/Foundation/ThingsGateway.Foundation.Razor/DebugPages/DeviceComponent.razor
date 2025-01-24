@@ -1,0 +1,125 @@
+﻿@using Microsoft.AspNetCore.Components.Web;
+@using Microsoft.JSInterop;
+@using ThingsGateway.Extension
+@using ThingsGateway.Foundation
+@using BootstrapBlazor.Components
+@using ThingsGateway.NewLife.Json.Extension
+@namespace ThingsGateway.Debug
+@inherits DeviceComponentBase
+
+<div class=@($"{ClassString} row my-2 mx-2 min-height-500 h-50")>
+
+    <div class="col-12 col-md-5 h-100">
+        <Tab class="h-100">
+            <TabItem Text=@Localizer["CommonFunctions"]>
+                @if (ShowDefaultReadWriteContent)
+                {
+                    <label class="form-label ms-2">@this.Description(a=>a.RegisterAddress)</label>
+                    <BootstrapInputGroup>
+                        <Textarea rows="1" title=@Plc?.GetAddressDescription() @bind-Value="RegisterAddress" ShowLabel="true" class="ms-2"></Textarea>
+                        <Button IsDisabled=@(OnShowAddressUI==null) Icon="fa-solid fa-bars" OnClick="ShowAddressUI"></Button>
+                    </BootstrapInputGroup>
+
+                    <div class="row mx-1 form-inline mt-2">
+
+                        <div class="col-12 col-md-8 p-1">
+
+                            <div class="p-1">
+
+                                <BootstrapInputNumber @bind-Value=@ArrayLength ShowLabel="true" />
+                                <Select @bind-Value="@DataType" ShowLabel="true" IsPopover="true" />
+                            </div>
+
+                        </div>
+                        <div class="col-12 col-md-4 p-1">
+
+                            <Button IsAsync Color="Color.Primary" OnClick="ReadAsync">@Localizer["Read"]</Button>
+
+                        </div>
+
+                    </div>
+
+                    <Divider />
+
+                    <div class="row mx-1 form-inline mt-2">
+
+                        <div class="col-12 col-md-8 p-1">
+                            <Textarea @bind-Value=@WriteValue ShowLabelTooltip="true"
+                                      ShowLabel="true" />
+
+                        </div>
+                        <div class="col-12 col-md-4 p-1">
+                            <Button IsAsync Color="Color.Primary" OnClick="WriteAsync">@Localizer["Write"]</Button>
+                        </div>
+                    </div>
+
+
+                }
+                @if (ReadWriteContent != null)
+                {
+                    @ReadWriteContent
+                }
+            </TabItem>
+
+
+            <TabItem Text=@Localizer["SpecialFunctions"]>
+                @if (ShowDefaultOtherContent)
+                {
+
+                    @foreach (var item in VariableRuntimes)
+                    {
+
+                        <div class="row mx-1 form-inline mt-2">
+
+                            <div class="col-12 col-md-8 p-1">
+
+                                <div class="p-1">
+
+                                    <BootstrapInput @bind-Value=@item.RegisterAddress title="@Plc?.GetAddressDescription()"
+                                                    ShowLabel="true" class="w-100" />
+
+                                    <Select @bind-Value="@item.DataType" ShowLabel="true" IsPopover />
+                                </div>
+
+                            </div>
+                            <div class="col-12 col-md-4 p-1">
+
+                                <Textarea ShowLabel="true" ShowLabelTooltip="false" title=@(item.LastErrorMessage) class=@(item.IsOnline?"green--text":"red--text")>@(item.Value?.ToJsonNetString())</Textarea>
+
+                            </div>
+                        </div>
+
+                    }
+
+
+
+                    <Divider />
+
+
+                    <Button IsAsync Color="Color.Primary" OnClick="MulRead">@Localizer["MulRead"]</Button>
+
+
+                }
+
+            </TabItem>
+
+        </Tab>
+
+    </div>
+    <div class="col-12 col-md-7 ">
+        <LogConsole HeightString="500px" Enable="true" LogLevel=@((Plc?.Logger??Logger)?.LogLevel??TouchSocket.Core.LogLevel.Trace)
+                    LogLevelChanged="(a)=>
+        {
+            var log=Plc?.Logger??Logger;
+            if(log!=null)
+            log.LogLevel=a;
+        }"
+                    LogPath=@LogPath HeaderText=@HeaderText></LogConsole>
+    </div>
+</div>
+
+
+
+
+
+

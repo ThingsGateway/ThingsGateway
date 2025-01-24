@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Foundation.Extension.String;
+using System.Text;
 
 namespace ThingsGateway.Foundation;
 
@@ -17,14 +17,27 @@ namespace ThingsGateway.Foundation;
 public class DtuPlugin : PluginBase, ITcpReceivingPlugin
 {
     /// <summary>
-    /// 心跳16进制字符串
+    /// 心跳字符串
     /// </summary>
-    public string HeartbeatHexString { get; set; }
+    public string Heartbeat
+    {
+        get
+        {
+            return _heartbeat;
+        }
+        set
+        {
+            _heartbeat = value;
+            HeartbeatByte = new ArraySegment<byte>(Encoding.UTF8.GetBytes(value));
+        }
+    }
+    private string _heartbeat;
+    private ArraySegment<byte> HeartbeatByte;
 
     /// <inheritdoc/>
     public async Task OnTcpReceiving(ITcpSession client, ByteBlockEventArgs e)
     {
-        var len = HeartbeatHexString.HexStringToBytes().Length;
+        var len = HeartbeatByte.Count;
         if (client is TcpSessionClientChannel socket && socket.Service is TcpServiceChannel tcpServiceChannel)
         {
             if (!socket.Id.StartsWith("ID="))
@@ -65,14 +78,14 @@ public class DtuPlugin : PluginBase, ITcpReceivingPlugin
 
             if (len > 0)
             {
-                if (HeartbeatHexString == e.ByteBlock.AsSegment(0, len).ToHexString(default))
+                if (HeartbeatByte.SequenceEqual(e.ByteBlock.AsSegment(0, len)))
                 {
                     if (DateTime.UtcNow - socket.LastSentTime.ToUniversalTime() < TimeSpan.FromMilliseconds(200))
                     {
                         await Task.Delay(200).ConfigureAwait(false);
                     }
                     //回应心跳包
-                    await socket.SendAsync(e.ByteBlock.AsSegment()).ConfigureAwait(false);
+                    await socket.SendAsync(HeartbeatByte).ConfigureAwait(false);
                     e.Handled = true;
                     if (socket.Logger?.LogLevel <= LogLevel.Trace)
                         socket.Logger?.Trace($"{socket}- Heartbeat");

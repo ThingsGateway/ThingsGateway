@@ -9,8 +9,9 @@
 //------------------------------------------------------------------------------
 
 using ThingsGateway.Admin.Application;
+using ThingsGateway.Razor;
 
-namespace ThingsGateway.Photino;
+namespace ThingsGateway.Server;
 
 
 public class HybridAuthRazorService : IAuthRazorService

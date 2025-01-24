@@ -10,17 +10,15 @@
 
 using Mapster;
 
-using ThingsGateway.Core.Json.Extension;
+using ThingsGateway.Admin.Application;
 using ThingsGateway.Foundation;
 using ThingsGateway.Gateway.Application;
+using ThingsGateway.NewLife.Json.Extension;
 
 using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Razor;
 
-/// <summary>
-/// HisAlarmPage
-/// </summary>
 public partial class TcpServicePage : IDriverUIBase
 {
     [Parameter, EditorRequired]
@@ -89,7 +87,7 @@ public partial class TcpServicePage : IDriverUIBase
         }
     }
 
-    public TcpServiceChannel? TcpServiceChannel => ((TcpServiceChannel)((DriverBase)Driver)?.Protocol?.Channel);
+    public TcpServiceChannel? TcpServiceChannel => (((DriverBase)Driver)?.FoundationDevice?.Channel as TcpServiceChannel);
 }
 
 public class TcpSessionClientDto

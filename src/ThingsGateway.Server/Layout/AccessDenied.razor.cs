@@ -11,16 +11,16 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 
-namespace ThingsGateway.Admin.Razor;
+using ThingsGateway.Admin.Application;
+
+namespace ThingsGateway.Server;
 
 public partial class AccessDenied
 {
     [SupplyParameterFromQuery]
     [Parameter]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string? ReturnUrl { get; set; }
 
     [Inject]

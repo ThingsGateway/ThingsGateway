@@ -8,25 +8,24 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
 using ThingsGateway.Admin.Application;
+using ThingsGateway.Gateway.Application;
 
-namespace ThingsGateway.Gateway.Application;
+namespace ThingsGateway.Server;
 
 internal sealed class HybridGatewayExportService : IGatewayExportService
 {
 
-    private readonly IChannelService _channelService;
-    private readonly IDeviceService _deviceService;
-    private readonly IVariableService _variableService;
+    private readonly IChannelRuntimeService _channelService;
+    private readonly IDeviceRuntimeService _deviceService;
+    private readonly IVariableRuntimeService _variableService;
     private readonly IImportExportService _importExportService;
 
 
     public HybridGatewayExportService(
-        IChannelService channelService,
-        IDeviceService deviceService,
-        IVariableService variableService,
+        IChannelRuntimeService channelService,
+        IDeviceRuntimeService deviceService,
+        IVariableRuntimeService variableService,
         IImportExportService importExportService
         )
     {
@@ -37,13 +36,13 @@ internal sealed class HybridGatewayExportService : IGatewayExportService
 
     }
 
-    public async Task OnChannelExport(QueryPageOptions dtoObject)
+    public async Task OnChannelExport(ExportFilter exportFilter)
     {
-        dtoObject.IsPage = false;
-        dtoObject.IsVirtualScroll = false;
+        exportFilter.QueryPageOptions.IsPage = false;
+        exportFilter.QueryPageOptions.IsVirtualScroll = false;
 
-        var sheets = await _deviceService.ExportDeviceAsync(dtoObject, PluginTypeEnum.Business).ConfigureAwait(false);
-        var path = await _importExportService.CreateFileAsync<Device>(sheets, "BusinessDevice", false).ConfigureAwait(false);
+        var sheets = await _channelService.ExportChannelAsync(exportFilter).ConfigureAwait(false);
+        var path = await _importExportService.CreateFileAsync<Device>(sheets, "Channel", false).ConfigureAwait(false);
 
         Open(path);
     }
@@ -67,22 +66,22 @@ internal sealed class HybridGatewayExportService : IGatewayExportService
         }
     }
 
-    public async Task OnDeviceExport(QueryPageOptions dtoObject, bool collect)
+    public async Task OnDeviceExport(ExportFilter exportFilter)
     {
-        dtoObject.IsPage = false;
-        dtoObject.IsVirtualScroll = false;
-        var sheets = await _deviceService.ExportDeviceAsync(dtoObject, collect ? PluginTypeEnum.Collect : PluginTypeEnum.Business).ConfigureAwait(false);
-        var path = await _importExportService.CreateFileAsync<Device>(sheets, collect ? "CollectDevice" : "BusinessDevice", false).ConfigureAwait(false);
+        exportFilter.QueryPageOptions.IsPage = false;
+        exportFilter.QueryPageOptions.IsVirtualScroll = false;
+        var sheets = await _deviceService.ExportDeviceAsync(exportFilter).ConfigureAwait(false);
+        var path = await _importExportService.CreateFileAsync<Device>(sheets, "Device", false).ConfigureAwait(false);
         Open(path);
 
 
     }
 
-    public async Task OnVariableExport(QueryPageOptions dtoObject)
+    public async Task OnVariableExport(ExportFilter exportFilter)
     {
-        dtoObject.IsPage = false;
-        dtoObject.IsVirtualScroll = false;
-        var sheets = await _variableService.ExportVariableAsync(dtoObject).ConfigureAwait(false);
+        exportFilter.QueryPageOptions.IsPage = false;
+        exportFilter.QueryPageOptions.IsVirtualScroll = false;
+        var sheets = await _variableService.ExportVariableAsync(exportFilter).ConfigureAwait(false);
         var path = await _importExportService.CreateFileAsync<Variable>(sheets, "Variable", false).ConfigureAwait(false);
         Open(path);
     }

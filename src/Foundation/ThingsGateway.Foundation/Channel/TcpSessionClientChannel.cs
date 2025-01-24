@@ -8,6 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+
+using System.Collections.Concurrent;
+
 namespace ThingsGateway.Foundation;
 
 /// <summary>
@@ -18,18 +21,23 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     /// <inheritdoc/>
     public TcpSessionClientChannel()
     {
+
         WaitHandlePool.MaxSign = ushort.MaxValue;
     }
+
     public int MaxSign { get => WaitHandlePool.MaxSign; set => WaitHandlePool.MaxSign = value; }
 
     /// <inheritdoc/>
     public ChannelReceivedEventHandler ChannelReceived { get; set; } = new();
 
     /// <inheritdoc/>
-    public ChannelTypeEnum ChannelType => ChannelTypeEnum.TcpService;
+    public IChannelOptions ChannelOptions { get; internal set; }
 
     /// <inheritdoc/>
-    public ConcurrentList<IProtocol> Collects { get; } = new();
+    public ChannelTypeEnum ChannelType => ChannelOptions.ChannelType;
+
+    /// <inheritdoc/>
+    public ConcurrentList<IDevice> Collects { get; } = new();
 
     /// <inheritdoc/>
     public DataHandlingAdapter ReadOnlyDataHandlingAdapter => DataHandlingAdapter;
@@ -51,13 +59,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     public WaitHandlePool<MessageBase> WaitHandlePool { get; private set; } = new();
 
     /// <inheritdoc/>
-    public WaitLock WaitLock { get; } = new WaitLock();
-
-    /// <inheritdoc/>
-    public void Close(string msg)
-    {
-        CloseAsync(msg).ConfigureAwait(false);
-    }
+    public WaitLock WaitLock => ChannelOptions.WaitLock;
 
     /// <inheritdoc/>
     public override Task CloseAsync(string msg)
@@ -67,10 +69,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     }
 
     /// <inheritdoc/>
-    public void Connect(int millisecondsTimeout = 3000, CancellationToken token = default) => throw new NotSupportedException();
-
-    /// <inheritdoc/>
-    public Task ConnectAsync(int timeout, CancellationToken token) => throw new NotImplementedException();
+    public Task ConnectAsync(int timeout, CancellationToken token) => Task.CompletedTask;
 
     /// <inheritdoc/>
     public void SetDataHandlingAdapter(DataHandlingAdapter adapter)
@@ -80,15 +79,10 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     }
 
     /// <inheritdoc/>
-    public Task SetupAsync(TouchSocketConfig config)
-    {
-        return EasyTask.CompletedTask;
-    }
+    public Task SetupAsync(TouchSocketConfig config) => Task.CompletedTask;
 
-    public override async Task ResetIdAsync(string newId)
-    {
-        await base.ResetIdAsync(newId).ConfigureAwait(false);
-    }
+    /// <inheritdoc/>
+    public ConcurrentDictionary<long, Func<IClientChannel, ReceivedDataEventArgs, bool, Task>> ChannelReceivedWaitDict { get; } = new();
 
     /// <inheritdoc/>
     public override string ToString()
@@ -99,7 +93,6 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (DisposedValue) return;
         WaitHandlePool.SafeDispose();
         base.Dispose(disposing);
     }
@@ -123,9 +116,7 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     /// <inheritdoc/>
     protected override async Task OnTcpConnected(ConnectedEventArgs e)
     {
-        //Logger?.Debug($"{ToString()}{FoundationConst.Connected}");
         await this.OnChannelEvent(Started).ConfigureAwait(false);
-
         await base.OnTcpConnected(e).ConfigureAwait(false);
     }
 
@@ -133,7 +124,6 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     protected override async Task OnTcpConnecting(ConnectingEventArgs e)
     {
         await this.OnChannelEvent(Starting).ConfigureAwait(false);
-
         await base.OnTcpConnecting(e).ConfigureAwait(false);
     }
 
@@ -141,7 +131,18 @@ public class TcpSessionClientChannel : TcpSessionClient, IClientChannel
     protected override async Task OnTcpReceived(ReceivedDataEventArgs e)
     {
         await base.OnTcpReceived(e).ConfigureAwait(false);
-        await this.OnChannelReceivedEvent(e, ChannelReceived).ConfigureAwait(false);
+        if (e.RequestInfo is MessageBase response)
+        {
+            if (ChannelReceivedWaitDict.TryRemove(response.Sign, out var func))
+            {
+                await func.Invoke(this, e, ChannelReceived.Count == 1).ConfigureAwait(false);
+                e.Handled = true;
+            }
+        }
+        if (e.Handled)
+            return;
 
+        await this.OnChannelReceivedEvent(e, ChannelReceived).ConfigureAwait(false);
     }
+
 }

@@ -22,8 +22,12 @@ namespace ThingsGateway.Gateway.Application;
 [SugarTable("device", TableDescription = "设备表")]
 [Tenant(SqlSugarConst.DB_Custom)]
 [SugarIndex("unique_device_name", nameof(Device.Name), OrderByType.Asc, true)]
-public class Device : BaseDataEntity
+public class Device : BaseDataEntity, IValidatableObject
 {
+    public override string ToString()
+    {
+        return Name ?? base.ToString();
+    }
     /// <summary>
     /// 名称
     /// </summary>
@@ -50,26 +54,11 @@ public class Device : BaseDataEntity
     public virtual long ChannelId { get; set; }
 
     /// <summary>
-    /// 插件类型
-    /// </summary>
-    [SugarColumn(ColumnDescription = "插件类型")]
-    [AutoGenerateColumn(Ignore = true)]
-    public virtual PluginTypeEnum PluginType { get; set; }
-
-    /// <summary>
-    /// 默认执行间隔
+    /// 默认执行间隔，支持corn表达式
     /// </summary>
     [SugarColumn(ColumnDescription = "默认执行间隔")]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public virtual string IntervalTime { get; set; } = "1000";
-
-    /// <summary>
-    /// 插件名称
-    /// </summary>
-    [SugarColumn(ColumnDescription = "插件名称")]
-    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    [Required]
-    public virtual string PluginName { get; set; }
 
     /// <summary>
     /// 设备使能
@@ -77,6 +66,20 @@ public class Device : BaseDataEntity
     [SugarColumn(ColumnDescription = "设备使能")]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public virtual bool Enable { get; set; } = true;
+
+    /// <summary>
+    /// LogEnable
+    /// </summary>
+    [SugarColumn(ColumnDescription = "调试日志")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public virtual bool LogEnable { get; set; } = true;
+
+    /// <summary>
+    /// LogLevel
+    /// </summary>
+    [SugarColumn(ColumnDescription = "日志等级")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public virtual TouchSocket.Core.LogLevel LogLevel { get; set; } = TouchSocket.Core.LogLevel.Info;
 
     /// <summary>
     /// 设备属性Json
@@ -102,6 +105,27 @@ public class Device : BaseDataEntity
     [AutoGenerateColumn(Visible = true, Filterable = false, Sortable = false)]
     [IgnoreExcel]
     public long? RedundantDeviceId { get; set; }
+
+    /// <summary>
+    /// 冗余模式
+    /// </summary>
+    [SugarColumn(ColumnDescription = "冗余模式")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public virtual RedundantSwitchTypeEnum RedundantSwitchType { get; set; }
+
+    /// <summary>
+    /// 冗余扫描间隔
+    /// </summary>
+    [SugarColumn(ColumnDescription = "冗余扫描间隔")]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public virtual int RedundantScanIntervalTime { get; set; } = 30000;
+
+    /// <summary>
+    /// 冗余切换判断脚本，返回true则切换冗余设备
+    /// </summary>
+    [SugarColumn(ColumnDescription = "冗余切换判断脚本", IsNullable = true)]
+    [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    public virtual string RedundantScript { get; set; }
 
     #endregion 冗余配置
 
@@ -154,10 +178,12 @@ public class Device : BaseDataEntity
     [AutoGenerateColumn(Ignore = true)]
     internal bool IsUp { get; set; }
 
-    /// <summary>
-    /// 插件属性
-    /// </summary>
-    [System.Text.Json.Serialization.JsonIgnore]
-    [Newtonsoft.Json.JsonIgnore]
-    public ModelValueValidateForm PluginPropertyModel;
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (RedundantEnable && RedundantDeviceId == null)
+        {
+            yield return new ValidationResult("When enable redundancy, you must select a redundant device.", new[] { nameof(RedundantEnable), nameof(RedundantDeviceId) });
+        }
+    }
 }

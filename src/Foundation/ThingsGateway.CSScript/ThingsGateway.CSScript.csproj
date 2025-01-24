@@ -1,26 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(SolutionDir)PackNuget.props" />
-  <Import Project="$(SolutionDir)FoundationVersion.props" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<Import Project="$(SolutionDir)PackNuget.props" />
+	<Import Project="$(SolutionDir)Version.props" />
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net9.0;net8.0;net6.0;</TargetFrameworks>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0;</TargetFrameworks>
+	</PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-    <PackageReference Include="CS-Script" Version="4.8.21" />
+	<ItemGroup>
+		<PackageReference Include="CS-Script" Version="4.8.27" />
+	</ItemGroup>
 
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != 'net9.0'">
-    <PackageReference Include="CS-Script" Version="4.8.19" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-	  <ProjectReference Include="..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+	</ItemGroup>
 
 </Project>

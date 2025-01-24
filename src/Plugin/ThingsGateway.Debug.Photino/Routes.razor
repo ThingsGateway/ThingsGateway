@@ -1,0 +1,18 @@
+﻿@using Microsoft.AspNetCore.Components.Routing
+@using ThingsGateway.Debug
+@namespace ThingsGateway
+
+<Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="App.RazorAssemblies.Where(a=>a!=typeof(Routes).Assembly)">
+<Found Context="routeData">
+
+    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+
+
+</Found>
+<NotFound>
+    <LayoutView Layout="@typeof(Razor.BaseLayout)">
+              <p role="alert">Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+

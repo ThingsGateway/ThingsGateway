@@ -1,0 +1,28 @@
+﻿@using BootstrapBlazor.Components
+@using ThingsGateway.Extension
+@using ThingsGateway.Foundation
+@using ThingsGateway.Foundation.SiemensS7
+@namespace ThingsGateway.Debug
+@using TouchSocket.Core
+
+<ValidateForm Model="Value" OnValidSubmit="OnValidSubmit">
+
+    <EditorFormObject class="p-2" IsDisplay="false" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=@(3) ShowLabelTooltip=true LabelWidth=@(150) Model="Value" ShowLabel="true" @key=@($"SiemensS7AddressComponent{Value.GetType().TypeHandle.Value}")>
+
+        <FieldItems>
+
+            <EditorItem @bind-Field=context.AddressStart />
+            <EditorItem @bind-Field=context.BitCode />
+            <EditorItem @bind-Field=context.DataCode />
+            <EditorItem @bind-Field=context.DbBlock />
+        </FieldItems>
+    </EditorFormObject>
+
+    <ConverterConfigComponent Model="ConverterConfig" />
+
+    <div class="form-footer">
+
+        <Button ButtonType="ButtonType.Submit" Icon="fa-solid fa-floppy-disk" IsAsync Text=@RazorLocalizer["Save"] />
+    </div>
+
+</ValidateForm>

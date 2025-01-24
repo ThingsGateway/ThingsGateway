@@ -1,0 +1,47 @@
+﻿{
+
+  "ThingsGateway.Foundation.SiemensS7.SiemensS7Address": {
+    "AddressStart": "起始地址",
+    "BitCode": "Bit地址",
+    "DataCode": "寄存器区",
+    "DbBlock": "DB块"
+  },
+  "ThingsGateway.Foundation.SiemensS7.SiemensS7Master": {
+    "SiemensS7Type": "S7类型",
+    "LocalTSAP": "本地TSAP",
+    "Rack": "机架号",
+    "Slot": "槽号",
+
+    "CacheTimeout": "组包缓存时间",
+    "SendDelayTime": "发送延时",
+    "DataFormat": "解析规则",
+    "Timeout": "读写超时",
+    "ConnectTimeout": "连接超时",
+    "IsStringReverseByteWord": "字符串反转"
+  },
+
+  "ThingsGateway.Foundation.SiemensS7.SiemensS7Resource": {
+    "AddressDes": "S7协议寄存器地址格式\nTxxxxx Timer寄存器，例如T100/T100.1\nCxxxxx，Counter寄存器，例如C100/C100.1\nAIxxxxx，AI寄存器，例如AI100/AI100.1\nAQxxxxx，AQ寄存器，例如AQ100/AQ100.1\nIxxxxx，I寄存器，例如I100/I100.1\nQxxxxx，Q寄存器，例如Q100/Q100.1\nMxxxxx，M寄存器，例如M100/M100.1\nDBxxxxx，DB寄存器，例如DB100.1/DB100.1.1",
+    "ReturnError": "PLC返回错误码，错误类型 {0} 错误代码 {1} ",
+    "ReturnCode": "PLC返回代码 {0} ",
+    "DataLengthError": "数据块长度校验失败",
+    "ValidateDataError": "验证错误，代码 {0}，类型 {1}",
+    "NotString": "PLC中的数据类型不是String",
+    "WriteDataLengthMore": "写入长度超限",
+
+    "ERROR5": "无效地址，所需的地址超出此PLC的极限",
+    "ERROR1": "硬件错误",
+    "ERROR3": "对象不允许访问",
+    "ERROR6": "数据类型不支持",
+    "ERROR7": "日期类型不一致",
+    "ERROR10": "对象不存在",
+
+    "MulWriteError": "不支持多写",
+    "StringLengthReadError": "不支持变长字符串的连读",
+
+    "HandshakeError1": "{0}：ISO_TP握手失败-{1}，请检查机架号/槽号是否正确",
+    "HandshakeError2": "{0}：PDU初始化失败-{1}，请检查机架号/槽号是否正确",
+
+    "AddressError": "寄存器地址格式错误 {0}"
+  }
+}

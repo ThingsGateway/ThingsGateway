@@ -1,0 +1,28 @@
+﻿@using BootstrapBlazor.Components
+@using ThingsGateway.Extension
+@using ThingsGateway.Foundation
+@using ThingsGateway.Foundation.Dlt645
+@namespace ThingsGateway.Debug
+@using TouchSocket.Core
+
+<ValidateForm Model="Value" OnValidSubmit="OnValidSubmit">
+
+    <EditorFormObject class="p-2" IsDisplay="false" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=@(3) ShowLabelTooltip=true LabelWidth=@(150) Model="Value" ShowLabel="true" @key=@($"Dlt645_2007AddressComponent{Value.GetType().TypeHandle.Value}")>
+
+        <FieldItems>
+    
+            <EditorItem @bind-Field=context.Data />
+            <EditorItem @bind-Field=context.Reverse />
+            <EditorItem @bind-Field=context.StationString />
+
+        </FieldItems>
+    </EditorFormObject>
+
+    @* <ConverterConfigComponent Model="ConverterConfig" /> *@
+
+    <div class="form-footer">
+
+        <Button ButtonType="ButtonType.Submit" Icon="fa-solid fa-floppy-disk" IsAsync Text=@RazorLocalizer["Save"] />
+    </div>
+
+</ValidateForm>

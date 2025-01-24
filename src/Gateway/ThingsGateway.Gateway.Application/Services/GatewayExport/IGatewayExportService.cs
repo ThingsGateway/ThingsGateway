@@ -8,13 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using BootstrapBlazor.Components;
-
 namespace ThingsGateway.Gateway.Application;
 
 public interface IGatewayExportService
 {
-    Task OnChannelExport(QueryPageOptions options);
-    Task OnDeviceExport(QueryPageOptions options, bool collect);
-    Task OnVariableExport(QueryPageOptions options);
+    Task OnChannelExport(ExportFilter exportFilter);
+    Task OnDeviceExport(ExportFilter exportFilter);
+    Task OnVariableExport(ExportFilter exportFilter);
 }

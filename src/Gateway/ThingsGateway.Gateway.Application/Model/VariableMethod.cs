@@ -24,7 +24,7 @@ public class VariableMethod
 
     private object?[]? OS;
 
-    public VariableMethod(Method method, VariableRunTime variable, string delay)
+    public VariableMethod(Method method, VariableRuntime variable, string delay)
     {
         _timeTick = new TimeTick(delay);
         MethodInfo = method;
@@ -45,14 +45,13 @@ public class VariableMethod
     /// <summary>
     /// 需分配的变量
     /// </summary>
-    public VariableRunTime Variable { get; }
+    public VariableRuntime Variable { get; }
 
     /// <summary>
     /// 检测是否达到读取间隔
     /// </summary>
-    /// <param name="time"></param>
     /// <returns></returns>
-    public bool CheckIfRequestAndUpdateTime(DateTime time) => _timeTick.IsTickHappen(time);
+    public bool CheckIfRequestAndUpdateTime() => _timeTick.IsTickHappen();
 
     /// <summary>
     /// 执行方法
@@ -69,8 +68,8 @@ public class VariableMethod
             if (value == null && OS == null)
             {
                 //默认的参数
-                var addresss = Variable.RegisterAddress?.Trim()?.TrimEnd(',').Split(',') ?? Array.Empty<string>();
-                //通过分号分割，并且合并参数
+                var addresss = Variable.RegisterAddress.SplitOS();
+                //通过逗号分割，并且合并参数
                 var strs = addresss;
 
                 OS = GetOS(strs, cancellationToken);
@@ -78,11 +77,10 @@ public class VariableMethod
             }
             else
             {
-                var addresss = Variable.RegisterAddress?.Trim()?.TrimEnd(',').Split(',') ?? Array.Empty<string>();
-                var values = value?.Trim()?.TrimEnd(',').Split(',') ?? Array.Empty<string>();
+                var addresss = Variable.RegisterAddress.SplitOS();
+                var values = value.SplitOS();
                 //通过分号分割，并且合并参数
-                var strs = DataTransUtil.SpliceArray(addresss, values);
-
+                var strs = addresss.Concat(values).ToList();
                 os = GetOS(strs, cancellationToken);
             }
 
@@ -115,7 +113,7 @@ public class VariableMethod
         }
     }
 
-    private object?[] GetOS(string[] strs, CancellationToken cancellationToken)
+    private object?[] GetOS(List<String> strs, CancellationToken cancellationToken)
     {
         var method = MethodInfo;
         var ps = method.Info.GetParameters();
@@ -129,14 +127,14 @@ public class VariableMethod
             }
             else if (ps[i].HasDefaultValue)
             {
-                if (strs.Length <= index)
+                if (strs.Count <= index)
                 {
                     os[i] = ps[i].DefaultValue;
                 }
             }
             else
             {
-                if (strs.Length <= index)
+                if (strs.Count <= index)
                     continue;
                 os[i] = ThingsGatewayStringConverter.Default.Deserialize(null, strs[index], ps[i].ParameterType);
                 index++;

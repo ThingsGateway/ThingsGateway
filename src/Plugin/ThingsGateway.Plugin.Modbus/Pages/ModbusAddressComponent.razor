@@ -1,0 +1,32 @@
+﻿@using BootstrapBlazor.Components
+@using ThingsGateway.Extension
+@using ThingsGateway.Foundation
+@using ThingsGateway.Foundation.Modbus
+@namespace ThingsGateway.Debug
+@using TouchSocket.Core
+
+<ValidateForm Model="Value" OnValidSubmit="OnValidSubmit">
+
+    <EditorFormObject class="p-2" IsDisplay="false" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=@(3) ShowLabelTooltip=true LabelWidth=@(150) Model="Value" ShowLabel="true" @key=@($"ModbusAddressComponent{Value.GetType().TypeHandle.Value}")>
+
+        <FieldItems>
+
+ 
+
+
+            <EditorItem @bind-Field=context.FunctionCode />
+            <EditorItem @bind-Field=context.StartAddress />
+            <EditorItem @bind-Field=context.BitIndex />
+            <EditorItem @bind-Field=context.Station />
+            <EditorItem @bind-Field=context.WriteFunctionCode />
+        </FieldItems>
+    </EditorFormObject>
+
+    <ConverterConfigComponent Model="ConverterConfig" />
+
+    <div class="form-footer">
+
+        <Button ButtonType="ButtonType.Submit" Icon="fa-solid fa-floppy-disk" IsAsync Text=@RazorLocalizer["Save"] />
+    </div>
+
+</ValidateForm>

@@ -50,6 +50,8 @@ public static class JTokenUtil
     /// </summary>
     public static object? GetObjectFromJToken(this JToken jtoken)
     {
+        if (jtoken == null)
+            return null;
         switch (jtoken.Type)
         {
             case JTokenType.Object:

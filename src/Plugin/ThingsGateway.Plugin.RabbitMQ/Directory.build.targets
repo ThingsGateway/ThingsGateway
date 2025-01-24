@@ -1,0 +1,39 @@
+<Project>
+
+
+	<Target Name="NET8CopyNugetPackages" AfterTargets="Build" Condition="'$(TargetFramework)' == 'net8.0'">
+		<ItemGroup>
+			<!-- setting up the variable for convenience -->
+			<ApplicationPackageFiles Include="$(PkgRabbitMQ_Client)\lib\net8.0\*.*" />
+			<ApplicationPackageFiles1 Include="$(PkgSystem_IO_Pipelines)\lib\net8.0\*.*" />
+			<ApplicationPackageFiles2 Include="$(PkgSystem_Threading_RateLimiting)\lib\net8.0\*.*" />
+		</ItemGroup>
+		<PropertyGroup>
+			<ApplicationFolder>$(TargetDir)</ApplicationFolder>
+		</PropertyGroup>
+		<Copy SourceFiles="@(ApplicationPackageFiles)" DestinationFolder="$(ApplicationFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(ApplicationPackageFiles1)" DestinationFolder="$(ApplicationFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(ApplicationPackageFiles2)" DestinationFolder="$(ApplicationFolder)%(RecursiveDir)" />
+	</Target>
+
+
+	<!--在构建后触发的。它通过在 Nuget 包的 Content 文件夹中包含目标目录中的所有文件和子文件夹来创建 nuget 包-->
+	<Target Name="IncludeAllFilesInTargetDir" AfterTargets="Build">
+		<ItemGroup>
+			<Content Include="$(ProjectDir)bin\$(Configuration)\$(TargetFramework)\**\*RabbitMQ*.dll">
+				<Pack>true</Pack>
+				<PackagePath>Content</PackagePath>
+			</Content>
+			<Content Include="$(ProjectDir)bin\$(Configuration)\$(TargetFramework)\**\*Pipelines*.dll">
+				<Pack>true</Pack>
+				<PackagePath>Content</PackagePath>
+			</Content>
+			<Content Include="$(ProjectDir)bin\$(Configuration)\$(TargetFramework)\**\*RateLimiting*.dll">
+				<Pack>true</Pack>
+				<PackagePath>Content</PackagePath>
+			</Content>
+		</ItemGroup>
+	</Target>
+
+</Project>
+

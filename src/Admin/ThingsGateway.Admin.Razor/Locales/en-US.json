@@ -1,0 +1,74 @@
+﻿{
+  "ThingsGateway.Admin.Razor.LoginConnectionHub": {
+    "Jump": "Jump"
+  },
+  "ThingsGateway.Admin.Razor.UserLogin": {
+    "Account": "Username",
+    "Password": "Password",
+    "Login": "Login"
+  },
+  "ThingsGateway.Admin.Razor._Imports": {
+    "Org": "Org",
+    "Position": "Position",
+    "Role": "Role",
+    "RoleList": "Role List",
+    "PositionList": "Position List",
+    "OrgList": "Org List",
+    "MaxCount": "Exceeding the quantity limit",
+    "All": "All",
+    "Copy": "Copy",
+    "Choice": "Choice",
+    "Picture": "Picture",
+    "Root": "Root",
+    "Save": "Save",
+    "CurrentVerificat": "CurrentVerificat",
+    "EmptyText": "Empty",
+    "SelectPlaceHolder": "Please select ...",
+    "ExportButtonText": "Export/Import"
+  },
+  "ThingsGateway.Admin.Razor.ChoiceModuleComponent": {
+    "SetDefaultModule": "Set as default module"
+  },
+
+  "ThingsGateway.Admin.Razor.HardwareInfoPage": {
+    "SystemInfo": "System Information",
+    "HardwareInfo": "Hardware Resources",
+    "HardwareInfoChart": "Hardware Resources History Chart",
+    "CpuUsage": "CPU Usage",
+    "AvailableMemory": "Available Memory",
+    "TotalMemory": "Total Memory",
+    "WorkingSet": "WorkingSet",
+    "MemoryUsage": "Memory Usage",
+    "AvailableDisk": "Available Disk",
+    "TotalDisk": "Total Disk",
+    "DiskUsage": "Disk Usage",
+    "HistoryHardwareInfo": "Historical Trends",
+    "DateTime": "Date Time",
+    "Data": "Data",
+    "OSName": "OS Name",
+    "OSVersion": "OS Version"
+  },
+  "ThingsGateway.Admin.Razor.OperLogPage": {
+    "Date": "Date",
+    "Count": "Count",
+    "Operate": "Succeed",
+    "Exception": "Failed",
+    "Login": "Login",
+    "Logout": "Logout",
+    "SysOperateLog": "Operation Log"
+  },
+  "ThingsGateway.Admin.Razor.SessionPage": {
+    "VerificatInfo": "Token List",
+    "ExitSession": "Force Logout"
+  },
+  "ThingsGateway.Admin.Razor.VerificatListDialog": {
+    "ExitVerificat": "Force Logout Token"
+  },
+  "ThingsGateway.Admin.Razor.UserCenterPage": {
+    "UpdateUserInfo": "Update Personal Information",
+    "UserInfo": "Personal Information",
+    "UpdatePasswordInfo": "Change Password",
+    "UpdateWorkbenchInfo": "Update Personal Workbench",
+    "WorkbenchInfo": "Personal Workbench"
+  }
+}

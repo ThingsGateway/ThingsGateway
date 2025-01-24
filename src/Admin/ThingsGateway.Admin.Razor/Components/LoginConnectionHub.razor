@@ -1,0 +1,10 @@
+﻿@using ThingsGateway.Admin.Application
+@namespace ThingsGateway.Admin.Razor
+@code {
+    RenderFragment<NavigationUri> RenderItem => item =>
+    @<div>
+        <span class="mx-3">@item.ConfirmMessage</span>
+
+        <Button Text=@Localizers["Jump"] Color="Color.Link" OnClick="()=>NavigationManager.NavigateTo(item.Uri)"></Button>
+    </div>;
+}

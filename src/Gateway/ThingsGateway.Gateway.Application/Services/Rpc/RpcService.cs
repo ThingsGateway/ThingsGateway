@@ -15,11 +15,9 @@ using Newtonsoft.Json.Linq;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Core.Json.Extension;
 using ThingsGateway.Extension;
 using ThingsGateway.Extension.Generic;
-
-using TouchSocket.Core;
+using ThingsGateway.NewLife.Json.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -29,12 +27,14 @@ namespace ThingsGateway.Gateway.Application;
 internal sealed class RpcService : IRpcService
 {
     private readonly ConcurrentQueue<RpcLog> _logQueues = new();
-
+    private readonly RpcLogOptions? _rpcLogOptions;
     /// <inheritdoc cref="RpcService"/>
     public RpcService(IStringLocalizer<RpcService> localizer)
     {
         Localizer = localizer;
-        Task.Factory.StartNew(RpcLogInsertAsync, TaskCreationOptions.LongRunning);
+        Task.Factory.StartNew(async () => await RpcLogInsertAsync().ConfigureAwait(false), TaskCreationOptions.LongRunning);
+        _rpcLogOptions = App.GetOptions<RpcLogOptions>();
+
     }
 
     private IStringLocalizer Localizer { get; }
@@ -43,8 +43,8 @@ internal sealed class RpcService : IRpcService
     public async Task<Dictionary<string, OperResult>> InvokeDeviceMethodAsync(string sourceDes, Dictionary<string, string> items, CancellationToken cancellationToken = default)
     {
         // 初始化用于存储将要写入的变量和方法的字典
-        Dictionary<CollectBase, Dictionary<VariableRunTime, JToken>> WriteVariables = new();
-        Dictionary<CollectBase, Dictionary<VariableRunTime, JToken>> WriteMethods = new();
+        Dictionary<CollectBase, Dictionary<VariableRuntime, JToken>> writeVariables = new();
+        Dictionary<CollectBase, Dictionary<VariableRuntime, JToken>> writeMethods = new();
         // 用于存储结果的并发字典
         ConcurrentDictionary<string, OperResult> results = new();
         var dict = GlobalData.Variables;
@@ -53,13 +53,12 @@ internal sealed class RpcService : IRpcService
         foreach (var item in items)
         {
             // 查找变量是否存在
-            if (!dict.ContainsKey(item.Key))
+            if (!dict.TryGetValue(item.Key, out var tag))
             {
                 // 如果变量不存在，则添加错误信息到结果中并继续下一个变量的处理
                 results.TryAdd(item.Key, new OperResult(Localizer["VariableNotNull", item.Key]));
                 continue;
             }
-            var tag = dict[item.Key];
 
             // 检查变量的保护类型和远程写入权限
             if (tag.ProtectType == ProtectTypeEnum.ReadOnly)
@@ -74,56 +73,37 @@ internal sealed class RpcService : IRpcService
             }
 
             // 查找变量对应的设备
-            var dev = (CollectBase)GlobalData.CollectDeviceHostedService.DriverBases.FirstOrDefault(it => it.DeviceId == tag.DeviceId);
-            if (dev == null)
+            var collect = tag.DeviceRuntime.Driver as CollectBase;
+            if (collect == null)
             {
                 // 如果设备不存在，则添加错误信息到结果中并继续下一个变量的处理
                 results.TryAdd(item.Key, new OperResult(Localizer["DriverNotNull"]));
                 continue;
             }
             // 检查设备状态，如果设备处于暂停状态，则添加相应的错误信息到结果中并继续下一个变量的处理
-            if (dev.CurrentDevice.DeviceStatus == DeviceStatusEnum.Pause)
+            if (collect.CurrentDevice.DeviceStatus == DeviceStatusEnum.Pause)
             {
-                results.TryAdd(item.Key, new OperResult(Localizer["DevicePause", dev.CurrentDevice.Name]));
+                results.TryAdd(item.Key, new OperResult(Localizer["DevicePause", collect.CurrentDevice.Name]));
                 continue;
             }
 
-            // 将变量添加到写入变量字典或执行方法字典中
-            if (!results.ContainsKey(item.Key))
+            JToken tagValue = JTokenUtil.GetJTokenFromString(item.Value);
+            bool isOtherMethodEmpty = string.IsNullOrEmpty(tag.OtherMethod);
+            var collection = isOtherMethodEmpty ? writeVariables : writeMethods;
+            if (collection.TryGetValue(collect, out var value))
             {
-                if (string.IsNullOrEmpty(tag.OtherMethod))
-                {
-                    // 写入变量值
-                    JToken tagValue = JTokenUtil.GetJTokenFromString(item.Value);
-                    if (WriteVariables.TryGetValue(dev, out var value))
-                    {
-                        value.Add(tag, tagValue);
-                    }
-                    else
-                    {
-                        WriteVariables.Add(dev, new());
-                        WriteVariables[dev].Add(tag, tagValue);
-                    }
-                }
-                else
-                {
-                    JToken tagValue = JTokenUtil.GetJTokenFromString(item.Value);
-                    // 执行方法
-                    if (WriteMethods.TryGetValue(dev, out var value))
-                    {
-                        value.Add(tag, tagValue);
-                    }
-                    else
-                    {
-                        WriteMethods.Add(dev, new());
-                        WriteMethods[dev].Add(tag, tagValue);
-                    }
-                }
+                value.Add(tag, tagValue);
             }
+            else
+            {
+                collection.Add(collect, new());
+                collection[collect].Add(tag, tagValue);
+            }
+
         }
 
         // 使用并行方式写入变量
-        await WriteVariables.ParallelForEachAsync(async (item, cancellationToken) =>
+        await writeVariables.ParallelForEachAsync(async (item, cancellationToken) =>
         {
             try
             {
@@ -133,31 +113,25 @@ internal sealed class RpcService : IRpcService
                 // 写入日志
                 foreach (var resultItem in result)
                 {
-                    string operObj;
-                    string parJson;
-                    if (resultItem.Key.IsNullOrEmpty())
-                    {
-                        operObj = items.Select(x => x.Key).ToJsonNetString();
-                        parJson = items.Select(x => x.Value).ToJsonNetString();
-                    }
-                    else
-                    {
-                        operObj = resultItem.Key;
-                        parJson = items[resultItem.Key];
-                    }
-                    _logQueues.Enqueue(
-                        new RpcLog()
-                        {
-                            LogTime = DateTime.Now,
-                            OperateMessage = resultItem.Value.IsSuccess ? null : resultItem.Value.ToString(),
-                            IsSuccess = resultItem.Value.IsSuccess,
-                            OperateMethod = Localizer["WriteVariable"],
-                            OperateObject = operObj,
-                            OperateSource = sourceDes,
-                            ParamJson = parJson,
-                            ResultJson = null
-                        }
-                    );
+                    var empty = string.IsNullOrEmpty(resultItem.Key);
+                    string operObj = empty ? items.Select(x => x.Key).ToJsonNetString() : resultItem.Key;
+
+                    string parJson = empty ? items.Select(x => x.Value).ToJsonNetString() : items[resultItem.Key];
+
+                    if (_rpcLogOptions.SuccessLog)
+                        _logQueues.Enqueue(
+                            new RpcLog()
+                            {
+                                LogTime = DateTime.Now,
+                                OperateMessage = resultItem.Value.IsSuccess ? null : resultItem.Value.ToString(),
+                                IsSuccess = resultItem.Value.IsSuccess,
+                                OperateMethod = Localizer["WriteVariable"],
+                                OperateObject = operObj,
+                                OperateSource = sourceDes,
+                                ParamJson = parJson,
+                                ResultJson = null
+                            }
+                        );
 
                     // 不返回详细错误
                     if (!resultItem.Value.IsSuccess)
@@ -174,15 +148,15 @@ internal sealed class RpcService : IRpcService
             catch (Exception ex)
             {
                 // 将异常信息添加到结果字典中
-                results.AddRange(item.Value.Select((KeyValuePair<VariableRunTime, JToken> a) =>
+                results.AddRange(item.Value.Select((KeyValuePair<VariableRuntime, JToken> a) =>
                 {
                     return new KeyValuePair<string, OperResult>(a.Key.Name, new OperResult(ex));
                 }));
             }
-        }, Environment.ProcessorCount / 2, cancellationToken).ConfigureAwait(false);
+        }, Environment.ProcessorCount, cancellationToken).ConfigureAwait(false);
 
         // 使用并行方式执行方法
-        await WriteMethods.ParallelForEachAsync(async (item, cancellationToken) =>
+        await writeMethods.ParallelForEachAsync(async (item, cancellationToken) =>
         {
             try
             {
@@ -195,19 +169,20 @@ internal sealed class RpcService : IRpcService
                 foreach (var resultItem in result)
                 {
                     // 写入日志
-                    _logQueues.Enqueue(
-                        new RpcLog()
-                        {
-                            LogTime = DateTime.Now,
-                            OperateMessage = resultItem.Value.IsSuccess ? null : resultItem.Value.ToString(),
-                            IsSuccess = resultItem.Value.IsSuccess,
-                            OperateMethod = operateMethods[resultItem.Key],
-                            OperateObject = resultItem.Key,
-                            OperateSource = sourceDes,
-                            ParamJson = items[resultItem.Key]?.ToString(),
-                            ResultJson = resultItem.Value.Content?.ToString()
-                        }
-                    );
+                    if (_rpcLogOptions.SuccessLog)
+                        _logQueues.Enqueue(
+                            new RpcLog()
+                            {
+                                LogTime = DateTime.Now,
+                                OperateMessage = resultItem.Value.IsSuccess ? null : resultItem.Value.ToString(),
+                                IsSuccess = resultItem.Value.IsSuccess,
+                                OperateMethod = operateMethods[resultItem.Key],
+                                OperateObject = resultItem.Key,
+                                OperateSource = sourceDes,
+                                ParamJson = items[resultItem.Key]?.ToString(),
+                                ResultJson = resultItem.Value.Content?.ToString()
+                            }
+                        );
 
                     // 不返回详细错误
                     if (!resultItem.Value.IsSuccess)
@@ -221,12 +196,13 @@ internal sealed class RpcService : IRpcService
             catch (Exception ex)
             {
                 // 将异常信息添加到结果字典中
-                results.AddRange(item.Value.Select((KeyValuePair<VariableRunTime, JToken> a) =>
+                results.AddRange(item.Value.Select((KeyValuePair<VariableRuntime, JToken> a) =>
                 {
                     return new KeyValuePair<string, OperResult>(a.Key.Name, new OperResult(ex));
                 }));
             }
-        }, Environment.ProcessorCount / 2, cancellationToken).ConfigureAwait(false);
+        }, Environment.ProcessorCount, cancellationToken).ConfigureAwait(false);
+
         // 返回结果字典
         return new(results);
     }
@@ -238,8 +214,7 @@ internal sealed class RpcService : IRpcService
     {
         var db = DbContext.Db.GetConnectionScopeWithAttr<RpcLog>().CopyNew(); // 创建一个新的数据库上下文实例
         var appLifetime = App.RootServices!.GetService<IHostApplicationLifetime>()!;
-        // 在应用程序未停止的情况下循环执行日志插入操作
-        while (!((appLifetime?.ApplicationStopping ?? default).IsCancellationRequested || (appLifetime?.ApplicationStopped ?? default).IsCancellationRequested))
+        while (!appLifetime.ApplicationStopping.IsCancellationRequested)
         {
             try
             {
@@ -252,7 +227,7 @@ internal sealed class RpcService : IRpcService
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                NewLife.Log.XTrace.WriteException(ex);
             }
             finally
             {

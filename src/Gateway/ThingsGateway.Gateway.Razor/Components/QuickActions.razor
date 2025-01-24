@@ -10,6 +10,12 @@
             <div class="flex-fill">@HeaderText</div>
             <button class="btn-close btn-close-white" type="button" aria-label="Close" onclick=@(async ()=>await ToggleOpen())></button>
         </div>
+        <div class="mx-2 row g-0">
+
+            <div class="col-12 my-1">
+                <RadioList ShowLabel="true" TValue="bool" IsButton ValueExpression=@(()=> AutoRestartThread ) Value="AutoRestartThread" ValueChanged="OnAutoRestartThreadChanged" Items="AutoRestartThreadBoolItems" />
+            </div>
+        </div>
 
         <PopConfirmButton Placement="Placement.Top"
                           class="m-2"
@@ -20,19 +26,8 @@
                           Content=@(ReloadServiceConfirmText)
                           Icon="fas fa-rotate"
                           IsAsync="true"
-                          OnConfirm="OnReloadService" IsDisabled=@(!AuthorizeButton("重启"))/>
+                          OnConfirm="Restart" IsDisabled=@(!AuthorizeButton("重启")) />
 
 
-        @* <PopConfirmButton Placement="Placement.Top"
-                          class="m-2"
-                          Color="Color.Danger"
-                          ConfirmIcon="fa-solid fa-triangle-exclamation text-danger"
-                          ConfirmButtonColor="Color.Danger"
-                          Text=@(RestartText)
-                          Content=@(ReloadPluginConfirmText)
-                          Icon="fas fa-rotate"
-                          IsAsync="true"
-                          OnConfirm="OnRestart" IsDisabled=@(!AuthorizeButton("重启")) />
- *@
     </div>
 </div>

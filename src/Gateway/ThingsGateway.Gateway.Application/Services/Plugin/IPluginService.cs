@@ -17,6 +17,9 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public interface IPluginService
 {
+    Type GetDebugUI(string pluginName);
+    Type GetAddressUI(string pluginName);
+
     /// <summary>
     /// 根据插件全名称构建插件实例
     /// </summary>
@@ -27,22 +30,23 @@ public interface IPluginService
     /// <summary>
     /// 获取插件动态注册的方法
     /// </summary>
-    List<DriverMethodInfo> GetDriverMethodInfos(string pluginName, DriverBase? driverBase = null);
+    List<DriverMethodInfo> GetDriverMethodInfos(string pluginName, IDriver? driver = null);
 
     /// <summary>
     /// 获取插件属性
     /// </summary>
     /// <param name="pluginName"></param>
-    /// <param name="driverBase"></param>
+    /// <param name="driver"></param>
     /// <returns></returns>
-    (IEnumerable<IEditorItem> EditorItems, object Model, Type PropertyUIType) GetDriverPropertyTypes(string pluginName, DriverBase? driverBase = null);
+    (IEnumerable<IEditorItem> EditorItems, object Model, Type PropertyUIType) GetDriverPropertyTypes(string pluginName, IDriver? driver = null);
 
     /// <summary>
     /// 根据插件类型获取信息
     /// </summary>
     /// <param name="pluginType"></param>
     /// <returns></returns>
-    List<PluginOutput> GetList(PluginTypeEnum? pluginType = null);
+    List<PluginInfo> GetList(PluginTypeEnum? pluginType = null);
+
 
     /// <summary>
     /// 获取变量属性
@@ -55,7 +59,7 @@ public interface IPluginService
     /// <summary>
     /// 分页显示插件
     /// </summary>
-    public QueryData<PluginOutput> Page(QueryPageOptions options, PluginTypeEnum? pluginTypeEnum = null);
+    public QueryData<PluginInfo> Page(QueryPageOptions options, PluginTypeEnum? pluginTypeEnum = null);
 
     /// <summary>
     /// 重载插件
@@ -74,5 +78,6 @@ public interface IPluginService
     /// </summary>
     /// <param name="driver"></param>
     /// <param name="deviceProperties"></param>
-    void SetDriverProperties(DriverBase driver, Dictionary<string, string> deviceProperties);
+    void SetDriverProperties(IDriver driver, Dictionary<string, string> deviceProperties);
+
 }

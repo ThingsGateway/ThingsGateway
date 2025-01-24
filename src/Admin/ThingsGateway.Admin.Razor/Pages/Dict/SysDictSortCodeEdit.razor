@@ -1,0 +1,8 @@
+﻿@namespace ThingsGateway.Admin.Razor
+@using ThingsGateway.Admin.Application
+<div class="col-12 col-sm-10">
+    <Slider @bind-Value="@Model.SortCode" Step="1" UseInputEvent="true" Max="999" Min="-999"></Slider>
+</div>
+<div class="col-12 col-sm-2">
+    <BootstrapInput @bind-Value="Model.SortCode" ShowLabel="false"></BootstrapInput>
+</div>

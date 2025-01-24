@@ -6,7 +6,7 @@
 @using Microsoft.Extensions.Localization
 @using ThingsGateway.Razor
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@namespace ThingsGateway
+@namespace ThingsGateway.Server
 
 <!DOCTYPE html>
 <html lang="en" data-bs-theme='light'>
@@ -30,8 +30,6 @@
     <link rel="stylesheet" href="ThingsGateway.Server.styles.css" />
     <link rel="stylesheet" href=@($"{WebsiteConst.DefaultResourceUrl}css/site.css") />
 
-    <link rel="stylesheet" href="/_content/ThingsGateway.Blazor.Diagrams/diagram.css" />
-    <link rel="stylesheet" href="/_content/ThingsGateway.RulesEngine/style.css" />
 
     @* <script src=@($"{WebsiteConst.DefaultResourceUrl}js/theme.js") type="module"></script><!-- 初始主题 --> *@
     <!-- PWA Manifest -->
@@ -43,14 +41,13 @@
 <body>
 
     <app>
-        <component type="typeof(ThingsGateway.Routes)" render-mode="Server" />
+        <component type="typeof(Routes)" render-mode="Server" />
         <component type="typeof(ReconnectorOutlet)" param-AutoReconnect="true" render-mode="Server" />
         <component type="typeof(BlazorReconnector)" render-mode="Server" />
     </app>
     
     <script src="_content/BootstrapBlazor/js/bootstrap.blazor.bundle.min.js"></script>
     <script src=@($"{WebsiteConst.DefaultResourceUrl}js/culture.js")></script>
-    <script src="/_content/ThingsGateway.Blazor.Diagrams/diagram.js"></script>
     <script src="_framework/blazor.server.js"></script>
 
        <!-- PWA Service Worker -->

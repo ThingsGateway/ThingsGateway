@@ -1,0 +1,41 @@
+﻿@page "/SiemensS7Master"
+@using BootstrapBlazor.Components
+@using ThingsGateway.Extension
+@using ThingsGateway.Foundation
+@using ThingsGateway.Foundation.SiemensS7
+@namespace ThingsGateway.Debug
+@using TouchSocket.Core
+
+
+<div class="w-100 h-100">
+    <ChannelComponent OnConfimClick="OnConfimClick" />
+
+    @if (_plc != null)
+    {
+        <Card class="mt-2">
+            <BodyTemplate>
+
+                <EditorForm Model="_plc" AutoGenerateAllItem=false RowType="RowType.Inline" ItemsPerRow="4" ShowLabelTooltip="true" ShowLabel="true">
+                    <FieldItems>
+
+                         <EditorItem @bind-Field=context.SiemensS7Type />
+                        <EditorItem @bind-Field=context.LocalTSAP />
+                        <EditorItem @bind-Field=context.Rack />
+                        <EditorItem @bind-Field=context.Slot />
+                        <EditorItem @bind-Field=context.DataFormat />
+                        <EditorItem @bind-Field=context.SendDelayTime />
+                        <EditorItem @bind-Field=context.Timeout />
+                        <EditorItem @bind-Field=context.IsStringReverseByteWord />
+
+                    </FieldItems>
+
+                </EditorForm>
+            </BodyTemplate>
+        </Card>
+
+    }
+
+    <DeviceComponent DefaultAddress="M100" OnShowAddressUI=OnShowAddressUI Plc=_plc LogPath=@LogPath @ref=DeviceComponent></DeviceComponent>
+</div>
+
+

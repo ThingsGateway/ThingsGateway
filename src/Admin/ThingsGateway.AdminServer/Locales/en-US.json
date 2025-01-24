@@ -1,0 +1,81 @@
+﻿{
+  "ThingsGateway.AdminServer.NotFound404": {
+    "404": "Sorry, the page you are looking for does not exist.",
+    "401": "Sorry, you do not have permission to access this page.",
+    "Home": "Back to Home",
+    "Login": "Login"
+  },
+  "ThingsGateway.AdminServer.Login": {
+    "LoginErrorh1": "Login Error",
+    "LoginSuccessh1": "Login Success",
+    "LoginSuccessc1": "Redirecting to the page",
+    "LoginErrorh2": "Login Failed",
+    "LoginErrorc2": "Please contact the administrator!",
+    "Remark1": "Admin",
+    "Remark2": "",
+    "Remark3": "Permission Framework Based on BlazorServer",
+    "Welcome": "Welcome"
+  },
+
+  "ThingsGateway.AdminServer.MainLayout": {
+    "About": "About",
+    "FullScreenButton": "Full Screen",
+    "UserCenter": "User Center",
+    "ChoiceModule": "Switch Module",
+
+    "LoginErrorh1": "Login Error",
+    "LoginSuccessh1": "Login Success",
+    "LoginSuccessc1": "Redirecting to the page",
+    "LoginErrorh2": "Login Failed",
+    "LoginErrorc2": "Please contact the administrator!",
+    "Logout": "Logout",
+
+    "系统首页": "Home",
+    "权限管理": "Permission",
+    "用户管理": "User",
+    "角色管理": "Role",
+    "菜单管理": "Menu",
+    "机构管理": "Organization",
+    "职位管理": "Position",
+    "系统运维": "SystemOperation",
+    "系统配置": "System",
+    "字典管理": "Dictionary",
+    "操作日志": "Operation",
+    "会话管理": "Session",
+    "硬件信息": "HardwareInfo",
+    "网关管理": "GatewayManagement",
+    "插件管理": "PluginManagement",
+    "插件调试": "PluginDebugging",
+    "通道管理": "Channel",
+    "采集设备": "CollectionDevices",
+    "业务设备": "BusinessDevices",
+    "变量管理": "Variable",
+    "网关状态": "GatewayStatus",
+    "设备状态": "Device",
+    "实时数据": "RealTimeData",
+    "实时报警": "RealTimeAlarms",
+    "网关日志": "GatewayLogs",
+    "后台日志": "Backend",
+    "RPC日志": "RPC",
+    "物联网关": "Gateway",
+    "系统管理": "Admin"
+  },
+
+  "ThingsGateway.AdminServer.AdminIndex": {
+    "CollectDevice": "Collect Device",
+    "BusinessDevice": "Business Device",
+    "Variable": "Variable",
+    "Alarm": "Real-time Alarm",
+    "AlarmCount": "Alarm Count",
+    "OnLine": "Online",
+    "OffLine": "Offline",
+    "Shortcuts": "Shortcuts",
+    "OperLog": "Recent Operations",
+    "BackendLog": "Gateway Backend Log",
+    "RpcLog": "Gateway RPC Log",
+    "HardwareInfoChart": "Hardware Information Historical Chart",
+    "DateTime": "Date Time",
+    "Data": "Data",
+    "HistoryHardwareInfo": "Historical Chart"
+  }
+}

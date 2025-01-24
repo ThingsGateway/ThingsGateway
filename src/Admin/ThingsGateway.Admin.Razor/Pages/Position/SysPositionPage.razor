@@ -1,0 +1,78 @@
+﻿@page "/admin/position"
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+@using ThingsGateway.Admin.Application
+@namespace ThingsGateway.Admin.Razor
+
+<div class="row h-100 g-0">
+
+    <div class="col-0 col-sm-2 h-100">
+        <Card IsShadow=true class="h-100" Color="Color.Primary">
+            <BodyTemplate>
+                <OrgTree ValueChanged="TreeChangedAsync"></OrgTree>
+            </BodyTemplate>
+        </Card>
+
+    </div>
+    <div class="col-12 col-sm-10 h-100 ps-2">
+        <AdminTable @ref=table TItem="SysPosition" AutoGenerateColumns="true"
+                    ShowSearch=false
+                    AllowResizing="true"
+                    IsFixedHeader=true
+                    IsMultipleSelect=true
+                    EditDialogSize="Size.Large"
+                    ShowExtendButtons=true
+                    ShowEditButton=false
+                    ExtendButtonColumnWidth=130
+                    IsPagination=true
+                    OnQueryAsync="OnQueryAsync" OnSaveAsync="Save" OnDeleteAsync="Delete">
+            @*             <CustomerSearchTemplate>
+            @if (context is PositionTableSearchModel model)
+            {
+            @Render(model)
+            }
+            </CustomerSearchTemplate> *@
+            <EditTemplate Context="context">
+                <SysPositionEdit Model=context></SysPositionEdit>
+            </EditTemplate>
+        </AdminTable>
+    </div>
+</div>
+
+@code {
+    [NotNull]
+    AdminTable<SysPosition>? table { get; set; }
+}
+@* @code {
+    RenderFragment Render(PositionTableSearchModel model) =>
+    @<div class="row form-inline g-2">
+        <div class="col-12 ">
+            <BootstrapInput @bind-Value="model.Name" ShowLabel="true"  />
+        </div>
+        <div class="col-12 ">
+            <Select @bind-Value="model.Category" ShowLabel="true" IsClearable />
+        </div>
+        <div class="col-12 ">
+            <Select Items="NullableBoolItems" @bind-Value="model.Enable" ShowLabel="true" IsClearable />
+        </div>
+    </div>
+    ;
+
+
+    [Inject]
+    private IStringLocalizer<ThingsGateway.Razor._Imports> RazorLocalizer { get; set; }
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        NullableBoolItems = new SelectedItem[]
+    {
+        new() { Text = RazorLocalizer["SelectPlaceHolder"].Value, Value = "" },
+        new() { Text = "True", Value = "true" },
+        new() { Text = "False", Value = "false" }
+    };
+    }
+    private IEnumerable<SelectedItem> NullableBoolItems { get; set; }
+}
+ *@

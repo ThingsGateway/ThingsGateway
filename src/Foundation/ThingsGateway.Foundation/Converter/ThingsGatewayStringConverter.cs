@@ -26,6 +26,6 @@ public class ThingsGatewayStringConverter : StringSerializerConverter
     public ThingsGatewayStringConverter(params ISerializerFormatter<string, object>[] converters) : base(converters)
     {
         Add(new StringToClassConverter<object>());
-        Add(new JsonStringToClassSerializerFormatter<object>());
+        Add(new JsonToClassConverter<object>());
     }
 }

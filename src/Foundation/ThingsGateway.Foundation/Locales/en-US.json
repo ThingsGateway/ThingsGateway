@@ -1,5 +1,10 @@
 ﻿{
   "ThingsGateway.Foundation.DefaultResource": {
+    "EmptyUriString": "The URI string cannot be null or consist only of whitespace.",
+    "InvalidPortRange": "The URI string cannot be null or consist only of whitespace.",
+    "InvalidIPv4Segment": "The URI string cannot be null or consist only of whitespace.",
+    "InvalidUriFormat": "The provided URI string format is not valid.",
+
     "CannotSendIRequestInfo": "The current adapter does not support object sending",
     "CannotSet": "Not allowed to freely call {0} for assignment",
     "CannotSplicingSend": "This adapter does not support splicing sending",
@@ -32,9 +37,19 @@
     "StringAddressError": "String read and write must specify length in register address, for example len=10;",
     "TransBytesError": "Conversion failed - original byte array {0}, length {1}",
     "UnknownError": "Unknown error, code: {0}",
-    "StringTypePackError": "When the data type is string, the string length must be specified in order to pack it"
+    "StringTypePackError": "When the data type is string, the string length must be specified in order to pack it",
+
+    "RemoteUrlNotNull": "Remote IP Address cannot be empty",
+    "BindUrlNotNull": "Local Bind IP Address cannot be empty",
+    "BindUrlOrRemoteUrlNotNull": "Remote IP Address or Local Bind IP Address cannot be empty",
+    "PortNameNotNull": "COM Port cannot be empty",
+    "BaudRateNotNull": "Baud Rate cannot be empty",
+    "DataBitsNotNull": "Data Bits can be empty",
+    "ParityNotNull": "Parity cannot be empty",
+    "StopBitsNotNull": "Stop Bits cannot be empty"
+
   },
-  "ThingsGateway.Foundation.ChannelData": {
+  "ThingsGateway.Foundation.ChannelOptions": {
     "Name": "Name",
     "Name.Required": "{0} cannot be empty",
     "ChannelType": "ChannelType",
@@ -48,9 +63,20 @@
     "Parity": "Parity",
     "StopBits": "StopBits",
     "DtrEnable": "DtrEnable",
-    "RtsEnable": "RtsEnable"
+    "RtsEnable": "RtsEnable",
+    "CacheTimeout": "CacheTimeout",
+    "ConnectTimeout": "ConnectTimeout",
+    "MaxConcurrentCount": "MaxConcurrentCount"
   },
   "ThingsGateway.Foundation.VariableClass": {
     "RegisterAddress": "RegisterAddress"
+  },
+  "ThingsGateway.Foundation.ConverterConfig": {
+    "DataFormat": "DataFormat",
+    "Encoding": "Encoding",
+    "EncodingName": "字符串编码",
+    "VariableStringLength": "VariableStringLength",
+    "Stringlength": "Stringlength",
+    "BcdFormat": "BcdFormat格式"
   }
 }

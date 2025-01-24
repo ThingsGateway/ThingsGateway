@@ -15,7 +15,7 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public class VariableSourceClass : IVariableSource
 {
-    private List<IVariable> _variableRunTimes = new();
+    private List<IVariable> _variableRuntimes = new();
 
     /// <inheritdoc/>
     public string? LastErrorMessage { get; set; }
@@ -32,13 +32,13 @@ public class VariableSourceClass : IVariableSource
     /// <summary>
     /// 已打包变量
     /// </summary>
-    public IEnumerable<IVariable> VariableRunTimes => _variableRunTimes;
+    public IEnumerable<IVariable> VariableRuntimes => _variableRuntimes;
 
     /// <inheritdoc/>
     public virtual void AddVariable(IVariable variable)
     {
         variable.VariableSource = this;
-        _variableRunTimes.Add(variable);
+        _variableRuntimes.Add(variable);
     }
 
     /// <inheritdoc/>
@@ -48,6 +48,6 @@ public class VariableSourceClass : IVariableSource
         {
             variable.VariableSource = this;
         }
-        _variableRunTimes.AddRange(variables);
+        _variableRuntimes.AddRange(variables);
     }
 }

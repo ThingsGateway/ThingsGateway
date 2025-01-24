@@ -12,16 +12,14 @@ using CSScripting;
 
 using CSScriptLib;
 
-
 using System.Reflection;
 using System.Text;
 
 using ThingsGateway.NewLife;
 using ThingsGateway.NewLife.Caching;
-using ThingsGateway.NewLife.Threading;
+using ThingsGateway.NewLife.Extension;
 
 namespace ThingsGateway.Gateway.Application;
-
 
 /// <summary>
 /// 脚本扩展方法
@@ -32,42 +30,46 @@ public static class CSharpScriptEngineExtension
 
     private static object m_waiterLock = new object();
 
-    /// <summary>清理计时器</summary>
-    private static TimerX? _clearTimer;
     static CSharpScriptEngineExtension()
     {
-        if (_clearTimer == null)
+        var temp = Environment.GetEnvironmentVariable("CSS_CUSTOM_TEMPDIR");
+        if (temp.IsNullOrWhiteSpace())
         {
-            _clearTimer = new TimerX(RemoveNotAlive, null, 30 * 1000, 60 * 1000) { Async = true };
+            var tempDir = Path.Combine(AppContext.BaseDirectory, "CSSCRIPT");
+            if (Directory.Exists(tempDir))
+            {
+                try
+                {
+                    Directory.Delete(tempDir);
+                }
+                catch
+                {
+
+                }
+            }
+
+            Directory.CreateDirectory(tempDir);//重新创建，防止缓存的一些目录信息错误
+            Environment.SetEnvironmentVariable("CSS_CUSTOM_TEMPDIR", tempDir); //传入变量
         }
+        Instance.KeyExpired += Instance_KeyExpired;
     }
 
-    private static void RemoveNotAlive(Object? state)
+    private static void Instance_KeyExpired(object sender, KeyEventArgs e)
     {
-        //检测缓存
         try
         {
-            var data = Instance.GetAll();
-            lock (m_waiterLock)
+            if (Instance.GetAll().TryGetValue(e.Key, out var item))
             {
-
-                foreach (var item in data)
-                {
-                    if (item.Value!.ExpiredTime < item.Value.VisitTime + 1800_000)
-                    {
-                        Instance.Remove(item.Key);
-                        item.Value?.Value?.TryDispose();
-                        item.Value?.Value?.GetType().Assembly.Unload();
-                        GC.Collect();
-                    }
-                }
+                item?.Value?.TryDispose();
+                item?.Value?.GetType().Assembly.Unload();
+                GC.Collect();
             }
         }
         catch
         {
         }
-
     }
+
 
     private static MemoryCache Instance { get; set; } = new MemoryCache();
 
@@ -119,6 +121,7 @@ public static class CSharpScriptEngineExtension
         using ThingsGateway.Gateway.Application;
         using ThingsGateway.NewLife;
         using ThingsGateway.NewLife.Extension;
+        using ThingsGateway.NewLife.Json.Extension;
         using ThingsGateway.Gateway.Application.Extensions;
         {_using}
         {_body}

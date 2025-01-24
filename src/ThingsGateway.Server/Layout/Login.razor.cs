@@ -18,14 +18,14 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
-using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 
 using ThingsGateway.Admin.Application;
+using ThingsGateway.DataEncryption;
 using ThingsGateway.NewLife.Extension;
 using ThingsGateway.Razor;
 
-namespace ThingsGateway.Admin.Razor;
+namespace ThingsGateway.Server;
 
 public partial class Login
 {
@@ -34,7 +34,6 @@ public partial class Login
 
     [SupplyParameterFromQuery]
     [Parameter]
-    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public string? ReturnUrl { get; set; }
 
     [Inject]
@@ -72,7 +71,7 @@ public partial class Login
     private async Task LoginAsync(EditContext context)
     {
         var model = loginModel.Adapt<LoginInput>();
-        model.Password = DESCEncryption.Encrypt(model.Password);
+        model.Password = DESEncryption.Encrypt(model.Password);
         model.Device = AppService.ClientInfo.Device.Family;
 
         try
@@ -91,7 +90,7 @@ public partial class Login
 
                 if (ReturnUrl.IsNullOrWhiteSpace() || ReturnUrl == @"/")
                 {
-                    await AjaxService.Goto(ret.Data!.Razor ?? ReturnUrl ?? "/");
+                    await AjaxService.Goto(ReturnUrl ?? "/");
                 }
                 else
                 {

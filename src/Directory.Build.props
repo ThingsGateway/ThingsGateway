@@ -1,10 +1,8 @@
 <Project>
 
 	<PropertyGroup>
-		<AdminVersion>7.2.0.64</AdminVersion>
-		<GatewayVersion>7.2.3.9</GatewayVersion>
-		<PluginVersion>9.0.3.10</PluginVersion>
-		<ProPluginVersion>9.0.3.6</ProPluginVersion>
+		<PluginVersion>10.0.0.17</PluginVersion>
+		<ProPluginVersion>10.0.0.17</ProPluginVersion>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -22,9 +20,9 @@
 		<AnalysisModeUsage>None</AnalysisModeUsage>
 		<AnalysisModeStyle>None</AnalysisModeStyle>
 
-		<NoWarn>CS8603;CS8618;CS1591;CS8625;CS8602;CS8604;CS8600;CS8601;CS8714;CS8619;CS8629;CS8765;CS8634;CS8621;CS8767;CS8633;CS8620;CS8610;CS8631;CS8605;CS8622;CS8613;NU5100;NU5104;NU1903;NU1902;</NoWarn>
-		<TargetFrameworks>net9.0;net8.0;net6.0;</TargetFrameworks>
-		<LangVersion>12.0</LangVersion>
+		<NoWarn>CS8603;CS8618;CS1591;CS8625;CS8602;CS8604;CS8600;CS8601;CS8714;CS8619;CS8629;CS8765;CS8634;CS8621;CS8767;CS8633;CS8620;CS8610;CS8631;CS8605;CS8622;CS8613;NU5100;NU5104;NU1903;NU1902;CA1813;</NoWarn>
+		<TargetFrameworks>net8.0;</TargetFrameworks>
+		<LangVersion>13.0</LangVersion>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<Authors>Diego</Authors>

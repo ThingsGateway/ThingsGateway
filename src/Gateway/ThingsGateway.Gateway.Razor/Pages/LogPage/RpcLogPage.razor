@@ -1,0 +1,55 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@page "/gateway/rpclog"
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+
+<Chart @ref=LineChart OnInitAsync="OnInit" Height="var(--line-chart-height)" Width="100%" />
+    <div class="line-chart-table-height">
+    <AdminTable TItem="RpcLog"
+                AutoGenerateColumns="true"
+                ShowDefaultButtons=false
+                AllowResizing="true"
+                ShowSearchButton="false"
+                IsFixedHeader=true
+                IsMultipleSelect=false
+                ShowExtendEditButton=false
+                ShowExtendDeleteButton=false
+                ShowExtendButtons=false
+                ShowExportButton="true"
+                EditDialogSize="Size.Large"
+                OnQueryAsync="OnQueryAsync"
+                IsPagination=true
+                CustomerSearchModel="@CustomerSearchModel">
+        <CustomerSearchTemplate>
+            @if (context is RpcLogPageInput model)
+            {
+                @Render(model)
+            }
+        </CustomerSearchTemplate>
+        <ExportButtonDropdownTemplate Context="ExportContext">
+            <div class="dropdown-item" @onclick="() => ExcelExportAsync(ExportContext)">
+                <i class="fas fa-file-export"></i>
+                <span>@RazorLocalizer["TablesExportButtonExcelText"]</span>
+            </div>
+        </ExportButtonDropdownTemplate>
+    </AdminTable>
+</div>
+@code {
+    RenderFragment Render(RpcLogPageInput model) =>
+    @<div class="row form-inline g-2">
+        <div class="col-12 ">
+            <BootstrapInput @bind-Value="model.OperateSource" ShowLabel="true" />
+        </div>
+        <div class="col-12 ">
+            <DateTimeRange @bind-Value="model.SearchDate" ShowLabel="true" />
+        </div>
+        <div class="col-12 ">
+            <BootstrapInput @bind-Value="model.OperateObject" ShowLabel="true" />
+        </div>
+    </div>;
+
+}

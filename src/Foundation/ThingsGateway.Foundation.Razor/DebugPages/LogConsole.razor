@@ -6,32 +6,53 @@
 @using BootstrapBlazor.Components
 @namespace ThingsGateway.Debug
 
-<Card HeaderText=@HeaderText class="mt-2" style="width:100%">
+<Card HeaderText=@HeaderText class=@("w-100") style=@($"{CardStyle}")>
     <HeaderTemplate>
         <div class="flex-fill">
         </div>
+        @if (EnableChanged.HasDelegate)
+        {
+            <Tooltip class=" col-auto" Title="@RazorLocalizer[!Enable?"Enable":"Disabled"]" Placement="Placement.Bottom">
+                <Button Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@(!Enable?"fa fa-play":"fa fa-pause") OnClick="OnEnable" />
+            </Tooltip>
+        }
         @if (LogLevelChanged.HasDelegate)
         {
             <Select Value="@LogLevel" ValueChanged="LogLevelChanged" IsPopover></Select>
         }
-        <Button Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@(IsPause?"fa fa-play":"fa fa-pause") OnClick="Pause" />
-        <Button IsAsync Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("fa fa-sign-out") OnClick="HandleOnExportClick" />
-        <Button IsAsync Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("far fa-trash-alt") OnClick="Delete" />
+        <Tooltip class=" col-auto" Title="@RazorLocalizer[Pause?"Play":"Pause"]" Placement="Placement.Bottom">
+
+            <Button Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@(Pause?"fa fa-play":"fa fa-pause") OnClick="OnPause" />
+
+        </Tooltip>
+
+        <Tooltip class=" col-auto" Title="@RazorLocalizer["Export"]" Placement="Placement.Bottom">
+
+            <Button IsAsync Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("fa fa-sign-out") OnClick="HandleOnExportClick" />
+
+        </Tooltip>
+
+        <Tooltip class=" col-auto" Title="@RazorLocalizer["Delete"]" Placement="Placement.Bottom">
+
+            <Button IsAsync Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("far fa-trash-alt") OnClick="Delete" />
+
+        </Tooltip>
+
 
     </HeaderTemplate>
     <BodyTemplate>
         <div style=@($"height:{HeightString};overflow-y:scroll")>
             <Virtualize Items="CurrentMessages??new  List<LogMessage>()" Context="itemMessage" ItemSize="60" OverscanCount=2>
                 <ItemContent>
-              @*       <Tooltip Placement="Placement.Bottom" Title=@itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 500))> *@
-                        <div class=@(itemMessage.Level<(byte)Microsoft.Extensions.Logging.LogLevel.Information?"":
-                             itemMessage.Level>=(byte)Microsoft.Extensions.Logging.LogLevel.Warning? " red--text ":"green--text ")
-                             style="white-space: nowrap !important;overflow: hidden !important; text-overflow: ellipsis !important;"
-                             title=@itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 500))>
+                    @*       <Tooltip Placement="Placement.Bottom" Title=@itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 500))> *@
+                    <div class=@(itemMessage.Level<(byte)Microsoft.Extensions.Logging.LogLevel.Information?"":
+                         itemMessage.Level>=(byte)Microsoft.Extensions.Logging.LogLevel.Warning? " red--text   text-truncate":"green--text text-truncate")
+                          
+                         title=@itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 500))>
 
-                            @itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 150))
+                        @itemMessage.Message.Substring(0, Math.Min(itemMessage.Message.Length, 150))
 
-                        </div>
+                    </div>
                     @* </Tooltip> *@
                 </ItemContent>
             </Virtualize>

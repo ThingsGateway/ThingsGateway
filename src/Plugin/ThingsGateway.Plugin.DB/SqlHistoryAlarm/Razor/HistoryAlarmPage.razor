@@ -1,0 +1,45 @@
+﻿@using System.Linq.Expressions;
+@using BootstrapBlazor.Components
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.Extensions.Logging
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Extension
+@using ThingsGateway.Gateway.Application
+@namespace ThingsGateway.Plugin.SqlHistoryAlarm
+
+
+
+<AdminTable TItem="HistoryAlarm" AutoGenerateColumns="true" ShowDefaultButtons=false
+            AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
+            ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
+            ShowExportButton="true" IsAutoQueryFirstRender=false
+            OnQueryAsync="OnQueryAsync" IsPagination=true CustomerSearchModel="@CustomerSearchModel">
+    <CustomerSearchTemplate>
+        @if (context is HistoryAlarmPageInput model)
+        {
+            @Render(model)
+        }
+    </CustomerSearchTemplate>
+
+</AdminTable>
+
+
+@code {
+    RenderFragment Render(HistoryAlarmPageInput model) =>
+    @<div class="row form-inline g-2">
+        <div class="col-12 ">
+            <BootstrapInput @bind-Value="model.VariableName" ShowLabel="true" />
+        </div>
+        <div class="col-12 ">
+            <DateTimeRange @bind-Value="model.SearchDate" ShowLabel="true" />
+        </div>
+        <div class="col-12 ">
+            <Select @bind-Value="model.AlarmType" ShowLabel="true" IsPopover />
+        </div>
+        <div class="col-12 ">
+            <Select @bind-Value="model.EventType" ShowLabel="true" IsPopover />
+        </div>
+    </div>;
+
+}

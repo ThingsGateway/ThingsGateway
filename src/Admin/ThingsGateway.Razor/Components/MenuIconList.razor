@@ -1,0 +1,10 @@
+﻿@namespace ThingsGateway.Razor
+<div>
+    <FAIconList @bind-Icon="Value" ShowCatalog="true" />
+    <div class="form-footer">
+        <span>@Localizer["ChoiceIcon"]</span>
+        <i class="@Value fa-fw icon"></i>
+        <DialogCloseButton />
+        <DialogCloseButton Color="Color.Primary" Icon="fa-solid fa-floppy-disk" Text="@RazorLocalizer["Choice"]" OnClickWithoutRender="OnSelctedIcon" />
+    </div>
+</div>

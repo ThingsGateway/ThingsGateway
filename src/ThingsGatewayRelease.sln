@@ -4,6 +4,17 @@ VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Server", "ThingsGateway.Server\ThingsGateway.Server.csproj", "{22875EFB-DADF-4612-A572-33BCC092F644}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThingsGateway.Photino", "ThingsGateway.Photino\ThingsGateway.Photino.csproj", "{50F42EDF-1E38-4A08-92EA-C06B794BA061}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "other", "other", "{0B748352-5D27-4F14-8A20-364034C72867}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
+		..\git_pull.bat = ..\git_pull.bat
+		PluginVersion.props = PluginVersion.props
+		Version.props = Version.props
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -14,6 +25,10 @@ Global
 		{22875EFB-DADF-4612-A572-33BCC092F644}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22875EFB-DADF-4612-A572-33BCC092F644}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22875EFB-DADF-4612-A572-33BCC092F644}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50F42EDF-1E38-4A08-92EA-C06B794BA061}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50F42EDF-1E38-4A08-92EA-C06B794BA061}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50F42EDF-1E38-4A08-92EA-C06B794BA061}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50F42EDF-1E38-4A08-92EA-C06B794BA061}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

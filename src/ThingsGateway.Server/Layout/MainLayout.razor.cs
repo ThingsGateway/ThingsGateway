@@ -19,8 +19,9 @@ using System.Diagnostics.CodeAnalysis;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
+using ThingsGateway.Razor;
 
-namespace ThingsGateway.Razor;
+namespace ThingsGateway.Server;
 
 public partial class MainLayout : IDisposable
 {
@@ -49,8 +50,6 @@ public partial class MainLayout : IDisposable
     }
 
     #endregion 全局通知
-    [Inject]
-    private IStringLocalizer<ThingsGateway.Admin.Razor._Imports> AdminLocalizer { get; set; }
 
     #region 切换模块
 
@@ -60,55 +59,9 @@ public partial class MainLayout : IDisposable
     [Inject]
     private IUserCenterService UserCenterService { get; set; }
 
-    private async Task ChoiceModule()
+    private Task ChoiceModule(long moduleId)
     {
-        DialogOption? op = null;
-
-        op = new DialogOption()
-        {
-            IsScrolling = false,
-            Size = Size.ExtraLarge,
-            ShowFooter = false,
-            Title = Localizer["ChoiceModule"],
-            BodyTemplate = BootstrapDynamicComponent.CreateComponent<ChoiceModuleComponent>(new Dictionary<string, object?>
-            {
-                [nameof(ChoiceModuleComponent.ModuleList)] = AppContext.CurrentUser.ModuleList.ToList(),
-                [nameof(ChoiceModuleComponent.Value)] = AppContext.CurrentModuleId,
-                [nameof(ChoiceModuleComponent.OnSave)] = async (long v, bool s) =>
-                {
-                    if (op != null)
-                    {
-                        await op.CloseDialogAsync();
-                    }
-                    if (s)
-                    {
-                        await UserCenterService.SetDefaultModule(v);
-                        NavigationManager.NavigateTo("/", true);
-                    }
-                    else
-                    {
-                        var filteredByA = AppContext.AllMenus.Where(p => p.Module != v);
-                        var filteredByB = AppContext.AllMenus.Where(p => p.Module == v);
-                        var uniqueAValues = new HashSet<string>();
-                        string finalResult = null;
-                        foreach (var pair in filteredByA)
-                        {
-                            uniqueAValues.Add(pair.Href);
-                        }
-                        foreach (var pair in filteredByB)
-                        {
-                            if (uniqueAValues.Add(pair.Href)) // 如果添加成功，说明a值没有重复
-                            {
-                                finalResult = pair.Href;
-                                break;
-                            }
-                        }
-                        NavigationManager.NavigateTo(finalResult ?? "/", true);
-                    }
-                }
-            }).Render(),
-        };
-        await DialogService.Show(op);
+        return ReloadMenu(moduleId);
     }
 
     #endregion 切换模块
@@ -168,10 +121,11 @@ public partial class MainLayout : IDisposable
     #endregion 注销
 
     private string _versionString = string.Empty;
-
     [Inject]
     [NotNull]
     private BlazorAppContext? AppContext { get; set; }
+    [Inject]
+    private IStringLocalizer<ThingsGateway.Admin.Razor._Imports> AdminLocalizer { get; set; }
 
     [Inject]
     private DialogService DialogService { get; set; }
@@ -212,11 +166,32 @@ public partial class MainLayout : IDisposable
         DispatchService.Subscribe(Dispatch);
         await AppContext.InitUserAsync();
         await AppContext.InitMenus(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-
         StateHasChanged();
         await base.OnInitializedAsync();
     }
+    private Tab Tab { get; set; }
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            //var items = Tab.Items.ToList();
+            //var tab = Tab.GetActiveTab();
+            //Tab.CloseAllTabs();
+            //Tab.AddTab("", Localizer["系统首页"], "fas fa-house", false, false);
+            //foreach (var item in items)
+            //{
+            //    if (item.Url == "/" || item.Url.IsNullOrWhiteSpace())
+            //        continue;
+            //    Tab.AddTab(item.Url, item.Text, item.Icon, item.IsActive, item.Closable);
+            //}
+            //if (!(tab.Url == "/" || tab.Url.IsNullOrWhiteSpace()))
+            //    NavigationManager.NavigateTo(ServiceProvider, tab.Url, tab.Text, tab.Icon, true);
+        }
+        base.OnAfterRender(firstRender);
+    }
 
+    [Inject]
+    IServiceProvider ServiceProvider { get; set; }
     private void Dispose(bool disposing)
     {
         if (disposing)
@@ -225,9 +200,9 @@ public partial class MainLayout : IDisposable
         }
     }
 
-    private async Task ReloadMenu()
+    private async Task ReloadMenu(long? moduleId = null)
     {
-        await AppContext.InitMenus(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        await AppContext.InitMenus(NavigationManager.ToBaseRelativePath(NavigationManager.Uri), moduleId);
         await InvokeAsync(StateHasChanged);
     }
 

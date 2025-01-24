@@ -21,7 +21,7 @@ public static class PluginUtil
         action += a =>
         {
             var plugin = a.Add<HeartbeatAndReceivePlugin>();
-            plugin.HeartbeatHexString = dtuClient.HeartbeatHexString;
+            plugin.Heartbeat = dtuClient.Heartbeat;
             plugin.DtuId = dtuClient.DtuId;
             plugin.HeartbeatTime = dtuClient.HeartbeatTime;
         };
@@ -37,18 +37,18 @@ public static class PluginUtil
         {
             a.UseCheckClear()
     .SetCheckClearType(CheckClearType.All)
-    .SetTick(TimeSpan.FromSeconds(dtu.CheckClearTime))
+    .SetTick(TimeSpan.FromMilliseconds(dtu.CheckClearTime))
     .SetOnClose((c, t) =>
     {
         c.TryShutdown();
-        c.SafeClose($"{dtu.CheckClearTime}s Timeout");
+        c.SafeClose($"{dtu.CheckClearTime}ms Timeout");
     });
         };
 
         action += a =>
         {
             var plugin = a.Add<DtuPlugin>();
-            plugin.HeartbeatHexString = dtu.HeartbeatHexString;
+            plugin.Heartbeat = dtu.Heartbeat;
         };
         return action;
     }
@@ -62,12 +62,25 @@ public static class PluginUtil
         {
             a.UseCheckClear()
     .SetCheckClearType(CheckClearType.All)
-    .SetTick(TimeSpan.FromSeconds(tcpService.CheckClearTime))
+    .SetTick(TimeSpan.FromMilliseconds(tcpService.CheckClearTime))
     .SetOnClose((c, t) =>
     {
         c.TryShutdown();
-        c.SafeClose($"{tcpService.CheckClearTime}s Timeout");
+        c.SafeClose($"{tcpService.CheckClearTime}ms Timeout");
     });
+        };
+
+        return action;
+    }
+
+    /// <inheritdoc/>
+    public static Action<IPluginManager> GetTcpReconnectionPlugin(ITcpClient tcpClient)
+    {
+        Action<IPluginManager> action = a => { };
+
+        action += a =>
+        {
+            a.UseTcpReconnection();
         };
 
         return action;

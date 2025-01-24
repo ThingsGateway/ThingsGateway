@@ -19,7 +19,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 定义了变量相关的服务接口
 /// </summary>
-public interface IVariableService
+internal interface IVariableService
 {
     /// <summary>
     /// 异步插入变量信息。
@@ -35,11 +35,6 @@ public interface IVariableService
     /// <param name="model">新数据</param>
     /// <returns></returns>
     Task<bool> BatchEditAsync(IEnumerable<Variable> models, Variable oldModel, Variable model);
-
-    /// <summary>
-    /// 异步清除变量数据。
-    /// </summary>
-    Task ClearVariableAsync(SqlSugarClient db = null);
 
     /// <summary>
     /// 根据设备ID异步删除变量数据。
@@ -64,39 +59,31 @@ public interface IVariableService
     /// <summary>
     /// 异步导出变量数据到文件流中。
     /// </summary>
-    Task<Dictionary<string, object>> ExportVariableAsync(QueryPageOptions options, FilterKeyValueAction filterKeyValueAction = null);
+    Task<Dictionary<string, object>> ExportVariableAsync(ExportFilter exportFilter);
 
     /// <summary>
-    /// 异步获取变量的运行时信息。
+    /// 异步获取变量。
     /// </summary>
     /// <param name="devId">设备ID（可选）。</param>
-    Task<List<VariableRunTime>> GetVariableRuntimeAsync(long? devId = null);
+    Task<List<Variable>> GetAllAsync(long? devId = null);
 
     /// <summary>
     /// 异步导入变量数据。
     /// </summary>
     /// <param name="input">要导入的数据。</param>
-    Task ImportVariableAsync(Dictionary<string, ImportPreviewOutputBase> input);
+    Task<HashSet<long>> ImportVariableAsync(Dictionary<string, ImportPreviewOutputBase> input);
 
     /// <summary>
     /// 创建n个modbus变量
     /// </summary>
-    Task InsertTestDataAsync(int variableCount, int deviceCount, string slaveUrl = "127.0.0.1:502");
+    Task<(List<Channel>, List<Device>, List<Variable>)> InsertTestDataAsync(int variableCount, int deviceCount, string slaveUrl = "127.0.0.1:502");
 
     /// <summary>
     /// 表格查询
     /// </summary>
-    /// <param name="option">查询分页选项</param>
-    /// <param name="businessDeviceId">业务设备id</param>
-    Task<QueryData<Variable>> PageAsync(QueryPageOptions option, long? businessDeviceId);
+    /// <param name="exportFilter">查询分页选项</param>
+    Task<QueryData<Variable>> PageAsync(ExportFilter exportFilter);
 
-
-    /// <summary>
-    /// API查询
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    Task<SqlSugarPagedList<Variable>> PageAsync(VariablePageInput input);
     Task PreheatCache();
 
     /// <summary>
@@ -111,4 +98,11 @@ public interface IVariableService
     /// <param name="input">要保存的设备信息。</param>
     /// <param name="type">变量变化类型。</param>
     Task<bool> SaveVariableAsync(Variable input, ItemChangedType type);
+
+
+
+    /// <summary>
+    /// 保存初始值
+    /// </summary>
+    Task UpdateInitValueAsync(List<Variable> variables);
 }

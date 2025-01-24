@@ -1,11 +1,11 @@
 ﻿{
-  "ThingsGateway.Admin.Razor.NotFound404": {
+  "ThingsGateway.Server.NotFound404": {
     "404": "Sorry, the page you are looking for does not exist.",
     "401": "Sorry, you do not have permission to access this page.",
     "Home": "Back to Home",
     "Login": "Login"
   },
-  "ThingsGateway.Admin.Razor.Login": {
+  "ThingsGateway.Server.Login": {
     "LoginErrorh1": "Login Error",
     "LoginSuccessh1": "Login Success",
     "LoginSuccessc1": "Redirecting to the page",
@@ -17,7 +17,7 @@
     "Welcome": "Welcome"
   },
 
-  "ThingsGateway.Razor.MainLayout": {
+  "ThingsGateway.Server.MainLayout": {
     "About": "About",
     "FullScreenButton": "Full Screen",
     "UserCenter": "User Center",
@@ -51,7 +51,7 @@
     "业务设备": "BusinessDevices",
     "变量管理": "Variable",
     "网关状态": "GatewayStatus",
-    "设备状态": "Device",
+    "网关监控": "GatewayMonitor",
     "实时数据": "RealTimeData",
     "实时报警": "RealTimeAlarms",
     "网关日志": "GatewayLogs",
@@ -63,7 +63,7 @@
     "规则设计": "RulesDesign"
   },
 
-  "ThingsGateway.Admin.Razor.AdminIndex": {
+  "ThingsGateway.Server.AdminIndex": {
     "CollectDevice": "Collect Device",
     "BusinessDevice": "Business Device",
     "Variable": "Variable",
@@ -80,7 +80,7 @@
     "Data": "Data",
     "HistoryHardwareInfo": "Historical Chart"
   },
-  "ThingsGateway.Gateway.Razor.GatewayIndex": {
+  "ThingsGateway.Server.GatewayIndex": {
     "CollectDevice": "Collect Device",
     "BusinessDevice": "Business Device",
     "Variable": "Variable",

@@ -52,14 +52,10 @@ public interface IThingsGatewayBitConverter
     int? StringLength { get; set; }
 
     /// <summary>
-    /// 数组长度，只在连读时生效
-    /// </summary>
-    int? ArrayLength { get; set; }
-
-    /// <summary>
     /// 获取或设置在解析字符串的时候是否将字节按照字单位反转
     /// </summary>
     bool IsStringReverseByteWord { get; set; }
+
     /// <summary>
     /// 获取或设置在解析字符串的时候是否变长字符串
     /// </summary>
@@ -329,13 +325,6 @@ public interface IThingsGatewayBitConverter
     /// <param name="length">length</param>
     /// <returns>decimal对象</returns>
     decimal[] ToDecimal(byte[] buffer, int offset, int length);
-
-    /// <summary>
-    /// 获取指定的数据格式
-    /// </summary>
-    /// <param name="dataFormat"></param>
-    /// <returns></returns>
-    IThingsGatewayBitConverter GetByDataFormat(DataFormatEnum dataFormat);
 
     #endregion ToValue
 }

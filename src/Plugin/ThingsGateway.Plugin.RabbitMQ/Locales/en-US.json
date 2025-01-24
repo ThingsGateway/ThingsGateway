@@ -1,0 +1,29 @@
+﻿{
+  "ThingsGateway.Plugin.RabbitMQ.RabbitMQProducerProperty": {
+    "IP": "IP",
+    "Port": "Port",
+    "UserName": "UserName",
+    "Password": "Password",
+    "DetailLog": "DetailLog",
+    "IsQueueDeclare": "IsQueueDeclare",
+    "VirtualHost": "VirtualHost",
+    "ExchangeName": "ExchangeName",
+
+    "BigTextScriptDeviceModel": "BigTextScriptDeviceModel",
+    "BigTextScriptVariableModel": "BigTextScriptVariableModel",
+    "BigTextScriptAlarmModel": "BigTextScriptAlarmModel",
+    "IsDeviceList": "IsDeviceList",
+    "IsVariableList": "IsVariableList",
+    "IsAlarmList": "IsAlarmList",
+    "DeviceTopic": "DeviceTopic",
+    "VariableTopic": "VariableTopic",
+    "AlarmTopic": "AlarmTopic",
+    "BusinessUpdateEnum": "BusinessUpdateEnum",
+    "BusinessInterval": "BusinessInterval",
+    "IsAllVariable": "IsAllVariable",
+    "QueueMaxCount": "QueueMaxCount",
+    "CacheFileMaxLength": "CacheFileMaxLength(mb)",
+    "SplitSize": "SplitSize",
+    "CacheEnable": "CacheEnable"
+  }
+}

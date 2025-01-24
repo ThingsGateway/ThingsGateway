@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<Import Project="$(SolutionDir)Foundation.props" />
+	<Import Project="$(SolutionDir)PackNuget.props" />
+	<Import Project="$(SolutionDir)Version.props" />
+	<PropertyGroup>
+		<Description>工业设备通讯协议-Modbus协议</Description>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<DocumentationFile></DocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+</Project>

@@ -1,5 +1,5 @@
 ﻿{
-  "ThingsGateway.Debug.ChannelDataDebugComponent": {
+  "ThingsGateway.Debug.ChannelComponent": {
     "Name": "名称",
     "Name.Required": " {0} 不可为空",
     "ChannelType": "通道类型",
@@ -17,14 +17,6 @@
     "DtrEnable": "Dtr",
     "RtsEnable": "Rts",
 
-    "RemoteUrlNotNull": "远程IP地址不可为空",
-    "BindUrlNotNull": "本地绑定IP地址不可为空",
-    "BindUrlOrRemoteUrlNotNull": "远程IP地址或本地绑定IP地址不可为空",
-    "PortNameNotNull": "COM口不可为空",
-    "BaudRateNotNull": "波特率不可为空",
-    "DataBitsNotNull": "数据位可为空",
-    "ParityNotNull": "校验位不可为空",
-    "StopBitsNotNull": "停止位不可为空",
 
     "SaveChannel": "添加/修改通道",
     "DeleteChannel": "删除通道",
@@ -40,8 +32,26 @@
     "Disconnect": "断开",
     "Channel": "通道"
   },
+  "ThingsGateway.Foundation.ChannelOptionsDefault": {
+    "Name": "名称",
+    "Name.Required": " {0} 不可为空",
+    "ChannelType": "通道类型",
 
-  "ThingsGateway.Debug.AdapterDebugBase": {
+    "RemoteUrl": "远程IP地址",
+    "BindUrl": "本地绑定IP地址",
+
+    "PortName": "COM口",
+    "BaudRate": "波特率",
+    "DataBits": "数据位",
+    "Parity": "校验位",
+    "StopBits": "停止位",
+    "DtrEnable": "Dtr",
+    "RtsEnable": "Rts",
+    "CacheTimeout": "接收缓存超时",
+    "ConnectTimeout": "连接超时",
+    "MaxConcurrentCount": "最大并发数"
+  },
+  "ThingsGateway.Debug.DeviceComponentBase": {
     "WriteSuccess": "写入成功",
     "DefaultSend": "直接发送",
     "Send": "发送",
@@ -51,7 +61,7 @@
     "WriteValue": "写入值",
     "SendValue": "发送原始报文"
   },
-  "ThingsGateway.Debug.AdapterDebugComponent": {
+  "ThingsGateway.Debug.DeviceComponent": {
     "HeaderText": "通道日志",
     "WriteSuccess": "写入成功",
     "DefaultSend": "直接发送",
@@ -67,9 +77,11 @@
     "Write": "写入",
     "MulRead": "多读"
   },
-  "ThingsGateway.Debug.ChannelDataEditComponent": {
+  "ThingsGateway.Debug.ChannelEditComponent": {
     "BasicInformation": "基础信息",
     "Connection": "连接"
+  },
+  "ThingsGateway.Debug.ConverterConfigComponent": {
+    "Converter": "内置数据转换"
   }
-
 }

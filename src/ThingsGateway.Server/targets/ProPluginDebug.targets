@@ -1,0 +1,35 @@
+<Project>
+
+	<ItemGroup>
+
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Management\ThingsGateway.Management.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.AllenBradleyCip\ThingsGateway.Plugin.AllenBradleyCip.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.BACnet\ThingsGateway.Plugin.BACnet.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.DCON\ThingsGateway.Plugin.DCON.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.DKQ_A16D\ThingsGateway.Plugin.DKQ_A16D.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.EDPF_NT\ThingsGateway.Plugin.EDPF_NT.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.HJ212\ThingsGateway.Plugin.HJ212.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.HUANANSFSK\ThingsGateway.Plugin.HUANANSFSK.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.IDR210\ThingsGateway.Plugin.IDR210.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.KELID2008\ThingsGateway.Plugin.KELID2008.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.LEIDIAN\ThingsGateway.Plugin.LEIDIANAPI.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.LKSIS\ThingsGateway.Plugin.LKSIS.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.Melsec\ThingsGateway.Plugin.Melsec.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.ModbusC1\ThingsGateway.Plugin.ModbusC1.csproj" />
+		<!--依赖版本不同，需插件隔离-->
+			<!--<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.MqttSZJYZ\ThingsGateway.Plugin.MqttSZJYZ.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.MqttYINGKE\ThingsGateway.Plugin.MqttYINGKE.csproj" />-->
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.Omron\ThingsGateway.Plugin.Omron.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.SECS\ThingsGateway.Plugin.SECS.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.TS550\ThingsGateway.Plugin.TS550.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.URF_R330\ThingsGateway.Plugin.URF_R330.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.USBScaner\ThingsGateway.Plugin.USBScaner.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.Vigor\ThingsGateway.Plugin.Vigor.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.YPSFSK\ThingsGateway.Plugin.YPSFSK.csproj" />
+			<ProjectReference Include="..\PluginPro\ThingsGateway.RulesEngine\ThingsGateway.RulesEngine.csproj" />
+
+
+	</ItemGroup>
+
+  
+</Project>

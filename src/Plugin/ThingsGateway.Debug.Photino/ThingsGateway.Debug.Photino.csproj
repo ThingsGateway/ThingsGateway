@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<Import Project="$(SolutionDir)Version.props" />
+
+
+	<PropertyGroup>
+		<SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
+		<OutputType>WinExe</OutputType>
+		<ApplicationIcon>favicon.ico</ApplicationIcon>
+		<TargetFrameworks>net9.0;</TargetFrameworks>
+
+		<!--动态适用GC-->
+		<GarbageCollectionAdaptationMode>true</GarbageCollectionAdaptationMode>
+		<!--使用自托管线程池-->
+		<!--<UseWindowsThreadPool>false</UseWindowsThreadPool> -->
+
+		<!--使用工作站GC-->
+		<!--<ServerGarbageCollection>true</ServerGarbageCollection>-->
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Update="wwwroot\**">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<ProjectReference Include="..\..\Admin\ThingsGateway.Photino.Blazor\ThingsGateway.Photino.Blazor.csproj" />
+		<ProjectReference Include="..\ThingsGateway.Debug.Razor\ThingsGateway.Debug.Razor.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="appsettings.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+		<Content Update="Configuration\Menu.json">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Content>
+		<Content Update="Configuration\MenuPro.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	<ItemGroup Condition="'$(SolutionName)'!='ThingsGatewayPro'">
+		<Content Update="Configuration\Menu.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+	<ItemGroup Condition="'$(SolutionName)'=='ThingsGatewayPro'">
+		<Content Update="Configuration\MenuPro.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<ProjectReference Include="..\..\PluginPro\ThingsGateway.Debug.ProRazor\ThingsGateway.Debug.ProRazor.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="favicon.ico">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+</Project>

@@ -1,20 +1,46 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<Import Project="$(SolutionDir)Version.props" />
-	<Import Project="targets\PluginContext.targets" />
-	<Import Project="targets\Publish1.targets" />
+
+
+	<ItemGroup Condition=" '$(SolutionName)' != 'ThingsGatewayRelease'">
+		<ProjectReference Include="..\Gateway\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
+		<ProjectReference Include="..\Gateway\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
+	</ItemGroup>
+
+
+	<!--发布版-->
+	<Import Project="targets\Gateway.targets" Condition=" '$(SolutionName)' == 'ThingsGatewayRelease' " />
+	<Import Project="targets\Admin.targets" Condition=" '$(SolutionName)' == 'ThingsGatewayRelease' " />
+
+	<!--直接引用-->
+	<!--<Import Project="targets\PluginDebug.targets" />-->
+
+	<!--nuget包解压复制文件，上下文动态加载-->
+	<!--<Import Project="targets\PluginContext.targets" />-->
+	<Import Project="targets\PluginContext.targets" Condition=" '$(SolutionName)' != 'ThingsGatewayPro' " />
+
+	<!--nuget包解压复制文件，插件域隔离动态加载-->
 	<!--<Import Project="targets\Plugin.targets" />-->
-	<Import Project="targets\CustomPlugin.targets" />
-	<Import Project="targets\Custom.targets" />
-	<!--<Import Project="targets\Admin.targets" />-->
-	<!--<Import Project="targets\OtherPlugin.targets" />-->
-	<!--<Import Project="targets\OtherPlugin1.targets" />-->
+
+	<!--nuget包解压复制文件，上下文动态加载，网关管理和网关冗余-->
+	<Import Project="targets\Pro1.targets" Condition=" '$(SolutionName)' != 'ThingsGatewayPro' " />
+	<!--nuget包解压复制文件，上下文动态加载，Pro插件-->
+	<Import Project="targets\Pro2.targets" Condition=" '$(SolutionName)' != 'ThingsGatewayPro' " />
+
+	<!--直接引用Pro-->
+	<Import Project="targets\PluginDebug.targets" Condition=" '$(SolutionName)' == 'ThingsGatewayPro' " />
+	<Import Project="targets\ProPluginDebug.targets" Condition=" '$(SolutionName)' == 'ThingsGatewayPro' " />
+
+	<!--打包复制-->
+	<Import Project="targets\PluginPublish.targets" />
 	<PropertyGroup>
+		<TargetFrameworks>net9.0;net8.0;</TargetFrameworks>
 		<CustomTargetFramework>$(TargetFramework)</CustomTargetFramework>
 		<OpenApiGenerateDocuments>false</OpenApiGenerateDocuments>
 		<SatelliteResourceLanguages>zh-Hans;en-US</SatelliteResourceLanguages>
 		<PublishReadyToRunComposite>true</PublishReadyToRunComposite>
-		<ApplicationIcon>wwwroot\favicon.ico</ApplicationIcon>
+		<ApplicationIcon>favicon.ico</ApplicationIcon>
 
 		<!--动态适用GC-->
 		<GarbageCollectionAdaptationMode>1</GarbageCollectionAdaptationMode>
@@ -29,48 +55,27 @@
 
 
 
-
-
-	<ItemGroup>
-		<Content Include="DockerPush.ps1">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="DockerPush_arm64.ps1">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
-		<EmbeddedResource Include="Locales\*.json">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</EmbeddedResource>
-	</ItemGroup>
-
 	<ItemGroup>
 		<Content Update="wwwroot\**">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
 
-	<ItemGroup Condition=" '$(TargetFramework)' != 'net6.0' ">
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
+
+	<ItemGroup>
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
 	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
-		<PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.20" />
-	</ItemGroup>
-
-
 
 	<!--安装服务守护-->
-	<ItemGroup Condition=" '$(TargetFramework)' != 'net9.0' ">
-		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.1" />
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="9.*" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.*" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.*" />
 	</ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
-		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.0" />
-	</ItemGroup>
+
 
 	<ItemGroup>
 		<Content Include="favicon.ico">
@@ -101,15 +106,21 @@
 		<None Update="WindowsServiceDelete.bat">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
+
 	</ItemGroup>
 
 
-	<ItemGroup Condition=" '$(SolutionName)' != 'ThingsGatewayRelease' ">
-		<ProjectReference Include="..\Gateway\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
-		<ProjectReference Include="..\Gateway\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
+
+
+	<ItemGroup>
+		<Content Include="DockerPush.ps1">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="DockerPush_arm64.ps1">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
-	<Import Project="targets\Gateway.targets" Condition=" '$(SolutionName)' == 'ThingsGatewayRelease' " />
-	<Import Project="targets\Admin.targets"  Condition=" '$(SolutionName)' == 'ThingsGatewayRelease' " />
+
 
 </Project>

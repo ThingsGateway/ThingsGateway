@@ -1,0 +1,62 @@
+﻿@namespace ThingsGateway.Admin.Razor
+@using ThingsGateway.Admin.Application
+<div class="row g-2 mx-1 form-inline">
+
+
+    <div class="col-12  col-md-12">
+        <BootstrapInput @bind-Value="Model.Name"></BootstrapInput>
+    </div>
+    <div class="col-12  col-md-12">
+        <BootstrapInput @bind-Value="Model.Code"></BootstrapInput>
+    </div>
+
+    <div class="col-12  col-md-12">
+        @if (AppContext.CurrentUser.IsGlobal)
+        {
+            <RadioList IsButton="true" @bind-Value="Model.Category"></RadioList>
+
+        }
+    </div>
+    <div class="col-12  col-md-12">
+        @if (Model.Category == RoleCategoryEnum.Org)
+        {
+            <SelectTree TValue="long" Items="OrgItems" @bind-Value=Model.OrgId ShowLabel="true" ShowRequired="true" />
+        }
+    </div>
+
+    <div class="col-12  col-md-8">
+        <Select @bind-Value="Model.DefaultDataScope.ScopeCategory"></Select>
+    </div>
+    <div class="col-12  col-md-4">
+        @if (Model.DefaultDataScope.ScopeCategory == DataScopeEnum.SCOPE_ORG_DEFINE)
+        {
+
+            <SelectObject @bind-Value="Model.DefaultDataScope.ScopeDefineOrgIdList" GetTextCallback="a=>a.Count.ToString()" Height="300">
+
+                <ChildContent>
+
+                    <TreeView TItem="SysOrg" Items="Items" ShowIcon="true" ShowSearch ClickToggleCheck="true"
+                              ShowCheckbox="true" AutoCheckParent="false" AutoCheckChildren="false" IsVirtualize="true"
+                              IsAccordion=false OnTreeItemChecked="OnTreeItemChecked" ModelEqualityComparer="SysRoleEdit.ModelEqualityComparer" IsFixedSearch OnSearchAsync="OnClickSearch">
+                    </TreeView>
+                </ChildContent>
+
+                <Template>
+                    @{
+                        var text = items?.FirstOrDefault(a => Model.DefaultDataScope.ScopeDefineOrgIdList.Contains(a.Id))?.Names;
+                    }
+                    <span>@($"{text}...")</span>
+                </Template>
+            </SelectObject>
+        }
+
+    </div>
+
+    <div class="col-12 col-sm-10">
+        <Slider @bind-Value="@Model.SortCode" Step="1" UseInputEvent="true" Max="999" Min="-999"></Slider>
+    </div>
+    <div class="col-12 col-sm-2">
+        <BootstrapInput @bind-Value="Model.SortCode" ShowLabel="false"></BootstrapInput>
+    </div>
+</div>
+

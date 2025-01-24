@@ -10,8 +10,6 @@
 
 using System.Text.RegularExpressions;
 
-using ThingsGateway.NewLife.Extension;
-
 namespace ThingsGateway.Foundation;
 
 /// <summary>
@@ -75,6 +73,15 @@ public static class LoggerExtensions
     /// <param name="channelId"></param>
     /// <returns></returns>
     public static string GetLogPath(this long channelId)
+    {
+        return GetLogBasePath().CombinePath(channelId.ToString()).FileNameReplace();
+    }
+    /// <summary>
+    /// 获取日志路径
+    /// </summary>
+    /// <param name="channelId"></param>
+    /// <returns></returns>
+    public static string GetLogPath(this string channelId)
     {
         return GetLogBasePath().CombinePath(channelId.ToString()).FileNameReplace();
     }

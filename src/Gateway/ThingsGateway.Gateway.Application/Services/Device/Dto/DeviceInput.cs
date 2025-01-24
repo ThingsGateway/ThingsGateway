@@ -14,26 +14,6 @@ using ThingsGateway.Extension.Generic;
 
 namespace ThingsGateway.Gateway.Application;
 
-/// <summary>
-/// 设备分页查询DTO
-/// </summary>
-public class DevicePageInput : BasePageInput
-{
-    /// <inheritdoc/>
-    public long? ChannelId { get; set; }
-
-    /// <inheritdoc/>
-    public string? Name { get; set; }
-
-    /// <inheritdoc/>
-    public string? PluginName { get; set; }
-
-    /// <inheritdoc/>
-    public PluginTypeEnum PluginType { get; set; }
-}
-
-
-
 public class DeviceSearchInput : ITableSearchModel
 {
     /// <inheritdoc/>
@@ -43,16 +23,10 @@ public class DeviceSearchInput : ITableSearchModel
     public string? Name { get; set; }
 
     /// <inheritdoc/>
-    public string? PluginName { get; set; }
-    /// <inheritdoc/>
-    public PluginTypeEnum PluginType { get; set; }
-
-    /// <inheritdoc/>
     public IEnumerable<IFilterAction> GetSearches()
     {
         var ret = new List<IFilterAction>();
         ret.AddIF(!string.IsNullOrEmpty(Name), () => new SearchFilterAction(nameof(Device.Name), Name));
-        ret.AddIF(!string.IsNullOrEmpty(PluginName), () => new SearchFilterAction(nameof(Device.PluginName), PluginName));
         ret.AddIF(ChannelId > 0, () => new SearchFilterAction(nameof(Device.ChannelId), ChannelId, FilterAction.Equal));
         return ret;
     }
@@ -61,7 +35,6 @@ public class DeviceSearchInput : ITableSearchModel
     public void Reset()
     {
         Name = null;
-        PluginName = null;
         ChannelId = null;
     }
 }

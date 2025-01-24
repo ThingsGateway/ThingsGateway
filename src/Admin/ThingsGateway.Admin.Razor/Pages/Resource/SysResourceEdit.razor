@@ -1,0 +1,63 @@
+﻿@namespace ThingsGateway.Admin.Razor
+@using ThingsGateway.Admin.Application
+<div class="row g-2 mx-1 form-inline">
+
+
+    <div class="col-12  col-md-6">
+        <BootstrapInput @bind-Value="Model.Title"></BootstrapInput>
+    </div>
+
+    <div class="col-12  col-md-6">
+        <RadioList @bind-Value="Model.Category" IsButton></RadioList>
+    </div>
+
+
+    @if (Model.Category != ResourceCategoryEnum.Module)
+    {
+        <div class="col-12  col-md-6">
+            <MenuChoice @bind-Value="Model.ParentId" Items="@MenuItems" ModuleId=ModuleId DisplayText=@(Model.GetType().GetPropertyDisplayName(nameof(Model.ParentId)))></MenuChoice>
+        </div>
+    }
+
+    @if (Model.Category != ResourceCategoryEnum.Button)
+    {
+        <div class="col-12  col-md-6">
+            <BootstrapInputGroup>
+                <i class="text-info d-flex  align-items-center @Model.Icon"></i>
+                <BootstrapInput @bind-Value="Model.Icon" ShowLabel="true"> </BootstrapInput>
+                <Button class="text-end" Icon="fa-solid fa-xmark" Color="Color.Secondary" OnClick="@(()=>Model.Icon=null)"></Button>
+                <Button class="text-end" Icon="fa-solid fa-bars" OnClick="OnToggleIconDialog"></Button>
+            </BootstrapInputGroup>
+        </div>
+    }
+    @if (Model.Category == ResourceCategoryEnum.Menu)
+    {
+        <div class="col-12">
+            <BootstrapInput @bind-Value="Model.Href"></BootstrapInput>
+        </div>
+        <div class="col-12  col-md-6">
+            <Select @bind-Value="Model.Target" ></Select>
+        </div>
+        <div class="col-12  col-md-6">
+            <RadioList @bind-Value="Model.NavLinkMatch" IsButton></RadioList>
+        </div>
+
+    }
+@*     @if (Model.Category == ResourceCategoryEnum.Button)
+    {
+        <div class="col-12  col-md-6">
+            <BootstrapInput @bind-Value="Model.Code"></BootstrapInput>
+        </div>
+    } *@
+    <div class="col-12 col-sm-5">
+        <Slider @bind-Value="@Model.SortCode" Step="1" UseInputEvent="true" Max="999" Min="-999"></Slider>
+    </div>
+    <div class="col-12 col-sm-1">
+        <BootstrapInput @bind-Value="Model.SortCode" ShowLabel="false"></BootstrapInput>
+    </div>
+</div>
+
+
+
+
+

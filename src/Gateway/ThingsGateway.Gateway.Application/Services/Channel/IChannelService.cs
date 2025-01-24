@@ -12,12 +12,14 @@ using BootstrapBlazor.Components;
 
 using Microsoft.AspNetCore.Components.Forms;
 
+using SqlSugar;
+
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
 /// 通道服务
 /// </summary>
-public interface IChannelService
+internal interface IChannelService
 {
     /// <summary>
     /// 批量修改
@@ -27,11 +29,6 @@ public interface IChannelService
     /// <param name="model">新数据</param>
     /// <returns></returns>
     Task<bool> BatchEditAsync(IEnumerable<Channel> models, Channel oldModel, Channel model);
-
-    /// <summary>
-    /// 清除所有通道
-    /// </summary>
-    Task ClearChannelAsync();
 
     /// <summary>
     /// 删除通道
@@ -48,7 +45,7 @@ public interface IChannelService
     /// 导出通道为文件流结果
     /// </summary>
     /// <returns>文件流结果</returns>
-    Task<Dictionary<string, object>> ExportChannelAsync(QueryPageOptions options, FilterKeyValueAction filterKeyValueAction = null);
+    Task<Dictionary<string, object>> ExportChannelAsync(ExportFilter exportFilter);
 
     /// <summary>
     /// 导出通道为内存流
@@ -61,38 +58,19 @@ public interface IChannelService
     /// 从缓存/数据库获取全部信息
     /// </summary>
     /// <returns>通道列表</returns>
-    List<Channel> GetAll();
-    /// <summary>
-    /// 从缓存/数据库获取全部信息
-    /// </summary>
-    /// <returns>通道列表</returns>
-    Task<List<Channel>> GetAllByOrgAsync();
-    /// <summary>
-    /// 通过ID获取通道
-    /// </summary>
-    /// <param name="id">通道ID</param>
-    /// <returns>通道对象</returns>
-    Channel? GetChannelById(long id);
+    Task<List<Channel>> GetAllAsync(SqlSugarClient db = null);
 
     /// <summary>
     /// 导入通道数据
     /// </summary>
     /// <param name="input">导入数据</param>
-    Task ImportChannelAsync(Dictionary<string, ImportPreviewOutputBase> input);
+    Task<HashSet<long>> ImportChannelAsync(Dictionary<string, ImportPreviewOutputBase> input);
 
     /// <summary>
     /// 报表查询
     /// </summary>
-    /// <param name="option">查询条件</param>
-    /// <param name="filterKeyValueAction">查询条件</param>
-    Task<QueryData<Channel>> PageAsync(QueryPageOptions option, FilterKeyValueAction filterKeyValueAction = null);
-
-    /// <summary>
-    /// API查询
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    Task<SqlSugarPagedList<Channel>> PageAsync(ChannelPageInput input);
+    /// <param name="exportFilter">查询条件</param>
+    Task<QueryData<Channel>> PageAsync(ExportFilter exportFilter);
 
     /// <summary>
     /// 预览导入数据
@@ -107,4 +85,10 @@ public interface IChannelService
     /// <param name="input">通道对象</param>
     /// <param name="type">保存类型</param>
     Task<bool> SaveChannelAsync(Channel input, ItemChangedType type);
+
+    /// <summary>
+    /// 保存是否输出日志和日志等级
+    /// </summary>
+    Task UpdateLogAsync(long channelId, bool logEnable, TouchSocket.Core.LogLevel logLevel);
+
 }

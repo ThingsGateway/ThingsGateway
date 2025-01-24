@@ -4,7 +4,7 @@
 @using ThingsGateway.Razor
 @inject IHostEnvironment Env
 @inject IStringLocalizer<BlazorApp> Localizer
-@namespace ThingsGateway
+@namespace ThingsGateway.Server
 <!DOCTYPE html>
 <html lang="en" data-bs-theme='light'>
 
@@ -26,10 +26,6 @@
     <link rel="stylesheet" href="_content/BootstrapBlazor/css/motronic.min.css" />
     <link rel="stylesheet" href="ThingsGateway.Server.styles.css" />
     <link rel="stylesheet" href=@($"{WebsiteConst.DefaultResourceUrl}css/site.css") />
-
-    <link rel="stylesheet" href="/_content/ThingsGateway.Blazor.Diagrams/diagram.css" />
-    <link rel="stylesheet" href="/_content/ThingsGateway.RulesEngine/style.css" />
-
     @* <script src=@($"{WebsiteConst.DefaultResourceUrl}js/theme.js") type="module"></script><!-- 初始主题 --> *@
     <!-- PWA Manifest -->
     <link rel="manifest" href="./manifest.json" />
@@ -38,13 +34,11 @@
 
 <body>
     <Routes @rendermode="new InteractiveServerRenderMode(false)" />
-
     <ReconnectorOutlet ReconnectInterval="5000" @rendermode="new InteractiveServerRenderMode(false)" />
 
     <BlazorReconnector @rendermode="new InteractiveServerRenderMode(false)" />
 
     <script src="_content/BootstrapBlazor/js/bootstrap.blazor.bundle.min.js"></script>
-    <script src="/_content/ThingsGateway.Blazor.Diagrams/diagram.js"></script>
     <script src=@($"{WebsiteConst.DefaultResourceUrl}js/culture.js")></script>
     <script src="_framework/blazor.web.js"></script>
     <!-- PWA Service Worker -->

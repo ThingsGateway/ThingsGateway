@@ -1,0 +1,42 @@
+<Project>
+
+
+	<Target Name="CopyNugetPackages" AfterTargets="Build">
+
+		<ItemGroup Condition="'$(TargetFramework)' != 'net6.0'">
+			<PkgOPCFoundation_NetStandard_Opc_Ua_ServerPackageFiles Include="$(PkgOPCFoundation_NetStandard_Opc_Ua_Server)\lib\net8.0\*.*" />
+			<PkgOPCFoundation_NetStandard_Opc_Ua_ConfigurationPackageFiles Include="$(PkgOPCFoundation_NetStandard_Opc_Ua_Configuration)\lib\net8.0\*.*" />
+			<PkgOPCFoundation_NetStandard_Opc_Ua_CorePackageFiles Include="$(PkgOPCFoundation_NetStandard_Opc_Ua_Core)\lib\net8.0\*.*" />
+			<PkgOPCFoundation_NetStandard_Opc_Ua_ServerPackageFiles Include="$(PkgOPCFoundation_NetStandard_Opc_Ua_Server)\lib\net8.0\*.*" />
+			<PkgOPCFoundation_NetStandard_Opc_Ua_Security_CertificatesPackageFiles Include="$(PkgOPCFoundation_NetStandard_Opc_Ua_Security_Certificates)\lib\net8.0\*.*" />
+			<PkgOPCFoundation_NetStandard_Opc_Ua_ClientPackageFiles Include="$(PkgOPCFoundation_NetStandard_Opc_Ua_Client)\lib\net8.0\*.*" />
+			<PkgOPCFoundation_NetStandard_Opc_Ua_Client_ComplexTypesPackageFiles Include="$(PkgOPCFoundation_NetStandard_Opc_Ua_Client_ComplexTypes)\lib\net8.0\*.*" />
+			<PkgSystem_Formats_Asn1PackageFiles Include="$(PkgSystem_Formats_Asn1)\lib\net9.0\*.*" />
+		</ItemGroup>
+
+		<PropertyGroup>
+			<ApplicationFolder>$(TargetDir)</ApplicationFolder>
+		</PropertyGroup>
+		<Copy SourceFiles="@(PkgOPCFoundation_NetStandard_Opc_Ua_ServerPackageFiles)" DestinationFolder="$(ApplicationFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgOPCFoundation_NetStandard_Opc_Ua_ConfigurationPackageFiles)" DestinationFolder="$(ApplicationFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgOPCFoundation_NetStandard_Opc_Ua_CorePackageFiles)" DestinationFolder="$(ApplicationFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgOPCFoundation_NetStandard_Opc_Ua_ServerPackageFiles)" DestinationFolder="$(ApplicationFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgOPCFoundation_NetStandard_Opc_Ua_Security_CertificatesPackageFiles)" DestinationFolder="$(ApplicationFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgSystem_Formats_Asn1PackageFiles)" DestinationFolder="$(ApplicationFolder)%(RecursiveDir)" />
+		<!--<Copy SourceFiles="@(PkgThingsGateway_Foundation_OpcUaPackageFiles)" DestinationFolder="$(ApplicationFolder)%(RecursiveDir)" />-->
+		<Copy SourceFiles="@(PkgOPCFoundation_NetStandard_Opc_Ua_ClientPackageFiles)" DestinationFolder="$(ApplicationFolder)%(RecursiveDir)" />
+		<Copy SourceFiles="@(PkgOPCFoundation_NetStandard_Opc_Ua_Client_ComplexTypesPackageFiles)" DestinationFolder="$(ApplicationFolder)%(RecursiveDir)" />
+	</Target>
+
+
+	<!--在构建后触发的。它通过在 Nuget 包的 Content 文件夹中包含目标目录中的所有文件和子文件夹来创建 nuget 包-->
+	<Target Name="IncludeAllFilesInTargetDir" AfterTargets="Build">
+		<ItemGroup>
+			<Content Include="$(ProjectDir)bin\$(Configuration)\$(TargetFramework)\**\*Opc*.dll">
+				<Pack>true</Pack>
+				<PackagePath>Content</PackagePath>
+			</Content>
+		</ItemGroup>
+	</Target>
+
+</Project>

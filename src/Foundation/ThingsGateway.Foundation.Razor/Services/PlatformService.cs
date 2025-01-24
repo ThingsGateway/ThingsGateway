@@ -12,7 +12,6 @@ using Microsoft.JSInterop;
 
 using ThingsGateway.Extension;
 using ThingsGateway.Foundation;
-using ThingsGateway.Razor;
 
 namespace ThingsGateway.Debug;
 
@@ -28,7 +27,7 @@ public class PlatformService : IPlatformService
     public async Task OnLogExport(string logPath)
     {
         var files = TextFileReader.GetFiles(logPath);
-        if (files == null || files.FirstOrDefault() == null || !files.FirstOrDefault().IsSuccess)
+        if (!files.IsSuccess)
         {
             return;
         }
@@ -36,10 +35,10 @@ public class PlatformService : IPlatformService
 
         string url = "api/file/download";
         //统一web下载
-        foreach (var item in files)
+        foreach (var item in files.Content)
         {
             await using var jSObject = await JSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
-            var path = Path.GetRelativePath("wwwroot", item.FullName);
+            var path = Path.GetRelativePath("wwwroot", item);
             string fileName = DateTime.Now.ToFileDateTimeFormat();
             await jSObject.InvokeVoidAsync("blazor_downloadFile", url, fileName, new { FileName = path });
         }

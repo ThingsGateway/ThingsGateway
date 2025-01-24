@@ -27,7 +27,7 @@ public abstract class VariableObject
     /// 协议对象
     /// </summary>
     [JsonIgnore]
-    public IProtocol Protocol;
+    public IDevice Device;
 
     /// <summary>
     /// VariableRuntimePropertyDict
@@ -49,9 +49,9 @@ public abstract class VariableObject
     /// <summary>
     /// VariableObject
     /// </summary>
-    public VariableObject(IProtocol protocol, int maxPack)
+    public VariableObject(IDevice device, int maxPack)
     {
-        Protocol = protocol;
+        Device = device;
         MaxPack = maxPack;
     }
 
@@ -73,7 +73,7 @@ public abstract class VariableObject
         {
             object rawdata = jToken is JValue jValue ? jValue.Value : jToken is JArray jArray ? jArray : jToken.ToString();
 
-            object data = variableRuntimeProperty.Attribute.WriteExpressions.GetExpressionsResult(rawdata);
+            object data = variableRuntimeProperty.Attribute.WriteExpressions.GetExpressionsResult(rawdata, Device?.Logger);
             jToken = JToken.FromObject(data);
         }
 
@@ -147,15 +147,15 @@ public abstract class VariableObject
             //连读
             foreach (var item in DeviceVariableSourceReads)
             {
-                var result = await Protocol.ReadAsync(item.RegisterAddress, item.Length, cancellationToken).ConfigureAwait(false);
+                var result = await Device.ReadAsync(item.RegisterAddress, item.Length, cancellationToken).ConfigureAwait(false);
                 if (result.IsSuccess)
                 {
-                    var result1 = item.VariableRunTimes.PraseStructContent(Protocol, result.Content, exWhenAny: true);
+                    var result1 = item.VariableRuntimes.PraseStructContent(Device, result.Content, exWhenAny: true);
                     if (!result1.IsSuccess)
                     {
                         item.LastErrorMessage = result1.ErrorMessage;
                         var time = DateTime.Now;
-                        item.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
+                        item.VariableRuntimes.ForEach(a => a.SetValue(null, time, isOnline: false));
                         return new OperResult(result1);
                     }
                 }
@@ -163,7 +163,7 @@ public abstract class VariableObject
                 {
                     item.LastErrorMessage = result.ErrorMessage;
                     var time = DateTime.Now;
-                    item.VariableRunTimes.ForEach(a => a.SetValue(null, time, isOnline: false));
+                    item.VariableRuntimes.ForEach(a => a.SetValue(null, time, isOnline: false));
                     return new OperResult(result);
                 }
             }
@@ -187,7 +187,7 @@ public abstract class VariableObject
         {
             if (!string.IsNullOrEmpty(pair.Value.Attribute.ReadExpressions))
             {
-                var data = pair.Value.Attribute.ReadExpressions.GetExpressionsResult(pair.Value.VariableClass.Value);
+                var data = pair.Value.Attribute.ReadExpressions.GetExpressionsResult(pair.Value.VariableClass.Value, Device?.Logger);
                 pair.Value.Property.SetValue(this, data.ChangeType(pair.Value.Property.PropertyType));
             }
             else
@@ -222,7 +222,7 @@ public abstract class VariableObject
 
             JToken jToken = GetExpressionsValue(value, variableRuntimeProperty);
 
-            var result = await Protocol.WriteAsync(variableRuntimeProperty.VariableClass.RegisterAddress, jToken, variableRuntimeProperty.VariableClass.DataType, cancellationToken).ConfigureAwait(false);
+            var result = await Device.WriteAsync(variableRuntimeProperty.VariableClass.RegisterAddress, jToken, variableRuntimeProperty.VariableClass.DataType, cancellationToken).ConfigureAwait(false);
             return result;
         }
         catch (Exception ex)
@@ -239,7 +239,7 @@ public abstract class VariableObject
         if (DeviceVariableSourceReads == null)
         {
             List<VariableClass> variableClasss = GetVariableClass();
-            DeviceVariableSourceReads = Protocol.LoadSourceRead<VariableSourceClass>(variableClasss, MaxPack, "1000");
+            DeviceVariableSourceReads = Device.LoadSourceRead<VariableSourceClass>(variableClasss, MaxPack, "1000");
         }
     }
 }

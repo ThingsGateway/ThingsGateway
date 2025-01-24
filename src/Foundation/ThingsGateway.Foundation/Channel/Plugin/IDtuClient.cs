@@ -11,18 +11,8 @@
 namespace ThingsGateway.Foundation;
 
 /// <inheritdoc/>
-public interface IDtuClient
+public interface IDtuClient : IDtu
 {
-    /// <summary>
-    /// DtuId
-    /// </summary>
-    public string DtuId { get; set; }
-
-    /// <summary>
-    /// 心跳内容
-    /// </summary>
-    public string HeartbeatHexString { get; set; }
-
     /// <summary>
     /// 心跳时间
     /// </summary>

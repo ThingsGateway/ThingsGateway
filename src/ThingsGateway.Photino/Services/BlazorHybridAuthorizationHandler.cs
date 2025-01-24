@@ -14,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using ThingsGateway.Admin.Application;
 
-namespace ThingsGateway.Photino;
+namespace ThingsGateway.Server;
 
 /// <inheritdoc/>
 public class BlazorHybridAuthorizationHandler : BlazorAuthenticationStateProvider

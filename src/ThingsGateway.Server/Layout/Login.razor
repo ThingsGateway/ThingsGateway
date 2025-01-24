@@ -1,8 +1,9 @@
 ﻿@page "/Account/Login"
 @layout BaseLayout
-@namespace ThingsGateway.Admin.Razor
+@namespace ThingsGateway.Server
 @using BootstrapBlazor.Components
 @using ThingsGateway.Admin.Application;
+@using ThingsGateway.Admin.Razor
 @using ThingsGateway.Extension;
 @using ThingsGateway.Razor
 
@@ -11,7 +12,7 @@
     <div class="row form-inline h-100">
         <div class="col-0 col-xl-8 p-5 login-left">
 
-            <div style="width:100%; height:100%;" class="d-flex align-items-start flex-column mb-6">
+            <div class="w-100 h-100 d-flex align-items-start flex-column mb-6">
                 <div class="d-flex align-items-center  justify-content-center ms-5 mt-5">
                     <span class="avatar">
                         @WebsiteOption.Value.Title?.GetNameLen2()
@@ -30,7 +31,7 @@
                     </div>
                 </div>
 
-                <div class="d-flex align-items-center p-2" style="width:100%;height:100%;">
+                <div class="d-flex align-items-center p-2 w-100 h-100" >
                     <img src=@($"{WebsiteConst.DefaultResourceUrl}images/login-left.svg") />
                 </div>
             </div>
@@ -41,9 +42,9 @@
 
         @* 右侧登录 *@
         <div class="col-12 col-xl-4">
-            <div style="width:100%; height:100%;" class="d-flex align-items-center  justify-content-center">
+            <div class="w-100 h-100 d-flex align-items-center  justify-content-center">
                 <div class="login-form d-flex align-items-center flex-column">
-                    <img src=@($"{WebsiteConst.DefaultResourceUrl}images/defaultUser.svg") style="width:36px;height:36px;" />
+                    <img src=@($"{WebsiteConst.DefaultResourceUrl}images/defaultUser.svg") class="user-avatar" />
                     <h5 class="mt-2 mb-12 ">@Localizer["Welcome"] 👋</h5>
                     <UserLogin Model="loginModel" OnLogin="LoginAsync"></UserLogin>
                 </div>

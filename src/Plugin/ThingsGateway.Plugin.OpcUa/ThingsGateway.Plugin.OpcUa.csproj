@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+	<Import Project="$(SolutionDir)Version.props" />
+	<Import Project="$(SolutionDir)PackNuget.props" />
+	<PropertyGroup>
+		<TargetFrameworks>net8.0;</TargetFrameworks>
+	</PropertyGroup>
+	<PropertyGroup>
+		<DefineConstants>Plugin</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj">
+		</ProjectReference>
+		<ProjectReference Include="..\..\Gateway\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj">
+		</ProjectReference>
+	
+		<ProjectReference Include="..\ThingsGateway.Foundation.OpcUa\ThingsGateway.Foundation.OpcUa.csproj">
+			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
+		</ProjectReference>
+
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Server" Version="1.5.374.158" GeneratePathProperty="true">
+			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
+		</PackageReference>
+		
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client.ComplexTypes" Version="1.5.374.158" GeneratePathProperty="true">
+			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
+		</PackageReference>
+
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Client" Version="1.5.374.158" GeneratePathProperty="true">
+			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
+		</PackageReference>
+
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Core" Version="1.5.374.158" GeneratePathProperty="true">
+			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
+		</PackageReference>
+
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Configuration" Version="1.5.374.158" GeneratePathProperty="true">
+			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
+		</PackageReference>
+
+		<PackageReference Include="OPCFoundation.NetStandard.Opc.Ua.Security.Certificates" Version="1.5.374.158" GeneratePathProperty="true">
+			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
+		</PackageReference>
+
+			<PackageReference Include="System.Formats.Asn1" Version="9.*" GeneratePathProperty="true" >
+				<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
+			</PackageReference>
+		
+	</ItemGroup>
+</Project>

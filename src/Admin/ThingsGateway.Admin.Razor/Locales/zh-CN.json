@@ -1,0 +1,74 @@
+﻿{
+  "ThingsGateway.Admin.Razor.LoginConnectionHub": {
+    "Jump": "跳转"
+  },
+  "ThingsGateway.Admin.Razor.UserLogin": {
+    "Account": "登录账号",
+    "Password": "登录密码",
+    "Login": "登录"
+  },
+  "ThingsGateway.Admin.Razor._Imports": {
+    "Org": "机构",
+    "Position": "岗位",
+    "Role": "角色",
+    "RoleList": "角色列表",
+    "PositionList": "岗位列表",
+    "OrgList": "机构列表",
+    "MaxCount": "超过数量限制",
+    "All": "全部",
+    "Copy": "复制",
+    "Choice": "选择",
+    "Picture": "头像",
+    "Root": "根目录",
+    "Save": "保存",
+    "CurrentVerificat": "当前令牌",
+    "SelectPlaceHolder": "请选择 ...",
+    "EmptyText": "空",
+    "ExportButtonText": "导出/导入"
+  },
+  "ThingsGateway.Admin.Razor.ChoiceModuleComponent": {
+    "SetDefaultModule": "设置为默认模块"
+  },
+
+  "ThingsGateway.Admin.Razor.HardwareInfoPage": {
+    "SystemInfo": "系统信息",
+    "HardwareInfo": "硬件资源",
+    "HardwareInfoChart": "硬件资源历史曲线",
+    "CpuUsage": "CPU使用率",
+    "AvailableMemory": "可用内存",
+    "TotalMemory": "总内存",
+    "WorkingSet": "进程内存",
+    "MemoryUsage": "内存使用率",
+    "AvailableDisk": "可用磁盘",
+    "TotalDisk": "总磁盘",
+    "DiskUsage": "磁盘使用率",
+    "HistoryHardwareInfo": "历史曲线",
+    "DateTime": "时间",
+    "Data": "数据",
+    "OSName": "系统名称",
+    "OSVersion": "系统版本"
+  },
+  "ThingsGateway.Admin.Razor.OperLogPage": {
+    "Date": "日期",
+    "Count": "数量",
+    "Operate": "成功",
+    "Exception": "失败",
+    "Login": "登录",
+    "Logout": "注销",
+    "SysOperateLog": "操作日志"
+  },
+  "ThingsGateway.Admin.Razor.SessionPage": {
+    "VerificatInfo": "令牌列表",
+    "ExitSession": "强退会话"
+  },
+  "ThingsGateway.Admin.Razor.VerificatListDialog": {
+    "ExitVerificat": "强退令牌"
+  },
+  "ThingsGateway.Admin.Razor.UserCenterPage": {
+    "UpdateUserInfo": "更新个人信息",
+    "UserInfo": "个人信息",
+    "UpdatePasswordInfo": "修改密码",
+    "UpdateWorkbenchInfo": "更新个人工作台",
+    "WorkbenchInfo": "个人工作台"
+  }
+}

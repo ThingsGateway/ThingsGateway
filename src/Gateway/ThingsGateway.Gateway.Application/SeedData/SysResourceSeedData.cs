@@ -19,9 +19,8 @@ public class SysResourceSeedData : ISqlSugarEntitySeedData<SysResource>
     public IEnumerable<SysResource> SeedData()
     {
         var data1 = SeedDataUtil.GetSeedData<SysResource>(PathExtensions.CombinePathWithOs("SeedData", "Gateway", "seed_gateway_resource.json"));
-        var data2 = SeedDataUtil.GetSeedData<SysResource>(PathExtensions.CombinePathWithOs("SeedData", "Gateway", "seed_gateway_resourcebutton.json"));
         var assembly = GetType().Assembly;
-        return SeedDataUtil.GetSeedDataByJson<SysResource>(SeedDataUtil.GetManifestResourceStream(assembly, "SeedData.Gateway.seed_gateway_resource.json")).Concat(SeedDataUtil.GetSeedDataByJson<SysResource>(SeedDataUtil.GetManifestResourceStream(assembly, "SeedData.Gateway.seed_gateway_resourcebutton.json"))).Concat(data1).Concat(data2);
+        return SeedDataUtil.GetSeedDataByJson<SysResource>(SeedDataUtil.GetManifestResourceStream(assembly, "SeedData.Gateway.seed_gateway_resource.json")).Concat(data1);
 
     }
 }

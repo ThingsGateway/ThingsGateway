@@ -1,0 +1,85 @@
+﻿{
+
+  "ThingsGateway.AdminServer.NotFound404": {
+    "404": "抱歉，您访问的页面不存在。",
+    "401": "抱歉，您无权限访问该页面。",
+    "Home": "回到首页",
+    "Login": "重新登录"
+  },
+  "ThingsGateway.AdminServer.Login": {
+    "LoginErrorh1": "登录异常",
+    "LoginSuccessh1": "登录成功",
+    "LoginSuccessc1": "即将跳转页面",
+    "LoginErrorh2": "登录失败",
+    "LoginErrorc2": "请联系管理员!",
+    "Remark1": "后台管理",
+    "Remark2": "",
+    "Remark3": "基于BlazorServer的权限框架",
+    "Welcome": "欢迎使用"
+  },
+
+
+  "ThingsGateway.AdminServer.MainLayout": {
+    "About": "关于",
+    "FullScreenButton": "全屏",
+    "UserCenter": "个人中心",
+    "ChoiceModule": "切换模块",
+
+    "LoginErrorh1": "登录异常",
+    "LoginSuccessh1": "登录成功",
+    "LoginSuccessc1": "即将跳转页面",
+    "LoginErrorh2": "登录失败",
+    "LoginErrorc2": "请联系管理员!",
+    "Logout": "注销",
+
+    "系统首页": "系统首页",
+    "权限管理": "权限管理",
+    "用户管理": "用户管理",
+    "角色管理": "角色管理",
+    "菜单管理": "菜单管理",
+    "机构管理": "机构管理",
+    "职位管理": "职位管理",
+    "系统运维": "系统运维",
+    "系统配置": "系统配置",
+    "字典管理": "字典管理",
+    "操作日志": "操作日志",
+    "会话管理": "会话管理",
+    "硬件信息": "硬件信息",
+    "网关管理": "网关管理",
+    "插件管理": "插件管理",
+    "插件调试": "插件调试",
+    "通道管理": "通道管理",
+    "采集设备": "采集设备",
+    "业务设备": "业务设备",
+    "变量管理": "变量管理",
+    "网关状态": "网关状态",
+    "设备状态": "设备状态",
+    "实时数据": "实时数据",
+    "实时报警": "实时报警",
+    "网关日志": "网关日志",
+    "后台日志": "后台日志",
+    "RPC日志": "RPC日志",
+    "物联网关": "物联网关",
+    "系统管理": "系统管理"
+  },
+
+
+  "ThingsGateway.AdminServer.AdminIndex": {
+    "CollectDevice": "采集设备",
+    "BusinessDevice": "业务设备",
+    "Variable": "变量",
+    "Alarm": "实时报警",
+    "AlarmCount": "报警数量",
+    "OnLine": "在线",
+    "OffLine": "离线",
+    "Shortcuts": "快捷方式",
+    "OperLog": "最近操作",
+    "BackendLog": "网关后台日志",
+    "RpcLog": "网关RPC日志",
+    "HardwareInfoChart": "硬件信息历史曲线",
+    "DateTime": "时间",
+    "Data": "数据",
+    "HistoryHardwareInfo": "历史曲线"
+  }
+
+}

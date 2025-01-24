@@ -1,0 +1,68 @@
+﻿@using System.Linq.Expressions;
+@using Microsoft.AspNetCore.Authorization;
+@using Microsoft.Extensions.Logging
+@using ThingsGateway.Admin.Application;
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Extension
+@using BootstrapBlazor.Components
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Plugin.DB
+@namespace ThingsGateway.Plugin.SqlDB
+
+@if (SqlDBProducer._driverPropertys.IsHistoryDB)
+{
+    <div>
+        HistoryValue
+    </div>
+
+    <AdminTable TItem="SQLHistoryValue" AutoGenerateColumns="true" ShowDefaultButtons=false
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
+                ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
+                ShowExportButton="true" IsAutoQueryFirstRender=false
+                OnQueryAsync="OnQueryHistoryAsync" IsPagination=true CustomerSearchModel="@_searchHistory">
+        <CustomerSearchTemplate>
+            @if (context is SqlDBPageInput model)
+            {
+                @Render(model)
+            }
+        </CustomerSearchTemplate>
+
+    </AdminTable>
+
+
+
+
+}
+@if (SqlDBProducer._driverPropertys.IsReadDB)
+{
+    <div>
+        ReadValue
+    </div>
+
+    <AdminTable TItem="SQLRealValue" AutoGenerateColumns="true" ShowDefaultButtons=false
+                AllowResizing="true" IsFixedHeader=true IsMultipleSelect=false
+                ShowExtendEditButton=false ShowExtendDeleteButton=false ShowExtendButtons=false
+                ShowExportButton="true" IsAutoQueryFirstRender=false
+                OnQueryAsync="OnQueryRealAsync" IsPagination=true CustomerSearchModel="@_searchReal">
+        <CustomerSearchTemplate>
+            @if (context is SqlDBPageInput model)
+            {
+                @Render(model)
+            }
+        </CustomerSearchTemplate>
+
+    </AdminTable>
+
+}
+@code {
+    RenderFragment Render(SqlDBPageInput model) =>
+    @<div class="row form-inline g-2">
+        <div class="col-12 ">
+            <BootstrapInput @bind-Value="model.VariableName" ShowLabel="true" />
+        </div>
+        <div class="col-12 ">
+            <DateTimeRange @bind-Value="model.SearchDate" ShowLabel="true" />
+        </div>
+    </div>;
+
+}

@@ -5,7 +5,7 @@
 ## Introduction
 
 ﻿
-A cross-platform, high-performance edge data collection gateway based on net8, capable of handling millions of data points per.
+A cross-platform, high-performance edge data collection gateway based on net9.
 ﻿
 
 ## Documentation

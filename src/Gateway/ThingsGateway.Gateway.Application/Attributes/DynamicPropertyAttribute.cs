@@ -18,11 +18,22 @@ namespace ThingsGateway.Gateway.Application;
 [AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
 public sealed class DynamicPropertyAttribute : Attribute
 {
+    /// <inheritdoc cref="DynamicMethodAttribute"/>
+    public DynamicPropertyAttribute(string? desc = null, string? remark = null, string? groupName = null)
+    {
+        Description = desc;
+        Remark = remark;
+        GroupName = groupName;
+    }
+
     /// <summary>
     /// 名称
     /// </summary>
     public string? Description { get; set; }
-
+    /// <summary>
+    /// 分组名称
+    /// </summary>
+    public string? GroupName { get; set; }
     /// <summary>
     /// 描述
     /// </summary>

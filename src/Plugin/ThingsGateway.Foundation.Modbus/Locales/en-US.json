@@ -1,0 +1,62 @@
+﻿{
+  "ThingsGateway.Foundation.Modbus.ModbusAddress": {
+    "FunctionCode": "FunctionCode",
+    "StartAddress": "StartAddress",
+    "BitIndex": "BitIndex",
+    "Station": "Station",
+    "WriteFunctionCode": "WriteFunctionCode"
+
+  },
+
+  "ThingsGateway.Foundation.Modbus.ModbusMaster": {
+    "ModbusType": "ModbusType",
+    "Station": "Station",
+    "DtuId": "DtuId",
+    "CheckClearTime": "CheckClearTime",
+    "Heartbeat": "Heartbeat",
+
+    "CacheTimeout": "CacheTimeout",
+    "SendDelayTime": "SendDelayTime",
+    "DataFormat": "DataFormat",
+    "Timeout": "Timeout",
+    "ConnectTimeout": "ConnectTimeout",
+    "IsStringReverseByteWord": "IsStringReverseByteWord"
+  },
+  "ThingsGateway.Foundation.Modbus.ModbusSlave": {
+    "ModbusType": "ModbusType",
+    "Station": "Station",
+    "CheckClearTime": "CheckClearTime",
+    "MulStation": "MulStation",
+    "IsWriteMemory": "IsWriteMemory",
+    "MaxClientCount": "MaxClientCount",
+
+    "DtuId": "DtuId",
+    "HeartbeatTime": "HeartbeatTime",
+    "Heartbeat": "Heartbeat",
+
+    "CacheTimeout": "CacheTimeout",
+    "SendDelayTime": "SendDelayTime",
+    "DataFormat": "DataFormat",
+    "Timeout": "Timeout",
+    "ConnectTimeout": "ConnectTimeout",
+    "IsStringReverseByteWord": "IsStringReverseByteWord"
+  },
+
+  "ThingsGateway.Foundation.Modbus.ModbusResource": {
+    "AddressDes": "Coil registers are numbered starting from 00001.\nDiscrete input registers are numbered starting from 10001.\nInput registers are numbered starting from 30001.\nHolding registers are numbered starting from 40001.\nExample: 40001=>Holding register first register\nAdditional format\nDevice station number, such as 40001;s=2;, indicates that the device address is the first register of the holding register with a device address of 2.\nWrite function code, such as 40001;w=16;, means that the first register of the holding register, when writing a value, uses the 0x10 function code",
+    "FunctionError": "Function code error",
+    "FunctionNotSame": "Function codes are inconsistent, request function code {0}, return function code {1}",
+    "ModbusError1": "Unsupported function code",
+    "ModbusError10": "Gateway path unavailable",
+    "ModbusError11": "Gateway target device response failed",
+    "ModbusError2": "Read register out of range",
+    "ModbusError3": "Read length exceeds limit",
+    "ModbusError4": "Device malfunction",
+    "ModbusError5": "Device acknowledged but not executed",
+    "ModbusError6": "Device busy",
+    "ModbusError8": "Storage parity error",
+    "StationNotSame": "Station numbers are inconsistent, request station number {0}, return station number {1}",
+    "ValueOverlimit": "{0} cannot exceed {1}",
+    "CrcError": "CRC check failed"
+  }
+}

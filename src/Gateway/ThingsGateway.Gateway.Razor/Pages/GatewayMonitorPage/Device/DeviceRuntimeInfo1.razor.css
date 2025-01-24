@@ -1,0 +1,41 @@
+﻿.text-h6 {
+    /* Headline 6 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: bold !important;
+    font-size: 1rem !important;
+    line-height: 1.875rem !important;
+    /* identical to box height */
+    letter-spacing: 0.01em !important;
+}
+
+.text-caption {
+    /* Caption-说明 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+    font-size: 0.75rem !important;
+    line-height: 1.125rem !important;
+}
+
+.device ::deep [data-bs-toggle=tooltip]:has(.form-label) {
+    width: 100px;
+    overflow: inherit;
+}
+.channel ::deep [data-bs-toggle=tooltip]:has(.is-display) {
+    overflow: inherit;
+}
+
+.device ::deep [data-bs-toggle=tooltip]:has(.form-control) {
+    width: 100%;
+    /*overflow: inherit;*/
+}
+
+.device ::deep .btn {
+    color: var(--bs-card-title-color);
+}
+
+.device ::deep .bb-editor .row {
+    --bs-gutter-y: 0.5rem;
+    --bs-gutter-x: 0.5rem;
+}

@@ -1,0 +1,14 @@
+﻿.menu-type {
+    width: 60px;
+    margin-left: 1rem;
+    text-align: left;
+    color: var(--bs-primary);
+}
+
+.menu-text {
+    margin-left: 1rem;
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    color: var(--bs-info);
+}

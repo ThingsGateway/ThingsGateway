@@ -1,0 +1,70 @@
+﻿@inherits ThingsGatewayModuleComponentBase
+@attribute [JSModuleAutoLoader("Components/QuickActions.razor.js")]
+@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+
+<div class="listtree-view">
+    <RadioList class="m-2" IsButton="true" AutoSelectFirstWhenValueIsNull="false" TValue="ShowTypeEnum?" ValueExpression=@(()=> ShowType ) Value="ShowType" ValueChanged="OnShowTypeChanged" ShowLabel="true" />
+
+
+    <span style="color:var(--bs-body-color)" class="text-h6 mb-2">@GatewayLocalizer["DeviceList"]</span>
+
+    <ContextMenuZone>
+        <TreeView TItem="ChannelDeviceTreeItem" Items="Items" ShowIcon="false" ShowSearch IsAccordion=false IsVirtualize="true" OnTreeItemClick="OnTreeItemClick" IsFixedSearch OnSearchAsync="OnClickSearch" ModelEqualityComparer=ModelEqualityComparer>
+
+        </TreeView>
+
+        <ContextMenu style="max-height:800px" class="tgTree" OnBeforeShowCallback="OnBeforeShowCallback">
+            @if (SelectModel != null)
+            {
+                <ContextMenuItem Icon="fa-solid fa-plus" Disabled="(SelectModel.ChannelDevicePluginType >ChannelDevicePluginTypeEnum.Channel||!AuthorizeButton(AdminOperConst.Add))" Text="@GatewayLocalizer["AddChannel"]" OnClick=@((a,b)=>EditChannel(a,b,ItemChangedType.Add))></ContextMenuItem>
+
+                <ContextMenuItem Icon="fa-regular fa-pen-to-square" Disabled="(SelectModel.ChannelDevicePluginType >=ChannelDevicePluginTypeEnum.Channel||!AuthorizeButton(AdminOperConst.Edit))" Text="@GatewayLocalizer["BatchEditChannel"]" OnClick=@((a,b)=>BatchEditChannel(a,b))></ContextMenuItem>
+
+                <ContextMenuItem Icon="fa-regular fa-pen-to-square" Disabled="(SelectModel.ChannelDevicePluginType !=ChannelDevicePluginTypeEnum.Channel||!AuthorizeButton(AdminOperConst.Edit))" Text="@GatewayLocalizer["UpdateChannel"]" OnClick=@((a,b)=>EditChannel(a,b,ItemChangedType.Update))></ContextMenuItem>
+
+                <ContextMenuItem Icon="fa-solid fa-xmark" Text="@GatewayLocalizer["DeleteCurrentChannel"]" Disabled="(SelectModel.ChannelDevicePluginType ==ChannelDevicePluginTypeEnum.Device||!AuthorizeButton(AdminOperConst.Delete))" OnClick="DeleteCurrentChannel"></ContextMenuItem>
+
+                <ContextMenuItem Icon="fa-solid fa-xmark" Disabled="(!AuthorizeButton(AdminOperConst.Delete))" Text="@GatewayLocalizer["DeleteAllChannel"]" OnClick="DeleteAllChannel"></ContextMenuItem>
+
+                <ContextMenuItem Icon="fas fa-file-export" Text="@GatewayLocalizer["ExportCurrentChannel"]"
+                                 Disabled=@(SelectModel.ChannelDevicePluginType ==ChannelDevicePluginTypeEnum.Device||!AuthorizeButton("导出"))
+                                 OnClick="ExportCurrentChannel"></ContextMenuItem>
+
+                <ContextMenuItem Icon="fas fa-file-export" Disabled=@(!AuthorizeButton("导出")) Text="@GatewayLocalizer["ExportAllChannel"]"
+                                 OnClick="ExportAllChannel"></ContextMenuItem>
+
+                <ContextMenuItem Icon="fas fa-file-import" Disabled=@(!AuthorizeButton("导入")) Text="@GatewayLocalizer["ImportChannel"]" OnClick="ImportChannel"></ContextMenuItem>
+
+                <ContextMenuItem Disabled="(SelectModel.ChannelDevicePluginType <ChannelDevicePluginTypeEnum.Channel)||!AuthorizeButton(AdminOperConst.Add)" Icon="fa-solid fa-plus device" Text="@GatewayLocalizer["AddDevice"]" OnClick=@((a,b)=>EditDevice(a,b,ItemChangedType.Add))></ContextMenuItem>
+
+                <ContextMenuItem Icon="fa-regular fa-pen-to-square" Text="@GatewayLocalizer["BatchEditDevice"]" Disabled="(SelectModel.ChannelDevicePluginType >=ChannelDevicePluginTypeEnum.Device)||!AuthorizeButton(AdminOperConst.Edit)" OnClick=@((a,b)=>BatchEditDevice(a,b))></ContextMenuItem>
+
+                <ContextMenuItem Disabled="(SelectModel.ChannelDevicePluginType !=ChannelDevicePluginTypeEnum.Device)||!AuthorizeButton(AdminOperConst.Edit)" Icon="fa-regular fa-pen-to-square" Text="@GatewayLocalizer["UpdateDevice"]" OnClick=@((a,b)=>EditDevice(a,b,ItemChangedType.Update))></ContextMenuItem>
+
+                <ContextMenuItem Icon="fa-solid fa-xmark" Disabled="(!AuthorizeButton(AdminOperConst.Delete))" Text="@GatewayLocalizer["DeleteCurrentDevice"]" OnClick="DeleteCurrentDevice"></ContextMenuItem>
+
+                <ContextMenuItem Icon="fa-solid fa-xmark" Disabled="(!AuthorizeButton(AdminOperConst.Delete))"  Text="@GatewayLocalizer["DeleteAllDevice"]" OnClick="DeleteAllDevice"></ContextMenuItem>
+
+                <ContextMenuItem Icon="fas fa-file-export" Disabled=@(!AuthorizeButton("导出")) Text="@GatewayLocalizer["ExportCurrentDevice"]" OnClick="ExportCurrentDevice"></ContextMenuItem>
+
+                <ContextMenuItem Icon="fas fa-file-export" Disabled=@(!AuthorizeButton("导出")) Text="@GatewayLocalizer["ExportAllDevice"]" OnClick="ExportAllDevice"></ContextMenuItem>
+
+                <ContextMenuItem Icon="fas fa-file-import" Disabled=@(!AuthorizeButton("导入")) Text="@GatewayLocalizer["ImportDevice"]" OnClick="ImportDevice"></ContextMenuItem>
+
+            }
+
+        </ContextMenu>
+
+    </ContextMenuZone>
+
+
+</div>
+@code {
+    RenderFragment<ChannelDeviceTreeItem> RenderTreeItem = (item) =>
+
+    @<span class=@(GetClass(item))>@item.ToString()</span> ;
+
+}

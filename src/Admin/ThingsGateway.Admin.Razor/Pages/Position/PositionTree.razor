@@ -1,0 +1,14 @@
+﻿@namespace ThingsGateway.Admin.Razor
+@using ThingsGateway.Admin.Application
+
+<div class="listtree-view">
+    <h6 class="mb-1">@AdminLocalizer["PositionList"]</h6>
+
+    <TreeView 
+              TItem="PositionTreeOutput" Items="Items" ShowIcon="true" ShowSearch IsAccordion=false IsVirtualize="true"  OnTreeItemClick="OnTreeItemClick" ModelEqualityComparer="PositionTree.ModelEqualityComparer" IsFixedSearch OnSearchAsync="OnClickSearch">
+
+
+    </TreeView>
+
+</div>
+

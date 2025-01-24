@@ -1,5 +1,10 @@
 ﻿{
   "ThingsGateway.Foundation.DefaultResource": {
+    "EmptyUriString": "URI 字符串不能为空或仅包含空白字符",
+    "InvalidPortRange": "端口号必须是 1 到 65535 之间的整数",
+    "InvalidIPv4Segment": "IPv4 地址的每段数值必须在 0 到 255 之间",
+    "InvalidUriFormat": "输入的 URI 字符串格式不符合要求",
+
     "CannotSendIRequestInfo": "当前适配器不支持对象发送",
     "CannotSet": "不允许自由调用 {0} 进行赋值",
     "CannotSplicingSend": "该适配器不支持拼接发送",
@@ -32,10 +37,20 @@
     "StringAddressError": "字符串读写必须在寄存器地址中指定长度，例如 len=10;",
     "TransBytesError": "转换失败-原始字节数组  {0}，长度 {1}",
     "UnknownError": "未知错误，错误代码：{0}",
-    "StringTypePackError": "数据类型为字符串时，必须指定字符串长度，才能进行打包"
+    "StringTypePackError": "数据类型为字符串时，必须指定字符串长度，才能进行打包",
+
+    "RemoteUrlNotNull": "远程IP地址不可为空",
+    "BindUrlNotNull": "本地绑定IP地址不可为空",
+    "BindUrlOrRemoteUrlNotNull": "远程IP地址或本地绑定IP地址不可为空",
+    "PortNameNotNull": "COM口不可为空",
+    "BaudRateNotNull": "波特率不可为空",
+    "DataBitsNotNull": "数据位可为空",
+    "ParityNotNull": "校验位不可为空",
+    "StopBitsNotNull": "停止位不可为空"
+
   },
 
-  "ThingsGateway.Foundation.ChannelData": {
+  "ThingsGateway.Foundation.ChannelOptions": {
     "Name": "名称",
     "Name.Required": " {0} 不可为空",
     "ChannelType": "通道类型",
@@ -49,9 +64,21 @@
     "Parity": "校验位",
     "StopBits": "停止位",
     "DtrEnable": "Dtr",
-    "RtsEnable": "Rts"
+    "RtsEnable": "Rts",
+    "CacheTimeout": "接收缓存超时",
+    "ConnectTimeout": "连接超时",
+    "MaxConcurrentCount": "最大并发数"
   },
   "ThingsGateway.Foundation.VariableClass": {
     "RegisterAddress": "寄存器地址"
+  },
+  "ThingsGateway.Foundation.ConverterConfig": {
+    "DataFormat": "字节顺序",
+    "Encoding": "字符串编码",
+    "EncodingName": "字符串编码",
+    "VariableStringLength": "变长字符串",
+    "Stringlength": "字符串长度",
+    "BcdFormat": "BCD格式"
   }
 }
+  

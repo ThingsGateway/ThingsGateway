@@ -1,0 +1,25 @@
+﻿@inherits ComponentDefault
+@namespace ThingsGateway.Admin.Razor
+@using ThingsGateway.Admin.Application
+
+<ValidateForm class="p-4" Model="@Model" OnValidSubmit="OnSave">
+
+    <SelectObject class="mb-2" @bind-Value="Model.Shortcuts" GetTextCallback="a=>a.Count.ToString()" Height="300">
+        <ChildContent>
+
+            <TreeView TItem="SysResource" Items="ShortcutsTreeViewItems" ShowIcon="true" ShowSearch ClickToggleCheck="true" IsVirtualize="true"
+                      ShowCheckbox="true" AutoCheckParent="true" AutoCheckChildren="true"
+                      IsAccordion=false OnTreeItemChecked="OnShortcutsTreeItemChecked" ModelEqualityComparer="EditPagePolicy.ModelEqualityComparer" IsFixedSearch OnSearchAsync="OnShortcutsClickSearch">
+            </TreeView>
+        </ChildContent>
+
+        <Template>
+            @{
+                var text = AppContext.OwnMenus.FirstOrDefault(a => Model.Shortcuts.Contains(a.Id))?.Title;
+            }
+            <span>@($"{text}...")</span>
+        </Template>
+    </SelectObject>
+
+    <Button class="mt-2" ButtonType="ButtonType.Submit" Icon="fa-solid fa-floppy-disk" IsAsync Text=@RazorLocalizer["Save"] />
+</ValidateForm>

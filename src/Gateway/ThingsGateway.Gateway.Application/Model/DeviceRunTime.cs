@@ -8,7 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 using Mapster;
+
+using System.Collections.Concurrent;
 
 using ThingsGateway.Extension;
 using ThingsGateway.NewLife.Extension;
@@ -19,31 +23,45 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 业务设备运行状态
 /// </summary>
-public class DeviceRunTime : Device
+public class DeviceRuntime : Device, IDisposable
 {
     protected volatile DeviceStatusEnum _deviceStatus = DeviceStatusEnum.Default;
-
-    protected int _errorCount;
 
     private string? _lastErrorMessage;
 
     /// <summary>
     /// 设备活跃时间
     /// </summary>
-    public DateTime? ActiveTime { get; set; } = DateTime.UnixEpoch.ToLocalTime();
+    public DateTime ActiveTime { get; set; } = DateTime.UnixEpoch.ToLocalTime();
 
     /// <summary>
-    /// 通道表
+    /// 插件名称
+    /// </summary>
+    public virtual string PluginName => ChannelRuntime?.PluginName;
+
+    /// <summary>
+    /// 插件名称
+    /// </summary>
+    public virtual PluginTypeEnum? PluginType => ChannelRuntime?.PluginInfo?.PluginType;
+
+    /// <summary>
+    /// 是否采集
+    /// </summary>
+    public bool? IsCollect => PluginType == null ? null : PluginType == PluginTypeEnum.Collect;
+
+    /// <summary>
+    /// 通道
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
     [AdaptIgnore]
-    public Channel? Channel { get; set; }
+    public ChannelRuntime? ChannelRuntime { get; set; }
 
     /// <summary>
     /// 通道名称
     /// </summary>
-    public string? ChannelName => Channel?.Name;
+    public string? ChannelName => ChannelRuntime?.Name;
+    public string LogPath => Id.GetLogPath();
 
     /// <summary>
     /// 设备状态
@@ -52,7 +70,7 @@ public class DeviceRunTime : Device
     {
         get
         {
-            if (KeepRun)
+            if (!Pause)
                 return _deviceStatus;
             else
                 return DeviceStatusEnum.Pause;
@@ -70,35 +88,12 @@ public class DeviceRunTime : Device
     /// <summary>
     /// 设备变量数量
     /// </summary>
-    public int DeviceVariableCount { get => VariableRunTimes == null ? 0 : VariableRunTimes.Count; }
+    public int DeviceVariableCount { get => VariableRuntimes == null ? 0 : VariableRuntimes.Count; }
 
     /// <summary>
-    /// 距上次成功时的读取失败次数,超过3次设备更新为离线，等于0时设备更新为在线
+    /// 暂停
     /// </summary>
-    public virtual int ErrorCount
-    {
-        get
-        {
-            return _errorCount;
-        }
-        protected set
-        {
-            _errorCount = value;
-            if (_errorCount > 3)
-            {
-                DeviceStatus = DeviceStatusEnum.OffLine;
-            }
-            else if (_errorCount == 0)
-            {
-                DeviceStatus = DeviceStatusEnum.OnLine;
-            }
-        }
-    }
-
-    /// <summary>
-    /// 运行
-    /// </summary>
-    public bool KeepRun { get; set; } = true;
+    public bool Pause { get; set; } = false;
 
     /// <summary>
     /// 最后一次失败原因
@@ -131,27 +126,109 @@ public class DeviceRunTime : Device
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
-    public IReadOnlyDictionary<string, VariableRunTime>? VariableRunTimes { get; set; }
+    [AdaptIgnore]
+    [AutoGenerateColumn(Ignore = true)]
+    public IReadOnlyDictionary<string, VariableRuntime>? ReadVariableRuntimes => VariableRuntimes;
+
+    /// <summary>
+    /// 设备变量
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    [AdaptIgnore]
+    [AutoGenerateColumn(Ignore = true)]
+    internal ConcurrentDictionary<string, VariableRuntime>? VariableRuntimes { get; set; } = new(Environment.ProcessorCount, 1000);
+
+    #region 采集
+    /// <summary>
+    /// 特殊方法数量
+    /// </summary>
+    public int MethodVariableCount { get; set; }
+
+    /// <summary>
+    /// 特殊方法变量
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    [AdaptIgnore]
+    public List<VariableMethod>? ReadVariableMethods { get; set; }
+
+    /// <summary>
+    /// 设备读取打包数量
+    /// </summary>
+    public int SourceVariableCount => VariableSourceReads?.Count ?? 0;
+
+    /// <summary>
+    /// 打包变量
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    [AdaptIgnore]
+    public List<VariableSourceRead>? VariableSourceReads { get; set; }
+
+    /// <summary>
+    /// 特殊地址变量
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    [AdaptIgnore]
+    public List<VariableRuntime>? OtherVariableRuntimes { get; set; }
+
+
+    public volatile bool CheckEnable;
+
+    #endregion 采集
 
     /// <summary>
     /// 传入设备的状态信息
     /// </summary>
     /// <param name="activeTime"></param>
-    /// <param name="errorCount"></param>
+    /// <param name="error"></param>
     /// <param name="lastErrorMessage"></param>
-    /// <param name="deviceStatus"></param>
-    public void SetDeviceStatus(DateTime? activeTime = null, int? errorCount = null, string lastErrorMessage = null, DeviceStatusEnum? deviceStatus = null)
+    public void SetDeviceStatus(DateTime? activeTime = null, bool? error = null, string lastErrorMessage = null)
     {
-        //lock (this)
+        if (activeTime != null)
+            ActiveTime = activeTime.Value;
+        if (error == true)
         {
-            if (activeTime != null)
-                ActiveTime = activeTime.Value;
-            if (errorCount != null)
-                ErrorCount = errorCount.Value;
-            if (lastErrorMessage != null)
-                LastErrorMessage = lastErrorMessage;
-            if (deviceStatus != null)
-                DeviceStatus = deviceStatus.Value;
+            DeviceStatus = DeviceStatusEnum.OffLine;
         }
+        else
+        {
+            DeviceStatus = DeviceStatusEnum.OnLine;
+        }
+        if (lastErrorMessage != null)
+            LastErrorMessage = lastErrorMessage;
     }
+
+
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    [AdaptIgnore]
+    public IDriver? Driver { get; internal set; }
+
+    public void Init(ChannelRuntime channelRuntime)
+    {
+        ChannelRuntime?.DeviceRuntimes?.TryRemove(Id, out _);
+
+        ChannelRuntime = channelRuntime;
+        ChannelRuntime?.DeviceRuntimes?.TryRemove(Id, out _);
+        ChannelRuntime.DeviceRuntimes.TryAdd(Id, this);
+
+        GlobalData.Devices.TryRemove(Id, out _);
+        GlobalData.Devices.TryAdd(Id, this);
+
+    }
+
+    public void Dispose()
+    {
+        ChannelRuntime?.DeviceRuntimes?.TryRemove(Id, out _);
+
+        GlobalData.Devices.TryRemove(Id, out _);
+
+        Driver = null;
+        GC.SuppressFinalize(this);
+    }
+
 }
