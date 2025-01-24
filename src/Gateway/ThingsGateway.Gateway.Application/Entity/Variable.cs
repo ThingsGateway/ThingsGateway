@@ -167,7 +167,7 @@ public class Variable : BaseDataEntity, IValidatableObject
     [SugarColumn(IsJson = true, ColumnDataType = StaticConfig.CodeFirst_BigString, ColumnDescription = "变量属性Json", IsNullable = true)]
     [IgnoreExcel]
     [AutoGenerateColumn(Ignore = true)]
-    public ConcurrentDictionary<long, Dictionary<string, string>>? VariablePropertys { get; set; }
+    public ConcurrentDictionary<long, Dictionary<string, string>>? VariablePropertys { get; set; } = new();
 
     #region 报警
     /// <summary>

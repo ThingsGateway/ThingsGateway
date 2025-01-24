@@ -21,11 +21,11 @@
     <link rel="apple-touch-icon" href="favicon.png">
     <base href="/" />
     <title>ThingsGateway</title>
-    <link rel="stylesheet" href="_content/BootstrapBlazor.FontAwesome/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="_content/BootstrapBlazor/css/bootstrap.blazor.bundle.min.css" />
-    <link rel="stylesheet" href="_content/BootstrapBlazor/css/motronic.min.css" />
-    <link rel="stylesheet" href="ThingsGateway.Server.styles.css" />
-    <link rel="stylesheet" href=@($"{WebsiteConst.DefaultResourceUrl}css/site.css") />
+    <link rel="stylesheet" href=@($"_content/BootstrapBlazor.FontAwesome/css/font-awesome.min.css?v={this.GetType().Assembly.GetName().Version}") />
+    <link rel="stylesheet" href=@($"_content/BootstrapBlazor/css/bootstrap.blazor.bundle.min.css?v={this.GetType().Assembly.GetName().Version}") />
+    <link rel="stylesheet" href=@($"_content/BootstrapBlazor/css/motronic.min.css?v={this.GetType().Assembly.GetName().Version}") />
+    <link rel="stylesheet" href=@($"ThingsGateway.Server.styles.css?v={this.GetType().Assembly.GetName().Version}") />
+    <link rel="stylesheet" href=@($"{WebsiteConst.DefaultResourceUrl}css/site.css?v={this.GetType().Assembly.GetName().Version}") />
     @* <script src=@($"{WebsiteConst.DefaultResourceUrl}js/theme.js") type="module"></script><!-- 初始主题 --> *@
     <!-- PWA Manifest -->
     <link rel="manifest" href="./manifest.json" />
@@ -38,8 +38,8 @@
 
     <BlazorReconnector @rendermode="new InteractiveServerRenderMode(false)" />
 
-    <script src="_content/BootstrapBlazor/js/bootstrap.blazor.bundle.min.js"></script>
-    <script src=@($"{WebsiteConst.DefaultResourceUrl}js/culture.js")></script>
+    <script src=@($"_content/BootstrapBlazor/js/bootstrap.blazor.bundle.min.js?v={this.GetType().Assembly.GetName().Version}")></script>
+    <script src=@($"{WebsiteConst.DefaultResourceUrl}js/culture.js?v={this.GetType().Assembly.GetName().Version}")></script>
     <script src="_framework/blazor.web.js"></script>
     <!-- PWA Service Worker -->
     <script type="text/javascript">'serviceWorker' in navigator && navigator.serviceWorker.register('./service-worker.js')</script>
