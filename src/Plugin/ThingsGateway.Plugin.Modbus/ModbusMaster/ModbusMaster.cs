@@ -60,7 +60,7 @@ public class ModbusMaster : CollectBase
         _plc.CheckClearTime = _driverPropertys.CheckClearTime;
         _plc.ModbusType = _driverPropertys.ModbusType;
         _plc.Heartbeat = _driverPropertys.Heartbeat;
-        _plc.InitChannel(channel,LogMessage);
+        _plc.InitChannel(channel, LogMessage);
         base.InitChannel(channel);
     }
 

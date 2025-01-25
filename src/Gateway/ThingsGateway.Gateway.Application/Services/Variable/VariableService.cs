@@ -443,90 +443,93 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
             variableExports.Add(varExport);
 
             #region 插件sheet
-
-            foreach (var item in variable.VariablePropertys ?? new())
+            if (variable.VariablePropertys != null)
             {
-                //插件属性
-                //单个设备的行数据
-                Dictionary<string, object> driverInfo = new();
-                var has = deviceDicts.TryGetValue(item.Key, out var businessDevice);
-                if (!has)
-                    continue;
 
-                channelDicts.TryGetValue(businessDevice.ChannelId, out var channel);
-
-                //没有包含设备名称，手动插入
-                driverInfo.TryAdd(ExportString.DeviceName, businessDevice.Name);
-                driverInfo.TryAdd(ExportString.VariableName, variable.Name);
-
-                var propDict = item.Value;
-
-                if (propertysDict.TryGetValue(channel.PluginName, out var propertys))
+                foreach (var item in variable.VariablePropertys)
                 {
-                }
-                else
-                {
-                    try
+                    //插件属性
+                    //单个设备的行数据
+                    Dictionary<string, object> driverInfo = new();
+                    var has = deviceDicts.TryGetValue(item.Key, out var businessDevice);
+                    if (!has)
+                        continue;
+
+                    channelDicts.TryGetValue(businessDevice.ChannelId, out var channel);
+
+                    //没有包含设备名称，手动插入
+                    driverInfo.TryAdd(ExportString.DeviceName, businessDevice.Name);
+                    driverInfo.TryAdd(ExportString.VariableName, variable.Name);
+
+                    var propDict = item.Value;
+
+                    if (propertysDict.TryGetValue(channel.PluginName, out var propertys))
                     {
-
-                        var variableProperty = ((BusinessBase)_pluginService.GetDriver(channel.PluginName))?.VariablePropertys;
-                        propertys.Item1 = variableProperty;
-                        var variablePropertyType = variableProperty.GetType();
-                        propertys.Item2 = variablePropertyType.GetRuntimeProperties()
-           .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
-           .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
-                        propertysDict.TryAdd(channel.PluginName, propertys);
-
-                    }
-                    catch
-                    {
-
-                    }
-                }
-                if (propertys.Item2?.Count == null)
-                {
-                    continue;
-                }
-                //根据插件的配置属性项生成列，从数据库中获取值或者获取属性默认值
-                foreach (var item1 in propertys.Item2)
-                {
-                    if (propDict.TryGetValue(item1.Value.Name, out var dependencyProperty))
-                    {
-                        driverInfo.TryAdd(item1.Key, dependencyProperty);
                     }
                     else
                     {
-                        //添加对应属性数据
-                        driverInfo.TryAdd(item1.Key, ThingsGatewayStringConverter.Default.Serialize(null, item1.Value.GetValue(propertys.Item1)));
-                    }
-                }
-
-                if (!driverPluginDicts.ContainsKey(channel.PluginName))
-                    continue;
-
-                var pluginName = PluginServiceUtil.GetFileNameAndTypeName(channel.PluginName);
-                //lock (devicePropertys)
-                {
-                    if (devicePropertys.ContainsKey(pluginName.Item2))
-                    {
-                        if (driverInfo.Count > 0)
-                            devicePropertys[pluginName.Item2].Add(driverInfo);
-                    }
-                    else
-                    {
-                        lock (devicePropertys)
+                        try
                         {
-                            if (devicePropertys.ContainsKey(pluginName.Item2))
-                            {
-                                if (driverInfo.Count > 0)
-                                    devicePropertys[pluginName.Item2].Add(driverInfo);
-                            }
-                            else
-                            {
-                                if (driverInfo.Count > 0)
-                                    devicePropertys.TryAdd(pluginName.Item2, new() { driverInfo });
-                            }
 
+                            var variableProperty = ((BusinessBase)_pluginService.GetDriver(channel.PluginName))?.VariablePropertys;
+                            propertys.Item1 = variableProperty;
+                            var variablePropertyType = variableProperty.GetType();
+                            propertys.Item2 = variablePropertyType.GetRuntimeProperties()
+               .Where(a => a.GetCustomAttribute<DynamicPropertyAttribute>() != null)
+               .ToDictionary(a => variablePropertyType.GetPropertyDisplayName(a.Name, a => a.GetCustomAttribute<DynamicPropertyAttribute>(true)?.Description));
+                            propertysDict.TryAdd(channel.PluginName, propertys);
+
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+                    if (propertys.Item2?.Count == null)
+                    {
+                        continue;
+                    }
+                    //根据插件的配置属性项生成列，从数据库中获取值或者获取属性默认值
+                    foreach (var item1 in propertys.Item2)
+                    {
+                        if (propDict.TryGetValue(item1.Value.Name, out var dependencyProperty))
+                        {
+                            driverInfo.TryAdd(item1.Key, dependencyProperty);
+                        }
+                        else
+                        {
+                            //添加对应属性数据
+                            driverInfo.TryAdd(item1.Key, ThingsGatewayStringConverter.Default.Serialize(null, item1.Value.GetValue(propertys.Item1)));
+                        }
+                    }
+
+                    if (!driverPluginDicts.ContainsKey(channel.PluginName))
+                        continue;
+
+                    var pluginName = PluginServiceUtil.GetFileNameAndTypeName(channel.PluginName);
+                    //lock (devicePropertys)
+                    {
+                        if (devicePropertys.ContainsKey(pluginName.Item2))
+                        {
+                            if (driverInfo.Count > 0)
+                                devicePropertys[pluginName.Item2].Add(driverInfo);
+                        }
+                        else
+                        {
+                            lock (devicePropertys)
+                            {
+                                if (devicePropertys.ContainsKey(pluginName.Item2))
+                                {
+                                    if (driverInfo.Count > 0)
+                                        devicePropertys[pluginName.Item2].Add(driverInfo);
+                                }
+                                else
+                                {
+                                    if (driverInfo.Count > 0)
+                                        devicePropertys.TryAdd(pluginName.Item2, new() { driverInfo });
+                                }
+
+                            }
                         }
                     }
                 }

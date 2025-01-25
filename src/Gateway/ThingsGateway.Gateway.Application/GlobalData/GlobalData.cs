@@ -36,6 +36,11 @@ public delegate void VariableChangeEventHandler(VariableRuntime variableRuntime,
 public delegate void VariableCollectEventHandler(VariableRuntime variableRuntime);
 
 /// <summary>
+/// 变量报警事件委托
+/// </summary>
+public delegate void VariableAlarmEventHandler(AlarmVariable alarmVariable);
+
+/// <summary>
 /// 采集设备值与状态全局提供类，用于提供全局的设备状态和变量数据的管理
 /// </summary>
 public static class GlobalData
@@ -57,7 +62,7 @@ public static class GlobalData
     /// <summary>
     /// 报警变化事件
     /// </summary>
-    public static event VariableAlarmEventHandler AlarmChangedEvent;
+    public static event VariableAlarmEventHandler? AlarmChangedEvent;
 
     /// <summary>
     /// 只读的通道字典，提供对通道的只读访问

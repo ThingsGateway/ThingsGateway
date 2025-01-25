@@ -20,11 +20,6 @@ using ThingsGateway.NewLife.Extension;
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
-/// 变量报警事件委托
-/// </summary>
-public delegate void VariableAlarmEventHandler(AlarmVariable alarmVariable);
-
-/// <summary>
 /// 设备采集报警后台服务
 /// </summary>
 internal sealed class AlarmHostedService : BackgroundService, IAlarmHostedService

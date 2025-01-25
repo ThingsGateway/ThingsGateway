@@ -13,7 +13,6 @@ using Newtonsoft.Json.Linq;
 using System.Text;
 
 using ThingsGateway.Foundation.Extension.String;
-using ThingsGateway.NewLife.Caching;
 
 namespace ThingsGateway.Foundation;
 
@@ -22,6 +21,8 @@ namespace ThingsGateway.Foundation;
 /// </summary>
 public static class ThingsGatewayBitConverterExtension
 {
+
+    //private static MemoryCache MemoryCache = new() { Capacity = 10000000 };
     /// <summary>
     /// 从设备地址中解析附加信息
     /// 这个方法获取<see cref="IThingsGatewayBitConverter"/>
@@ -36,18 +37,18 @@ public static class ThingsGatewayBitConverterExtension
 
         var type = defaultBitConverter.GetType();
         // 尝试从缓存中获取解析结果
-        var cacheKey = $"{nameof(ThingsGatewayBitConverterExtension)}_{nameof(GetTransByAddress)}_{type.FullName}_{type.TypeHandle.Value}_{defaultBitConverter.ToJsonString()}_{registerAddress}";
-        if (MemoryCache.Instance.TryGetValue(cacheKey, out IThingsGatewayBitConverter cachedConverter))
-        {
-            if (cachedConverter.Equals(defaultBitConverter))
-            {
-                return defaultBitConverter;
-            }
-            else
-            {
-                return (IThingsGatewayBitConverter)cachedConverter.Map(type);
-            }
-        }
+        //var cacheKey = $"{nameof(ThingsGatewayBitConverterExtension)}_{nameof(GetTransByAddress)}_{type.FullName}_{type.TypeHandle.Value}_{defaultBitConverter.ToJsonString()}_{registerAddress}_{defaultBitConverter.GetHashCode()}";
+        //if (MemoryCache.TryGetValue(cacheKey, out IThingsGatewayBitConverter cachedConverter))
+        //{
+        //    if (cachedConverter.Equals(defaultBitConverter))
+        //    {
+        //        return defaultBitConverter;
+        //    }
+        //    else
+        //    {
+        //        return (IThingsGatewayBitConverter)cachedConverter.Map(type);
+        //    }
+        //}
 
         // 去除设备地址两端的空格
         registerAddress = registerAddress.Trim();
@@ -109,7 +110,7 @@ public static class ThingsGatewayBitConverterExtension
         // 如果没有解析出任何附加信息，则直接返回默认的数据转换器
         if (bcdFormat == null && stringlength == null && encoding == null && dataFormat == null && wstring == null)
         {
-            MemoryCache.Instance.Set(cacheKey, defaultBitConverter!, 3600);
+            //MemoryCache.Set(cacheKey, defaultBitConverter!, 3600);
             return defaultBitConverter;
         }
 
@@ -139,7 +140,7 @@ public static class ThingsGatewayBitConverterExtension
         }
 
         // 将解析结果添加到缓存中，缓存有效期为3600秒
-        MemoryCache.Instance.Set(cacheKey, converter!, 3600);
+        //MemoryCache.Set(cacheKey, converter!, 3600);
         return converter;
     }
 

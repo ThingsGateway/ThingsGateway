@@ -71,7 +71,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
 
 
         // 触发一次设备状态变化和变量值变化事件
-        CollectDevices.ForEach(a =>
+        CollectDevices?.ForEach(a =>
         {
             if (a.Value.DeviceStatus == DeviceStatusEnum.OnLine)
                 DeviceStatusChange(a.Value, a.Value.Adapt<DeviceBasicData>());
@@ -162,10 +162,14 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
                 {
                     if (_exT2TimerTick.IsTickHappen())
                     {
-                        // 间隔推送全部设备
-                        foreach (var deviceRuntime in CollectDevices.Select(a => a.Value))
+                        if (CollectDevices != null)
                         {
-                            DeviceTimeInterval(deviceRuntime, deviceRuntime.Adapt<DeviceBasicData>());
+
+                            // 间隔推送全部设备
+                            foreach (var deviceRuntime in CollectDevices.Select(a => a.Value))
+                            {
+                                DeviceTimeInterval(deviceRuntime, deviceRuntime.Adapt<DeviceBasicData>());
+                            }
                         }
                     }
                 }
@@ -237,7 +241,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
         //if (_businessPropertyWithCacheInterval?.IsInterval != true)
         {
             // 检查当前设备的设备列表是否包含此设备，如果包含，则触发设备的状态变化处理方法
-            if (CollectDevices.ContainsKey(deviceData.Id))
+            if (CollectDevices?.ContainsKey(deviceData.Id) == true)
                 DeviceChange(deviceRuntime, deviceData);
         }
     }

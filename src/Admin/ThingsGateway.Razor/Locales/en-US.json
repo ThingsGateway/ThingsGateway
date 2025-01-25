@@ -23,6 +23,7 @@
     "False": "No",
     "Save": "Save",
     "Fail": "Fail {0}",
+    "Clear": "Clear",
     "Success": "Success",
     "PleaseSelect": "Please select the data",
     "TablesExportButtonExcelText": "Export Excel",

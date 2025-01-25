@@ -832,13 +832,14 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
         Disposed = true;
         try
         {
-            Channel?.SafeDispose();
-
-            LogMessage?.LogInformation(Localizer["ChannelDispose", CurrentChannel?.Name ?? string.Empty]);
 
             await NewDeviceLock.WaitAsync().ConfigureAwait(false);
 
             await PrivateRemoveDevicesAsync(Drivers.Keys).ConfigureAwait(false);
+            Channel?.SafeDispose();
+
+            LogMessage?.LogInformation(Localizer["ChannelDispose", CurrentChannel?.Name ?? string.Empty]);
+
         }
         finally
         {

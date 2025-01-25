@@ -66,7 +66,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
     }
 
     /// <inheritdoc/>
-    protected override async void Dispose(bool disposing)
+    protected override void Dispose(bool disposing)
     {
         base.Dispose(disposing);
         if (_mqttServer != null)
@@ -79,7 +79,6 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         }
         if (_webHost != null)
         {
-            await _webHost.StopAsync().ConfigureAwait(false);
             _webHost.SafeDispose();
         }
 

@@ -166,7 +166,6 @@ public partial class MainLayout : IDisposable
         DispatchService.Subscribe(Dispatch);
         await AppContext.InitUserAsync();
         await AppContext.InitMenus(NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
-        StateHasChanged();
         await base.OnInitializedAsync();
     }
     private Tab Tab { get; set; }

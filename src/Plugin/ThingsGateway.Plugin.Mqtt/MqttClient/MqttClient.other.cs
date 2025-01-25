@@ -199,7 +199,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         //保留消息
         //分解List，避免超出mqtt字节大小限制
         var varData = VariableRuntimes.Select(a => a.Value).Adapt<List<VariableData>>().ChunkBetter(_driverPropertys.SplitSize);
-        var devData = CollectDevices.Select(a => a.Value).Adapt<List<DeviceBasicData>>().ChunkBetter(_driverPropertys.SplitSize);
+        var devData = CollectDevices?.Select(a => a.Value).Adapt<List<DeviceBasicData>>().ChunkBetter(_driverPropertys.SplitSize);
         var alramData = GlobalData.ReadOnlyRealAlarmVariables.Select(a => a.Value).Adapt<List<AlarmVariable>>().ChunkBetter(_driverPropertys.SplitSize);
         foreach (var item in varData)
         {
@@ -207,12 +207,14 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
                 break;
             await UpdateVarModel(item, cancellationToken).ConfigureAwait(false);
         }
-
-        foreach (var item in devData)
+        if (devData != null)
         {
-            if (!success)
-                break;
-            await UpdateDevModel(item, cancellationToken).ConfigureAwait(false);
+            foreach (var item in devData)
+            {
+                if (!success)
+                    break;
+                await UpdateDevModel(item, cancellationToken).ConfigureAwait(false);
+            }
         }
 
         foreach (var item in alramData)

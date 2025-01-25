@@ -64,7 +64,7 @@ public class SiemensS7Master : CollectBase
         _plc.LocalTSAP = _driverPropertys.LocalTSAP;
         _plc.Rack = _driverPropertys.Rack;
         _plc.Slot = _driverPropertys.Slot;
-        _plc.InitChannel(channel,LogMessage);
+        _plc.InitChannel(channel, LogMessage);
         base.InitChannel(channel);
     }
 

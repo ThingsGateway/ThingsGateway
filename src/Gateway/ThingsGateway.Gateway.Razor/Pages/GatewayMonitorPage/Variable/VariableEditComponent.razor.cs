@@ -190,7 +190,7 @@ public partial class VariableEditComponent
                     VariablePropertyRenderFragments.AddOrUpdate(id, component.Render());
                 }
 
-                if (Model.VariablePropertys.TryGetValue(id, out var dict))
+                if (Model.VariablePropertys?.TryGetValue(id, out var dict) == true)
                 {
                     PluginServiceUtil.SetModel(data.Model, dict);
                 }

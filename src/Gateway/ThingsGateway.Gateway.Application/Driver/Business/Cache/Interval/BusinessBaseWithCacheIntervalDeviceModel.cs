@@ -75,7 +75,7 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
         }
 
 
-        CollectDevices.ForEach(a =>
+        CollectDevices?.ForEach(a =>
         {
             if (a.Value.DeviceStatus == DeviceStatusEnum.OnLine)
                 DeviceStatusChange(a.Value, a.Value.Adapt<DeviceBasicData>());
@@ -159,10 +159,13 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
                 {
                     if (_exT2TimerTick.IsTickHappen())
                     {
-                        // 上传所有设备信息
-                        foreach (var deviceRuntime in CollectDevices.Select(a => a.Value))
+                        if (CollectDevices != null)
                         {
-                            DeviceTimeInterval(deviceRuntime, deviceRuntime.Adapt<DeviceBasicData>());
+                            // 上传所有设备信息
+                            foreach (var deviceRuntime in CollectDevices.Select(a => a.Value))
+                            {
+                                DeviceTimeInterval(deviceRuntime, deviceRuntime.Adapt<DeviceBasicData>());
+                            }
                         }
                     }
                 }
@@ -219,7 +222,7 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
         //if (_businessPropertyWithCacheInterval?.IsInterval != true)
         {
             // 检查当前设备集合中是否包含该设备，并进行相应处理
-            if (CollectDevices.ContainsKey(deviceRuntime.Id))
+            if (CollectDevices?.ContainsKey(deviceRuntime.Id) == true)
                 DeviceChange(deviceRuntime, deviceData);
         }
     }

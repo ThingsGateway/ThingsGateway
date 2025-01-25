@@ -43,7 +43,7 @@ public class VariableRuntimeService : IVariableRuntimeService
                 foreach (var item in group)
                 {
                     //需要重启业务线程
-                    var deviceRuntimes = GlobalData.Devices.Where(a => item.Value.VariablePropertys.ContainsKey(a.Key)).Select(a => a.Value);
+                    var deviceRuntimes = GlobalData.Devices.Where(a => item.Value.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
                     foreach (var deviceRuntime in deviceRuntimes)
                     {
                         if (deviceRuntime.Driver != null)
@@ -116,7 +116,7 @@ public class VariableRuntimeService : IVariableRuntimeService
                 foreach (var item in group)
                 {
                     //需要重启业务线程
-                    var deviceRuntimes = GlobalData.Devices.Where(a => item.Value.VariablePropertys.ContainsKey(a.Key)).Select(a => a.Value);
+                    var deviceRuntimes = GlobalData.Devices.Where(a => item.Value.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
                     foreach (var deviceRuntime in deviceRuntimes)
                     {
                         if (deviceRuntime.Driver != null)
@@ -192,7 +192,7 @@ public class VariableRuntimeService : IVariableRuntimeService
                 foreach (var item in group)
                 {
                     //需要重启业务线程
-                    var deviceRuntimes = GlobalData.Devices.Where(a => item.VariablePropertys.ContainsKey(a.Key)).Select(a => a.Value);
+                    var deviceRuntimes = GlobalData.Devices.Where(a => item.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
                     foreach (var deviceRuntime in deviceRuntimes)
                     {
                         if (deviceRuntime.Driver != null)
@@ -254,7 +254,7 @@ public class VariableRuntimeService : IVariableRuntimeService
                 foreach (var item in group)
                 {
                     //需要重启业务线程
-                    var deviceRuntimes = GlobalData.Devices.Where(a => item.Value.VariablePropertys.ContainsKey(a.Key)).Select(a => a.Value);
+                    var deviceRuntimes = GlobalData.Devices.Where(a => item.Value.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
                     foreach (var deviceRuntime in deviceRuntimes)
                     {
                         if (deviceRuntime.Driver != null)
@@ -437,7 +437,7 @@ public class VariableRuntimeService : IVariableRuntimeService
             }
 
             //需要重启业务线程
-            var deviceRuntimes = GlobalData.Devices.Where(a => newVariableRuntime.VariablePropertys.ContainsKey(a.Key)).Select(a => a.Value);
+            var deviceRuntimes = GlobalData.Devices.Where(a => newVariableRuntime.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
             foreach (var businessDeviceRuntime in deviceRuntimes)
             {
                 if (businessDeviceRuntime.Driver != null)

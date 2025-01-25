@@ -85,7 +85,7 @@ public class ModbusSlave : BusinessBase
         _plc.DtuId = _driverPropertys.DtuId;
         _plc.HeartbeatTime = _driverPropertys.HeartbeatTime;
         _plc.Heartbeat = _driverPropertys.Heartbeat;
-        _plc.InitChannel(channel,LogMessage);
+        _plc.InitChannel(channel, LogMessage);
         base.InitChannel(channel);
 
         _plc.WriteData -= OnWriteData;
@@ -147,10 +147,13 @@ public class ModbusSlave : BusinessBase
             CurrentDevice.SetDeviceStatus(TimerX.Now, true);
             try
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
                 await FoundationDevice.Channel.CloseAsync().ConfigureAwait(false);
                 await FoundationDevice.Channel.ConnectAsync(3000, cancellationToken).ConfigureAwait(false);
                 success = true;
             }
+            catch (ObjectDisposedException) { }
             catch (Exception ex)
             {
                 if (success)

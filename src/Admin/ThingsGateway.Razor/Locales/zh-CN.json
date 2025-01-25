@@ -23,6 +23,7 @@
     "False": "否",
     "Save": "保存",
     "Fail": "失败 {0}",
+    "Clear": "清空",
     "Success": "成功",
     "PleaseSelect": "请选择需要操作的数据",
     "TablesExportButtonExcelText": "导出Excel",

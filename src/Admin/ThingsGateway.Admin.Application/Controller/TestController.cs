@@ -21,6 +21,7 @@ public class TestController : ControllerBase
     [HttpPost]
     public async Task Test(string data)
     {
+        GC.Collect();
         await Task.CompletedTask.ConfigureAwait(false);
     }
 }

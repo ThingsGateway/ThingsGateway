@@ -60,7 +60,7 @@ public class Dlt645_2007Master : CollectBase
         _plc.CheckClearTime = _driverPropertys.CheckClearTime;
         _plc.Station = _driverPropertys.Station;
         _plc.Heartbeat = _driverPropertys.Heartbeat;
-        _plc.InitChannel(channel,LogMessage);
+        _plc.InitChannel(channel, LogMessage);
 
         base.InitChannel(channel);
     }

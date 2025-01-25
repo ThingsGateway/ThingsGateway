@@ -173,7 +173,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         //首次连接时的保留消息
         //分解List，避免超出mqtt字节大小限制
         var varData = VariableRuntimes.Select(a => a.Value).Adapt<List<VariableData>>().ChunkBetter(_driverPropertys.SplitSize);
-        var devData = CollectDevices.Select(a => a.Value).Adapt<List<DeviceData>>().ChunkBetter(_driverPropertys.SplitSize);
+        var devData = CollectDevices?.Select(a => a.Value).Adapt<List<DeviceData>>().ChunkBetter(_driverPropertys.SplitSize);
         var alramData = GlobalData.ReadOnlyRealAlarmVariables.Select(a => a.Value).Adapt<List<AlarmVariable>>().ChunkBetter(_driverPropertys.SplitSize);
         List<MqttApplicationMessage> Messages = new();
 
@@ -192,14 +192,17 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
         }
         if (!_businessPropertyWithCacheIntervalScript.DeviceTopic.IsNullOrEmpty())
         {
-            foreach (var item in devData)
+            if (devData != null)
             {
-                List<TopicJson> topicJsonList = GetDeviceData(item);
-                foreach (var topicJson in topicJsonList)
+                foreach (var item in devData)
                 {
-                    Messages.Add(new MqttApplicationMessageBuilder()
-    .WithTopic(topicJson.Topic)
-    .WithPayload(topicJson.Json).Build());
+                    List<TopicJson> topicJsonList = GetDeviceData(item);
+                    foreach (var topicJson in topicJsonList)
+                    {
+                        Messages.Add(new MqttApplicationMessageBuilder()
+        .WithTopic(topicJson.Topic)
+        .WithPayload(topicJson.Json).Build());
+                    }
                 }
             }
         }
