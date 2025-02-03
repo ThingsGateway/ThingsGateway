@@ -17,6 +17,5 @@ public interface IAlarmHostedService : IHostedService
     /// <summary>
     /// 确认报警
     /// </summary>
-    /// <param name="item"></param>
-    void ConfirmAlarm(VariableRuntime item);
+    void ConfirmAlarm(string variableName);
 }

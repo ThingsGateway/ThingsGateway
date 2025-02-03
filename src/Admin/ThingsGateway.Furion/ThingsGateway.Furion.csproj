@@ -38,23 +38,27 @@
 		<PackageReference Include="Ben.Demystifier" Version="0.4.1" />
 		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
 		<PackageReference Include="Mapster" Version="7.4.0" />
-		<PackageReference Include="System.Text.Json" Version="9.*" />
-		<PackageReference Include="System.Reflection.MetadataLoadContext" Version="9.*" />
 		<PackageReference Include="MiniProfiler.AspNetCore.Mvc" Version="4.5.4" />
-		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="9.*" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+		<PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.3.1" />
 	</ItemGroup>
 
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.*" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.*" />
+		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="8.*" />
+		<PackageReference Include="System.Reflection.MetadataLoadContext" Version="8.*" />
+		<PackageReference Include="System.Text.Json" Version="8.*" />
 	</ItemGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.*" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.*" />
+		<PackageReference Include="Microsoft.Extensions.DependencyModel" Version="9.*" />
+		<PackageReference Include="System.Reflection.MetadataLoadContext" Version="9.*" />
+		<PackageReference Include="System.Text.Json" Version="9.*" />
 
 	</ItemGroup>
 

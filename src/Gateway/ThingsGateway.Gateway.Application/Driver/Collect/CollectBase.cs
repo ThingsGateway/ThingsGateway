@@ -52,7 +52,7 @@ public abstract class CollectBase : DriverBase
     public override void AfterVariablesChanged()
     {
         var currentDevice = CurrentDevice;
-        VariableRuntimes = currentDevice.VariableRuntimes.Where(a => a.Value.Enable).ToDictionary();
+        VariableRuntimes = currentDevice.VariableRuntimes.Where(a => a.Value.Enable).ToDictionary(a => a.Value.Name, a => a.Value);
 
         //预热脚本，加速编译
         VariableRuntimes.Where(a => !string.IsNullOrWhiteSpace(a.Value.ReadExpressions))

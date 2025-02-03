@@ -128,7 +128,7 @@ public class DeviceRuntime : Device, IDisposable
     [Newtonsoft.Json.JsonIgnore]
     [AdaptIgnore]
     [AutoGenerateColumn(Ignore = true)]
-    public IReadOnlyDictionary<string, VariableRuntime>? ReadVariableRuntimes => VariableRuntimes;
+    public IReadOnlyDictionary<long, VariableRuntime>? ReadVariableRuntimes => VariableRuntimes;
 
     /// <summary>
     /// 设备变量
@@ -137,7 +137,7 @@ public class DeviceRuntime : Device, IDisposable
     [Newtonsoft.Json.JsonIgnore]
     [AdaptIgnore]
     [AutoGenerateColumn(Ignore = true)]
-    internal ConcurrentDictionary<string, VariableRuntime>? VariableRuntimes { get; set; } = new(Environment.ProcessorCount, 1000);
+    internal ConcurrentDictionary<long, VariableRuntime>? VariableRuntimes { get; set; } = new(Environment.ProcessorCount, 1000);
 
     #region 采集
     /// <summary>

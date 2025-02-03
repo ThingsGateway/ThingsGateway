@@ -67,7 +67,7 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
         if (_businessPropertyWithCacheInterval.IsAllVariable)
         {
             VariableRuntimes = new(GlobalData.GetEnableVariables());
-            CollectDevices = GlobalData.GetEnableDevices().ToDictionary();
+            CollectDevices = GlobalData.GetEnableDevices().Where(a => a.Value.IsCollect == true).ToDictionary();
         }
         else
         {

@@ -49,7 +49,7 @@
 			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
 		</PackageReference>
 
-			<PackageReference Include="System.Formats.Asn1" Version="9.*" GeneratePathProperty="true">
+			<PackageReference Include="System.Formats.Asn1" Version="8.*" GeneratePathProperty="true">
 				<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
 			</PackageReference>
 		

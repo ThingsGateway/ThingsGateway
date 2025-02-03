@@ -181,7 +181,7 @@ public partial class LogConsole : IDisposable
                 string pattern = @"[\\/:*?""<>|]";
                 // 使用正则表达式将不符合规则的部分替换为下划线
                 string sanitizedFileName = Regex.Replace(HeaderText, pattern, "_");
-                await DownloadService.DownloadFromStreamAsync(sanitizedFileName + DateTime.Now.ToFileDateTimeFormat(), memoryStream);
+                await DownloadService.DownloadFromStreamAsync($"{sanitizedFileName}{DateTime.Now.ToFileDateTimeFormat()}.txt", memoryStream);
             }
             else
             {

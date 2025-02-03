@@ -9,6 +9,7 @@
 		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.Mqtt\ThingsGateway.Plugin.Mqtt.csproj" />
 		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.OpcDa\ThingsGateway.Plugin.OpcDa.csproj" />
 		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.OpcUa\ThingsGateway.Plugin.OpcUa.csproj" />
+		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.OpcUa105\ThingsGateway.Plugin.OpcUa105.csproj" />
 		<ProjectReference Include="..\Plugin\ThingsGateway.Plugin.RabbitMQ\ThingsGateway.Plugin.RabbitMQ.csproj" />
 	</ItemGroup>
 

@@ -57,7 +57,7 @@ public partial class OpcUaServer : BusinessBase
         {
             VariableRuntimes = new(GlobalData.GetEnableVariables());
 
-            CollectDevices = GlobalData.GetEnableDevices().ToDictionary();
+            CollectDevices = GlobalData.GetEnableDevices().Where(a => a.Value.IsCollect == true).ToDictionary();
         }
         else
         {

@@ -316,31 +316,31 @@ public class VariableRuntime : Variable, IVariable, IDisposable
     #endregion 报警
     public void Init(DeviceRuntime deviceRuntime)
     {
-        DeviceRuntime?.VariableRuntimes?.TryRemove(Name, out _);
+        DeviceRuntime?.VariableRuntimes?.TryRemove(Id, out _);
 
         DeviceRuntime = deviceRuntime;
 
-        DeviceRuntime.VariableRuntimes.TryAdd(Name, this);
+        DeviceRuntime.VariableRuntimes.TryAdd(Id, this);
         GlobalData.IdVariables.TryRemove(Id, out _);
         GlobalData.IdVariables.TryAdd(Id, this);
         GlobalData.Variables.TryRemove(Name, out _);
         GlobalData.Variables.TryAdd(Name, this);
         if (AlarmEnable)
         {
-            GlobalData.AlarmEnableVariables.TryRemove(Name, out _);
-            GlobalData.AlarmEnableVariables.TryAdd(Name, this);
+            GlobalData.AlarmEnableVariables.TryRemove(Id, out _);
+            GlobalData.AlarmEnableVariables.TryAdd(Id, this);
         }
     }
 
 
     public void Dispose()
     {
-        DeviceRuntime?.VariableRuntimes?.TryRemove(Name, out _);
+        DeviceRuntime?.VariableRuntimes?.TryRemove(Id, out _);
 
         GlobalData.IdVariables.TryRemove(Id, out _);
         GlobalData.Variables.TryRemove(Name, out _);
 
-        GlobalData.AlarmEnableVariables.TryRemove(Name, out _);
+        GlobalData.AlarmEnableVariables.TryRemove(Id, out _);
 
         GC.SuppressFinalize(this);
     }

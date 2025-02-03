@@ -94,7 +94,7 @@ public abstract class BusinessBase : DriverBase
 
 
         // 获取当前设备需要采集的设备
-        CollectDevices = GlobalData.GetEnableDevices().Where(a => CurrentDevice.VariableRuntimes.Select(b => b.Value.DeviceId).ToHashSet().Contains(a.Key)).ToDictionary(a => a.Key, a => a.Value);
+        CollectDevices = GlobalData.GetEnableDevices().Where(a => variableRuntimes.Select(b => b.Value.DeviceId).ToHashSet().Contains(a.Key)).ToDictionary(a => a.Key, a => a.Value);
 
         VariableRuntimes = variableRuntimes.ToDictionary();
     }

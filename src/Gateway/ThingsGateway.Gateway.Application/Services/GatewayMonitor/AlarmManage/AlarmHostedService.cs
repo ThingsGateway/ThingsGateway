@@ -376,12 +376,15 @@ internal sealed class AlarmHostedService : BackgroundService, IAlarmHostedServic
 
     }
 
-    public void ConfirmAlarm(VariableRuntime item)
+    public void ConfirmAlarm(string variableName)
     {
         // 如果是确认报警事件
-        item.EventType = EventTypeEnum.Confirm;
-        item.EventTime = DateTime.Now;
-        GlobalData.AlarmChange(item.Adapt<AlarmVariable>());
+        if (GlobalData.RealAlarmVariables.TryGetValue(variableName, out var variableRuntime))
+        {
+            variableRuntime.EventType = EventTypeEnum.Confirm;
+            variableRuntime.EventTime = DateTime.Now;
+            GlobalData.AlarmChange(variableRuntime.Adapt<AlarmVariable>());
+        }
     }
 
     #endregion 核心实现
@@ -425,7 +428,7 @@ internal sealed class AlarmHostedService : BackgroundService, IAlarmHostedServic
 
             foreach (var item in GlobalData.RealAlarmVariables)
             {
-                if (!GlobalData.AlarmEnableVariables.ContainsKey(item.Key))
+                if (!GlobalData.AlarmEnableVariables.ContainsKey(item.Value.Id))
                 {
                     if (GlobalData.RealAlarmVariables.TryRemove(item.Key, out var oldAlarm))
                     {

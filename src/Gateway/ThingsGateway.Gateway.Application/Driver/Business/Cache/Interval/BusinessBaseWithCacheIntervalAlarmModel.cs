@@ -62,7 +62,7 @@ public abstract class BusinessBaseWithCacheIntervalAlarmModel<VarModel, DevModel
         {
             VariableRuntimes = new(GlobalData.GetEnableVariables());
 
-            CollectDevices = GlobalData.GetEnableDevices().ToDictionary();
+            CollectDevices = GlobalData.GetEnableDevices().Where(a => a.Value.IsCollect == true).ToDictionary();
         }
         else
         {

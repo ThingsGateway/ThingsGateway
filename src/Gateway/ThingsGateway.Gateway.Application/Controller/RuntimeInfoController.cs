@@ -101,7 +101,7 @@ public class RuntimeInfoController : ControllerBase
         if (GlobalData.ReadOnlyRealAlarmVariables.TryGetValue(variableName, out var variable))
         {
             await GlobalData.SysUserService.CheckApiDataScopeAsync(variable.CreateOrgId, variable.CreateUserId).ConfigureAwait(false);
-            GlobalData.AlarmHostedService.ConfirmAlarm(variable);
+            GlobalData.AlarmHostedService.ConfirmAlarm(variableName);
         }
     }
 

@@ -5,8 +5,8 @@
 		<ItemGroup>
 			<!-- setting up the variable for convenience -->
 			<ApplicationPackageFiles Include="$(PkgRabbitMQ_Client)\lib\net8.0\*.*" />
-			<ApplicationPackageFiles1 Include="$(PkgSystem_IO_Pipelines)\lib\net8.0\*.*" />
-			<ApplicationPackageFiles2 Include="$(PkgSystem_Threading_RateLimiting)\lib\net8.0\*.*" />
+			<!--<ApplicationPackageFiles1 Include="$(PkgSystem_IO_Pipelines)\lib\net8.0\*.*" />-->
+			<!--<ApplicationPackageFiles2 Include="$(PkgSystem_Threading_RateLimiting)\lib\net8.0\*.*" />-->
 		</ItemGroup>
 		<PropertyGroup>
 			<ApplicationFolder>$(TargetDir)</ApplicationFolder>

@@ -12,8 +12,6 @@ namespace ThingsGateway.Foundation.OpcUa;
 
 internal static class CollectionExtension
 {
-
-
     /// <summary>
     /// 将项目列表分解为特定大小的块
     /// </summary>

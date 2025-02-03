@@ -387,7 +387,7 @@ public static class GlobalData
     /// <summary>
     /// 内部使用的报警配置变量字典
     /// </summary>
-    internal static ConcurrentDictionary<string, VariableRuntime> AlarmEnableVariables { get; } = new();
+    internal static ConcurrentDictionary<long, VariableRuntime> AlarmEnableVariables { get; } = new();
 
     /// <summary>
     /// 内部使用的报警配置变量字典

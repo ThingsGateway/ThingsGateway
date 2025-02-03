@@ -1,0 +1,38 @@
+﻿{
+  "ThingsGateway.Plugin.OpcUa105.OpcUaImportVariable": {
+    "NoVariablesAvailable": "No variables available",
+    "Success": "Success"
+  },
+  "ThingsGateway.Foundation.OpcUa105.OpcUaProperty": {
+    "OpcUrl": "OpcUrl",
+    "UserName": "UserName",
+    "Password": "Password",
+    "CheckDomain": "CheckDomain",
+    "UpdateRate": "UpdateRate",
+    "ActiveSubscribe": "ActiveSubscribe",
+    "GroupSize": "GroupSize",
+    "DeadBand": "DeadBand",
+    "KeepAliveInterval": "KeepAliveInterval(ms)",
+    "UseSecurity": "UseSecurity",
+    "LoadType": "LoadType",
+    "AutoAcceptUntrustedCertificates": "AutoAcceptUntrustedCertificates",
+    "ExportC": "ExportCertificate",
+    "SourceTimestampEnable": "SourceTimestampEnable",
+    "ReIntervalTime": "ReIntervalTime",
+    "RetryCount": "RetryCount"
+  },
+  "ThingsGateway.Plugin.OpcUa105.OpcUaServerProperty": {
+    "IsAllVariable": "IsAllVariable",
+    "OpcUaStringUrl": "OpcUaStringUrl",
+    "BigTextSubjectName": "SubjectName",
+    "BigTextApplicationUri": "ApplicationUri",
+    "SecurityPolicy": "SecurityPolicy",
+    "AutoAcceptUntrustedCertificates": "AutoAcceptUntrustedCertificates"
+  },
+  "ThingsGateway.Plugin.OpcUa105.OpcUaServerVariableProperty": {
+    "DataType": "DataType"
+  },
+  "ThingsGateway.Plugin.OpcUa105.OpcUaServer": {
+    "CanStartService": "Can start service"
+  }
+}

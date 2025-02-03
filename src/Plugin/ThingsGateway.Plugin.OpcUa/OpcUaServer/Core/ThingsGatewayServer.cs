@@ -167,7 +167,7 @@ public partial class ThingsGatewayServer : StandardServer
                     configuration.SecurityConfiguration.UserIssuerCertificates != null)
                 {
                     CertificateValidator certificateValidator = new();
-                    certificateValidator.Update(configuration.SecurityConfiguration).Wait();
+                    certificateValidator.Update(configuration).GetAwaiter().GetResult();
                     certificateValidator.Update(configuration.SecurityConfiguration.UserIssuerCertificates,
                         configuration.SecurityConfiguration.TrustedUserCertificates,
                         configuration.SecurityConfiguration.RejectedCertificateStore);

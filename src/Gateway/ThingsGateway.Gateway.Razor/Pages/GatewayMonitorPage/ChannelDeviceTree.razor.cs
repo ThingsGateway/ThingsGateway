@@ -466,7 +466,7 @@ public partial class ChannelDeviceTree : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = false,
+            IsScrolling = true,
             ShowMaximizeButton = true,
             Size = Size.ExtraLarge,
             Title = item.Text,
@@ -515,7 +515,7 @@ public partial class ChannelDeviceTree : IDisposable
 
         var op = new DialogOption()
         {
-            IsScrolling = false,
+            IsScrolling = true,
             ShowMaximizeButton = true,
             Size = Size.ExtraLarge,
             Title = item.Text,

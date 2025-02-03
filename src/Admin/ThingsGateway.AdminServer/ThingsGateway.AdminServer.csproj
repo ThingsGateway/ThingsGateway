@@ -41,13 +41,20 @@
 		</Content>
 	</ItemGroup>
 
-	<!--安装服务守护-->
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Data.Sqlite" Version="9.*" />
+	</ItemGroup>
+	<!--安装服务守护-->
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net8.0' ">
+
+		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.*" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.*" />
+	</ItemGroup>
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net9.0' ">
 		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="9.*" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.*" />
 	</ItemGroup>
-
+	
 	<ItemGroup>
 
 		<None Update="Dockerfile">

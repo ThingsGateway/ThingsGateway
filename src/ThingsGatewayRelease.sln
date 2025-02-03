@@ -10,8 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "other", "other", "{0B748352
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		Directory.Build.props = Directory.Build.props
-		..\git_pull.bat = ..\git_pull.bat
-		PluginVersion.props = PluginVersion.props
 		Version.props = Version.props
 	EndProjectSection
 EndProject
@@ -34,8 +32,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
-		RESX_Rules = {"EnabledRules":[]}
 		RESX_NeutralResourcesLanguage = zh-Hans
+		RESX_Rules = {"EnabledRules":[]}
+		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
 	EndGlobalSection
 EndGlobal
