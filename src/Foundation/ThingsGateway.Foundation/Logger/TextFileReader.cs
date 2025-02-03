@@ -160,7 +160,7 @@ public class TextFileReader
         }
     }
 
-    private static long InverseReadRow(FileStream fs, long position, out string value, int maxRead = 10240)
+    private static long InverseReadRow(FileStream fs, long position, out string value, int maxRead = 102400)
     {
         byte n = 0xD; // 换行符
         byte a = 0xA; // 回车符
@@ -200,7 +200,7 @@ public class TextFileReader
                 if (buffer.Count > maxRead) // 超过最大字节数限制时丢弃数据
                 {
                     newPos = -1;
-                    break;
+                    return newPos;
                 }
                 newPos--;
                 if (newPos <= -1)

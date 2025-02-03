@@ -26,7 +26,8 @@ public partial class PropertyComponent : IPropertyUIBase
 
     protected override Task OnParametersSetAsync()
     {
-        PropertyComponentLocalizer = App.CreateLocalizerByType(Model.Value.GetType());
+        if (Model?.Value != null)
+            PropertyComponentLocalizer = App.CreateLocalizerByType(Model.Value.GetType());
         return base.OnParametersSetAsync();
     }
 
