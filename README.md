@@ -16,6 +16,29 @@ A cross-platform, high-performance edge data collection gateway based on net9.
 [NuGet](https://www.nuget.org/packages?q=Tags%3A%22ThingsGateway%22)
 ﻿
 
+
+## Demo
+
+﻿
+[Demo](http://47.119.161.158:5000/)
+﻿
+Account: **SuperAdmin**
+﻿
+Password: **111111**
+﻿
+**In the upper-right corner, switch to the IoT Gateway module in the personal popup box**
+
+## Docker
+
+```shell
+
+docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway
+
+docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway_arm64
+```
+
+
+
 ### Plugin List
 
 ﻿
@@ -54,27 +77,6 @@ A cross-platform, high-performance edge data collection gateway based on net9.
 ﻿
 [Apache-2.0](https://gitee.com/diego2098/ThingsGateway/blob/master/LICENSE)
 ﻿
-
-## Demo
-
-﻿
-[Demo](http://47.119.161.158:5000/)
-﻿
-Account: **SuperAdmin**
-﻿
-Password: **111111**
-﻿
-**In the upper-right corner, switch to the IoT Gateway module in the personal popup box**
-
-## Docker
-
-```shell
-
-docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway
-
-docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway_arm64
-```
-
 ﻿
 
 ## Sponsorship

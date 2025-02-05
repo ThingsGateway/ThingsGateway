@@ -4,28 +4,32 @@
 
 基于net9的跨平台高性能边缘采集网关
 
-最新版本分支：10.0
-
-稳定版分支：Release
-
 ## 文档
 
 [文档](https://thingsgateway.cn/)
 
 [NuGet](https://www.nuget.org/packages?q=Tags%3A%22ThingsGateway%22)
 
-## 源码获取/更新
 
-### 源码克隆
+## 演示
 
+[ThingsGateway演示地址](http://47.119.161.158:5000/)
 
-建议使用git clone命令
+账户	:  **SuperAdmin**
 
-``` shell
+密码 : **111111**
 
-https://gitee.com/ThingsGateway/ThingsGateway.git
+**右上角个人弹出框中，切换到物联网关模块**
 
+## Docker
+
+```shell
+
+docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway
+
+docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway_arm64
 ```
+
 
 ### 插件列表
 
@@ -60,24 +64,6 @@ https://gitee.com/ThingsGateway/ThingsGateway.git
 
 [Apache-2.0](https://gitee.com/diego2098/ThingsGateway/blob/master/LICENSE)
 
-## 演示
-
-[ThingsGateway演示地址](http://47.119.161.158:5000/)
-
-账户	:  **SuperAdmin**
-
-密码 : **111111**
-
-**右上角个人弹出框中，切换到物联网关模块**
-
-## Docker
-
-```shell
-
-docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway
-
-docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway_arm64
-```
 
 ## 赞助
 
