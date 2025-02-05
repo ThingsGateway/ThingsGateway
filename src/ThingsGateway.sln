@@ -85,6 +85,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Plugin.Mqtt",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Plugin.RabbitMQ", "Plugin\ThingsGateway.Plugin.RabbitMQ\ThingsGateway.Plugin.RabbitMQ.csproj", "{2F28B6CF-4253-4075-ACA3-3ADED72D01FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Plugin.OpcUa105", "Plugin\ThingsGateway.Plugin.OpcUa105\ThingsGateway.Plugin.OpcUa105.csproj", "{2B407498-F822-47F7-85EE-ACDB81801065}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Foundation.OpcUa105", "Plugin\ThingsGateway.Foundation.OpcUa105\ThingsGateway.Foundation.OpcUa105.csproj", "{24918252-8D73-4C40-8E63-28236FE7B102}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -223,6 +227,14 @@ Global
 		{2F28B6CF-4253-4075-ACA3-3ADED72D01FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F28B6CF-4253-4075-ACA3-3ADED72D01FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F28B6CF-4253-4075-ACA3-3ADED72D01FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B407498-F822-47F7-85EE-ACDB81801065}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B407498-F822-47F7-85EE-ACDB81801065}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B407498-F822-47F7-85EE-ACDB81801065}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B407498-F822-47F7-85EE-ACDB81801065}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24918252-8D73-4C40-8E63-28236FE7B102}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24918252-8D73-4C40-8E63-28236FE7B102}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24918252-8D73-4C40-8E63-28236FE7B102}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24918252-8D73-4C40-8E63-28236FE7B102}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -259,10 +271,12 @@ Global
 		{3301EF1C-771F-491B-B64F-53BFAF42A0F8} = {36510D70-161F-4241-B8D0-781E21032816}
 		{AF74C6B4-BBCC-4CB7-85ED-74EB7ADC8968} = {36510D70-161F-4241-B8D0-781E21032816}
 		{2F28B6CF-4253-4075-ACA3-3ADED72D01FA} = {36510D70-161F-4241-B8D0-781E21032816}
+		{2B407498-F822-47F7-85EE-ACDB81801065} = {36510D70-161F-4241-B8D0-781E21032816}
+		{24918252-8D73-4C40-8E63-28236FE7B102} = {36510D70-161F-4241-B8D0-781E21032816}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}
-		RESX_NeutralResourcesLanguage = zh-Hans
 		RESX_Rules = {"EnabledRules":[]}
+		RESX_NeutralResourcesLanguage = zh-Hans
 	EndGlobalSection
 EndGlobal
