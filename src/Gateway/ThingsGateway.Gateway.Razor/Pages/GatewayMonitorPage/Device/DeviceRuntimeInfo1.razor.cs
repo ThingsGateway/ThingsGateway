@@ -90,6 +90,7 @@ public partial class DeviceRuntimeInfo1 : IDisposable
             {
                 await InvokeAsync(() =>
                 {
+                    OnParametersSet();
                     StateHasChanged();
                 });
             }
