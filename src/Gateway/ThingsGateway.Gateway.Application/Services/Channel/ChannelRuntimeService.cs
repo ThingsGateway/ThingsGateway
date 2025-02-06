@@ -10,6 +10,8 @@
 
 using BootstrapBlazor.Components;
 
+using CSScripting;
+
 using Mapster;
 
 using Microsoft.AspNetCore.Components.Forms;
@@ -42,6 +44,7 @@ public class ChannelRuntimeService : IChannelRuntimeService
                 {
                     channelRuntime.Dispose();
                     newChannelRuntime.Init();
+                    channelRuntime.DeviceRuntimes.ForEach(a => a.Value.Init(newChannelRuntime));
                     newChannelRuntime.DeviceRuntimes.AddRange(channelRuntime.DeviceRuntimes);
                 }
                 else
@@ -125,6 +128,7 @@ public class ChannelRuntimeService : IChannelRuntimeService
                 {
                     channelRuntime.Dispose();
                     newChannelRuntime.Init();
+                    channelRuntime.DeviceRuntimes.ForEach(a => a.Value.Init(newChannelRuntime));
                     newChannelRuntime.DeviceRuntimes.AddRange(channelRuntime.DeviceRuntimes);
                 }
                 else
@@ -162,6 +166,8 @@ public class ChannelRuntimeService : IChannelRuntimeService
             {
                 channelRuntime.Dispose();
                 newChannelRuntime.Init();
+                channelRuntime.DeviceRuntimes.ForEach(a => a.Value.Init(newChannelRuntime));
+
                 newChannelRuntime.DeviceRuntimes.AddRange(channelRuntime.DeviceRuntimes);
             }
             else

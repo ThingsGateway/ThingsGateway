@@ -112,6 +112,7 @@ public static class GlobalData
     /// 只读的设备字典，提供对设备的只读访问
     /// </summary>
     public static IReadOnlyDictionary<long, DeviceRuntime> ReadOnlyDevices => Devices;
+
     /// <summary>
     /// 只读的通道字典，提供对通道的只读访问
     /// </summary>

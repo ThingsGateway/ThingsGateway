@@ -55,7 +55,8 @@ public class DeviceRuntime : Device, IDisposable
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
     [AdaptIgnore]
-    public ChannelRuntime? ChannelRuntime { get; set; }
+    public ChannelRuntime? ChannelRuntime { get;
+        set; }
 
     /// <summary>
     /// 通道名称

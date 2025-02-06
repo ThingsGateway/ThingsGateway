@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Components.Forms;
 using ThingsGateway.Extension.Generic;
 using ThingsGateway.NewLife;
 
+using TouchSocket.Core;
+
 namespace ThingsGateway.Gateway.Application;
 
 public class VariableRuntimeService : IVariableRuntimeService
@@ -326,6 +328,8 @@ public class VariableRuntimeService : IVariableRuntimeService
                     {
                         channelRuntime.Dispose();
                         newChannelRuntime.Init();
+                        channelRuntime.DeviceRuntimes.ForEach(a => a.Value.Init(newChannelRuntime));
+
                         newChannelRuntime.DeviceRuntimes.AddRange(channelRuntime.DeviceRuntimes);
                     }
                     else
