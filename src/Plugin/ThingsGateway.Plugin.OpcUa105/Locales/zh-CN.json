@@ -33,7 +33,7 @@
   "ThingsGateway.Plugin.OpcUa105.OpcUaServerVariableProperty": {
     "DataType": "数据类型"
   },
-  "ThingsGateway.Plugin.OpcUa105.OpcUaServer": {
+  "ThingsGateway.Plugin.OpcUa105.OpcUa105Server": {
     "CanStartService": "无法启动服务"
   }
 }

@@ -29,7 +29,7 @@ namespace ThingsGateway.Plugin.OpcUa105;
 /// <summary>
 /// OPCUA服务端
 /// </summary>
-public partial class OpcUaServer : BusinessBase
+public partial class OpcUa105Server : BusinessBase
 {
     private readonly OpcUaServerProperty _driverPropertys = new();
     private readonly OpcUaServerVariableProperty _variablePropertys = new();
@@ -93,7 +93,7 @@ public partial class OpcUaServer : BusinessBase
 
         GlobalData.VariableValueChangeEvent += VariableValueChange;
 
-        Localizer = App.CreateLocalizerByType(typeof(OpcUaServer))!;
+        Localizer = App.CreateLocalizerByType(typeof(OpcUa105Server))!;
         base.InitChannel(channel);
     }
 

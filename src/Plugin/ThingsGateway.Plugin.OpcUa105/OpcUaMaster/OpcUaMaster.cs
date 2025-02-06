@@ -25,7 +25,7 @@ namespace ThingsGateway.Plugin.OpcUa105;
 /// <summary>
 /// <inheritdoc/>
 /// </summary>
-public class OpcUaMaster : CollectBase
+public class OpcUa105Master : CollectBase
 {
     private readonly OpcUaMasterProperty _driverProperties = new();
 
