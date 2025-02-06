@@ -18,6 +18,7 @@ using System.Text;
 
 using ThingsGateway.Foundation;
 using ThingsGateway.Gateway.Application.Extensions;
+using ThingsGateway.NewLife;
 using ThingsGateway.NewLife.Extension;
 using ThingsGateway.NewLife.Json.Extension;
 

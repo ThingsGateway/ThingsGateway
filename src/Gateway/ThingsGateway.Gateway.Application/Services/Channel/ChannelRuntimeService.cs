@@ -15,6 +15,7 @@ using Mapster;
 using Microsoft.AspNetCore.Components.Forms;
 
 using ThingsGateway.Extension.Generic;
+using ThingsGateway.NewLife;
 
 namespace ThingsGateway.Gateway.Application;
 

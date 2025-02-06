@@ -10,6 +10,8 @@
 
 using Mapster;
 
+using ThingsGateway.NewLife;
+
 using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Application;

@@ -11,6 +11,8 @@
 
 using System.Collections.Concurrent;
 
+using ThingsGateway.NewLife;
+
 namespace ThingsGateway.Foundation;
 
 /// <summary>

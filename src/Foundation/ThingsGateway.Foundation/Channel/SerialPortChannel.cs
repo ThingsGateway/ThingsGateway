@@ -10,6 +10,8 @@
 
 using System.Collections.Concurrent;
 
+using ThingsGateway.NewLife;
+
 using TouchSocket.SerialPorts;
 
 namespace ThingsGateway.Foundation;

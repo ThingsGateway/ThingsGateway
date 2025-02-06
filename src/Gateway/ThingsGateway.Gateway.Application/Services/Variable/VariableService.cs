@@ -26,6 +26,7 @@ using System.Text;
 
 using ThingsGateway.Extension.Generic;
 using ThingsGateway.Foundation.Extension.Dynamic;
+using ThingsGateway.NewLife;
 
 using TouchSocket.Core;
 

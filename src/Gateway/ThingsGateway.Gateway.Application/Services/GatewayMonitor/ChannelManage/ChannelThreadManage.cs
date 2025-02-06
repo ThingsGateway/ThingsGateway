@@ -14,6 +14,8 @@ using Microsoft.Extensions.Logging;
 
 using System.Collections.Concurrent;
 
+using ThingsGateway.NewLife;
+
 namespace ThingsGateway.Gateway.Application;
 
 internal sealed class ChannelThreadManage : IChannelThreadManage

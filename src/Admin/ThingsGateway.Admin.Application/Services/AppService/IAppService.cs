@@ -49,7 +49,7 @@ public interface IAppService
     /// LoginAsync
     /// </summary>
     /// <returns></returns>
-    public Task LoginAsync(ClaimsIdentity claimsIdentity);
+    public Task LoginAsync(ClaimsIdentity claimsIdentity, int expire);
 
 
 

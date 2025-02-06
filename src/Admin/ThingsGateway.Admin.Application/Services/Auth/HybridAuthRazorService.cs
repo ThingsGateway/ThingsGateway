@@ -8,10 +8,9 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Razor;
 
-namespace ThingsGateway.Server;
+namespace ThingsGateway.Admin.Application;
 
 
 public class HybridAuthRazorService : IAuthRazorService

@@ -11,6 +11,7 @@
 using Mapster;
 
 using ThingsGateway.Admin.Application;
+using ThingsGateway.NewLife;
 using ThingsGateway.NewLife.Extension;
 
 namespace ThingsGateway.Admin.Razor;
@@ -151,7 +152,7 @@ public class BlazorAppContext
             CurrentUser = (await SysUserService.GetUserByIdAsync(UserManager.UserId))!;
         }
     }
-
+    TimeTick timeTick = new("50000");
     /// <summary>
     /// 是否拥有按钮授权
     /// </summary>
@@ -160,6 +161,9 @@ public class BlazorAppContext
     /// <returns></returns>
     public bool IsHasButtonWithRole(string url, string code)
     {
+        if (timeTick.IsTickHappen())
+            BlazorAuthenticationHandler.CheckVerificat(UserManager.UserId, UserManager.VerificatId);
+
         if (UserManager.SuperAdmin)
             return true;
         url ??= string.Empty;

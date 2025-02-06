@@ -14,11 +14,9 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Security.Claims;
 
-using ThingsGateway.Admin.Application;
-
 using UAParser;
 
-namespace ThingsGateway.Server;
+namespace ThingsGateway.Admin.Application;
 
 public class HybridAppService : IAppService
 {
@@ -30,6 +28,18 @@ public class HybridAppService : IAppService
     }
     public ClientInfo? ClientInfo { get; }
 
+    private static BlazorHybridAuthenticationStateProvider _authenticationStateProvider;
+    private static BlazorHybridAuthenticationStateProvider AuthenticationStateProvider
+    {
+        get
+        {
+            if (_authenticationStateProvider == null)
+                _authenticationStateProvider = ((BlazorHybridAuthenticationStateProvider)App.RootServices.GetService<AuthenticationStateProvider>());
+
+            return _authenticationStateProvider;
+        }
+    }
+
     private ClaimsPrincipal? user;
 
     public ClaimsPrincipal? User
@@ -37,8 +47,12 @@ public class HybridAppService : IAppService
         get { return user; }
         internal set
         {
+            if (user == value)
+            {
+                return;
+            }
             user = value;
-            ((BlazorHybridAuthenticationStateProvider)App.RootServices.GetService<AuthenticationStateProvider>()).UserChanged();
+            AuthenticationStateProvider.UserChanged(user);
         }
     }
 
@@ -55,9 +69,10 @@ public class HybridAppService : IAppService
         return Task.CompletedTask;
     }
 
-    public Task LoginAsync(ClaimsIdentity claimsIdentity)
+    public Task LoginAsync(ClaimsIdentity claimsIdentity, int expire)
     {
         User = new ClaimsPrincipal(claimsIdentity);
         return Task.CompletedTask;
     }
+
 }

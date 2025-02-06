@@ -16,6 +16,7 @@ using SqlSugar;
 
 using ThingsGateway.Admin.Razor;
 using ThingsGateway.Gateway.Application;
+using ThingsGateway.NewLife;
 using ThingsGateway.NewLife.Extension;
 using ThingsGateway.NewLife.Json.Extension;
 
@@ -939,7 +940,7 @@ public partial class ChannelDeviceTree : IDisposable
 
     private ExecutionContext? context;
 
-    private Foundation.WaitLock WaitLock = new();
+    private WaitLock WaitLock = new();
 
     protected override void OnInitialized()
     {

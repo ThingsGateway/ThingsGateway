@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.StaticFiles;
@@ -296,8 +297,9 @@ public class Startup : AppStartup
 #if NET8_0_OR_GREATER
         services.AddCascadingAuthenticationState();
 #endif
-        services.AddScoped<IAuthorizationHandler, BlazorAuthenticationStateProvider>();
-
+        services.AddAuthorizationCore();
+        services.AddScoped<IAuthorizationHandler, BlazorServerAuthenticationHandler>();
+        services.AddScoped<AuthenticationStateProvider, BlazorServerAuthenticationStateProvider>();
     }
 
 

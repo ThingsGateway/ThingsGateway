@@ -1,6 +1,6 @@
 ﻿using ThingsGateway.NewLife.Threading;
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.NewLife;
 
 /// <summary>
 /// 最小时间间隔 10 毫秒

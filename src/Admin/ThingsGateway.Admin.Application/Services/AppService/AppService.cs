@@ -58,9 +58,9 @@ public class AppService : IAppService
         }
     }
 
-    public async Task LoginAsync(ClaimsIdentity identity)
+    public async Task LoginAsync(ClaimsIdentity identity, int expire)
     {
-        var diffTime = DateTime.MaxValue;
+        var diffTime = DateTime.Now + TimeSpan.FromMinutes(expire);
         //var diffTime = DateTime.Now.AddMinutes(expire);
         await App.HttpContext!.SignInAsync(Assembly.GetEntryAssembly().GetName().Name, new ClaimsPrincipal(identity), new AuthenticationProperties()
         {

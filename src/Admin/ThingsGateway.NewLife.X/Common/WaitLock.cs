@@ -8,12 +8,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.NewLife;
 
 /// <summary>
 /// WaitLock，使用轻量级SemaphoreSlim锁
 /// </summary>
-public sealed class WaitLock : DisposableObject
+public sealed class WaitLock : IDisposable
 {
     private readonly SemaphoreSlim _waiterLock;
 
@@ -40,7 +40,7 @@ public sealed class WaitLock : DisposableObject
     /// <inheritdoc/>
     ~WaitLock()
     {
-        this.SafeDispose();
+        Dispose();
     }
 
     public bool Waited => _waiterLock.CurrentCount == 0;
@@ -89,10 +89,11 @@ public sealed class WaitLock : DisposableObject
         return _waiterLock.WaitAsync(millisecondsTimeout, cancellationToken);
     }
 
-    /// <inheritdoc/>
-    protected override void Dispose(bool disposing)
+    bool DisposedValue;
+    public void Dispose()
     {
-        base.Dispose(disposing);
-        _waiterLock.SafeDispose();
+        DisposedValue = true;
+        _waiterLock?.TryDispose();
+        GC.SuppressFinalize(this);
     }
 }

@@ -21,19 +21,17 @@ using ThingsGateway.DataEncryption;
 namespace ThingsGateway.Admin.Application;
 
 /// <inheritdoc/>
-public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
+public class BlazorAuthenticationHandler : AppAuthorizeHandler
 {
     private readonly ISysDictService _sysDictService;
     private readonly ISysRoleService _sysRoleService;
     private readonly ISysUserService _sysUserService;
-    private readonly IVerificatInfoService _verificatInfoService;
 
-    public BlazorAuthenticationStateProvider(IVerificatInfoService verificatInfoService, ISysUserService sysUserService, ISysRoleService sysRoleService, ISysDictService sysDictService)
+    public BlazorAuthenticationHandler(ISysUserService sysUserService, ISysRoleService sysRoleService, ISysDictService sysDictService)
     {
         _sysUserService = sysUserService;
         _sysRoleService = sysRoleService;
         _sysDictService = sysDictService;
-        _verificatInfoService = verificatInfoService;
     }
 
     /// <inheritdoc/>
@@ -48,31 +46,36 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
             }
             else
             {
-                if (App.HttpContext != null)
-                {
-                    var identity = new ClaimsIdentity();
-                    App.HttpContext.User = new ClaimsPrincipal(identity);
-                }
-                Fail(context);
+                await Fail(context).ConfigureAwait(false);
             }
         }
         else
         {
-            Fail(context);// 授权失败
+            await Fail(context).ConfigureAwait(false);// 授权失败
         }
 
-        static void Fail(AuthorizationHandlerContext context)
-        {
-            context.Fail(); // 授权失败
-            DefaultHttpContext currentHttpContext = context.GetCurrentHttpContext();
-            if (currentHttpContext == null)
-                return;
-            currentHttpContext.Response.StatusCode = 401; //返回401给授权筛选器用
-            currentHttpContext.SignoutToSwagger();
-            currentHttpContext.SignOutAsync();
-        }
     }
+    static async Task Fail(AuthorizationHandlerContext context)
+    {
+        var verificatId = UserManager.VerificatId;
+        var verificatInfo = App.GetService<IVerificatInfoService>().GetOne(verificatId, false);
+        if (App.HttpContext != null)
+        {
+            var identity = new ClaimsIdentity();
+            App.HttpContext.User = new ClaimsPrincipal(identity);
+        }
+        context.Fail(); // 授权失败
 
+        if (verificatInfo != null)
+            await App.GetService<INoticeService>().UserLoginOut(verificatInfo.ClientIds, App.CreateLocalizerByType(typeof(BlazorAuthenticationHandler))["UserExpire"]).ConfigureAwait(false);
+
+        DefaultHttpContext currentHttpContext = context.GetCurrentHttpContext();
+        if (currentHttpContext == null)
+            return;
+        currentHttpContext.Response.StatusCode = 401; //返回401给授权筛选器用
+        currentHttpContext.SignoutToSwagger();
+        await currentHttpContext.SignOutAsync().ConfigureAwait(false);
+    }
     /// <inheritdoc/>
     public override async Task<bool> PipelineAsync(AuthorizationHandlerContext context, DefaultHttpContext httpContext)
     {
@@ -200,21 +203,7 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
         var expire = (await _sysDictService.GetAppConfigAsync().ConfigureAwait(false)).LoginPolicy.VerificatExpireTime;
         if (currentHttpContext == null)
         {
-            var verificatInfo = userId != null ? _verificatInfoService.GetOne(verificatId ?? 0) : null;//获取token信息
-
-            if (verificatInfo != null)
-            {
-                if (verificatInfo.VerificatTimeout < DateTime.Now.AddMinutes(5))
-                {
-                    verificatInfo.VerificatTimeout = DateTime.Now.AddMinutes(30); //新的过期时间
-                    _verificatInfoService.Update(verificatInfo); //更新tokne信息到cache
-                }
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return CheckVerificat(userId, verificatId);
         }
         else
         {
@@ -222,13 +211,13 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
             {
                 //var token = JWTEncryption.GetJwtBearerToken(currentHttpContext); //获取当前token
 
-                var verificatInfo = userId != null ? _verificatInfoService.GetOne(verificatId ?? 0) : null;//获取token信息
+                var verificatInfo = userId != null ? VerificatInfoService.GetOne(verificatId ?? 0, false) : null;//获取token信息
                 if (verificatInfo != null)
                 {
-                    if (verificatInfo.VerificatTimeout < DateTime.Now.AddMinutes(5))
+                    if (verificatInfo.VerificatTimeout < DateTime.Now.AddMinutes(1))
                     {
-                        verificatInfo.VerificatTimeout = DateTime.Now.AddMinutes(verificatInfo.Expire); //新的过期时间
-                        _verificatInfoService.Update(verificatInfo); //更新tokne信息到cache
+                        verificatInfo.VerificatTimeout = verificatInfo.VerificatTimeout.AddMinutes(verificatInfo.Expire); //新的过期时间
+                        VerificatInfoService.Update(verificatInfo); //更新tokne信息到cache
                     }
                     return true;
                 }
@@ -242,6 +231,71 @@ public class BlazorAuthenticationStateProvider : AppAuthorizeHandler
                 //失败
                 return false;
             }
+        }
+    }
+    private static IVerificatInfoService _verificatInfoService;
+    private static IVerificatInfoService VerificatInfoService
+    {
+        get
+        {
+            if (_verificatInfoService == null)
+                _verificatInfoService = App.GetService<IVerificatInfoService>();
+
+            return _verificatInfoService;
+        }
+    }
+    public static bool CheckVerificat(long? userId, long? verificatId, bool autoUpdate = true)
+    {
+        var verificatInfo = userId != null ? VerificatInfoService.GetOne(verificatId ?? 0, false) : null;//获取token信息
+
+        if (verificatInfo != null)
+        {
+            if (verificatInfo.VerificatTimeout < DateTime.Now.AddMinutes(1))
+            {
+                if (!autoUpdate && verificatInfo.VerificatTimeout < DateTime.Now)
+                    return false;
+
+                if (verificatInfo.VerificatTimeout.AddMinutes(verificatInfo.Expire) < DateTime.Now)
+                {
+                    return false;
+                }
+
+                if (autoUpdate)
+                {
+                    verificatInfo.VerificatTimeout = verificatInfo.VerificatTimeout.AddMinutes(verificatInfo.Expire); //新的过期时间
+                    VerificatInfoService.Update(verificatInfo); //更新tokne信息到cache
+
+
+                }
+
+                //无法在server中刷新cookies，单页面应用会一直保持登录状态，所以这里不需要刷新cookies，但是F5刷新后会重新登录
+
+                //if (App.HttpContext != null)
+                //{
+                //    try
+                //    {
+                //        var authProperties = new AuthenticationProperties
+                //        {
+                //            IsPersistent = true,
+                //            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+                //        };
+                //        await App.HttpContext.SignInAsync(Assembly.GetEntryAssembly().GetName().Name, context.User, authProperties).ConfigureAwait(false);
+
+                //    }
+                //    catch
+                //    {
+
+                //    }
+                //}
+
+            }
+
+
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 }

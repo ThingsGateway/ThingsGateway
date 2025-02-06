@@ -8,12 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using ThingsGateway.Admin.Application;
 using ThingsGateway.Gateway.Application;
 
 namespace ThingsGateway.Server;
 
-internal sealed class HybridGatewayExportService : IGatewayExportService
+public sealed class HybridGatewayExportService : IGatewayExportService
 {
 
     private readonly IChannelRuntimeService _channelService;

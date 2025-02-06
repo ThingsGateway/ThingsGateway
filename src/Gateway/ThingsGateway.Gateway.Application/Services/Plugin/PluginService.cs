@@ -21,6 +21,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 
 using ThingsGateway.Extension.Generic;
+using ThingsGateway.NewLife;
 
 using TouchSocket.Core;
 

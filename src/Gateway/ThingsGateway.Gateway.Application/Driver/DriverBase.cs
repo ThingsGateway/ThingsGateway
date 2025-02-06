@@ -12,6 +12,7 @@ using BootstrapBlazor.Components;
 
 using Microsoft.Extensions.Localization;
 
+using ThingsGateway.NewLife;
 using ThingsGateway.NewLife.Threading;
 using ThingsGateway.Razor;
 

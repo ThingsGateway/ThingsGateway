@@ -10,6 +10,8 @@
 
 using System.IO.Ports;
 
+using ThingsGateway.NewLife;
+
 namespace ThingsGateway.Foundation;
 
 public interface IChannelOptions

@@ -8,7 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-namespace ThingsGateway.Foundation;
+namespace ThingsGateway.NewLife;
 
 /// <summary>
 /// 自增数据类，用于自增数据，可以设置最大值，初始值，自增步长等。

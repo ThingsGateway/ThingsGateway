@@ -229,7 +229,7 @@ public class AuthService : IAuthService
             identity.AddClaim(new Claim(ClaimConst.OrgId, sysUser.OrgId.ToString()));
             identity.AddClaim(new Claim(ClaimConst.TenantId, input.TenantId?.ToString() ?? "0"));
 
-            await _appService.LoginAsync(identity).ConfigureAwait(false);
+            await _appService.LoginAsync(identity, expire).ConfigureAwait(false);
 
             #endregion cookie
         }

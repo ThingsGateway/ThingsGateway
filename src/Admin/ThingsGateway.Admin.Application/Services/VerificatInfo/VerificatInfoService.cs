@@ -22,17 +22,19 @@ internal sealed class VerificatInfoService : BaseService<VerificatInfo>, IVerifi
 {
     #region 查询
 
-    public VerificatInfo GetOne(long id)
+    public VerificatInfo GetOne(long id, bool delete = true)
     {
         //先从Cache拿
         var verificatInfo = App.CacheService.HashGetOne<VerificatInfo>(CacheConst.Cache_Token, id.ToString());
         verificatInfo ??= GetFromDb(id);
-        if (verificatInfo != null)
+        if (verificatInfo != null && delete)
+        {
             if (verificatInfo.VerificatTimeout.AddSeconds(30) < DateTime.Now)
             {
                 Delete(verificatInfo.Id);
                 return null;
             }
+        }
         return verificatInfo;
     }
 

@@ -15,6 +15,8 @@ using Microsoft.Extensions.Localization;
 
 using System.Collections.Concurrent;
 
+using ThingsGateway.NewLife;
+
 using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Application;

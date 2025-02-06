@@ -1,4 +1,7 @@
 ﻿{
+  "ThingsGateway.Admin.Application.BlazorAuthenticationHandler": {
+    "UserExpire": "User expired, please login again"
+  },
   "ThingsGateway.Admin.Application.SysUser": {
     "Disable": "Disable",
     "Enable": "Enable",

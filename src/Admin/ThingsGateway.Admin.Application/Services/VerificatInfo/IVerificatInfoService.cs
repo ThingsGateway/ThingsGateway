@@ -28,7 +28,7 @@ public interface IVerificatInfoService
 
     List<VerificatInfo>? GetListByUserIds(List<long> userIds);
 
-    VerificatInfo GetOne(long id);
+    VerificatInfo GetOne(long id, bool delete = true);
 
     void RemoveAllClientId();
 
