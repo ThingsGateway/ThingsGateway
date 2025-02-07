@@ -61,7 +61,17 @@ public static class ExpandoObjectExtensions
             {
                 var value = keyValuePair.Value; // 获取动态属性的值
                 // 将动态属性值转换为目标属性类型并设置到目标对象的属性中
-                property.SetValue(entity, ThingsGatewayStringConverter.Default.Deserialize(null, value?.ToString(), property.PropertyType));
+                if (value == null && property.IsNullableType())
+                {
+                    property.SetValue(entity, null);
+                }
+                else if (value == null && !property.IsNullableType())
+                {
+                }
+                else
+                {
+                    property.SetValue(entity, ThingsGatewayStringConverter.Default.Deserialize(null, value?.ToString(), property.PropertyType));
+                }
             }
         });
         return entity; // 返回转换后的实体对象
