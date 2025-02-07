@@ -413,7 +413,10 @@ public class ModbusSlave : DeviceBase, ITcpService, IDtuClient
             Bytes = modbusTcpSlaveMessage.Bytes;
             modbusRtu = false;
         }
-
+        else
+        {
+            return;
+        }
         //忽略不同设备地址的报文
         if (!MulStation && modbusRequest.Station != Station)
         {

@@ -317,14 +317,21 @@ public partial class VariableRuntimeInfo : IDisposable
                         ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
                     });
                 });
-                await GlobalData.VariableRuntimeService.InsertTestDataAsync(TestVariableCount, TestDeviceCount, SlaveUrl, AutoRestartThread);
-                await InvokeAsync(async () =>
+                try
                 {
-                    await MaskService.Close();
-                    await ToastService.Default();
-                    await table.QueryAsync();
-                    StateHasChanged();
-                });
+                    await GlobalData.VariableRuntimeService.InsertTestDataAsync(TestVariableCount, TestDeviceCount, SlaveUrl, AutoRestartThread);
+                }
+                finally
+                {
+                    await InvokeAsync(async () =>
+                    {
+                        await MaskService.Close();
+                        await ToastService.Default();
+                        await table.QueryAsync();
+                        StateHasChanged();
+                    });
+                }
+
             });
         }
         catch (Exception ex)

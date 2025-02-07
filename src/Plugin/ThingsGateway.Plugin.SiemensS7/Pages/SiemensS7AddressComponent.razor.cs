@@ -32,8 +32,15 @@ public partial class SiemensS7AddressComponent : ComponentBase, IAddressUIBase
     protected override void OnParametersSet()
     {
         ConverterConfig = new ConverterConfig(Model);
-        var data = SiemensS7Address.ParseFrom(Model, isCache: false);
-        if (data != null) Value = data;
+        try
+        {
+            var data = SiemensS7Address.ParseFrom(Model, isCache: false);
+            if (data != null) Value = data;
+        }
+        catch
+        {
+
+        }
         base.OnParametersSet();
     }
     [CascadingParameter]

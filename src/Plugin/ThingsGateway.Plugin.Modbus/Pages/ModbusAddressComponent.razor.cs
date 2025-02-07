@@ -32,8 +32,15 @@ public partial class ModbusAddressComponent : ComponentBase, IAddressUIBase
     protected override void OnParametersSet()
     {
         ConverterConfig = new ConverterConfig(Model);
-        var data = ModbusAddress.ParseFrom(Model, isCache: false);
-        if (data != null) Value = data;
+        try
+        {
+            var data = ModbusAddress.ParseFrom(Model, isCache: false);
+            if (data != null) Value = data;
+        }
+        catch
+        {
+
+        }
         base.OnParametersSet();
     }
     [CascadingParameter]

@@ -32,8 +32,15 @@ public partial class Dlt645_2007AddressComponent : ComponentBase, IAddressUIBase
     protected override void OnParametersSet()
     {
         ConverterConfig = new ConverterConfig(Model);
-        var data = Dlt645_2007Address.ParseFrom(Model, isCache: false);
-        if (data != null) Value = data;
+        try
+        {
+            var data = Dlt645_2007Address.ParseFrom(Model, isCache: false);
+            if (data != null) Value = data;
+        }
+        catch
+        {
+
+        }
         base.OnParametersSet();
     }
     [CascadingParameter]
