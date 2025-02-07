@@ -44,30 +44,6 @@ public partial class ThingsGatewayServer : StandardServer
     }
 
     /// <inheritdoc/>
-    public override UserTokenPolicyCollection GetUserTokenPolicies(ApplicationConfiguration configuration, EndpointDescription description)
-    {
-        var policies = base.GetUserTokenPolicies(configuration, description);
-
-        // 样品如何修改默认用户令牌的政策
-        if (description.SecurityPolicyUri == SecurityPolicies.Aes256_Sha256_RsaPss &&
-            description.SecurityMode == MessageSecurityMode.SignAndEncrypt)
-        {
-            policies = new UserTokenPolicyCollection(policies.Where(u => u.TokenType != UserTokenType.Certificate));
-        }
-        else if (description.SecurityPolicyUri == SecurityPolicies.Aes128_Sha256_RsaOaep &&
-            description.SecurityMode == MessageSecurityMode.Sign)
-        {
-            policies = new UserTokenPolicyCollection(policies.Where(u => u.TokenType != UserTokenType.Anonymous));
-        }
-        else if (description.SecurityPolicyUri == SecurityPolicies.Aes128_Sha256_RsaOaep &&
-            description.SecurityMode == MessageSecurityMode.SignAndEncrypt)
-        {
-            policies = new UserTokenPolicyCollection(policies.Where(u => u.TokenType != UserTokenType.UserName));
-        }
-        return policies;
-    }
-
-    /// <inheritdoc/>
     protected override MasterNodeManager CreateMasterNodeManager(IServerInternal server, ApplicationConfiguration configuration)
     {
         List<INodeManager> nodeManagers = new List<INodeManager>();
