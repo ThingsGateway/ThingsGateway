@@ -147,7 +147,7 @@ public partial class VariableEditComponent
 
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             ShowMaximizeButton = true,
             Size = Size.ExtraLarge,
             Title = DeviceLocalizer["SaveDevice"],

@@ -130,7 +130,7 @@ public partial class VariableRuntimeInfo : IDisposable
     {
         var op = new DialogOption()
         {
-            IsScrolling = true,
+            IsScrolling = false,
             ShowMaximizeButton = true,
             Size = Size.ExtraLarge,
             Title = RazorLocalizer["BatchEdit"],

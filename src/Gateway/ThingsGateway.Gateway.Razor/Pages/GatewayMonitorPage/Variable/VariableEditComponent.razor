@@ -214,7 +214,7 @@ if(item.Value!=null)
                                       @key=@($"VariableEditValidateForm{item.Key}{Model.Id}{item.Value.Value.GetType().TypeHandle.Value}")
                                       Id=@($"VariableEditValidateForm{item.Key}{Model.Id}{item.Value.Value.GetType().TypeHandle.Value}")>
 
-                            <EditorFormObject class="p-2" Items=items AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=250 Model="item.Value.Value" @key=@($"VariableEditEditorFormObject{item.Key}{Model.Id}{item.Value.Value.GetType().TypeHandle.Value}")>
+                            <EditorFormObject class="p-2" Items=items AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=2 ShowLabelTooltip=true LabelWidth=150 Model="item.Value.Value" @key=@($"VariableEditEditorFormObject{item.Key}{Model.Id}{item.Value.Value.GetType().TypeHandle.Value}")>
 
                             </EditorFormObject>
                         </ValidateForm>
