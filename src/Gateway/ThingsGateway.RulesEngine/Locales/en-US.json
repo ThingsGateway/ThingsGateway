@@ -1,0 +1,57 @@
+﻿{
+  "ThingsGateway.RulesEngine._Imports": {
+    "Start": "Start",
+    "StartNode": "Start",
+    "End": "End",
+    "EndNode": "End",
+    "TimeIntervalTriggerNode": "IntervalExecutionTrigger",
+    "TimeIntervalTriggerNode.Placeholder": "IntervalTime (ms)",
+    "DeviceChangedTriggerNode": "DeviceStateTrigger",
+    "DeviceChangedTriggerNode.Placeholder": "DeviceName",
+    "AlarmChangedTriggerNode": "AlarmStateTrigger",
+    "AlarmChangedTriggerNode.Placeholder": "VariableName",
+    "ValueChangedTriggerNode": "VariableStateTrigger",
+    "ValueChangedTriggerNode.Placeholder": "VariableName",
+    "DelayNode": "Delay",
+    "DelayNode.Placeholder": "Interval Time (ms)",
+    "DataNode": "DataScript",
+    "ConditionNode": "Condition",
+    "ConditionNode.Placeholder": "Calculation returns boolean",
+    "ExecuteScriptNode": "CustomExecution",
+    "BusinessNode": "BusinessDeviceExecution",
+    "BusinessNode.Placeholder": "BusinessDeviceName",
+    "VariableRpcNode": "VariableRpc",
+    "VariableRpcNode.Placeholder": "VariableName",
+
+    "Clear": "Clear",
+
+    "Load": "Load JSON",
+    "Download": "Download JSON",
+    "Cancel": "Cancel",
+    "Save": "Save",
+    "Design": "Design",
+
+    "Start/End": "Start/End",
+    "Trigger": "Trigger",
+    "Expression": "Script",
+    "Actuator": "Actuator",
+    "Other": "Other",
+    "ZoomToFit": "ZoomToFit",
+    "Check": "Check"
+  },
+  "ThingsGateway.RulesEngine.Rules": {
+    "Name": "Name",
+    "Status": "Status",
+    "SortCode": "SortCode"
+  },
+
+  "ThingsGateway.RulesEngine.RulesEngineHostedService": {
+    "RulesEngineTask": "Rules Engine Thread",
+    "RulesEngineTaskStart": "Rules Engine Thread Start"
+  },
+
+  "ThingsGateway.RulesEngine.RulesStatus": {
+    "RulesId": "Name",
+    "LogConsole": "Log"
+  }
+}

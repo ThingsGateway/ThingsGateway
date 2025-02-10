@@ -1,0 +1,40 @@
+﻿.device {
+    --virtualize-height: calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - 160px);
+    --logconsle-height: calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - 160px);
+}
+
+.text-h6 {
+    /* Headline 6 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: bold !important;
+    font-size: 1rem !important;
+    line-height: 1.875rem !important;
+    /* identical to box height */
+    letter-spacing: 0.01em !important;
+}
+
+.text-caption {
+    /* Caption-说明 */
+    font-family: Roboto !important;
+    font-style: normal !important;
+    font-weight: 500 !important;
+    font-size: 0.75rem !important;
+    line-height: 1.125rem !important;
+}
+
+.device ::deep .card-header {
+    height: 36px;
+}
+
+.device ::deep .deviceVirtualize {
+    border: none;
+    border-top-left-radius: unset;
+}
+
+    .device ::deep .deviceVirtualize .card-body {
+        padding: 0.4rem;
+    }
+--logconsle-height {
+    height: calc(100% - 140px)
+}

@@ -1,0 +1,62 @@
+﻿{
+  "ThingsGateway.Management.AutoUpdateControler": {
+    "AutoUpdateControler": "程序更新",
+    "Update": "更新"
+  },
+  "ThingsGateway.Upgrade.UpdateZipFile": {
+
+    "AppName": "名称",
+    "Version": "版本",
+
+    "FileSize": "文件大小",
+    "MinimumCompatibleVersion": "最小兼容版本",
+    "DotNetVersion": ".net版本",
+    "OSPlatform": "系统版本",
+    "Architecture": "架构",
+    "FilePath": "文件路径"
+
+  },
+
+  "ThingsGateway.Management.UpdateZipFileHostedService": {
+    "Update": "检测到新版本"
+  },
+  "ThingsGateway.Management.RedundancyHostedService": {
+    "Start": "网关管理服务启动",
+    "Stop": "网关管理服务停止",
+    "RedundancyDup": "主备站设置重复",
+    "SwitchMasterState": "无法连接冗余站点，本机将切换到正常状态",
+    "SwitchSlaveState": "主站已恢复，本机(从站)将切换到备用状态",
+    "SwitchNormalState": "本机(主站)将切换到正常状态",
+    "ErrorSynchronizingData": "同步数据到从站错误",
+    "RedundancyDisable": "不启用网关冗余站点"
+  },
+
+  "ThingsGateway.Management.RedundancyOptions": {
+
+    "Enable": "启用双机冗余",
+    "MasterUri": "主站Url",
+    "IsMaster": "是否为主站",
+    "VerifyToken": "Token",
+    "HeartbeatInterval": "心跳间隔",
+    "MaxErrorCount": "错误最大次数",
+    "IsStartBusinessDevice": "备用站点启用业务设备",
+    "SyncInterval": "数据同步间隔",
+    "RedundancyOptions": "双机冗余",
+    "Status": "当前站点状态",
+    "Master": "激活站",
+    "Slave": "备用站",
+    "Switch": "切换",
+
+    "Restart": "即将重新启动冗余服务",
+    "Confirm": "确认切换冗余状态"
+  },
+
+  "ThingsGateway.Management._Imports": {
+    "CheckUpdate": "检查更新",
+
+    "Update": "下载更新",
+    "Restart": "重启网关",
+    "HeaderText": "通讯日志",
+    "Info": "详情"
+  }
+}

@@ -1,0 +1,20 @@
+﻿@namespace ThingsGateway.Upgrade
+@using BootstrapBlazor.Components
+
+<ValidateForm Model="Model" OnValidSubmit="OnSave">
+    <div class="row g-2 mx-1 form-inline">
+        <div class="col-12">
+            <ButtonUpload @bind-Value="@Model.ZipFile" Accept=".zip" IsSingle ShowLabelTooltip="true" />
+        </div>
+        <div class="col-12">
+            <ButtonUpload @bind-Value="@Model.JsonFile" Accept=".json" IsSingle ShowLabelTooltip="true" />
+            <Button Color="Color.Link" class="mx-2" Size="Size.ExtraSmall" Text="@Localizer["DownTemplate"]" OnClick="DownTemplate" />
+        </div>
+    </div>
+    <div class="form-footer">
+        <Button Text="@RazorLocalizer["Save"]" ButtonType="@ButtonType.Submit" />
+    </div>
+</ValidateForm>
+
+
+

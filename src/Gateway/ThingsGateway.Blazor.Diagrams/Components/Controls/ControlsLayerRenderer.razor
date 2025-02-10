@@ -1,0 +1,33 @@
+@foreach (var model in BlazorDiagram.Controls.Models)
+{
+    var controls = BlazorDiagram.Controls.GetFor(model)!;
+    if (!controls.Visible || controls.Count == 0)
+        continue;
+
+    if (Svg && model.IsSvg())
+    {
+        <g class="controls" data-model-type="@model.GetType().Name" data-model-id="@model.Id">
+            @foreach (var control in controls)
+            {
+                var position = control.GetPosition(model);
+                if (position == null)
+                    continue;
+
+                @RenderControl(model, control, position, true)
+            }
+        </g>
+    }
+    else if (!Svg && !model.IsSvg())
+    {
+        <div class="controls" data-model-type="@model.GetType().Name" data-model-id="@model.Id">
+            @foreach (var control in controls)
+            {
+                var position = control.GetPosition(model);
+                if (position == null)
+                    continue;
+
+                @RenderControl(model, control, position, false)
+            }
+        </div>
+    }
+}

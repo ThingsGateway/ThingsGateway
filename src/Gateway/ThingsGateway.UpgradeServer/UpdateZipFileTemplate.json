@@ -1,0 +1,8 @@
+{
+  "AppName": "ThingsGateway", //APP名称
+  "Version": "7.2.0", //版本
+  "MinimumCompatibleVersion": "7.0", //最低更新版本
+  "DotNetVersion": "8.0", //.net版本  8.0,6.0
+  "OSPlatform": "Linux", //系统  Windows,Linux
+  "Architecture": "X64" //系统  X64,X86,Arm,Arm64
+}

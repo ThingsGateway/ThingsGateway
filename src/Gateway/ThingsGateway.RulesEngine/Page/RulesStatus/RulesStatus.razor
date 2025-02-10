@@ -1,0 +1,19 @@
+﻿@namespace ThingsGateway.RulesEngine
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Debug
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Extension
+@inherits ComponentDefault
+
+
+
+
+@if (_rules != null)
+{
+    <LogConsole Enable="true" LogLevel=@(_rules.Log.LogLevel) LogLevelChanged="(a)=>{
+_rules.Log.LogLevel=a;
+}" LogPath=@_rules.Log.LogPath HeaderText="@_rules.Rules.Name" HeightString="calc(100vh - var(--bs-header-height) - var(--bb-layout-header-height) - 130px)"></LogConsole>
+}
+
+

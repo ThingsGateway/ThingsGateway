@@ -1,0 +1,52 @@
+﻿
+@namespace ThingsGateway.RulesEngine
+@using ThingsGateway.RulesEngine
+
+<div class="rule-t text-end row g-0 pb-2">
+
+    <ButtonUpload class="col-auto ms-auto me-2" Size="Size.Small" ShowUploadFileList="false" BrowserButtonText=@(Localizer["Load"]) IsMultiple="false" OnChange="@Load" TValue="string" Accept=".json" />
+
+    <Button class="col-auto me-2" Size="Size.Small" Text=@(Localizer["Download"]) OnClick="Download" />
+
+    <Button class="col-auto me-2" Size="Size.Small" Text=@(Localizer["Save"]) OnClick="OnSave" />
+    <Button class="col-auto me-2" Size="Size.Small" Text=@(Localizer["Cancel"]) OnClick="OnCancel" />
+</div>
+
+<div class="row g-0 rule-b rulesengine">
+
+    <div class="col-auto h-100 rule-left px-2" style="overflow-y:auto">
+
+
+        @foreach (var item in RuleHelpers.CategoryNodeGroups)
+        {
+            <div class="my-3 fs-7">
+                @(item.FirstOrDefault().Value?.StringLocalizer[item.Key])
+            </div>
+            @foreach (var node in item)
+            {
+                <div class="my-1">
+                    <DragComponent Desc=@node.Value.StringLocalizer[node.Value.Desc] ImgUrl=@node.Value.ImgUrl OnDragStart=@(()=>OnDragStart(node.Key.FullName))></DragComponent>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="col h-100 rule-right" ondragover="event.preventDefault();" @ondragover:preventDefault @ondrop="OnDrop">
+        <CascadingValue Value="_blazorDiagram">
+            <DiagramCanvas>
+                <Widgets>
+                    <NavigatorWidget Width="200" Height="150" Style="position: absolute; bottom: 15px; right: 15px; border: 1px solid black;"></NavigatorWidget>
+
+                    <GridWidget Size="50" Mode="GridMode.Line" ZoomThreshold="0.5"></GridWidget>
+                </Widgets>
+
+            </DiagramCanvas>
+        </CascadingValue>
+    </div>
+</div>
+
+
+@* <div class="form-footer">
+    <DialogCloseButton />
+    <DialogCloseButton Color="Color.Primary" Icon="fa-solid fa-floppy-disk" Text="@Localizer["Save"]" OnClickWithoutRender="OnSave" />
+</div> *@

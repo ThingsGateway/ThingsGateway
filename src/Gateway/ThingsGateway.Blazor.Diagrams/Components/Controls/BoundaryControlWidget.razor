@@ -1,0 +1,35 @@
+@if (Model.IsSvg())
+{
+    <rect fill="none"
+          stroke="gray"
+          stroke-width="1"
+          stroke-dasharray="5"
+          pointer-events="none"
+          class="boundary"
+          width="@Control.Bounds.Width.ToInvariantString()"
+          height="@Control.Bounds.Height.ToInvariantString()">
+    </rect>
+}
+else
+{
+    <svg>
+        <rect fill="none"
+              stroke="gray"
+              stroke-width="1"
+              stroke-dasharray="5"
+              pointer-events="none"
+              class="boundary"
+              width="@Control.Bounds.Width.ToInvariantString()"
+              height="@Control.Bounds.Height.ToInvariantString()">
+        </rect>
+    </svg>
+}
+
+@code
+{
+    [Parameter]
+    public BoundaryControl Control { get; set; } = null!;
+
+    [Parameter]
+    public Model Model { get; set; } = null!;
+}

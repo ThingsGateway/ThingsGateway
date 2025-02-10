@@ -1,0 +1,18 @@
+﻿{
+  "RECORDS": [
+    {
+      "Id": 61100022003,
+      "Module": 6,
+      "ParentId": 6100001,
+      "Title": "系统配置",
+      "NavLinkMatch": "Prefix",
+      "Code": "System",
+      "Category": "MENU",
+      "Target": "_self",
+      "Href": "/gateway/system",
+      "Icon": "fas fa-journal-whills",
+      "IsDelete": "0",
+      "SortCode": -1
+    }
+  ]
+}

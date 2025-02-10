@@ -1,0 +1,26 @@
+﻿@namespace ThingsGateway.RulesEngine
+
+@using Newtonsoft.Json.Linq
+@using ThingsGateway.Blazor.Diagrams.Components.Renderers
+<div class="custom-node @(Node.Selected ? " selected" : "")">
+    <div class="card" style="width: 250px; ">
+        <div class="card-body">
+            <h6 class="card-title mb-2">@Localizer[Node.Title]</h6>
+            <div class="form-group">
+                <div class="text-end">
+                    <Button OnClick="()=>CheckScript()">
+                        @Localizer["Edit"]
+                    </Button>
+                </div>
+     
+            </div>
+        </div>
+    </div>
+
+    @foreach (var port in Node.Ports)
+    {
+        <PortRenderer @key="port" Port="port"></PortRenderer>
+    }
+</div>
+
+

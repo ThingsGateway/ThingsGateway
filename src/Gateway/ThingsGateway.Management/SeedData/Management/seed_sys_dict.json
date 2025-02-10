@@ -1,0 +1,77 @@
+﻿{
+  "RECORDS": [
+    {
+      "Id": 234575263003120,
+      "DictType": "System",
+      "Category": "RedundancyOptions",
+      "Name": "Enable",
+      "Code": "False",
+      "IsDelete": "0",
+      "SortCode": 1
+    },
+    {
+      "Id": 234575263003720,
+      "DictType": "System",
+      "Category": "RedundancyOptions",
+      "Name": "MasterUri",
+      "Code": "127.0.0.1:7789",
+      "IsDelete": "0",
+      "SortCode": 1
+    },
+    {
+      "Id": 234575263003728,
+      "DictType": "System",
+      "Category": "RedundancyOptions",
+      "Name": "IsMaster",
+      "Code": "true",
+      "IsDelete": "0",
+      "SortCode": 1
+    },
+    {
+      "Id": 234564896825413,
+      "DictType": "System",
+      "Category": "RedundancyOptions",
+      "Name": "VerifyToken",
+      "Code": "ThingsGatewayToken",
+      "IsDelete": "0",
+      "SortCode": 1
+    },
+    {
+      "Id": 234579540875333,
+      "DictType": "System",
+      "Category": "RedundancyOptions",
+      "Name": "HeartbeatInterval",
+      "Code": "3000",
+      "IsDelete": "0",
+      "SortCode": 99
+    },
+    {
+      "Id": 234579718375493,
+      "DictType": "System",
+      "Category": "RedundancyOptions",
+      "Name": "MaxErrorCount",
+      "Code": "3",
+      "IsDelete": "0",
+      "SortCode": 99
+    },
+    {
+      "Id": 234579850803269,
+      "DictType": "System",
+      "Category": "RedundancyOptions",
+      "Name": "IsStartBusinessDevice",
+      "Code": "False",
+      "IsDelete": "0",
+      "SortCode": 99
+    },
+    {
+      "Id": 234511701160005,
+      "DictType": "System",
+      "Category": "RedundancyOptions",
+      "Name": "SyncInterval",
+      "Code": "3000",
+      "IsDelete": "0",
+      "SortCode": 99
+    }
+  
+  ]
+}

@@ -1,0 +1,31 @@
+﻿@inherits ComponentDefault
+@using BootstrapBlazor.Components
+@using Microsoft.AspNetCore.Authorization
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Debug
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Razor
+@namespace ThingsGateway.Management
+
+
+<div class=@($"{ClassString} row my-2 mx-2") style="min-height:500px;height: 50%;">
+
+    <div class="col-12 h-100">
+
+        <EditComponent Model="Model" OnSave="OnSaveRedundancy"/>
+
+    </div>
+    <div class="col-12 ">
+
+    @if (Logger != null)
+    {
+            <LogConsole HeightString="500px" Enable="true" LogLevel=@(Logger.LogLevel) LogLevelChanged="(a)=>{
+Logger.LogLevel=a;
+}" LogPath=@LogPath HeaderText=@HeaderText></LogConsole>
+    }
+    </div>
+</div>
+
+
+

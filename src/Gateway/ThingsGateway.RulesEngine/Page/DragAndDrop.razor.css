@@ -1,0 +1,132 @@
+﻿
+.rule-left {
+    background-color: var(--bs-tertiary-bg);
+    font-size: var(--bs-btn-font-size);
+}
+
+.rule-t {
+    height: 40px
+}
+
+    .rule-t ::deep .btn-browser {
+        height: 100%;
+    }
+
+.rule-b {
+    height: calc(100% - 40px)
+}
+
+.form-footer {
+    height: 40px
+}
+
+.fs-7 {
+    font-size: 0.8rem;
+}
+
+.rulesengine {
+}
+
+
+    .rulesengine ::deep .custom-node.selected, .custom-node.selected .diagram-port {
+        border: 1px solid #6e9fd4;
+        border-radius: var(--bs-border-radius);
+    }
+
+    .rulesengine ::deep .custom-node:hover .diagram-port {
+        /*visibility: visible;*/
+    }
+
+    .rulesengine ::deep .custom-node .diagram-port {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background-color: #f5f5f5;
+        border: 1px solid #d4d4d4;
+        cursor: pointer;
+        /*visibility: hidden;*/
+    }
+
+        .rulesengine ::deep .custom-node .diagram-port.has-links {
+            background-color: black;
+        }
+
+        .rulesengine ::deep .custom-node .diagram-port:hover, .diagram-node > .card .diagram-port.has-links {
+            /*visibility: visible;*/
+            background-color: black;
+        }
+
+        .rulesengine ::deep .custom-node .diagram-port.bottom {
+            position: absolute;
+            bottom: -10px;
+            left: 115px;
+        }
+
+        .rulesengine ::deep .custom-node .diagram-port.top {
+            position: absolute;
+            top: -10px;
+            left: 115px;
+        }
+
+    .rulesengine ::deep .diagram-canvas.grid {
+        background-size: 50px 50px;
+        background-image: linear-gradient(to right, rgb(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgb(0, 0, 0, 0.05) 1px, transparent 1px);
+    }
+
+
+
+    /*颜色*/
+
+
+    .rulesengine ::deep .bg-color1 {
+        background-color: #A0B15B;
+    }
+
+    .rulesengine ::deep .bg-color2 {
+        background-color: #DC9A7A;
+    }
+
+    .rulesengine ::deep .bg-color3 {
+        background-color: #9EA5E3;
+    }
+
+    .rulesengine ::deep .outline-color1 {
+        box-shadow: 0px 0px 0px 2px #A0B15B inset;
+    }
+
+    .rulesengine ::deep .outline-color2 {
+        box-shadow: 0px 0px 0px 2px #DC9A7A inset;
+    }
+
+    .rulesengine ::deep .outline-color3 {
+        box-shadow: 0px 0px 0px 2px #9EA5E3 inset;
+    }
+
+    .rulesengine ::deep .outline-color1-darker {
+        box-shadow: 0px 0px 0px 2px #515a2b inset;
+    }
+
+    .rulesengine ::deep .outline-color2-darker {
+        box-shadow: 0px 0px 0px 2px #874423 inset;
+    }
+
+    .rulesengine ::deep .outline-color3-darker {
+        box-shadow: 0px 0px 0px 2px #2b3595 inset;
+    }
+
+    .rulesengine ::deep .diagram-link-label > div {
+        display: inline-block;
+        color: #000000;
+        font-size: 0.875rem;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+        transform: translate(-50%, -50%);
+        white-space: nowrap;
+        background-color: white;
+    }
+
+    .rulesengine ::deep .small-text {
+        font-size: smaller
+    }
+/*颜色*/

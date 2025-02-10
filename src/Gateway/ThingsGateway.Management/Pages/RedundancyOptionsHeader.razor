@@ -1,0 +1,17 @@
+﻿@using BootstrapBlazor.Components
+@using Microsoft.AspNetCore.Authorization
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Upgrade
+@using ThingsGateway.Debug
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Razor
+@namespace ThingsGateway.Management
+
+<span class=@("text-h6 mx-1") style="overflow:auto;">
+    <span class="text-truncate">
+        @RedundancyLocalizer["Status"]：@(GlobalData.StartCollectChannelEnable ? RedundancyLocalizer["Master"] : RedundancyLocalizer["Slave"])
+    </span>
+</span>
+
+<div style="flex-grow: 1;"></div>

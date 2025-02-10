@@ -1,0 +1,58 @@
+﻿<div class="diagram-canvas @Class"
+     tabindex="-1"
+     @ref="elementReference"
+     @onpointerdown="OnPointerDown"
+     @onpointermove="OnPointerMove"
+     @onpointerup="OnPointerUp"
+     @onkeydown="OnKeyDown"
+     @onwheel="OnWheel"
+     @onpointermove:preventDefault
+     @onwheel:stopPropagation>
+
+    <svg class="diagram-svg-layer" style="@GetLayerStyle(BlazorDiagram.Options.LinksLayerOrder)">
+
+        @foreach (var model in BlazorDiagram.OrderedSelectables)
+        {
+            if (model is SvgNodeModel node && node.Group == null)
+            {
+                <NodeRenderer @key="node" Node="node" />
+            }
+            else if (model is SvgGroupModel group && group.Group == null)
+            {
+                <GroupRenderer @key="group" Group="group" />
+            }
+            else if (model is BaseLinkModel link)
+            {
+                <LinkRenderer @key="link" Link="link" />
+            }
+        }
+
+        <ControlsLayerRenderer Svg="@true"></ControlsLayerRenderer>
+
+        @AdditionalSvg
+    </svg>
+
+    <div class="diagram-html-layer" style="@GetLayerStyle(BlazorDiagram.Options.NodesLayerOrder)">
+
+        @foreach (var model in BlazorDiagram.OrderedSelectables)
+        {
+            if (model is GroupModel group)
+            {
+                if (group.Group == null && group is not SvgGroupModel)
+                {
+                    <GroupRenderer @key="group" Group="group" />
+                }
+            }
+            else if (model is NodeModel node && node.Group == null && node is not SvgNodeModel)
+            {
+                <NodeRenderer @key="node" Node="node" />
+            }
+        }
+
+        <ControlsLayerRenderer Svg="@false"></ControlsLayerRenderer>
+
+        @AdditionalHtml
+    </div>
+
+    @Widgets
+</div>

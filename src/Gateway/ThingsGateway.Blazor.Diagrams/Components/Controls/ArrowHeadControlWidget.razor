@@ -1,0 +1,13 @@
+﻿ 
+<g transform="rotate(@Control.Angle.ToInvariantString())">
+    <path d="@Control.Marker.Path" fill="black" cursor="move"></path>
+</g>
+
+@code
+{
+    [Parameter]
+    public ArrowHeadControl Control { get; set; } = null!;
+
+    [Parameter]
+    public BaseLinkModel Model { get; set; } = null!;
+}

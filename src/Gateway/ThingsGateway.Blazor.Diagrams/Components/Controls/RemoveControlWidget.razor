@@ -1,0 +1,21 @@
+@if (Model is SvgNodeModel)
+{
+    <circle r="10" fill="red"></circle>
+    <path d="M -5 -5 L 5 5 M -5 5 L 5 -5" stroke="white" stroke-width="2"></path>
+}
+else
+{
+    <svg width="20" height="20" viewBox="0 0 20 20" style="overflow: visible;">
+        <circle r="10" fill="red"></circle>
+        <path d="M -5 -5 L 5 5 M -5 5 L 5 -5" stroke="white" stroke-width="2"></path>
+    </svg>
+}
+
+@code
+{
+    [Parameter]
+    public RemoveControl Control { get; set; } = null!;
+
+    [Parameter]
+    public Model Model { get; set; } = null!;
+}

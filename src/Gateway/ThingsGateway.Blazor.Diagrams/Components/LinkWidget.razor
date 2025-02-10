@@ -1,0 +1,65 @@
+﻿@using ThingsGateway.Blazor.Diagrams.Core.Behaviors;
+
+@{
+    var color = Link.Selected ? Link.SelectedColor ?? BlazorDiagram.Options.Links.DefaultSelectedColor : Link.Color ?? BlazorDiagram.Options.Links.DefaultColor;
+    var result = Link.PathGeneratorResult;
+    if (result == null)
+        return;
+
+    var dnlb = BlazorDiagram.GetBehavior<DragNewLinkBehavior>();
+    var d = result.FullPath.ToString();
+}
+
+<path d="@d"
+      stroke-width="@Link.Width.ToInvariantString()"
+      fill="none"
+      stroke="@color" />
+
+@if (dnlb!.OngoingLink == null || dnlb.OngoingLink != Link)
+{
+    @if (Link.Vertices.Count == 0)
+    {
+        @GetSelectionHelperPath(color, d, 0)
+    }
+    else
+    {
+        @for (var i = 0; i < result.Paths.Length; i++)
+        {
+            d = result.Paths[i].ToString();
+            var index = i;
+            @GetSelectionHelperPath(color, d, index)
+        }
+    }
+}
+
+@if (Link.SourceMarker != null && result.SourceMarkerAngle != null && result.SourceMarkerPosition != null)
+{
+    <g transform="@(FormattableString.Invariant($"translate({result.SourceMarkerPosition.X}, {result.SourceMarkerPosition.Y}) rotate({result.SourceMarkerAngle})"))">
+        <path d="@Link.SourceMarker.Path" fill="@color"></path>
+    </g>
+}
+
+@if (Link.TargetMarker != null && result.TargetMarkerAngle != null && result.TargetMarkerPosition != null)
+{
+    <g transform="@(FormattableString.Invariant($"translate({result.TargetMarkerPosition.X}, {result.TargetMarkerPosition.Y}) rotate({result.TargetMarkerAngle})"))">
+        <path d="@Link.TargetMarker.Path" fill="@color"></path>
+    </g>
+}
+
+@if (Link.Vertices.Count > 0)
+{
+    var selectedColor = Link.SelectedColor ?? BlazorDiagram.Options.Links.DefaultSelectedColor;
+    var normalColor = Link.Color ?? BlazorDiagram.Options.Links.DefaultColor;
+    @foreach (var vertex in Link.Vertices)
+    {
+        <LinkVertexRenderer @key="vertex.Id"
+                    Vertex="vertex"
+                    Color="@normalColor"
+                    SelectedColor="@selectedColor" />
+    }
+}
+
+@foreach (var label in Link.Labels)
+{
+    <LinkLabelRenderer @key="label.Id" Label="@label" Path="@result.FullPath" />
+}

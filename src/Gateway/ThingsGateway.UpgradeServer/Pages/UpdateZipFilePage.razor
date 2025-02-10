@@ -1,0 +1,35 @@
+﻿@namespace ThingsGateway.Upgrade
+
+
+<div class="h-100">
+    <DefaultTable @ref=table TItem="UpdateZipFile"
+                AutoGenerateColumns="true"
+                ShowDefaultButtons=true
+                EditDialogSize="Size.Large"
+                AllowResizing="true"
+                IsFixedHeader=true
+                ShowAddButton="false"
+                ShowSearch="false"
+                IsMultipleSelect=true
+                IsPagination=true
+                ShowExtendEditButton=false
+                ShowExtendDeleteButton=true
+                ShowExtendButtons=true
+                ShowDeleteButton="true"
+                ShowEditButton="false"
+                ShowAdvancedSearch=false
+                OnQueryAsync="OnQueryAsync"
+                OnDeleteAsync="OnDeleteAsync">
+
+        <TableToolbarBeforeTemplate>
+            <TableToolbarButton TItem="UpdateZipFile" Color="Color.Info" Icon="fa fa-plus" Text="@RazorLocalizer["Add"]"
+                                OnClickCallback="OnAdd"  />
+
+        </TableToolbarBeforeTemplate>
+
+    </DefaultTable>
+</div>
+
+@code{
+    DefaultTable<UpdateZipFile> table;
+}

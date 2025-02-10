@@ -1,0 +1,51 @@
+﻿@using Microsoft.AspNetCore.Components.Web;
+@using Microsoft.JSInterop;
+@using ThingsGateway.Debug
+@using ThingsGateway.Extension
+@using ThingsGateway.Foundation
+@using BootstrapBlazor.Components
+@namespace ThingsGateway.Upgrade
+
+<div class=@($"{ClassString} row my-2 mx-2") style="min-height:500px;height: 50%;">
+
+    <div class="col-3 h-100">
+
+        <div class="row mx-1 form-inline mt-2">
+
+            <div class="col-12 col-md-8 p-1">
+
+                <div class="p-1">
+                    <Button IsAsync Color="Color.Primary" OnClick="OnUpdate">@ManagementLocalizer["Update"]</Button>
+                </div>
+
+            </div>
+            <div class="col-12 col-md-4 p-1">
+
+                <Button IsAsync Color="Color.Primary" OnClick="OnRestart">
+                    @ManagementLocalizer["Restart"]
+                </Button>
+
+            </div>
+
+        </div>
+
+        <Divider />
+
+
+
+    </div>
+    <div class="col-9 ">
+        @if (Logger != null)
+        {
+            <LogConsole HeightString="500px" Enable="true" LogLevel=@(Logger.LogLevel) LogLevelChanged="(a)=>{
+Logger.LogLevel=a;
+}" LogPath=@LogPath HeaderText=@HeaderText></LogConsole>
+        }
+    </div>
+</div>
+
+
+
+
+
+

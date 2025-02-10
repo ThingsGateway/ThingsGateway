@@ -1,0 +1,25 @@
+@if (Model is SvgNodeModel)
+{
+    <circle r="14" fill="lightgray"></circle>
+    <path d="M 6.79 -1.26 L 2.17 -5.46 C 1.82 -5.81 1.4 -5.46 1.4 -4.9 V -2.8 C -1.89 -2.8 -4.69 -0.77 -6.02 1.96 C -6.51 2.87 -6.79 3.85 -7 4.83 C -7.14 5.53 -6.09 5.88 -5.67 5.25 C -4.13 2.8 -1.54 1.19 1.4 1.19 V 3.5 C 1.4 4.06 1.82 4.41 2.17 4.06 L 6.79 -0.14 C 7.07 -0.42 7.07 -0.98 6.79 -1.26 Z"
+          fill="black">
+    </path>
+}
+else
+{
+    <svg width="20" height="20" viewBox="0 0 20 20" style="overflow: visible;">
+        <circle r="14" fill="lightgray"></circle>
+        <path d="M 6.79 -1.26 L 2.17 -5.46 C 1.82 -5.81 1.4 -5.46 1.4 -4.9 V -2.8 C -1.89 -2.8 -4.69 -0.77 -6.02 1.96 C -6.51 2.87 -6.79 3.85 -7 4.83 C -7.14 5.53 -6.09 5.88 -5.67 5.25 C -4.13 2.8 -1.54 1.19 1.4 1.19 V 3.5 C 1.4 4.06 1.82 4.41 2.17 4.06 L 6.79 -0.14 C 7.07 -0.42 7.07 -0.98 6.79 -1.26 Z"
+              fill="black">
+        </path>
+    </svg>
+}
+
+@code
+{
+    [Parameter]
+    public DragNewLinkControl Control { get; set; } = null!;
+
+    [Parameter]
+    public Model Model { get; set; } = null!;
+}

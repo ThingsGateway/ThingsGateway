@@ -89,6 +89,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Plugin.OpcUa1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Foundation.OpcUa105", "Plugin\ThingsGateway.Foundation.OpcUa105\ThingsGateway.Foundation.OpcUa105.csproj", "{24918252-8D73-4C40-8E63-28236FE7B102}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Blazor.Diagrams", "Gateway\ThingsGateway.Blazor.Diagrams\ThingsGateway.Blazor.Diagrams.csproj", "{014345C1-116F-4C45-A61B-5BFE257E1D56}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.Management", "Gateway\ThingsGateway.Management\ThingsGateway.Management.csproj", "{F82B07C6-967F-404D-888A-0611E27D0C98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.RulesEngine", "Gateway\ThingsGateway.RulesEngine\ThingsGateway.RulesEngine.csproj", "{07D554EF-3D43-4722-84FC-DD3A0B614CA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThingsGateway.UpgradeServer", "Gateway\ThingsGateway.UpgradeServer\ThingsGateway.UpgradeServer.csproj", "{C9A5E317-65F3-4608-A095-E7A21F1946CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -235,6 +243,22 @@ Global
 		{24918252-8D73-4C40-8E63-28236FE7B102}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24918252-8D73-4C40-8E63-28236FE7B102}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24918252-8D73-4C40-8E63-28236FE7B102}.Release|Any CPU.Build.0 = Release|Any CPU
+		{014345C1-116F-4C45-A61B-5BFE257E1D56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{014345C1-116F-4C45-A61B-5BFE257E1D56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{014345C1-116F-4C45-A61B-5BFE257E1D56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{014345C1-116F-4C45-A61B-5BFE257E1D56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F82B07C6-967F-404D-888A-0611E27D0C98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F82B07C6-967F-404D-888A-0611E27D0C98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F82B07C6-967F-404D-888A-0611E27D0C98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F82B07C6-967F-404D-888A-0611E27D0C98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07D554EF-3D43-4722-84FC-DD3A0B614CA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07D554EF-3D43-4722-84FC-DD3A0B614CA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07D554EF-3D43-4722-84FC-DD3A0B614CA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07D554EF-3D43-4722-84FC-DD3A0B614CA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9A5E317-65F3-4608-A095-E7A21F1946CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9A5E317-65F3-4608-A095-E7A21F1946CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9A5E317-65F3-4608-A095-E7A21F1946CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9A5E317-65F3-4608-A095-E7A21F1946CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -273,6 +297,10 @@ Global
 		{2F28B6CF-4253-4075-ACA3-3ADED72D01FA} = {36510D70-161F-4241-B8D0-781E21032816}
 		{2B407498-F822-47F7-85EE-ACDB81801065} = {36510D70-161F-4241-B8D0-781E21032816}
 		{24918252-8D73-4C40-8E63-28236FE7B102} = {36510D70-161F-4241-B8D0-781E21032816}
+		{014345C1-116F-4C45-A61B-5BFE257E1D56} = {5948EA23-4B42-4C22-A266-2E0AE5FA575F}
+		{F82B07C6-967F-404D-888A-0611E27D0C98} = {5948EA23-4B42-4C22-A266-2E0AE5FA575F}
+		{07D554EF-3D43-4722-84FC-DD3A0B614CA0} = {5948EA23-4B42-4C22-A266-2E0AE5FA575F}
+		{C9A5E317-65F3-4608-A095-E7A21F1946CF} = {5948EA23-4B42-4C22-A266-2E0AE5FA575F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {199B1B96-4F56-4828-9531-813BA02DB282}

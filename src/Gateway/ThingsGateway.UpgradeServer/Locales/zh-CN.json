@@ -1,0 +1,21 @@
+﻿{
+
+  "ThingsGateway.Upgrade.UpdateZipFile": {
+
+    "AppName": "名称",
+    "Version": "版本",
+
+    "FileSize": "文件大小",
+    "MinimumCompatibleVersion": "最小兼容版本",
+    "DotNetVersion": ".net版本",
+    "OSPlatform": "系统版本",
+    "Architecture": "架构",
+    "FilePath": "文件路径"
+
+  },
+  "ThingsGateway.Upgrade.SaveUpdateZipFile": {
+    "DownTemplate": "下载模板",
+    "SaveUpdateZipFile": "上传版本包"
+  }
+
+}

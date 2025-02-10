@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+	<Import Project="$(SolutionDir)Version.props" />
+	<Import Project="$(SolutionDir)PackNuget.props" />
+
+
+	<PropertyGroup>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Remove="SeedData\Management\*.json" />
+		<Content Include="SeedData\Management\*.json" Pack="true" PackagePath="\Content\SeedData\Management\">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Remove="Locales\*.json" />
+		<EmbeddedResource Include="Locales\*.json">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Include="..\ThingsGateway.UpgradeServer\Extensions\LogExtensions.cs" Link="Update\Update\Files\LogExtensions.cs" />
+	  <Compile Include="..\ThingsGateway.UpgradeServer\Model\UpdateZipFile.cs" Link="Update\Update\Files\UpdateZipFile.cs" />
+	  <Compile Include="..\ThingsGateway.UpgradeServer\Model\UpdateZipFileInput.cs" Link="Update\Update\Files\UpdateZipFileInput.cs" />
+	  <Compile Include="..\ThingsGateway.UpgradeServer\Services\FileConst.cs" Link="Update\Update\Files\FileConst.cs" />
+	  <Compile Include="..\ThingsGateway.UpgradeServer\Services\FilePlugin.cs" Link="Update\Update\Files\FilePlugin.cs" />
+	  <Compile Include="..\ThingsGateway.UpgradeServer\Services\UpgradeServerOptions.cs" Link="Update\Update\Files\UpgradeServerOptions.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Foundation\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj" />
+	  <ProjectReference Include="..\ThingsGateway.Gateway.Razor\ThingsGateway.Gateway.Razor.csproj" />
+	</ItemGroup>
+
+
+</Project>

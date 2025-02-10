@@ -1,0 +1,40 @@
+﻿@code {
+
+    [Parameter]
+    public GroupModel Group { get; set; } = null!;
+
+    // Remove duplicated code
+}
+
+@if (Group is SvgGroupModel)
+{
+    <g class="children" transform="translate(@((-Group.Position.X).ToInvariantString()) @((-Group.Position.Y).ToInvariantString()))">
+        @foreach (var node in Group.Children)
+        {
+            if (node is GroupModel g)
+            {
+                <GroupRenderer @key="g.Id" Group="g"></GroupRenderer>
+            }
+            else
+            {
+                <NodeRenderer @key="node.Id" Node="node"></NodeRenderer>
+            }
+        }
+    </g>
+}
+else
+{
+    <div class="children" style="top: @((-Group.Position.Y).ToInvariantString())px; left: @((-Group.Position.X).ToInvariantString())px">
+        @foreach (var node in Group.Children)
+        {
+            if (node is GroupModel g)
+            {
+                <GroupRenderer @key="g.Id" Group="g"></GroupRenderer>
+            }
+            else
+            {
+                <NodeRenderer @key="node.Id" Node="node"></NodeRenderer>
+            }
+        }
+    </div>
+}

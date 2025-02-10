@@ -1,0 +1,61 @@
+﻿{
+  "ThingsGateway.RulesEngine._Imports": {
+    "Start": "开始",
+    "StartNode": "开始",
+    "End": "结束",
+    "EndNode": "结束",
+    "TimeIntervalTriggerNode": "间隔执行触发器",
+    "TimeIntervalTriggerNode.Placeholder": "间隔时间(ms)",
+    "DeviceChangedTriggerNode": "设备状态触发器",
+    "DeviceChangedTriggerNode.Placeholder": "设备名称",
+    "AlarmChangedTriggerNode": "报警状态触发器",
+    "AlarmChangedTriggerNode.Placeholder": "变量名称",
+    "ValueChangedTriggerNode": "变量状态触发器",
+    "ValueChangedTriggerNode.Placeholder": "变量名称",
+    "DelayNode": "延时",
+    "DelayNode.Placeholder": "间隔时间(ms)",
+    "DataNode": "数据脚本",
+    "ConditionNode": "条件",
+    "ConditionNode.Placeholder": "计算返回boolean",
+    "ExecuteScriptNode": "自定义执行",
+    "BusinessNode": "业务设备执行",
+    "BusinessNode.Placeholder": "设备名称",
+    "VariableRpcNode": "RPC写入",
+    "VariableRpcNode.Placeholder": "变量名称",
+
+
+    "Clear": "清空",
+
+
+    "Load": "加载Json",
+    "Download": "下载Json",
+    "Cancel": "取消",
+    "Save": "保存",
+    "Design": "设计",
+
+    "Start/End": "开始/结束",
+    "Trigger": "触发器",
+    "Expression": "脚本",
+    "Actuator": "执行",
+    "Other": "其他",
+    "ZoomToFit": "自适应",
+
+    "Check": "检查"
+  },
+  "ThingsGateway.RulesEngine.Rules": {
+
+    "Name": "名称",
+    "Status": "状态",
+    "SortCode": "排序"
+  },
+
+  "ThingsGateway.RulesEngine.RulesEngineHostedService": {
+    "RulesEngineTask": "规则引擎线程",
+    "RulesEngineTaskStart": "规则引擎线程启动"
+  },
+
+  "ThingsGateway.RulesEngine.RulesStatus": {
+    "RulesId": "名称",
+    "LogConsole": "日志"
+  }
+}

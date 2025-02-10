@@ -1,0 +1,72 @@
+﻿@page "/gateway/system"
+@attribute [Authorize]
+@attribute [RolePermission]
+@inherits ComponentDefault
+@using BootstrapBlazor.Components
+@using Microsoft.AspNetCore.Authorization
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Upgrade
+@using ThingsGateway.Debug
+@using ThingsGateway.Gateway.Application
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Razor
+@namespace ThingsGateway.Management
+
+
+<div class="appconfig">
+    <Tab class="h-100" @ref=tabComponent>
+
+        <TabItem Text=@RedundancyLocalizer[nameof(RedundancyOptions)]>
+
+            <Card class="mb-2">
+
+                <HeaderTemplate>
+
+                    <RedundancyOptionsHeader />
+
+                </HeaderTemplate>
+
+                <BodyTemplate>
+
+                    <RedundancyOptionsPage Logger="@RedundancyHostedService.TextLogger" Model="@RedundancyOptions" LogPath="@RedundancyHostedService.LogPath" />
+
+                </BodyTemplate>
+
+            </Card>
+
+        </TabItem>
+
+        <TabItem Text=@ManagementLocalizer["CheckUpdate"]>
+
+            <Card class="h-100">
+
+                <BodyTemplate>
+                    <UpdateZipFilePage></UpdateZipFilePage>
+                </BodyTemplate>
+
+            </Card>
+
+        </TabItem>
+
+
+        <TabItem Text=@ManagementLocalizer["Restart"]>
+
+            <Card class="mb-2">
+
+                <BodyTemplate>
+
+                    <Button OnClick="OnRestart" Text=@ManagementLocalizer["Restart"]></Button>
+
+                </BodyTemplate>
+
+            </Card>
+
+        </TabItem>
+
+    </Tab>
+
+</div>
+
+@code {
+    Tab tabComponent;
+}

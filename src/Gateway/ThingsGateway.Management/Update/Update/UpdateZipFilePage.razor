@@ -1,0 +1,31 @@
+﻿@using BootstrapBlazor.Components
+@using ThingsGateway.Razor
+@namespace ThingsGateway.Upgrade
+
+
+<div class="h-100">
+    <DefaultTable TItem="UpdateZipFile"
+                AutoGenerateColumns="true"
+                ShowDefaultButtons=false
+                EditDialogSize="Size.Large"
+                AllowResizing="true"
+                IsFixedHeader=true
+                ShowAddButton="false"
+                ShowRefresh="true"
+                ShowEmpty="true"
+                ShowSearch="false"
+                IsMultipleSelect=false
+                ShowExtendEditButton=false
+                ShowExtendDeleteButton=false
+                ShowExtendButtons=true
+                ShowDeleteButton="false"
+                ShowEditButton="false"
+                ShowAdvancedSearch=false
+                OnQueryAsync="OnQueryAsync">
+
+        <RowButtonTemplate>
+            <TableCellButton Size="Size.ExtraSmall" Color="Color.Success" Icon="fa-solid fa-people-roof" Text="@ManagementLocalizer["Info"]" OnClick="()=>ShowInfo(context)" />
+        </RowButtonTemplate>
+
+    </DefaultTable>
+</div>

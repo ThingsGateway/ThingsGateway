@@ -1,0 +1,21 @@
+﻿@namespace ThingsGateway.RulesEngine
+
+<div class="text-center" draggable="true" @ondragstart=@(() => OnDragStart())>
+    <div style="pointer-events:none;">
+        <img class="d-block m-auto" src=@ImgUrl width="24" height="24" />
+        <span class="small-text">@Desc</span>
+    </div>
+</div>
+@code {
+
+    [Parameter]
+    [EditorRequired]
+    public Func<Task> OnDragStart { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string ImgUrl { get; set; }
+    [Parameter]
+    [EditorRequired]
+    public string Desc { get; set; }
+
+}

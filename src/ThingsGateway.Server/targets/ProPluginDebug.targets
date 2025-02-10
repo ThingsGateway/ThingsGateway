@@ -2,8 +2,7 @@
 
 	<ItemGroup>
 
-			<ProjectReference Include="..\PluginPro\ThingsGateway.Management\ThingsGateway.Management.csproj" />
-			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.AllenBradleyCip\ThingsGateway.Plugin.AllenBradleyCip.csproj" />
+		<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.AllenBradleyCip\ThingsGateway.Plugin.AllenBradleyCip.csproj" />
 			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.BACnet\ThingsGateway.Plugin.BACnet.csproj" />
 			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.DCON\ThingsGateway.Plugin.DCON.csproj" />
 			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.DKQ_A16D\ThingsGateway.Plugin.DKQ_A16D.csproj" />
@@ -26,7 +25,6 @@
 			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.USBScaner\ThingsGateway.Plugin.USBScaner.csproj" />
 			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.Vigor\ThingsGateway.Plugin.Vigor.csproj" />
 			<ProjectReference Include="..\PluginPro\ThingsGateway.Plugin.YPSFSK\ThingsGateway.Plugin.YPSFSK.csproj" />
-			<ProjectReference Include="..\PluginPro\ThingsGateway.RulesEngine\ThingsGateway.RulesEngine.csproj" />
 
 
 	</ItemGroup>

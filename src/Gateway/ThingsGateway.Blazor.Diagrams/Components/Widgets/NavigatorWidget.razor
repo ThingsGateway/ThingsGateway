@@ -1,0 +1,40 @@
+﻿<svg class="navigator @Class"
+     style="@Style"
+     width="@Width.ToInvariantString()"
+     height="@Height.ToInvariantString()"
+     viewBox="@(FormattableString.Invariant($"{_x} {_y} {_width} {_height}"))">
+
+    @foreach (var group in BlazorDiagram.Groups)
+    {
+        if (group.Size == null)
+            continue;
+
+        <rect @key="group"
+              class="navigator-group"
+              x="@group.Position.X.ToInvariantString()"
+              y="@group.Position.Y.ToInvariantString()"
+              width="@group.Size.Width.ToInvariantString()"
+              height="@group.Size.Height.ToInvariantString()"
+              fill="@GroupColor">
+        </rect>
+    }
+
+    @foreach (var node in BlazorDiagram.Nodes)
+    {
+        if (node.Size == null)
+            continue;
+
+        @GetNodeRenderFragment(node)
+    }
+
+    <rect class="navigator-current-view"
+          x="@(_vX.ToInvariantString())"
+          y="@(_vY.ToInvariantString())"
+          width="@_vWidth.ToInvariantString()"
+          height="@_vHeight.ToInvariantString()"
+          fill="none"
+          stroke="@ViewStrokeColor"
+          stroke-width="@ViewStrokeWidth">
+    </rect>
+
+</svg>
