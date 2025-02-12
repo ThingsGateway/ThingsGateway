@@ -167,6 +167,7 @@ public class OpcUa105Master : CollectBase
     /// <inheritdoc/>
     protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRuntime> deviceVariables)
     {
+        _plc?.Disconnect();
         if (deviceVariables.Count > 0)
         {
             var dataLists = deviceVariables.ChunkBetter(_driverProperties.GroupSize);

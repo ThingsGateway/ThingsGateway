@@ -124,6 +124,7 @@ public class OpcDaMaster : CollectBase
     /// <inheritdoc/>
     protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRuntime> deviceVariables)
     {
+        _plc?.Disconnect();
         if (deviceVariables.Count > 0)
         {
             var result = _plc.AddItemsWithSave(deviceVariables.Where(a => !string.IsNullOrEmpty(a.RegisterAddress)).Select(a => a.RegisterAddress!).ToList());

@@ -2,8 +2,8 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="ThingsGateway.Management" Version="$(ProPluginVersion)" GeneratePathProperty="true"/>
-		<PackageReference Include="ThingsGateway.RulesEngine" Version="$(ProPluginVersion)" GeneratePathProperty="true"/>
+		<PackageReference Include="ThingsGateway.Management" Version="$(Version)" GeneratePathProperty="true"/>
+		<PackageReference Include="ThingsGateway.RulesEngine" Version="$(Version)" GeneratePathProperty="true"/>
 	</ItemGroup>
 
 	<Target Name="_ResolveCopyManagementLocalNuGetPkgXmls" AfterTargets="ResolveReferences">
