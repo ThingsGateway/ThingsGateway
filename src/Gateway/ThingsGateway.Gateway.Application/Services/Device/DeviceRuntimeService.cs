@@ -59,7 +59,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
                 }
                 if (deviceRuntime != null)
                 {
-                    newDeviceRuntime.VariableRuntimes.AddRange(deviceRuntime.VariableRuntimes);
+                    deviceRuntime.VariableRuntimes.ParallelForEach(a => a.Value.Init(newDeviceRuntime));
                 }
             }
 
@@ -166,7 +166,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
                 }
                 if (deviceRuntime != null)
                 {
-                    newDeviceRuntime.VariableRuntimes.AddRange(deviceRuntime.VariableRuntimes);
+                    deviceRuntime.VariableRuntimes.ParallelForEach(a => a.Value.Init(newDeviceRuntime));
                 }
             }
 
@@ -214,7 +214,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
                         await deviceThreadManage.RemoveDeviceAsync(deviceRuntime.Id).ConfigureAwait(false);
                 }
                 deviceRuntime.Dispose();
-                newDeviceRuntime.VariableRuntimes.AddRange(deviceRuntime.VariableRuntimes);
+                deviceRuntime.VariableRuntimes.ParallelForEach(a => a.Value.Init(newDeviceRuntime));
             }
 
             if (GlobalData.Channels.TryGetValue(newDeviceRuntime.ChannelId, out var channelRuntime))

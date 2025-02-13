@@ -356,7 +356,7 @@ public class VariableRuntimeService : IVariableRuntimeService
                         }
                         if (deviceRuntime != null)
                         {
-                            newDeviceRuntime.VariableRuntimes.AddRange(deviceRuntime.VariableRuntimes);
+                            deviceRuntime.VariableRuntimes.ParallelForEach(a => a.Value.Init(newDeviceRuntime));
                         }
                     }
 
