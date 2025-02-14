@@ -680,7 +680,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
     private static void SetRedundantDevice(DeviceRuntime? deviceRuntime, DeviceRuntime? newDeviceRuntime)
     {
         //传入变量
-        newDeviceRuntime.VariableRuntimes?.Clear();
+        //newDeviceRuntime.VariableRuntimes.ParallelForEach(a => a.Value.SafeDispose());
         deviceRuntime.VariableRuntimes.ParallelForEach(a => a.Value.Init(newDeviceRuntime));
     }
 
@@ -705,28 +705,44 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
             if (deviceRuntime.RedundantEnable && deviceRuntime.RedundantDeviceId != null)
             {
-                var newDev = await GlobalData.DeviceService.GetDeviceByIdAsync(deviceRuntime.RedundantDeviceId ?? 0).ConfigureAwait(false);
-                if (newDev == null)
+                if (!GlobalData.ReadOnlyDevices.TryGetValue(deviceRuntime.RedundantDeviceId ?? 0, out newDeviceRuntime))
                 {
-                    LogMessage?.LogWarning($"Device with deviceId {deviceRuntime.RedundantDeviceId} not found");
+                    var newDev = await GlobalData.DeviceService.GetDeviceByIdAsync(deviceRuntime.RedundantDeviceId ?? 0).ConfigureAwait(false);
+                    if (newDev == null)
+                    {
+                        LogMessage?.LogWarning($"Device with deviceId {deviceRuntime.RedundantDeviceId} not found");
+                    }
+                    else
+                    {
+                        newDeviceRuntime = newDev.Adapt<DeviceRuntime>();
+                        SetRedundantDevice(deviceRuntime, newDeviceRuntime);
+                    }
                 }
                 else
                 {
-                    newDeviceRuntime = newDev.Adapt<DeviceRuntime>();
                     SetRedundantDevice(deviceRuntime, newDeviceRuntime);
                 }
             }
             else
             {
-                var newDev = devices.FirstOrDefault(a => a.RedundantDeviceId == deviceRuntime.Id);
-                if (newDev == null)
+                newDeviceRuntime = GlobalData.ReadOnlyDevices.FirstOrDefault(a => a.Value.RedundantDeviceId == deviceRuntime.Id).Value;
+                if (newDeviceRuntime == null)
                 {
-                    LogMessage?.LogWarning($"Device with redundantDeviceId {deviceRuntime.Id} not found");
+                    var newDev = devices.FirstOrDefault(a => a.RedundantDeviceId == deviceRuntime.Id);
+                    if (newDev == null)
+                    {
+                        LogMessage?.LogWarning($"Device with redundantDeviceId {deviceRuntime.Id} not found");
+                    }
+                    else
+                    {
+                        newDeviceRuntime = newDev.Adapt<DeviceRuntime>();
+                        SetRedundantDevice(deviceRuntime, newDeviceRuntime);
+                    }
                 }
                 else
                 {
-                    newDeviceRuntime = newDev.Adapt<DeviceRuntime>();
                     SetRedundantDevice(deviceRuntime, newDeviceRuntime);
+
                 }
             }
 
