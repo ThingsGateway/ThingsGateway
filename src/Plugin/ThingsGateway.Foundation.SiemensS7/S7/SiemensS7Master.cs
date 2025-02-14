@@ -24,9 +24,9 @@ public partial class SiemensS7Master : DeviceBase
         base.InitChannel(channel, deviceLog);
 
         RegisterByteLength = 1;
-        ThingsGatewayBitConverter = new S7BitConverter(EndianType.Big);
 
     }
+    public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get; protected set; } = new S7BitConverter(EndianType.Big) { };
 
     /// <summary>
     /// PduLength

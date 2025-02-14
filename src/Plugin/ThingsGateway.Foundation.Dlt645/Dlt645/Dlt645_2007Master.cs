@@ -21,10 +21,10 @@ public class Dlt645_2007Master : DeviceBase, IDtu
     public override void InitChannel(IChannel channel, ILog? deviceLog = null)
     {
         base.InitChannel(channel, deviceLog);
-        ThingsGatewayBitConverter = new Dlt645_2007BitConverter(EndianType.Big);
         RegisterByteLength = 2;
         channel.MaxSign = ushort.MaxValue;
     }
+    public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get; protected set; } = new Dlt645_2007BitConverter(EndianType.Big) { };
 
     /// <summary>
     /// 客户端连接滑动过期时间(TCP服务通道时)

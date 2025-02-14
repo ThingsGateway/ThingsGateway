@@ -48,10 +48,10 @@ public class ModbusSlave : DeviceBase, ITcpService, IDtuClient
     public override void InitChannel(IChannel channel, ILog? deviceLog = null)
     {
         base.InitChannel(channel, deviceLog);
-        ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
         RegisterByteLength = 2;
         channel.MaxSign = ushort.MaxValue;
     }
+    public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get; protected set; } = new ThingsGatewayBitConverter(EndianType.Big) { };
 
     public override bool SupportMultipleDevice()
     {

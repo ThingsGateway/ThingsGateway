@@ -874,7 +874,7 @@ public abstract class DeviceBase : DisposableObject, IDevice
                     try
                     {
                         //只关闭，不释放
-                        Channel.SafeClose();
+                        _ = Channel.CloseAsync();
                         if (Channel is IClientChannel client)
                         {
                             client.WaitHandlePool.SafeDispose();

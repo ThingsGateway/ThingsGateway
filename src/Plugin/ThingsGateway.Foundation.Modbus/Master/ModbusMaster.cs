@@ -18,10 +18,10 @@ public partial class ModbusMaster : DeviceBase, IDtu
     {
         base.InitChannel(channel, deviceLog);
 
-        ThingsGatewayBitConverter = new ThingsGatewayBitConverter(EndianType.Big);
         RegisterByteLength = 2;
         channel.MaxSign = ushort.MaxValue;
     }
+    public override IThingsGatewayBitConverter ThingsGatewayBitConverter { get; protected set; } = new ThingsGatewayBitConverter(EndianType.Big) {  };
 
     /// <summary>
     /// 客户端连接滑动过期时间(TCP服务通道时)
