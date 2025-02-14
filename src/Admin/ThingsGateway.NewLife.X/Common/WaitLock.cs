@@ -54,7 +54,13 @@ public sealed class WaitLock : IDisposable
     public void Release()
     {
         if (DisposedValue) return;
-        _waiterLock.Release();
+        try
+        {
+            _waiterLock.Release();
+        }
+        catch (SemaphoreFullException)
+        {
+        }
     }
 
     /// <summary>
