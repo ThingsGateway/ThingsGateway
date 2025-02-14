@@ -445,7 +445,7 @@ public abstract class DriverBase : DisposableObject, IDriver
                         // 记录 Dispose 方法执行失败的错误信息
                         LogMessage?.LogError(ex, "Dispose");
                     }
-
+                    CurrentDevice.Driver = null;
                     // 记录设备线程已停止的信息
                     LogMessage?.LogInformation(Localizer["DeviceTaskStop", DeviceName]);
                 }

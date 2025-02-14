@@ -125,6 +125,20 @@ public static class GlobalData
     {
         return Devices.Select(a => a.Value).Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet();
     }
+
+    public static bool IsRedundant(long deviceId)
+    {
+        if (GlobalData.Devices.TryGetValue(deviceId, out var deviceRuntime))
+        {
+            if (deviceRuntime.RedundantEnable && deviceRuntime.RedundantDeviceId != null)
+                return true;
+            else if (GlobalData.Devices.Any(a => a.Value.RedundantDeviceId == deviceRuntime.Id))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     /// <summary>
     /// 实时报警列表
     /// </summary>

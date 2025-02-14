@@ -35,7 +35,7 @@
                 </Tooltip>
 
 
-                @if (DeviceRuntime.RedundantEnable == true && AuthorizeButton("切换冗余"))
+                @if (GlobalData.IsRedundant(DeviceRuntime.Id) && AuthorizeButton("切换冗余"))
                 {
                     <Tooltip Title="@GatewayLocalizer["DeviceRedundantThread"]" Placement="Placement.Bottom">
                         <PopConfirmButton OnConfirm=@(DeviceRedundantThreadAsync) class="mx-2" Color="Color.None" style="color: var(--bs-card-title-color);" Icon=@("fas fa-exchange-alt") />
@@ -102,7 +102,7 @@
                             </EditTemplate>
                         </EditorItem>
 
-                        <EditorItem @bind-Field="@context.ActiveTime"/>
+                        <EditorItem @bind-Field="@context.ActiveTime" />
                         <EditorItem @bind-Field="@context.DeviceStatus" />
                         <EditorItem Field=@context.DeviceVariableCount FieldExpression=@(()=> context.DeviceVariableCount ) />
                         @if (context.IsCollect == true)

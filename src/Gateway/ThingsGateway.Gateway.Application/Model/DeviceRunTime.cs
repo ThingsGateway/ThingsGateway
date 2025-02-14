@@ -119,7 +119,7 @@ public class DeviceRuntime : Device, IDisposable
     /// <summary>
     /// 冗余状态
     /// </summary>
-    public RedundantTypeEnum? RedundantType { get; set; } = RedundantTypeEnum.Primary;
+    public RedundantTypeEnum? RedundantType { get; set; } = null;
 
     /// <summary>
     /// 设备变量

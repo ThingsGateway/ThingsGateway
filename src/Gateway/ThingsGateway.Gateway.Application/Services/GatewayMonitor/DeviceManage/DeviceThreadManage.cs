@@ -10,6 +10,8 @@
 
 using BootstrapBlazor.Components;
 
+using Mapster;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 
@@ -324,6 +326,20 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
             await deviceRuntimes.ParallelForEachAsync(async (deviceRuntime, cancellationToken) =>
             {
+                //备用设备实时取消
+                var redundantDeviceId = deviceRuntime.RedundantDeviceId;
+                if (GlobalData.ReadOnlyDevices.TryGetValue(redundantDeviceId ?? 0, out var redundantDeviceRuntime))
+                {
+                    if (GlobalData.TryGetDeviceThreadManage(redundantDeviceRuntime, out var redundantDeviceThreadManage))
+                    {
+
+                        await redundantDeviceThreadManage.RemoveDeviceAsync(redundantDeviceRuntime.Id).ConfigureAwait(false);
+
+                        redundantDeviceThreadManage.LogMessage?.LogInformation($"The device {redundantDeviceRuntime.Name} is standby and no communication tasks are created");
+
+                    }
+                }
+
                 if (deviceRuntime.IsCollect == true)
                 {
                     if (!GlobalData.StartCollectChannelEnable)
@@ -341,7 +357,15 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
                 if (!deviceRuntime.Enable) return;
                 if (Disposed) return;
-                if (idSet.Contains(deviceRuntime.Id)) return;
+                if (idSet.Contains(deviceRuntime.Id) && deviceRuntime.RedundantType != RedundantTypeEnum.Primary  )
+                {
+                    var pDevice = GlobalData.Devices.FirstOrDefault(a => a.Value.RedundantDeviceId == deviceRuntime.Id);
+                    if(pDevice.Value?.RedundantType == RedundantTypeEnum.Primary)
+                    {
+                        LogMessage?.LogInformation($"The device {deviceRuntime.Name} is standby and no communication tasks are created");
+                        return;
+                    }
+                }
                 DriverBase driver = null;
                 try
                 {
@@ -398,6 +422,9 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
 
             }, Environment.ProcessorCount).ConfigureAwait(false);
+
+
+
 
             ThreadPool.GetMaxThreads(out int maxWorkerThreads, out int maxCompletionPortThreads);
             var taskCount = GlobalData.Devices.Count;
@@ -619,7 +646,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
                             if (deviceRuntime.DeviceStatus == DeviceStatusEnum.OffLine && (deviceRuntime.Driver?.IsInitSuccess == false || deviceRuntime.Driver?.IsStarted == true) && deviceRuntime.Driver?.DisposedValue != true)
                             {
                                 //冗余切换
-                                if (deviceRuntime.RedundantEnable)
+                                if (GlobalData.IsRedundant(deviceRuntime.Id))
                                 {
                                     await DeviceRedundantThreadAsync(deviceRuntime.Id).ConfigureAwait(false);
                                 }
@@ -632,13 +659,11 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
         }
     }
 
-    private static void SetRedundantDevice(DeviceRuntime? dev, Device? newDev)
+    private static void SetRedundantDevice(DeviceRuntime? deviceRuntime, DeviceRuntime? newDeviceRuntime)
     {
-        dev.DevicePropertys = newDev.DevicePropertys;
-        dev.Description = newDev.Description;
-        dev.ChannelId = newDev.ChannelId;
-        dev.IntervalTime = newDev.IntervalTime;
-        dev.Name = newDev.Name;
+        //传入变量
+        newDeviceRuntime.VariableRuntimes?.Clear();
+        deviceRuntime.VariableRuntimes.ParallelForEach(a => a.Value.Init(newDeviceRuntime));
     }
 
     /// <inheritdoc/>
@@ -646,58 +671,73 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
     {
         try
         {
+            DeviceRuntime newDeviceRuntime = null;
 
             if (!CurrentChannel.DeviceRuntimes.TryGetValue(deviceId, out var deviceRuntime)) return;
 
             //实际上DevicerRuntime是不变的，一直都是主设备对象，只是获取备用设备，改变设备插件属性
             //这里先停止采集，操作会使线程取消，需要重新恢复线程
+
+            //注意切换后需要刷新业务设备的变量和采集设备集合
             await RemoveDeviceAsync(deviceRuntime.Id).ConfigureAwait(false);
-            if (deviceRuntime.RedundantType == RedundantTypeEnum.Standby)
+
+
+            //获取主设备
+            var devices = await GlobalData.DeviceService.GetAllAsync().ConfigureAwait(false);//获取设备属性
+
+            if (deviceRuntime.RedundantEnable && deviceRuntime.RedundantDeviceId != null)
             {
-                var newDev = await GlobalData.DeviceService.GetDeviceByIdAsync(deviceRuntime.Id).ConfigureAwait(false);//获取设备属性
+                var newDev = await GlobalData.DeviceService.GetDeviceByIdAsync(deviceRuntime.RedundantDeviceId ?? 0).ConfigureAwait(false);
                 if (newDev == null)
                 {
-                    LogMessage?.LogWarning($"Device with id {deviceRuntime.Id} not found");
+                    LogMessage?.LogWarning($"Device with deviceId {deviceRuntime.RedundantDeviceId} not found");
                 }
                 else
                 {
-                    //冗余切换时，改变全部属性，但不改变变量信息
-                    SetRedundantDevice(deviceRuntime, newDev);
-                    deviceRuntime.RedundantType = RedundantTypeEnum.Primary;
-                    LogMessage?.LogInformation($"Device {deviceRuntime.Name} switched to primary channel");
+                    newDeviceRuntime = newDev.Adapt<DeviceRuntime>();
+                    SetRedundantDevice(deviceRuntime, newDeviceRuntime);
                 }
             }
             else
             {
-                try
+                var newDev = devices.FirstOrDefault(a => a.RedundantDeviceId == deviceRuntime.Id);
+                if (newDev == null)
                 {
-                    var newDev = await GlobalData.DeviceService.GetDeviceByIdAsync(deviceRuntime.RedundantDeviceId ?? 0).ConfigureAwait(false);
-                    if (newDev == null)
-                    {
-                        LogMessage?.LogWarning($"Failed to update device thread, device with id {deviceRuntime.RedundantDeviceId} does not exist");
-                    }
-                    else
-                    {
-                        SetRedundantDevice(deviceRuntime, newDev);
-                        deviceRuntime.RedundantType = RedundantTypeEnum.Standby;
-                        LogMessage?.LogInformation($"Device {deviceRuntime.Name} switched to standby channel");
-                    }
+                    LogMessage?.LogWarning($"Device with redundantDeviceId {deviceRuntime.Id} not found");
                 }
-                catch
+                else
                 {
+                    newDeviceRuntime = newDev.Adapt<DeviceRuntime>();
+                    SetRedundantDevice(deviceRuntime, newDeviceRuntime);
                 }
             }
 
+            if (newDeviceRuntime == null) return;
+
+
+            deviceRuntime.RedundantType = RedundantTypeEnum.Standby;
+            newDeviceRuntime.RedundantType = RedundantTypeEnum.Primary;
+            if (newDeviceRuntime.Id != deviceRuntime.Id)
+                LogMessage?.LogInformation($"Device {deviceRuntime.Name} switched to standby channel");
+
             //找出新的通道，添加设备线程
 
+            if (!GlobalData.Channels.TryGetValue(newDeviceRuntime.ChannelId, out var channelRuntime))
+                LogMessage?.LogWarning($"device {newDeviceRuntime.Name} cannot found channel with id{newDeviceRuntime.ChannelId}");
 
-            if (!GlobalData.Channels.TryGetValue(deviceRuntime.ChannelId, out var channelRuntime))
-                LogMessage?.LogWarning($"device {deviceRuntime.Name} cannot found channel with id{deviceRuntime.ChannelId}");
+            newDeviceRuntime.Init(channelRuntime);
+            await channelRuntime.DeviceThreadManage.RestartDeviceAsync(newDeviceRuntime, false).ConfigureAwait(false);
+            channelRuntime.DeviceThreadManage.LogMessage?.LogInformation($"Device {newDeviceRuntime.Name} switched to primary channel");
 
-
-            deviceRuntime.Init(channelRuntime);
-            await channelRuntime.DeviceThreadManage.RestartDeviceAsync(deviceRuntime, false).ConfigureAwait(false);
-
+            //需要重启业务线程
+            var businessDeviceRuntimes = GlobalData.Devices.Where(a => a.Value.Driver is BusinessBase).Where(a => ((BusinessBase)a.Value.Driver).CollectDevices.ContainsKey(a.Key) == true).Select(a => a.Value);
+            foreach (var businessDeviceRuntime in businessDeviceRuntimes)
+            {
+                if (businessDeviceRuntime.Driver != null)
+                {
+                    businessDeviceRuntime.Driver.AfterVariablesChanged();
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -731,7 +771,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
                                     if ((deviceRuntime.Driver?.IsInitSuccess == false || deviceRuntime.Driver?.IsStarted == true) && deviceRuntime.Driver?.DisposedValue != true)
                                     {
                                         //冗余切换
-                                        if (deviceRuntime.RedundantEnable)
+                                        if (GlobalData.IsRedundant(deviceRuntime.Id))
                                         {
                                             await DeviceRedundantThreadAsync(deviceRuntime.Id).ConfigureAwait(false);
                                         }

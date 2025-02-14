@@ -111,7 +111,7 @@ public partial class DeviceEditComponent
         };
 
         var devices = await GlobalData.GetCurrentUserDevices().ConfigureAwait(false);
-        var pluginName = GlobalData.ReadOnlyDevices.TryGetValue(device.ChannelId, out var channel) ? channel.PluginName : string.Empty;
+        var pluginName = GlobalData.ReadOnlyChannels.TryGetValue(device.ChannelId, out var channel) ? channel.PluginName : string.Empty;
         var items = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat(devices.WhereIf(!option.SearchText.IsNullOrWhiteSpace(), a => a.Value.Name.Contains(option.SearchText))
             .Where(a => a.Value.PluginName == pluginName && a.Value.Id != device.Id).Select(a => a.Value).BuildDeviceSelectList()
             );
