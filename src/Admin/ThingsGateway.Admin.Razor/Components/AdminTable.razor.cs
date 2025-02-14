@@ -126,6 +126,15 @@ public partial class AdminTable<TItem> where TItem : class, new()
     [Parameter]
     public bool IsMultipleSelect { get; set; } = true;
 
+    /// <inheritdoc cref="Table{TItem}.DataService"/>
+    [Parameter]
+    public IDataService<TItem> DataService { get; set; }
+
+    /// <inheritdoc cref="Table{TItem}.CreateItemCallback"/>
+    [Parameter]
+    public Func<TItem> CreateItemCallback { get; set; }
+
+
     /// <inheritdoc cref="Table{TItem}.IsPagination"/>
     [Parameter]
     public bool IsPagination { get; set; }

@@ -80,14 +80,21 @@ public abstract class CollectBase : DriverBase
             //1、DeviceStatus
             Func<VariableRuntime, bool> source = (a =>
             {
-                return a.RegisterAddress != nameof(DeviceRuntime.DeviceStatus) &&
-                a.RegisterAddress != "Script" &&
-                a.RegisterAddress != "ScriptRead"
+                return !a.RegisterAddress.Equals(nameof(DeviceRuntime.DeviceStatus), StringComparison.OrdinalIgnoreCase) &&
+                !a.RegisterAddress.Equals("Script", StringComparison.OrdinalIgnoreCase) &&
+                !a.RegisterAddress.Equals("ScriptRead", StringComparison.OrdinalIgnoreCase)
                 ;
 
             });
 
-            currentDevice.OtherVariableRuntimes = tags.Where(a => !source(a)).ToList();
+
+            currentDevice.VariableScriptReads = tags.Where(a => !source(a)).Select(a =>
+            {
+                var data = new VariableScriptRead();
+                data.VariableRuntime = a;
+                data.TimeTick = new(a.IntervalTime ?? currentDevice.IntervalTime);
+                return data;
+            }).ToList();
 
             // 将打包后的结果存储在当前设备的 VariableSourceReads 属性中
             currentDevice.VariableSourceReads = ProtectedLoadSourceRead(tags.Where(source).ToList());
@@ -449,19 +456,24 @@ public abstract class CollectBase : DriverBase
     {
         DateTime dateTime = TimerX.Now;
         //特殊地址变量
-        for (int i = 0; i < CurrentDevice.OtherVariableRuntimes.Count; i++)
+        for (int i = 0; i < CurrentDevice.VariableScriptReads.Count; i++)
         {
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var variableRuntime = CurrentDevice.OtherVariableRuntimes[i];
-            if (variableRuntime.RegisterAddress == nameof(DeviceRuntime.DeviceStatus))
+            if (CurrentDevice.VariableScriptReads[i].CheckIfRequestAndUpdateTime())
             {
-                variableRuntime.SetValue(variableRuntime.DeviceRuntime.DeviceStatus, dateTime);
-            }
-            else if (variableRuntime.RegisterAddress == "ScriptRead")
-            {
-                variableRuntime.SetValue(default, dateTime);
+
+                var variableRuntime = CurrentDevice.VariableScriptReads[i].VariableRuntime;
+                if (variableRuntime.RegisterAddress.Equals(nameof(DeviceRuntime.DeviceStatus), StringComparison.OrdinalIgnoreCase))
+                {
+                    variableRuntime.SetValue(variableRuntime.DeviceRuntime.DeviceStatus, dateTime);
+                }
+                else if (variableRuntime.RegisterAddress.Equals("ScriptRead", StringComparison.OrdinalIgnoreCase))
+                {
+                    variableRuntime.SetValue(default, dateTime);
+                }
+
             }
         }
 
@@ -664,9 +676,8 @@ public abstract class CollectBase : DriverBase
             }
         }
 
-
-        var writePList = writeInfoLists.Where(a => !CurrentDevice.OtherVariableRuntimes.Contains(a.Key));
-        var writeSList = writeInfoLists.Where(a => CurrentDevice.OtherVariableRuntimes.Contains(a.Key));
+        var writePList = writeInfoLists.Where(a => !CurrentDevice.VariableScriptReads.Select(a => a.VariableRuntime).Any(b => a.Key.Name == b.Name));
+        var writeSList = writeInfoLists.Where(a => CurrentDevice.VariableScriptReads.Select(a => a.VariableRuntime).Any(b => a.Key.Name == b.Name));
 
         DateTime now = DateTime.Now;
         foreach (var item in writeSList)

@@ -172,7 +172,7 @@ public class DeviceRuntime : Device, IDisposable
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
     [AdaptIgnore]
-    public List<VariableRuntime>? OtherVariableRuntimes { get; set; }
+    public List<VariableScriptRead>? VariableScriptReads { get; set; }
 
 
     public volatile bool CheckEnable;
