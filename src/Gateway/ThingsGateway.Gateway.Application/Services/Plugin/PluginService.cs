@@ -657,8 +657,8 @@ internal sealed class PluginService : IPluginService
                 }
                 //添加到全局对象
                 _assemblyLoadContextDict.TryAdd(fileName, (assemblyLoadContext, assembly));
+                _logger?.LogInformation(Localizer["AddPluginFile", path]);
             }
-            _logger?.LogInformation(Localizer["AddPluginFile", path]);
             return assembly;
 
         }

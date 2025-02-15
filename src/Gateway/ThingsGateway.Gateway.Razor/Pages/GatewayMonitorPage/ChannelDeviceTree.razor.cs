@@ -150,7 +150,7 @@ public partial class ChannelDeviceTree : IDisposable
         {
              {nameof(ChannelEditComponent.OnValidSubmit), async () =>
             {
-                await GlobalData.ChannelRuntimeService.SaveChannelAsync(oneModel,itemChangedType);
+                await Task.Run(() =>GlobalData.ChannelRuntimeService.SaveChannelAsync(oneModel,itemChangedType));
             }},
             {nameof(ChannelEditComponent.Model),oneModel },
             {nameof(ChannelEditComponent.ValidateEnable),true },
@@ -228,7 +228,7 @@ public partial class ChannelDeviceTree : IDisposable
                     ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
                 });
                 });
-                await GlobalData.ChannelRuntimeService.BatchEditAsync(changedModels,oldModel,oneModel);
+                await Task.Run(() => GlobalData.ChannelRuntimeService.BatchEditAsync(changedModels, oldModel, oneModel));
                        await InvokeAsync(async ()=>
             {
 
@@ -297,21 +297,19 @@ public partial class ChannelDeviceTree : IDisposable
             var ret = await SwalService.ShowModal(op);
             if (ret)
             {
-                await Task.Run(async () =>
+
+                await InvokeAsync(async () =>
                 {
-                    await InvokeAsync(async () =>
+                    await MaskService.Show(new MaskOption()
                     {
-                        await MaskService.Show(new MaskOption()
-                        {
-                            ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
-                        });
+                        ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
                     });
-                    await GlobalData.ChannelRuntimeService.DeleteChannelAsync(modelIds.Select(a => a.Id));
-                    await InvokeAsync(async () =>
-                    {
-                        await MaskService.Close();
-                        StateHasChanged();
-                    });
+                });
+                await Task.Run(() => GlobalData.ChannelRuntimeService.DeleteChannelAsync(modelIds.Select(a => a.Id)));
+                await InvokeAsync(async () =>
+                {
+                    await MaskService.Close();
+                    StateHasChanged();
                 });
             }
 
@@ -348,22 +346,20 @@ public partial class ChannelDeviceTree : IDisposable
             var ret = await SwalService.ShowModal(op);
             if (ret)
             {
-                await Task.Run(async () =>
+
+                await InvokeAsync(async () =>
                 {
-                    await InvokeAsync(async () =>
+                    await MaskService.Show(new MaskOption()
                     {
-                        await MaskService.Show(new MaskOption()
-                        {
-                            ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
-                        });
+                        ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
                     });
-                    var key = await GlobalData.GetCurrentUserChannels().ConfigureAwait(false);
-                    await GlobalData.ChannelRuntimeService.DeleteChannelAsync(key.Select(a => a.Key));
-                    await InvokeAsync(async () =>
-                    {
-                        await MaskService.Close();
-                        StateHasChanged();
-                    });
+                });
+                var key = await GlobalData.GetCurrentUserChannels().ConfigureAwait(false);
+                await Task.Run(() => GlobalData.ChannelRuntimeService.DeleteChannelAsync(key.Select(a => a.Key)));
+                await InvokeAsync(async () =>
+                {
+                    await MaskService.Close();
+                    StateHasChanged();
                 });
             }
 
@@ -440,7 +436,7 @@ public partial class ChannelDeviceTree : IDisposable
                     ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
                 });
             });
-            await GlobalData.ChannelRuntimeService.ImportChannelAsync(value);
+            await Task.Run(() => GlobalData.ChannelRuntimeService.ImportChannelAsync(value));
             await InvokeAsync(async () =>
             {
                 await MaskService.Close();
@@ -500,7 +496,7 @@ public partial class ChannelDeviceTree : IDisposable
         {
              {nameof(DeviceEditComponent.OnValidSubmit), async () =>
              {
-                 await GlobalData.DeviceRuntimeService.SaveDeviceAsync(oneModel,itemChangedType, AutoRestartThread);
+                 await Task.Run(() =>GlobalData.DeviceRuntimeService.SaveDeviceAsync(oneModel,itemChangedType, AutoRestartThread));
             }},
             {nameof(DeviceEditComponent.Model),oneModel },
             {nameof(DeviceEditComponent.ValidateEnable),true },
@@ -585,7 +581,7 @@ public partial class ChannelDeviceTree : IDisposable
                     ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
                 });
                 });
-                await GlobalData.DeviceRuntimeService.BatchEditAsync(changedModels,oldModel,oneModel,AutoRestartThread);
+                await Task.Run(() =>GlobalData.DeviceRuntimeService.BatchEditAsync(changedModels,oldModel,oneModel,AutoRestartThread));
                          await InvokeAsync(async () =>
             {
                 await MaskService.Close();
@@ -656,21 +652,19 @@ public partial class ChannelDeviceTree : IDisposable
             var ret = await SwalService.ShowModal(op);
             if (ret)
             {
-                await Task.Run(async () =>
+
+                await InvokeAsync(async () =>
                 {
-                    await InvokeAsync(async () =>
+                    await MaskService.Show(new MaskOption()
                     {
-                        await MaskService.Show(new MaskOption()
-                        {
-                            ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
-                        });
+                        ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
                     });
-                    await GlobalData.DeviceRuntimeService.DeleteDeviceAsync(modelIds.Select(a => a.Id), AutoRestartThread);
-                    await InvokeAsync(async () =>
-                    {
-                        await MaskService.Close();
-                        await OnClickSearch(SearchText);
-                    });
+                });
+                await Task.Run(() => GlobalData.DeviceRuntimeService.DeleteDeviceAsync(modelIds.Select(a => a.Id), AutoRestartThread));
+                await InvokeAsync(async () =>
+                {
+                    await MaskService.Close();
+                    await OnClickSearch(SearchText);
                 });
             }
 
@@ -708,23 +702,21 @@ public partial class ChannelDeviceTree : IDisposable
             var ret = await SwalService.ShowModal(op);
             if (ret)
             {
-                await Task.Run(async () =>
-                {
-                    await InvokeAsync(async () =>
-                    {
-                        await MaskService.Show(new MaskOption()
-                        {
-                            ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
-                        });
-                    });
-                    var data = await GlobalData.GetCurrentUserDevices().ConfigureAwait(false);
 
-                    await GlobalData.DeviceRuntimeService.DeleteDeviceAsync(data.Select(a => a.Key), AutoRestartThread);
-                    await InvokeAsync(async () =>
+                await InvokeAsync(async () =>
+                {
+                    await MaskService.Show(new MaskOption()
                     {
-                        await MaskService.Close();
-                        await OnClickSearch(SearchText);
+                        ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
                     });
+                });
+                var data = await GlobalData.GetCurrentUserDevices().ConfigureAwait(false);
+
+                await Task.Run(() => GlobalData.DeviceRuntimeService.DeleteDeviceAsync(data.Select(a => a.Key), AutoRestartThread));
+                await InvokeAsync(async () =>
+                {
+                    await MaskService.Close();
+                    await OnClickSearch(SearchText);
                 });
             }
 
@@ -805,7 +797,7 @@ public partial class ChannelDeviceTree : IDisposable
                 });
             });
 
-            await GlobalData.DeviceRuntimeService.ImportDeviceAsync(value, AutoRestartThread);
+            await Task.Run(() => GlobalData.DeviceRuntimeService.ImportDeviceAsync(value, AutoRestartThread));
             await InvokeAsync(async () =>
             {
 

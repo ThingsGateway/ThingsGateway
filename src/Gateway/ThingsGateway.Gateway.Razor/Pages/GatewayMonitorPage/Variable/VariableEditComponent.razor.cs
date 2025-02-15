@@ -158,7 +158,7 @@ public partial class VariableEditComponent
         {
              {nameof(DeviceEditComponent.OnValidSubmit), async () =>
              {
-                await GlobalData.DeviceRuntimeService.SaveDeviceAsync(oneModel,ItemChangedType.Add,AutoRestartThread);
+                await Task.Run(() =>GlobalData.DeviceRuntimeService.SaveDeviceAsync(oneModel,ItemChangedType.Add,AutoRestartThread));
                  OnParametersSet();
             }},
             {nameof(DeviceEditComponent.Model),oneModel },

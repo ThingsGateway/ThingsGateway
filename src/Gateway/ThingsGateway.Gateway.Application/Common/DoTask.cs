@@ -41,15 +41,15 @@ public class DoTask
     /// 开始
     /// </summary>
     /// <param name="cancellationToken">调度取消令牌</param>
-    public void Start(CancellationToken? cancellationToken = null)
+    public void Start(CancellationToken cancellationToken = default)
     {
         try
         {
-            WaitLock.Wait();
+            WaitLock.Wait(cancellationToken);
 
-            if (cancellationToken != null && cancellationToken.Value.CanBeCanceled)
+            if (cancellationToken.CanBeCanceled)
             {
-                _cancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken.Value);
+                _cancelTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             }
             else
             {
@@ -57,7 +57,7 @@ public class DoTask
             }
 
             // 异步执行
-            PrivateTask = Task.Run(Do);
+            PrivateTask = Do();
         }
         finally
         {

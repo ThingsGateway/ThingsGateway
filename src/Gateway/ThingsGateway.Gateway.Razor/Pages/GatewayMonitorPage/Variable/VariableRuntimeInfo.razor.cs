@@ -96,7 +96,7 @@ public partial class VariableRuntimeInfo : IDisposable
     {
         try
         {
-            var data = await variableRuntime.RpcAsync(WriteValue);
+            var data = await Task.Run(async () => await variableRuntime.RpcAsync(WriteValue));
             if (!data.IsSuccess)
             {
                 await ToastService.Warning(null, data.ErrorMessage);
@@ -149,7 +149,7 @@ public partial class VariableRuntimeInfo : IDisposable
         {
              {nameof(VariableEditComponent.OnValidSubmit), async () =>
             {
-                await GlobalData. VariableRuntimeService.BatchEditAsync(variables,oldmodel,model);
+                await Task.Run(()=> GlobalData. VariableRuntimeService.BatchEditAsync(variables,oldmodel,model));
 
                 await InvokeAsync(table.QueryAsync);
             }},
@@ -196,7 +196,7 @@ public partial class VariableRuntimeInfo : IDisposable
             }
 
             variable.VariablePropertys = PluginServiceUtil.SetDict(variable.VariablePropertyModels);
-            return await GlobalData.VariableRuntimeService.SaveVariableAsync(variable, itemChangedType);
+            return await Task.Run(() => GlobalData.VariableRuntimeService.SaveVariableAsync(variable, itemChangedType));
         }
         catch (Exception ex)
         {
@@ -308,31 +308,29 @@ public partial class VariableRuntimeInfo : IDisposable
     {
         try
         {
-            await Task.Run(async () =>
+
+            await InvokeAsync(async () =>
+            {
+                await MaskService.Show(new MaskOption()
+                {
+                    ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
+                });
+            });
+            try
+            {
+                await Task.Run(() => GlobalData.VariableRuntimeService.InsertTestDataAsync(TestVariableCount, TestDeviceCount, SlaveUrl, AutoRestartThread));
+            }
+            finally
             {
                 await InvokeAsync(async () =>
                 {
-                    await MaskService.Show(new MaskOption()
-                    {
-                        ChildContent = builder => builder.AddContent(0, new MarkupString("<i class=\"text-white fa-solid fa-3x fa-spinner fa-spin-pulse\"></i><span class=\"ms-3 fs-2 text-white\">loading ....</span>"))
-                    });
+                    await MaskService.Close();
+                    await ToastService.Default();
+                    await table.QueryAsync();
+                    StateHasChanged();
                 });
-                try
-                {
-                    await GlobalData.VariableRuntimeService.InsertTestDataAsync(TestVariableCount, TestDeviceCount, SlaveUrl, AutoRestartThread);
-                }
-                finally
-                {
-                    await InvokeAsync(async () =>
-                    {
-                        await MaskService.Close();
-                        await ToastService.Default();
-                        await table.QueryAsync();
-                        StateHasChanged();
-                    });
-                }
+            }
 
-            });
         }
         catch (Exception ex)
         {

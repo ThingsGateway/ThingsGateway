@@ -84,7 +84,6 @@ public class TextFileLogger : ThingsGateway.NewLife.Log.TextFileLog, TouchSocket
         return cache.GetOrAdd(key, k => new TextFileLogger(path, false, fileFormat));
     }
 
-
     /// <summary>
     /// TimeFormat
     /// </summary>
@@ -125,6 +124,9 @@ public class TextFileLogger : ThingsGateway.NewLife.Log.TextFileLog, TouchSocket
 
     /// <inheritdoc/>
     public LogLevel LogLevel { get; set; } = LogLevel.Trace;
+
+    public string DateTimeFormat { get; set; } = TimeFormat;
+
     /// <inheritdoc/>
     public void Log(LogLevel logLevel, object source, string message, Exception exception)
     {

@@ -88,7 +88,7 @@ public partial class DeviceEditComponent
         {
              {nameof(ChannelEditComponent.OnValidSubmit), async () =>
              {
-                await GlobalData.ChannelRuntimeService.SaveChannelAsync(oneModel,ItemChangedType.Add);
+                await Task.Run(() =>GlobalData.ChannelRuntimeService.SaveChannelAsync(oneModel,ItemChangedType.Add));
                  OnParametersSet();
             }},
             {nameof(ChannelEditComponent.Model),oneModel },

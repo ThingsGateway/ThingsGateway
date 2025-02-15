@@ -121,6 +121,7 @@ public static class GlobalData
         var idSet = GetRedundantDeviceIds();
         return Devices.Where(a => a.Value.Enable && !idSet.Contains(a.Value.Id));
     }
+
     public static HashSet<long> GetRedundantDeviceIds()
     {
         return Devices.Select(a => a.Value).Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet();
@@ -154,17 +155,9 @@ public static class GlobalData
 
     public static IEnumerable<KeyValuePair<string, VariableRuntime>> GetEnableVariables()
     {
-        var idSet = Devices.Select(a => a.Value).Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet();
-
-        return Variables.Where(a => a.Value.Enable && !idSet.Contains(a.Value.DeviceId));
+        return Variables.Where(a => a.Value.Enable);
     }
 
-    public static IEnumerable<KeyValuePair<long, VariableRuntime>> GetEnableIdVariables()
-    {
-        var idSet = Devices.Select(a => a.Value).Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet();
-
-        return IdVariables.Where(a => a.Value.Enable && !idSet.Contains(a.Value.DeviceId));
-    }
 
     public static bool TryGetDeviceThreadManage(DeviceRuntime deviceRuntime, out IDeviceThreadManage deviceThreadManage)
     {

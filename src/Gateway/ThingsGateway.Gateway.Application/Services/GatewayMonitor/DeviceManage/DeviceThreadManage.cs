@@ -421,7 +421,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
                 }
 
                 // 初始化业务线程
-                var driverTask = new DoTask((t => DoWork(driver, t)), driver.LogMessage, null);
+                var driverTask = new DoTask(t => DoWork(driver, t), driver.LogMessage, null);
                 DriverTasks.TryAdd(driver.DeviceId, driverTask);
 
 
@@ -434,8 +434,8 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
 
             ThreadPool.GetMaxThreads(out int maxWorkerThreads, out int maxCompletionPortThreads);
-            var taskCount = GlobalData.Devices.Count;
-            if (taskCount * 3 > maxWorkerThreads)
+            var taskCount = GlobalData.Devices.Count * Environment.ProcessorCount;
+            if (taskCount > maxWorkerThreads)
             {
                 var result = ThreadPool.SetMaxThreads(taskCount + maxWorkerThreads, taskCount + maxCompletionPortThreads);
             }
@@ -574,7 +574,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
                 driver.Stop();
                 return;
             }
-
+            
             // 只有当驱动成功初始化后才执行操作
             if (driver.IsInitSuccess)
             {
