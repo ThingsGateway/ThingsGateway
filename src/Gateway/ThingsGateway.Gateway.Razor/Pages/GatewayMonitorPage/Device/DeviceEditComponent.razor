@@ -78,7 +78,7 @@
                                                     if (value.RedundantDeviceId != null)
                                                     {
                                                         if (value.RedundantDeviceId.HasValue)
-                                                            if (GlobalData.ReadOnlyDevices.TryGetValue(value.RedundantDeviceId.Value, out var deviceRuntime))
+                                                            if (GlobalData.ReadOnlyIdDevices.TryGetValue(value.RedundantDeviceId.Value, out var deviceRuntime))
                                                                 device = deviceRuntime?.Name ?? device;
                                                     }
                                                     @device

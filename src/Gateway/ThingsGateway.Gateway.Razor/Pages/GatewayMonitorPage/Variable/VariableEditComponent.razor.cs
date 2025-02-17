@@ -90,7 +90,7 @@ public partial class VariableEditComponent
     {
         try
         {
-            if (GlobalData.ReadOnlyDevices.TryGetValue(selectedItem.Value.ToLong(), out var device))
+            if (GlobalData.ReadOnlyIdDevices.TryGetValue(selectedItem.Value.ToLong(), out var device))
             {
                 var data = GlobalData.PluginService.GetDriverMethodInfos(device.PluginName);
                 OtherMethods = new List<SelectedItem>() { new SelectedItem(string.Empty, "none") }.Concat(data.Select(a => new SelectedItem(a.Name, a.Description)));
@@ -173,7 +173,7 @@ public partial class VariableEditComponent
     {
         if (id > 0)
         {
-            if (GlobalData.ReadOnlyDevices.TryGetValue(id, out var device))
+            if (GlobalData.ReadOnlyIdDevices.TryGetValue(id, out var device))
             {
                 var data = GlobalData.PluginService.GetVariablePropertyTypes(device.PluginName);
                 Model.VariablePropertyModels ??= new();

@@ -59,7 +59,7 @@ public class ControlController : ControllerBase
     [DisplayName("控制设备线程启停")]
     public async Task PauseDeviceThreadAsync(long id, bool pause)
     {
-        if (GlobalData.Devices.TryGetValue(id, out var device))
+        if (GlobalData.IdDevices.TryGetValue(id, out var device))
         {
             await GlobalData.SysUserService.CheckApiDataScopeAsync(device.CreateOrgId, device.CreateUserId).ConfigureAwait(false);
             if (device.Driver != null)
@@ -90,7 +90,7 @@ public class ControlController : ControllerBase
     [DisplayName("重启设备线程")]
     public async Task RestartDeviceThreadAsync(long deviceId)
     {
-        if (GlobalData.Devices.TryGetValue(deviceId, out var deviceRuntime))
+        if (GlobalData.IdDevices.TryGetValue(deviceId, out var deviceRuntime))
         {
             await GlobalData.SysUserService.CheckApiDataScopeAsync(deviceRuntime.CreateOrgId, deviceRuntime.CreateUserId).ConfigureAwait(false);
             if (GlobalData.TryGetDeviceThreadManage(deviceRuntime, out var deviceThreadManage))

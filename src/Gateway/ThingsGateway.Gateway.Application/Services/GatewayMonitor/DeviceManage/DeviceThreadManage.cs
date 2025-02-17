@@ -328,7 +328,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
             {
                 //备用设备实时取消
                 var redundantDeviceId = deviceRuntime.RedundantDeviceId;
-                if (GlobalData.ReadOnlyDevices.TryGetValue(redundantDeviceId ?? 0, out var redundantDeviceRuntime))
+                if (GlobalData.ReadOnlyIdDevices.TryGetValue(redundantDeviceId ?? 0, out var redundantDeviceRuntime))
                 {
                     if (GlobalData.TryGetDeviceThreadManage(redundantDeviceRuntime, out var redundantDeviceThreadManage))
                     {
@@ -366,7 +366,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
                 if (Disposed) return;
                 if (idSet.Contains(deviceRuntime.Id) && deviceRuntime.RedundantType != RedundantTypeEnum.Primary)
                 {
-                    var pDevice = GlobalData.Devices.FirstOrDefault(a => a.Value.RedundantDeviceId == deviceRuntime.Id);
+                    var pDevice = GlobalData.IdDevices.FirstOrDefault(a => a.Value.RedundantDeviceId == deviceRuntime.Id);
                     if (pDevice.Value?.RedundantType != RedundantTypeEnum.Standby)
                     {
                         LogMessage?.LogInformation($"The device {deviceRuntime.Name} is standby and no communication tasks are created");
@@ -434,7 +434,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
 
             ThreadPool.GetMaxThreads(out int maxWorkerThreads, out int maxCompletionPortThreads);
-            var taskCount = GlobalData.Devices.Count * Environment.ProcessorCount;
+            var taskCount = GlobalData.IdDevices.Count * Environment.ProcessorCount;
             if (taskCount > maxWorkerThreads)
             {
                 var result = ThreadPool.SetMaxThreads(taskCount + maxWorkerThreads, taskCount + maxCompletionPortThreads);
@@ -705,7 +705,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
             if (deviceRuntime.RedundantEnable && deviceRuntime.RedundantDeviceId != null)
             {
-                if (!GlobalData.ReadOnlyDevices.TryGetValue(deviceRuntime.RedundantDeviceId ?? 0, out newDeviceRuntime))
+                if (!GlobalData.ReadOnlyIdDevices.TryGetValue(deviceRuntime.RedundantDeviceId ?? 0, out newDeviceRuntime))
                 {
                     var newDev = await GlobalData.DeviceService.GetDeviceByIdAsync(deviceRuntime.RedundantDeviceId ?? 0).ConfigureAwait(false);
                     if (newDev == null)
@@ -725,7 +725,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
             }
             else
             {
-                newDeviceRuntime = GlobalData.ReadOnlyDevices.FirstOrDefault(a => a.Value.RedundantDeviceId == deviceRuntime.Id).Value;
+                newDeviceRuntime = GlobalData.ReadOnlyIdDevices.FirstOrDefault(a => a.Value.RedundantDeviceId == deviceRuntime.Id).Value;
                 if (newDeviceRuntime == null)
                 {
                     var newDev = devices.FirstOrDefault(a => a.RedundantDeviceId == deviceRuntime.Id);
@@ -764,7 +764,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
             channelRuntime.DeviceThreadManage.LogMessage?.LogInformation($"Device {newDeviceRuntime.Name} switched to primary channel");
 
             //需要重启业务线程
-            var businessDeviceRuntimes = GlobalData.Devices.Where(a => a.Value.Driver is BusinessBase).Where(a => ((BusinessBase)a.Value.Driver).CollectDevices.ContainsKey(a.Key) == true).Select(a => a.Value);
+            var businessDeviceRuntimes = GlobalData.IdDevices.Where(a => a.Value.Driver is BusinessBase).Where(a => ((BusinessBase)a.Value.Driver).CollectDevices.ContainsKey(a.Key) == true).Select(a => a.Value);
             foreach (var businessDeviceRuntime in businessDeviceRuntimes)
             {
                 if (businessDeviceRuntime.Driver != null)

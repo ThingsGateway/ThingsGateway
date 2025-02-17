@@ -116,12 +116,12 @@ public partial class GatewayIndexComponent : IDisposable
             BusinessDeviceChartDataSource.Labels = data.Select(a => a.Text);
             BusinessDeviceChartDataSource.Data.Add(new ChartDataset()
             {
-                Data = data.Select(i => GlobalData.ReadOnlyDevices.Where(a => a.Value.IsCollect == false).Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>()
+                Data = data.Select(i => GlobalData.ReadOnlyIdDevices.Where(a => a.Value.IsCollect == false).Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>()
             });
         }
         else
         {
-            BusinessDeviceChartDataSource.Data[0].Data = data.Select(i => GlobalData.ReadOnlyDevices.Where(a => a.Value.IsCollect == false).Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>();
+            BusinessDeviceChartDataSource.Data[0].Data = data.Select(i => GlobalData.ReadOnlyIdDevices.Where(a => a.Value.IsCollect == false).Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>();
         }
         return Task.FromResult(BusinessDeviceChartDataSource!);
     }
@@ -137,12 +137,12 @@ public partial class GatewayIndexComponent : IDisposable
             CollectDeviceChartDataSource.Labels = data.Select(a => a.Text);
             CollectDeviceChartDataSource.Data.Add(new ChartDataset()
             {
-                Data = data.Select(i => GlobalData.ReadOnlyDevices.Where(a => a.Value.IsCollect == true).Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>()
+                Data = data.Select(i => GlobalData.ReadOnlyIdDevices.Where(a => a.Value.IsCollect == true).Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>()
             });
         }
         else
         {
-            CollectDeviceChartDataSource.Data[0].Data = data.Select(i => GlobalData.ReadOnlyDevices.Where(a => a.Value.IsCollect == true).Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>();
+            CollectDeviceChartDataSource.Data[0].Data = data.Select(i => GlobalData.ReadOnlyIdDevices.Where(a => a.Value.IsCollect == true).Count(device => device.Value.DeviceStatus == (DeviceStatusEnum)Enum.Parse(typeof(DeviceStatusEnum), i.Value))).Cast<object>();
         }
         return Task.FromResult(CollectDeviceChartDataSource!);
     }

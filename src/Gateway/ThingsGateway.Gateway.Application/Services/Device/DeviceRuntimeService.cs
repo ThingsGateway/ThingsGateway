@@ -37,7 +37,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
             if (restart)
             {
                 //先找出线程管理器，停止
-                var data = GlobalData.Devices.Where(a => newDeviceRuntimes.Select(a => a.Id).ToHashSet().Contains(a.Key)).GroupBy(a => a.Value.ChannelRuntime?.DeviceThreadManage);
+                var data = GlobalData.IdDevices.Where(a => newDeviceRuntimes.Select(a => a.Id).ToHashSet().Contains(a.Key)).GroupBy(a => a.Value.ChannelRuntime?.DeviceThreadManage);
                 foreach (var group in data)
                 {
                     if (group.Key != null)
@@ -48,7 +48,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
             //批量修改之后，需要重新加载通道
             foreach (var newDeviceRuntime in newDeviceRuntimes)
             {
-                if (GlobalData.Devices.TryGetValue(newDeviceRuntime.Id, out var deviceRuntime))
+                if (GlobalData.IdDevices.TryGetValue(newDeviceRuntime.Id, out var deviceRuntime))
                 {
                     deviceRuntime.Dispose();
                 }
@@ -93,7 +93,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
             var result = await GlobalData.DeviceService.DeleteDeviceAsync(ids).ConfigureAwait(false);
 
             //根据条件重启通道线程
-            var deviceRuntimes = GlobalData.Devices.Where(a => ids.Contains(a.Key)).Select(a => a.Value).ToList();
+            var deviceRuntimes = GlobalData.IdDevices.Where(a => ids.Contains(a.Key)).Select(a => a.Value).ToList();
 
 
 
@@ -144,7 +144,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
             if (restart)
             {
                 //先找出线程管理器，停止
-                var data = GlobalData.Devices.Where(a => newDeviceRuntimes.Select(a => a.Id).ToHashSet().Contains(a.Key)).GroupBy(a => a.Value.ChannelRuntime?.DeviceThreadManage);
+                var data = GlobalData.IdDevices.Where(a => newDeviceRuntimes.Select(a => a.Id).ToHashSet().Contains(a.Key)).GroupBy(a => a.Value.ChannelRuntime?.DeviceThreadManage);
                 foreach (var group in data)
                 {
                     if (group.Key != null)
@@ -155,7 +155,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
             //批量修改之后，需要重新加载通道
             foreach (var newDeviceRuntime in newDeviceRuntimes)
             {
-                if (GlobalData.Devices.TryGetValue(newDeviceRuntime.Id, out var deviceRuntime))
+                if (GlobalData.IdDevices.TryGetValue(newDeviceRuntime.Id, out var deviceRuntime))
                 {
                     deviceRuntime.Dispose();
                 }
@@ -204,7 +204,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
 
 
             //批量修改之后，需要重新加载通道
-            if (GlobalData.Devices.TryGetValue(newDeviceRuntime.Id, out var deviceRuntime))
+            if (GlobalData.IdDevices.TryGetValue(newDeviceRuntime.Id, out var deviceRuntime))
             {
                 if (restart)
                 {
@@ -220,7 +220,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
             {
                 newDeviceRuntime.Init(channelRuntime);
             }
-            if (restart)
+            if (restart && channelRuntime.DeviceThreadManage != null)
             {
                 //根据条件重启通道线程
                 await channelRuntime.DeviceThreadManage.RestartDeviceAsync(newDeviceRuntime, false).ConfigureAwait(false);

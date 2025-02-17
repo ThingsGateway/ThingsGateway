@@ -77,10 +77,13 @@ public class DeviceRuntime : Device, IDisposable
         }
         set
         {
-            if (_deviceStatus != value)
+            lock (this)
             {
-                _deviceStatus = value;
-                GlobalData.DeviceStatusChange(this);
+                if (_deviceStatus != value)
+                {
+                    _deviceStatus = value;
+                    GlobalData.DeviceStatusChange(this);
+                }
             }
         }
     }
@@ -193,7 +196,7 @@ public class DeviceRuntime : Device, IDisposable
         {
             DeviceStatus = DeviceStatusEnum.OffLine;
         }
-        else
+        else if (error == false)
         {
             DeviceStatus = DeviceStatusEnum.OnLine;
         }
@@ -216,8 +219,10 @@ public class DeviceRuntime : Device, IDisposable
         ChannelRuntime?.DeviceRuntimes?.TryRemove(Id, out _);
         ChannelRuntime.DeviceRuntimes.TryAdd(Id, this);
 
-        GlobalData.Devices.TryRemove(Id, out _);
-        GlobalData.Devices.TryAdd(Id, this);
+        GlobalData.IdDevices.TryRemove(Id, out _);
+        GlobalData.IdDevices.TryAdd(Id, this);
+        GlobalData.Devices.TryRemove(Name, out _);
+        GlobalData.Devices.TryAdd(Name, this);
 
     }
 
@@ -225,7 +230,8 @@ public class DeviceRuntime : Device, IDisposable
     {
         ChannelRuntime?.DeviceRuntimes?.TryRemove(Id, out _);
 
-        GlobalData.Devices.TryRemove(Id, out _);
+        GlobalData.IdDevices.TryRemove(Id, out _);
+        GlobalData.Devices.TryRemove(Name, out _);
 
         Driver = null;
         GC.SuppressFinalize(this);

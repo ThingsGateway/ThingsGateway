@@ -158,7 +158,7 @@ internal sealed class RedundancyHostedService : BackgroundService, IRedundancyHo
                 // 如果 online 为 true，表示设备在线
                 if (online)
                 {
-                    var deviceRunTimes = GlobalData.ReadOnlyDevices.Select(a => a.Value).Where(a => a.IsCollect == true).Adapt<List<DeviceDataWithValue>>();
+                    var deviceRunTimes = GlobalData.ReadOnlyIdDevices.Select(a => a.Value).Where(a => a.IsCollect == true).Adapt<List<DeviceDataWithValue>>();
                     var variableRuntimes = GlobalData.ReadOnlyVariables.Select(a => a.Value).Adapt<List<VariableDataWithValue>>();
                     var variableRuntimes1 = variableRuntimes.ChunkBetter(80000);
                     var variableRuntimes1Count = variableRuntimes1.Count();

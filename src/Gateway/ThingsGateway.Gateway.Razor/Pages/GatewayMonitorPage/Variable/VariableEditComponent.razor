@@ -195,7 +195,7 @@ if(item.Value!=null)
                 <Card IsShadow=true class="m-2 flex-fill" Color="Color.Primary">
                     <HeaderTemplate>
                         @{
-                    GlobalData.ReadOnlyDevices.TryGetValue(item.Key, out var items);
+                    GlobalData.ReadOnlyIdDevices.TryGetValue(item.Key, out var items);
                         }
                         <div class="flex-fill">
                             @($"{items.Name} - {PluginServiceUtil.GetFileNameAndTypeName(items?.PluginName).TypeName}")

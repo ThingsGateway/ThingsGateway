@@ -23,7 +23,7 @@ public partial class ReverseCallbackServer : RpcServer
 
         foreach (var deviceData in deviceDatas)
         {
-            if (GlobalData.ReadOnlyDevices.TryGetValue(deviceData.Id, out var value))
+            if (GlobalData.ReadOnlyDevices.TryGetValue(deviceData.Name, out var value))
             {
                 value.SetDeviceStatus(deviceData.ActiveTime, deviceData.DeviceStatus == DeviceStatusEnum.OnLine ? false : true, lastErrorMessage: deviceData.LastErrorMessage);
             }

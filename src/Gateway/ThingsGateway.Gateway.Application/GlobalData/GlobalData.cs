@@ -78,7 +78,7 @@ public static class GlobalData
     public static async Task<IEnumerable<KeyValuePair<long, DeviceRuntime>>> GetCurrentUserDevices()
     {
         var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
-        return ReadOnlyDevices.WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.Value.CreateOrgId))//在指定机构列表查询
+        return ReadOnlyIdDevices.WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.Value.CreateOrgId))//在指定机构列表查询
           .WhereIf(dataScope?.Count == 0, u => u.Value.CreateUserId == UserManager.UserId);
     }
     public static async Task<IEnumerable<KeyValuePair<long, VariableRuntime>>> GetCurrentUserIdVariables()
@@ -111,7 +111,12 @@ public static class GlobalData
     /// <summary>
     /// 只读的设备字典，提供对设备的只读访问
     /// </summary>
-    public static IReadOnlyDictionary<long, DeviceRuntime> ReadOnlyDevices => Devices;
+    public static IReadOnlyDictionary<long, DeviceRuntime> ReadOnlyIdDevices => IdDevices;
+
+    /// <summary>
+    /// 只读的设备字典，提供对设备的只读访问
+    /// </summary>
+    public static IReadOnlyDictionary<string, DeviceRuntime> ReadOnlyDevices => Devices;
 
     /// <summary>
     /// 只读的通道字典，提供对通道的只读访问
@@ -119,21 +124,21 @@ public static class GlobalData
     public static IEnumerable<KeyValuePair<long, DeviceRuntime>> GetEnableDevices()
     {
         var idSet = GetRedundantDeviceIds();
-        return Devices.Where(a => a.Value.Enable && !idSet.Contains(a.Value.Id));
+        return IdDevices.Where(a => a.Value.Enable && !idSet.Contains(a.Value.Id));
     }
 
     public static HashSet<long> GetRedundantDeviceIds()
     {
-        return Devices.Select(a => a.Value).Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet();
+        return IdDevices.Select(a => a.Value).Where(a => a.RedundantEnable && a.RedundantDeviceId != null).Select(a => a.RedundantDeviceId ?? 0).ToHashSet();
     }
 
     public static bool IsRedundant(long deviceId)
     {
-        if (GlobalData.Devices.TryGetValue(deviceId, out var deviceRuntime))
+        if (GlobalData.IdDevices.TryGetValue(deviceId, out var deviceRuntime))
         {
             if (deviceRuntime.RedundantEnable && deviceRuntime.RedundantDeviceId != null)
                 return true;
-            else if (GlobalData.Devices.Any(a => a.Value.RedundantDeviceId == deviceRuntime.Id))
+            else if (GlobalData.IdDevices.Any(a => a.Value.RedundantDeviceId == deviceRuntime.Id))
             {
                 return true;
             }
@@ -383,7 +388,11 @@ public static class GlobalData
     /// <summary>
     /// 内部使用的设备字典，用于存储设备对象
     /// </summary>
-    internal static ConcurrentDictionary<long, DeviceRuntime> Devices { get; } = new();
+    internal static ConcurrentDictionary<string, DeviceRuntime> Devices { get; } = new();
+    /// <summary>
+    /// 内部使用的设备字典，用于存储设备对象
+    /// </summary>
+    internal static ConcurrentDictionary<long, DeviceRuntime> IdDevices { get; } = new();
     /// <summary>
     /// 内部使用的变量字典，用于存储变量对象
     /// </summary>

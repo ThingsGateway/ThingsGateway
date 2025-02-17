@@ -46,7 +46,7 @@ public class VariableRuntimeService : IVariableRuntimeService
                 foreach (var item in group)
                 {
                     //需要重启业务线程
-                    var deviceRuntimes = GlobalData.Devices.Where(a => item.Value.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
+                    var deviceRuntimes = GlobalData.IdDevices.Where(a => item.Value.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
                     foreach (var deviceRuntime in deviceRuntimes)
                     {
                         if (deviceRuntime.Driver != null)
@@ -69,7 +69,7 @@ public class VariableRuntimeService : IVariableRuntimeService
             //批量修改之后，需要重新加载
             foreach (var newVariableRuntime in newVariableRuntimes)
             {
-                if (GlobalData.Devices.TryGetValue(newVariableRuntime.DeviceId, out var deviceRuntime))
+                if (GlobalData.IdDevices.TryGetValue(newVariableRuntime.DeviceId, out var deviceRuntime))
                 {
                     newVariableRuntime.Init(deviceRuntime);
 
@@ -119,7 +119,7 @@ public class VariableRuntimeService : IVariableRuntimeService
                 foreach (var item in group)
                 {
                     //需要重启业务线程
-                    var deviceRuntimes = GlobalData.Devices.Where(a => item.Value.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
+                    var deviceRuntimes = GlobalData.IdDevices.Where(a => item.Value.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
                     foreach (var deviceRuntime in deviceRuntimes)
                     {
                         if (deviceRuntime.Driver != null)
@@ -142,7 +142,7 @@ public class VariableRuntimeService : IVariableRuntimeService
             //批量修改之后，需要重新加载
             foreach (var newVariableRuntime in newVariableRuntimes)
             {
-                if (GlobalData.Devices.TryGetValue(newVariableRuntime.DeviceId, out var deviceRuntime))
+                if (GlobalData.IdDevices.TryGetValue(newVariableRuntime.DeviceId, out var deviceRuntime))
                 {
                     newVariableRuntime.Init(deviceRuntime);
 
@@ -195,7 +195,7 @@ public class VariableRuntimeService : IVariableRuntimeService
                 foreach (var item in group)
                 {
                     //需要重启业务线程
-                    var deviceRuntimes = GlobalData.Devices.Where(a => item.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
+                    var deviceRuntimes = GlobalData.IdDevices.Where(a => item.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
                     foreach (var deviceRuntime in deviceRuntimes)
                     {
                         if (deviceRuntime.Driver != null)
@@ -257,7 +257,7 @@ public class VariableRuntimeService : IVariableRuntimeService
                 foreach (var item in group)
                 {
                     //需要重启业务线程
-                    var deviceRuntimes = GlobalData.Devices.Where(a => item.Value.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
+                    var deviceRuntimes = GlobalData.IdDevices.Where(a => item.Value.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
                     foreach (var deviceRuntime in deviceRuntimes)
                     {
                         if (deviceRuntime.Driver != null)
@@ -280,7 +280,7 @@ public class VariableRuntimeService : IVariableRuntimeService
             //批量修改之后，需要重新加载
             foreach (var newVariableRuntime in newVariableRuntimes)
             {
-                if (GlobalData.Devices.TryGetValue(newVariableRuntime.DeviceId, out var deviceRuntime))
+                if (GlobalData.IdDevices.TryGetValue(newVariableRuntime.DeviceId, out var deviceRuntime))
                 {
                     newVariableRuntime.Init(deviceRuntime);
                     //添加新变量所在任务
@@ -346,7 +346,7 @@ public class VariableRuntimeService : IVariableRuntimeService
                     //批量修改之后，需要重新加载通道
                     foreach (var newDeviceRuntime in newDeviceRuntimes)
                     {
-                        if (GlobalData.Devices.TryGetValue(newDeviceRuntime.Id, out var deviceRuntime))
+                        if (GlobalData.IdDevices.TryGetValue(newDeviceRuntime.Id, out var deviceRuntime))
                         {
                             deviceRuntime.Dispose();
                         }
@@ -380,7 +380,7 @@ public class VariableRuntimeService : IVariableRuntimeService
                     //批量修改之后，需要重新加载
                     foreach (var newVariableRuntime in newVariableRuntimes)
                     {
-                        if (GlobalData.Devices.TryGetValue(newVariableRuntime.DeviceId, out var deviceRuntime))
+                        if (GlobalData.IdDevices.TryGetValue(newVariableRuntime.DeviceId, out var deviceRuntime))
                         {
                             newVariableRuntime.Init(deviceRuntime);
                         }
@@ -442,7 +442,7 @@ public class VariableRuntimeService : IVariableRuntimeService
             }
 
             //需要重启业务线程
-            var deviceRuntimes = GlobalData.Devices.Where(a => newVariableRuntime.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
+            var deviceRuntimes = GlobalData.IdDevices.Where(a => newVariableRuntime.VariablePropertys?.ContainsKey(a.Key) == true).Select(a => a.Value);
             foreach (var businessDeviceRuntime in deviceRuntimes)
             {
                 if (businessDeviceRuntime.Driver != null)
@@ -453,7 +453,7 @@ public class VariableRuntimeService : IVariableRuntimeService
 
             //批量修改之后，需要重新加载
 
-            if (GlobalData.Devices.TryGetValue(newVariableRuntime.DeviceId, out var deviceRuntime))
+            if (GlobalData.IdDevices.TryGetValue(newVariableRuntime.DeviceId, out var deviceRuntime))
             {
                 newVariableRuntime.Init(deviceRuntime);
 
