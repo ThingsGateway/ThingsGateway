@@ -378,6 +378,8 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
                 {
                     driver = CreateDriver(deviceRuntime);
 
+                    //初始状态
+                    deviceRuntime.DeviceStatus = DeviceStatusEnum.Default;
 
                     Drivers.TryRemove(deviceRuntime.Id, out _);
 
@@ -574,7 +576,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
                 driver.Stop();
                 return;
             }
-            
+
             // 只有当驱动成功初始化后才执行操作
             if (driver.IsInitSuccess)
             {
@@ -637,6 +639,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
     private void GlobalData_DeviceStatusChangeEvent(DeviceRuntime deviceRuntime, DeviceBasicData deviceData)
     {
+        if (deviceRuntime.DeviceStatus != DeviceStatusEnum.OffLine) return;
         if (deviceRuntime.ChannelId != ChannelId) return;
         try
         {
