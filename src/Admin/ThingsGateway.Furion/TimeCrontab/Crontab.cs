@@ -15,7 +15,6 @@ namespace ThingsGateway.TimeCrontab;
 /// Cron 表达式抽象类
 /// </summary>
 /// <remarks>主要将 Cron 表达式转换成 OOP 类进行操作</remarks>
-[SuppressSniffer]
 public sealed partial class Crontab
 {
     /// <summary>
@@ -138,6 +137,16 @@ public sealed partial class Crontab
     }
 
     /// <summary>
+    /// 获取起始时间上一个发生时间
+    /// </summary>
+    /// <param name="baseTime">起始时间</param>
+    /// <returns><see cref="DateTime"/></returns>
+    public DateTime GetPreviousOccurrence(DateTime baseTime)
+    {
+        return GetPreviousOccurrence(baseTime, DateTime.MinValue);
+    }
+
+    /// <summary>
     /// 获取特定时间范围下一个发生时间
     /// </summary>
     /// <param name="baseTime">起始时间</param>
@@ -146,6 +155,16 @@ public sealed partial class Crontab
     public DateTime GetNextOccurrence(DateTime baseTime, DateTime endTime)
     {
         return InternalGetNextOccurence(baseTime, endTime);
+    }
+
+    /// <summary>
+    /// 获取特定时间范围上一个发生时间
+    /// </summary>
+    /// <param name="baseTime">起始时间</param>
+    /// <param name="endTime">结束时间</param>
+    public DateTime GetPreviousOccurrence(DateTime baseTime, DateTime endTime)
+    {
+        return InternalGetPreviousOccurence(baseTime, endTime);
     }
 
     /// <summary>
@@ -159,6 +178,22 @@ public sealed partial class Crontab
         for (var occurrence = GetNextOccurrence(baseTime, endTime);
              occurrence < endTime;
              occurrence = GetNextOccurrence(occurrence, endTime))
+        {
+            yield return occurrence;
+        }
+    }
+
+    /// <summary>
+    /// 获取特定时间范围所有发生时间
+    /// </summary>
+    /// <param name="baseTime">起始时间</param>
+    /// <param name="endTime">结束时间</param>
+    /// <returns><see cref="IEnumerable{T}"/></returns>
+    public IEnumerable<DateTime> GetPreviousOccurrences(DateTime baseTime, DateTime endTime)
+    {
+        for (var occurrence = GetPreviousOccurrence(baseTime, endTime);
+            occurrence > endTime;
+            occurrence = GetPreviousOccurrence(occurrence, endTime))
         {
             yield return occurrence;
         }

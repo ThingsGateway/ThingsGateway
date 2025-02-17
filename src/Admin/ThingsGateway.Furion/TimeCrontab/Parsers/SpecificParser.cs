@@ -71,8 +71,17 @@ internal class SpecificParser : ICronParser, ITimeParser
     /// </summary>
     /// <param name="currentValue">时间值</param>
     /// <returns><see cref="int"/></returns>
-    /// <exception cref="TimeCrontabException"></exception>
     public virtual int? Next(int currentValue)
+    {
+        return SpecificValue;
+    }
+
+    /// <summary>
+    /// 获取 Cron 字段种类当前值的上一个发生值
+    /// </summary>
+    /// <param name="currentValue">时间值</param>
+    /// <returns><see cref="int"/></returns>
+    public virtual int? Previous(int currentValue)
     {
         return SpecificValue;
     }
@@ -81,8 +90,16 @@ internal class SpecificParser : ICronParser, ITimeParser
     /// 获取 Cron 字段种类字段起始值
     /// </summary>
     /// <returns><see cref="int"/></returns>
-    /// <exception cref="TimeCrontabException"></exception>
     public int First()
+    {
+        return SpecificValue;
+    }
+
+    /// <summary>
+    /// 获取 Cron 字段种类字段末尾值
+    /// </summary>
+    /// <returns><see cref="int"/></returns>
+    public int Last()
     {
         return SpecificValue;
     }

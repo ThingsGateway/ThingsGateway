@@ -34,11 +34,20 @@ internal sealed class SpecificYearParser : SpecificParser
     /// </summary>
     /// <param name="currentValue">时间值</param>
     /// <returns><see cref="int"/></returns>
-    /// <exception cref="TimeCrontabException"></exception>
     public override int? Next(int currentValue)
     {
         // 如果当前年份小于具体值，则返回具体值，否则返回 null
         // 因为一旦指定了年份，那么就必须等到那一年才触发
         return currentValue < SpecificValue ? SpecificValue : null;
+    }
+
+    /// <summary>
+    /// 获取 Cron 字段种类当前值的上一个发生值
+    /// </summary>
+    /// <param name="currentValue">时间值</param>
+    /// <returns><see cref="int"/></returns>
+    public override int? Previous(int currentValue)
+    {
+        return currentValue > SpecificValue ? SpecificValue : null;
     }
 }

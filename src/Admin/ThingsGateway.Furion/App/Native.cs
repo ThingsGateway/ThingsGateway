@@ -16,6 +16,7 @@ using System.Reflection;
 using System.Security.Cryptography;
 
 using ThingsGateway;
+using ThingsGateway.Utilities;
 
 namespace System;
 
@@ -126,27 +127,7 @@ public static class Native
     /// <returns></returns>
     public static int GetIdlePort()
     {
-        const int fromPort = 10000;
-        const int toPort = 65535;
-
-        do
-        {
-            lock (_portLock)
-            {
-                var randomPort = RandomNumberGenerator.GetInt32(fromPort, toPort + 1);
-                if (!IsPortInUse(randomPort))
-                {
-                    return randomPort;
-                }
-            }
-
-            // 减少CPU资源消耗
-            Thread.Sleep(10);
-        } while (true);
+       return NetworkUtility.FindAvailableTcpPort(); ;
     }
 
-    private static bool IsPortInUse(int port)
-    {
-        return IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(p => p.Port == port);
-    }
 }

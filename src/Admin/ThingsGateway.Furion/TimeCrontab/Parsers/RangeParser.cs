@@ -141,7 +141,46 @@ internal sealed class RangeParser : ICronParser, ITimeParser
             newValue++;
         }
 
+        if (Kind == CrontabFieldKind.Year && newValue >= maximum)
+        {
+            return null;
+        }
+
         return newValue > maximum ? null : newValue;
+    }
+
+    /// <summary>
+    /// 获取 Cron 字段种类当前值的上一个发生值
+    /// </summary>
+    /// <param name="currentValue">时间值</param>
+    /// <returns><see cref="int"/></returns>
+    /// <exception cref="TimeCrontabException"></exception>
+    public int? Previous(int currentValue)
+    {
+        // 由于天、月、周计算复杂，所以这里排除对它们的处理
+        if (Kind == CrontabFieldKind.Day
+            || Kind == CrontabFieldKind.Month
+            || Kind == CrontabFieldKind.DayOfWeek)
+        {
+            throw new TimeCrontabException("Cannot call Previous for Day, Month or DayOfWeek types.");
+        }
+
+        // 默认递减步长为 1
+        int? newValue = currentValue - 1;
+
+        // 获取上一个匹配的发生值
+        var minimum = Constants.MinimumDateTimeValues[Kind];
+        while (newValue > minimum && !IsMatch(newValue.Value))
+        {
+            newValue--;
+        }
+
+        if (Kind == CrontabFieldKind.Year && newValue <= minimum)
+        {
+            return null;
+        }
+
+        return newValue < minimum ? null : newValue;
     }
 
     /// <summary>
@@ -191,6 +230,54 @@ internal sealed class RangeParser : ICronParser, ITimeParser
 
         // 缓存起始值
         FirstCache = newValue;
+        return newValue;
+    }
+
+    /// <summary>
+    /// 存储末尾值，避免重复计算
+    /// </summary>
+    private int? LastCache { get; set; }
+
+    /// <summary>
+    /// 获取 Cron 字段种类字段末尾值
+    /// </summary>
+    /// <returns><see cref="int"/></returns>
+    /// <exception cref="TimeCrontabException"></exception>
+    public int Last()
+    {
+        // 判断是否缓存过起始值，如果有则跳过
+        if (LastCache.HasValue)
+        {
+            return LastCache.Value;
+        }
+
+        // 由于天、月、周计算复杂，所以这里排除对它们的处理
+        if (Kind == CrontabFieldKind.Day
+            || Kind == CrontabFieldKind.Month
+            || Kind == CrontabFieldKind.DayOfWeek)
+        {
+            throw new TimeCrontabException("Cannot call Last for Day, Month or DayOfWeek types.");
+        }
+
+        var maximum = Constants.MinimumDateTimeValues[Kind];
+        var newValue = Constants.MaximumDateTimeValues[Kind];
+
+        // 获取首个符合的末尾值
+        while (newValue > maximum && !IsMatch(newValue))
+        {
+            newValue--;
+        }
+
+        if (newValue < maximum)
+        {
+            throw new TimeCrontabException(string.Format("Previous value for {0} on field {1} could not be found!",
+                ToString(),
+                Enum.GetName(typeof(CrontabFieldKind), Kind))
+            );
+        }
+
+        // 缓存末尾值
+        LastCache = newValue;
         return newValue;
     }
 

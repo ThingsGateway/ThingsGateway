@@ -282,7 +282,7 @@ public abstract class DriverBase : DisposableObject, IDriver
     /// </summary>
     /// <param name="cancellationToken">取消操作的令牌。</param>
     /// <returns>表示异步操作的任务。</returns>
-    internal async ValueTask StartAsync(CancellationToken cancellationToken)
+    internal virtual async ValueTask StartAsync(CancellationToken cancellationToken)
     {
         // 如果已经执行过初始化，则直接返回
         if (IsStarted)
@@ -338,7 +338,7 @@ public abstract class DriverBase : DisposableObject, IDriver
     /// </summary>
     /// <param name="cancellationToken">取消操作的令牌。</param>
     /// <returns>表示异步操作结果的枚举。</returns>
-    internal async ValueTask<ThreadRunReturnTypeEnum> ExecuteAsync(CancellationToken cancellationToken)
+    internal virtual async ValueTask<ThreadRunReturnTypeEnum> ExecuteAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -426,7 +426,7 @@ public abstract class DriverBase : DisposableObject, IDriver
     /// <summary>
     /// 已停止循环任务，释放插件
     /// </summary>
-    internal void Stop()
+    internal virtual void Stop()
     {
 
         if (!DisposedValue)

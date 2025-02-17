@@ -22,13 +22,24 @@ internal interface ITimeParser
     /// </summary>
     /// <param name="currentValue">时间值</param>
     /// <returns><see cref="int"/></returns>
-    /// <exception cref="TimeCrontabException"></exception>
     int? Next(int currentValue);
+
+    /// <summary>
+    /// 获取 Cron 字段种类当前值的上一个发生值
+    /// </summary>
+    /// <param name="currentValue">时间值</param>
+    /// <returns><see cref="int"/></returns>
+    int? Previous(int currentValue);
 
     /// <summary>
     /// 获取 Cron 字段种类字段起始值
     /// </summary>
     /// <returns><see cref="int"/></returns>
-    /// <exception cref="TimeCrontabException"></exception>
     int First();
+
+    /// <summary>
+    /// 获取 Cron 字段种类字段末尾值
+    /// </summary>
+    /// <returns><see cref="int"/></returns>
+    int Last();
 }

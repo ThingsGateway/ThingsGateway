@@ -14,7 +14,6 @@ namespace ThingsGateway.TimeCrontab;
 /// <summary>
 /// TimeCrontab 模块异常类
 /// </summary>
-[SuppressSniffer]
 public sealed class TimeCrontabException : Exception
 {
     /// <summary>

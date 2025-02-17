@@ -85,6 +85,18 @@ internal sealed class RandomParser : ICronParser, ITimeParser
     }
 
     /// <summary>
+    /// 获取 Cron 字段种类当前值的上一个发生值
+    /// </summary>
+    /// <param name="currentValue">时间值</param>
+    /// <returns><see cref="int"/></returns>
+    /// <exception cref="TimeCrontabException"></exception>
+    public int? Previous(int currentValue)
+    {
+        // 生成最小值和最大值之间的随机数
+        return random.Next(_minimumOfKind, _maximumOfKind + 1);
+    }
+
+    /// <summary>
     /// 获取 Cron 字段种类字段起始值
     /// </summary>
     /// <returns><see cref="int"/></returns>
@@ -92,6 +104,15 @@ internal sealed class RandomParser : ICronParser, ITimeParser
     public int First()
     {
         return 0;
+    }
+
+    /// <summary>
+    /// 获取 Cron 字段种类字段末尾值
+    /// </summary>
+    /// <returns><see cref="int"/></returns>
+    public int Last()
+    {
+        return Constants.MaximumDateTimeValues[Kind];
     }
 
     /// <summary>

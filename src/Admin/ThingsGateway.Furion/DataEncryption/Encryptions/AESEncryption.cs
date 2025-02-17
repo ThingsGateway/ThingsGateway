@@ -9,7 +9,6 @@
 // 许可证的完整文本可以在源代码树根目录中的 LICENSE-APACHE 和 LICENSE-MIT 文件中找到。
 // ------------------------------------------------------------------------
 
-using System.Buffers.Text;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -36,11 +35,17 @@ public class AESEncryption
         var bKey = Encoding.UTF8.GetBytes(skey);
 
         using var aesAlg = Aes.Create();
-        aesAlg.IV = iv ?? aesAlg.IV;
+        aesAlg.Key = bKey;
         aesAlg.Mode = mode;
         aesAlg.Padding = padding;
 
-        using var encryptor = aesAlg.CreateEncryptor(bKey, aesAlg.IV);
+        // 如果是 ECB 模式，不需要 IV
+        if (mode != CipherMode.ECB)
+        {
+            aesAlg.IV = iv ?? aesAlg.IV; // 如果未提供 IV，则使用随机生成的 IV
+        }
+
+        using var encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
         using var msEncrypt = new MemoryStream();
         using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
         using (var swEncrypt = new StreamWriter(csEncrypt))
@@ -50,16 +55,17 @@ public class AESEncryption
 
         var encryptedContent = msEncrypt.ToArray();
 
-        var bVector = aesAlg.IV;
-        var dataLength = bVector.Length + encryptedContent.Length;
-        var base64Length = Base64.GetMaxEncodedToUtf8Length(dataLength);
-        var result = new byte[base64Length];
+        // 如果是 CBC 模式，将 IV 和密文拼接在一起
+        if (mode != CipherMode.ECB)
+        {
+            var result = new byte[aesAlg.IV.Length + encryptedContent.Length];
+            Buffer.BlockCopy(aesAlg.IV, 0, result, 0, aesAlg.IV.Length);
+            Buffer.BlockCopy(encryptedContent, 0, result, aesAlg.IV.Length, encryptedContent.Length);
+            return Convert.ToBase64String(result);
+        }
 
-        Unsafe.CopyBlock(ref result[0], ref bVector[0], (uint)bVector.Length);
-        Unsafe.CopyBlock(ref result[bVector.Length], ref encryptedContent[0], (uint)encryptedContent.Length);
-        Base64.EncodeToUtf8InPlace(result, dataLength, out base64Length);
-
-        return Encoding.ASCII.GetString(result.AsSpan()[..base64Length]);
+        // 如果是 ECB 模式，直接返回密文的 Base64 编码
+        return Convert.ToBase64String(encryptedContent);
     }
 
     /// <summary>
@@ -75,20 +81,28 @@ public class AESEncryption
     {
         var fullCipher = Convert.FromBase64String(hash);
 
-        var bVector = new byte[16];
-        var cipher = new byte[fullCipher.Length - bVector.Length];
-
-        Unsafe.CopyBlock(ref bVector[0], ref fullCipher[0], (uint)bVector.Length);
-        Unsafe.CopyBlock(ref cipher[0], ref fullCipher[bVector.Length], (uint)(fullCipher.Length - bVector.Length));
         var bKey = Encoding.UTF8.GetBytes(skey);
 
         using var aesAlg = Aes.Create();
-        aesAlg.IV = iv ?? bVector;
+        aesAlg.Key = bKey;
         aesAlg.Mode = mode;
         aesAlg.Padding = padding;
 
-        using var decryptor = aesAlg.CreateDecryptor(bKey, aesAlg.IV);
-        using var msDecrypt = new MemoryStream(cipher);
+        // 如果是 ECB 模式，不需要 IV
+        if (mode != CipherMode.ECB)
+        {
+            var bVector = new byte[16];
+            var cipher = new byte[fullCipher.Length - bVector.Length];
+
+            Unsafe.CopyBlock(ref bVector[0], ref fullCipher[0], (uint)bVector.Length);
+            Unsafe.CopyBlock(ref cipher[0], ref fullCipher[bVector.Length], (uint)(fullCipher.Length - bVector.Length));
+
+            aesAlg.IV = iv ?? bVector;
+            fullCipher = cipher;
+        }
+
+        using var decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+        using var msDecrypt = new MemoryStream(fullCipher);
         using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
         using var srDecrypt = new StreamReader(csDecrypt);
 
@@ -106,23 +120,52 @@ public class AESEncryption
     /// <returns>加密后的字节数组</returns>
     public static byte[] Encrypt(byte[] bytes, string skey, byte[] iv = null, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
     {
-        var bKey = new byte[32];
-        Array.Copy(Encoding.UTF8.GetBytes(skey.PadRight(bKey.Length)), bKey, bKey.Length);
+        // 确保密钥长度为 128 位、192 位或 256 位
+        var bKey = new byte[32]; // 256 位密钥
+        var keyBytes = Encoding.UTF8.GetBytes(skey);
+        Array.Copy(keyBytes, bKey, Math.Min(keyBytes.Length, bKey.Length));
 
-        iv ??= MD5Encryption.Encrypt(skey, false, is16: true).PadRight(16).Take(16).Select(c => (byte)c).ToArray();
+        // 如果是 ECB 模式，不需要 IV
+        if (mode != CipherMode.ECB)
+        {
+            iv ??= GenerateRandomIV(); // 生成随机 IV
+        }
 
         using var aesAlg = Aes.Create();
-        aesAlg.IV = iv;
+        aesAlg.Key = bKey;
         aesAlg.Mode = mode;
         aesAlg.Padding = padding;
 
+        if (mode != CipherMode.ECB)
+        {
+            aesAlg.IV = iv;
+        }
+
         using var memoryStream = new MemoryStream();
-        using var cryptoStream = new CryptoStream(memoryStream, aesAlg.CreateEncryptor(bKey, aesAlg.IV), CryptoStreamMode.Write);
+        using var cryptoStream = new CryptoStream(memoryStream, aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV), CryptoStreamMode.Write);
 
         cryptoStream.Write(bytes, 0, bytes.Length);
         cryptoStream.FlushFinalBlock();
 
+        // 如果是 CBC 模式，将 IV 和密文拼接在一起
+        if (mode != CipherMode.ECB)
+        {
+            var result = new byte[aesAlg.IV.Length + memoryStream.ToArray().Length];
+            Buffer.BlockCopy(aesAlg.IV, 0, result, 0, aesAlg.IV.Length);
+            Buffer.BlockCopy(memoryStream.ToArray(), 0, result, aesAlg.IV.Length, memoryStream.ToArray().Length);
+            return result;
+        }
+
+        // 如果是 ECB 模式，直接返回密文
         return memoryStream.ToArray();
+    }
+
+    // 生成随机 IV
+    private static byte[] GenerateRandomIV()
+    {
+        using var aes = Aes.Create();
+        aes.GenerateIV();
+        return aes.IV;
     }
 
     /// <summary>
@@ -136,18 +179,35 @@ public class AESEncryption
     /// <returns></returns>
     public static byte[] Decrypt(byte[] bytes, string skey, byte[] iv = null, CipherMode mode = CipherMode.CBC, PaddingMode padding = PaddingMode.PKCS7)
     {
-        var bKey = new byte[32];
-        Array.Copy(Encoding.UTF8.GetBytes(skey.PadRight(bKey.Length)), bKey, bKey.Length);
+        // 确保密钥长度为 128 位、192 位或 256 位
+        var bKey = new byte[32]; // 256 位密钥
+        var keyBytes = Encoding.UTF8.GetBytes(skey);
+        Array.Copy(keyBytes, bKey, Math.Min(keyBytes.Length, bKey.Length));
 
-        iv ??= MD5Encryption.Encrypt(skey, false, is16: true).PadRight(16).Take(16).Select(c => (byte)c).ToArray();
+        // 如果是 ECB 模式，不需要 IV
+        if (mode != CipherMode.ECB)
+        {
+            if (iv == null)
+            {
+                // 从密文中提取 IV
+                iv = new byte[16];
+                Array.Copy(bytes, iv, iv.Length);
+                bytes = bytes.Skip(iv.Length).ToArray();
+            }
+        }
 
         using var aesAlg = Aes.Create();
-        aesAlg.IV = iv;
+        aesAlg.Key = bKey;
         aesAlg.Mode = mode;
         aesAlg.Padding = padding;
 
+        if (mode != CipherMode.ECB)
+        {
+            aesAlg.IV = iv;
+        }
+
         using var memoryStream = new MemoryStream(bytes);
-        using var cryptoStream = new CryptoStream(memoryStream, aesAlg.CreateDecryptor(bKey, aesAlg.IV), CryptoStreamMode.Read);
+        using var cryptoStream = new CryptoStream(memoryStream, aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV), CryptoStreamMode.Read);
         using var originalStream = new MemoryStream();
 
         var buffer = new byte[1024];

@@ -68,6 +68,30 @@ internal sealed class AnyParser : ICronParser, ITimeParser
     }
 
     /// <summary>
+    /// 获取 Cron 字段种类当前值的上一个发生值
+    /// </summary>
+    /// <param name="currentValue">时间值</param>
+    /// <returns><see cref="int"/></returns>
+    /// <exception cref="TimeCrontabException"></exception>
+    public int? Previous(int currentValue)
+    {
+        // 由于天、月、周计算复杂，所以这里排除对它们的处理
+        if (Kind == CrontabFieldKind.Day
+            || Kind == CrontabFieldKind.Month
+            || Kind == CrontabFieldKind.DayOfWeek)
+        {
+            throw new TimeCrontabException("Cannot call Previous for Day, Month or DayOfWeek types.");
+        }
+
+        // 默认递减步长为 1
+        int? newValue = currentValue - 1;
+
+        // 验证最小值
+        var minimum = Constants.MinimumDateTimeValues[Kind];
+        return newValue < minimum ? null : newValue;
+    }
+
+    /// <summary>
     /// 获取 Cron 字段种类字段起始值
     /// </summary>
     /// <returns><see cref="int"/></returns>
@@ -83,6 +107,24 @@ internal sealed class AnyParser : ICronParser, ITimeParser
         }
 
         return 0;
+    }
+
+    /// <summary>
+    /// 获取 Cron 字段种类字段末尾值
+    /// </summary>
+    /// <returns><see cref="int"/></returns>
+    /// <exception cref="TimeCrontabException"></exception>
+    public int Last()
+    {
+        // 由于天、月、周计算复杂，所以这里排除对它们的处理
+        if (Kind == CrontabFieldKind.Day
+            || Kind == CrontabFieldKind.Month
+            || Kind == CrontabFieldKind.DayOfWeek)
+        {
+            throw new TimeCrontabException("Cannot call Last for Day, Month or DayOfWeek types.");
+        }
+
+        return Constants.MaximumDateTimeValues[Kind];
     }
 
     /// <summary>
