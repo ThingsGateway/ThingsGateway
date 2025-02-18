@@ -6,7 +6,7 @@
 	<ItemGroup>
     <ProjectReference Include="..\ThingsGateway.Admin.Application\ThingsGateway.Admin.Application.csproj" />
     <PackageReference Include="BootstrapBlazor.Chart" Version="9.0.0" />
-    <PackageReference Include="BootstrapBlazor.TableExport" Version="9.1.1" />
+    <PackageReference Include="BootstrapBlazor.TableExport" Version="9.2.1" />
   </ItemGroup>
 	<PropertyGroup>
 		<TargetFrameworks>net8.0;</TargetFrameworks>

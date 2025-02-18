@@ -51,6 +51,7 @@ public abstract class CollectBase : DriverBase
     /// </summary>
     public override void AfterVariablesChanged()
     {
+        LogMessage?.LogInformation("Refresh variable");
         var currentDevice = CurrentDevice;
         VariableRuntimes = currentDevice.VariableRuntimes.Where(a => a.Value.Enable).ToDictionary(a => a.Value.Name, a => a.Value);
 

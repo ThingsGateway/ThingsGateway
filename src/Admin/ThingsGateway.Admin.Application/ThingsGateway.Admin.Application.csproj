@@ -18,7 +18,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="BootstrapBlazor.MiniExcel" Version="1.38.0" />
+		<PackageReference Include="MiniExcel" Version="1.38.0" />
 		<PackageReference Include="UAParser" Version="3.1.47" />
 		<PackageReference Include="Rougamo.Fody" Version="5.0.0" />
 		<PackageReference Include="MailKit" Version="4.10.0" />

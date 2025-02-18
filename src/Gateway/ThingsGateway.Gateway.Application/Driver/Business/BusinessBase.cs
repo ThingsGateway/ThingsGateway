@@ -68,6 +68,7 @@ public abstract class BusinessBase : DriverBase
 
     public override void AfterVariablesChanged()
     {
+        LogMessage?.LogInformation("Refresh variable");
         // 获取与当前设备相关的变量,CurrentDevice.VariableRuntimes并不适用于业务插件
         var variableRuntimes = GlobalData.Variables.Where(a =>
         {

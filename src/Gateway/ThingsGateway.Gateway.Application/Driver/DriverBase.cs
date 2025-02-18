@@ -115,28 +115,6 @@ public abstract class DriverBase : DisposableObject, IDriver
 
     #endregion 属性
 
-    #region 变量管理
-
-    private WaitLock NewVariableLock = new();
-
-    /// <summary>
-    /// 动态刷新变量
-    /// </summary>
-    public async Task RefreshVariableAsync()
-    {
-        try
-        {
-            await NewVariableLock.WaitAsync().ConfigureAwait(false);
-            AfterVariablesChanged();
-        }
-        finally
-        {
-            NewVariableLock.Release();
-        }
-    }
-
-    #endregion
-
     /// <summary>
     /// 暂停
     /// </summary>
