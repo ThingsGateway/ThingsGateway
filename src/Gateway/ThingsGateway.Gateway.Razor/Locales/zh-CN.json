@@ -21,7 +21,7 @@
     "Test": "一键添加测试变量"
   },
 
-  "ThingsGateway.Gateway.Razor.DriverDebugPage": {
+  "ThingsGateway.Gateway.Razor.PluginDebugPage": {
     "PluginUINotNull": "此插件未实现调试页面",
     "New": "新建",
     "NewWinbox": "新建窗口"

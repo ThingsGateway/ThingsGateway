@@ -61,6 +61,12 @@
     "Test": "Addition of test variables"
   },
 
+  "ThingsGateway.Gateway.Razor.PluginDebugPage": {
+    "PluginUINotNull": "This plugin does not implement a debugging page",
+    "New": "New",
+    "NewWinbox": "NewWinbox"
+  },
+
   "ThingsGateway.Gateway.Razor.QuickActions": {
     "TooltipText": "Quick Operation",
     "HeaderText": "Quick Operation",
