@@ -17,6 +17,7 @@ using ThingsGateway.Foundation.SiemensS7;
 using ThingsGateway.Gateway.Application;
 
 using TouchSocket.Core;
+using TouchSocket.Sockets;
 
 namespace ThingsGateway.Plugin.SiemensS7;
 
@@ -53,7 +54,7 @@ public class SiemensS7Master : CollectBase
     public override Type DriverVariableAddressUIType => typeof(SiemensS7AddressComponent);
 
 
-    protected override void InitChannel(IChannel? channel = null)
+    protected override async Task InitChannelAsync(IChannel? channel = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         //载入配置
@@ -65,7 +66,7 @@ public class SiemensS7Master : CollectBase
         _plc.Rack = _driverPropertys.Rack;
         _plc.Slot = _driverPropertys.Slot;
         _plc.InitChannel(channel, LogMessage);
-        base.InitChannel(channel);
+        await base.InitChannelAsync(channel).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -208,10 +209,18 @@ public class SiemensS7Master : CollectBase
     }
 
     /// <inheritdoc/>
-    protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRuntime> deviceVariables)
+    protected override async Task<List<VariableSourceRead>> ProtectedLoadSourceReadAsync(List<VariableRuntime> deviceVariables)
     {
         try
         {
+            try
+            {
+                await _plc.Channel.ConnectAsync().ConfigureAwait(false);
+            }
+            catch
+            {
+
+            }
             return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, _plc.OnLine ? _plc.PduLength : _driverPropertys.MaxPack, CurrentDevice.IntervalTime);
         }
         finally { }

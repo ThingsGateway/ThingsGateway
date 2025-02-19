@@ -49,7 +49,7 @@ public abstract class CollectBase : DriverBase
     /// <summary>
     /// 获取设备变量打包列表/特殊方法列表
     /// </summary>
-    public override void AfterVariablesChanged()
+    public override async Task AfterVariablesChangedAsync()
     {
         LogMessage?.LogInformation("Refresh variable");
         var currentDevice = CurrentDevice;
@@ -98,7 +98,7 @@ public abstract class CollectBase : DriverBase
             }).ToList();
 
             // 将打包后的结果存储在当前设备的 VariableSourceReads 属性中
-            currentDevice.VariableSourceReads = ProtectedLoadSourceRead(tags.Where(source).ToList());
+            currentDevice.VariableSourceReads = await ProtectedLoadSourceReadAsync(tags.Where(source).ToList()).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -486,7 +486,7 @@ public abstract class CollectBase : DriverBase
     /// </summary>
     /// <param name="deviceVariables">设备下的全部通讯点位</param>
     /// <returns></returns>
-    protected abstract List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRuntime> deviceVariables);
+    protected abstract Task<List<VariableSourceRead>> ProtectedLoadSourceReadAsync(List<VariableRuntime> deviceVariables);
 
 
     protected AsyncReadWriteLock ReadWriteLock = new();

@@ -70,7 +70,7 @@ public class ModbusSlave : BusinessBase
     protected IStringLocalizer Localizer { get; private set; }
 
     /// <inheritdoc/>
-    protected override void InitChannel(IChannel? channel = null)
+    protected override async Task InitChannelAsync(IChannel? channel = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         //载入配置
@@ -86,7 +86,7 @@ public class ModbusSlave : BusinessBase
         _plc.HeartbeatTime = _driverPropertys.HeartbeatTime;
         _plc.Heartbeat = _driverPropertys.Heartbeat;
         _plc.InitChannel(channel, LogMessage);
-        base.InitChannel(channel);
+        await base.InitChannelAsync(channel).ConfigureAwait(false);
 
         _plc.WriteData -= OnWriteData;
         _plc.WriteData += OnWriteData;
@@ -105,9 +105,9 @@ public class ModbusSlave : BusinessBase
         GlobalData.VariableValueChangeEvent += VariableValueChange;
 
     }
-    public override void AfterVariablesChanged()
+    public override async Task AfterVariablesChangedAsync()
     {
-        base.AfterVariablesChanged();
+        await base.AfterVariablesChangedAsync().ConfigureAwait(false);
         _modbusVariableQueue.Clear();
         VariableRuntimes.ForEach(a =>
         {

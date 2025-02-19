@@ -47,7 +47,7 @@ public class OpcUaMaster : CollectBase
 
 
 
-    protected override void InitChannel(IChannel? channel = null)
+    protected override async Task InitChannelAsync(IChannel? channel = null)
     {
 
 
@@ -74,7 +74,7 @@ public class OpcUaMaster : CollectBase
             _plc.DataChangedHandler += DataChangedHandler;
         }
         _plc.OpcUaProperty = config;
-        base.InitChannel(channel);
+        await base.InitChannelAsync(channel).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -165,34 +165,42 @@ public class OpcUaMaster : CollectBase
     }
 
     /// <inheritdoc/>
-    protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRuntime> deviceVariables)
+    protected override async Task<List<VariableSourceRead>> ProtectedLoadSourceReadAsync(List<VariableRuntime> deviceVariables)
     {
-        _plc?.Disconnect();
-        if (deviceVariables.Count > 0)
+        try
         {
-            var dataLists = deviceVariables.ChunkBetter(_driverProperties.GroupSize);
-            _plc.Variables = new();
-            _plc.Variables.AddRange(dataLists.Select(a => a.Where(a => !a.RegisterAddress.IsNullOrEmpty()).Select(a => a.RegisterAddress!).ToList()).ToList());
-            var dataResult = new List<VariableSourceRead>();
-            foreach (var variable in dataLists)
+            _plc?.Disconnect();
+            if (deviceVariables.Count > 0)
             {
-                var sourVars = new VariableSourceRead()
+                var dataLists = deviceVariables.ChunkBetter(_driverProperties.GroupSize);
+                _plc.Variables = new();
+                _plc.Variables.AddRange(dataLists.Select(a => a.Where(a => !a.RegisterAddress.IsNullOrEmpty()).Select(a => a.RegisterAddress!).ToList()).ToList());
+                var dataResult = new List<VariableSourceRead>();
+                foreach (var variable in dataLists)
                 {
-                    TimeTick = new(_driverProperties.UpdateRate.ToString()),
-                    RegisterAddress = "",
-                };
-                foreach (var item in variable)
-                {
-                    sourVars.AddVariable(item);
+                    var sourVars = new VariableSourceRead()
+                    {
+                        TimeTick = new(_driverProperties.UpdateRate.ToString()),
+                        RegisterAddress = "",
+                    };
+                    foreach (var item in variable)
+                    {
+                        sourVars.AddVariable(item);
+                    }
+                    dataResult.Add(sourVars);
                 }
-                dataResult.Add(sourVars);
-            }
 
-            return dataResult;
+                return dataResult;
+            }
+            else
+            {
+                return new();
+            }
         }
-        else
+        finally
         {
-            return new();
+
+            await _plc.ConnectAsync(default).ConfigureAwait(false);
         }
     }
 
@@ -289,6 +297,15 @@ public class OpcUaMaster : CollectBase
         LogMessage?.Log((LogLevel)level, sender, message, ex);
     }
 
+    public override async Task AfterVariablesChangedAsync()
+    {
+        await base.AfterVariablesChangedAsync().ConfigureAwait(false);
+
+        VariableAddresDicts = VariableRuntimes.Select(a => a.Value).Where(it => !it.RegisterAddress.IsNullOrEmpty()).GroupBy(a => a.RegisterAddress).ToDictionary(a => a.Key!, b => b.ToList());
+    }
+
+    private Dictionary<string, List<VariableRuntime>> VariableAddresDicts { get; set; } = new();
+
     private void DataChangedHandler((VariableNode variableNode, DataValue dataValue, JToken jToken) data)
     {
         DateTime time = DateTime.Now;
@@ -299,16 +316,18 @@ public class OpcUaMaster : CollectBase
             if (_token.IsCancellationRequested)
                 return;
 
-            LogMessage.Trace($"{ToString()} Change: {Environment.NewLine} {data.variableNode.NodeId} : {data.jToken?.ToString()}");
 
             if (CurrentDevice.Pause)
             {
                 return;
             }
+
+            LogMessage.Trace($"{ToString()} Change: {Environment.NewLine} {data.variableNode.NodeId} : {data.jToken?.ToString()}");
+
             //尝试固定点位的数据类型
             var type = TypeInfo.GetSystemType(TypeInfo.GetBuiltInType(data.variableNode.DataType, _plc.Session.SystemContext.TypeTable), data.variableNode.ValueRank);
 
-            var itemReads = VariableRuntimes.Select(a => a.Value).Where(it => it.RegisterAddress == data.variableNode.NodeId);
+            if (!VariableAddresDicts.TryGetValue(data.variableNode.NodeId.ToString(), out var itemReads)) return;
 
             object value;
             if (data.jToken is JValue jValue)

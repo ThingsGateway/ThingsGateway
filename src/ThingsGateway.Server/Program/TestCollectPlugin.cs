@@ -34,7 +34,7 @@
 //    /// <summary>
 //    /// 在插件初始化时调用，只会执行一次，参数为插件默认的链路通道类，如未实现可忽略l
 //    /// </summary>
-//        protected override void InitChannel(IChannel? channel = null)
+//        protected override Task InitChannelAsync(IChannel? channel = null)
 //    {
 //        //做一些初始化操作
 //    }
@@ -42,7 +42,7 @@
 //    /// <summary>
 //    /// 变量打包操作，会在Init方法后执行，参数为设备变量列表，返回源读取变量列表
 //    /// </summary>
-//    protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRuntime> deviceVariables)
+//    protected override Task<List<VariableSourceRead>> ProtectedLoadSourceReadAsync(List<VariableRuntime> deviceVariables)
 //    {
 //        //实现将设备变量打包成源读取变量
 //        //比如如果需要实现MC中的字多读功能，需将多个变量地址打包成一个源读取地址和读取长度，根据一系列规则，添加解析标识，然后在返回的整个字节数组中解析出原来的变量地址代表的数据字节

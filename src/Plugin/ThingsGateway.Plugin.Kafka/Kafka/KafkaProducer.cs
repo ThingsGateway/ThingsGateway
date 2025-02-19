@@ -27,7 +27,7 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
 
     protected override BusinessPropertyWithCacheIntervalScript _businessPropertyWithCacheIntervalScript => _driverPropertys;
 
-    protected override void InitChannel(IChannel? channel = null)
+    protected override async Task InitChannelAsync(IChannel? channel = null)
     {
         #region 初始化
 
@@ -60,7 +60,7 @@ public partial class KafkaProducer : BusinessBaseWithCacheIntervalScript<Variabl
         #endregion Kafka 生产者
 
         #endregion 初始化
-        base.InitChannel(channel);
+        await base.InitChannelAsync(channel).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

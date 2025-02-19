@@ -83,7 +83,7 @@ public class VariableRuntimeService : IVariableRuntimeService
             //根据条件重启通道线程
             foreach (var driver in changedDriver)
             {
-                driver.AfterVariablesChanged();
+                await driver.AfterVariablesChangedAsync().ConfigureAwait(false);
             }
 
         }
@@ -156,7 +156,7 @@ public class VariableRuntimeService : IVariableRuntimeService
             //根据条件重启通道线程
             foreach (var driver in changedDriver)
             {
-                driver.AfterVariablesChanged();
+                await driver.AfterVariablesChangedAsync().ConfigureAwait(false);
             }
 
             return true;
@@ -217,7 +217,7 @@ public class VariableRuntimeService : IVariableRuntimeService
 
             foreach (var driver in changedDriver)
             {
-                driver.AfterVariablesChanged();
+                await driver.AfterVariablesChangedAsync().ConfigureAwait(false);
             }
 
 
@@ -295,7 +295,7 @@ public class VariableRuntimeService : IVariableRuntimeService
 
             foreach (var driver in changedDriver)
             {
-                driver.AfterVariablesChanged();
+                await driver.AfterVariablesChangedAsync().ConfigureAwait(false);
             }
 
 
@@ -467,7 +467,7 @@ public class VariableRuntimeService : IVariableRuntimeService
             //根据条件重启通道线程
             foreach (var driver in changedDriver)
             {
-                driver.AfterVariablesChanged();
+                await driver.AfterVariablesChangedAsync().ConfigureAwait(false);
             }
 
 

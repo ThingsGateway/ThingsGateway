@@ -50,7 +50,7 @@ public partial class OpcUa105Server : BusinessBase
     private static readonly string[] separator = new string[] { ";" };
 
 
-    public override void AfterVariablesChanged()
+    public override async Task AfterVariablesChangedAsync()
     {
         // 如果业务属性指定了全部变量，则设置当前设备的变量运行时列表和采集设备列表
         if (_driverPropertys.IsAllVariable)
@@ -61,7 +61,7 @@ public partial class OpcUa105Server : BusinessBase
         }
         else
         {
-            base.AfterVariablesChanged();
+            await base.AfterVariablesChangedAsync().ConfigureAwait(false);
         }
         VariableRuntimes.ForEach(a =>
         {
@@ -70,14 +70,14 @@ public partial class OpcUa105Server : BusinessBase
     }
 
 
-    protected override void InitChannel(IChannel? channel = null)
+    protected override async Task InitChannelAsync(IChannel? channel = null)
     {
         ApplicationInstance.MessageDlg = new ApplicationMessageDlg(LogMessage);//默认返回true
 
         //Utils.SetLogger(new OpcUaLogger(LogMessage)); //调试用途
         m_application = new ApplicationInstance();
         m_configuration = GetDefaultConfiguration();
-        m_configuration.Validate(ApplicationType.Server).GetAwaiter().GetResult();
+        await m_configuration.Validate(ApplicationType.Server).ConfigureAwait(false);
         m_application.ApplicationConfiguration = m_configuration;
         if (m_configuration.SecurityConfiguration.AutoAcceptUntrustedCertificates)
         {
@@ -94,7 +94,7 @@ public partial class OpcUa105Server : BusinessBase
         GlobalData.VariableValueChangeEvent += VariableValueChange;
 
         Localizer = App.CreateLocalizerByType(typeof(OpcUa105Server))!;
-        base.InitChannel(channel);
+        await base.InitChannelAsync(channel).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -374,7 +374,7 @@ public partial class OpcUa105Server : BusinessBase
         config.TraceConfiguration = new TraceConfiguration();
 
         config.CertificateValidator = new CertificateValidator();
-        config.CertificateValidator.Update(config).GetAwaiter().GetResult();
+        config.CertificateValidator.Update(config).ConfigureAwait(false);
         config.Extensions = new XmlElementCollection();
 
         return config;

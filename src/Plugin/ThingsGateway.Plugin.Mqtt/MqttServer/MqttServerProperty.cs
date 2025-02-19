@@ -43,7 +43,7 @@ public class MqttServerProperty : BusinessPropertyWithCacheIntervalScript
     /// 允许连接的ID(前缀)
     /// </summary>
     [DynamicProperty]
-    public string StartWithId { get; set; } = "ThingsGatewayId";
+    public string StartWithId { get; set; }
 
     /// <summary>
     /// 允许Rpc写入

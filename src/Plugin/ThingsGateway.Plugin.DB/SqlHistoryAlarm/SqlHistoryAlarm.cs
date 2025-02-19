@@ -34,17 +34,17 @@ public partial class SqlHistoryAlarm : BusinessBaseWithCacheVariableModel<Histor
 
     protected override BusinessPropertyWithCache _businessPropertyWithCache => _driverPropertys;
 
-    protected override void InitChannel(IChannel? channel = null)
+    protected override async Task InitChannelAsync(IChannel? channel = null)
     {
 
         _config.ForType<AlarmVariable, HistoryAlarm>().Map(dest => dest.Id, (src) => CommonUtils.GetSingleId());
         GlobalData.AlarmChangedEvent += AlarmWorker_OnAlarmChanged;
 
-        base.InitChannel(channel);
+        await base.InitChannelAsync(channel).ConfigureAwait(false);
     }
-    public override void AfterVariablesChanged()
+    public override async Task AfterVariablesChangedAsync()
     {
-        base.AfterVariablesChanged();
+        await base.AfterVariablesChangedAsync().ConfigureAwait(false);
         VariableRuntimes = GlobalData.ReadOnlyVariables.Where(a => a.Value.AlarmEnable).ToDictionary(a => a.Key, a => a.Value);
 
         CollectDevices = GlobalData.ReadOnlyIdDevices

@@ -67,6 +67,7 @@ public class DoTask
 
     private async Task Do()
     {
+        await Task.Yield();
         while (!_cancelTokenSource.IsCancellationRequested)
         {
             try

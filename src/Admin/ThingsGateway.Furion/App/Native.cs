@@ -11,9 +11,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 
-using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Security.Cryptography;
 
 using ThingsGateway;
 using ThingsGateway.Utilities;
@@ -127,7 +125,7 @@ public static class Native
     /// <returns></returns>
     public static int GetIdlePort()
     {
-       return NetworkUtility.FindAvailableTcpPort(); ;
+        return NetworkUtility.FindAvailableTcpPort(); ;
     }
 
 }

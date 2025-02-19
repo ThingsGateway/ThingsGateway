@@ -45,7 +45,7 @@ public class Dlt645_2007Master : CollectBase
     public override IDevice? FoundationDevice => _plc;
 
 
-    protected override void InitChannel(IChannel? channel = null)
+    protected override async Task InitChannelAsync(IChannel? channel = null)
     {
 
         ArgumentNullException.ThrowIfNull(channel);
@@ -62,12 +62,13 @@ public class Dlt645_2007Master : CollectBase
         _plc.Heartbeat = _driverPropertys.Heartbeat;
         _plc.InitChannel(channel, LogMessage);
 
-        base.InitChannel(channel);
+        await base.InitChannelAsync(channel).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRuntime> deviceVariables)
+    protected override async Task<List<VariableSourceRead>> ProtectedLoadSourceReadAsync(List<VariableRuntime> deviceVariables)
     {
+        await Task.CompletedTask.ConfigureAwait(false);
         return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, 0, CurrentDevice.IntervalTime);
     }
 }

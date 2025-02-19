@@ -96,9 +96,9 @@ public partial class MqttCollect : CollectBase
         }
     }
 
-    protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRuntime> deviceVariables)
+    protected override async Task<List<VariableSourceRead>> ProtectedLoadSourceReadAsync(List<VariableRuntime> deviceVariables)
     {
-
+        await Task.CompletedTask.ConfigureAwait(false);
         if (deviceVariables.Count > 0)
         {
             var dataResult = new List<VariableSourceRead>();
@@ -176,7 +176,7 @@ public partial class MqttCollect : CollectBase
 
     }
 
-    protected override void InitChannel(IChannel? channel = null)
+    protected override async Task InitChannelAsync(IChannel? channel = null)
     {
 
         #region 初始化
@@ -212,7 +212,7 @@ public partial class MqttCollect : CollectBase
         _mqttClient.ApplicationMessageReceivedAsync += MqttClient_ApplicationMessageReceivedAsync;
 
         #endregion 初始化
-        base.InitChannel(channel);
+        await base.InitChannelAsync(channel).ConfigureAwait(false);
     }
     protected override async Task ProtectedStartAsync(CancellationToken cancellationToken)
     {

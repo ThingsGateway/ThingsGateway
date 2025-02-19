@@ -35,13 +35,15 @@ public class LogJob : IJob
     private static async Task DeleteRpcLog(int daysAgo, CancellationToken stoppingToken)
     {
         using var db = DbContext.Db.GetConnectionScopeWithAttr<RpcLog>().CopyNew();
-        await db.DeleteableWithAttr<RpcLog>().Where(u => u.LogTime < DateTime.Now.AddDays(-daysAgo)).ExecuteCommandAsync(stoppingToken).ConfigureAwait(false); // 删除操作日志
+        var time = DateTime.Now.AddDays(-daysAgo);
+        await db.DeleteableWithAttr<RpcLog>().Where(u => u.LogTime < time).ExecuteCommandAsync(stoppingToken).ConfigureAwait(false); // 删除操作日志
     }
 
     private static async Task DeleteBackendLog(int daysAgo, CancellationToken stoppingToken)
     {
         using var db = DbContext.Db.GetConnectionScopeWithAttr<BackendLog>().CopyNew();
-        await db.DeleteableWithAttr<BackendLog>().Where(u => u.LogTime < DateTime.Now.AddDays(-daysAgo)).ExecuteCommandAsync(stoppingToken).ConfigureAwait(false); // 删除操作日志
+        var time = DateTime.Now.AddDays(-daysAgo);
+        await db.DeleteableWithAttr<BackendLog>().Where(u => u.LogTime < time).ExecuteCommandAsync(stoppingToken).ConfigureAwait(false); // 删除操作日志
     }
 
 

@@ -391,7 +391,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
 
                     // 初始化驱动程序对象，并加载源读取
-                    driver.InitChannel(Channel);
+                    await driver.InitChannelAsync(Channel).ConfigureAwait(false);
 
                     if (Channel != null && Drivers.Count <= 1)
                     {
@@ -772,7 +772,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
             {
                 if (businessDeviceRuntime.Driver != null)
                 {
-                    businessDeviceRuntime.Driver.AfterVariablesChanged();
+                    await businessDeviceRuntime.Driver.AfterVariablesChangedAsync().ConfigureAwait(false);
                 }
             }
         }

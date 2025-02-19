@@ -273,7 +273,7 @@ public partial class MqttServer : BusinessBaseWithCacheIntervalScript<VariableDa
 
     private async Task MqttServer_ValidatingConnectionAsync(ValidatingConnectionEventArgs arg)
     {
-        if (!arg.ClientId.StartsWith(_driverPropertys.StartWithId))
+        if (string.IsNullOrEmpty(_driverPropertys.StartWithId) || !arg.ClientId.StartsWith(_driverPropertys.StartWithId))
         {
             arg.ReasonCode = MqttConnectReasonCode.ClientIdentifierNotValid;
             return;

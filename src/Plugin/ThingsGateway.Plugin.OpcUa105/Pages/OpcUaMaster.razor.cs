@@ -166,10 +166,10 @@ public partial class OpcUaMaster : IDisposable
         }
     }
 
-    private void Remove()
+    private async Task Remove()
     {
-        if (_plc.Connected)
-            _plc.RemoveSubscription("");
+        if (_plc?.Connected == true)
+            await _plc.RemoveSubscriptionAsync("");
     }
 
     private async Task ShowImport()

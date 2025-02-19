@@ -66,7 +66,7 @@ public abstract class BusinessBase : DriverBase
         base.ProtectedInitDevice(device); // 调用基类的初始化方法
     }
 
-    public override void AfterVariablesChanged()
+    public override Task AfterVariablesChangedAsync()
     {
         LogMessage?.LogInformation("Refresh variable");
         // 获取与当前设备相关的变量,CurrentDevice.VariableRuntimes并不适用于业务插件
@@ -100,6 +100,7 @@ public abstract class BusinessBase : DriverBase
         // 获取当前设备需要采集的设备
         CollectDevices = GlobalData.GetEnableDevices().Where(a => VariableRuntimes.Select(b => b.Value.DeviceId).ToHashSet().Contains(a.Key)).ToDictionary(a => a.Key, a => a.Value);
 
+        return Task.CompletedTask;
     }
 
 
@@ -165,7 +166,7 @@ public abstract class BusinessBase : DriverBase
             }
 
             // 执行任务操作
-            if(TimeTick.IsTickHappen())
+            if (TimeTick.IsTickHappen())
                 await ProtectedExecuteAsync(cancellationToken).ConfigureAwait(false);
 
             // 再次检查取消操作是否被请求
@@ -196,7 +197,7 @@ public abstract class BusinessBase : DriverBase
 
     internal override ValueTask StartAsync(CancellationToken cancellationToken)
     {
-        TimeTick= new TimeTick(CurrentDevice.IntervalTime);
+        TimeTick = new TimeTick(CurrentDevice.IntervalTime);
         return base.StartAsync(cancellationToken);
     }
 

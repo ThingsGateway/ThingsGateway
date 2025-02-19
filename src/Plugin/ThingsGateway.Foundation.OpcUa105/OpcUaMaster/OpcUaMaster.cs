@@ -10,6 +10,8 @@
 
 //修改自https://github.com/dathlin/OpcUaHelper 与OPC基金会net库
 
+using System.Collections.Concurrent;
+
 namespace ThingsGateway.Foundation.OpcUa105;
 
 /// <summary>
@@ -53,14 +55,14 @@ public class OpcUaMaster : IDisposable
     /// <summary>
     /// 当前的变量名称/OPC变量节点
     /// </summary>
-    private readonly Dictionary<string, VariableNode> _variableDicts = new();
+    private readonly ConcurrentDictionary<string, VariableNode> _variableDicts = new();
 
     private readonly object checkLock = new();
 
     /// <summary>
     /// 当前的订阅组，组名称/组
     /// </summary>
-    private readonly Dictionary<string, Subscription> dic_subscriptions = new();
+    private readonly ConcurrentDictionary<string, Subscription> dic_subscriptions = new();
 
     private readonly ApplicationInstance m_application = new();
 
@@ -280,13 +282,13 @@ public class OpcUaMaster : IDisposable
 
         m_session.AddSubscription(m_subscription);
 
-        m_subscription.Create();
+        await m_subscription.CreateAsync().ConfigureAwait(false);
 
         foreach (var item in m_subscription.MonitoredItems.Where(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode)))
         {
             item.Filter = OpcUaProperty.DeadBand == 0 ? null : new DataChangeFilter() { DeadbandValue = OpcUaProperty.DeadBand, DeadbandType = (int)DeadbandType.None, Trigger = DataChangeTrigger.StatusValue };
         }
-        m_subscription.ApplyChanges();
+        await m_subscription.ApplyChangesAsync().ConfigureAwait(false);
 
         var isError = m_subscription.MonitoredItems.Any(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode));
         if (isError)
@@ -296,20 +298,17 @@ public class OpcUaMaster : IDisposable
                 .Select(a => $"{a.StartNodeId}：{a.Status.Error}").ToJsonString()}");
         }
 
-        lock (dic_subscriptions)
+        if (dic_subscriptions.TryAdd(subscriptionName, m_subscription))
         {
-            if (dic_subscriptions.TryGetValue(subscriptionName, out var existingSubscription))
-            {
-                // remove
-                existingSubscription.Delete(true);
-                m_session.RemoveSubscription(existingSubscription);
-                try { existingSubscription.Dispose(); } catch { }
-                dic_subscriptions[subscriptionName] = m_subscription;
-            }
-            else
-            {
-                dic_subscriptions.TryAdd(subscriptionName, m_subscription);
-            }
+
+        }
+        else if (dic_subscriptions.TryGetValue(subscriptionName, out var existingSubscription))
+        {
+            // remove
+            existingSubscription.Delete(true);
+            await m_session.RemoveSubscriptionAsync(existingSubscription).ConfigureAwait(false);
+            try { existingSubscription.Dispose(); } catch { }
+            dic_subscriptions[subscriptionName] = m_subscription;
         }
     }
 
@@ -703,37 +702,35 @@ public class OpcUaMaster : IDisposable
     /// <summary>
     /// 移除所有的订阅消息
     /// </summary>
-    public void RemoveAllSubscription()
+    public async Task RemoveAllSubscription()
     {
-        lock (dic_subscriptions)
+
+        foreach (var item in dic_subscriptions)
         {
-            foreach (var item in dic_subscriptions)
-            {
-                item.Value.Delete(true);
-                m_session.RemoveSubscription(item.Value);
-                try { item.Value.Dispose(); } catch { }
-            }
-            dic_subscriptions.Clear();
+            item.Value.Delete(true);
+            await m_session.RemoveSubscriptionAsync(item.Value).ConfigureAwait(false);
+            try { item.Value.Dispose(); } catch { }
         }
+        dic_subscriptions.Clear();
+
     }
 
     /// <summary>
     /// 移除订阅消息
     /// </summary>
     /// <param name="subscriptionName">组名称</param>
-    public void RemoveSubscription(string subscriptionName)
+    public async Task RemoveSubscriptionAsync(string subscriptionName)
     {
-        lock (dic_subscriptions)
+
+        if (dic_subscriptions.TryGetValue(subscriptionName, out var subscription))
         {
-            if (dic_subscriptions.TryGetValue(subscriptionName, out var subscription))
-            {
-                // remove
-                subscription.Delete(true);
-                m_session.RemoveSubscription(subscription);
-                try { subscription.Dispose(); } catch { }
-                dic_subscriptions.Remove(subscriptionName);
-            }
+            // remove
+            subscription.Delete(true);
+            await m_session.RemoveSubscriptionAsync(subscription).ConfigureAwait(false);
+            try { subscription.Dispose(); } catch { }
+            dic_subscriptions.TryRemove(subscriptionName, out _);
         }
+
     }
 
     /// <summary>
@@ -878,7 +875,7 @@ public class OpcUaMaster : IDisposable
         false,
         OpcUaProperty.CheckDomain,
         (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
-        60000,
+        600000,
         userIdentity,
         null, cancellationToken
         ).ConfigureAwait(false);
@@ -895,10 +892,12 @@ public class OpcUaMaster : IDisposable
         //如果是订阅模式，连接时添加订阅组
         if (OpcUaProperty.ActiveSubscribe)
         {
+            List<Task> tasks = new(Variables.Count);
             foreach (var item in Variables)
             {
-                await AddSubscriptionAsync(Guid.NewGuid().ToString(), item.ToArray(), OpcUaProperty.LoadType).ConfigureAwait(false);
+                tasks.Add(AddSubscriptionAsync(Guid.NewGuid().ToString(), item.ToArray(), OpcUaProperty.LoadType));
             }
+            await Task.WhenAll(tasks).ConfigureAwait(false);
         }
         return m_session;
     }
@@ -984,7 +983,7 @@ public class OpcUaMaster : IDisposable
         }
         NodeId nodeToRead = new(nodeIdStr);
         var node = (VariableNode)m_session.ReadNode(nodeToRead, NodeClass.Variable, false);
-        _variableDicts.AddOrUpdate(nodeIdStr, node);
+        _variableDicts.AddOrUpdate(nodeIdStr, a => node, (a, b) => node);
         return node;
     }
 
@@ -1004,7 +1003,7 @@ public class OpcUaMaster : IDisposable
         var node = (VariableNode)await m_session.ReadNodeAsync(nodeToRead, NodeClass.Variable, false, cancellationToken).ConfigureAwait(false);
         if (OpcUaProperty.LoadType)
             await typeSystem.LoadType(node.DataType, ct: cancellationToken).ConfigureAwait(false);
-        _variableDicts.AddOrUpdate(nodeIdStr, node);
+        _variableDicts.AddOrUpdate(nodeIdStr, a => node, (a, b) => node);
         return node;
     }
 
@@ -1030,7 +1029,7 @@ public class OpcUaMaster : IDisposable
                 {
                     var node = ((VariableNode)nodes.Item1[i]);
                     await typeSystem.LoadType(node.DataType, ct: cancellationToken).ConfigureAwait(false);
-                    _variableDicts.AddOrUpdate(nodeIdStrs[i], node);
+                    _variableDicts.AddOrUpdate(nodeIdStrs[i], a => node, (a, b) => node);
                 }
                 else
                 {

@@ -41,7 +41,7 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
 
 
 
-    protected internal override void InitChannel(IChannel? channel = null)
+    protected internal override async Task InitChannelAsync(IChannel? channel = null)
     {
         // 初始化设备和变量上传的定时器
         _exTTimerTick = new(_businessPropertyWithCacheInterval.BusinessInterval);
@@ -61,9 +61,9 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
 
         }
 
-        base.InitChannel(channel);
+        await base.InitChannelAsync(channel).ConfigureAwait(false);
     }
-    public override void AfterVariablesChanged()
+    public override async Task AfterVariablesChangedAsync()
     {
         // 如果业务属性指定了全部变量，则设置当前设备的变量运行时列表和采集设备列表
         if (_businessPropertyWithCacheInterval.IsAllVariable)
@@ -73,7 +73,7 @@ public abstract class BusinessBaseWithCacheIntervalDeviceModel<VarModel, DevMode
         }
         else
         {
-            base.AfterVariablesChanged();
+            await base.AfterVariablesChangedAsync().ConfigureAwait(false);
         }
 
 

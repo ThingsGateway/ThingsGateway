@@ -58,7 +58,7 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVariableMode
         var data = await Query(input).ToListAsync().ConfigureAwait(false);
         return data.Cast<IDBHistoryValue>().ToList(); ;
     }
-    protected override void InitChannel(IChannel? channel = null)
+    protected override async Task InitChannelAsync(IChannel? channel = null)
     {
 
         _config = new TypeAdapterConfig();
@@ -71,7 +71,7 @@ public partial class QuestDBProducer : BusinessBaseWithCacheIntervalVariableMode
             .Map(dest => dest.CreateTime, (src) => DateTime.UtcNow)
             ;//注意sqlsugar插入时无时区，直接utc时间
 
-        base.InitChannel(channel);
+        await base.InitChannelAsync(channel).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

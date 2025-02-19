@@ -43,7 +43,7 @@ public class OpcDaMaster : CollectBase
 
 
     /// <inheritdoc/>
-    protected override void InitChannel(IChannel? channel = null)
+    protected override async Task InitChannelAsync(IChannel? channel = null)
     {
         //载入配置
         OpcDaProperty opcNode = new()
@@ -63,7 +63,7 @@ public class OpcDaMaster : CollectBase
             _plc.LogEvent = (a, b, c, d) => LogMessage.Log((LogLevel)a, b, c, d);
         }
         _plc.Init(opcNode);
-        base.InitChannel(channel);
+        await base.InitChannelAsync(channel).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -122,32 +122,42 @@ public class OpcDaMaster : CollectBase
     }
 
     /// <inheritdoc/>
-    protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRuntime> deviceVariables)
+    protected override async Task<List<VariableSourceRead>> ProtectedLoadSourceReadAsync(List<VariableRuntime> deviceVariables)
     {
+        await Task.CompletedTask.ConfigureAwait(false);
         _plc?.Disconnect();
-        if (deviceVariables.Count > 0)
+        try
         {
-            var result = _plc.AddItemsWithSave(deviceVariables.Where(a => !string.IsNullOrEmpty(a.RegisterAddress)).Select(a => a.RegisterAddress!).ToList());
-            var sourVars = result?.Select(
-      it =>
-      {
-          var read = new VariableSourceRead()
+
+
+            if (deviceVariables.Count > 0)
+            {
+                var result = _plc.AddItemsWithSave(deviceVariables.Where(a => !string.IsNullOrEmpty(a.RegisterAddress)).Select(a => a.RegisterAddress!).ToList());
+                var sourVars = result?.Select(
+          it =>
           {
-              TimeTick = new(_driverProperties.UpdateRate.ToString()),
-              RegisterAddress = it.Key,
-          };
-          var variables = deviceVariables.Where(a => it.Value.Select(b => b.ItemID).Contains(a.RegisterAddress));
-          foreach (var v in variables)
-          {
-              read.AddVariable(v);
-          }
-          return read;
-      }).ToList();
-            return sourVars;
+              var read = new VariableSourceRead()
+              {
+                  TimeTick = new(_driverProperties.UpdateRate.ToString()),
+                  RegisterAddress = it.Key,
+              };
+              var variables = deviceVariables.Where(a => it.Value.Select(b => b.ItemID).Contains(a.RegisterAddress));
+              foreach (var v in variables)
+              {
+                  read.AddVariable(v);
+              }
+              return read;
+          }).ToList();
+                return sourVars;
+            }
+            else
+            {
+                return new();
+            }
         }
-        else
+        finally
         {
-            return new();
+            _plc?.Connect();
         }
     }
 
@@ -192,6 +202,14 @@ public class OpcDaMaster : CollectBase
         {
         }
     }
+    public override async Task AfterVariablesChangedAsync()
+    {
+        await base.AfterVariablesChangedAsync().ConfigureAwait(false);
+
+        VariableAddresDicts = VariableRuntimes.Select(a => a.Value).Where(it => !it.RegisterAddress.IsNullOrEmpty()).GroupBy(a => a.RegisterAddress).ToDictionary(a => a.Key!, b => b.ToList());
+    }
+
+    private Dictionary<string, List<VariableRuntime>> VariableAddresDicts { get; set; } = new();
 
     private void DataChangedHandler(string name, int serverGroupHandle, List<ItemReadResult> values)
     {
@@ -215,7 +233,8 @@ public class OpcDaMaster : CollectBase
                 {
                     type = type.GetElementType();
                 }
-                var itemReads = VariableRuntimes.Select(a => a.Value).Where(it => it.RegisterAddress == data.Name);
+                if (!VariableAddresDicts.TryGetValue(data.Name, out var itemReads)) return;
+
                 foreach (var item in itemReads)
                 {
                     if (CurrentDevice.Pause)

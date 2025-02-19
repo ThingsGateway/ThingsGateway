@@ -27,7 +27,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
     public override VariablePropertyBase VariablePropertys => _variablePropertys;
     protected override BusinessPropertyWithCacheIntervalScript _businessPropertyWithCacheIntervalScript => _driverPropertys;
 
-    protected override void InitChannel(IChannel? channel = null)
+    protected override async Task InitChannelAsync(IChannel? channel = null)
     {
 
 
@@ -96,7 +96,7 @@ public partial class MqttClient : BusinessBaseWithCacheIntervalScript<VariableDa
         _mqttClient.ApplicationMessageReceivedAsync += MqttClient_ApplicationMessageReceivedAsync;
 
         #endregion 初始化
-        base.InitChannel(channel);
+        await base.InitChannelAsync(channel).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>

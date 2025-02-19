@@ -281,10 +281,11 @@ public abstract class DriverBase : DisposableObject, IDriver
 
             var timeout = 60; // 设置超时时间为 60 秒
 
+            var task = ProtectedStartAsync(cancellationToken);
             try
             {
                 // 异步执行初始化操作，并设置超时时间
-                await ProtectedStartAsync(cancellationToken).WaitAsync(TimeSpan.FromSeconds(timeout), cancellationToken).ConfigureAwait(false);
+                await task.WaitAsync(TimeSpan.FromSeconds(timeout), cancellationToken).ConfigureAwait(false);
             }
             catch (OperationCanceledException)
             {
@@ -292,7 +293,7 @@ public abstract class DriverBase : DisposableObject, IDriver
             catch (TimeoutException)
             {
                 // 如果初始化操作超时，则记录警告信息
-                LogMessage?.LogWarning(Localizer["DeviceTaskStartTimeout", DeviceName, timeout]);
+                LogMessage?.LogInformation(Localizer["DeviceTaskStartTimeout", DeviceName, timeout]);
             }
 
             // 设置设备状态为当前时间
@@ -459,17 +460,17 @@ public abstract class DriverBase : DisposableObject, IDriver
     /// 初始化，在开始前执行，异常时会标识重启
     /// </summary>
     /// <param name="channel">通道，当通道类型为<see cref="ChannelTypeEnum.Other"/>时，传入null</param>
-    internal protected virtual void InitChannel(IChannel? channel = null)
+    internal protected virtual async Task InitChannelAsync(IChannel? channel = null)
     {
         if (channel != null)
-            channel.SetupAsync(channel.Config.Clone());
-        AfterVariablesChanged();
+            await channel.SetupAsync(channel.Config.Clone()).ConfigureAwait(false);
+        await AfterVariablesChangedAsync().ConfigureAwait(false);
     }
 
     /// <summary>
     /// 变量更改后， 重新初始化变量列表，获取设备变量打包列表/特殊方法列表等
     /// </summary>
-    public abstract void AfterVariablesChanged();
+    public abstract Task AfterVariablesChangedAsync();
 
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)

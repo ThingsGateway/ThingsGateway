@@ -46,7 +46,7 @@ public class ModbusMaster : CollectBase
     public override Type DriverVariableAddressUIType => typeof(ModbusAddressComponent);
 
     /// <inheritdoc/>
-    protected override void InitChannel(IChannel? channel = null)
+    protected override async Task InitChannelAsync(IChannel? channel = null)
     {
 
         ArgumentNullException.ThrowIfNull(channel);
@@ -61,12 +61,13 @@ public class ModbusMaster : CollectBase
         _plc.ModbusType = _driverPropertys.ModbusType;
         _plc.Heartbeat = _driverPropertys.Heartbeat;
         _plc.InitChannel(channel, LogMessage);
-        base.InitChannel(channel);
+        await base.InitChannelAsync(channel).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    protected override List<VariableSourceRead> ProtectedLoadSourceRead(List<VariableRuntime> deviceVariables)
+    protected override async Task<List<VariableSourceRead>> ProtectedLoadSourceReadAsync(List<VariableRuntime> deviceVariables)
     {
+        await Task.CompletedTask.ConfigureAwait(false);
         return _plc.LoadSourceRead<VariableSourceRead>(deviceVariables, _driverPropertys.MaxPack, CurrentDevice.IntervalTime);
     }
 }
