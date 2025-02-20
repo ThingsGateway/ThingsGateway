@@ -1,23 +1,57 @@
 ﻿@namespace ThingsGateway.Razor
 @using ThingsGateway
-
-<div>
-    <div class=" ps-1 mb-2">@Localizer["Docs"]</div>
-</div>
-<div class="my-2 ms-4">
-    <a target="_blank" href="@WebsiteOption.Value.WikiUrl">@WebsiteOption.Value.WikiUrl</a>
-</div>
-
-<div class="my-4">
-    <div class=" ps-1 mb-2">@Localizer["Community"]</div>
-    <div class="my-2 ms-4">
-        <span>@Localizer["QQGroup"]</span> <a target="_blank" href="@WebsiteOption.Value.QQGroup1Link">@WebsiteOption.Value.QQGroup1Number</a>
+@if (!string.IsNullOrEmpty(WebsiteOption.Value.WikiUrl))
+{
+    <div>
+        <div class=" ps-1 mb-2">@Localizer["Docs"]</div>
     </div>
-</div>
+    <div class="my-2 ms-4">
+        <a target="_blank" href="@WebsiteOption.Value.WikiUrl">@WebsiteOption.Value.WikiUrl</a>
+    </div>
+}
 
-<div class="mt-4">
-    <span>@WebsiteOption.Value.Copyright</span>
-</div>
+@if (!string.IsNullOrEmpty(WebsiteOption.Value.QQGroup1Link))
+{
+    <div class="my-4">
+        <div class=" ps-1 mb-2">@Localizer["Community"]</div>
+        <div class="my-2 ms-4">
+            <span>@Localizer["QQGroup"]</span> <a target="_blank" href="@WebsiteOption.Value.QQGroup1Link">@WebsiteOption.Value.QQGroup1Number</a>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(WebsiteOption.Value.Copyright))
+{
+
+    <div class="mt-4">
+        <span>@WebsiteOption.Value.Copyright</span>
+    </div>
+}
+
+@if (WebsiteOption.Value.ShowAuthorize)
+{
+    <div class="mt-4">
+        <span>@Localizer["UUID"]</span>
+        <div class="my-2 ms-4 text-truncate">
+            <span title="@RegisterService.UUID">@RegisterService.UUID</span>
+        </div>
+    </div>
+    <div class="mt-4">
+        <span>@Localizer["RegisterStatus"]</span>
+        <div class="my-2 ms-4">
+            <span>@RegisterService.IsRegistered()</span>
+        </div>
+    </div>
+    <div class="mt-4">
+        <PopConfirmButton Size="Size.Small" Color="Color.Warning" Icon="fa-solid fa-bars" Text="Register" IsAsync OnConfirm="Register">
+
+            <BodyTemplate>
+                <Textarea @bind-Value=Password ShowLabel="true" ShowLabelTooltip="true" />
+            </BodyTemplate>
+
+        </PopConfirmButton>
+    </div>
+}
 
 
 

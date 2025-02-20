@@ -13,7 +13,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="RabbitMQ.Client" Version="7.0.0" GeneratePathProperty="true">
+		<PackageReference Include="RabbitMQ.Client" Version="7.1.0" GeneratePathProperty="true">
 			<PrivateAssets>contentFiles;compile;build;buildMultitargeting;buildTransitive;analyzers;</PrivateAssets>
 		</PackageReference>
 

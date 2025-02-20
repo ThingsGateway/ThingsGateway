@@ -20,15 +20,15 @@ public class FileUtil
     /// <summary>
     /// 读取文件
     /// </summary>
-    public static string ReadFile(string Path, Encoding? encoding = default)
+    public static string ReadFile(string path, Encoding? encoding = default)
     {
         encoding ??= Encoding.UTF8;
-        if (!File.Exists(Path))
+        if (!File.Exists(path))
         {
             return null;
         }
 
-        StreamReader streamReader = new StreamReader(Path, encoding);
+        StreamReader streamReader = new StreamReader(path, encoding);
         string result = streamReader.ReadToEnd();
         streamReader.Close();
         streamReader.Dispose();
@@ -43,4 +43,10 @@ public class FileUtil
             File.Delete(file);
         }
     }
+
+    public static void WriteFile(string path, string data)
+    {
+        File.WriteAllText(path, data);
+    }
+
 }

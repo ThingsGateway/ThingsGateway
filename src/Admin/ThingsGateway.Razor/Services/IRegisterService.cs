@@ -10,28 +10,14 @@
 
 namespace ThingsGateway.Razor;
 
-/// <inheritdoc/>
-public partial class About
+public interface IRegisterService
 {
-    [Inject]
-    [NotNull]
-    private IStringLocalizer<About>? Localizer { get; set; }
+    /// <summary>
+    /// 唯一编码
+    /// </summary>
+    public string UUID { get; }
 
-    [Inject]
-    [NotNull]
-    private IOptions<WebsiteOptions>? WebsiteOption { get; set; }
-    [Inject]
-    [NotNull]
-    private IRegisterService? RegisterService { get; set; }
-    private string Password { get; set; }
-    [Inject]
-    ToastService ToastService { get; set; }
-    private async Task Register()
-    {
-        var result = RegisterService.Register(Password);
-        if (result)
-            await ToastService.Default();
-        else
-            await ToastService.Default(false);
-    }
+    public bool IsRegistered();
+
+    public bool Register(string password);
 }

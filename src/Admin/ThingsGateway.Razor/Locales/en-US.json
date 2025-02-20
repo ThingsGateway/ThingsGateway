@@ -52,7 +52,9 @@
   "ThingsGateway.Razor.About": {
     "Docs": "Docs",
     "Community": "Community",
-    "QQGroup": "QQGroup"
+    "QQGroup": "QQGroup",
+    "UUID": "UUID",
+    "RegisterStatus": "RegisterStatus"
   },
   "ThingsGateway.Razor.BlazorReconnector": {
     "Reconnecting1": "Reconnecting...",

@@ -18,6 +18,7 @@ using System.Runtime.InteropServices;
 using ThingsGateway.DataEncryption;
 using ThingsGateway.Extension;
 using ThingsGateway.NewLife;
+using ThingsGateway.Razor;
 using ThingsGateway.NewLife.Threading;
 using ThingsGateway.Schedule;
 
@@ -32,9 +33,10 @@ public class HardwareJob : IJob, IHardwareJob
 {
     private readonly ILogger _logger;
     private readonly IStringLocalizer _localizer;
+    private readonly IRegisterService registerService;
 
     /// <inheritdoc/>
-    public HardwareJob(ILogger<HardwareJob> logger, IStringLocalizer<HardwareJob> localizer, IOptions<HardwareInfoOptions> options)
+    public HardwareJob(IRegisterService registerService  ,ILogger<HardwareJob> logger, IStringLocalizer<HardwareJob> localizer, IOptions<HardwareInfoOptions> options)
     {
         _logger = logger;
         _localizer = localizer;
@@ -82,7 +84,7 @@ public class HardwareJob : IJob, IHardwareJob
                     HardwareInfo.OsArchitecture = Environment.OSVersion.Platform.ToString() + " " + RuntimeInformation.OSArchitecture.ToString(); // 系统架构
                     HardwareInfo.FrameworkDescription = RuntimeInformation.FrameworkDescription; // NET框架
                     HardwareInfo.Environment = App.HostEnvironment.IsDevelopment() ? "Development" : "Production";
-                    HardwareInfo.UUID = DESEncryption.Encrypt(HardwareInfo.MachineInfo.UUID + HardwareInfo.MachineInfo.Guid + HardwareInfo.MachineInfo.DiskID);
+                    HardwareInfo.UUID = registerService.UUID;
 
                     HardwareInfo.UpdateTime = TimerX.Now.ToDefaultDateTimeFormat();
 

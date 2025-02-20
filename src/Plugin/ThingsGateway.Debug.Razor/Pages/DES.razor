@@ -1,0 +1,58 @@
+﻿@page "/des"
+@inject NavigationManager NavigationManager
+@namespace ThingsGateway.Debug
+@using Microsoft.AspNetCore.Authorization;
+@using BootstrapBlazor.Components;
+@using ThingsGateway.DataEncryption
+
+<div class="mt-4">
+    <div class="my-2 ms-4 text-truncate">
+        <BootstrapInput @bind-Value=DecryptData ShowLabel="true"> </BootstrapInput>
+    </div>
+</div>
+<div class="mt-4">
+    <div class="my-2 ms-4 text-truncate">
+        <BootstrapInput @bind-Value=EncryptData ShowLabel="true"> </BootstrapInput>
+    </div>
+</div>
+<div class="mt-4">
+    <div class="my-2 ms-4 text-truncate">
+        <Button OnClick="Encrypt"> Encrypt</Button>
+    </div>
+</div>
+<div class="mt-4">
+    <div class="my-2 ms-4 text-truncate">
+        <Button OnClick="Decrypt"> Decrypt</Button>
+    </div>
+</div>
+@code {
+    private string DecryptData { get; set; }
+    private string EncryptData { get; set; }
+    [Inject]
+    ToastService ToastService { get; set; }
+    private async Task Encrypt()
+    {
+        try
+        {
+            EncryptData = DESEncryption.Encrypt(DecryptData);
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warn(ex);
+        }
+
+    }
+    private async Task Decrypt()
+    {
+        try
+        {
+            DecryptData = DESEncryption.Decrypt(EncryptData);
+        }
+        catch (Exception ex)
+        {
+            await ToastService.Warn(ex);
+        }
+
+    }
+
+}

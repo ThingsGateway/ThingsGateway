@@ -8,30 +8,35 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using Microsoft.Extensions.Hosting;
+
+using ThingsGateway.DataEncryption;
+using ThingsGateway.NewLife;
+using ThingsGateway.NewLife.Caching;
+using ThingsGateway.NewLife.Extension;
+
 namespace ThingsGateway.Razor;
 
-/// <inheritdoc/>
-public partial class About
+public class DefaultRegisterService : IRegisterService
 {
-    [Inject]
-    [NotNull]
-    private IStringLocalizer<About>? Localizer { get; set; }
 
-    [Inject]
-    [NotNull]
-    private IOptions<WebsiteOptions>? WebsiteOption { get; set; }
-    [Inject]
-    [NotNull]
-    private IRegisterService? RegisterService { get; set; }
-    private string Password { get; set; }
-    [Inject]
-    ToastService ToastService { get; set; }
-    private async Task Register()
+    public DefaultRegisterService(IHostApplicationLifetime hostApplicationLifetime)
     {
-        var result = RegisterService.Register(Password);
-        if (result)
-            await ToastService.Default();
-        else
-            await ToastService.Default(false);
+        UUID = DESEncryption.Encrypt($"{MachineInfo.Current.UUID}{MachineInfo.Current.Guid}{MachineInfo.Current.DiskID}");
+    }
+
+    /// <summary>
+    /// 唯一编码
+    /// </summary>
+    public string UUID { get; }
+
+    public bool IsRegistered()
+    {
+        return true;
+    }
+
+    public bool Register(string password)
+    {
+        return true;
     }
 }

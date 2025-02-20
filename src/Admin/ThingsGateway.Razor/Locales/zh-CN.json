@@ -52,7 +52,9 @@
   "ThingsGateway.Razor.About": {
     "Docs": "文档",
     "Community": "社区",
-    "QQGroup": "QQ群"
+    "QQGroup": "QQ群",
+    "UUID": "唯一编码",
+    "RegisterStatus": "注册状态"
   },
   "ThingsGateway.Razor.BlazorReconnector": {
     "Reconnecting1": "重连中...",

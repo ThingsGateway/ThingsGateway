@@ -1,0 +1,13 @@
+﻿.markdown-body {
+    margin-left:5px;
+    font-size: 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    line-height: 1.6;
+}
+.markdown-body {
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    word-wrap: break-word;
+}
+

@@ -33,7 +33,7 @@ public partial class Crontab
         }
 
         // 通过空白符切割 Cron 表达式每个字段域
-        var instructions = expression.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        var instructions = expression.Split(separator, StringSplitOptions.RemoveEmptyEntries);
 
         // 验证当前 Cron 格式化类型字段数量和表达式字段数量是否一致
         var expectedCount = Constants.ExpectedFieldCounts[format];
@@ -76,6 +76,8 @@ public partial class Crontab
         return fieldParsers;
     }
 
+    private static readonly char[] separator = new[] { ' ' };
+
     /// <summary>
     /// 解析 Cron 单个字段域所有发生值 字符解析器
     /// </summary>
@@ -117,13 +119,13 @@ public partial class Crontab
         try
         {
             // 判断值是否以 * 字符开头
-            if (newParser.StartsWith("*", StringComparison.OrdinalIgnoreCase))
+            if (newParser.StartsWith('*'))
             {
                 // 继续往后解析
                 newParser = newParser[1..];
 
                 // 判断是否以 / 字符开头，如果是，则该值为带步长的 Cron 值
-                if (newParser.StartsWith("/", StringComparison.OrdinalIgnoreCase))
+                if (newParser.StartsWith('/'))
                 {
                     // 继续往后解析
                     newParser = newParser[1..];
@@ -134,7 +136,7 @@ public partial class Crontab
                 }
 
                 // 处理 * 携带意外值
-                if (newParser != string.Empty)
+                if (!string.IsNullOrEmpty(newParser))
                 {
                     throw new TimeCrontabException(string.Format("Invalid parser '{0}'.", parser));
                 }
@@ -144,7 +146,7 @@ public partial class Crontab
             }
 
             // 判断值是否以 L 字符开头
-            if (newParser.StartsWith("L") && kind == CrontabFieldKind.Day)
+            if (newParser.StartsWith('L') && kind == CrontabFieldKind.Day)
             {
                 // 继续往后解析
                 newParser = newParser[1..];
@@ -220,7 +222,7 @@ public partial class Crontab
                         int? steps = null;
 
                         // 继续推进解析，判断是否以 / 开头，如果是，则获取步长
-                        if (newParser.StartsWith("/"))
+                        if (newParser.StartsWith('/'))
                         {
                             newParser = newParser[1..];
                             steps = GetValue(ref newParser, kind);
@@ -347,7 +349,7 @@ public partial class Crontab
 
                 // 处理带 L 和不带 L 的单词问题
                 if (parser.Length == offset
-                    && parser.EndsWith("L")
+                    && parser.EndsWith('L')
                     && kind == CrontabFieldKind.DayOfWeek)
                 {
                     missingParser = "L";
@@ -383,9 +385,9 @@ public partial class Crontab
         var daySingle = GetSpecificParsers(parsers, CrontabFieldKind.Day);
 
         // 如果月份为 2 月单天数出现 30 和 31 天，则是无效数值
-        if (monthSingle.Any() && monthSingle.All(x => x.SpecificValue == 2))
+        if (monthSingle.Count != 0 && monthSingle.All(x => x.SpecificValue == 2))
         {
-            if (daySingle.Any() && daySingle.All(x => (x.SpecificValue == 30) || (x.SpecificValue == 31)))
+            if (daySingle.Count != 0 && daySingle.All(x => (x.SpecificValue == 30) || (x.SpecificValue == 31)))
             {
                 throw new TimeCrontabException("The February 30 and 31 don't exist.");
             }
@@ -806,7 +808,7 @@ public partial class Crontab
     /// <param name="defaultValue">默认值</param>
     /// <param name="overflow">控制秒、分钟、小时到达59秒/分和23小时开关</param>
     /// <returns><see cref="int"/></returns>
-    private int Decrement(IEnumerable<ITimeParser> parsers, int value, int defaultValue, out bool overflow)
+    private static int Decrement(IEnumerable<ITimeParser> parsers, int value, int defaultValue, out bool overflow)
     {
         var previousValue = parsers.Select(x => x.Previous(value))
             .Where(x => x < value)
@@ -837,7 +839,7 @@ public partial class Crontab
     /// <param name="newTime">下一个发生时间</param>
     /// <param name="endTime">终止时间</param>
     /// <returns><see cref="DateTime"/></returns>
-    private DateTime MaxDate(DateTime newTime, DateTime endTime)
+    private static DateTime MaxDate(DateTime newTime, DateTime endTime)
     {
         return newTime <= endTime ? endTime : newTime;
     }
