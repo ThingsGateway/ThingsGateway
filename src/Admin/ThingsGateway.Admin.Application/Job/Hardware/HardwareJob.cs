@@ -33,14 +33,15 @@ public class HardwareJob : IJob, IHardwareJob
 {
     private readonly ILogger _logger;
     private readonly IStringLocalizer _localizer;
-    private readonly IRegisterService registerService;
+    private readonly IRegisterService _registerService;
 
     /// <inheritdoc/>
-    public HardwareJob(IRegisterService registerService  ,ILogger<HardwareJob> logger, IStringLocalizer<HardwareJob> localizer, IOptions<HardwareInfoOptions> options)
+    public HardwareJob(IRegisterService registerService, ILogger<HardwareJob> logger, IStringLocalizer<HardwareJob> localizer, IOptions<HardwareInfoOptions> options)
     {
         _logger = logger;
         _localizer = localizer;
         HardwareInfoOptions = options.Value;
+        _registerService = registerService;
     }
     #region 属性
 
@@ -84,7 +85,7 @@ public class HardwareJob : IJob, IHardwareJob
                     HardwareInfo.OsArchitecture = Environment.OSVersion.Platform.ToString() + " " + RuntimeInformation.OSArchitecture.ToString(); // 系统架构
                     HardwareInfo.FrameworkDescription = RuntimeInformation.FrameworkDescription; // NET框架
                     HardwareInfo.Environment = App.HostEnvironment.IsDevelopment() ? "Development" : "Production";
-                    HardwareInfo.UUID = registerService.UUID;
+                    HardwareInfo.UUID = _registerService.UUID;
 
                     HardwareInfo.UpdateTime = TimerX.Now.ToDefaultDateTimeFormat();
 

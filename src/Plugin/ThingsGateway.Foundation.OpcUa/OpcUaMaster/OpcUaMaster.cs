@@ -48,11 +48,6 @@ public class OpcUaMaster : IDisposable
     public string ProductUri = "https://thingsgateway.cn/";
 
     /// <summary>
-    /// 当前保存的变量名称列表
-    /// </summary>
-    public List<List<string>> Variables = new();
-
-    /// <summary>
     /// 当前的变量名称/OPC变量节点
     /// </summary>
     private readonly ConcurrentDictionary<string, VariableNode> _variableDicts = new();
@@ -62,7 +57,7 @@ public class OpcUaMaster : IDisposable
     /// <summary>
     /// 当前的订阅组，组名称/组
     /// </summary>
-    private readonly ConcurrentDictionary<string, Subscription> dic_subscriptions = new();
+    private readonly ConcurrentDictionary<string, Subscription> _subscriptionDicts = new();
 
     private readonly ApplicationInstance m_application = new();
 
@@ -244,7 +239,7 @@ public class OpcUaMaster : IDisposable
     /// <summary>
     /// 新增订阅，需要指定订阅组名称，订阅的tag名数组
     /// </summary>
-    public async Task AddSubscriptionAsync(string subscriptionName, string[] items, bool loadType = true)
+    public async Task AddSubscriptionAsync(string subscriptionName, string[] items, bool loadType = true, CancellationToken cancellationToken = default)
     {
         Subscription m_subscription = new(m_session.DefaultSubscription)
         {
@@ -257,7 +252,7 @@ public class OpcUaMaster : IDisposable
             DisplayName = subscriptionName
         };
         List<MonitoredItem> monitoredItems = new();
-        var variableNodes = loadType ? await ReadNodesAsync(items).ConfigureAwait(false) : null;
+        var variableNodes = loadType ? await ReadNodesAsync(items, cancellationToken).ConfigureAwait(false) : null;
         for (int i = 0; i < items.Length; i++)
         {
             try
@@ -278,18 +273,17 @@ public class OpcUaMaster : IDisposable
                 Log(3, ex, $"Failed to initialize {items[i]} variable subscription");
             }
         }
-        m_subscription.AddItems(monitoredItems);
 
         m_session.AddSubscription(m_subscription);
+        await m_subscription.CreateAsync(cancellationToken).ConfigureAwait(false);
 
-        await m_subscription.CreateAsync().ConfigureAwait(false);
-
+        m_subscription.AddItems(monitoredItems);
         foreach (var item in m_subscription.MonitoredItems.Where(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode)))
         {
             item.Filter = OpcUaProperty.DeadBand == 0 ? null : new DataChangeFilter() { DeadbandValue = OpcUaProperty.DeadBand, DeadbandType = (int)DeadbandType.None, Trigger = DataChangeTrigger.StatusValue };
         }
-        await m_subscription.ApplyChangesAsync().ConfigureAwait(false);
 
+        await m_subscription.ApplyChangesAsync(cancellationToken).ConfigureAwait(false);
         var isError = m_subscription.MonitoredItems.Any(a => a.Status.Error != null && StatusCode.IsBad(a.Status.Error.StatusCode));
         if (isError)
         {
@@ -298,17 +292,17 @@ public class OpcUaMaster : IDisposable
                 .Select(a => $"{a.StartNodeId}：{a.Status.Error}").ToJsonString()}");
         }
 
-        if (dic_subscriptions.TryAdd(subscriptionName, m_subscription))
+        if (_subscriptionDicts.TryAdd(subscriptionName, m_subscription))
         {
 
         }
-        else if (dic_subscriptions.TryGetValue(subscriptionName, out var existingSubscription))
+        else if (_subscriptionDicts.TryGetValue(subscriptionName, out var existingSubscription))
         {
             // remove
             existingSubscription.Delete(true);
-            await m_session.RemoveSubscriptionAsync(existingSubscription).ConfigureAwait(false);
+            await m_session.RemoveSubscriptionAsync(existingSubscription, cancellationToken).ConfigureAwait(false);
             try { existingSubscription.Dispose(); } catch { }
-            dic_subscriptions[subscriptionName] = m_subscription;
+            _subscriptionDicts[subscriptionName] = m_subscription;
         }
     }
 
@@ -702,18 +696,15 @@ public class OpcUaMaster : IDisposable
     /// <summary>
     /// 移除所有的订阅消息
     /// </summary>
-    public void RemoveAllSubscription()
+    public async Task RemoveAllSubscriptionAsync()
     {
-        lock (dic_subscriptions)
+        foreach (var item in _subscriptionDicts)
         {
-            foreach (var item in dic_subscriptions)
-            {
-                item.Value.Delete(true);
-                m_session.RemoveSubscription(item.Value);
-                try { item.Value.Dispose(); } catch { }
-            }
-            dic_subscriptions.Clear();
+            item.Value.Delete(true);
+            await m_session.RemoveSubscriptionAsync(item.Value).ConfigureAwait(false);
+            try { item.Value.Dispose(); } catch { }
         }
+        _subscriptionDicts.Clear();
     }
 
     /// <summary>
@@ -723,13 +714,13 @@ public class OpcUaMaster : IDisposable
     public async Task RemoveSubscriptionAsync(string subscriptionName)
     {
 
-        if (dic_subscriptions.TryGetValue(subscriptionName, out var subscription))
+        if (_subscriptionDicts.TryGetValue(subscriptionName, out var subscription))
         {
             // remove
             subscription.Delete(true);
             await m_session.RemoveSubscriptionAsync(subscription).ConfigureAwait(false);
             try { subscription.Dispose(); } catch { }
-            dic_subscriptions.TryRemove(subscriptionName, out _);
+            _subscriptionDicts.TryRemove(subscriptionName, out _);
         }
 
     }
@@ -839,68 +830,86 @@ public class OpcUaMaster : IDisposable
     {
         await m_application.CheckApplicationInstanceCertificate(true, 0, 1200).ConfigureAwait(false);
     }
+
+    SemaphoreSlim waitLock = new(1, 1);
+
+    private string LastServerUrl { get; set; }
     /// <summary>
     /// Creates a new session.
     /// </summary>
     /// <returns>The new session object.</returns>
-    private async Task<ISession> ConnectAsync(string serverUrl, CancellationToken cancellationToken)
+    private async Task ConnectAsync(string serverUrl, CancellationToken cancellationToken)
     {
-        PrivateDisconnect();
-
-        if (m_configuration == null)
+        if (m_session != null)
         {
-            throw new ArgumentNullException(nameof(m_configuration));
+            return;
         }
-        var useSecurity = OpcUaProperty?.UseSecurity ?? true;
-
-        EndpointDescription endpointDescription = await OpcUaUtils.SelectEndpointAsync(m_configuration, serverUrl, useSecurity, 10000).ConfigureAwait(false);
-        EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(m_configuration);
-        ConfiguredEndpoint endpoint = new(null, endpointDescription, endpointConfiguration);
-        UserIdentity userIdentity;
-        if (!string.IsNullOrEmpty(OpcUaProperty.UserName))
+        try
         {
-            userIdentity = new UserIdentity(OpcUaProperty.UserName, OpcUaProperty.Password);
-        }
-        else
-        {
-            userIdentity = new UserIdentity(new AnonymousIdentityToken());
-        }
-        //创建本地证书
-        if (useSecurity)
-            await m_application.CheckApplicationInstanceCertificate(true, 0, 1200, cancellationToken).ConfigureAwait(false);
 
-        m_session = await Opc.Ua.Client.Session.Create(
-
-        m_configuration,
-        endpoint,
-        false,
-        OpcUaProperty.CheckDomain,
-        (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
-        600000,
-        userIdentity,
-        null, cancellationToken
-        ).ConfigureAwait(false);
-        typeSystem = new ComplexTypeSystem(m_session);
-
-        m_session.KeepAliveInterval = OpcUaProperty.KeepAliveInterval == 0 ? 60000 : OpcUaProperty.KeepAliveInterval;
-        m_session.KeepAlive += Session_KeepAlive;
-
-        // raise an event.
-        DoConnectComplete(true);
-
-        Log(2, null, "Connected");
-
-        //如果是订阅模式，连接时添加订阅组
-        if (OpcUaProperty.ActiveSubscribe)
-        {
-            List<Task> tasks = new(Variables.Count);
-            foreach (var item in Variables)
+            await waitLock.WaitAsync(cancellationToken).ConfigureAwait(false);
+            if (m_session != null)
             {
-                tasks.Add(AddSubscriptionAsync(Guid.NewGuid().ToString(), item.ToArray(), OpcUaProperty.LoadType));
+                return;
             }
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+            PrivateDisconnect();
+            if (LastServerUrl != serverUrl)
+            {
+                _variableDicts.Clear();
+                _subscriptionDicts.Clear();
+            }
+            LastServerUrl = serverUrl;
+            if (m_configuration == null)
+            {
+                throw new ArgumentNullException(nameof(m_configuration));
+            }
+            var useSecurity = OpcUaProperty?.UseSecurity ?? true;
+
+            EndpointDescription endpointDescription = await OpcUaUtils.SelectEndpointAsync(m_configuration, serverUrl, useSecurity, 10000).ConfigureAwait(false);
+            EndpointConfiguration endpointConfiguration = EndpointConfiguration.Create(m_configuration);
+            ConfiguredEndpoint endpoint = new(null, endpointDescription, endpointConfiguration);
+            UserIdentity userIdentity;
+            if (!string.IsNullOrEmpty(OpcUaProperty.UserName))
+            {
+                userIdentity = new UserIdentity(OpcUaProperty.UserName, OpcUaProperty.Password);
+            }
+            else
+            {
+                userIdentity = new UserIdentity(new AnonymousIdentityToken());
+            }
+            //创建本地证书
+            if (useSecurity)
+                await m_application.CheckApplicationInstanceCertificate(true, 0, 1200, cancellationToken).ConfigureAwait(false);
+
+            m_session = await Opc.Ua.Client.Session.Create(
+
+            m_configuration,
+            endpoint,
+            false,
+            OpcUaProperty.CheckDomain,
+            (string.IsNullOrEmpty(OPCUAName)) ? m_configuration.ApplicationName : OPCUAName,
+            600000,
+            userIdentity,
+            null, cancellationToken
+            ).ConfigureAwait(false);
+
+            m_session.KeepAliveInterval = OpcUaProperty.KeepAliveInterval == 0 ? 60000 : OpcUaProperty.KeepAliveInterval;
+            m_session.KeepAlive += Session_KeepAlive;
+
+            typeSystem = new ComplexTypeSystem(m_session);
+
+
+            // raise an event.
+            DoConnectComplete(true);
+
+            Log(2, null, "Connected");
+
+
         }
-        return m_session;
+        finally
+        {
+            waitLock.Release();
+        }
     }
 
     private void PrivateDisconnect()

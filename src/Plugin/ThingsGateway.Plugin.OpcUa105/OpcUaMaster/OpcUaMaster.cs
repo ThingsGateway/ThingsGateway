@@ -126,6 +126,8 @@ public class OpcUa105Master : CollectBase
             try
             {
                 await _plc.ConnectAsync(cancellationToken).ConfigureAwait(false);
+
+
                 connectFirstFail = false;
             }
             catch (Exception ex)
@@ -150,6 +152,22 @@ public class OpcUa105Master : CollectBase
             {
                 //更新设备活动时间
                 CurrentDevice.SetDeviceStatus(TimerX.Now, false);
+
+                //如果是订阅模式，连接时添加订阅组
+                if (_plc.OpcUaProperty?.ActiveSubscribe == true && CurrentDevice.VariableSourceReads.Count > 0 && _plc.Session.SubscriptionCount < CurrentDevice.VariableSourceReads.Count)
+                {
+                    foreach (var variableSourceRead in CurrentDevice.VariableSourceReads)
+                    {
+                        if (_plc.Session.Subscriptions.FirstOrDefault(a => a.DisplayName == variableSourceRead.RegisterAddress) == null)
+                        {
+                            await _plc.AddSubscriptionAsync(variableSourceRead.RegisterAddress, variableSourceRead.VariableRuntimes.Where(a => !a.RegisterAddress.IsNullOrEmpty()).Select(a => a.RegisterAddress!).ToHashSet().ToArray(), _plc.OpcUaProperty.LoadType, cancellationToken).ConfigureAwait(false);
+
+                            LogMessage?.LogInformation($"AddSubscription {CurrentDevice.VariableSourceReads.IndexOf(variableSourceRead)}  done");
+
+                        }
+                    }
+                    LogMessage?.LogInformation("AddSubscriptions done");
+                }
             }
             else
             {
@@ -167,40 +185,33 @@ public class OpcUa105Master : CollectBase
     /// <inheritdoc/>
     protected override async Task<List<VariableSourceRead>> ProtectedLoadSourceReadAsync(List<VariableRuntime> deviceVariables)
     {
-        try
+        await Task.CompletedTask.ConfigureAwait(false);
+        if (deviceVariables.Count > 0)
         {
-            _plc?.Disconnect();
-            if (deviceVariables.Count > 0)
-            {
-                var dataLists = deviceVariables.ChunkBetter(_driverProperties.GroupSize);
-                _plc.Variables = new();
-                _plc.Variables.AddRange(dataLists.Select(a => a.Where(a => !a.RegisterAddress.IsNullOrEmpty()).Select(a => a.RegisterAddress!).ToList()).ToList());
-                var dataResult = new List<VariableSourceRead>();
-                foreach (var variable in dataLists)
-                {
-                    var sourVars = new VariableSourceRead()
-                    {
-                        TimeTick = new(_driverProperties.UpdateRate.ToString()),
-                        RegisterAddress = "",
-                    };
-                    foreach (var item in variable)
-                    {
-                        sourVars.AddVariable(item);
-                    }
-                    dataResult.Add(sourVars);
-                }
+            var dataLists = deviceVariables.ChunkBetter(_driverProperties.GroupSize);
 
-                return dataResult;
-            }
-            else
+            var dataResult = new List<VariableSourceRead>();
+            foreach (var variable in dataLists)
             {
-                return new();
+                var sourVars = new VariableSourceRead()
+                {
+                    TimeTick = new(_driverProperties.UpdateRate.ToString()),
+                    RegisterAddress = Guid.NewGuid().ToString(),
+                };
+                foreach (var item in variable)
+                {
+                    sourVars.AddVariable(item);
+                }
+                dataResult.Add(sourVars);
             }
+
+            return dataResult;
         }
-        finally
+        else
         {
-            await _plc.ConnectAsync(default).ConfigureAwait(false);
+            return new();
         }
+
     }
 
     /// <inheritdoc/>
@@ -295,11 +306,20 @@ public class OpcUa105Master : CollectBase
     {
         LogMessage?.Log((LogLevel)level, sender, message, ex);
     }
+
     public override async Task AfterVariablesChangedAsync()
     {
-        await base.AfterVariablesChangedAsync().ConfigureAwait(false);
+        try
+        {
+            _plc?.Disconnect();
+            await base.AfterVariablesChangedAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            VariableAddresDicts = VariableRuntimes.Select(a => a.Value).Where(it => !it.RegisterAddress.IsNullOrEmpty()).GroupBy(a => a.RegisterAddress).ToDictionary(a => a.Key!, b => b.ToList());
+            await _plc.ConnectAsync(default).ConfigureAwait(false);
+        }
 
-        VariableAddresDicts = VariableRuntimes.Select(a => a.Value).Where(it => !it.RegisterAddress.IsNullOrEmpty()).GroupBy(a => a.RegisterAddress).ToDictionary(a => a.Key!, b => b.ToList());
     }
 
     private Dictionary<string, List<VariableRuntime>> VariableAddresDicts { get; set; } = new();
