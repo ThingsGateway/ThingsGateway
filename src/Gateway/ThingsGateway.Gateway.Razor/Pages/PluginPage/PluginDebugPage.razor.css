@@ -1,19 +1,8 @@
-﻿
-.listtree-view {
-    height: calc(100% - 10px);
+﻿::deep .bb-cm-zone {
+    height: 100%;
+    margin-right: 1px;
 }
 
-    .listtree-view ::deep .bb-cm-zone {
-        height: calc(100% - 10px);
-        margin-bottom: 2px;
-    }
-
-    .listtree-view ::deep .tree-view {
-        --bb-tree-search-height: 32px;
-        min-height: 300px;
-        height: calc(100% - 10px);
-    }
-
-.deviceEnable--text {
-    color: var(--bs-body-color);
+::deep .tree-view {
+    height: 100%;
 }

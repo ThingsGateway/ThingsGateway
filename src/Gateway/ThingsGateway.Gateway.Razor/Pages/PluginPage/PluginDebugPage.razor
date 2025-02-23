@@ -17,26 +17,22 @@
 <div class="listtree-view h-100">
     <Split Basis="20%">
         <FirstPaneTemplate>
-                <ContextMenuZone>
+            <ContextMenuZone>
                 <TreeView TItem="PluginInfo" Items="PluginTreeViewItems" ClickToggleNode IsVirtualize="true" />
-                    <ContextMenu>
+                <ContextMenu>
                     <ContextMenuItem Text=@Localizer["New"] OnClick="NewPluginRender"></ContextMenuItem>
                     <ContextMenuItem Text=@Localizer["NewWinbox"] OnClick="NewPluginWinboxRender"></ContextMenuItem>
-                    </ContextMenu>
-                </ContextMenuZone>
+                </ContextMenu>
+            </ContextMenuZone>
         </FirstPaneTemplate>
         <SecondPaneTemplate>
-
             <Tab ShowClose @ref=tab>
-                
+
             </Tab>
         </SecondPaneTemplate>
     </Split>
 </div>
 
-
-@code{
+@code {
     Tab tab;
-
-
 }
