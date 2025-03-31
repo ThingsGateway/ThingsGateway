@@ -358,10 +358,6 @@ public partial class AdminTable<TItem> where TItem : class, new()
     [Parameter]
     public RenderFragment<TItem>? TableColumns { get; set; }
 
-    /// <inheritdoc cref="Table{TItem}.TableSize"/>
-    [Parameter]
-    public TableSize TableSize { get; set; } = TableSize.Compact;
-
     /// <inheritdoc cref="Table{TItem}.TableToolbarBeforeTemplate"/>
     [NotNull]
     [Parameter]
