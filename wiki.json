@@ -1,0 +1,315 @@
+{
+  "supported_ languages": {
+    "en": "English",
+    "ja": "Japanese (日本語)",
+    "zh": "Mandarin Chinese (中文)",
+    "zh-tw": "Traditional Chinese (繁 體中文)",
+    "es": "Spanish (Espano1)",
+    "kr": "Korean (就30)",
+    "vi": "Vietnamese (Tieng Viet)",
+    "pt-br": "Brazilian Portuguese (Portugues Brasileiro)",
+    "fr": "Francais (French)",
+    "ru": "PyccKmi (Russian)"
+  },
+  "default": "zh",
+  "repo_notes": [
+    {
+      "content": ""
+    }
+  ],
+  "pages": [
+    {
+      "title": "Overview",
+      "purpose": "Introduce ThingsGateway, explaining what it is, its core purpose as an industrial IoT gateway, and the high-level architecture",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Key Features",
+      "purpose": "List and describe the main features including multi-protocol support, plugin architecture, data persistence options, and deployment models",
+      "parent": "Overview",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "System Requirements and Dependencies",
+      "purpose": "Document the .NET versions, target frameworks, required NuGet packages, and system requirements",
+      "parent": "Overview",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Getting Started",
+      "purpose": "Provide quick-start guide for installing and running ThingsGateway",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Installation and Deployment",
+      "purpose": "Explain deployment options including Docker (x64/ARM64), web server, desktop application, and configuration basics",
+      "parent": "Getting Started",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Initial Configuration",
+      "purpose": "Guide users through initial setup including appsettings.json, environment variables, logging configuration, and first channel/device setup",
+      "parent": "Getting Started",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Architecture Overview",
+      "purpose": "Explain the overall system architecture including layered design, separation of concerns, and component relationships",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Layered Architecture",
+      "purpose": "Describe the Foundation, Gateway Application, and UI/Admin layers and their responsibilities",
+      "parent": "Architecture Overview",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Plugin System Architecture",
+      "purpose": "Explain the plugin architecture including Foundation vs Plugin layer separation, dynamic loading with AssemblyLoadContext, and plugin types",
+      "parent": "Architecture Overview",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Build System and Conditional Compilation",
+      "purpose": "Document the MSBuild-based build system including Directory.Build.props, conditional plugin loading, multi-targeting, and NuGet package generation",
+      "parent": "Architecture Overview",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Foundation Layer",
+      "purpose": "Document the core foundation libraries that provide protocol implementations and communication primitives",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Device Communication",
+      "purpose": "Explain DeviceBase abstraction, IDevice interface, protocol implementations, read/write operations, and data parsing",
+      "parent": "Foundation Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Channel Architecture",
+      "purpose": "Document IChannel interface, channel implementations (TCP/UDP/Serial), channel options, and connection lifecycle",
+      "parent": "Foundation Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Data Handling and Transformation",
+      "purpose": "Describe DataHandlingAdapter, message parsing, ThingsGatewayBitConverter for endianness/format conversion, and WaitHandlePool for request-response correlation",
+      "parent": "Foundation Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Core Utilities",
+      "purpose": "Document TimerX scheduling, ExpiringDictionary caching, WaitLock concurrency primitives, and Reflect utilities",
+      "parent": "Foundation Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Gateway Application",
+      "purpose": "Explain the main gateway application layer that orchestrates device communication and data flow",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Runtime Management System",
+      "purpose": "Document the entity-to-runtime conversion, GlobalData static registry, RuntimeServiceHelper, and runtime synchronization",
+      "parent": "Gateway Application",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Device Lifecycle Management",
+      "purpose": "Explain DeviceThreadManage, driver initialization, StartAsync/StopAsync lifecycle, TaskSchedulerLoop, and thread management",
+      "parent": "Gateway Application",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Variable Management",
+      "purpose": "Document VariableRuntime, VariableSourceRead, variable packing optimization, and data collection workflow",
+      "parent": "Gateway Application",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Concurrency and Read/Write Coordination",
+      "purpose": "Explain AsyncReadWriteLock, reader/writer priority, duty cycle control, and concurrent operation management",
+      "parent": "Gateway Application",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Event System",
+      "purpose": "Document GlobalData event dispatchers, VariableValueChangeEvent, DeviceStatusChangeEvent, AlarmChangedEvent, and event flow",
+      "parent": "Gateway Application",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Redundancy and Failover",
+      "purpose": "Explain device redundancy system, master/slave configuration, failover triggers, and variable state transfer",
+      "parent": "Gateway Application",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Plugin Development",
+      "purpose": "Guide for developing custom plugins for data collection and business logic integration",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Collection Plugins (CollectBase)",
+      "purpose": "Document how to create data collection plugins including protocol implementation, variable loading, and scheduled tasks",
+      "parent": "Plugin Development",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Business Plugins (BusinessBase)",
+      "purpose": "Explain business plugin development for data persistence, distribution, and serving protocols",
+      "parent": "Plugin Development",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Plugin Service and Dynamic Loading",
+      "purpose": "Document PluginService, AssemblyLoadContext usage, plugin discovery, driver instantiation, and property configuration",
+      "parent": "Plugin Development",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Plugin Packaging and Distribution",
+      "purpose": "Explain how to package plugins as NuGet packages, versioning, and deployment via Directory.build.targets",
+      "parent": "Plugin Development",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Built-in Protocols",
+      "purpose": "Document the built-in protocol implementations including Modbus, Siemens S7, OPC UA, OPC DA, and Dlt645",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Modbus Protocol",
+      "purpose": "Document Modbus Master/Slave implementations, RTU/TCP/UDP support, function codes, and address parsing",
+      "parent": "Built-in Protocols",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Siemens S7 Protocol",
+      "purpose": "Explain S7 Master implementation, PLC types, area addressing, and data block access",
+      "parent": "Built-in Protocols",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    }
+  ]
+}
