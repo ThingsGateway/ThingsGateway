@@ -474,19 +474,6 @@ public static class GlobalData
         }
     }
 
-    private static IGatewayMonitorHostedService gatewayMonitorHostedService;
-    public static IGatewayMonitorHostedService GatewayMonitorHostedService
-    {
-        get
-        {
-            if (gatewayMonitorHostedService == null)
-            {
-                gatewayMonitorHostedService = App.RootServices.GetRequiredService<IGatewayMonitorHostedService>();
-            }
-            return gatewayMonitorHostedService;
-        }
-    }
-
     private static IRpcService rpcService;
     public static IRpcService RpcService
     {

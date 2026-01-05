@@ -94,7 +94,7 @@ public class Startup : AppStartup
         services.AddSingleton<IGlobalDataService, GlobalDataService>();
 
         services.AddGatewayHostedService<IAlarmHostedService, AlarmHostedService>();
-        services.AddGatewayHostedService<IGatewayMonitorHostedService, GatewayMonitorHostedService>();
+        services.AddHostedService<GatewayMonitorHostedService>();
     }
 
     public void Use(IServiceProvider serviceProvider)

@@ -35,7 +35,8 @@
 		<ProjectReference Include="..\..\..\ThingsGateway.ProPlugin\src\ThingsGateway.Plugin.OpcAe\ThingsGateway.Plugin.OpcAe.csproj" />
 		<ProjectReference Include="..\..\..\ThingsGateway.ProPlugin\src\ThingsGateway.Foundation.OpcAe\ThingsGateway.Foundation.OpcAe.csproj" />
 
-		<ProjectReference Include="..\..\..\ThingsGateway.Management\src\ThingsGateway.Gateway.VariableCore\ThingsGateway.Gateway.VariableCore.csproj" />
+		<ProjectReference Include="..\..\..\ThingsGateway.Management\src\ThingsGateway.Gateway.CalcVariableProRazor\ThingsGateway.Gateway.CalcVariableProRazor.csproj" />
+		<ProjectReference Include="..\..\..\ThingsGateway.Management\src\ThingsGateway.Gateway.CalcVariablePro\ThingsGateway.Gateway.CalcVariablePro.csproj" />
 	</ItemGroup>
 
 

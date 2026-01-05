@@ -18,7 +18,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 通道后台服务
 /// </summary>
-internal sealed class GatewayMonitorHostedService : BackgroundService, IGatewayMonitorHostedService
+internal sealed class GatewayMonitorHostedService : BackgroundService
 {
     public ILogger Logger { get; }
     /// <inheritdoc cref="AlarmHostedService"/>
