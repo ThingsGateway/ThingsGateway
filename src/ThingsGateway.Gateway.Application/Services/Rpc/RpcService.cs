@@ -360,7 +360,7 @@ internal sealed class RpcService : IRpcService
                 var end = DateTime.Now;
 
                 string operObj = tag.Name;
-                string parJson = deviceDatas["Memory"][tag.Name].ToJsonString();
+                string parJson = deviceDatas["Memory"][tag.Name].ToJsonString(SystemTextJsonExtension.SystemTextJsonService.IndentedOptions);
 
                 if (!variableResult.IsSuccess || _rpcLogOptions.SuccessLog)
                 {
@@ -480,7 +480,7 @@ internal sealed class RpcService : IRpcService
                     foreach (var variableResult in resultItem.Value)
                     {
                         string operObj = variableResult.Key;
-                        string parJson = deviceDatas[resultItem.Key][variableResult.Key].ToJsonString();
+                        string parJson = deviceDatas[resultItem.Key][variableResult.Key].ToJsonString(SystemTextJsonExtension.SystemTextJsonService.IndentedOptions);
 
                         if (!variableResult.Value.IsSuccess || _rpcLogOptions.SuccessLog)
                         {
@@ -540,7 +540,7 @@ internal sealed class RpcService : IRpcService
                     foreach (var variableResult in resultItem.Value)
                     {
                         string operObj = variableResult.Key;
-                        string parJson = deviceDatas[resultItem.Key][variableResult.Key].ToJsonString();
+                        string parJson = deviceDatas[resultItem.Key][variableResult.Key].ToJsonString(SystemTextJsonExtension.SystemTextJsonService.IndentedOptions);
 
                         if (!variableResult.Value.IsSuccess || _rpcLogOptions.SuccessLog)
                         {

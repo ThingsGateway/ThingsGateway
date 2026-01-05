@@ -12,7 +12,7 @@
 using Newtonsoft.Json.Linq;
 
 using System.Text;
-
+using ThingsGateway.Foundation.Common.Json.Extension;
 using TouchSocket.Core;
 
 using Size = BootstrapBlazor.Components.Size;
@@ -56,7 +56,7 @@ namespace ThingsGateway.Gateway.Razor
                 expressionNode.Logger=new EasyLogger((a)=>stringBuilder.AppendLine(a));
                 var data=await expressionNode.ExecuteAsync(new NodeInput(){Value=a==null?a:JToken.Parse(a??string.Empty) },default).ConfigureAwait(false);
 
-                stringBuilder.AppendLine( data.IsSuccess? data.Content.JToken?.ToString()??string.Empty: data.ToString());
+                stringBuilder.AppendLine( data.IsSuccess? data.Content.JToken?.ToJsonString(SystemTextJsonExtension.SystemTextJsonService.IndentedOptions)??string.Empty: data.ToString());
                 return stringBuilder.ToString();
             }
              if(Node is IActuatorNode actuatorNode)
@@ -65,7 +65,7 @@ namespace ThingsGateway.Gateway.Razor
                 actuatorNode.Logger=new EasyLogger((a)=>stringBuilder.AppendLine(a));
                 var data=await actuatorNode.ExecuteAsync(new NodeInput(){Value=a==null?a:JToken.Parse(a??string.Empty) },default).ConfigureAwait(false);
 
-                stringBuilder.AppendLine( data.IsSuccess? data.Content.JToken?.ToString()??string.Empty: data.ToString());
+                stringBuilder.AppendLine( data.IsSuccess? data.Content.JToken?.ToJsonString(SystemTextJsonExtension.SystemTextJsonService.IndentedOptions)??string.Empty: data.ToString());
                 return stringBuilder.ToString();
             }
         return string.Empty;
