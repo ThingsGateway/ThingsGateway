@@ -30,6 +30,7 @@ using System.Text.Unicode;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
+using ThingsGateway.Common;
 using ThingsGateway.DB;
 using ThingsGateway.Debug;
 using ThingsGateway.Foundation.Common;
@@ -50,6 +51,7 @@ public class Startup : AppStartup
         services.AddSingleton<IAuthRazorService, HybridAuthRazorService>();
         services.AddSingleton<HybridAppService>();
         services.AddSingleton<IAppService, HybridAppService>(a => a.GetService<HybridAppService>());
+        services.AddSingleton<IReturnUrlService>(a => a.GetService<IAppService>());
         services.AddSingleton<IClaimsPrincipalService, HybridClaimsPrincipalService>();
 
         services.AddScoped<IPlatformService, HybridPlatformService>();
@@ -193,6 +195,7 @@ public class Startup : AppStartup
     public void Use(IApplicationBuilder applicationBuilder, IWebHostEnvironment env)
     {
         var app = (WebApplication)applicationBuilder;
+        app.UseStatusCodePagesWithReExecute("/notfound", "?statusCode={0}");
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
             ForwardedHeaders = ForwardedHeaders.All,

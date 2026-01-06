@@ -214,6 +214,7 @@ public class Startup : AppStartup
     public void Use(IApplicationBuilder applicationBuilder, IWebHostEnvironment env)
     {
         var app = (WebApplication)applicationBuilder;
+        app.UseStatusCodePagesWithReExecute("/notfound", "?statusCode={0}");
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
             ForwardedHeaders = ForwardedHeaders.All,

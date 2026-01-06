@@ -60,13 +60,9 @@
 		<Content Include="..\ThingsGateway.Server\Layout\MainLayout.razor" Link="Layout\MainLayout.razor" />
 		<Compile Include="..\ThingsGateway.Server\Layout\MainLayout.razor.cs" Link="Layout\MainLayout.razor.cs" />
 		<Content Include="..\ThingsGateway.Server\Layout\MainLayout.razor.css" Link="Layout\MainLayout.razor.css" />
-		<Content Include="..\ThingsGateway.Server\Layout\AccessDenied.razor" Link="Layout\AccessDenied.razor" />
-		<Compile Include="..\ThingsGateway.Server\Layout\AccessDenied.razor.cs" Link="Layout\AccessDenied.razor.cs" />
 		<Content Include="..\ThingsGateway.Server\Layout\Login.razor" Link="Layout\Login.razor" />
 		<Compile Include="..\ThingsGateway.Server\Layout\Login.razor.cs" Link="Layout\Login.razor.cs" />
 		<Content Include="..\ThingsGateway.Server\Layout\Login.razor.css" Link="Layout\Login.razor.css" />
-		<Content Include="..\ThingsGateway.Server\Layout\NotFound404.razor" Link="Layout\NotFound404.razor" />
-		<Compile Include="..\ThingsGateway.Server\Layout\NotFound404.razor.cs" Link="Layout\NotFound404.razor.cs" />
 		<Content Include="..\ThingsGateway.Server\Index\GatewayIndexComponent.razor" Link="Index\GatewayIndexComponent.razor" />
 		<Compile Include="..\ThingsGateway.Server\Index\GatewayIndexComponent.razor.cs" Link="Index\GatewayIndexComponent.razor.cs" />
 

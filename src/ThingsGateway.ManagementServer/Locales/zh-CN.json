@@ -68,11 +68,5 @@
     "RPC日志": "RPC日志",
     "UserCenter": "个人中心",
     "远程网关": "远程网关"
-  },
-  "ThingsGateway.ManagementServer.NotFound404": {
-    "401": "抱歉，您无权限访问该页面。",
-    "404": "抱歉，您访问的页面不存在。",
-    "Home": "回到首页",
-    "Login": "重新登录"
   }
 }

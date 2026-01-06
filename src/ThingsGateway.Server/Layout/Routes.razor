@@ -5,14 +5,14 @@
 @namespace ThingsGateway.Server
 
 @{
-    #if NET6_0
+#if NET6_0
 }
 <Microsoft.AspNetCore.Components.Authorization.CascadingAuthenticationState>
 
-<Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="App.RazorAssemblies.Where(a=>a!=typeof(Routes).Assembly)">
-<Found Context="routeData">
+    <Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="App.RazorAssemblies.Where(a=>a!=typeof(Routes).Assembly)">
+        <Found Context="routeData">
 
-    <Microsoft.AspNetCore.Components.Authorization.AuthorizeView Resource="routeData">
+            <Microsoft.AspNetCore.Components.Authorization.AuthorizeView Resource="routeData">
                 <Authorized>
                     <RouteView RouteData="routeData" DefaultLayout="typeof(Razor.MainLayout)">
                     </RouteView>
@@ -20,50 +20,52 @@
                 <NotAuthorized>
                     @if (UserManager.UserId > 0)
                     {
-                        <LayoutView Layout="typeof(Razor.BaseLayout)">
-                            <AccessDenied/>
-                        </LayoutView>
+                    <LayoutView Layout="typeof(Razor.BaseLayout)">
+                        <AccessDenied />
+                    </LayoutView>
                     }
                     else
                     {
-                        <LayoutView Layout="typeof(Razor.BaseLayout)">
-                            <Login/>
-                        </LayoutView>
+                    <LayoutView Layout="typeof(Razor.BaseLayout)">
+                        <Login />
+                    </LayoutView>
                     }
                 </NotAuthorized>
             </Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
 
 
-</Found>
-<NotFound>
-    <LayoutView Layout="@typeof(Razor.BaseLayout)">
-    <NotFound404></NotFound404>
-        </LayoutView>
-    </NotFound>
-</Router>
+        </Found>
+        <NotFound>
+            <LayoutView Layout="@typeof(Razor.BaseLayout)">
+                <NotFound404></NotFound404>
+            </LayoutView>
+        </NotFound>
+    </Router>
 
 
 </Microsoft.AspNetCore.Components.Authorization.CascadingAuthenticationState>
 
 
 @{
-    #else
+#else
+
 }
-<Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="App.RazorAssemblies.Where(a=>a!=typeof(Routes).Assembly)">
-<Found Context="routeData">
+<Router AppAssembly="@typeof(Routes).Assembly" AdditionalAssemblies="App.RazorAssemblies.Where(a => a != typeof(Routes).Assembly)">
+    <Found Context="routeData">
 
-    <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
 
 
-</Found>
-<NotFound>
-    <LayoutView Layout="@typeof(Razor.BaseLayout)">
-    <NotFound404></NotFound404>
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(Razor.BaseLayout)">
+            <NotFound404></NotFound404>
         </LayoutView>
     </NotFound>
 </Router>
 
 @{
-    #endif
+#endif
+
 }
 

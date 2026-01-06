@@ -791,7 +791,7 @@ internal sealed class PluginService : IPluginService
                         LastWriteTime = lastWriteTime, //编译时间
                     };
                     if (!item.Value.Assembly.Location.IsNullOrEmpty())
-                        pluginInfo.Directory = Path.GetDirectoryName(item.Value.Assembly.Location);
+                        pluginInfo.Directory = Path.GetRelativePath(AppContext.BaseDirectory, Path.GetDirectoryName(item.Value.Assembly.Location));
 
                     plugins.Add(pluginInfo);
                 }
@@ -801,10 +801,10 @@ internal sealed class PluginService : IPluginService
             string[] folderPaths = Directory.GetDirectories(PathHelper.CombinePathReplace(AppContext.BaseDirectory, tempDir));
 
             // 遍历插件文件夹
-            foreach (string folderPath in folderPaths)
+            foreach (string folderPath1 in folderPaths)
             {
                 //当前插件文件夹
-
+                var folderPath = Path.GetRelativePath(AppContext.BaseDirectory, folderPath1);
                 try
                 {
                     var driverMainName = Path.GetFileName(folderPath);

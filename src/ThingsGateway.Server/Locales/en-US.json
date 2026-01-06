@@ -89,11 +89,6 @@
     "Logout": "Logout",
     "RPC日志": "RPC",
     "UserCenter": "User Center"
-  },
-  "ThingsGateway.Server.NotFound404": {
-    "401": "Sorry, you do not have permission to access this page.",
-    "404": "Sorry, the page you are looking for does not exist.",
-    "Home": "Back to Home",
-    "Login": "Login"
   }
+
 }

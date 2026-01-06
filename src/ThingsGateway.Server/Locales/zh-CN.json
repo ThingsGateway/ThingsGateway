@@ -89,11 +89,6 @@
     "Logout": "注销",
     "RPC日志": "RPC日志",
     "UserCenter": "个人中心"
-  },
-  "ThingsGateway.Server.NotFound404": {
-    "401": "抱歉，您无权限访问该页面。",
-    "404": "抱歉，您访问的页面不存在。",
-    "Home": "回到首页",
-    "Login": "重新登录"
   }
+
 }

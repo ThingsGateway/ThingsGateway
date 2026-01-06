@@ -266,6 +266,7 @@ public class Startup : AppStartup
         {
 
             var app = (WebApplication)applicationBuilder;
+            app.UseStatusCodePagesWithReExecute("/notfound", "?statusCode={0}");
 
             app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
@@ -330,7 +331,6 @@ public class Startup : AppStartup
 
             // 添加状态码拦截中间件
             app.UseUnifyResultStatusCodes();
-
             // 路由注册
             app.UseRouting();
 
