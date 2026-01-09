@@ -31,11 +31,11 @@ public partial class GatewayMonitorPage
 
             if (channelRuntime.IsCollect == true)
             {
-                VariableRuntimes = channelRuntime.ReadDeviceRuntimes.SelectMany(a => a.Value.ReadOnlyVariableRuntimes.Select(a => a.Value).Where(a => a != null));
+                VariableRuntimes = channelRuntime.ReadDeviceRuntimes.SelectMany(a => a.Value.ReadOnlyVariableRuntimes.Select(a => a.Value).Where(a => a != null && !a.IsMemory));
             }
             else
             {
-                VariableRuntimes = channelRuntime.ReadDeviceRuntimes.Where(a => a.Value?.Driver?.IdVariableRuntimes != null).SelectMany(a => a.Value?.Driver?.IdVariableRuntimes?.Where(a => a.Value != null)?.Select(a => a.Value)).Where(a => a != null);
+                VariableRuntimes = channelRuntime.ReadDeviceRuntimes.Where(a => a.Value?.Driver?.IdVariableRuntimes != null).SelectMany(a => a.Value?.Driver?.IdVariableRuntimes?.Where(a => a.Value != null && !a.Value.IsMemory)?.Select(a => a.Value)).Where(a => a != null);
             }
             //ChannelRuntimes = Enumerable.Repeat(channelRuntime, 1);
             //DeviceRuntimes = channelRuntime.ReadDeviceRuntimes.Select(a => a.Value);
@@ -62,14 +62,14 @@ public partial class GatewayMonitorPage
                     _ = Task.Run(async () =>
                     {
                         await Task.Delay(2000);
-                        VariableRuntimes = deviceRuntime.Driver?.IdVariableRuntimes?.Where(a => a.Value != null)
+                        VariableRuntimes = deviceRuntime.Driver?.IdVariableRuntimes?.Where(a => a.Value != null && !a.Value.IsMemory)
 .Select(a => a.Value) ?? Enumerable.Empty<VariableRuntime>();
                         await InvokeAsync(StateHasChanged);
                     });
                 }
                 else
                 {
-                    VariableRuntimes = deviceRuntime.Driver?.IdVariableRuntimes?.Where(a => a.Value != null)
+                    VariableRuntimes = deviceRuntime.Driver?.IdVariableRuntimes?.Where(a => a.Value != null && !a.Value.IsMemory)
 .Select(a => a.Value) ?? Enumerable.Empty<VariableRuntime>();
                 }
 
@@ -82,11 +82,11 @@ public partial class GatewayMonitorPage
             var pluginType = GlobalData.PluginService.GetPluginList().FirstOrDefault(a => a.FullName == pluginName)?.PluginType;
             if (pluginType == PluginTypeEnum.Collect)
             {
-                VariableRuntimes = channels.Where(a => a.PluginName == pluginName).SelectMany(a => a.ReadDeviceRuntimes).SelectMany(a => a.Value.ReadOnlyVariableRuntimes).Select(a => a.Value).Where(a => a != null);
+                VariableRuntimes = channels.Where(a => a.PluginName == pluginName).SelectMany(a => a.ReadDeviceRuntimes).SelectMany(a => a.Value.ReadOnlyVariableRuntimes).Select(a => a.Value).Where(a => a != null && !a.IsMemory);
             }
             else
             {
-                VariableRuntimes = channels.Where(a => a.PluginName == pluginName).SelectMany(a => a.ReadDeviceRuntimes).Where(a => a.Value.Driver?.IdVariableRuntimes != null).SelectMany(a => a.Value.Driver?.IdVariableRuntimes).Select(a => a.Value);
+                VariableRuntimes = channels.Where(a => a.PluginName == pluginName).SelectMany(a => a.ReadDeviceRuntimes).Where(a => a.Value.Driver?.IdVariableRuntimes != null && !a.Value.IsMemory).SelectMany(a => a.Value.Driver?.IdVariableRuntimes).Select(a => a.Value);
             }
 
             //ChannelRuntimes = channels.Where(a => a.PluginName == pluginName);
