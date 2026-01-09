@@ -28,7 +28,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
     {
         foreach (var deviceData in deviceDatas)
         {
-            if (GlobalData.ReadOnlyDevices.TryGetValue(deviceData.Name, out var device))
+            if (GlobalData.TryGetDeviceRuntime(deviceData.Name, out var device))
             {
                 device.RpcDriver = RedundancyTask;
                 device.Tag = callContext.Caller is IIdClient idClient ? idClient.Id : string.Empty;
@@ -49,7 +49,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
     }
 
     [DmtpRpc]
-    public async Task SyncData(List<Channel> channels, List<Device> devices, List<Variable> variables)
+    public async Task SyncData(List<Channel> channels, List<Device> devices, List<MemoryVariable> variables)
     {
         List<Channel> addChannels = new();
         List<Device> addDevices = new();
@@ -61,6 +61,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
         Dictionary<long, long> channelNewId = new();
         Dictionary<long, long> deviceNewId = new();
 
+
         foreach (var channel in channels)
         {
             if (GlobalData.ReadOnlyChannels.TryGetValue(channel.Name, out var channelRuntime))
@@ -70,7 +71,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
                 channel.Enable = false;
                 upChannels.Add(channel);
             }
-            else
+            else if (channel.Id != MemoryVariable.MemoryChannelId)
             {
                 var id = CommonUtils.GetSingleId();
                 channelNewId.TryAdd(channel.Id, id);
@@ -82,7 +83,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
 
         foreach (var device in devices)
         {
-            if (GlobalData.ReadOnlyDevices.TryGetValue(device.Name, out var deviceRuntime))
+            if (GlobalData.TryGetDeviceRuntime(device.Name, out var deviceRuntime))
             {
                 deviceNewId.TryAdd(device.Id, deviceRuntime.Id);
                 device.Id = deviceRuntime.Id;
@@ -93,7 +94,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
                 device.Enable = false;
                 upDevices.Add(device);
             }
-            else
+            else if (device.Id != MemoryVariable.MemoryDeviceId)
             {
                 var id = CommonUtils.GetSingleId();
                 deviceNewId.TryAdd(device.Id, id);
@@ -106,18 +107,28 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
             }
         }
 
-        foreach (var variable in variables)
+        foreach (var variable in variables.Where(a => a.DeviceId != MemoryVariable.MemoryDeviceId))
         {
-            deviceNewId.TryGetValue(variable.DeviceId, out var newid);
-            if (GlobalData.ReadOnlyIdDevices.TryGetValue(newid, out var deviceRuntime))
             {
-                if (deviceRuntime.ReadOnlyVariableRuntimes.TryGetValue(variable.Name, out var variableRuntime))
+                deviceNewId.TryGetValue(variable.DeviceId, out var newid);
+                if (GlobalData.TryGetDeviceRuntime(newid, out var deviceRuntime))
                 {
-                    variable.Id = variableRuntime.Id;
+                    if (deviceRuntime.ReadOnlyVariableRuntimes.TryGetValue(variable.Name, out var variableRuntime))
+                    {
+                        variable.Id = variableRuntime.Id;
 
-                    variable.DeviceId = newid;
+                        variable.DeviceId = newid;
 
-                    upVariables.Add(variable);
+                        upVariables.Add(variable);
+                    }
+                    else
+                    {
+                        var id = CommonUtils.GetSingleId();
+                        variable.Id = id;
+
+                        variable.DeviceId = newid;
+                        addVariables.Add(variable);
+                    }
                 }
                 else
                 {
@@ -128,18 +139,27 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
                     addVariables.Add(variable);
                 }
             }
-            else
-            {
-                var id = CommonUtils.GetSingleId();
-                variable.Id = id;
-
-                variable.DeviceId = newid;
-                addVariables.Add(variable);
-            }
         }
 
         await GlobalData.ChannelRuntimeService.InsertAsync(addChannels, addDevices, addVariables, true).ConfigureAwait(false);
         await GlobalData.ChannelRuntimeService.UpdateAsync(upChannels, upDevices, upVariables, true).ConfigureAwait(false);
+
+        List<MemoryVariable> addMemVars = new();
+        List<MemoryVariable> upMemVars = new();
+        foreach (var variable in variables.Where(a => a.DeviceId == MemoryVariable.MemoryDeviceId))
+        {
+            if (GlobalData.MemoryVariableRuntimes.TryGetValue(variable.Name, out var varRuntime))
+            {
+                variable.Id = varRuntime.Id;
+                upMemVars.Add(variable);
+            }
+            else
+            {
+                addMemVars.Add(variable);
+            }
+        }
+        await App.GetService<IMemoryVariableRuntimeService>().BatchSaveMemoryVariableAsync(addMemVars, BootstrapBlazor.Components.ItemChangedType.Add, false).ConfigureAwait(false);
+        await App.GetService<IMemoryVariableRuntimeService>().BatchSaveMemoryVariableAsync(upMemVars, BootstrapBlazor.Components.ItemChangedType.Update, false).ConfigureAwait(false);
 
         RedundancyTask.LogMessage?.LogTrace($"Sync data success");
     }

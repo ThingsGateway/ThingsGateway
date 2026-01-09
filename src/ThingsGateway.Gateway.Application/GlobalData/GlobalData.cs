@@ -275,6 +275,10 @@ public static class GlobalData
                 return variable;
             }
         }
+        if (deviceName == "Memory" && MemoryVariableRuntimes.TryGetValue(variableName, out var memVariable))
+        {
+            return memVariable;
+        }
         return null;
     }
     public static bool TryGetVariable(string deviceName, string variableName, out VariableRuntime value)
@@ -456,6 +460,7 @@ public static class GlobalData
             return deviceRuntimeService;
         }
     }
+    internal static ChannelThreadManage MemoryChannelThreadManage { get; } = new ChannelThreadManage();
 
     private static IChannelRuntimeService channelRuntimeService;
     public static IChannelRuntimeService ChannelRuntimeService
@@ -607,7 +612,21 @@ public static class GlobalData
     /// 只读的设备字典，提供对设备的只读访问
     /// </summary>
     public static IReadOnlyDictionary<string, DeviceRuntime> ReadOnlyDevices => Devices;
-
+    public static bool TryGetDeviceRuntime(long deviceId, out DeviceRuntime deviceRuntime)
+    {
+        if (IdDevices.TryGetValue(deviceId, out var v1))
+        {
+            deviceRuntime = v1;
+            return true;
+        }
+        if (deviceId == MemoryVariable.MemoryDeviceId)
+        {
+            deviceRuntime = MemoryDeviceRuntime;
+            return true;
+        }
+        deviceRuntime = null;
+        return false;
+    }
     /// <summary>
     /// 内部使用的设备字典，用于存储设备对象
     /// </summary>
@@ -643,7 +662,21 @@ public static class GlobalData
     public static IReadOnlyDictionary<long, VariableRuntime> ReadOnlyIdVariables => IdVariables;
     public static MemoryChannelRuntime MemoryChannelRuntime { get; } = new MemoryChannelRuntime();
     public static MemoryDeviceRuntime MemoryDeviceRuntime { get; } = new MemoryDeviceRuntime();
-
+    public static bool TryGetDeviceRuntime(string deviceName, out DeviceRuntime deviceRuntime)
+    {
+        if (Devices.TryGetValue(deviceName, out var v1))
+        {
+            deviceRuntime = v1;
+            return true;
+        }
+        if (deviceName == "Memory")
+        {
+            deviceRuntime = MemoryDeviceRuntime;
+            return true;
+        }
+        deviceRuntime = null;
+        return false;
+    }
     public static IReadOnlyDictionary<string, VariableRuntime> MemoryVariableRuntimes => MemoryDeviceRuntime.VariableRuntimes;
     #region 变化事件
     /// <summary>

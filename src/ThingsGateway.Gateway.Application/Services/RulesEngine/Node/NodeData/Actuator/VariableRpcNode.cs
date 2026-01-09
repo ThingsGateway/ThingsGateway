@@ -14,7 +14,7 @@ public class VariableRpcNode : VariableNode, IActuatorNode
     {
         try
         {
-            if ((!DeviceText.IsNullOrWhiteSpace()) && GlobalData.ReadOnlyDevices.TryGetValue(DeviceText, out var device))
+            if ((!DeviceText.IsNullOrWhiteSpace()) && GlobalData.TryGetDeviceRuntime(DeviceText, out var device))
             {
                 if (device.ReadOnlyVariableRuntimes.TryGetValue(Text, out var value))
                 {

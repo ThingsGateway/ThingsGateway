@@ -40,6 +40,7 @@ public static partial class GatewayMapper
     public static partial List<VariableBasicData> AdaptListVariableBasicData(this IEnumerable<VariableRuntime> src);
 
     public static partial Variable AdaptVariable(this VariableRuntime src);
+    public static partial MemoryVariable AdaptMemoryVariable(this VariableRuntime src);
 
     [MapProperty(nameof(Variable.InitValue), nameof(VariableRuntime.Value))]
     public static partial VariableRuntime AdaptVariableRuntime(this Variable src);

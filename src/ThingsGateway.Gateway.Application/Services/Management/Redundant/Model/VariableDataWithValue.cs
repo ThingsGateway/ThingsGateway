@@ -32,4 +32,9 @@ public class VariableDataWithValue
     [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string? LastErrorMessage { get; set; }
+
+    /// <inheritdoc cref="MemoryVariableRuntime.BusinessUpdate"/>
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public BusinessUpdateEnum? BusinessUpdate { get; set; }
 }

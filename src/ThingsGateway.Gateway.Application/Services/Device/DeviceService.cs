@@ -251,7 +251,7 @@ internal sealed class DeviceService : BaseService<Device>, IDeviceService
     [OperDesc("SaveDevice", localizerType: typeof(Device))]
     public async Task<bool> SaveDeviceAsync(Device input, ItemChangedType type)
     {
-        if (GlobalData.Devices.TryGetValue(input.Name, out var device))
+        if (GlobalData.ReadOnlyDevices.TryGetValue(input.Name, out var device))
         {
             if (device.Id != input.Id)
             {

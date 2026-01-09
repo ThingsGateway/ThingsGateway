@@ -30,7 +30,7 @@ public partial class TcpServiceComponentRpc : SingletonRpcServer, IPluginRpcServ
     [DmtpRpc]
     public async Task<bool> OnDeleteAsync(long deviceId, List<TcpSessionClientDto> tcpSessionClientDtos)
     {
-        ITcpServiceChannel? TcpServiceChannel = GlobalData.ReadOnlyIdDevices.TryGetValue(deviceId, out DeviceRuntime deviceRuntime) ? deviceRuntime.Driver?.Channel as ITcpServiceChannel : null;
+        ITcpServiceChannel? TcpServiceChannel = GlobalData.TryGetDeviceRuntime(deviceId, out DeviceRuntime deviceRuntime) ? deviceRuntime.Driver?.Channel as ITcpServiceChannel : null;
         if (TcpServiceChannel == null) return false;
 
         foreach (var item in tcpSessionClientDtos)
@@ -44,7 +44,7 @@ public partial class TcpServiceComponentRpc : SingletonRpcServer, IPluginRpcServ
     [DmtpRpc]
     public Task<QueryData<TcpSessionClientDto>> OnQueryAsync(long deviceId, QueryPageOptions options)
     {
-        ITcpServiceChannel? TcpServiceChannel = GlobalData.ReadOnlyIdDevices.TryGetValue(deviceId, out DeviceRuntime deviceRuntime) ? deviceRuntime.Driver?.Channel as ITcpServiceChannel : null;
+        ITcpServiceChannel? TcpServiceChannel = GlobalData.TryGetDeviceRuntime(deviceId, out DeviceRuntime deviceRuntime) ? deviceRuntime.Driver?.Channel as ITcpServiceChannel : null;
         if (TcpServiceChannel != null)
         {
             var clients = TcpServiceChannel.Clients.ToList();

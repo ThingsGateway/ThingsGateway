@@ -48,7 +48,7 @@ public partial class TcpServiceComponent : IDriverUIBase
             }
             else
             {
-                var TcpServiceChannel = GlobalData.ReadOnlyIdDevices.TryGetValue(DeviceId, out DeviceRuntime deviceRuntime) ? deviceRuntime.Driver?.Channel as ITcpServiceChannel : null;
+                var TcpServiceChannel = GlobalData.TryGetDeviceRuntime(DeviceId, out DeviceRuntime deviceRuntime) ? deviceRuntime.Driver?.Channel as ITcpServiceChannel : null;
 
                 if (TcpServiceChannel == null) return false;
 
@@ -75,7 +75,7 @@ public partial class TcpServiceComponent : IDriverUIBase
         }
         else
         {
-            var TcpServiceChannel = GlobalData.ReadOnlyIdDevices.TryGetValue(DeviceId, out DeviceRuntime deviceRuntime) ? deviceRuntime.Driver?.Channel as ITcpServiceChannel : null;
+            var TcpServiceChannel = GlobalData.TryGetDeviceRuntime(DeviceId, out DeviceRuntime deviceRuntime) ? deviceRuntime.Driver?.Channel as ITcpServiceChannel : null;
             if (TcpServiceChannel != null)
             {
                 var clients = TcpServiceChannel.Clients.ToList();

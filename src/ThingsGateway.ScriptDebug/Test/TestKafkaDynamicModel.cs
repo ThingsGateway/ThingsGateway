@@ -23,7 +23,7 @@
 //        {
 
 //            var name = "kafka_DA"; Logger?.LogInformation("进来了10000");
-//            if (GlobalData.ReadOnlyDevices.TryGetValue(name, out var kafka1))
+//            if (GlobalData.TryGetDeviceRuntime(name, out var kafka1))
 //            {
 //                id = kafka1.Id;
 

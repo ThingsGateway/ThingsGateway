@@ -40,11 +40,11 @@ public class DeviceRuntimeService : IDeviceRuntimeService
 
     public Task<string> GetDevicePluginNameAsync(long id)
     {
-        return Task.FromResult(GlobalData.ReadOnlyIdDevices.TryGetValue(id, out var deviceRuntime) ? deviceRuntime.PluginName : string.Empty);
+        return Task.FromResult(GlobalData.TryGetDeviceRuntime(id, out var deviceRuntime) ? deviceRuntime.PluginName : string.Empty);
     }
     public Task<string> GetDeviceNameAsync(long redundantDeviceId)
     {
-        return Task.FromResult(GlobalData.ReadOnlyIdDevices.TryGetValue(redundantDeviceId, out var deviceRuntime) ? deviceRuntime.Name : string.Empty);
+        return Task.FromResult(GlobalData.TryGetDeviceRuntime(redundantDeviceId, out var deviceRuntime) ? deviceRuntime.Name : string.Empty);
     }
 
     public Task<bool> IsRedundantDeviceAsync(long id)

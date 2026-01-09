@@ -46,7 +46,7 @@ public class ChannelDeviceTreeItem : IEqualityComparer<ChannelDeviceTreeItem>
     {
         if (ChannelDevicePluginType == ChannelDevicePluginTypeEnum.Device && DeviceRuntimeId > 0)
         {
-            if (GlobalData.ReadOnlyIdDevices.TryGetValue(DeviceRuntimeId, out deviceRuntime))
+            if (GlobalData.TryGetDeviceRuntime(DeviceRuntimeId, out deviceRuntime))
             {
                 return true;
             }
@@ -172,7 +172,7 @@ public struct ChannelDeviceTreeItemStruct
     {
         if (ChannelDevicePluginType == ChannelDevicePluginTypeEnum.Device && DeviceRuntimeId > 0)
         {
-            if (GlobalData.ReadOnlyIdDevices.TryGetValue(DeviceRuntimeId, out deviceRuntime))
+            if (GlobalData.TryGetDeviceRuntime(DeviceRuntimeId, out deviceRuntime))
             {
                 return true;
             }

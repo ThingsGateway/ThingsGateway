@@ -20,7 +20,7 @@
 //    public TestKafkaDynamicModel()
 //    {
 //        var name = "kafka1";
-//        if (GlobalData.ReadOnlyDevices.TryGetValue(name, out var kafka1))
+//        if (GlobalData.TryGetDeviceRuntime(name, out var kafka1))
 //        {
 //            id = kafka1.Id;
 

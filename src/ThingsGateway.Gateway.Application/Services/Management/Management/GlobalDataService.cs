@@ -33,7 +33,7 @@ public class GlobalDataService : IGlobalDataService
             IsSearch = !searchText.IsNullOrWhiteSpace()
         };
 
-        if ((!deviceText.IsNullOrWhiteSpace()) && GlobalData.ReadOnlyDevices.TryGetValue(deviceText, out var device))
+        if ((!deviceText.IsNullOrWhiteSpace()) && GlobalData.TryGetDeviceRuntime(deviceText, out var device))
         {
             var items = device.ReadOnlyVariableRuntimes.WhereIf(!searchText.IsNullOrWhiteSpace(), a => a.Value.Name.Contains(searchText)).Select(a => a.Value).Skip(startIndex).Take(count)
                .Select(a => new SelectedItem(a.Name, a.Name)).ToList();

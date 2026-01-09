@@ -20,7 +20,7 @@ internal interface IRedundantRpcServer : IRpcServer
     Task<IDictionary<string, IDictionary<string, OperResult<object>>>> RpcAsync(ICallContext callContext, Dictionary<string, Dictionary<string, string>> deviceDatas);
 
     [DmtpRpc]
-    Task SyncData(List<Channel> channels, List<Device> devices, List<Variable> variables);
+    Task SyncData(List<Channel> channels, List<Device> devices, List<MemoryVariable> variables);
     [DmtpRpc]
     void UpData(ICallContext callContext, List<DeviceDataWithValue> deviceDatas);
 }

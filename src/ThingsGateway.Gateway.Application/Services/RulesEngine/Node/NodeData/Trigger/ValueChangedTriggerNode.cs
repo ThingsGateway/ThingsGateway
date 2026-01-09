@@ -80,7 +80,7 @@ public class ValueChangedTriggerNode : VariableNode, ITriggerNode, IDisposable
                 {
                     if (FuncDict.TryGetValue(item, out var func))
                     {
-                        item.Logger?.Trace($"Variable changed: {item.Text}");
+                        item.Logger?.Trace($"Variable changed: {item.Text} , value: {variableBasicData.Value}");
                         await func.Invoke(new NodeOutput() { Value = variableBasicData }, token).ConfigureAwait(false);
                     }
                 }

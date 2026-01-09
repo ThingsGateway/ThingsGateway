@@ -26,8 +26,6 @@ public partial class MemoryVariable : Variable
     [OrmColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
     public override long DeviceId { get; set; } = MemoryDeviceId;
 
     /// <summary>
@@ -36,8 +34,6 @@ public partial class MemoryVariable : Variable
     [OrmColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
     public override bool RpcWriteCheck { get; set; }
 
     /// <summary>
@@ -46,29 +42,21 @@ public partial class MemoryVariable : Variable
     [OrmColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
     public override string OtherMethod { get; set; }
 
     [OrmColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
     public override DataTypeEnum DataType { get; set; } = DataTypeEnum.Object;
 
     [OrmColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
     public override string RegisterAddress { get; set; } = "Memory";
 
     [OrmColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
     public override int? ArrayLength { get; set; }
 
 

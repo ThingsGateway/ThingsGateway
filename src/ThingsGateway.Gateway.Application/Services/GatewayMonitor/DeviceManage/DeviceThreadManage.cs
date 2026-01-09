@@ -257,7 +257,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
                 //备用设备实时取消
                 var redundantDeviceId = deviceRuntime.RedundantDeviceId;
-                if (GlobalData.ReadOnlyIdDevices.TryGetValue(redundantDeviceId ?? 0, out var redundantDeviceRuntime))
+                if (GlobalData.TryGetDeviceRuntime(redundantDeviceId ?? 0, out var redundantDeviceRuntime))
                 {
                     if (GlobalData.TryGetDeviceThreadManage(redundantDeviceRuntime, out var redundantDeviceThreadManage))
                     {
@@ -612,7 +612,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
             if (deviceRuntime.RedundantEnable && deviceRuntime.RedundantDeviceId != null)
             {
-                if (!GlobalData.ReadOnlyIdDevices.TryGetValue(deviceRuntime.RedundantDeviceId ?? 0, out newDeviceRuntime))
+                if (!GlobalData.TryGetDeviceRuntime(deviceRuntime.RedundantDeviceId ?? 0, out newDeviceRuntime))
                 {
                     devices.TryGetValue(deviceRuntime.RedundantDeviceId ?? 0, out var newDev);
                     if (newDev == null)

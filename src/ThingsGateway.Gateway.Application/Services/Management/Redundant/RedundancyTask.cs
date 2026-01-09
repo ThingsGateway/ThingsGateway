@@ -88,7 +88,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
                 {
                     int batchSize = 50;
 
-                    var deviceRunTimes = GlobalData.ReadOnlyIdDevices.Where(a => a.Value.IsCollect == true).Select(a => a.Value).Batch(batchSize);
+                    var deviceRunTimes = GlobalData.ReadOnlyIdDevices.Where(a => a.Value.IsCollect == true).Select(a => a.Value).Concat([GlobalData.MemoryDeviceRuntime]).Batch(batchSize);
 
                     foreach (var item in _tcpDmtpService.Clients)
                     {
@@ -231,9 +231,10 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
             first = true;
         }
     }
-    private static Task RestartAsync()
+    private static async Task RestartAsync()
     {
-        return GlobalData.ChannelRuntimeService.RestartChannelAsync(GlobalData.ReadOnlyIdChannels.Values);
+        await GlobalData.ChannelRuntimeService.RestartChannelAsync(GlobalData.ReadOnlyIdChannels.Values).ConfigureAwait(false);
+        await GlobalData.MemoryChannelThreadManage.RestartChannelAsync(GlobalData.MemoryChannelRuntime).ConfigureAwait(false);
     }
 
     public async Task StartRedundancyTaskAsync()
@@ -484,7 +485,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
 
         var channelBatch = new HashSet<Channel>();
         var deviceBatch = new HashSet<Device>();
-        var variableBatch = new List<Variable>();
+        var variableBatch = new List<MemoryVariable>();
         foreach (var group in groups)
         {
 
@@ -503,7 +504,14 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
                     channelBatch.Add(channel);
                     deviceBatch.Add(device);
                 }
-                variableBatch.Add(variable.AdaptVariable());
+                if (variable is MemoryVariableRuntime memoryVariableRuntime)
+                {
+                    variableBatch.Add(memoryVariableRuntime.AdaptMemoryVariable());
+                }
+                else
+                {
+                    variableBatch.Add(variable.AdaptMemoryVariable());
+                }
 
                 if (variableBatch.Count >= maxBatchSize)
                 {
@@ -613,7 +621,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
 
         foreach (var (key, value) in deviceDatas)
         {
-            if (!GlobalData.ReadOnlyDevices.TryGetValue(key, out var device))
+            if (!GlobalData.TryGetDeviceRuntime(key, out var device))
             {
                 continue;
             }

@@ -27,7 +27,6 @@ internal sealed class MemoryMonitorHostedService : BackgroundService
         Logger = logger;
     }
 
-    private ChannelThreadManage ChannelThreadManage { get; } = new ChannelThreadManage();
 
 
 
@@ -43,6 +42,7 @@ internal sealed class MemoryMonitorHostedService : BackgroundService
             GlobalData.MemoryChannelRuntime.LogLevel = TouchSocket.Core.LogLevel.Trace;
             GlobalData.MemoryChannelRuntime.Init();
             GlobalData.MemoryDeviceRuntime.Id = MemoryVariable.MemoryDeviceId;
+            GlobalData.MemoryDeviceRuntime.ChannelId = MemoryVariable.MemoryChannelId;
             GlobalData.MemoryDeviceRuntime.Name = "Memory";
             GlobalData.MemoryDeviceRuntime.LogLevel = TouchSocket.Core.LogLevel.Trace;
             GlobalData.MemoryDeviceRuntime.Init(GlobalData.MemoryChannelRuntime);
@@ -59,7 +59,7 @@ internal sealed class MemoryMonitorHostedService : BackgroundService
                 Logger.LogWarning(ex, "Init MemoryVariable");
             }
 
-            await ChannelThreadManage.RestartChannelAsync(GlobalData.MemoryChannelRuntime).ConfigureAwait(false);
+            await GlobalData.MemoryChannelThreadManage.RestartChannelAsync(GlobalData.MemoryChannelRuntime).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -69,7 +69,7 @@ internal sealed class MemoryMonitorHostedService : BackgroundService
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        await ChannelThreadManage.SafeDisposeAsync().ConfigureAwait(false);
+        await GlobalData.MemoryChannelThreadManage.SafeDisposeAsync().ConfigureAwait(false);
         await base.StopAsync(cancellationToken).ConfigureAwait(false);
     }
 }

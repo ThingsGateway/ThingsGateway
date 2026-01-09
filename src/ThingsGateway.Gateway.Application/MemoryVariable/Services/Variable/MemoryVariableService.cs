@@ -453,7 +453,7 @@ internal sealed class MemoryVariableService : BaseService<MemoryVariable>, IMemo
                         return;
                     }
 
-                    if (GlobalData.ReadOnlyIdDevices.TryGetValue(variable.DeviceId, out var dbvar1s) && dbvar1s.ReadOnlyVariableRuntimes.TryGetValue(variable.Name, out var dbvar1))
+                    if (GlobalData.TryGetVariable(variable.Name, out var dbvar1))
                     {
                         variable.Id = dbvar1.Id;
                         variable.IsUp = true;
