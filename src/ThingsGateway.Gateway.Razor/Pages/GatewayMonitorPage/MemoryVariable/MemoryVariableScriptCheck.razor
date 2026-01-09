@@ -1,0 +1,35 @@
+﻿@namespace ThingsGateway.Gateway.Razor
+@using ThingsGateway.Admin.Application
+@using ThingsGateway.Admin.Razor
+@using ThingsGateway.Gateway.Application
+
+<div class="row me-4 scriptcheck">
+    <div class="col-12  col-md-8">
+
+        <BootstrapLabel Value="Script" ShowLabelTooltip="true" />
+        <CodeEditor ShowLineNo Value=@Script ValueChanged=@Change Language="csharp" Theme="vs-dark" />
+
+    </div>
+    <div class="col-12  col-md-4">
+
+        <BootstrapLabel Value="Tip" ShowLabelTooltip="true" />
+        <Alert Icon="fa-solid fa-circle-check" Color="Color.Success">@(new MarkupString("注意  <code>Tag(\"deviceName\",\"variableName\").Value</code> 参数 为 <code>object</code> 类型，需要转换为实际类型操作"))</Alert>
+        <Alert Icon="fa-solid fa-circle-check" Color="Color.Success">@(new MarkupString("引用变量值，可用  <code>Tag(\"deviceName\",\"variableName\").Value</code>"))</Alert>
+        <Alert Icon="fa-solid fa-circle-check" Color="Color.Success">@(new MarkupString("可选触发方式为引用变量变化或间隔触发"))</Alert>
+        <Alert Icon="fa-solid fa-circle-check" Color="Color.Success">@(new MarkupString("详细说明查看文档对应内容页面"))</Alert>
+
+        <Button IsAsync OnClick="GetDemo" class="mt-3" Text="Demo" />
+
+    </div>
+
+    <div class="col-12  col-md-12">
+        <BootstrapLabel Value="Output" ShowLabelTooltip="true" />
+        <CodeEditor ShowLineNo @bind-Value=@Output Language="csharp" Theme="vs-dark" />
+
+    </div>
+</div>
+<div class="text-start">
+    <Button IsAsync OnClick="CheckScript" class="  mt-3">
+        Check
+    </Button>
+</div>

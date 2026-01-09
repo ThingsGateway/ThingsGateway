@@ -22,14 +22,11 @@ internal sealed class GatewayMonitorHostedService : BackgroundService
 {
     public ILogger Logger { get; }
     /// <inheritdoc cref="AlarmHostedService"/>
-    public GatewayMonitorHostedService(ILogger<GatewayMonitorHostedService> logger, IStringLocalizer<GatewayMonitorHostedService> localizer, IChannelThreadManage channelThreadManage)
+    public GatewayMonitorHostedService(ILogger<GatewayMonitorHostedService> logger, IChannelThreadManage channelThreadManage)
     {
         Logger = logger;
-        Localizer = localizer;
         ChannelThreadManage = channelThreadManage;
     }
-
-    private IStringLocalizer Localizer { get; }
 
     private IChannelThreadManage ChannelThreadManage { get; }
 

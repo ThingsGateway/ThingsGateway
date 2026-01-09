@@ -11,6 +11,7 @@
 using Microsoft.Extensions.Logging;
 
 using System.Collections.Concurrent;
+using System.Collections.Frozen;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
@@ -59,8 +60,7 @@ public abstract partial class CollectBase : DriverBase, IRpcDriver
     {
         LogMessage?.LogInformation("Refresh variable");
         var currentDevice = CurrentDevice;
-        IdVariableRuntimes.Clear();
-        IdVariableRuntimes.AddRange(currentDevice.VariableRuntimes.Where(a => a.Value.Enable).ToDictionary(a => a.Value.Id, a => a.Value));
+        IdVariableRuntimes = currentDevice.VariableRuntimes.Where(a => a.Value.Enable).ToFrozenDictionary(a => a.Value.Id, a => a.Value);
 
         //预热脚本，加速编译
         IdVariableRuntimes.Where(a => !string.IsNullOrWhiteSpace(a.Value.ReadExpressions))

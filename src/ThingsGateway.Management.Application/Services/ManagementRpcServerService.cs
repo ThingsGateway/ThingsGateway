@@ -21,7 +21,7 @@ using TouchSocket.Rpc.DmtpRpc.Generators;
 
 namespace ThingsGateway.Management.Application;
 
-public partial class ManagementRpcServerService(DmtpActorContext dmtpActorContext) : IManagementRpcServer, IManagementUpgradeRpcServer, IHardwarePageService, IBackendLogService, IUpgradeRpcServer, IRpcLogService, IRestartService, IAuthenticationService, IChannelEnableService, IRedundancyHostedService, IRedundancyService, ITextFileReadService, IPluginPageService, IRealAlarmService, IGlobalDataService, IRulesEngineHostedService, IRulesPageService, IChannelPageService, IDevicePageService, IVariablePageService
+public partial class ManagementRpcServerService(DmtpActorContext dmtpActorContext) : IManagementRpcServer, IManagementUpgradeRpcServer, IHardwarePageService, IBackendLogService, IUpgradeRpcServer, IRpcLogService, IRestartService, IAuthenticationService, IChannelEnableService, IRedundancyHostedService, IRedundancyService, ITextFileReadService, IPluginPageService, IRealAlarmService, IGlobalDataService, IRulesEngineHostedService, IRulesPageService, IChannelPageService, IDevicePageService, IVariablePageService, IMemoryVariablePageService
 {
     public Task<HardwareInfo> GetRealTimeHardwareInfo() => dmtpActorContext.Current.GetDmtpRpcActor().GetRealTimeHardwareInfoAsync(invokeOption);
     public Task<List<HistoryHardwareInfo>> GetHistoryHardwareInfos() => dmtpActorContext.Current.GetDmtpRpcActor().GetHistoryHardwareInfosAsync(invokeOption);
@@ -399,7 +399,7 @@ public partial class ManagementRpcServerService(DmtpActorContext dmtpActorContex
     public async Task<string> ExportChannelDataFileAsync(List<Channel> data)
     {
         //传递文件到远端
-        var path = await dmtpActorContext.Current.GetDmtpRpcActor().ExportChannelDataFileAsync(data).ConfigureAwait(false);
+        var path = await dmtpActorContext.Current.GetDmtpRpcActor().ExportChannelDataFileAsync(data, invokeOption).ConfigureAwait(false);
 
         string savePath = PathHelper.CombinePathReplace("wwwroot", dmtpActorContext.Current.Id.SanitizeFileName(), "exports", Path.GetFileName(path));
 
@@ -411,7 +411,7 @@ public partial class ManagementRpcServerService(DmtpActorContext dmtpActorContex
     public async Task<string> ExportDeviceDataFileAsync(List<Device> data, string channelName, string plugin)
     {
         //传递文件到远端
-        var path = await dmtpActorContext.Current.GetDmtpRpcActor().ExportDeviceDataFileAsync(data, channelName, plugin).ConfigureAwait(false);
+        var path = await dmtpActorContext.Current.GetDmtpRpcActor().ExportDeviceDataFileAsync(data, channelName, plugin, invokeOption).ConfigureAwait(false);
 
         string savePath = PathHelper.CombinePathReplace("wwwroot", dmtpActorContext.Current.Id.SanitizeFileName(), "exports", Path.GetFileName(path));
 
@@ -423,7 +423,7 @@ public partial class ManagementRpcServerService(DmtpActorContext dmtpActorContex
     public async Task<string> ExportVariableDataFileAsync(List<Variable> data, string devName)
     {
         //传递文件到远端
-        var path = await dmtpActorContext.Current.GetDmtpRpcActor().ExportVariableDataFileAsync(data, devName).ConfigureAwait(false);
+        var path = await dmtpActorContext.Current.GetDmtpRpcActor().ExportVariableDataFileAsync(data, devName, invokeOption).ConfigureAwait(false);
 
         string savePath = PathHelper.CombinePathReplace("wwwroot", dmtpActorContext.Current.Id.SanitizeFileName(), "exports", Path.GetFileName(path));
 
@@ -431,4 +431,97 @@ public partial class ManagementRpcServerService(DmtpActorContext dmtpActorContex
 
         return savePath;
     }
+
+    public Task<QueryData<ThingsGateway.Management.Application.MemoryVariableRuntime>> OnMemoryVariableQueryAsync(QueryPageOptions options)
+=> dmtpActorContext.Current.GetDmtpRpcActor().OnMemoryVariableQueryAsync(options, invokeOption);
+
+
+    public Task<bool> BatchEditMemoryVariableAsync(List<MemoryVariable> models, MemoryVariable oldModel, MemoryVariable model, bool restart)
+=> dmtpActorContext.Current.GetDmtpRpcActor().BatchEditMemoryVariableAsync(models, oldModel, model, restart, invokeOption);
+
+
+    public Task<bool> DeleteMemoryVariableAsync(List<long> ids, bool restart)
+=> dmtpActorContext.Current.GetDmtpRpcActor().DeleteMemoryVariableAsync(ids, restart, invokeOption);
+
+
+    public Task<bool> ClearMemoryVariableAsync(bool restart)
+=> dmtpActorContext.Current.GetDmtpRpcActor().ClearMemoryVariableAsync(restart, invokeOption);
+
+
+    public Task<bool> BatchSaveMemoryVariableAsync(List<MemoryVariable> input, ItemChangedType type, bool restart)
+=> dmtpActorContext.Current.GetDmtpRpcActor().BatchSaveMemoryVariableAsync(input, type, restart, invokeOption);
+
+
+    public Task<bool> SaveMemoryVariableAsync(MemoryVariable input, ItemChangedType type, bool restart)
+=> dmtpActorContext.Current.GetDmtpRpcActor().SaveMemoryVariableAsync(input, type, restart, invokeOption);
+
+
+    public Task CopyMemoryVariableAsync(List<MemoryVariable> Model, int CopyCount, string CopyMemoryVariableNamePrefix, int CopyMemoryVariableNameSuffixNumber, bool AutoRestartThread)
+=> dmtpActorContext.Current.GetDmtpRpcActor().CopyMemoryVariableAsync(Model, CopyCount, CopyMemoryVariableNamePrefix, CopyMemoryVariableNameSuffixNumber, AutoRestartThread, invokeOption);
+
+
+    public Task<List<MemoryVariable>> GetMemoryVariableListAsync(QueryPageOptions option, int v)
+=> dmtpActorContext.Current.GetDmtpRpcActor().GetMemoryVariableListAsync(option, v, invokeOption);
+
+
+    public Task<USheetDatas> ExportMemoryVariableAsync(List<MemoryVariable> models, string? sortName, SortOrder sortOrder)
+=> dmtpActorContext.Current.GetDmtpRpcActor().ExportMemoryVariableAsync(models, sortName, sortOrder, invokeOption);
+
+
+    public Task<Dictionary<string, ImportPreviewOutputBase>> ImportMemoryVariableUSheetDatasAsync(USheetDatas data, bool restart)
+=> dmtpActorContext.Current.GetDmtpRpcActor().ImportMemoryVariableUSheetDatasAsync(data, restart, invokeOption);
+
+
+    public Task<OperResult<object>> OnWriteMemoryVariableAsync(string name, string writeData)
+=> dmtpActorContext.Current.GetDmtpRpcActor().OnWriteMemoryVariableAsync(name, writeData, invokeOption);
+
+
+    public async Task<Dictionary<string, ImportPreviewOutputBase>> ImportMemoryVariableAsync(IBrowserFile a, bool restart)
+    {
+
+        //传递文件到远端
+        var path = await a.StorageLocal().ConfigureAwait(false);
+
+
+        await FileServerHelpers.ClientPushFileFromService(dmtpActorContext.Current, path, path).ConfigureAwait(false);
+
+        return await dmtpActorContext.Current.GetDmtpRpcActor().ImportMemoryVariableFileAsync(path, restart, invokeOption).ConfigureAwait(false);
+
+    }
+
+
+    public Task<Dictionary<string, ImportPreviewOutputBase>> ImportMemoryVariableFileAsync(string filePath, bool restart)
+=> dmtpActorContext.Current.GetDmtpRpcActor().ImportMemoryVariableFileAsync(filePath, restart, invokeOption);
+
+
+
+    public async Task<string> ExportMemoryVariableFileAsync(GatewayExportFilter exportFilter)
+    {
+        //传递文件到远端
+
+        var path = await dmtpActorContext.Current.GetDmtpRpcActor().ExportMemoryVariableFileAsync(exportFilter, invokeOption).ConfigureAwait(false);
+
+        string savePath = PathHelper.CombinePathReplace("wwwroot", dmtpActorContext.Current.Id.SanitizeFileName(), "exports", Path.GetFileName(path));
+
+        await FileServerHelpers.ClientPullFileFromService(dmtpActorContext.Current, path, savePath).ConfigureAwait(false);
+
+        return savePath;
+
+    }
+
+    public async Task<string> ExportMemoryVariableDataFileAsync(List<MemoryVariable> data, string devName)
+    {
+        //传递文件到远端
+        var path = await dmtpActorContext.Current.GetDmtpRpcActor().ExportMemoryVariableDataFileAsync(data, devName, invokeOption).ConfigureAwait(false);
+
+        string savePath = PathHelper.CombinePathReplace("wwwroot", dmtpActorContext.Current.Id.SanitizeFileName(), "exports", Path.GetFileName(path));
+
+        await FileServerHelpers.ClientPullFileFromService(dmtpActorContext.Current, path, savePath).ConfigureAwait(false);
+
+        return savePath;
+    }
+
+    public Task<VariableRuntime> GetVariableAsync(string devName, string varName)
+=> dmtpActorContext.Current.GetDmtpRpcActor().GetVariableAsync(devName, varName, invokeOption);
+
 }

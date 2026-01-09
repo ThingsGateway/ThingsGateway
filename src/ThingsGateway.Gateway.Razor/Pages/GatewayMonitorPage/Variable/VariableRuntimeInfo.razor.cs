@@ -303,7 +303,7 @@ public partial class VariableRuntimeInfo
 #endif
         Disposed = true;
         VariableRuntimeDispatchService?.UnSubscribe(Refresh);
-
+        context?.Dispose();
         if (Module != null)
             await Module.InvokeVoidAsync("dispose", Id);
 
@@ -312,6 +312,7 @@ public partial class VariableRuntimeInfo
 
     protected override void OnInitialized()
     {
+        context = ExecutionContext.Capture();
         Localizer = App.CreateLocalizerByType(GetType());
         VariableRuntimeDispatchService.Subscribe(Refresh);
 
@@ -322,6 +323,9 @@ public partial class VariableRuntimeInfo
 #endif
         base.OnInitialized();
     }
+
+    private ExecutionContext? context;
+
 #if Management
     private void RunTimer(object? state)
     {
@@ -363,8 +367,18 @@ public partial class VariableRuntimeInfo
     {
         if (cancellationToken.IsCancellationRequested) return;
         if (Disposed) return;
-        if (table != null)
-            await InvokeAsync(table.QueryAsync);
+        var current = ExecutionContext.Capture();
+        try
+        {
+            ExecutionContext.Restore(context);
+            if (table != null)
+                await InvokeAsync(table.QueryAsync);
+        }
+        finally
+        {
+            ExecutionContext.Restore(current);
+        }
+
     }
 
     #region 查询
@@ -511,7 +525,7 @@ public partial class VariableRuntimeInfo
             variable.VariablePropertyModels ??= new();
             foreach (var item in variable.VariablePropertyModels)
             {
-                var result = (!PluginServiceUtil.HasDynamicProperty(item.Value.Value)) || (item.Value.ValidateForm?.Validate() != false);
+                var result = (!PluginServiceUtil.HasDynamicProperty(item.Value.Value)) || (await item.Value.ValidateForm?.ValidateAsync() != false);
                 if (result == false)
                 {
                     return false;
@@ -519,7 +533,7 @@ public partial class VariableRuntimeInfo
             }
 
             variable.AlarmPropertys ??= new();
-            if (variable.AlarmPropertysValidateForm?.Validate() == false)
+            if (await variable.AlarmPropertysValidateForm?.ValidateAsync() == false)
             {
                 return false;
             }

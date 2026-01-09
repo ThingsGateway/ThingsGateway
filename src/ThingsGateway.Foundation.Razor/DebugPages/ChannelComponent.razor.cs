@@ -68,7 +68,7 @@ public partial class ChannelComponent : ComponentBase
     {
         try
         {
-            var validate = ValidateForm.Validate();
+            var validate = await ValidateForm.ValidateAsync();
             if (!validate) return;
             await DisconnectClick();
             Channel?.SafeDispose();

@@ -707,11 +707,11 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
                     {
                         if (deviceRuntime.Driver != null)
                         {
-                            if (deviceRuntime.RedundantScript.GetExpressionsResult(deviceRuntime).ToBoolean(true) && (deviceRuntime.Driver?.IsInitSuccess == false || deviceRuntime.Driver?.IsStarted == true) && deviceRuntime.Driver?.DisposedValue != true)
+                            if (deviceRuntime.RedundantScript.GetExpressionsResult(deviceRuntime, LogMessage).ToBoolean(true) && (deviceRuntime.Driver?.IsInitSuccess == false || deviceRuntime.Driver?.IsStarted == true) && deviceRuntime.Driver?.DisposedValue != true)
                             {
                                 await Task.Delay(deviceRuntime.RedundantScanIntervalTime, cancellationToken).ConfigureAwait(false);//10s后再次检测
                                 if (Disposed) return;
-                                if ((deviceRuntime.RedundantScript.GetExpressionsResult(deviceRuntime).ToBoolean(true) && deviceRuntime.Driver?.IsInitSuccess == false || deviceRuntime.Driver?.IsStarted == true) && deviceRuntime.Driver?.DisposedValue != true && deviceRuntime.RedundantType != RedundantTypeEnum.Standby)
+                                if ((deviceRuntime.RedundantScript.GetExpressionsResult(deviceRuntime, LogMessage).ToBoolean(true) && deviceRuntime.Driver?.IsInitSuccess == false || deviceRuntime.Driver?.IsStarted == true) && deviceRuntime.Driver?.DisposedValue != true && deviceRuntime.RedundantType != RedundantTypeEnum.Standby)
                                 {
                                     //冗余切换
                                     if (GlobalData.IsRedundant(deviceRuntime.Id))

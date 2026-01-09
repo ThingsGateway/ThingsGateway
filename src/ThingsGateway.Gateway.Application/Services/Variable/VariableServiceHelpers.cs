@@ -375,7 +375,7 @@ string? deviceName)
 
         #region 列名称
 
-        var type = typeof(Variable);
+        var type = data.FirstOrDefault()?.GetType() ?? typeof(Variable);
         var propertyInfos = type.GetRuntimeProperties().Where(a => a.GetCustomAttribute<IgnoreExcelAttribute>(false) == null)
              .OrderBy(
             a =>
@@ -602,7 +602,7 @@ string? deviceName)
         foreach (var sheetName in sheetNames)
         {
             List<IDictionary<string, object>> rows = new();
-            var first = uSheetDatas.sheets[sheetName].cellData[0];
+            var first = uSheetDatas.sheets[sheetName].cellData.FirstOrDefault().Value;
 
             foreach (var item in uSheetDatas.sheets[sheetName].cellData)
             {

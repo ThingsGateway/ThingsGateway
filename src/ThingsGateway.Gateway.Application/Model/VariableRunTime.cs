@@ -41,13 +41,8 @@ public partial class VariableRuntime : Variable
 #endif
 {
 
-
     [AutoGenerateColumn(Ignore = true)]
-    public virtual bool IsMemoryVariable { get; set; }
-    [AutoGenerateColumn(Ignore = true)]
-    public virtual bool IsInternalMemoryVariable { get; set; }
-
-    [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
     public bool ValueInited { get; set; }
 
     #region 属性
@@ -56,36 +51,42 @@ public partial class VariableRuntime : Variable
     /// 这个参数值由自动打包方法写入/>
     /// </summary>
     [AutoGenerateColumn(Visible = false)]
+    [IgnoreExcel]
     public int Index { get; set; }
 
     /// <summary>
     /// 变化时间
     /// </summary>
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 5)]
+    [IgnoreExcel]
     public DateTime ChangeTime { get; set; } = DateTime.UnixEpoch.ToLocalTime();
 
     /// <summary>
     /// 采集时间
     /// </summary>
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 5)]
+    [IgnoreExcel]
     public DateTime CollectTime { get; set; } = DateTime.UnixEpoch.ToLocalTime();
 
     /// <summary>
     /// 上次值
     /// </summary>
     [AutoGenerateColumn(Visible = false, Order = 6)]
+    [IgnoreExcel]
     public object LastSetValue { get; set; }
 
     /// <summary>
     /// 原始值
     /// </summary>
     [AutoGenerateColumn(Visible = false, Order = 6)]
+    [IgnoreExcel]
     public object RawValue { get => rawValue; set => rawValue = value; }
 
 #if !Management
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
     public TouchSocket.Core.ILog? LogMessage => DeviceRuntime?.Driver?.LogMessage;
 
     /// <summary>
@@ -94,7 +95,12 @@ public partial class VariableRuntime : Variable
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
     public DeviceRuntime? DeviceRuntime { get; private set; }
+
+    [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
+    public virtual bool IsMemory => DeviceRuntime?.IsMemory ?? false;
 
     /// <summary>
     /// VariableSource
@@ -103,6 +109,7 @@ public partial class VariableRuntime : Variable
     [System.Text.Json.Serialization.JsonIgnore]
     [MapperIgnore]
     [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
     public IVariableSource? VariableSource { get; set; }
 
     /// <summary>
@@ -112,6 +119,7 @@ public partial class VariableRuntime : Variable
     [System.Text.Json.Serialization.JsonIgnore]
     [MapperIgnore]
     [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
     public VariableMethod? VariableMethod { get; set; }
 
     /// <summary>
@@ -120,6 +128,8 @@ public partial class VariableRuntime : Variable
     [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     [AutoGenerateColumn(Ignore = true)]
+    [MapperIgnore]
+    [IgnoreExcel]
     public IThingsGatewayBitConverter? BitConverter { get; set; }
 
 #endif
@@ -133,13 +143,14 @@ public partial class VariableRuntime : Variable
     /// 是否在线
     /// </summary>
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 5)]
+    [IgnoreExcel]
     public bool IsOnline
     {
         get
         {
             return _isOnline;
         }
-        private set
+        protected set
         {
             if (IsOnline != value)
             {
@@ -157,12 +168,14 @@ public partial class VariableRuntime : Variable
     /// 设备名称
     /// </summary>
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 4)]
-    public string DeviceName => DeviceRuntime?.Name;
+    [IgnoreExcel]
+    public virtual string DeviceName => DeviceRuntime?.Name;
 
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 5)]
+    [IgnoreExcel]
     public string LastErrorMessage
     {
         get
@@ -179,6 +192,7 @@ public partial class VariableRuntime : Variable
     /// 实时值类型
     /// </summary>
     [AutoGenerateColumn(Visible = true, Order = 6)]
+    [IgnoreExcel]
     public string RuntimeType => Value?.GetType()?.ToString();
 
 #else
@@ -189,18 +203,25 @@ public partial class VariableRuntime : Variable
     /// 是否在线
     /// </summary>
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 5)]
+    [IgnoreExcel]
     public bool IsOnline { get; set; }
 
     /// <summary>
     /// 设备名称
     /// </summary>
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 4)]
-    public string DeviceName { get; set; }
+    [IgnoreExcel]
+    public virtual string DeviceName { get; set; }
+
+    [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
+    public virtual bool IsMemory { get; set; }
 
     /// <summary>
     /// <inheritdoc/>
     /// </summary>
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true, Order = 5)]
+    [IgnoreExcel]
     public string LastErrorMessage { get; set; }
 
 
@@ -208,6 +229,7 @@ public partial class VariableRuntime : Variable
     /// 实时值类型
     /// </summary>
     [AutoGenerateColumn(Visible = true, Order = 6)]
+    [IgnoreExcel]
     public string RuntimeType { get; set; }
 
 #endif
@@ -217,12 +239,14 @@ public partial class VariableRuntime : Variable
     /// 实时值
     /// </summary>
     [AutoGenerateColumn(Visible = true, Order = 6)]
+    [IgnoreExcel]
     public object Value { get; set; }
 
     /// <summary>
     /// 报警使能
     /// </summary>
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    [IgnoreExcel]
     public bool AlarmEnable
     {
         get
@@ -243,7 +267,7 @@ public partial class VariableRuntime : Variable
     private object rawValue;
 #if !Management
 #pragma warning disable CS0649
-    private string _lastErrorMessage;
+    protected string _lastErrorMessage;
 
 
     /// <summary>
@@ -252,7 +276,7 @@ public partial class VariableRuntime : Variable
     /// <param name="value"></param>
     /// <param name="dateTime"></param>
     /// <param name="isOnline"></param>
-    public OperResult SetValue(object value, DateTime dateTime, bool isOnline = true)
+    public virtual OperResult SetValue(object value, DateTime dateTime, bool isOnline = true)
     {
         IsOnline = isOnline;
         RawValue = value;
@@ -314,7 +338,7 @@ public partial class VariableRuntime : Variable
         }
     }
 
-    private void Set(object data, DateTime dateTime)
+    protected void Set(object data, DateTime dateTime)
     {
         DateTime time = dateTime != default ? dateTime : DateTime.Now;
         CollectTime = time;
@@ -390,11 +414,7 @@ public partial class VariableRuntime : Variable
 
         DeviceRuntime = deviceRuntime;
 
-        if (deviceRuntime == null)
-        {
-            GlobalData.MemoryVariables.Remove(Name, out _);
-            GlobalData.MemoryVariables.TryAdd(Name, this);
-        }
+
 
         DeviceRuntime?.VariableRuntimes?.TryAdd(Name, this);
         GlobalData.IdVariables.Remove(Id, out _);
@@ -409,10 +429,7 @@ public partial class VariableRuntime : Variable
     public void Dispose()
     {
         DeviceRuntime?.VariableRuntimes?.Remove(Name, out _);
-        if (DeviceRuntime == null)
-        {
-            GlobalData.MemoryVariables.Remove(Name, out _);
-        }
+
         GlobalData.IdVariables.Remove(Id, out _);
 
         GlobalData.AlarmEnableIdVariables.Remove(Id, out _);

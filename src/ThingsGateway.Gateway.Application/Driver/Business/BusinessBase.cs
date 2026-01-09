@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 using BootstrapBlazor.Components;
+using System.Collections.Frozen;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -17,6 +18,7 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public abstract class BusinessBase : DriverBase
 {
+    public virtual bool RefreshRuntimeAlways { get; set; } = false;
     /// <summary>
     /// 当前关联的采集设备
     /// </summary>
@@ -48,7 +50,7 @@ public abstract class BusinessBase : DriverBase
     /// <summary>
     /// 当前关联的变量
     /// </summary>
-    protected Dictionary<string, List<VariableRuntime>> VariableRuntimeGroups { get; set; } = new();
+    protected IReadOnlyDictionary<string, List<VariableRuntime>> VariableRuntimeGroups { get; set; } = FrozenDictionary<string, List<VariableRuntime>>.Empty;
 
 
 
@@ -56,6 +58,7 @@ public abstract class BusinessBase : DriverBase
     {
         LogMessage?.LogInformation("Refresh variable");
         // 获取与当前设备相关的变量,CurrentDevice.VariableRuntimes并不适用于业务插件
+
         var variableRuntimes = GlobalData.IdVariables.Where(a =>
         {
             if (!a.Value.Enable) return false;
@@ -79,13 +82,11 @@ public abstract class BusinessBase : DriverBase
                 return false;
             }
         }
-        );
-        IdVariableRuntimes.Clear();
-        IdVariableRuntimes.AddRange(variableRuntimes);
-        var ids = IdVariableRuntimes.Select(b => b.Value.DeviceId).ToHashSet();
-        // 获取当前设备需要采集的设备
-        CollectDevices = GlobalData.GetEnableDevices().Where(a => ids.Contains(a.Id)).ToDictionary(a => a.Id);
-        VariableRuntimeGroups = IdVariableRuntimes.Where(a => !a.Value.BusinessGroup.IsNullOrEmpty()).GroupBy(a => a.Value.BusinessGroup ?? string.Empty).ToDictionary(a => a.Key, a => a.Select(a => a.Value).ToList());
+       );
+        IdVariableRuntimes = variableRuntimes.ToFrozenDictionary();
+        CollectDevices = IdVariableRuntimes.Select(a => a.Value.DeviceRuntime).Where(a => !a.IsMemory && a.IsCollect == true).DistinctBy(a => a.Id).ToFrozenDictionary(a => a.Id, a => a);
+
+        VariableRuntimeGroups = IdVariableRuntimes.Where(a => !a.Value.BusinessGroup.IsNullOrEmpty()).GroupBy(a => a.Value.BusinessGroup ?? string.Empty).ToFrozenDictionary(a => a.Key, a => a.Select(a => a.Value).ToList());
 
         return Task.CompletedTask;
     }

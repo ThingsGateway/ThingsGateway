@@ -8,9 +8,8 @@
 		<ProjectReference Include="..\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj" />
 		<ProjectReference Include="..\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
 		<ProjectReference Include="..\ThingsGateway.Gateway.Razor.Common\ThingsGateway.Gateway.Razor.Common.csproj" />
-		<PackageReference Include="Riok.Mapperly" Version="4.3.1" ExcludeAssets="runtime" PrivateAssets="all">
-		  <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
+		<PackageReference Include="Riok.Mapperly" Version="4.3.1" ExcludeAssets="runtime" PrivateAssets="all" />
+
 	</ItemGroup>
 
 	<ItemGroup>

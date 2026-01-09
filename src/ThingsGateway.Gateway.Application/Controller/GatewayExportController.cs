@@ -25,18 +25,21 @@ public class GatewayExportController : ControllerBase
     private readonly IChannelRuntimeService _channelService;
     private readonly IDeviceRuntimeService _deviceService;
     private readonly IVariableRuntimeService _variableService;
+    private readonly IMemoryVariableRuntimeService _memoryVariableService;
     private readonly IImportExportService _importExportService;
 
     public GatewayExportController(
         IChannelRuntimeService channelService,
         IDeviceRuntimeService deviceService,
         IVariableRuntimeService variableService,
+        IMemoryVariableRuntimeService memoryVariableRuntimeService,
         IImportExportService importExportService
         )
     {
         _channelService = channelService;
         _deviceService = deviceService;
         _variableService = variableService;
+        _memoryVariableService = memoryVariableRuntimeService;
         _importExportService = importExportService;
     }
 
@@ -78,6 +81,20 @@ public class GatewayExportController : ControllerBase
         input.QueryPageOptions.IsVirtualScroll = false;
 
         var sheets = await _variableService.ExportVariableAsync(input).ConfigureAwait(false);
+        return await _importExportService.ExportAsync<Variable>(sheets, "Variable", false).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// 下载变量
+    /// </summary>
+    /// <returns></returns>
+    [HttpPost("memoryvariable")]
+    public async Task<IActionResult> DownloadMmeoryVariableAsync([FromBody] GatewayExportFilter input)
+    {
+        input.QueryPageOptions.IsPage = false;
+        input.QueryPageOptions.IsVirtualScroll = false;
+
+        var sheets = await _memoryVariableService.ExportVariableAsync(input).ConfigureAwait(false);
         return await _importExportService.ExportAsync<Variable>(sheets, "Variable", false).ConfigureAwait(false);
     }
 }

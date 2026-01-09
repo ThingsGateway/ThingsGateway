@@ -27,16 +27,20 @@ global using ThingsGateway.Gateway.Application;
 global using ChannelRuntime = ThingsGateway.Gateway.Application.ChannelRuntime;
 global using DeviceRuntime = ThingsGateway.Gateway.Application.DeviceRuntime;
 global using VariableRuntime = ThingsGateway.Gateway.Application.VariableRuntime;
+global using MemoryVariableRuntime = ThingsGateway.Gateway.Application.MemoryVariableRuntime;
 global using IVariablePageService = ThingsGateway.Gateway.Application.IVariablePageService;
 global using IDevicePageService = ThingsGateway.Gateway.Application.IDevicePageService;
 global using IChannelPageService = ThingsGateway.Gateway.Application.IChannelPageService;
+global using IMemoryVariablePageService = ThingsGateway.Gateway.Application.IMemoryVariablePageService;
 #else
 global using ChannelRuntime = ThingsGateway.Management.Application.ChannelRuntime;
 global using DeviceRuntime = ThingsGateway.Management.Application.DeviceRuntime;
 global using VariableRuntime = ThingsGateway.Management.Application.VariableRuntime;
+global using MemoryVariableRuntime = ThingsGateway.Management.Application.MemoryVariableRuntime;
 global using IVariablePageService = ThingsGateway.Management.Application.IVariablePageService;
 global using IDevicePageService = ThingsGateway.Management.Application.IDevicePageService;
 global using IChannelPageService = ThingsGateway.Management.Application.IChannelPageService;
+global using IMemoryVariablePageService = ThingsGateway.Management.Application.IMemoryVariablePageService;
 #endif
 
 [assembly: SuppressMessage("Reliability", "CA2007", Justification = "<挂起>", Scope = "module")]

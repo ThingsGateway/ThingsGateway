@@ -44,7 +44,9 @@ public abstract class CollectPropertyBase : DriverPropertyBase
     /// </summary>
     public virtual bool WritePriority { get; set; } = false;
 }
-
+public class CollectPropertyNone : CollectPropertyBase
+{
+}
 /// <summary>
 /// 插件配置项
 /// <br></br>

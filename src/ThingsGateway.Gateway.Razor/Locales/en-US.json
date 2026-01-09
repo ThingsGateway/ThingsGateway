@@ -28,6 +28,7 @@
     "ChannelTable": "Channel",
     "DeviceTable": "Device",
     "VariableRuntimeInfo": "Variable",
+    "MemoryVariableRuntimeInfo": "MemoryVariable",
     "GatewayUpdateZipFilePage": "Version",
     "HardwareInfoPage": "HardwareInfo"
 
@@ -105,11 +106,13 @@
     "AllChannel": "All Channel",
     "AllDevice": "All Device",
     "BasicInformation": "Basic Information",
+    "Calc": "Calc",
     "BatchEditChannel": "Batch Edit Channel",
     "BatchEditDevice": "Batch Edit Device",
     "Business": "Business",
     "Check": "Check",
     "Collect": "Collect",
+    "Memory": "Memory",
     "Connection": "Connection",
     "CopyChannel": "CopyChannel",
     "CopyChannelNamePrefix": "CopyChannelNamePrefix",
@@ -244,7 +247,20 @@
   "ThingsGateway.Gateway.Razor.VariableEditComponent": {
     "ChoiceBusinessDeviceId": "BusinessDevice"
   },
+  "ThingsGateway.Gateway.Razor.MemoryVariableEditComponent": {
+    "ChoiceBusinessDeviceId": "BusinessDevice"
+  },
   "ThingsGateway.Gateway.Razor.VariableRuntimeInfo": {
+    "BusinessEnable": "BusinessEnable",
+    "SlaveUrl": "SlaveUrl",
+    "Test": "Addition of test variables",
+    "TestDtu": "Addition of test dtu variables",
+    "TestDeviceCount": "TestDeviceCount",
+    "TestVariableCount": "TestVariableCount",
+    "WriteValue": "WriteValue",
+    "WriteVariable": "WriteVariable"
+  },
+  "ThingsGateway.Gateway.Razor.MemoryVariableRuntimeInfo": {
     "BusinessEnable": "BusinessEnable",
     "SlaveUrl": "SlaveUrl",
     "Test": "Addition of test variables",

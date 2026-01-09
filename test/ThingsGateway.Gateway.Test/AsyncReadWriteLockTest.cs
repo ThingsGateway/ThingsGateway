@@ -2,7 +2,7 @@
 using ThingsGateway.Foundation.Common.PooledAwait;
 using ThingsGateway.Gateway.Application;
 using TouchSocket.Core;
-
+[assembly: Parallelize]
 namespace ThingsGateway.Gateway.Test
 {
     [TestClass]

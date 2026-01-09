@@ -41,8 +41,6 @@ public class DeviceRuntime : Device
     /// </summary>
     public DateTime ActiveTime { get; set; } = DateTime.MinValue;
 
-
-
     /// <summary>
     /// 是否采集
     /// </summary>
@@ -79,6 +77,9 @@ public class DeviceRuntime : Device
     [MapperIgnore]
     [AutoGenerateColumn(Ignore = true)]
     public ChannelRuntime? ChannelRuntime { get; set; }
+
+    [AutoGenerateColumn(Ignore = true)]
+    public virtual bool IsMemory => ChannelRuntime?.IsMemory ?? false;
 
 
     [AutoGenerateColumn(Ignore = true)]
@@ -328,7 +329,7 @@ public class DeviceRuntime : Device
     [AutoGenerateColumn(Ignore = true)]
     public string? Tag { get; set; }
 
-    public void Init(ChannelRuntime channelRuntime)
+    public virtual void Init(ChannelRuntime channelRuntime)
     {
         ChannelRuntime?.DeviceRuntimes?.TryRemove(Id, out _);
 
@@ -342,7 +343,7 @@ public class DeviceRuntime : Device
         GlobalData.Devices.TryAdd(Name, this);
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         ChannelRuntime?.DeviceRuntimes?.TryRemove(Id, out _);
 

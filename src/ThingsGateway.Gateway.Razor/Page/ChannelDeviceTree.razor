@@ -61,16 +61,17 @@
 
                         <Button Size=Size.ExtraSmall Icon="fa-solid fa-circle-info" Color=Color.None OnClickWithoutRender=@(() => ShowLogInfo(context))>
                         </Button>
-
+                        if (context.DeviceRuntimeId != MemoryVariable.MemoryDeviceId)
+                    {
                         @* <Tooltip Title=@(GatewayLocalizer["UpdateDevice"]) Placement="Placement.Bottom"> *@
                             <Button Size=Size.ExtraSmall Icon="fa-regular fa-pen-to-square" Color=Color.None OnClickWithoutRender=@(() => EditDevice(GatewayLocalizer["UpdateDevice"], context, ItemChangedType.Update))>
                             </Button>
                         @* </Tooltip> *@
-
                         @* <Tooltip Title=@(GatewayLocalizer["DeleteDevice"]) Placement="Placement.Bottom"> *@
                             <Button Size=Size.ExtraSmall Icon="fa-solid fa-xmark" Color=Color.None OnClickWithoutRender=@(() => DeleteCurrentDevice(context))>
                             </Button>
                         @* </Tooltip> *@
+                        }
                     }
 
                 </div>
@@ -79,7 +80,7 @@
         </TreeView>
 
         <ContextMenu style="max-height:800px" class="tgTree" OnBeforeShowCallback="OnBeforeShowCallback">
-            @if (SelectModel != null)
+            @if (SelectModel != null&&SelectModel.DeviceRuntimeId!=MemoryVariable.MemoryDeviceId)
             {
                 <ContextMenuItem Icon="fa-solid fa-table" Text="@Localizer["ChannelTable"]" OnClick=@((a, b) => ShowChannelRuntimeTable(b as ChannelDeviceTreeItem))></ContextMenuItem>
                 <ContextMenuItem Icon="fa-solid fa-table" Text="@Localizer["DeviceTable"]" OnClick=@((a, b) => ShowDeviceRuntimeTable(b as ChannelDeviceTreeItem))></ContextMenuItem>

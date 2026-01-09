@@ -39,7 +39,7 @@ public class ChannelDeviceTreeItem : IEqualityComparer<ChannelDeviceTreeItem>
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(ChannelDevicePluginType, DeviceRuntimeId, ChannelRuntimeId, PluginName, PluginType);
+        return HashCode.Combine(ChannelDevicePluginType, DeviceRuntimeId, ChannelRuntimeId, PluginName, PluginType, Id);
     }
 
     public bool TryGetDeviceRuntime(out DeviceRuntime deviceRuntime)
@@ -48,6 +48,11 @@ public class ChannelDeviceTreeItem : IEqualityComparer<ChannelDeviceTreeItem>
         {
             if (GlobalData.ReadOnlyIdDevices.TryGetValue(DeviceRuntimeId, out deviceRuntime))
             {
+                return true;
+            }
+            if (DeviceRuntimeId == MemoryVariable.MemoryDeviceId)
+            {
+                deviceRuntime = GlobalData.MemoryDeviceRuntime;
                 return true;
             }
         }
@@ -138,7 +143,7 @@ public class ChannelDeviceTreeItem : IEqualityComparer<ChannelDeviceTreeItem>
 
     public int GetHashCode([DisallowNull] ChannelDeviceTreeItem obj)
     {
-        return HashCode.Combine(obj.ChannelDevicePluginType, obj.DeviceRuntimeId, obj.ChannelRuntimeId, obj.PluginName, obj.PluginType);
+        return HashCode.Combine(obj.ChannelDevicePluginType, obj.DeviceRuntimeId, obj.ChannelRuntimeId, obj.PluginName, obj.PluginType, obj.Id);
     }
 
 

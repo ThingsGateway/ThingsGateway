@@ -20,5 +20,6 @@ public interface IVariablePageService : IVariableModelPageService
 {
     Task<QueryData<VariableRuntime>> OnVariableQueryAsync(QueryPageOptions options);
 
+    Task<VariableRuntime> GetVariableAsync(string devName, string varName);
 
 }

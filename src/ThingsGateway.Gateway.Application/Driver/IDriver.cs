@@ -23,7 +23,7 @@ namespace ThingsGateway.Gateway.Application
         Type DriverPropertyUIType { get; }
         Type DriverUIType { get; }
         Type DriverVariableAddressUIType { get; }
-        List<IEditorItem> PluginPropertyEditorItems { get; }
+        IReadOnlyList<IEditorItem> PluginPropertyEditorItems { get; }
 
         bool? IsCollectDevice { get; }
         bool DisposedValue { get; }
@@ -39,9 +39,8 @@ namespace ThingsGateway.Gateway.Application
         LoggerGroup LogMessage { get; }
         string LogPath { get; }
         string PluginDirectory { get; }
-        Dictionary<long, VariableRuntime> IdVariableRuntimes { get; }
+        IReadOnlyDictionary<long, VariableRuntime> IdVariableRuntimes { get; }
         IDeviceThreadManage DeviceThreadManage { get; }
-        bool RefreshRuntimeAlways { get; set; }
         IChannel? Channel { get; }
 
         bool IsConnected();

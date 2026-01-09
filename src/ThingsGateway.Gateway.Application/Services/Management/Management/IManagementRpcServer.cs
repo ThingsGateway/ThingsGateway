@@ -413,4 +413,51 @@ internal interface IManagementRpcServer : IRpcServer
     [DmtpRpc]
     Task<string> ExportVariableDataFileAsync(List<Variable> data, string devName);
 
+
+    [DmtpRpc]
+    Task<bool> BatchEditMemoryVariableAsync(List<MemoryVariable> models, MemoryVariable oldModel, MemoryVariable model, bool restart);
+    [DmtpRpc]
+    Task<bool> DeleteMemoryVariableAsync(List<long> ids, bool restart);
+    [DmtpRpc]
+    Task<bool> ClearMemoryVariableAsync(bool restart);
+
+    [DmtpRpc]
+    Task<bool> BatchSaveMemoryVariableAsync(List<MemoryVariable> input, ItemChangedType type, bool restart);
+
+    [DmtpRpc]
+    Task<bool> SaveMemoryVariableAsync(MemoryVariable input, ItemChangedType type, bool restart);
+    [DmtpRpc]
+    Task CopyMemoryVariableAsync(List<MemoryVariable> Model, int CopyCount, string CopyMemoryVariableNamePrefix, int CopyMemoryVariableNameSuffixNumber, bool AutoRestartThread);
+    [DmtpRpc]
+    Task<List<MemoryVariable>> GetMemoryVariableListAsync(QueryPageOptions option, int v);
+#if !Management
+    [DmtpRpc]
+    Task<ThingsGateway.Gateway.Application.VariableRuntime> GetVariableAsync(string devName, string varName);
+#else
+    [DmtpRpc]
+    Task<ThingsGateway.Management.Application.VariableRuntime> GetVariableAsync(string devName, string varName);
+#endif
+    [DmtpRpc]
+    Task<USheetDatas> ExportMemoryVariableAsync(List<MemoryVariable> models, string? sortName, SortOrder sortOrder);
+    [DmtpRpc]
+    Task<Dictionary<string, ImportPreviewOutputBase>> ImportMemoryVariableUSheetDatasAsync(USheetDatas data, bool restart);
+
+    [DmtpRpc]
+    Task<string> ExportMemoryVariableFileAsync(GatewayExportFilter exportFilter);
+
+    [DmtpRpc]
+    Task<OperResult<object>> OnWriteMemoryVariableAsync(string name, string writeData);
+
+    [DmtpRpc]
+    Task<Dictionary<string, ImportPreviewOutputBase>> ImportMemoryVariableFileAsync(string filePath, bool restart);
+    [DmtpRpc]
+    Task<string> ExportMemoryVariableDataFileAsync(List<MemoryVariable> data, string devName);
+#if !Management
+    [DmtpRpc]
+    Task<QueryData<ThingsGateway.Gateway.Application.MemoryVariableRuntime>> OnMemoryVariableQueryAsync(QueryPageOptions options);
+#else
+    [DmtpRpc]
+    Task<QueryData<ThingsGateway.Management.Application.MemoryVariableRuntime>> OnMemoryVariableQueryAsync(QueryPageOptions options);
+#endif
+
 }

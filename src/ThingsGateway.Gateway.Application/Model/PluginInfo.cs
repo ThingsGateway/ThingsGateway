@@ -46,6 +46,13 @@ public class PluginInfo
     [AutoGenerateColumn(Ignore = true)]
     public bool EducationPlugin { get; set; }
 
+    [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
+    [OrmColumn(IsIgnore = true)]
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    public bool Display { get; set; }
+
     /// <summary>
     /// 插件名称
     /// </summary>

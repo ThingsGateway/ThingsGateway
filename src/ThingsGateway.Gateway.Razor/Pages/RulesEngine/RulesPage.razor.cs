@@ -36,6 +36,7 @@ public partial class RulesPage : ThingsGatewayModuleComponentBase
     protected override async ValueTask DisposeAsync(bool disposing)
     {
         RulesDispatchService.UnSubscribe(Notify);
+        context?.Dispose();
         if (Module != null)
         {
             await Module.InvokeVoidAsync("disposeJS", DiagramsJS);
@@ -157,13 +158,23 @@ public partial class RulesPage : ThingsGatewayModuleComponentBase
 
     private async Task Notify()
     {
-        await InvokeAsync(async () =>
+        var current = ExecutionContext.Capture();
+        try
         {
-            if (table != null)
-                await table.QueryAsync();
+            ExecutionContext.Restore(context);
+            await InvokeAsync(async () =>
+            {
+                if (table != null)
+                    await table.QueryAsync();
 
-            StateHasChanged();
-        });
+                StateHasChanged();
+            });
+        }
+        finally
+        {
+            ExecutionContext.Restore(current);
+        }
+
     }
 
     private async Task Notify(DispatchEntry<Rules> entry)

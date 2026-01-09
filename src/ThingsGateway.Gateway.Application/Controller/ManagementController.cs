@@ -267,7 +267,7 @@ public partial class ManagementController : ControllerBase, IRpcServer
     {
         var path = await callContext.HttpContext.Request.StorageLocalExcel().ConfigureAwait(false);
 
-        return (await GlobalData.ChannelRuntimeService.ImportChannelFileAsync(path, true).ConfigureAwait(false)).AdaptImportPreviewOutputBases(); ;
+        return (await GlobalData.ChannelRuntimeService.ImportChannelFileAsync(path, true).ConfigureAwait(false)).AdaptImportPreviewOutputBases();
 
     }
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -277,7 +277,7 @@ public partial class ManagementController : ControllerBase, IRpcServer
     {
         var path = await callContext.HttpContext.Request.StorageLocalExcel().ConfigureAwait(false);
 
-        return (await GlobalData.DeviceRuntimeService.ImportDeviceFileAsync(path, true).ConfigureAwait(false)).AdaptImportPreviewOutputBases(); ;
+        return (await GlobalData.DeviceRuntimeService.ImportDeviceFileAsync(path, true).ConfigureAwait(false)).AdaptImportPreviewOutputBases();
 
     }
     [ApiExplorerSettings(IgnoreApi = true)]
@@ -318,6 +318,7 @@ public partial class ManagementController : ControllerBase, IRpcServer
     }
 
     [HttpPost]
+    [TouchSocket.WebApi.WebApi(Method = TouchSocket.WebApi.HttpMethodType.Post)]
     public async Task<Dictionary<string, ImportPreviewOutputBase>> ImportVariableAsync([FromForm] ImportRequest request)
     {
         return (await App.GetService<IVariableRuntimeService>().ImportVariableAsync(request.File, request.Restart).ConfigureAwait(false)).AdaptImportPreviewOutputBases();
@@ -537,6 +538,8 @@ public partial class ManagementController : ControllerBase, IRpcServer
     [HttpPost]
     [TouchSocket.WebApi.WebApi(Method = TouchSocket.WebApi.HttpMethodType.Post)]
     public Task<string> UUIDAsync() => App.GetService<IAuthenticationService>().UUIDAsync();
+
+
 }
 // 定义请求 DTO
 public class BatchEditChannelRequest

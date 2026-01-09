@@ -15,9 +15,10 @@ public partial class GatewayMonitorPage
     private ChannelDeviceTreeItem SelectModel { get; set; } = new() { ChannelDevicePluginType = ChannelDevicePluginTypeEnum.PluginType, PluginType = null };
 
     #region 查询
-
+    private bool ShowMemoryVariable = false;
     private async Task TreeChangedAsync(ChannelDeviceTreeItem channelDeviceTreeItem)
     {
+        ShowMemoryVariable = false;
         //ShowChannelRuntime = 0;
         //ShowDeviceRuntime = 0;
         SelectModel = channelDeviceTreeItem;
@@ -44,7 +45,15 @@ public partial class GatewayMonitorPage
             //ShowDeviceRuntime = deviceRuntime.Id;
             if (deviceRuntime.IsCollect == true)
             {
-                VariableRuntimes = deviceRuntime.ReadOnlyVariableRuntimes.Select(a => a.Value).Where(a => a != null);
+                if (deviceRuntime.Id == MemoryVariable.MemoryDeviceId)
+                {
+                    MemoryVariableRuntimes = GlobalData.MemoryVariableRuntimes.Select(a => a.Value).Cast<MemoryVariableRuntime>();
+                    ShowMemoryVariable = true;
+                }
+                else
+                {
+                    VariableRuntimes = deviceRuntime.ReadOnlyVariableRuntimes.Select(a => a.Value).Where(a => a != null);
+                }
             }
             else
             {
@@ -85,8 +94,7 @@ public partial class GatewayMonitorPage
         }
         else
         {
-            VariableRuntimes = variables.Where(a => a != null);
-
+            VariableRuntimes = variables.Where(a => a != null && !a.IsMemory);
             //if (channelDeviceTreeItem.TryGetPluginType(out var pluginTypeEnum))
             //{
             //    if (pluginTypeEnum != null)
@@ -112,6 +120,7 @@ public partial class GatewayMonitorPage
         await base.OnAfterRenderAsync(firstRender);
     }
     public IEnumerable<VariableRuntime> VariableRuntimes { get; set; } = Enumerable.Empty<VariableRuntime>();
+    public IEnumerable<MemoryVariableRuntime> MemoryVariableRuntimes { get; set; } = Enumerable.Empty<MemoryVariableRuntime>();
 
     //public IEnumerable<ChannelRuntime> ChannelRuntimes { get; set; } = Enumerable.Empty<ChannelRuntime>();
     //public IEnumerable<DeviceRuntime> DeviceRuntimes { get; set; } = Enumerable.Empty<DeviceRuntime>();

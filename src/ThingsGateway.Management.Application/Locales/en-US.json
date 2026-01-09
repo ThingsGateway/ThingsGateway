@@ -1,5 +1,16 @@
 ﻿{
-
+  "ThingsGateway.Gateway.Application.MemoryVariable": {
+    "BusinessUpdate": "BusinessUpdate"
+  },
+  "ThingsGateway.Gateway.Application.MemoryVariableRuntime": {
+    "BusinessUpdate": "BusinessUpdate"
+  },
+  "ThingsGateway.Management.Application.MemoryVariable": {
+    "BusinessUpdate": "BusinessUpdate"
+  },
+  "ThingsGateway.Management.Application.MemoryVariableRuntime": {
+    "BusinessUpdate": "BusinessUpdate"
+  },
   "ThingsGateway.Gateway.Application.BusinessVariableProperty": {
 
     "Data1": "Data1",

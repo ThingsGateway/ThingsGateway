@@ -24,9 +24,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Riok.Mapperly" Version="4.3.1" ExcludeAssets="runtime" PrivateAssets="all">
-		  <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
+		<PackageReference Include="Riok.Mapperly" Version="4.3.1" ExcludeAssets="runtime" PrivateAssets="all" />
+
 	</ItemGroup>
 
 
@@ -47,12 +46,14 @@
 	<ItemGroup>
 	  <Compile Include="..\ThingsGateway.Gateway.Application\Model\ChannelRuntime.cs" Link="Model\ChannelRuntime.cs" />
 	  <Compile Include="..\ThingsGateway.Gateway.Application\Model\DeviceRunTime.cs" Link="Model\DeviceRunTime.cs" />
-	  <Compile Include="..\ThingsGateway.Gateway.Application\Model\VariableRunTime.cs" Link="Model\VariableRunTime.cs" />
+		<Compile Include="..\ThingsGateway.Gateway.Application\Model\VariableRunTime.cs" Link="Model\VariableRunTime.cs" />
+		<Compile Include="..\ThingsGateway.Gateway.Application\MemoryVariable\Model\MemoryVariableRunTime.cs" Link="Model\MemoryVariableRunTime.cs" />
 	  <Compile Include="..\ThingsGateway.Gateway.Application\Services\Channel\IChannelPageService.cs" Link="Services\IChannelPageService.cs" />
-	  <Compile Include="..\ThingsGateway.Gateway.Application\Services\Device\IDevicePageService.cs" Link="Services\IDevicePageService.cs" />
+		<Compile Include="..\ThingsGateway.Gateway.Application\Services\Device\IDevicePageService.cs" Link="Services\IDevicePageService.cs" />
 	  <Compile Include="..\ThingsGateway.Gateway.Application\Services\Management\Management\IManagementRpcServer.cs" Link="Services\IManagementRpcServer.cs" />
 	  <Compile Include="..\ThingsGateway.Gateway.Application\Services\Management\Management\Update\Services\IUpgradeRpcServer.cs" Link="Services\IUpgradeRpcServer.cs" />
 	  <Compile Include="..\ThingsGateway.Gateway.Application\Services\Variable\IVariablePageService.cs" Link="Services\IVariablePageService.cs" />
+		<Compile Include="..\ThingsGateway.Gateway.Application\MemoryVariable\Services\Variable\IMemoryVariablePageService.cs" Link="Services\IMemoryVariablePageService.cs" />
 	</ItemGroup>
 
 	<Target Name="CopyGatewayFiles" BeforeTargets="BeforeBuild">

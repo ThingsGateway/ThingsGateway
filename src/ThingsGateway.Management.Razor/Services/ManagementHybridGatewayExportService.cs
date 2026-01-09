@@ -14,7 +14,7 @@ using ThingsGateway.Gateway.Razor;
 
 namespace ThingsGateway.Management.Razor;
 
-public sealed class ManagementHybridGatewayExportService(IChannelPageService channelPageService, IDevicePageService devicePageService, IVariablePageService variablePageService) : IGatewayExportService
+public sealed class ManagementHybridGatewayExportService(IChannelPageService channelPageService, IDevicePageService devicePageService, IVariablePageService variablePageService, IMemoryVariablePageService memoryVariablePageService) : IGatewayExportService
 {
 
 
@@ -129,6 +129,40 @@ public sealed class ManagementHybridGatewayExportService(IChannelPageService cha
         try
         {
             var item = await variablePageService.ExportVariableDataFileAsync(data, devName).ConfigureAwait(false);
+
+            Open(item);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> OnMemoryVariableExport(List<MemoryVariable> data, string devName)
+    {
+        try
+        {
+            var item = await memoryVariablePageService.ExportMemoryVariableDataFileAsync(data, devName).ConfigureAwait(false);
+
+            Open(item);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> OnMemoryVariableExport(GatewayExportFilter exportFilter)
+    {
+
+        try
+        {
+            exportFilter.QueryPageOptions.IsPage = false;
+            exportFilter.QueryPageOptions.IsVirtualScroll = false;
+
+            var item = await memoryVariablePageService.ExportMemoryVariableFileAsync(exportFilter).ConfigureAwait(false);
 
             Open(item);
             return true;

@@ -390,6 +390,7 @@ finally
     };
     protected override async Task OnInitializedAsync()
     {
+        context = ExecutionContext.Capture();
 
         TreeItem = new(RootItem)
         {
@@ -493,18 +494,31 @@ finally
         await base.OnInitializedAsync();
     }
 
+
+    private ExecutionContext? context;
+
     private async Task Notify(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested) return;
         if (Disposed) return;
-        await OnClickSearch(SearchText);
-
-        DmtpActorObject = GetValue(Item);
-        if (DmtpActorObjectChanged != null)
+        var current = ExecutionContext.Capture();
+        try
         {
-            await DmtpActorObjectChanged.Invoke(DmtpActorObject, GetTask(Item)?.TextLogger);
+            ExecutionContext.Restore(context);
+            await OnClickSearch(SearchText);
+
+            DmtpActorObject = GetValue(Item);
+            if (DmtpActorObjectChanged != null)
+            {
+                await DmtpActorObjectChanged.Invoke(DmtpActorObject, GetTask(Item)?.TextLogger);
+            }
+            await InvokeAsync(StateHasChanged);
         }
-        await InvokeAsync(StateHasChanged);
+        finally
+        {
+            ExecutionContext.Restore(current);
+        }
+
     }
 
 
@@ -644,6 +658,7 @@ finally
     private bool Disposed;
     public void Dispose()
     {
+        context?.Dispose();
         Disposed = true;
         ManagementConfigDispatchService.UnSubscribe(Refresh);
 

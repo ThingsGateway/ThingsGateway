@@ -28,6 +28,7 @@
     "ChannelTable": "通道信息",
     "DeviceTable": "设备信息",
     "VariableRuntimeInfo": "变量信息",
+    "MemoryVariableRuntimeInfo": "内存变量",
     "GatewayUpdateZipFilePage": "版本管理",
     "HardwareInfoPage": "硬件信息"
   },
@@ -104,11 +105,13 @@
     "AllChannel": "全部通道",
     "AllDevice": "全部设备",
     "BasicInformation": "基础信息",
+    "Calc": "计算",
     "BatchEditChannel": "批量编辑通道",
     "BatchEditDevice": "批量编辑设备",
     "Business": "业务",
     "Check": "检查",
     "Collect": "采集",
+    "Memory": "内存变量",
     "Connection": "连接",
     "CopyChannel": "复制通道",
     "CopyChannelNamePrefix": "通道名称前缀",
@@ -243,7 +246,20 @@
   "ThingsGateway.Gateway.Razor.VariableEditComponent": {
     "ChoiceBusinessDeviceId": "业务设备"
   },
+  "ThingsGateway.Gateway.Razor.MemoryVariableEditComponent": {
+    "ChoiceBusinessDeviceId": "业务设备"
+  },
   "ThingsGateway.Gateway.Razor.VariableRuntimeInfo": {
+    "BusinessEnable": "添加业务设备",
+    "SlaveUrl": "服务端Url",
+    "Test": "一键添加测试变量",
+    "TestDtu": "一键添加Dtu测试变量",
+    "TestDeviceCount": "采集设备数量",
+    "TestVariableCount": "变量数量",
+    "WriteValue": "写入值",
+    "WriteVariable": "写入"
+  },
+  "ThingsGateway.Gateway.Razor.MemoryVariableRuntimeInfo": {
     "BusinessEnable": "添加业务设备",
     "SlaveUrl": "服务端Url",
     "Test": "一键添加测试变量",

@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.Collections.Frozen;
+
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
@@ -39,14 +41,12 @@ public abstract class BusinessBaseWithCacheAlarm : BusinessBaseWithCache
     public override async Task AfterVariablesChangedAsync(CancellationToken cancellationToken)
     {
         await base.AfterVariablesChangedAsync(cancellationToken).ConfigureAwait(false);
-        IdVariableRuntimes.Clear();
-        IdVariableRuntimes.AddRange(GlobalData.ReadOnlyIdVariables.Where(a => a.Value.AlarmEnable));
 
-        var ids = IdVariableRuntimes.Select(b => b.Value.DeviceId).ToHashSet();
+        IdVariableRuntimes = GlobalData.AlarmEnableIdVariables;
 
-        CollectDevices = GlobalData.ReadOnlyIdDevices
-                                .Where(a => IdVariableRuntimes.Select(b => b.Value.DeviceId).Contains(a.Value.Id))
-                                .ToDictionary(a => a.Key, a => a.Value);
+        CollectDevices = IdVariableRuntimes.Select(a => a.Value.DeviceRuntime).Where(a => !a.IsMemory && a.IsCollect == true).DistinctBy(a => a.Id).ToFrozenDictionary(a => a.Id, a => a);
+        VariableRuntimeGroups = IdVariableRuntimes.Where(a => !a.Value.BusinessGroup.IsNullOrEmpty()).GroupBy(a => a.Value.BusinessGroup ?? string.Empty).ToFrozenDictionary(a => a.Key, a => a.Select(a => a.Value).ToList());
+
     }
     protected internal override async Task InitChannelAsync(IChannel? channel, CancellationToken cancellationToken)
     {

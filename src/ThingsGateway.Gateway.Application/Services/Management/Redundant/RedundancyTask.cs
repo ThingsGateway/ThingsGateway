@@ -487,15 +487,22 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
         var variableBatch = new List<Variable>();
         foreach (var group in groups)
         {
+
             var channel = group.Key.ChannelRuntime.AdaptChannel();
             var device = group.Key.AdaptDevice();
-            channelBatch.Add(channel);
-            deviceBatch.Add(device);
-
-            foreach (var variable in group)
+            if (!group.Key.ChannelRuntime.IsMemory)
             {
                 channelBatch.Add(channel);
                 deviceBatch.Add(device);
+            }
+
+            foreach (var variable in group)
+            {
+                if (!group.Key.ChannelRuntime.IsMemory)
+                {
+                    channelBatch.Add(channel);
+                    deviceBatch.Add(device);
+                }
                 variableBatch.Add(variable.AdaptVariable());
 
                 if (variableBatch.Count >= maxBatchSize)

@@ -336,7 +336,7 @@ internal sealed class PluginService : IPluginService
     public async Task<QueryData<PluginInfo>> PluginPageAsync(QueryPageOptions options, PluginTypeEnum? pluginType = null)
     {
         //指定关键词搜索为插件FullName
-        var query = (await GetPluginsAsync(pluginType).ConfigureAwait(false)).WhereIf(!options.SearchText.IsNullOrWhiteSpace(), a => a.FullName.Contains(options.SearchText)).GetQueryData(options);
+        var query = (await GetPluginsAsync(pluginType).ConfigureAwait(false)).WhereIf(!options.SearchText.IsNullOrWhiteSpace(), a => a.FullName.Contains(options.SearchText)).Where(a => a.Display).GetQueryData(options);
         return query;
     }
 
@@ -786,6 +786,7 @@ internal sealed class PluginService : IPluginService
                         FileName = Path.GetFileNameWithoutExtension(fileInfo.Name),//插件文件名称（分类）
                         PluginType = (typeof(CollectBase).IsAssignableFrom(item.Value)) ? PluginTypeEnum.Collect : PluginTypeEnum.Business, //插件类型
                         EducationPlugin = PluginServiceUtil.IsEducation(item.Value),
+                        Display = PluginServiceUtil.IsEducation(item.Value),
                         Version = item.Value.Assembly.GetName().Version.ToString(), //插件版本
 
                         LastWriteTime = lastWriteTime, //编译时间

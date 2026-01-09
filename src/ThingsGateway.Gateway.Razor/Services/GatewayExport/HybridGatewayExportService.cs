@@ -15,25 +15,9 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Razor;
 
-public sealed class HybridGatewayExportService : IGatewayExportService
+public sealed class HybridGatewayExportService(IChannelRuntimeService channelService, IDeviceRuntimeService deviceService, IVariableRuntimeService variableService, IMemoryVariableRuntimeService memoryVariableService, IImportExportService importExportService) : IGatewayExportService
 {
-    private readonly IChannelRuntimeService _channelService;
-    private readonly IDeviceRuntimeService _deviceService;
-    private readonly IVariableRuntimeService _variableService;
-    private readonly IImportExportService _importExportService;
 
-    public HybridGatewayExportService(
-        IChannelRuntimeService channelService,
-        IDeviceRuntimeService deviceService,
-        IVariableRuntimeService variableService,
-        IImportExportService importExportService
-        )
-    {
-        _channelService = channelService;
-        _deviceService = deviceService;
-        _variableService = variableService;
-        _importExportService = importExportService;
-    }
 
     public async Task<bool> OnChannelExport(GatewayExportFilter exportFilter)
     {
@@ -42,8 +26,8 @@ public sealed class HybridGatewayExportService : IGatewayExportService
             exportFilter.QueryPageOptions.IsPage = false;
             exportFilter.QueryPageOptions.IsVirtualScroll = false;
 
-            var sheets = await _channelService.ExportChannelAsync(exportFilter).ConfigureAwait(false);
-            var path = await _importExportService.CreateFileAsync<Channel>(sheets, "Channel", false).ConfigureAwait(false);
+            var sheets = await channelService.ExportChannelAsync(exportFilter).ConfigureAwait(false);
+            var path = await importExportService.CreateFileAsync<Channel>(sheets, "Channel", false).ConfigureAwait(false);
 
             Open(path);
             return true;
@@ -80,8 +64,8 @@ public sealed class HybridGatewayExportService : IGatewayExportService
         {
             exportFilter.QueryPageOptions.IsPage = false;
             exportFilter.QueryPageOptions.IsVirtualScroll = false;
-            var sheets = await _deviceService.ExportDeviceAsync(exportFilter).ConfigureAwait(false);
-            var path = await _importExportService.CreateFileAsync<Device>(sheets, "Device", false).ConfigureAwait(false);
+            var sheets = await deviceService.ExportDeviceAsync(exportFilter).ConfigureAwait(false);
+            var path = await importExportService.CreateFileAsync<Device>(sheets, "Device", false).ConfigureAwait(false);
             Open(path);
 
             return true;
@@ -98,8 +82,8 @@ public sealed class HybridGatewayExportService : IGatewayExportService
         {
             exportFilter.QueryPageOptions.IsPage = false;
             exportFilter.QueryPageOptions.IsVirtualScroll = false;
-            var sheets = await _variableService.ExportVariableAsync(exportFilter).ConfigureAwait(false);
-            var path = await _importExportService.CreateFileAsync<Variable>(sheets, "Variable", false).ConfigureAwait(false);
+            var sheets = await variableService.ExportVariableAsync(exportFilter).ConfigureAwait(false);
+            var path = await importExportService.CreateFileAsync<Variable>(sheets, "Variable", false).ConfigureAwait(false);
             Open(path);
             return true;
         }
@@ -113,7 +97,7 @@ public sealed class HybridGatewayExportService : IGatewayExportService
     {
         try
         {
-            var path = await _channelService.ExportChannelDataFileAsync(data).ConfigureAwait(false);
+            var path = await channelService.ExportChannelDataFileAsync(data).ConfigureAwait(false);
             Open(path);
             return true;
         }
@@ -127,7 +111,7 @@ public sealed class HybridGatewayExportService : IGatewayExportService
     {
         try
         {
-            var path = await _deviceService.ExportDeviceDataFileAsync(data, channelName, plugin).ConfigureAwait(false);
+            var path = await deviceService.ExportDeviceDataFileAsync(data, channelName, plugin).ConfigureAwait(false);
             Open(path);
             return true;
         }
@@ -141,7 +125,38 @@ public sealed class HybridGatewayExportService : IGatewayExportService
     {
         try
         {
-            var path = await _variableService.ExportVariableDataFileAsync(data, devName).ConfigureAwait(false);
+            var path = await variableService.ExportVariableDataFileAsync(data, devName).ConfigureAwait(false);
+            Open(path);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> OnMemoryVariableExport(List<MemoryVariable> data, string devName)
+    {
+        try
+        {
+            var path = await memoryVariableService.ExportMemoryVariableDataFileAsync(data, devName).ConfigureAwait(false);
+            Open(path);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> OnMemoryVariableExport(GatewayExportFilter exportFilter)
+    {
+        try
+        {
+            exportFilter.QueryPageOptions.IsPage = false;
+            exportFilter.QueryPageOptions.IsVirtualScroll = false;
+            var sheets = await memoryVariableService.ExportVariableAsync(exportFilter).ConfigureAwait(false);
+            var path = await importExportService.CreateFileAsync<Variable>(sheets, "Variable", false).ConfigureAwait(false);
             Open(path);
             return true;
         }

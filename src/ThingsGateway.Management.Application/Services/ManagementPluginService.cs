@@ -338,7 +338,7 @@ internal sealed class ManagementPluginService : IPluginService
     public async Task<QueryData<PluginInfo>> PluginPageAsync(QueryPageOptions options, PluginTypeEnum? pluginType = null)
     {
         //指定关键词搜索为插件FullName
-        var query = (await GetPluginsAsync(pluginType).ConfigureAwait(false)).WhereIf(!options.SearchText.IsNullOrWhiteSpace(), a => a.FullName.Contains(options.SearchText)).GetQueryData(options);
+        var query = (await GetPluginsAsync(pluginType).ConfigureAwait(false)).WhereIf(!options.SearchText.IsNullOrWhiteSpace(), a => a.FullName.Contains(options.SearchText)).Where(a => a.Display).GetQueryData(options);
         return query;
     }
 

@@ -11,7 +11,7 @@
 using BootstrapBlazor.Components;
 
 using Microsoft.Extensions.Logging;
-
+using System.Collections.Frozen;
 using System.Text;
 
 using LogLevel = TouchSocket.Core.LogLevel;
@@ -32,7 +32,6 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
 
     #region 属性
 
-    public virtual bool RefreshRuntimeAlways { get; set; } = false;
 
     /// <summary>
     /// 调试UI Type，如果不存在，返回null
@@ -62,8 +61,8 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
 
 
 
-    private List<IEditorItem> pluginPropertyEditorItems;
-    public List<IEditorItem> PluginPropertyEditorItems
+    private IReadOnlyList<IEditorItem> pluginPropertyEditorItems;
+    public IReadOnlyList<IEditorItem> PluginPropertyEditorItems
     {
         get
         {
@@ -403,7 +402,6 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
 
         TextLogger?.Dispose();
         _logger?.TryDispose();
-        IdVariableRuntimes?.Clear();
         IdVariableRuntimes = null;
         var device = CurrentDevice;
         if (device != null)
@@ -411,7 +409,6 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
 
         LogMessage?.Logs?.ForEach(a => a.TryDispose());
         LogMessage = null;
-        pluginPropertyEditorItems?.Clear();
         pluginPropertyEditorItems = null;
         DeviceThreadManage = null;
     }
@@ -440,7 +437,7 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
     /// <summary>
     /// 当前关联的变量
     /// </summary>
-    public Dictionary<long, VariableRuntime> IdVariableRuntimes { get; private set; } = new();
+    public IReadOnlyDictionary<long, VariableRuntime> IdVariableRuntimes { get; protected set; } = FrozenDictionary<long, VariableRuntime>.Empty;
 
     public abstract bool IsConnected();
 

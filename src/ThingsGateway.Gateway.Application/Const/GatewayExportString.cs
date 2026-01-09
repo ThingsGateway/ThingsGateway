@@ -35,7 +35,6 @@ public static class GatewayExportString
     /// </summary>
     public static string VariableName => Localizer["VariableName"];
 
-
     /// <summary>
     /// 变量报警表名称
     /// </summary>

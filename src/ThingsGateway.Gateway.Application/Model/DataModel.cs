@@ -107,7 +107,7 @@ public class VariableBasicData
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public string RuntimeType { get; set; }
 
-    [JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
     [System.Text.Json.Serialization.JsonIgnore]
     public bool IsNumber => Value?.GetType()?.IsNumber() == true;
 
@@ -199,6 +199,6 @@ public class VariableBasicData
 
     /// <inheritdoc cref="VariableRuntime.ValueInited"/>
     public bool ValueInited { get; set; }
-    /// <inheritdoc cref="VariableRuntime.IsMemoryVariable"/>
-    public bool IsMemoryVariable { get; set; }
+    /// <inheritdoc cref="VariableRuntime.IsMemory"/>
+    public bool IsMemory { get; set; }
 }

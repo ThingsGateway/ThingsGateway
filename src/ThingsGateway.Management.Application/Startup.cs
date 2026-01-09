@@ -54,6 +54,9 @@ public class Startup : AppStartup
         services.AddScoped<IDeviceModelPageService>(a => a.GetService<ManagementRpcServerService>());
         services.AddScoped<IVariableModelPageService>(a => a.GetService<ManagementRpcServerService>());
 
+        services.AddScoped<IMemoryVariablePageService>(a => a.GetService<ManagementRpcServerService>());
+        services.AddScoped<IMemoryVariableModelPageService>(a => a.GetService<ManagementRpcServerService>());
+
         services.AddScoped<IHardwarePageService>(a => a.GetService<ManagementRpcServerService>());
 
         services.AddScoped<DmtpActorContext>();

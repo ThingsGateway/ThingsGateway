@@ -122,7 +122,7 @@ public static class GlobalData
         {
             var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
 
-            return IdVariables.Where(a => a.Value.IsInternalMemoryVariable == false)
+            return IdVariables
                 .WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.Value.DeviceRuntime.CreateOrgId))//在指定机构列表查询
               .WhereIf(dataScope?.Count == 0, u => u.Value.DeviceRuntime.CreateUserId == UserManager.UserId).Select(a => a.Value);
         }
@@ -188,7 +188,7 @@ public static class GlobalData
         static async PooledTask<IEnumerable<VariableRuntime>> GetCurrentUserAlarmEnableVariables()
         {
             var dataScope = await GlobalData.SysUserService.GetCurrentUserDataScopeAsync().ConfigureAwait(false);
-            return AlarmEnableIdVariables.Where(a => a.Value.IsInternalMemoryVariable == false).WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.Value.DeviceRuntime.CreateOrgId))//在指定机构列表查询
+            return AlarmEnableIdVariables.WhereIf(dataScope != null && dataScope?.Count > 0, u => dataScope.Contains(u.Value.DeviceRuntime.CreateOrgId))//在指定机构列表查询
               .WhereIf(dataScope?.Count == 0, u => u.Value.DeviceRuntime.CreateUserId == UserManager.UserId).Select(a => a.Value);
         }
     }
@@ -202,8 +202,7 @@ public static class GlobalData
             {
                 if (businessBase.DriverProperties is IBusinessPropertyAllVariableBase property && property.IsAllVariable)
                 {
-                    if (a.IsInternalMemoryVariable == false)
-                        return true;
+                    return true;
                 }
                 else if (businessBase.RefreshRuntimeAlways)
                 {
@@ -278,7 +277,12 @@ public static class GlobalData
         }
         return null;
     }
+    public static bool TryGetVariable(string deviceName, string variableName, out VariableRuntime value)
+    {
 
+        value = GetVariable(deviceName, variableName);
+        return value != null;
+    }
     public static VariableRuntime GetVariable(string variableName)
     {
 
@@ -290,7 +294,7 @@ public static class GlobalData
 
         if (names.Length == 1)
         {
-            if (MemoryVariables.TryGetValue(names[0], out var variable))
+            if (MemoryVariableRuntimes.TryGetValue(names[0], out var variable))
             {
                 return variable;
             }
@@ -304,7 +308,11 @@ public static class GlobalData
         }
         return null;
     }
-
+    public static bool TryGetVariable(string variableName, out VariableRuntime value)
+    {
+        value = GetVariable(variableName);
+        return value != null;
+    }
     public static IEnumerable<DeviceRuntime> GetEnableDevices()
     {
         var idSet = GetRedundantDeviceIds();
@@ -624,9 +632,6 @@ public static class GlobalData
     /// </summary>
     internal static NonBlockingDictionary<long, VariableRuntime> IdVariables { get; } = new();
 
-    internal static NonBlockingDictionary<string, VariableRuntime> MemoryVariables { get; } = new();
-    public static IReadOnlyDictionary<string, VariableRuntime> ReadOnlyMemoryVariables => MemoryVariables;
-
     /// <summary>
     /// 实时报警列表
     /// </summary>
@@ -636,7 +641,10 @@ public static class GlobalData
     /// 只读的变量字典
     /// </summary>
     public static IReadOnlyDictionary<long, VariableRuntime> ReadOnlyIdVariables => IdVariables;
+    public static MemoryChannelRuntime MemoryChannelRuntime { get; } = new MemoryChannelRuntime();
+    public static MemoryDeviceRuntime MemoryDeviceRuntime { get; } = new MemoryDeviceRuntime();
 
+    public static IReadOnlyDictionary<string, VariableRuntime> MemoryVariableRuntimes => MemoryDeviceRuntime.VariableRuntimes;
     #region 变化事件
     /// <summary>
     /// 报警状态变化处理方法，用于处理报警状态变化时的逻辑

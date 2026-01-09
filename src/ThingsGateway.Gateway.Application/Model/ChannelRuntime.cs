@@ -35,6 +35,10 @@ public class ChannelRuntime : Channel
 
 #if !Management
 
+
+    [AutoGenerateColumn(Ignore = true)]
+    public virtual bool IsMemory { get; protected set; }
+
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
     [MapperIgnore]
@@ -159,7 +163,7 @@ public class ChannelRuntime : Channel
 
 
 
-    public void Init()
+    public virtual void Init()
     {
         // 通过插件名称获取插件信息
         PluginInfo = GlobalData.PluginService.GetPluginList().FirstOrDefault(A => A.FullName == PluginName);
@@ -171,7 +175,7 @@ public class ChannelRuntime : Channel
         GlobalData.Channels.TryAdd(Name, this);
     }
 
-    public void Dispose()
+    public virtual void Dispose()
     {
         //Config?.SafeDispose();
 

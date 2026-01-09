@@ -23,8 +23,14 @@
 
         </FirstPaneTemplate>
         <SecondPaneTemplate>
-
-            <VariableRuntimeInfo Items="VariableRuntimes" SelectModel="SelectModel" AutoRestartThread="AutoRestartThread" />
+            @if(ShowMemoryVariable)
+            {
+                <MemoryVariableRuntimeInfo Items="MemoryVariableRuntimes" SelectModel="SelectModel" AutoRestartThread="AutoRestartThread" />
+            }
+            else
+            {
+                <VariableRuntimeInfo Items="VariableRuntimes" SelectModel="SelectModel" AutoRestartThread="AutoRestartThread" />
+            }
 
         </SecondPaneTemplate>
     </Split>

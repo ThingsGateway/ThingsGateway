@@ -1,4 +1,16 @@
 ﻿{
+  "ThingsGateway.Gateway.Application.MemoryVariable": {
+    "BusinessUpdate": "触发方式"
+  },
+  "ThingsGateway.Gateway.Application.MemoryVariableRuntime": {
+    "BusinessUpdate": "触发方式"
+  },
+  "ThingsGateway.Management.Application.MemoryVariable": {
+    "BusinessUpdate": "触发方式"
+  },
+  "ThingsGateway.Management.Application.MemoryVariableRuntime": {
+    "BusinessUpdate": "触发方式"
+  },
   "ThingsGateway.Gateway.Application.BusinessVariableProperty": {
 
     "Data1": "备注1",

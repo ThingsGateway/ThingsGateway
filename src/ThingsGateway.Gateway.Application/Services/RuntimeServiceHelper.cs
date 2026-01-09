@@ -16,7 +16,7 @@ using ThingsGateway.Common.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 
-internal static class RuntimeServiceHelper
+public static class RuntimeServiceHelper
 {
     public static async Task InitAsync(List<ChannelRuntime> newChannelRuntimes, List<DeviceRuntime> newDeviceRuntimes, ILogger logger)
     {
@@ -126,6 +126,10 @@ internal static class RuntimeServiceHelper
             if (GlobalData.IdDevices.TryGetValue(newVariableRuntime.DeviceId, out var deviceRuntime))
             {
                 newVariableRuntime.Init(deviceRuntime);
+            }
+            if (newVariableRuntime.DeviceId == MemoryVariable.MemoryDeviceId)
+            {
+                newVariableRuntime.Init(GlobalData.MemoryDeviceRuntime);
             }
         }
         GlobalData.VariableRuntimeDispatchService.Dispatch(null);
@@ -299,7 +303,7 @@ internal static class RuntimeServiceHelper
 
     public static void AddBusinessChangedDriver(HashSet<long> variableIds, ConcurrentHashSet<IDriver> changedDriver)
     {
-        var data = GlobalData.IdVariables.FilterByKeys(variableIds).GroupBy(a => a.Value.DeviceRuntime).Where(a => a.Key != null);
+        var data = GlobalData.IdVariables.FilterByKeys(variableIds).GroupBy(a => a.Value.DeviceRuntime).Where(a => a.Key != null && !a.Key.IsMemory);
 
         foreach (var group in data)
         {
@@ -356,6 +360,10 @@ internal static class RuntimeServiceHelper
                 {
                     changedDriver.TryAdd(deviceRuntime.Driver);
                 }
+            }
+            if (newVariableRuntime.DeviceId == MemoryVariable.MemoryDeviceId)
+            {
+                newVariableRuntime.Init(GlobalData.MemoryDeviceRuntime);
             }
         }
         GlobalData.VariableRuntimeDispatchService.Dispatch(null);

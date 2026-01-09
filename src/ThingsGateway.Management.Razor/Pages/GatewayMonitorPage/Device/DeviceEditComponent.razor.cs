@@ -58,7 +58,7 @@ public partial class DeviceEditComponent
     {
         try
         {
-            var result = (!PluginServiceUtil.HasDynamicProperty(Model.ModelValueValidateForm.Value)) || (Model.ModelValueValidateForm.ValidateForm?.Validate() != false);
+            var result = (!PluginServiceUtil.HasDynamicProperty(Model.ModelValueValidateForm.Value)) || (await Model.ModelValueValidateForm.ValidateForm?.ValidateAsync() != false);
             if (!result)
             {
                 // 进行设备对象属性的验证
@@ -130,7 +130,6 @@ public partial class DeviceEditComponent
         await base.SetParametersAsync(parameters);
         if (ChannelName.IsNullOrEmpty())
         {
-            parameters.SetParameterProperties(this);
             ChannelName = await ChannelPageService.GetChannelNameAsync(Model?.ChannelId ?? 0);
             DeviceName = await DevicePageService.GetDeviceNameAsync(Model?.RedundantDeviceId ?? 0);
             if (!_initialized)

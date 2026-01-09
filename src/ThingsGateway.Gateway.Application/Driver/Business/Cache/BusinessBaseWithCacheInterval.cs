@@ -8,6 +8,8 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.Collections.Frozen;
+
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
@@ -71,11 +73,11 @@ public abstract class BusinessBaseWithCacheInterval : BusinessBaseWithCache
             if (_businessPropertyWithCacheInterval.IsAllVariable)
             {
                 LogMessage?.LogInformation("Refresh variable");
-                IdVariableRuntimes.Clear();
-                IdVariableRuntimes.AddRange(GlobalData.GetEnableVariables().Where(a => a.IsInternalMemoryVariable == false).ToDictionary(a => a.Id));
-                CollectDevices = GlobalData.GetEnableDevices().Where(a => a.IsCollect == true).ToDictionary(a => a.Id);
+                IdVariableRuntimes = GlobalData.GetEnableVariables().ToFrozenDictionary(a => a.Id);
+                CollectDevices = IdVariableRuntimes.Select(a => a.Value.DeviceRuntime).Where(a => !a.IsMemory && a.IsCollect == true).DistinctBy(a => a.Id).ToFrozenDictionary(a => a.Id, a => a);
 
-                VariableRuntimeGroups = IdVariableRuntimes.GroupBy(a => a.Value.BusinessGroup ?? string.Empty).ToDictionary(a => a.Key, a => a.Select(a => a.Value).ToList());
+
+                VariableRuntimeGroups = IdVariableRuntimes.GroupBy(a => a.Value.BusinessGroup ?? string.Empty).ToFrozenDictionary(a => a.Key, a => a.Select(a => a.Value).ToList());
             }
             else
             {

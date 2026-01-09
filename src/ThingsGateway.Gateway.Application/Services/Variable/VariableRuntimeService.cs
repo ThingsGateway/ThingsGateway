@@ -24,11 +24,15 @@ public class VariableRuntimeService : IVariableRuntimeService
     {
         _logger = logger;
     }
+    public Task<VariableRuntime> GetVariableAsync(string devName, string varName)
+    {
+        return Task.FromResult(GlobalData.GetVariable(devName, varName));
+    }
 
 
     public Task<QueryData<VariableRuntime>> OnVariableQueryAsync(QueryPageOptions options)
     {
-        var data = GlobalData.IdVariables.Select(a => a.Value)
+        var data = GlobalData.IdVariables.Select(a => a.Value).Where(a => !a.IsMemory)
                 .WhereIf(!options.SearchText.IsNullOrWhiteSpace(), a => a.Name.Contains(options.SearchText))
                 .GetQueryData(options);
         return Task.FromResult(data);

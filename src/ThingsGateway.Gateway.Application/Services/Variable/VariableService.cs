@@ -511,6 +511,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         .WhereIF(!string.IsNullOrWhiteSpace(exportFilter.QueryPageOptions.SearchText), a => a.Name.Contains(exportFilter.QueryPageOptions.SearchText!))
         .WhereIF(exportFilter.PluginType == PluginTypeEnum.Collect, a => a.DeviceId == exportFilter.DeviceId)
         .WhereIF(deviceId != null, a => deviceId.Contains(a.DeviceId))
+        .Where(a => a.DeviceId != MemoryVariable.MemoryDeviceId)
 
         .WhereIF(filterDeviceIds != null, u => filterDeviceIds.Contains(u.DeviceId))//在指定机构列表查询
 
@@ -542,6 +543,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         .WhereIF(!string.IsNullOrWhiteSpace(exportFilter.QueryPageOptions.SearchText), a => a.Name.Contains(exportFilter.QueryPageOptions.SearchText!))
         .WhereIF(exportFilter.PluginType == PluginTypeEnum.Collect, a => a.DeviceId == exportFilter.DeviceId)
         .WhereIF(deviceId != null, a => deviceId.Contains(a.DeviceId))
+        .Where(a => a.DeviceId != MemoryVariable.MemoryDeviceId)
 
         .WhereIF(filterDeviceIds != null, u => filterDeviceIds.Contains(u.DeviceId))//在指定机构列表查询
 
@@ -843,7 +845,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
                         variable.IsUp = false;
                     }
 
-                    if (device.IsUp && (filterDeviceIds?.Contains(variable.DeviceId) != false))
+                    if (variable.IsUp && (filterDeviceIds?.Contains(variable.DeviceId) != false))
                     {
                         importPreviewOutput.Results.Add(new(Interlocked.Increment(ref row), false, "Operation not permitted"));
                     }

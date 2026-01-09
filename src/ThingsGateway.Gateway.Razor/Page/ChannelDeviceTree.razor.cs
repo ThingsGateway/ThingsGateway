@@ -1346,6 +1346,7 @@ EventCallback.Factory.Create<MouseEventArgs>(this, async e =>
 
     private ChannelDeviceTreeItem CollectItem = new() { ChannelDevicePluginType = ChannelDevicePluginTypeEnum.PluginType, PluginType = PluginTypeEnum.Collect };
     private ChannelDeviceTreeItem BusinessItem = new() { ChannelDevicePluginType = ChannelDevicePluginTypeEnum.PluginType, PluginType = PluginTypeEnum.Business };
+    private ChannelDeviceTreeItem MemoryItem = new() { ChannelDevicePluginType = ChannelDevicePluginTypeEnum.Device, DeviceRuntimeId = MemoryVariable.MemoryDeviceId, Id = MemoryVariable.MemoryDeviceId };
     private ChannelDeviceTreeItem UnknownItem = new() { ChannelDevicePluginType = ChannelDevicePluginTypeEnum.PluginType, PluginType = null };
 
     private TreeViewItem<ChannelDeviceTreeItem> UnknownTreeViewItem;
@@ -1367,6 +1368,12 @@ EventCallback.Factory.Create<MouseEventArgs>(this, async e =>
             IsActive = false,
             IsExpand = true,
         },
+        new TreeViewItem<ChannelDeviceTreeItem>(MemoryItem)
+        {
+            Text = GatewayLocalizer["Memory"],
+            IsActive = false,
+            IsExpand = true,
+        },
         new TreeViewItem<ChannelDeviceTreeItem>(BusinessItem)
         {
             Text = GatewayLocalizer["Business"],
@@ -1377,7 +1384,7 @@ EventCallback.Factory.Create<MouseEventArgs>(this, async e =>
         var channels = await GlobalData.GetCurrentUserChannels().ConfigureAwait(false);
 
         ZItem[0].Items = GatewayResourceUtil.BuildTreeItemList(channels.Where(a => a.IsCollect == true), new List<ChannelDeviceTreeItem> { Value }, RenderTreeItem);
-        ZItem[1].Items = GatewayResourceUtil.BuildTreeItemList(channels.Where(a => a.IsCollect == false), new List<ChannelDeviceTreeItem> { Value }, RenderTreeItem);
+        ZItem[2].Items = GatewayResourceUtil.BuildTreeItemList(channels.Where(a => a.IsCollect == false), new List<ChannelDeviceTreeItem> { Value }, RenderTreeItem);
         var item2 = GatewayResourceUtil.BuildTreeItemList(channels.Where(a => a.IsCollect == null), new List<ChannelDeviceTreeItem> { Value }, RenderTreeItem);
         if (item2.Count > 0)
         {
@@ -1401,23 +1408,37 @@ EventCallback.Factory.Create<MouseEventArgs>(this, async e =>
         Items = ZItem.AdaptListTreeViewItemChannelDeviceTreeItem();
         ChannelRuntimeDispatchService.Subscribe(Refresh);
 
+        context = ExecutionContext.Capture();
         scheduler = new SmartTriggerScheduler(Notify, TimeSpan.FromMilliseconds(3000));
 
         await base.OnInitializedAsync();
     }
+
+    private ExecutionContext? context;
+
+
     private async Task Notify(CancellationToken cancellationToken)
     {
         if (cancellationToken.IsCancellationRequested) return;
         if (Disposed) return;
-
-        await OnClickSearch(SearchText);
-
-        Value = GetValue(Value);
-        if (ChannelDeviceChanged != null)
+        var current = ExecutionContext.Capture();
+        try
         {
-            await ChannelDeviceChanged.Invoke(Value);
+            ExecutionContext.Restore(context);
+
+            await OnClickSearch(SearchText);
+
+            Value = GetValue(Value);
+            if (ChannelDeviceChanged != null)
+            {
+                await ChannelDeviceChanged.Invoke(Value);
+            }
+            await InvokeAsync(StateHasChanged);
         }
-        await InvokeAsync(StateHasChanged);
+        finally
+        {
+            ExecutionContext.Restore(current);
+        }
     }
 
     private static ChannelDeviceTreeItem GetValue(ChannelDeviceTreeItem channelDeviceTreeItem)
@@ -1465,7 +1486,7 @@ EventCallback.Factory.Create<MouseEventArgs>(this, async e =>
             var items = channels.WhereIF(!searchText.IsNullOrEmpty(), a => a.Name.Contains(searchText));
 
             ZItem[0].Items = GatewayResourceUtil.BuildTreeItemList(items.Where(a => a.IsCollect == true), new List<ChannelDeviceTreeItem> { Value }, RenderTreeItem, items: ZItem[0].Items);
-            ZItem[1].Items = GatewayResourceUtil.BuildTreeItemList(items.Where(a => a.IsCollect == false), new List<ChannelDeviceTreeItem> { Value }, RenderTreeItem, items: ZItem[1].Items);
+            ZItem[2].Items = GatewayResourceUtil.BuildTreeItemList(items.Where(a => a.IsCollect == false), new List<ChannelDeviceTreeItem> { Value }, RenderTreeItem, items: ZItem[2].Items);
 
             var item2 = GatewayResourceUtil.BuildTreeItemList(items.Where(a => a.IsCollect == null), new List<ChannelDeviceTreeItem> { Value }, RenderTreeItem);
             if (item2.Count > 0)
@@ -1543,7 +1564,7 @@ EventCallback.Factory.Create<MouseEventArgs>(this, async e =>
             }
 
             ZItem[0].Items = collectChannelDevices.BuildTreeItemList(new List<ChannelDeviceTreeItem> { Value }, RenderTreeItem, items: ZItem[0].Items);
-            ZItem[1].Items = businessChannelDevices.BuildTreeItemList(new List<ChannelDeviceTreeItem> { Value }, RenderTreeItem, items: ZItem[1].Items);
+            ZItem[2].Items = businessChannelDevices.BuildTreeItemList(new List<ChannelDeviceTreeItem> { Value }, RenderTreeItem, items: ZItem[2].Items);
             var item2 = otherChannelDevices.BuildTreeItemList(new List<ChannelDeviceTreeItem> { Value }, RenderTreeItem);
             if (item2.Count > 0)
             {
@@ -1571,28 +1592,14 @@ EventCallback.Factory.Create<MouseEventArgs>(this, async e =>
 
     private static bool ModelEqualityComparer(ChannelDeviceTreeItem x, ChannelDeviceTreeItem y)
     {
-        if (x.ChannelDevicePluginType != y.ChannelDevicePluginType)
-            return false;
-
-        switch (x.ChannelDevicePluginType)
-        {
-            case ChannelDevicePluginTypeEnum.Device:
-                return x.DeviceRuntimeId == y.DeviceRuntimeId;
-            case ChannelDevicePluginTypeEnum.PluginType:
-                return x.PluginType == y.PluginType;
-            case ChannelDevicePluginTypeEnum.Channel:
-                return x.ChannelRuntimeId == y.ChannelRuntimeId;
-            case ChannelDevicePluginTypeEnum.PluginName:
-                return x.PluginName == y.PluginName;
-            default:
-                return false;
-        }
+        return x.Equals(x, y);
     }
+
     private bool Disposed;
 
     protected override async ValueTask DisposeAsync(bool disposing)
     {
-
+        context?.Dispose();
         Disposed = true;
         ChannelRuntimeDispatchService?.UnSubscribe(Refresh);
 

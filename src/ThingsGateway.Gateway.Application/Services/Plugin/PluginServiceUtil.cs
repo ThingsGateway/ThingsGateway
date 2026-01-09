@@ -95,6 +95,12 @@ public static class PluginServiceUtil
         if (type == null) return false;
         return Attribute.IsDefined(type, typeof(EducationPluginAttribute));
     }
+    public static bool IsDisplay(Type type)
+    {
+        if (type == null) return false;
+        return !Attribute.IsDefined(type, typeof(DisplayNonePluginAttribute));
+    }
+
     /// <summary>
     /// 通过实体赋值到字典中
     /// </summary>

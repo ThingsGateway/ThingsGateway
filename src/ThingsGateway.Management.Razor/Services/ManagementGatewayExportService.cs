@@ -20,7 +20,7 @@ using ThingsGateway.Management.Application;
 
 using TouchSocket.Core;
 
-public sealed class ManagementGatewayExportService(IJSRuntime jSRuntime, IChannelPageService channelPageService, IDevicePageService devicePageService, IVariablePageService variablePageService) : IGatewayExportService
+public sealed class ManagementGatewayExportService(IJSRuntime jSRuntime, IChannelPageService channelPageService, IDevicePageService devicePageService, IVariablePageService variablePageService, IMemoryVariablePageService memoryVariablePageService) : IGatewayExportService
 {
 
 
@@ -108,6 +108,49 @@ public sealed class ManagementGatewayExportService(IJSRuntime jSRuntime, IChanne
             string fileName = DateTime.Now.ToFileDateTimeFormat();
             return await jSObject.InvokeAsync<bool>("blazor_downloadFile", url, fileName, new { FileName = path });
 
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> OnMemoryVariableExport(List<MemoryVariable> data, string devName)
+    {
+        try
+        {
+
+
+            var item = await memoryVariablePageService.ExportMemoryVariableDataFileAsync(data, devName).ConfigureAwait(false);
+
+            //打开文件夹
+            string url = "api/file/download";
+            //统一web下载
+            await using var jSObject = await jSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
+            var path = Path.GetRelativePath("wwwroot", item);
+            string fileName = DateTime.Now.ToFileDateTimeFormat();
+            return await jSObject.InvokeAsync<bool>("blazor_downloadFile", url, fileName, new { FileName = path });
+
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public async Task<bool> OnMemoryVariableExport(GatewayExportFilter exportFilter)
+    {
+        try
+        {
+            var item = await memoryVariablePageService.ExportMemoryVariableFileAsync(exportFilter).ConfigureAwait(false);
+
+            //打开文件夹
+            string url = "api/file/download";
+            //统一web下载
+            await using var jSObject = await jSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
+            var path = Path.GetRelativePath("wwwroot", item);
+            string fileName = DateTime.Now.ToFileDateTimeFormat();
+            return await jSObject.InvokeAsync<bool>("blazor_downloadFile", url, fileName, new { FileName = path });
         }
         catch
         {

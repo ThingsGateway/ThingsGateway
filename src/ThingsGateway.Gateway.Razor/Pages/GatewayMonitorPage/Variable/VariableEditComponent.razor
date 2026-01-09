@@ -204,13 +204,13 @@
                         <Button OnClick="async() =>{
 
                                 await RefreshBusinessPropertyClickAsync(ChoiceBusinessDeviceId);
-                                foreach (var item in Model.VariablePropertyModels)
-                                {
-                                    if (item.Value != null)
-                                    {
-                                        item.Value.ValidateForm = null;
-                                    }
-                                }
+                                // foreach (var item in Model.VariablePropertyModels)
+                                // {
+                                //     if (item.Value != null)
+                                //     {
+                                //         item.Value.ValidateForm = null;
+                                //     }
+                                // }
                             }">
                         @GatewayLocalizer["RefreshBusinessProperty"]
                     </Button>

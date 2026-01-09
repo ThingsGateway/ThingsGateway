@@ -20,7 +20,7 @@ using TouchSocket.Sockets;
 
 namespace ThingsGateway.Gateway.Application;
 
-public partial class ManagementRpcServer : IRpcServer, IManagementRpcServer, IHardwarePageService, IBackendLogService, IRpcLogService, IRestartService, IAuthenticationService, IChannelEnableService, IRedundancyHostedService, IRedundancyService, ITextFileReadService, IPluginPageService, IRealAlarmService, IChannelPageService, IDevicePageService, IVariablePageService
+public partial class ManagementRpcServer : IRpcServer, IManagementRpcServer, IHardwarePageService, IBackendLogService, IRpcLogService, IRestartService, IAuthenticationService, IChannelEnableService, IRedundancyHostedService, IRedundancyService, ITextFileReadService, IPluginPageService, IRealAlarmService, IChannelPageService, IDevicePageService, IVariablePageService, IMemoryVariablePageService
 {
     public Task<HardwareInfo> GetRealTimeHardwareInfo() => App.GetService<IHardwarePageService>().GetRealTimeHardwareInfo();
     public Task<List<HistoryHardwareInfo>> GetHistoryHardwareInfos() => App.GetService<IHardwarePageService>().GetHistoryHardwareInfos();
@@ -297,4 +297,61 @@ public partial class ManagementRpcServer : IRpcServer, IManagementRpcServer, IHa
 
     public Task<string> ExportVariableDataFileAsync(List<Variable> data, string devName) => App.GetService<IVariablePageService>().ExportVariableDataFileAsync(data, devName);
 
+    public Task<QueryData<MemoryVariableRuntime>> OnMemoryVariableQueryAsync(QueryPageOptions options)
+=> App.GetService<IMemoryVariablePageService>().OnMemoryVariableQueryAsync(options);
+
+    public Task<bool> BatchEditMemoryVariableAsync(List<MemoryVariable> models, MemoryVariable oldModel, MemoryVariable model, bool restart)
+=> App.GetService<IMemoryVariablePageService>().BatchEditMemoryVariableAsync(models, oldModel, model, restart);
+
+    public Task<bool> BatchSaveMemoryVariableAsync(List<MemoryVariable> input, ItemChangedType type, bool restart)
+=> App.GetService<IMemoryVariablePageService>().BatchSaveMemoryVariableAsync(input, type, restart);
+
+
+    public Task<bool> SaveMemoryVariableAsync(MemoryVariable input, ItemChangedType type, bool restart)
+=> App.GetService<IMemoryVariablePageService>().SaveMemoryVariableAsync(input, type, restart);
+
+
+    public Task CopyMemoryVariableAsync(List<MemoryVariable> Model, int CopyCount, string CopyMemoryVariableNamePrefix, int CopyMemoryVariableNameSuffixNumber, bool AutoRestartThread)
+=> App.GetService<IMemoryVariablePageService>().CopyMemoryVariableAsync(Model, CopyCount, CopyMemoryVariableNamePrefix, CopyMemoryVariableNameSuffixNumber, AutoRestartThread);
+
+
+    public Task<List<MemoryVariable>> GetMemoryVariableListAsync(QueryPageOptions option, int v)
+=> App.GetService<IMemoryVariablePageService>().GetMemoryVariableListAsync(option, v);
+
+
+
+    public Task<USheetDatas> ExportMemoryVariableAsync(List<MemoryVariable> models, string? sortName, SortOrder sortOrder)
+=> App.GetService<IMemoryVariablePageService>().ExportMemoryVariableAsync(models, sortName, sortOrder);
+
+    public Task<OperResult<object>> OnWriteMemoryVariableAsync(string name, string writeData)
+=> App.GetService<IMemoryVariablePageService>().OnWriteMemoryVariableAsync(name, writeData);
+
+    public Task<string> ExportMemoryVariableDataFileAsync(List<MemoryVariable> data, string devName)
+=> App.GetService<IMemoryVariablePageService>().ExportMemoryVariableDataFileAsync(data, devName);
+
+    public Task<bool> DeleteMemoryVariableAsync(List<long> ids, bool restart)
+=> App.GetService<IMemoryVariablePageService>().DeleteMemoryVariableAsync(ids, restart);
+
+
+    public Task<bool> ClearMemoryVariableAsync(bool restart)
+=> App.GetService<IMemoryVariablePageService>().ClearMemoryVariableAsync(restart);
+
+
+    public Task<Dictionary<string, ImportPreviewOutputBase>> ImportMemoryVariableUSheetDatasAsync(USheetDatas data, bool restart)
+=> App.GetService<IMemoryVariablePageService>().ImportMemoryVariableUSheetDatasAsync(data, restart);
+
+
+    public Task<string> ExportMemoryVariableFileAsync(GatewayExportFilter exportFilter)
+=> App.GetService<IMemoryVariablePageService>().ExportMemoryVariableFileAsync(exportFilter);
+
+
+    public Task<Dictionary<string, ImportPreviewOutputBase>> ImportMemoryVariableFileAsync(string filePath, bool restart)
+=> App.GetService<IMemoryVariablePageService>().ImportMemoryVariableFileAsync(filePath, restart);
+
+
+    public Task<Dictionary<string, ImportPreviewOutputBase>> ImportMemoryVariableAsync(IBrowserFile a, bool restart)
+=> App.GetService<IMemoryVariablePageService>().ImportMemoryVariableAsync(a, restart);
+
+    public Task<VariableRuntime> GetVariableAsync(string devName, string varName)
+=> App.GetService<IVariablePageService>().GetVariableAsync(devName, varName);
 }

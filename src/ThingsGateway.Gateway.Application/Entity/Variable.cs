@@ -39,14 +39,14 @@ public class Variable : PrimaryKeyEntity, IValidatableObject
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
-    internal long Row;
+    public long Row;
 
     /// <summary>
     /// 导入验证专用
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
-    internal bool IsUp;
+    public bool IsUp;
     public bool DynamicVariable;
 
     private object _value;
@@ -54,7 +54,7 @@ public class Variable : PrimaryKeyEntity, IValidatableObject
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
     [MapperIgnore]
-    public ValidateForm AlarmPropertysValidateForm;
+    public ValidateForm? AlarmPropertysValidateForm;
 
     /// <summary>
     /// 变量额外属性Json
@@ -143,7 +143,7 @@ public class Variable : PrimaryKeyEntity, IValidatableObject
     /// </summary>
     [OrmColumn(ColumnDescription = "数组长度", IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
-    public int? ArrayLength { get; set; }
+    public virtual int? ArrayLength { get; set; }
 
     /// <summary>
     /// 其他方法，若不为空，此时RegisterAddress为方法参数

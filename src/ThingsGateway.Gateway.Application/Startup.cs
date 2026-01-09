@@ -95,6 +95,16 @@ public class Startup : AppStartup
 
         services.AddGatewayHostedService<IAlarmHostedService, AlarmHostedService>();
         services.AddHostedService<GatewayMonitorHostedService>();
+
+
+
+        services.AddSingleton<IMemoryVariableService, MemoryVariableService>();
+        services.AddSingleton<IMemoryVariableRuntimeService, MemoryVariableRuntimeService>();
+        services.AddSingleton<IMemoryVariablePageService>(a => a.GetService<IMemoryVariableRuntimeService>());
+        services.AddSingleton<IMemoryVariableModelPageService>(a => a.GetService<IMemoryVariableRuntimeService>());
+
+
+        services.AddHostedService<MemoryMonitorHostedService>();
     }
 
     public void Use(IServiceProvider serviceProvider)

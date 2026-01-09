@@ -61,7 +61,6 @@ public partial class VariableEditComponent
         if (DeviceName.IsNullOrEmpty() && first == false)
         {
             first = true;
-            parameters.SetParameterProperties(this);
             DeviceName = await DevicePageService.GetDeviceNameAsync(Model?.DeviceId ?? 0);
             if (!_initialized)
             {
@@ -134,7 +133,7 @@ public partial class VariableEditComponent
     {
         try
         {
-            if (Model.AlarmPropertysValidateForm?.Validate() == false)
+            if (await Model.AlarmPropertysValidateForm?.ValidateAsync() == false)
             {
                 return;
             }
@@ -306,7 +305,8 @@ public partial class VariableEditComponent
             {
                 var data = PluginService.GetVariablePropertyTypes(pluginName);
                 Model.VariablePropertyModels ??= new();
-                Model.VariablePropertyModels.AddOrUpdate(id, (a) => new ModelValueValidateForm() { Value = data.Model }, (a, b) => new ModelValueValidateForm() { Value = data.Model });
+                Model.VariablePropertyModels.AddOrUpdate(id, (a) => new ModelValueValidateForm() { Value = data.Model }, (a, b) =>
+                { b.Value = data.Model; return b; });
                 VariablePropertyEditors.TryAdd(id, data.EditorItems);
 
                 if (data.VariablePropertyUIType != null)

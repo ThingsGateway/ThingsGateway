@@ -1,7 +1,4 @@
-﻿using Microsoft.CSharp.RuntimeBinder;
-
-using System.Dynamic;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 using ThingsGateway.Common.Extension;
 using ThingsGateway.Foundation.Common.Caching;
@@ -17,16 +14,17 @@ public static class VariableModelUtils
         {
             throw new ArgumentNullException(nameof(model));
         }
-
-        if (MemoryCache.TryGetValue(fieldName, out Func<VariableRuntime, object> data))
+        var type = model.GetType();
+        var key = $"{type.TypeHandle.Value}{fieldName}";
+        if (MemoryCache.TryGetValue(key, out Func<object, object?> data))
         {
             return data(model);
         }
         else
         {
-            var ret = MemoryCache.GetOrAdd(fieldName, (fieldName) =>
+            var ret = MemoryCache.GetOrAdd(key, (key) =>
         {
-            return GetPropertyValueLambda<VariableRuntime, object?>(fieldName).Compile();
+            return CreatePropertyGetter(type, fieldName);
         })(model);
             return ret;
         }
@@ -35,65 +33,26 @@ public static class VariableModelUtils
     /// <summary>
     /// 获取属性方法 Lambda 表达式
     /// </summary>
-    /// <typeparam name="TModel"></typeparam>
-    /// <typeparam name="TResult"></typeparam>
-    /// <param name="propertyName"></param>
-    /// <returns></returns>
-    private static Expression<Func<TModel, TResult>> GetPropertyValueLambda<TModel, TResult>(string propertyName) where TModel : class, new()
+    private static Func<object, object?> CreatePropertyGetter(Type modelType, string propertyPath)
     {
+        var parameter = Expression.Parameter(typeof(object), "obj");
+        Expression current = Expression.Convert(parameter, modelType);
 
-        var type = typeof(TModel);
-        var parameter = Expression.Parameter(typeof(TModel));
-
-        return !type.Assembly.IsDynamic && propertyName.Contains('.')
-            ? GetComplexPropertyExpression()
-            : GetSimplePropertyExpression();
-
-        Expression<Func<TModel, TResult>> GetSimplePropertyExpression()
+        foreach (var name in propertyPath.Split('.'))
         {
-            Expression body;
-            var p = type.GetPropertyByName(propertyName);
-            if (p != null)
-            {
-                body = Expression.Property(Expression.Convert(parameter, type), p);
-            }
-            else if (type.IsAssignableTo(typeof(IDynamicMetaObjectProvider)))
-            {
-                var binder = Microsoft.CSharp.RuntimeBinder.Binder.GetMember(
-                    CSharpBinderFlags.None,
-                    propertyName,
-                    type,
-                    [CSharpArgumentInfo.Create(CSharpArgumentInfoFlags.None, null)]);
-                body = Expression.Dynamic(binder, typeof(object), parameter);
-            }
-            else
-            {
-                throw new InvalidOperationException($"类型 {type.Name} 未找到 {propertyName} 属性，无法获取其值");
-            }
+            var prop = modelType.GetPropertyByName(name)
+                ?? throw new InvalidOperationException(
+                    $"类型 {modelType.Name} 未找到属性 {name}");
 
-            return Expression.Lambda<Func<TModel, TResult>>(Expression.Convert(body, typeof(TResult)), parameter);
+            current = Expression.Property(current, prop);
+            modelType = prop.PropertyType;
         }
 
-        Expression<Func<TModel, TResult>> GetComplexPropertyExpression()
-        {
-            var propertyNames = propertyName.Split(".");
-            Expression? body = null;
-            Type t = type;
-            object? propertyInstance = new TModel();
-            foreach (var name in propertyNames)
-            {
-                var p = t.GetPropertyByName(name) ?? throw new InvalidOperationException($"类型 {type.Name} 未找到 {name} 属性，无法获取其值");
-                propertyInstance = p.GetValue(propertyInstance);
-                if (propertyInstance != null)
-                {
-                    t = propertyInstance.GetType();
-                }
-
-                body = Expression.Property(body ?? Expression.Convert(parameter, type), p);
-            }
-            return Expression.Lambda<Func<TModel, TResult>>(Expression.Convert(body!, typeof(TResult)), parameter);
-        }
+        // box
+        var body = Expression.Convert(current, typeof(object));
+        return Expression.Lambda<Func<object, object?>>(body, parameter).Compile();
     }
+
 
     public static string GetValue(VariableRuntime row, string fieldName)
     {

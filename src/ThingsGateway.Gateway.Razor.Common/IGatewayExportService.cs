@@ -18,4 +18,6 @@ public interface IGatewayExportService
     Task<bool> OnChannelExport(GatewayExportFilter exportFilter);
     Task<bool> OnDeviceExport(GatewayExportFilter exportFilter);
     Task<bool> OnVariableExport(GatewayExportFilter exportFilter);
+    Task<bool> OnMemoryVariableExport(List<MemoryVariable> data, string devName);
+    Task<bool> OnMemoryVariableExport(GatewayExportFilter exportFilter);
 }

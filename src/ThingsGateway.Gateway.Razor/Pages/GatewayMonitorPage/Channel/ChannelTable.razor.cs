@@ -76,16 +76,21 @@ public partial class ChannelTable : IDisposable
 
     public void Dispose()
     {
+        context?.Dispose();
         Disposed = true;
         GC.SuppressFinalize(this);
     }
 
     protected override void OnInitialized()
     {
+        context = ExecutionContext.Capture();
         scheduler = new SmartTriggerScheduler(Notify, TimeSpan.FromMilliseconds(1000));
         _ = RunTimerAsync();
         base.OnInitialized();
     }
+
+
+    private ExecutionContext? context;
 
     private SmartTriggerScheduler scheduler;
 
@@ -97,8 +102,18 @@ public partial class ChannelTable : IDisposable
     {
         if (cancellationToken.IsCancellationRequested) return;
         if (Disposed) return;
-        if (table != null)
-            await InvokeAsync(table.QueryAsync);
+        var current = ExecutionContext.Capture();
+        try
+        {
+            ExecutionContext.Restore(context);
+            if (table != null)
+                await InvokeAsync(table.QueryAsync);
+        }
+        finally
+        {
+            ExecutionContext.Restore(current);
+        }
+
     }
     private async Task RunTimerAsync()
     {
@@ -106,11 +121,21 @@ public partial class ChannelTable : IDisposable
         {
             try
             {
+                var current = ExecutionContext.Capture();
+                try
+                {
+                    ExecutionContext.Restore(context);
+
 #if Management
                 Refresh();
 #else
-                await InvokeAsync(StateHasChanged);
+                    await InvokeAsync(StateHasChanged);
 #endif
+                }
+                finally
+                {
+                    ExecutionContext.Restore(current);
+                }
             }
             catch (Exception ex)
             {

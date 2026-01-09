@@ -47,8 +47,6 @@ public class LogJob : IJob
     private static async Task DeleteTextLog(CancellationToken stoppingToken)
     {
         //网关通道日志以通道id命名
-        var channelService = App.RootServices.GetService<IChannelService>();
-        var deviceService = App.RootServices.GetService<IDeviceService>();
         var channelNames = (GlobalData.Channels.Keys).ToHashSet();
         var deviceNames = (GlobalData.Devices.Keys).ToHashSet();
         var channelBaseDir = LoggerHelper.GetChannelLogBasePath();

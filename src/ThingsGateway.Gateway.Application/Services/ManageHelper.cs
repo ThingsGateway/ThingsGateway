@@ -12,7 +12,7 @@ using ThingsGateway.Authentication;
 
 namespace ThingsGateway.Gateway.Application;
 
-internal static class ManageHelper
+public static class ManageHelper
 {
     /// <summary>
     /// 线程最大等待间隔时间

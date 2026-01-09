@@ -17,3 +17,7 @@ namespace ThingsGateway.Gateway.Application;
 public sealed class EducationPluginAttribute : Attribute
 {
 }
+[AttributeUsage(AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+public sealed class DisplayNonePluginAttribute : Attribute
+{
+}

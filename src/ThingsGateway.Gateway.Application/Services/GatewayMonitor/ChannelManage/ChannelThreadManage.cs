@@ -16,7 +16,7 @@ using ThingsGateway.Common.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 
-internal sealed class ChannelThreadManage : IChannelThreadManage
+public sealed class ChannelThreadManage : IChannelThreadManage
 {
     private ILogger _logger;
 

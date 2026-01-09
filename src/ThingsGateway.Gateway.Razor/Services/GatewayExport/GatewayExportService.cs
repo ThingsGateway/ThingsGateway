@@ -15,7 +15,7 @@ using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Razor;
 
-internal sealed class GatewayExportService(IJSRuntime jSRuntime, IChannelPageService channelPageService, IDevicePageService devicePageService, IVariablePageService variablePageService) : IGatewayExportService
+internal sealed class GatewayExportService(IJSRuntime jSRuntime, IChannelPageService channelPageService, IDevicePageService devicePageService, IVariablePageService variablePageService, IMemoryVariablePageService memoryVariablePageService) : IGatewayExportService
 {
 
     public async Task<bool> OnChannelExport(GatewayExportFilter exportFilter)
@@ -96,6 +96,7 @@ internal sealed class GatewayExportService(IJSRuntime jSRuntime, IChannelPageSer
     {
         try
         {
+
             await using var ajaxJS = await jSRuntime.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Razor/js/downloadFile.js");
             string url = "api/gatewayExport/variable";
             string fileName = $"{DateTime.Now.ToFileDateTimeFormat()}.xlsx";
@@ -106,6 +107,23 @@ internal sealed class GatewayExportService(IJSRuntime jSRuntime, IChannelPageSer
             return false;
         }
     }
+
+    public async Task<bool> OnMemoryVariableExport(GatewayExportFilter exportFilter)
+    {
+        try
+        {
+
+            await using var ajaxJS = await jSRuntime.InvokeAsync<IJSObjectReference>("import", $"/_content/ThingsGateway.Razor/js/downloadFile.js");
+            string url = "api/gatewayExport/memoryvariable";
+            string fileName = $"{DateTime.Now.ToFileDateTimeFormat()}.xlsx";
+            return await ajaxJS.InvokeAsync<bool>("postJson_downloadFile", url, fileName, exportFilter.ToJsonString());
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
 
     public async Task<bool> OnVariableExport(List<Variable> data, string devName)
     {
@@ -128,4 +146,27 @@ internal sealed class GatewayExportService(IJSRuntime jSRuntime, IChannelPageSer
             return false;
         }
     }
+
+    public async Task<bool> OnMemoryVariableExport(List<MemoryVariable> data, string devName)
+    {
+        try
+        {
+
+            var item = await memoryVariablePageService.ExportMemoryVariableDataFileAsync(data, devName);
+
+            //打开文件夹
+            string url = "api/file/download";
+            //统一web下载
+            await using var jSObject = await jSRuntime.InvokeAsync<IJSObjectReference>("import", $"{WebsiteConst.DefaultResourceUrl}js/downloadFile.js");
+            var path = Path.GetRelativePath("wwwroot", item);
+            string fileName = DateTime.Now.ToFileDateTimeFormat();
+            return await jSObject.InvokeAsync<bool>("blazor_downloadFile", url, fileName, new { FileName = path });
+
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
 }

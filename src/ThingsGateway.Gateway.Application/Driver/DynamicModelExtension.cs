@@ -64,16 +64,7 @@ public static class DynamicModelExtension
         {
             if (deviceRuntime.Driver is BusinessBase businessBase)
             {
-                if (businessBase.DriverProperties is IBusinessPropertyAllVariableBase property && property.IsAllVariable)
-                {
-                    if (variableRuntime.IsInternalMemoryVariable == false)
-                        return GetVariableProperty(variableRuntime, businessId, propertyName, businessBase);
-                }
-                else if (businessBase.RefreshRuntimeAlways)
-                {
-                    return GetVariableProperty(variableRuntime, businessId, propertyName, businessBase);
-                }
-
+                return GetVariableProperty(variableRuntime, businessId, propertyName, businessBase);
             }
         }
 

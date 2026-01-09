@@ -56,7 +56,7 @@ internal sealed class RpcService : IRpcService
         foreach (var item in deviceDatas.Where(a => a.Key.IsNullOrEmpty() || a.Key.Equals("Memory", StringComparison.OrdinalIgnoreCase)).SelectMany(a => a.Value))
         {
             // 查找变量是否存在
-            if (!(GlobalData.MemoryVariables.TryGetValue(item.Key, out var tag) &&
+            if (!(GlobalData.TryGetVariable(item.Key, out var tag) &&
                   tag is IMemoryVariableRpc memoryVariableRuntime))
             {
                 // 如果变量不存在，则添加错误信息到结果中并继续下一个变量的处理
@@ -331,7 +331,7 @@ internal sealed class RpcService : IRpcService
         foreach (var item in deviceDatas.Where(a => a.Key.IsNullOrEmpty() || a.Key.Equals("Memory", StringComparison.OrdinalIgnoreCase)).SelectMany(a => a.Value))
         {
             // 查找变量是否存在
-            if (!(GlobalData.MemoryVariables.TryGetValue(item.Key, out var tag) &&
+            if (!(GlobalData.TryGetVariable(item.Key, out var tag) &&
                   tag is IMemoryVariableRpc memoryVariableRuntime))
             {
                 // 如果变量不存在，则添加错误信息到结果中并继续下一个变量的处理
