@@ -45,7 +45,7 @@ public partial class GatewayMonitorPage
             //ShowDeviceRuntime = deviceRuntime.Id;
             if (deviceRuntime.IsCollect == true)
             {
-                if (deviceRuntime.Id == MemoryVariable.MemoryDeviceId)
+                if (deviceRuntime.Id == MemoryConst.MemoryDeviceId)
                 {
                     MemoryVariableRuntimes = GlobalData.MemoryVariableRuntimes.Select(a => a.Value).Cast<MemoryVariableRuntime>();
                     ShowMemoryVariable = true;

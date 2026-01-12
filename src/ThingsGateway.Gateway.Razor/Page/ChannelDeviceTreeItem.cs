@@ -50,7 +50,7 @@ public class ChannelDeviceTreeItem : IEqualityComparer<ChannelDeviceTreeItem>
             {
                 return true;
             }
-            if (DeviceRuntimeId == MemoryVariable.MemoryDeviceId)
+            if (DeviceRuntimeId == MemoryConst.MemoryDeviceId)
             {
                 deviceRuntime = GlobalData.MemoryDeviceRuntime;
                 return true;

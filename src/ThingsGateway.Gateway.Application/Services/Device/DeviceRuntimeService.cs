@@ -81,14 +81,14 @@ public class DeviceRuntimeService : IDeviceRuntimeService
 
     public async Task DeviceRedundantThreadAsync(long id)
     {
-        if (GlobalData.IdDevices.TryGetValue(id, out var deviceRuntime) && GlobalData.TryGetDeviceThreadManage(deviceRuntime, out var deviceThreadManage))
+        if (GlobalData.TryGetDeviceRuntime(id, out var deviceRuntime) && GlobalData.TryGetDeviceThreadManage(deviceRuntime, out var deviceThreadManage))
         {
             await deviceThreadManage.DeviceRedundantThreadAsync(id, default).ConfigureAwait(false);
         }
     }
     public async Task RestartDeviceAsync(long id, bool deleteCache)
     {
-        if (GlobalData.IdDevices.TryGetValue(id, out var deviceRuntime) && GlobalData.TryGetDeviceThreadManage(deviceRuntime, out var deviceThreadManage))
+        if (GlobalData.TryGetDeviceRuntime(id, out var deviceRuntime) && GlobalData.TryGetDeviceThreadManage(deviceRuntime, out var deviceThreadManage))
         {
             await deviceThreadManage.RestartDeviceAsync(deviceRuntime, deleteCache).ConfigureAwait(false);
         }
@@ -96,7 +96,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
 
     public Task PauseThreadAsync(long id)
     {
-        if (GlobalData.IdDevices.TryGetValue(id, out var deviceRuntime))
+        if (GlobalData.TryGetDeviceRuntime(id, out var deviceRuntime))
         {
             deviceRuntime.Driver?.PauseThread(!deviceRuntime.Pause);
         }
@@ -126,7 +126,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
 
     public Task<TouchSocket.Core.LogLevel> DeviceLogLevelAsync(long id)
     {
-        GlobalData.IdDevices.TryGetValue(id, out var DeviceRuntime);
+        GlobalData.TryGetDeviceRuntime(id, out var DeviceRuntime);
         var data = DeviceRuntime?.Driver?.LogMessage?.LogLevel ?? TouchSocket.Core.LogLevel.Trace;
         return Task.FromResult(data);
     }
@@ -134,7 +134,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
 
     public async Task SetDeviceLogLevelAsync(long id, TouchSocket.Core.LogLevel logLevel)
     {
-        if (GlobalData.IdDevices.TryGetValue(id, out var DeviceRuntime))
+        if (GlobalData.TryGetDeviceRuntime(id, out var DeviceRuntime))
         {
             if (DeviceRuntime.Driver != null)
             {
@@ -148,7 +148,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
 
     public async Task CopyDeviceAsync(int CopyCount, string CopyDeviceNamePrefix, int CopyDeviceNameSuffixNumber, long deviceId, bool AutoRestartThread)
     {
-        if (!GlobalData.IdDevices.TryGetValue(deviceId, out var deviceRuntime))
+        if (!GlobalData.TryGetDeviceRuntime(deviceId, out var deviceRuntime))
         {
             return;
         }

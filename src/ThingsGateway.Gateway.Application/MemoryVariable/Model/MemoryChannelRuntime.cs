@@ -8,10 +8,14 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using BootstrapBlazor.Components;
+
 namespace ThingsGateway.Gateway.Application;
 
 public partial class MemoryChannelRuntime : ChannelRuntime
 {
+    [AutoGenerateColumn(Ignore = true)]
+    public override bool IsMemory => true;
     public override void Init()
     {
         // 通过插件名称获取插件信息

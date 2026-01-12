@@ -71,7 +71,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
                 channel.Enable = false;
                 upChannels.Add(channel);
             }
-            else if (channel.Id != MemoryVariable.MemoryChannelId)
+            else if (channel.Id != MemoryConst.MemoryChannelId)
             {
                 var id = CommonUtils.GetSingleId();
                 channelNewId.TryAdd(channel.Id, id);
@@ -94,7 +94,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
                 device.Enable = false;
                 upDevices.Add(device);
             }
-            else if (device.Id != MemoryVariable.MemoryDeviceId)
+            else if (device.Id != MemoryConst.MemoryDeviceId)
             {
                 var id = CommonUtils.GetSingleId();
                 deviceNewId.TryAdd(device.Id, id);
@@ -107,7 +107,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
             }
         }
 
-        foreach (var variable in variables.Where(a => a.DeviceId != MemoryVariable.MemoryDeviceId))
+        foreach (var variable in variables.Where(a => a.DeviceId != MemoryConst.MemoryDeviceId))
         {
             {
                 deviceNewId.TryGetValue(variable.DeviceId, out var newid);
@@ -146,7 +146,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
 
         List<MemoryVariable> addMemVars = new();
         List<MemoryVariable> upMemVars = new();
-        foreach (var variable in variables.Where(a => a.DeviceId == MemoryVariable.MemoryDeviceId))
+        foreach (var variable in variables.Where(a => a.DeviceId == MemoryConst.MemoryDeviceId))
         {
             if (GlobalData.MemoryVariableRuntimes.TryGetValue(variable.Name, out var varRuntime))
             {

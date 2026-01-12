@@ -10,6 +10,8 @@
 
 
 using BootstrapBlazor.Components;
+using Riok.Mapperly.Abstractions;
+using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
 using ThingsGateway.Gateway.Application.Extensions;
@@ -62,13 +64,32 @@ public partial class MemoryVariableRuntime : VariableRuntime
     [OrmColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
-    public override string RegisterAddress { get; set; } = "Memory";
+    public override string RegisterAddress { get; set; } = MemoryConst.MemoryName;
 
 
     [OrmColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
     public override int? ArrayLength { get; set; }
+
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    [MapperIgnore]
+    [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
+    public override ValidateForm? AlarmPropertysValidateForm { get; set; }
+
+    /// <summary>
+    /// 变量额外属性Json
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    [MapperIgnore]
+    [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
+    public override NonBlockingDictionary<long, ModelValueValidateForm>? VariablePropertyModels { get; set; }
+
 
 
     [OrmColumn(ColumnDescription = "触发方式", Length = 200, IsNullable = true)]
@@ -95,7 +116,7 @@ public partial class MemoryVariableRuntime : VariableRuntime
 
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
-    public override string DeviceName { get; set; } 
+    public override string DeviceName { get; set; }
 
 #endif
 #if !Management

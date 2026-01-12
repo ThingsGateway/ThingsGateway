@@ -2,14 +2,15 @@
 @using ThingsGateway.Admin.Application
 @using ThingsGateway.Debug
 @using ThingsGateway.Gateway.Application
-
-<DeviceRuntimeInfo1 DeviceRuntime="DeviceRuntime" />
+@if (DeviceRuntime?.IsMemory == false)
+{
+    <DeviceRuntimeInfo1 DeviceRuntime="DeviceRuntime" />
+}
 
 <LogConsole HeightString=@Height LogLevel=@(LogLevel)
             LogLevelChanged="async (logLevel)=>
-        {
-                        LogLevel = logLevel;
-                        await DevicePageService.SetDeviceLogLevelAsync(DeviceRuntime?.Id ?? 0, logLevel);
-        }"
-
+                                {
+                                    LogLevel = logLevel;
+                                    await DevicePageService.SetDeviceLogLevelAsync(DeviceRuntime?.Id ?? 0, logLevel);
+                                }"
             LogPath=@DeviceRuntime.LogPath></LogConsole>

@@ -576,7 +576,7 @@ public partial class MemoryVariableRuntimeInfo
         bool ret;
         if (all)
         {
-            ret = await GatewayExportService.OnMemoryVariableExport(new() { QueryPageOptions = new() { SortName = _option.SortName, SortOrder = _option.SortOrder }, DeviceId = MemoryVariable.MemoryDeviceId, PluginType = PluginTypeEnum.Collect });
+            ret = await GatewayExportService.OnMemoryVariableExport(new() { QueryPageOptions = new() { SortName = _option.SortName, SortOrder = _option.SortOrder }, DeviceId = MemoryConst.MemoryDeviceId, PluginType = PluginTypeEnum.Collect });
 
         }
         else

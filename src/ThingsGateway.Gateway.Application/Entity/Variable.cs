@@ -54,7 +54,9 @@ public class Variable : PrimaryKeyEntity, IValidatableObject
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
     [MapperIgnore]
-    public ValidateForm? AlarmPropertysValidateForm;
+    [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
+    public virtual ValidateForm? AlarmPropertysValidateForm { get; set; }
 
     /// <summary>
     /// 变量额外属性Json
@@ -62,7 +64,9 @@ public class Variable : PrimaryKeyEntity, IValidatableObject
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
     [MapperIgnore]
-    public NonBlockingDictionary<long, ModelValueValidateForm>? VariablePropertyModels;
+    [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
+    public virtual NonBlockingDictionary<long, ModelValueValidateForm>? VariablePropertyModels { get; set; }
 
     /// <summary>
     /// 设备

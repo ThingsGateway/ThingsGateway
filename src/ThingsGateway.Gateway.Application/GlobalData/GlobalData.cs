@@ -195,7 +195,7 @@ public static class GlobalData
 
     public static bool ContainsVariable(long businessDeviceId, VariableRuntime a)
     {
-        if (GlobalData.IdDevices.TryGetValue(businessDeviceId, out var deviceRuntime))
+        if (GlobalData.TryGetDeviceRuntime(businessDeviceId, out var deviceRuntime))
         {
 
             if (deviceRuntime.Driver is BusinessBase businessBase)
@@ -268,14 +268,14 @@ public static class GlobalData
 
     public static VariableRuntime GetVariable(string deviceName, string variableName)
     {
-        if (Devices.TryGetValue(deviceName, out var device))
+        if (TryGetDeviceRuntime(deviceName, out var device))
         {
             if (device.VariableRuntimes.TryGetValue(variableName, out var variable))
             {
                 return variable;
             }
         }
-        if (deviceName == "Memory" && MemoryVariableRuntimes.TryGetValue(variableName, out var memVariable))
+        if (deviceName == MemoryConst.MemoryName && MemoryVariableRuntimes.TryGetValue(variableName, out var memVariable))
         {
             return memVariable;
         }
@@ -303,7 +303,7 @@ public static class GlobalData
                 return variable;
             }
         }
-        else if (Devices.TryGetValue(names[0], out var device))
+        else if (TryGetDeviceRuntime(names[0], out var device))
         {
             if (device.VariableRuntimes.TryGetValue(names[1], out var variable))
             {
@@ -330,7 +330,7 @@ public static class GlobalData
 
     public static bool IsRedundant(long deviceId)
     {
-        if (GlobalData.IdDevices.TryGetValue(deviceId, out var deviceRuntime))
+        if (GlobalData.TryGetDeviceRuntime(deviceId, out var deviceRuntime))
         {
             if (deviceRuntime.RedundantEnable && deviceRuntime.RedundantDeviceId != null)
                 return true;
@@ -346,7 +346,7 @@ public static class GlobalData
     }
     public static bool IsRedundantEnable(long deviceId)
     {
-        if (GlobalData.IdDevices.TryGetValue(deviceId, out var deviceRuntime))
+        if (GlobalData.TryGetDeviceRuntime(deviceId, out var deviceRuntime))
         {
             if (deviceRuntime.RedundantEnable && deviceRuntime.RedundantDeviceId != null)
                 return true;
@@ -360,9 +360,9 @@ public static class GlobalData
 
     public static bool TryGetDeviceThreadManage(DeviceRuntime deviceRuntime, out IDeviceThreadManage deviceThreadManage)
     {
-        if (deviceRuntime.Driver?.DeviceThreadManage != null)
+        if (deviceRuntime.ChannelRuntime?.DeviceThreadManage != null)
         {
-            deviceThreadManage = deviceRuntime.Driver.DeviceThreadManage;
+            deviceThreadManage = deviceRuntime.ChannelRuntime.DeviceThreadManage;
             return true;
         }
         return GlobalData.ChannelThreadManage.DeviceThreadManages.TryGetValue(deviceRuntime.ChannelId, out deviceThreadManage);
@@ -619,7 +619,7 @@ public static class GlobalData
             deviceRuntime = v1;
             return true;
         }
-        if (deviceId == MemoryVariable.MemoryDeviceId)
+        if (deviceId == MemoryConst.MemoryDeviceId)
         {
             deviceRuntime = MemoryDeviceRuntime;
             return true;
@@ -669,7 +669,7 @@ public static class GlobalData
             deviceRuntime = v1;
             return true;
         }
-        if (deviceName == "Memory")
+        if (deviceName == MemoryConst.MemoryName)
         {
             deviceRuntime = MemoryDeviceRuntime;
             return true;

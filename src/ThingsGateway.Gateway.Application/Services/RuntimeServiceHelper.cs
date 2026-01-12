@@ -98,7 +98,7 @@ public static class RuntimeServiceHelper
         //批量修改之后，需要重新加载通道
         foreach (var newDeviceRuntime in newDeviceRuntimes)
         {
-            if (GlobalData.IdDevices.TryGetValue(newDeviceRuntime.Id, out var deviceRuntime))
+            if (GlobalData.TryGetDeviceRuntime(newDeviceRuntime.Id, out var deviceRuntime))
             {
                 deviceRuntime.Dispose();
             }
@@ -123,11 +123,11 @@ public static class RuntimeServiceHelper
             {
                 variableRuntime.Dispose();
             }
-            if (GlobalData.IdDevices.TryGetValue(newVariableRuntime.DeviceId, out var deviceRuntime))
+            if (GlobalData.TryGetDeviceRuntime(newVariableRuntime.DeviceId, out var deviceRuntime))
             {
                 newVariableRuntime.Init(deviceRuntime);
             }
-            if (newVariableRuntime.DeviceId == MemoryVariable.MemoryDeviceId)
+            if (newVariableRuntime.DeviceId == MemoryConst.MemoryDeviceId)
             {
                 newVariableRuntime.Init(GlobalData.MemoryDeviceRuntime);
             }
@@ -352,7 +352,7 @@ public static class RuntimeServiceHelper
         //批量修改之后，需要重新加载
         foreach (var newVariableRuntime in newVariableRuntimes)
         {
-            if (GlobalData.IdDevices.TryGetValue(newVariableRuntime.DeviceId, out var deviceRuntime))
+            if (GlobalData.TryGetDeviceRuntime(newVariableRuntime.DeviceId, out var deviceRuntime))
             {
                 newVariableRuntime.Init(deviceRuntime);
 
@@ -361,7 +361,7 @@ public static class RuntimeServiceHelper
                     changedDriver.TryAdd(deviceRuntime.Driver);
                 }
             }
-            if (newVariableRuntime.DeviceId == MemoryVariable.MemoryDeviceId)
+            if (newVariableRuntime.DeviceId == MemoryConst.MemoryDeviceId)
             {
                 newVariableRuntime.Init(GlobalData.MemoryDeviceRuntime);
             }

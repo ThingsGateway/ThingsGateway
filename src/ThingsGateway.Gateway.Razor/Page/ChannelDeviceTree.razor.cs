@@ -1346,7 +1346,7 @@ EventCallback.Factory.Create<MouseEventArgs>(this, async e =>
 
     private ChannelDeviceTreeItem CollectItem = new() { ChannelDevicePluginType = ChannelDevicePluginTypeEnum.PluginType, PluginType = PluginTypeEnum.Collect };
     private ChannelDeviceTreeItem BusinessItem = new() { ChannelDevicePluginType = ChannelDevicePluginTypeEnum.PluginType, PluginType = PluginTypeEnum.Business };
-    private ChannelDeviceTreeItem MemoryItem = new() { ChannelDevicePluginType = ChannelDevicePluginTypeEnum.Device, DeviceRuntimeId = MemoryVariable.MemoryDeviceId, Id = MemoryVariable.MemoryDeviceId };
+    private ChannelDeviceTreeItem MemoryItem = new() { ChannelDevicePluginType = ChannelDevicePluginTypeEnum.Device, DeviceRuntimeId = MemoryConst.MemoryDeviceId, Id = MemoryConst.MemoryDeviceId };
     private ChannelDeviceTreeItem UnknownItem = new() { ChannelDevicePluginType = ChannelDevicePluginTypeEnum.PluginType, PluginType = null };
 
     private TreeViewItem<ChannelDeviceTreeItem> UnknownTreeViewItem;

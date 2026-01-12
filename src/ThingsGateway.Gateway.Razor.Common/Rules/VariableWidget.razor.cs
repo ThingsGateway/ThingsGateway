@@ -30,7 +30,7 @@ namespace ThingsGateway.Gateway.Razor
                 IsSearch = !option.SearchText.IsNullOrWhiteSpace()
             };
 
-            var items = (await GlobalDataService.GetCurrentUserDeviceSelectedItemsAsync(option.SearchText, option.StartIndex, option.Count)).Concat(new List<SelectedItem>() { new SelectedItem("Memory", "Memory") });
+            var items = (await GlobalDataService.GetCurrentUserDeviceSelectedItemsAsync(option.SearchText, option.StartIndex, option.Count)).Concat(new List<SelectedItem>() { new SelectedItem(MemoryConst.MemoryName, MemoryConst.MemoryName) });
 
             ret.TotalCount = items.Count();
             ret.Items = items;

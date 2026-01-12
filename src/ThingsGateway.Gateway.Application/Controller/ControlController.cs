@@ -58,7 +58,7 @@ public class ControlController : ControllerBase, IRpcServer
     [TouchSocket.WebApi.WebApi(Method = TouchSocket.WebApi.HttpMethodType.Post)]
     public async Task PauseDeviceThreadAsync(long id, bool pause)
     {
-        if (GlobalData.IdDevices.TryGetValue(id, out var device))
+        if (GlobalData.TryGetDeviceRuntime(id, out var device))
         {
             await GlobalData.SysUserService.CheckApiDataScopeAsync(device.CreateOrgId, device.CreateUserId).ConfigureAwait(false);
             if (device.Driver != null)
@@ -103,7 +103,7 @@ public class ControlController : ControllerBase, IRpcServer
     [TouchSocket.WebApi.WebApi(Method = TouchSocket.WebApi.HttpMethodType.Post)]
     public async Task RestartDeviceThreadAsync(long deviceId)
     {
-        if (GlobalData.IdDevices.TryGetValue(deviceId, out var deviceRuntime))
+        if (GlobalData.TryGetDeviceRuntime(deviceId, out var deviceRuntime))
         {
             await GlobalData.SysUserService.CheckApiDataScopeAsync(deviceRuntime.CreateOrgId, deviceRuntime.CreateUserId).ConfigureAwait(false);
             if (GlobalData.TryGetDeviceThreadManage(deviceRuntime, out var deviceThreadManage))

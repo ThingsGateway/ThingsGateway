@@ -53,27 +53,27 @@ internal sealed class RpcService : IRpcService
         deviceDatas.ForEach(a => results.TryAdd(a.Key, new Dictionary<string, OperResult<object>>()));
 
         // 对每个要操作的变量进行检查和处理（内存变量）
-        foreach (var item in deviceDatas.Where(a => a.Key.IsNullOrEmpty() || a.Key.Equals("Memory", StringComparison.OrdinalIgnoreCase)).SelectMany(a => a.Value))
+        foreach (var item in deviceDatas.Where(a => a.Key.IsNullOrEmpty() || a.Key.Equals(MemoryConst.MemoryName, StringComparison.OrdinalIgnoreCase)).SelectMany(a => a.Value))
         {
             // 查找变量是否存在
             if (!(GlobalData.TryGetVariable(item.Key, out var tag) &&
                   tag is IMemoryVariableRpc memoryVariableRuntime))
             {
                 // 如果变量不存在，则添加错误信息到结果中并继续下一个变量的处理
-                results["Memory"].TryAdd(item.Key, new OperResult<object>(Localizer["VariableNotNull", item.Key]));
+                results[MemoryConst.MemoryName].TryAdd(item.Key, new OperResult<object>(Localizer["VariableNotNull", item.Key]));
                 continue;
             }
 
             // 检查变量的保护类型和远程写入权限
             if (tag.ProtectType == ProtectTypeEnum.ReadOnly)
             {
-                results["Memory"].TryAdd(item.Key, new OperResult<object>(Localizer["VariableReadOnly", item.Key]));
+                results[MemoryConst.MemoryName].TryAdd(item.Key, new OperResult<object>(Localizer["VariableReadOnly", item.Key]));
                 continue;
             }
 
             if (!tag.RpcWriteEnable)
             {
-                results["Memory"].TryAdd(item.Key, new OperResult<object>(Localizer["VariableWriteDisable", item.Key]));
+                results[MemoryConst.MemoryName].TryAdd(item.Key, new OperResult<object>(Localizer["VariableWriteDisable", item.Key]));
                 continue;
             }
 
@@ -85,7 +85,7 @@ internal sealed class RpcService : IRpcService
                 var end = DateTime.Now;
 
                 string operObj = tag.Name;
-                string parJson = deviceDatas["Memory"][tag.Name];
+                string parJson = deviceDatas[MemoryConst.MemoryName][tag.Name];
 
                 if (!variableResult.IsSuccess || _rpcLogOptions.SuccessLog)
                 {
@@ -113,19 +113,19 @@ internal sealed class RpcService : IRpcService
                     variableResult = result1;
                 }
 
-                results["Memory"].Add(tag.Name, variableResult);
+                results[MemoryConst.MemoryName].Add(tag.Name, variableResult);
             }
             catch (Exception ex)
             {
                 // 将异常信息添加到结果字典中
-                results["Memory"].Add(tag.Name, new OperResult<object>(ex));
+                results[MemoryConst.MemoryName].Add(tag.Name, new OperResult<object>(ex));
             }
         }
 
         var deviceDict = GlobalData.Devices;
 
         // 对每个要操作的变量进行检查和处理（设备变量）
-        foreach (var deviceData in deviceDatas.Where(a => (!a.Key.IsNullOrEmpty() && !a.Key.Equals("Memory", StringComparison.OrdinalIgnoreCase))))
+        foreach (var deviceData in deviceDatas.Where(a => (!a.Key.IsNullOrEmpty() && !a.Key.Equals(MemoryConst.MemoryName, StringComparison.OrdinalIgnoreCase))))
         {
             // 查找设备是否存在
             if (!deviceDict.TryGetValue(deviceData.Key, out var device))
@@ -328,27 +328,27 @@ internal sealed class RpcService : IRpcService
         deviceDatas.ForEach(a => results.TryAdd(a.Key, new Dictionary<string, OperResult<object>>()));
 
         // 对每个要操作的变量进行检查和处理（内存变量）
-        foreach (var item in deviceDatas.Where(a => a.Key.IsNullOrEmpty() || a.Key.Equals("Memory", StringComparison.OrdinalIgnoreCase)).SelectMany(a => a.Value))
+        foreach (var item in deviceDatas.Where(a => a.Key.IsNullOrEmpty() || a.Key.Equals(MemoryConst.MemoryName, StringComparison.OrdinalIgnoreCase)).SelectMany(a => a.Value))
         {
             // 查找变量是否存在
             if (!(GlobalData.TryGetVariable(item.Key, out var tag) &&
                   tag is IMemoryVariableRpc memoryVariableRuntime))
             {
                 // 如果变量不存在，则添加错误信息到结果中并继续下一个变量的处理
-                results["Memory"].TryAdd(item.Key, new OperResult<object>(Localizer["VariableNotNull", item.Key]));
+                results[MemoryConst.MemoryName].TryAdd(item.Key, new OperResult<object>(Localizer["VariableNotNull", item.Key]));
                 continue;
             }
 
             // 检查变量的保护类型和远程写入权限
             if (tag.ProtectType == ProtectTypeEnum.ReadOnly)
             {
-                results["Memory"].TryAdd(item.Key, new OperResult<object>(Localizer["VariableReadOnly", item.Key]));
+                results[MemoryConst.MemoryName].TryAdd(item.Key, new OperResult<object>(Localizer["VariableReadOnly", item.Key]));
                 continue;
             }
 
             if (!tag.RpcWriteEnable)
             {
-                results["Memory"].TryAdd(item.Key, new OperResult<object>(Localizer["VariableWriteDisable", item.Key]));
+                results[MemoryConst.MemoryName].TryAdd(item.Key, new OperResult<object>(Localizer["VariableWriteDisable", item.Key]));
                 continue;
             }
 
@@ -360,7 +360,7 @@ internal sealed class RpcService : IRpcService
                 var end = DateTime.Now;
 
                 string operObj = tag.Name;
-                string parJson = deviceDatas["Memory"][tag.Name].ToJsonString(SystemTextJsonExtension.SystemTextJsonService.IndentedOptions);
+                string parJson = deviceDatas[MemoryConst.MemoryName][tag.Name].ToJsonString(SystemTextJsonExtension.SystemTextJsonService.IndentedOptions);
 
                 if (!variableResult.IsSuccess || _rpcLogOptions.SuccessLog)
                 {
@@ -388,19 +388,19 @@ internal sealed class RpcService : IRpcService
                     variableResult = result1;
                 }
 
-                results["Memory"].Add(tag.Name, variableResult);
+                results[MemoryConst.MemoryName].Add(tag.Name, variableResult);
             }
             catch (Exception ex)
             {
                 // 将异常信息添加到结果字典中
-                results["Memory"].Add(tag.Name, new OperResult<object>(ex));
+                results[MemoryConst.MemoryName].Add(tag.Name, new OperResult<object>(ex));
             }
         }
 
         var deviceDict = GlobalData.Devices;
 
         // 对每个要操作的变量进行检查和处理（设备变量）
-        foreach (var deviceData in deviceDatas.Where(a => (!a.Key.IsNullOrEmpty() && !a.Key.Equals("Memory", StringComparison.OrdinalIgnoreCase))))
+        foreach (var deviceData in deviceDatas.Where(a => (!a.Key.IsNullOrEmpty() && !a.Key.Equals(MemoryConst.MemoryName, StringComparison.OrdinalIgnoreCase))))
         {
             // 查找设备是否存在
             if (!deviceDict.TryGetValue(deviceData.Key, out var device))

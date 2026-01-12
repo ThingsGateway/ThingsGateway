@@ -39,7 +39,7 @@ public class Device : BaseDataEntity, IValidatableObject
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     [Required]
     [RegularExpression(@"^[^.]*$", ErrorMessage = "The field {0} cannot contain a dot ('.')")]
-    [StringNotMemoryAttribute]
+    [StringNotMemory]
     public virtual string Name { get; set; }
 
     /// <summary>

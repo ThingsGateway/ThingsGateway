@@ -18,7 +18,14 @@ public partial class DeviceRuntimeInfo
 #else
     private string Height { get; set; } = "calc(100% - 330px)";
 #endif
-
+    protected override void OnInitialized()
+    {
+        if (DeviceRuntime?.IsMemory == true)
+        {
+            Height = "calc(100% - 100px)";
+        }
+        base.OnInitialized();
+    }
     [Parameter, EditorRequired]
 #if Management
     public ThingsGateway.Management.Application.DeviceRuntime DeviceRuntime { get; set; }

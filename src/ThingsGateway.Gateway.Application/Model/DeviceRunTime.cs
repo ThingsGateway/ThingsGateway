@@ -129,7 +129,9 @@ public class DeviceRuntime : Device
 
 #else
 
-
+    [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
+    public virtual bool IsMemory { get; set; }
 
     /// <summary>
     /// 插件名称

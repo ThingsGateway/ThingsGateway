@@ -60,7 +60,7 @@ public static class DynamicModelExtension
 
 
 
-        if (GlobalData.IdDevices.TryGetValue(businessId, out var deviceRuntime))
+        if (GlobalData.TryGetDeviceRuntime(businessId, out var deviceRuntime))
         {
             if (deviceRuntime.Driver is BusinessBase businessBase)
             {

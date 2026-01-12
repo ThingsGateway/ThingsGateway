@@ -32,18 +32,17 @@ internal sealed class MemoryMonitorHostedService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Yield();
         try
         {
-            GlobalData.MemoryChannelRuntime.Id = MemoryVariable.MemoryChannelId;
-            GlobalData.MemoryChannelRuntime.Name = "Memory";
+            GlobalData.MemoryChannelRuntime.Id = MemoryConst.MemoryChannelId;
+            GlobalData.MemoryChannelRuntime.Name = MemoryConst.MemoryName;
             GlobalData.MemoryChannelRuntime.PluginName = typeof(MemoryDriver).FullName;
             GlobalData.MemoryChannelRuntime.ChannelType = ChannelTypeEnum.Other;
             GlobalData.MemoryChannelRuntime.LogLevel = TouchSocket.Core.LogLevel.Trace;
             GlobalData.MemoryChannelRuntime.Init();
-            GlobalData.MemoryDeviceRuntime.Id = MemoryVariable.MemoryDeviceId;
-            GlobalData.MemoryDeviceRuntime.ChannelId = MemoryVariable.MemoryChannelId;
-            GlobalData.MemoryDeviceRuntime.Name = "Memory";
+            GlobalData.MemoryDeviceRuntime.Id = MemoryConst.MemoryDeviceId;
+            GlobalData.MemoryDeviceRuntime.ChannelId = MemoryConst.MemoryChannelId;
+            GlobalData.MemoryDeviceRuntime.Name = MemoryConst.MemoryName;
             GlobalData.MemoryDeviceRuntime.LogLevel = TouchSocket.Core.LogLevel.Trace;
             GlobalData.MemoryDeviceRuntime.Init(GlobalData.MemoryChannelRuntime);
 

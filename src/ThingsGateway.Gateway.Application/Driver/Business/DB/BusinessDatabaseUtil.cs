@@ -53,7 +53,7 @@ public static class BusinessDatabaseUtil
     {
         try
         {
-            var driver = GlobalData.IdDevices.TryGetValue(deviceId, out var businessDevice) ? businessDevice.Driver : null;
+            var driver = GlobalData.TryGetDeviceRuntime(deviceId, out var businessDevice) ? businessDevice.Driver : null;
             if (driver is not IDBHistoryAlarmService alarmService)
             {
                 return new(new ArgumentNullException(nameof(driver)));
@@ -78,7 +78,7 @@ public static class BusinessDatabaseUtil
     {
         try
         {
-            var driver = GlobalData.IdDevices.TryGetValue(deviceId, out var businessDevice) ? businessDevice.Driver : null;
+            var driver = GlobalData.TryGetDeviceRuntime(deviceId, out var businessDevice) ? businessDevice.Driver : null;
             if (driver is not IDBHistoryAlarmService alarmService)
             {
                 return new(new ArgumentNullException(nameof(alarmService)));
@@ -103,7 +103,7 @@ public static class BusinessDatabaseUtil
     {
         try
         {
-            var driver = GlobalData.IdDevices.TryGetValue(deviceId, out var businessDevice) ? businessDevice.Driver : null;
+            var driver = GlobalData.TryGetDeviceRuntime(deviceId, out var businessDevice) ? businessDevice.Driver : null;
             if (driver is not IDBHistoryValueService historyValueService)
             {
                 return new(new ArgumentNullException(nameof(businessDevice)));
@@ -128,7 +128,7 @@ public static class BusinessDatabaseUtil
     {
         try
         {
-            var driver = GlobalData.IdDevices.TryGetValue(deviceId, out var businessDevice) ? businessDevice.Driver : null;
+            var driver = GlobalData.TryGetDeviceRuntime(deviceId, out var businessDevice) ? businessDevice.Driver : null;
             if (driver is not IDBHistoryValueService historyValueService)
             {
                 return new(new ArgumentNullException(nameof(businessDevice)));

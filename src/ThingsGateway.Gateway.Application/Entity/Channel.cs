@@ -41,6 +41,7 @@ public class Channel : ChannelOptionsBase, IPrimaryIdEntity, IBaseDataEntity, IB
     [OrmColumn(ColumnDescription = "名称", Length = 200)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     [Required]
+    [StringNotMemory]
     public virtual string Name { get; set; }
 
     /// <inheritdoc/>

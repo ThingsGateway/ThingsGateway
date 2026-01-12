@@ -197,7 +197,7 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
 
             if (logLevel != null)
                 CurrentDevice.LogLevel = logLevel.Value;
-            if (up)
+            if (up && CurrentDevice.Id != MemoryConst.MemoryDeviceId)
             {
                 //更新数据库
                 await GlobalData.DeviceService.UpdateLogAsync(CurrentDevice.Id, CurrentDevice.LogLevel).ConfigureAwait(false);

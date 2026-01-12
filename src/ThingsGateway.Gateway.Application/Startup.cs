@@ -93,8 +93,7 @@ public class Startup : AppStartup
         services.AddSingleton<IRealAlarmService, RealAlarmService>();
         services.AddSingleton<IGlobalDataService, GlobalDataService>();
 
-        services.AddGatewayHostedService<IAlarmHostedService, AlarmHostedService>();
-        services.AddHostedService<GatewayMonitorHostedService>();
+
 
 
 
@@ -105,6 +104,10 @@ public class Startup : AppStartup
 
 
         services.AddHostedService<MemoryMonitorHostedService>();
+
+        services.AddGatewayHostedService<IAlarmHostedService, AlarmHostedService>();
+        services.AddHostedService<GatewayMonitorHostedService>();
+
     }
 
     public void Use(IServiceProvider serviceProvider)

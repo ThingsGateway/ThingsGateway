@@ -511,7 +511,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         .WhereIF(!string.IsNullOrWhiteSpace(exportFilter.QueryPageOptions.SearchText), a => a.Name.Contains(exportFilter.QueryPageOptions.SearchText!))
         .WhereIF(exportFilter.PluginType == PluginTypeEnum.Collect, a => a.DeviceId == exportFilter.DeviceId)
         .WhereIF(deviceId != null, a => deviceId.Contains(a.DeviceId))
-        .Where(a => a.DeviceId != MemoryVariable.MemoryDeviceId)
+        .Where(a => a.DeviceId != MemoryConst.MemoryDeviceId)
 
         .WhereIF(filterDeviceIds != null, u => filterDeviceIds.Contains(u.DeviceId))//在指定机构列表查询
 
@@ -543,7 +543,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         .WhereIF(!string.IsNullOrWhiteSpace(exportFilter.QueryPageOptions.SearchText), a => a.Name.Contains(exportFilter.QueryPageOptions.SearchText!))
         .WhereIF(exportFilter.PluginType == PluginTypeEnum.Collect, a => a.DeviceId == exportFilter.DeviceId)
         .WhereIF(deviceId != null, a => deviceId.Contains(a.DeviceId))
-        .Where(a => a.DeviceId != MemoryVariable.MemoryDeviceId)
+        .Where(a => a.DeviceId != MemoryConst.MemoryDeviceId)
 
         .WhereIF(filterDeviceIds != null, u => filterDeviceIds.Contains(u.DeviceId))//在指定机构列表查询
 
@@ -835,7 +835,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
                         return;
                     }
 
-                    if (GlobalData.IdDevices.TryGetValue(variable.DeviceId, out var dbvar1s) && dbvar1s.VariableRuntimes.TryGetValue(variable.Name, out var dbvar1))
+                    if (GlobalData.TryGetDeviceRuntime(variable.DeviceId, out var dbvar1s) && dbvar1s.VariableRuntimes.TryGetValue(variable.Name, out var dbvar1))
                     {
                         variable.Id = dbvar1.Id;
                         variable.IsUp = true;

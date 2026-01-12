@@ -8,23 +8,12 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using System.ComponentModel.DataAnnotations;
-
 namespace ThingsGateway.Gateway.Application;
 
-[AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
-public class StringNotMemoryAttribute : ValidationAttribute
+public static class MemoryConst
 {
-    public StringNotMemoryAttribute()
-      : base("The field {0} cannot be 'Memory'.")
-    {
-    }
-
-    public override bool IsValid(object value)
-    {
-        var str = value as string;
-        return !string.Equals(str, MemoryConst.MemoryName, StringComparison.OrdinalIgnoreCase);
-    }
-
+    public const long MemoryDeviceId = 11;
+    public const long MemoryChannelId = 11;
+    public const string MemoryName = "Memory";
 
 }

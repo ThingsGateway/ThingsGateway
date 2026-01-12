@@ -9,6 +9,8 @@
 //------------------------------------------------------------------------------
 
 using BootstrapBlazor.Components;
+using Riok.Mapperly.Abstractions;
+using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 
 namespace ThingsGateway.Gateway.Application;
@@ -18,15 +20,14 @@ namespace ThingsGateway.Gateway.Application;
 [OrmIndex("unique_memory_variable_name", nameof(Variable.Name), OrderByType.Asc, true)]
 public partial class MemoryVariable : Variable
 {
-    public const long MemoryDeviceId = 11;
-    public const long MemoryChannelId = 11;
+
     /// <summary>
     /// 设备
     /// </summary>
     [OrmColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
-    public override long DeviceId { get; set; } = MemoryDeviceId;
+    public override long DeviceId { get; set; } = MemoryConst.MemoryDeviceId;
 
     /// <summary>
     /// 写入后再次读取检查值是否一致
@@ -52,7 +53,7 @@ public partial class MemoryVariable : Variable
     [OrmColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
-    public override string RegisterAddress { get; set; } = "Memory";
+    public override string RegisterAddress { get; set; } = MemoryConst.MemoryName;
 
     [OrmColumn(IsIgnore = true)]
     [AutoGenerateColumn(Ignore = true)]
@@ -63,6 +64,23 @@ public partial class MemoryVariable : Variable
     [OrmColumn(ColumnDescription = "触发方式", Length = 200, IsNullable = true)]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
     public virtual BusinessUpdateEnum BusinessUpdate { get; set; }
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    [MapperIgnore]
+    [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
+    public override ValidateForm? AlarmPropertysValidateForm { get; set; }
+
+    /// <summary>
+    /// 变量额外属性Json
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    [MapperIgnore]
+    [AutoGenerateColumn(Ignore = true)]
+    [IgnoreExcel]
+    public override NonBlockingDictionary<long, ModelValueValidateForm>? VariablePropertyModels { get; set; }
 
     public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
