@@ -51,7 +51,7 @@ public class PluginInfo
     [OrmColumn(IsIgnore = true)]
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
-    public bool Display { get; set; }
+    public bool Display { get; set; } = true;
 
     /// <summary>
     /// 插件名称

@@ -70,6 +70,7 @@ public partial class MemoryVariable : Variable
     [MapperIgnore]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
+    [OrmColumn(IsIgnore = true)]
     public override ValidateForm? AlarmPropertysValidateForm { get; set; }
 
     /// <summary>
@@ -80,6 +81,7 @@ public partial class MemoryVariable : Variable
     [MapperIgnore]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
+    [OrmColumn(IsIgnore = true)]
     public override NonBlockingDictionary<long, ModelValueValidateForm>? VariablePropertyModels { get; set; }
 
     public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

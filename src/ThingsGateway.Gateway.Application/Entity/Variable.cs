@@ -56,6 +56,7 @@ public class Variable : PrimaryKeyEntity, IValidatableObject
     [MapperIgnore]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
+    [OrmColumn(IsIgnore = true)]
     public virtual ValidateForm? AlarmPropertysValidateForm { get; set; }
 
     /// <summary>
@@ -66,6 +67,7 @@ public class Variable : PrimaryKeyEntity, IValidatableObject
     [MapperIgnore]
     [AutoGenerateColumn(Ignore = true)]
     [IgnoreExcel]
+    [OrmColumn(IsIgnore = true)]
     public virtual NonBlockingDictionary<long, ModelValueValidateForm>? VariablePropertyModels { get; set; }
 
     /// <summary>
