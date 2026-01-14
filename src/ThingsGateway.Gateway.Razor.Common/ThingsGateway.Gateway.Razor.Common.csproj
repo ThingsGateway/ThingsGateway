@@ -18,7 +18,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\ThingsGateway.Foundation.Razor\ThingsGateway.Foundation.Razor.csproj" />
 		<ProjectReference Include="..\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
-		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.1" />
 		<PackageReference Include="Riok.Mapperly" Version="4.3.1" ExcludeAssets="runtime" PrivateAssets="all" />
 
 	</ItemGroup>
