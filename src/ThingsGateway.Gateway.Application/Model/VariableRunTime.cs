@@ -273,16 +273,13 @@ public partial class VariableRuntime : Variable
     /// <summary>
     /// 设置变量值与时间/质量戳
     /// </summary>
-    /// <param name="value"></param>
-    /// <param name="dateTime"></param>
-    /// <param name="isOnline"></param>
-    public virtual OperResult SetValue(object value, DateTime dateTime, bool isOnline = true)
+    public virtual OperResult SetValue(object value, DateTime dateTime, bool isOnline = true, bool setChanged = false)
     {
         IsOnline = isOnline;
         RawValue = value;
         if (IsOnline == false)
         {
-            Set(value, dateTime);
+            Set(value, dateTime, setChanged);
             return new();
         }
         if (!string.IsNullOrEmpty(ReadExpressions))
@@ -290,12 +287,12 @@ public partial class VariableRuntime : Variable
             try
             {
                 var data = ReadExpressions.GetExpressionsResult(RawValue, LogMessage);
-                Set(data, dateTime);
+                Set(data, dateTime, setChanged);
             }
             catch (Exception ex)
             {
                 IsOnline = false;
-                Set(null, dateTime);
+                Set(null, dateTime, setChanged);
                 var oldMessage = _lastErrorMessage;
                 if (ex.StackTrace != null)
                 {
@@ -315,7 +312,7 @@ public partial class VariableRuntime : Variable
         }
         else
         {
-            Set(value, dateTime);
+            Set(value, dateTime, setChanged);
         }
         return new();
     }
@@ -338,7 +335,7 @@ public partial class VariableRuntime : Variable
         }
     }
 
-    protected void Set(object data, DateTime dateTime)
+    protected void Set(object data, DateTime dateTime, bool setChanged)
     {
         DateTime time = dateTime != default ? dateTime : DateTime.Now;
         CollectTime = time;
@@ -382,7 +379,7 @@ public partial class VariableRuntime : Variable
                 changed = false;
             }
         }
-        if (changed || _isOnlineChanged == true)
+        if (changed || _isOnlineChanged == true || setChanged)
         {
             ChangeTime = time;
 

@@ -133,16 +133,13 @@ public partial class MemoryVariableRuntime : VariableRuntime
     /// <summary>
     /// 设置变量值与时间/质量戳
     /// </summary>
-    /// <param name="value"></param>
-    /// <param name="dateTime"></param>
-    /// <param name="isOnline"></param>
-    public override OperResult SetValue(object value, DateTime dateTime, bool isOnline = true)
+    public override OperResult SetValue(object value, DateTime dateTime, bool isOnline = true, bool setChanged = false)
     {
         IsOnline = isOnline;
         RawValue = value;
         if (IsOnline == false)
         {
-            Set(value, dateTime);
+            Set(value, dateTime, setChanged);
             return new();
         }
         if (!string.IsNullOrEmpty(ReadExpressions))
@@ -150,12 +147,12 @@ public partial class MemoryVariableRuntime : VariableRuntime
             try
             {
                 var data = ReadExpressions.GetMemoryExpressionsResult(LogMessage);
-                Set(data, dateTime);
+                Set(data, dateTime, setChanged);
             }
             catch (Exception ex)
             {
                 IsOnline = false;
-                Set(null, dateTime);
+                Set(null, dateTime, setChanged);
                 var oldMessage = _lastErrorMessage;
                 if (ex.StackTrace != null)
                 {
@@ -175,7 +172,7 @@ public partial class MemoryVariableRuntime : VariableRuntime
         }
         else
         {
-            Set(value, dateTime);
+            Set(value, dateTime, setChanged);
         }
         return new();
     }
@@ -193,7 +190,7 @@ public partial class MemoryVariableRuntime : VariableRuntime
         RawValue = value;
         if (IsOnline == false)
         {
-            Set(value, dateTime);
+            Set(value, dateTime, false);
             return new();
         }
         if (!string.IsNullOrEmpty(WriteExpressions))
@@ -201,12 +198,12 @@ public partial class MemoryVariableRuntime : VariableRuntime
             try
             {
                 var data = WriteExpressions.GetMemoryExpressionsResult(LogMessage);
-                Set(data, dateTime);
+                Set(data, dateTime, false);
             }
             catch (Exception ex)
             {
                 IsOnline = false;
-                Set(null, dateTime);
+                Set(null, dateTime, false);
                 var oldMessage = _lastErrorMessage;
                 if (ex.StackTrace != null)
                 {
@@ -226,7 +223,7 @@ public partial class MemoryVariableRuntime : VariableRuntime
         }
         else
         {
-            Set(value, dateTime);
+            Set(value, dateTime, false);
         }
         return new();
     }
