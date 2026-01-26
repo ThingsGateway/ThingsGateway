@@ -62,20 +62,21 @@ public abstract partial class CollectBase : DriverBase, IRpcDriver
         var currentDevice = CurrentDevice;
         IdVariableRuntimes = currentDevice.VariableRuntimes.Where(a => a.Value.Enable).ToFrozenDictionary(a => a.Value.Id, a => a.Value);
 
-        //预热脚本，加速编译
-        IdVariableRuntimes.Where(a => !string.IsNullOrWhiteSpace(a.Value.ReadExpressions))
-         .Select(b => b.Value.ReadExpressions).Distinct().ToArray().ParallelForEach(script =>
-         {
-             try
+        if (!this.CurrentDevice.IsMemory)
+        {
+            //预热脚本，加速编译
+            IdVariableRuntimes.Where(a => !string.IsNullOrWhiteSpace(a.Value.ReadExpressions))
+             .Select(b => b.Value.ReadExpressions).Distinct().ToArray().ParallelForEach(script =>
              {
-                 _ = ExpressionEvaluatorExtension.GetOrAddScript(script);
-             }
-             catch
-             {
-             }
-         });
-
-
+                 try
+                 {
+                     _ = ExpressionEvaluatorExtension.GetOrAddScript(script);
+                 }
+                 catch
+                 {
+                 }
+             });
+        }
         // 连读打包
         // 从收集的变量运行时信息中筛选需要读取的变量
         var tags = IdVariableRuntimes.Select(a => a.Value)

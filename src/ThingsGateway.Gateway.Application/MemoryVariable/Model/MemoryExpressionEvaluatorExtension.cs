@@ -150,6 +150,8 @@ $@"
 
         }}
     ");
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
                     Instance.Set(field, runScript);
                 }
                 catch (Exception ex)

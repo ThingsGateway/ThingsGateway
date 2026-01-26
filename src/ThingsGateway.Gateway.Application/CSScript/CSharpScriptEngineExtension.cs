@@ -129,7 +129,8 @@ public static class CSharpScriptEngineExtension
         {_using.ToString()}
         {_body.ToString()}
     ");
-
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
                         Instance.Set(field, runScript);
 
                     }
