@@ -10,7 +10,7 @@
   },
 
   "RemoteServerManagement": {
-    "Enable": true,
+    "Enable": false,
     "Name": "ThingsGateway",
     "ServerUri": "0.0.0.0:8399",
     "VerifyToken": "ThingsGateway",
