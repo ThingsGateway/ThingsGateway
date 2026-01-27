@@ -220,6 +220,7 @@
     "ReloadServiceConfirmText": "Confirm when restarting the runtime?",
     "ReloadServiceText": "Reload Service",
     "RestartText": "Restart",
+    "RestartSystemConfirmText": "Confirm when restarting process?",
     "TooltipText": "Quick Operation"
   },
   "ThingsGateway.Gateway.Razor.RpcLogPage": {

@@ -28,6 +28,16 @@
                           IsAsync="true"
                           OnConfirm="Restart" IsKeepDisabled=@(!AuthorizeButton("重启")) />
 
+        <PopConfirmButton Placement="Placement.Top"
+                          class="m-2"
+                          Color="Color.Danger"
+                          ConfirmIcon="fa-solid fa-triangle-exclamation text-danger"
+                          ConfirmButtonColor="Color.Danger"
+                          Text=@(RestartText)
+                          Content=@(RestartSystemConfirmText)
+                          Icon="fas fa-rotate"
+                          IsAsync="true"
+                          OnConfirm="OnRestart" IsKeepDisabled=@(!AuthorizeButton("重启")) />
 
     </div>
 </div>

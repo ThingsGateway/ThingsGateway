@@ -29,6 +29,7 @@ public partial class QuickActions
 
     private string? ReloadPluginConfirmText { get; set; }
     private string? RestartText { get; set; }
+    private string? RestartSystemConfirmText { get; set; }
     private string? ReloadServiceConfirmText { get; set; }
     private string? ReloadServiceText { get; set; }
     private string? TooltipText { get; set; }
@@ -44,6 +45,7 @@ public partial class QuickActions
         HeaderText ??= Localizer[nameof(HeaderText)];
 
         RestartText ??= Localizer[nameof(RestartText)];
+        RestartSystemConfirmText ??= Localizer[nameof(RestartSystemConfirmText)];
         ReloadServiceText ??= Localizer[nameof(ReloadServiceText)];
         ReloadPluginConfirmText ??= Localizer[nameof(ReloadPluginConfirmText)];
         ReloadServiceConfirmText ??= Localizer[nameof(ReloadServiceConfirmText)];
@@ -93,6 +95,16 @@ public partial class QuickActions
         });
     }
 
+    [Inject]
+    public IRestartService RestartService { get; set; }
+    private async Task OnRestart()
+    {
+#if Management
+        if (DmtpActorContext.Current == null)
+            return;
+#endif
+        await RestartService.RestartServerAsync();
+    }
     protected override async Task InvokeInitAsync()
     {
         var restart = await Module!.InvokeAsync<bool>("getAutoRestartThread");

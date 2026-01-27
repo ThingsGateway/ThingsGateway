@@ -8,12 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using CSScripting;
-
-using CSScriptLib;
-
+using System.Runtime.Loader;
 using System.Text;
 using ThingsGateway.Foundation.Common.Caching;
+using Westwind.Scripting;
+using Yitter.IdGenerator;
 
 namespace ThingsGateway.Gateway.Application.Extensions;
 
@@ -47,30 +46,12 @@ public abstract class MemoryReadWriteExpressions
 /// </summary>
 public static class MemoryExpressionEvaluatorExtension
 {
-
     private static readonly object m_waiterLock = new object();
-
+    public static readonly string ExpressionEvaluatorExtensionDir =
+  Path.Combine(AppContext.BaseDirectory, "CSSCRIPT");
     static MemoryExpressionEvaluatorExtension()
     {
-        var temp = Environment.GetEnvironmentVariable("CSS_CUSTOM_TEMPDIR");
-        if (string.IsNullOrWhiteSpace(temp))
-        {
-            var tempDir = Path.Combine(AppContext.BaseDirectory, "CSSCRIPT");
-            if (Directory.Exists(tempDir))
-            {
-                try
-                {
-                    Directory.Delete(tempDir, true);
-                }
-                catch
-                {
-                }
-            }
-
-            Directory.CreateDirectory(tempDir);//重新创建，防止缓存的一些目录信息错误
-            Environment.SetEnvironmentVariable("CSS_CUSTOM_TEMPDIR", tempDir); //传入变量
-        }
-
+        Directory.CreateDirectory(ExpressionEvaluatorExtensionDir);
         Instance.KeyExpired += Instance_KeyExpired;
     }
 
@@ -80,8 +61,10 @@ public static class MemoryExpressionEvaluatorExtension
         {
             if (Instance.GetAll().TryGetValue(e.Key, out var item))
             {
-                item?.Value?.TryDispose();
-                item?.Value?.GetType().Assembly.Unload();
+                var data = (CacheItem)item?.Value;
+                data.Obj?.TryDispose();
+                data.ALC?.Unload();
+                CSharpScriptExecution.MarkDelete(data.Path);
             }
         }
         catch
@@ -90,6 +73,7 @@ public static class MemoryExpressionEvaluatorExtension
     }
 
     private static MemoryCache Instance { get; set; } = new MemoryCache();
+    static TimeSpan time = TimeSpan.FromSeconds(30);
 
     /// <summary>
     /// 添加或获取脚本，非线程安全
@@ -98,11 +82,12 @@ public static class MemoryExpressionEvaluatorExtension
     /// <returns></returns>
     public static MemoryReadWriteExpressions GetOrAddScript(string source)
     {
-        var field = source;
-        var runScript = Instance.Get<MemoryReadWriteExpressions>(field);
-        if (runScript == null)
+        if (string.IsNullOrEmpty(source)) return null;
+        var key = source.GetHashCode().ToString();
+        var runScript = Instance.Get<CacheItem>(key);
+        if (runScript.Obj == null)
         {
-            var hasValue = Instance.TryGetValue<MemoryReadWriteExpressions>(field, out runScript);
+            var hasValue = Instance.TryGetValue<CacheItem>(key, out runScript);
             if (!hasValue)
             {
 
@@ -127,8 +112,11 @@ public static class MemoryExpressionEvaluatorExtension
                 // 动态加载并执行代码
                 try
                 {
-                    runScript = CSScript.Evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<MemoryReadWriteExpressions>(
-$@"
+                    var context = new AssemblyLoadContext(YitIdHelper.NextId().ToString(), true);
+                    var script = new CSharpScriptExecution();
+                    script.AlternateAssemblyLoadContext = context;
+                    var code =
+                    $@"
         using System;
         using System.Linq;
         using System.Collections.Generic;
@@ -149,31 +137,42 @@ $@"
             }}
 
         }}
-    ");
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    Instance.Set(field, runScript);
+    ";
+
+                    var readWriteExpressions = script.CompileClassWithFile(code) as MemoryReadWriteExpressions;
+                    if (readWriteExpressions == null)
+                    {
+                        CSharpScriptExecution.MarkDelete(script.OutputAssembly);
+                        throw new Exception("compilation error");
+                    }
+                    runScript.Obj = readWriteExpressions;
+                    runScript.ALC = context;
+                    runScript.Path = script.OutputAssembly;
+
+                    Instance.Set(key, runScript);
+
                 }
                 catch (Exception ex)
                 {
                     //如果编译失败，应该不重复编译，避免oom
-                    Instance.Set<MemoryReadWriteExpressions>(field, null, TimeSpan.FromHours(1));
-                    var exfield = $"Exception-{source}";
-                    Instance.Set(exfield, ex, TimeSpan.FromHours(1));
+                    Instance.Set<CacheItem>(key, default, time);
+                    var exfield = $"Exception-{key}";
+                    Instance.Set(exfield, ex, time);
                     throw;
                 }
-
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
 
         }
 
-        Instance.SetExpire(field, TimeSpan.FromHours(1));
-        if (runScript == null)
+        Instance.SetExpire(key, time);
+        if (runScript.Obj == null)
         {
-            var exfield = $"Exception-{source}";
+            var exfield = $"Exception-{key}";
             throw (Instance.Get<Exception>(exfield) ?? new Exception("compilation error"));
         }
-        return runScript;
+        return (MemoryReadWriteExpressions)runScript.Obj;
     }
 
     public static object GetMemoryExpressionsResult(this string expressions)
@@ -213,7 +212,7 @@ $@"
                 runScript = GetOrAddScript(source);
             }
         }
-        Instance.SetExpire(field, TimeSpan.FromHours(1));
+        Instance.SetExpire(field, time);
 
         return runScript;
     }

@@ -10,8 +10,6 @@
 
 using BootstrapBlazor.Components;
 
-using CSScripting;
-
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -52,8 +50,8 @@ public static class PluginServiceUtil
                 {
                     { "title", classAttribute.Remark }
                 };
-                tc.ComponentParameters = tc.ComponentParameters.AddItem(
-                   new("title", classAttribute.Remark)
+                tc.ComponentParameters = tc.ComponentParameters.Concat(
+                   [new("title", classAttribute.Remark)]
                );
             }
             if (!classAttribute.GroupName.IsNullOrEmpty())

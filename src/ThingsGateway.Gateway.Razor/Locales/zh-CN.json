@@ -218,6 +218,7 @@
     "ReloadPluginConfirmText": "确定重载插件?",
     "ReloadServiceConfirmText": "确定重启运行时?",
     "ReloadServiceText": "重启运行时",
+    "RestartSystemConfirmText": "确定重启进程?",
     "RestartText": "重启",
     "TooltipText": "快捷操作"
   },

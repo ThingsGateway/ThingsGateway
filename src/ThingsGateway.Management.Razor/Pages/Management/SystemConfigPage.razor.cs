@@ -61,20 +61,6 @@ public partial class SystemConfigPage
     [NotNull]
     public IStringLocalizer<ThingsGateway.Gateway.Razor._Imports> GatewayLocalizer { get; set; }
 
-    [Inject]
-    public IRestartService RestartService { get; set; }
-    private async Task OnRestart()
-    {
-        var result = await SwalService.ShowModal(new SwalOption()
-        {
-            Category = SwalCategory.Warning,
-            Title = GatewayLocalizer["Restart"]
-        });
-        if (result)
-        {
-            await RestartService.RestartServerAsync();
-        }
-    }
 
     [Parameter]
     [SupplyParameterFromQuery]

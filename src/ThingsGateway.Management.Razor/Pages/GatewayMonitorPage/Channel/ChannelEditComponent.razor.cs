@@ -61,7 +61,7 @@ public partial class ChannelEditComponent
 
     protected override async Task OnInitializedAsync()
     {
-        var plugins = await PluginService.GetPluginsAsync(PluginType);
+        var plugins = (await PluginService.GetPluginsAsync(PluginType)).Where(a => a.Display);
 
         PluginDcit = plugins.ToDictionary(a => a.FullName);
         PluginNames = plugins.BuildPluginSelectList();

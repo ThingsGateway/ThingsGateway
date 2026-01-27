@@ -42,20 +42,6 @@
 
         </TabItem>
 
-        <TabItem Text=@GatewayLocalizer["Restart"]>
-
-            <Card class="h-100">
-
-                <BodyTemplate>
-
-                    <Button OnClick="OnRestart" Text=@GatewayLocalizer["Restart"]></Button>
-
-                </BodyTemplate>
-
-            </Card>
-
-        </TabItem>
-
         @if (WebsiteOption.Value.ShowAuthorize)
         {
             <TabItem Text=@GatewayLocalizer["Authentication"]>

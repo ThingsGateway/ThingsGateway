@@ -8,13 +8,13 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
-using CSScripting;
-
-using CSScriptLib;
-
 using System.Reflection;
+using System.Runtime.Loader;
 using System.Text;
 using ThingsGateway.Foundation.Common.Caching;
+using ThingsGateway.Gateway.Application.Extensions;
+using Westwind.Scripting;
+using Yitter.IdGenerator;
 
 namespace ThingsGateway.Gateway.Application;
 
@@ -26,27 +26,11 @@ public static class CSharpScriptEngineExtension
     private const string CacheKey = $"{nameof(CSharpScriptEngineExtension)}-{nameof(Do)}";
 
     private static readonly object m_waiterLock = new object();
-
+    public static readonly string ExpressionEvaluatorExtensionDir =
+  Path.Combine(AppContext.BaseDirectory, "CSSCRIPT");
     static CSharpScriptEngineExtension()
     {
-        var temp = Environment.GetEnvironmentVariable("CSS_CUSTOM_TEMPDIR");
-        if (string.IsNullOrWhiteSpace(temp))
-        {
-            var tempDir = Path.Combine(AppContext.BaseDirectory, "CSSCRIPT");
-            if (Directory.Exists(tempDir))
-            {
-                try
-                {
-                    Directory.Delete(tempDir);
-                }
-                catch
-                {
-                }
-            }
-
-            Directory.CreateDirectory(tempDir);//重新创建，防止缓存的一些目录信息错误
-            Environment.SetEnvironmentVariable("CSS_CUSTOM_TEMPDIR", tempDir); //传入变量
-        }
+        Directory.CreateDirectory(ExpressionEvaluatorExtensionDir);
         Instance.KeyExpired += Instance_KeyExpired;
     }
 
@@ -56,8 +40,10 @@ public static class CSharpScriptEngineExtension
         {
             if (Instance.GetAll().TryGetValue(e.Key, out var item))
             {
-                item?.Value?.TryDispose();
-                item?.Value?.GetType().Assembly.Unload();
+                var data = (CacheItem)item?.Value;
+                data.Obj?.TryDispose();
+                data.ALC?.Unload();
+                CSharpScriptExecution.MarkDelete(data.Path);
             }
         }
         catch
@@ -71,6 +57,7 @@ public static class CSharpScriptEngineExtension
     }
 
     private static MemoryCache Instance { get; } = new MemoryCache();
+    static TimeSpan time = TimeSpan.FromHours(1);
 
     /// <summary>
     /// 执行脚本获取返回值
@@ -78,41 +65,41 @@ public static class CSharpScriptEngineExtension
     public static T Do<T>(string source, TimeSpan timeSpan, params Assembly[] assemblies) where T : class
     {
         if (source.IsNullOrEmpty()) return null;
-        var field = $"{CacheKey}-{source}";
-        var exfield = $"{CacheKey}-Exception-{source}";
-        var runScript = Instance.Get<T>(field);
-        if (runScript == null)
+        var key = source.GetHashCode().ToString();
+        var exfield = $"Exception-{key}";
+        var runScript = Instance.Get<CacheItem>(key);
+        if (runScript.Obj == null)
         {
-            lock (m_waiterLock)
+            var hasValue = Instance.TryGetValue<CacheItem>(key, out runScript);
+            if (!hasValue)
             {
-                var hasValue = Instance.TryGetValue<T>(field, out runScript);
-                if (!hasValue)
+                var src = source.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                using var _using = new ValueStringBuilder();
+                using var _body = new ValueStringBuilder();
+                foreach (var item in src)
                 {
-                    var src = source.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                    using var _using = new ValueStringBuilder();
-                    using var _body = new ValueStringBuilder();
-                    foreach (var item in src)
+                    if (item.StartsWith("using "))
                     {
-                        if (item.StartsWith("using "))
-                        {
-                            _using.AppendLine(item);
-                        }
-                        else
-                        {
-                            _body.AppendLine(item);
-                        }
+                        _using.AppendLine(item);
                     }
+                    else
+                    {
+                        _body.AppendLine(item);
+                    }
+                }
 
-                    var evaluator = CSScript.Evaluator;
-                    foreach (var item in assemblies)
-                    {
-                        evaluator = evaluator.ReferenceAssembly(item.Location);
-                    }
-                    try
-                    {
-                        // 动态加载并执行代码
-                        runScript = evaluator.With(eval => eval.IsAssemblyUnloadingEnabled = true).LoadCode<T>(
-                           $@"
+                var context = new AssemblyLoadContext(YitIdHelper.NextId().ToString(), true);
+                var script = new CSharpScriptExecution();
+                script.AlternateAssemblyLoadContext = context;
+                foreach (var item in assemblies)
+                {
+                    script.AddAssembly(item.Location);
+                }
+                try
+                {
+                    // 动态加载并执行代码
+                    var code =
+                               $@"
         using System;
         using System.Linq;
         using System.Threading.Tasks;
@@ -128,37 +115,50 @@ public static class CSharpScriptEngineExtension
         using ThingsGateway.Gateway.Application.Extensions;
         {_using.ToString()}
         {_body.ToString()}
-    ");
-                        GC.Collect();
-                        GC.WaitForPendingFinalizers();
-                        Instance.Set(field, runScript);
+    ";
 
-                    }
-                    catch (NullReferenceException)
-                    {
-                        //如果编译失败，应该不重复编译，避免oom
-                        Instance.Set<T>(field, null, timeSpan);
 
-                        string exString = string.Format("无法识别正确的接口类，需要实现 {0} 类型", typeof(T).FullName);
-                        throw new(exString);
-                    }
-                    catch (Exception ex)
+                    var readWriteExpressions = script.CompileClassWithFile(code) as T;
+                    if (readWriteExpressions == null)
                     {
-                        //如果编译失败，应该不重复编译，避免oom
-                        Instance.Set<T>(field, null, timeSpan);
-                        Instance.Set(exfield, ex, timeSpan);
-                        throw;
+                        CSharpScriptExecution.MarkDelete(script.OutputAssembly);
+                        throw new Exception("compilation error");
                     }
+                    runScript.Obj = readWriteExpressions;
+                    runScript.ALC = context;
+                    runScript.Path = script.OutputAssembly;
+
+                    Instance.Set(key, runScript);
+
                 }
+                catch (NullReferenceException)
+                {
+                    //如果编译失败，应该不重复编译，避免oom
+                    Instance.Set<CacheItem>(key, default, timeSpan);
+
+                    string exString = string.Format("无法识别正确的接口类，需要实现 {0} 类型", typeof(T).FullName);
+                    throw new(exString);
+                }
+                catch (Exception ex)
+                {
+                    //如果编译失败，应该不重复编译，避免oom
+                    Instance.Set<CacheItem>(key, default, timeSpan);
+                    Instance.Set(exfield, ex, timeSpan);
+                    throw;
+                }
+
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
         }
-        Instance.SetExpire(field, timeSpan);
+        Instance.SetExpire(key, timeSpan);
         Instance.SetExpire(exfield, timeSpan);
-        if (runScript == null)
+        if (runScript.Obj == null)
         {
             throw (Instance.Get<Exception>(exfield) ?? new Exception("compilation error"));
         }
-        return runScript;
+        return (T)runScript.Obj;
     }
     /// <summary>
     /// 执行脚本获取返回值
@@ -171,6 +171,6 @@ public static class CSharpScriptEngineExtension
     public static void SetExpire(string source, TimeSpan? timeSpan = null)
     {
         var field = $"{CacheKey}-{source}";
-        Instance.SetExpire(field, timeSpan ?? TimeSpan.FromHours(1));
+        Instance.SetExpire(field, timeSpan ?? time);
     }
 }
