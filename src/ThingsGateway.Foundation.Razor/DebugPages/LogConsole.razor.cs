@@ -77,7 +77,7 @@ public partial class LogConsole : IDisposable
     /// </summary>
     private ICollection<LogData> PauseMessagesText { get; set; } = new List<LogData>();
 
-    private string GetStringMessage(LogData itemMessage)
+    private string GetStringMessage(LogData itemMessage, bool slice = true)
     {
         using ValueStringBuilder valueStringBuilder = new();
         valueStringBuilder.Append(itemMessage.LogTime);
@@ -90,7 +90,10 @@ public partial class LogConsole : IDisposable
             valueStringBuilder.Append(Environment.NewLine);
             valueStringBuilder.Append(itemMessage.ExceptionString);
         }
-        return valueStringBuilder.AsSpan().Slice(0, Math.Min(valueStringBuilder.Length, 150)).ToString();
+        if (slice)
+            return valueStringBuilder.AsSpan().Slice(0, Math.Min(valueStringBuilder.Length, 150)).ToString();
+        else
+            return valueStringBuilder.ToString();
     }
 
     [Inject]
@@ -173,7 +176,7 @@ public partial class LogConsole : IDisposable
                 using StreamWriter writer = new(memoryStream);
                 foreach (var item in PauseMessagesText)
                 {
-                    await writer.WriteLineAsync(item.Message);
+                    await writer.WriteLineAsync(GetStringMessage(item, false));
                 }
                 await writer.FlushAsync();
                 memoryStream.Seek(0, SeekOrigin.Begin);

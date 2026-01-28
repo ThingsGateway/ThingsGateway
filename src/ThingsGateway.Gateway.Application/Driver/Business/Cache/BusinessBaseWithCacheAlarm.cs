@@ -48,7 +48,7 @@ public abstract class BusinessBaseWithCacheAlarm : BusinessBaseWithCache
         VariableRuntimeGroups = IdVariableRuntimes.Where(a => !a.Value.BusinessGroup.IsNullOrEmpty()).GroupBy(a => a.Value.BusinessGroup ?? string.Empty).ToFrozenDictionary(a => a.Key, a => a.Select(a => a.Value).ToList());
 
     }
-    protected internal override async Task InitChannelAsync(IChannel? channel, CancellationToken cancellationToken)
+    protected internal override async Task InitChannelAsync(ChannelObject channelObject, CancellationToken cancellationToken)
     {
         GlobalData.AlarmChangedEvent -= AlarmValueChange;
         GlobalData.ReadOnlyRealAlarmIdVariables?.ForEach(a => AlarmValueChange(a.Value));
@@ -56,7 +56,7 @@ public abstract class BusinessBaseWithCacheAlarm : BusinessBaseWithCache
         GlobalData.PluginEventHandler -= PluginEventChange;
         GlobalData.PluginEventHandler += PluginEventChange;
 
-        await base.InitChannelAsync(channel, cancellationToken).ConfigureAwait(false);
+        await base.InitChannelAsync(channelObject, cancellationToken).ConfigureAwait(false);
     }
     protected override Task DisposeAsync(bool disposing)
     {

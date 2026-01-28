@@ -40,7 +40,7 @@ public abstract class BusinessBaseWithCache : BusinessBase
     protected abstract bool AlarmModelEnable { get; }
     protected abstract bool DevModelEnable { get; }
     protected abstract bool VarModelEnable { get; }
-    protected internal override Task InitChannelAsync(IChannel? channel, CancellationToken cancellationToken)
+    protected internal override Task InitChannelAsync(ChannelObject channelObject, CancellationToken cancellationToken)
     {
         if (AlarmModelEnable)
             DBCacheAlarm = LocalDBCacheAlarmModel();
@@ -58,7 +58,7 @@ public abstract class BusinessBaseWithCache : BusinessBase
             DBCacheVars = LocalDBCacheVarModels();
         }
 
-        return base.InitChannelAsync(channel, cancellationToken);
+        return base.InitChannelAsync(channelObject, cancellationToken);
     }
     protected override Task ProtectedExecuteAsync(object? state, CancellationToken cancellationToken)
     {

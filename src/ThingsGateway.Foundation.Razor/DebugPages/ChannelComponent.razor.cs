@@ -18,11 +18,11 @@ public partial class ChannelComponent : ComponentBase
 {
     [Parameter]
     public string ClassString { get; set; }
-
+    private ChannelObject channelObject = new();
     [Parameter]
-    public EventCallback<IChannel> OnConnectClick { get; set; }
+    public EventCallback<ChannelObject> OnConnectClick { get; set; }
     [Parameter]
-    public EventCallback<(IChannel, string)> OnConfimClick { get; set; }
+    public EventCallback<(ChannelObject, string)> OnConfimClick { get; set; }
 
     [Parameter]
     public EventCallback OnDisConnectClick { get; set; }
@@ -37,7 +37,7 @@ public partial class ChannelComponent : ComponentBase
         StateHasChanged();
     }
 
-    private IChannel? Channel { get; set; }
+    private IChannel? Channel => channelObject.Channel;
 
     [Inject]
     private IStringLocalizer<ChannelComponent> Localizer { get; set; }
@@ -72,7 +72,7 @@ public partial class ChannelComponent : ComponentBase
             if (!validate) return;
             await DisconnectClick();
             Channel?.SafeDispose();
-            Channel = null;
+            channelObject.Reset(null);
 
             if (Channel == null)
             {
@@ -86,12 +86,12 @@ public partial class ChannelComponent : ComponentBase
                 Model.Config = config;
 
                 if (OnCreateClick != null)
-                    Channel = OnCreateClick(config, Model);
+                    channelObject.Reset(OnCreateClick(config, Model));
                 else
-                    Channel = config.GetChannel(Model);
+                    channelObject.Reset(config.GetChannel(Model));
 
                 if (OnConfimClick.HasDelegate)
-                    await OnConfimClick.InvokeAsync((Channel, path));
+                    await OnConfimClick.InvokeAsync((channelObject, path));
 
                 await Channel.SetupAsync(config);
             }
@@ -99,7 +99,7 @@ public partial class ChannelComponent : ComponentBase
             await Channel.ConnectAsync(default);
 
             if (OnConnectClick.HasDelegate)
-                await OnConnectClick.InvokeAsync(Channel);
+                await OnConnectClick.InvokeAsync(channelObject);
         }
         catch (Exception ex)
         {

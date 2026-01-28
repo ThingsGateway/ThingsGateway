@@ -26,13 +26,6 @@ public abstract partial class BusinessBaseWithCacheIntervalScript : BusinessBase
 
 
 
-    protected internal override Task InitChannelAsync(IChannel? channel, CancellationToken cancellationToken)
-    {
-
-        return base.InitChannelAsync(channel, cancellationToken);
-    }
-
-
     protected override Task DisposeAsync(bool disposing)
     {
         try

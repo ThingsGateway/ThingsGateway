@@ -50,11 +50,11 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
         var driver = GlobalData.PluginService.GetDriver(channelRuntime.PluginName);
         if (driver is IReceivedFoundationDevice foundationDevice && foundationDevice.ReceivedFoundationDevice != null)
         {
-            Channel = foundationDevice.ReceivedFoundationDevice.CreateChannel(config, channelRuntime);
+            ChannelObject.Reset(foundationDevice.ReceivedFoundationDevice.CreateChannel(config, channelRuntime));
         }
         else
         {
-            Channel = channelRuntime.GetChannel(config);
+            ChannelObject.Reset(channelRuntime.GetChannel(config));
         }
 
         //初始设置输出文本日志
@@ -76,12 +76,12 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
         CheckRedundantAsyncTimer.Start();
     }
 
-    private IScheduledTask CheckThreadAsyncTimer;
-    private IScheduledTask CheckRedundantAsyncTimer;
+    private readonly IScheduledTask CheckThreadAsyncTimer;
+    private readonly IScheduledTask CheckRedundantAsyncTimer;
 
-    private CancellationTokenSource CancellationTokenSource = new();
+    private readonly CancellationTokenSource CancellationTokenSource = new();
 
-    private CancellationToken CancellationToken;
+    private readonly CancellationToken CancellationToken;
 
     #region 日志
 
@@ -151,7 +151,8 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
     public long ChannelId => CurrentChannel.Id;
 
-    public IChannel? Channel { get; }
+    public ChannelObject ChannelObject { get; } = new();
+    public IChannel? Channel => ChannelObject.Channel;
 
     public ChannelRuntime CurrentChannel { get; }
 
@@ -169,7 +170,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
     /// <summary>
     /// 插件列表
     /// </summary>
-    private NonBlockingDictionary<long, DriverBase> Drivers { get; set; } = new();
+    private NonBlockingDictionary<long, DriverBase> Drivers { get; } = new();
 
     public IChannelThreadManage ChannelThreadManage { get; internal set; }
 
@@ -177,7 +178,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
     #region 设备管理
 
-    private WaitLock NewDeviceLock = new(nameof(DeviceThreadManage));
+    private readonly WaitLock NewDeviceLock = new(nameof(DeviceThreadManage));
 
     /// <summary>
     /// 向当前通道添加设备
@@ -327,7 +328,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
                     driver.DeviceThreadManage = this;
 
                     // 初始化驱动程序对象，并加载源读取
-                    await driver.InitChannelAsync(Channel, token).ConfigureAwait(false);
+                    await driver.InitChannelAsync(ChannelObject, token).ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {

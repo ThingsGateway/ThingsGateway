@@ -20,6 +20,7 @@ public interface IDeviceThreadManage : IAsyncDisposable
     LoggerGroup LogMessage { get; }
     string LogPath { get; }
     IChannelThreadManage ChannelThreadManage { get; }
+    ChannelObject ChannelObject { get; }
     IChannel? Channel { get; }
     int TaskCount { get; }
 

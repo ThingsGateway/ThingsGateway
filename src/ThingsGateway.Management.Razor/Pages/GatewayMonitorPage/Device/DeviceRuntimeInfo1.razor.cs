@@ -142,12 +142,18 @@ public partial class DeviceRuntimeInfo1 : IDisposable
     }
 
     private bool Disposed;
+#if !Management
     private async Task RunTimerAsync()
     {
         while (!Disposed)
         {
             try
             {
+                if (!DeviceRuntime.Started)
+                {
+                    DeviceRuntime = GlobalData.ReadOnlyIdDevices.TryGetValue(DeviceRuntime.Id, out var deviceRuntime) ? deviceRuntime : DeviceRuntime;
+                }
+
 #pragma warning disable CA1849
                 OnParametersSet();
 #pragma warning restore CA1849
@@ -163,6 +169,7 @@ public partial class DeviceRuntimeInfo1 : IDisposable
             }
         }
     }
+#endif
 
     public void Dispose()
     {

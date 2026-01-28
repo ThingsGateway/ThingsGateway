@@ -32,7 +32,10 @@ public class ChannelRuntime : Channel
     IDisposable
 #endif
 {
-
+    ~ChannelRuntime()
+    {
+        this.TryDispose();
+    }
 #if !Management
 
 

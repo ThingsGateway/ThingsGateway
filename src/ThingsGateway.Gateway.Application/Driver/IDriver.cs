@@ -41,8 +41,8 @@ namespace ThingsGateway.Gateway.Application
         string PluginDirectory { get; }
         IReadOnlyDictionary<long, VariableRuntime> IdVariableRuntimes { get; }
         IDeviceThreadManage DeviceThreadManage { get; }
+        ChannelObject? ChannelObject { get; }
         IChannel? Channel { get; }
-
         bool IsConnected();
         void PauseThread(bool pause);
         Task SetLogAsync(LogLevel? logLevel = null, bool upDataBase = true);

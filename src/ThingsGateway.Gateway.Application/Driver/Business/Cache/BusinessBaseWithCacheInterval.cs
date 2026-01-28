@@ -29,7 +29,7 @@ public abstract class BusinessBaseWithCacheInterval : BusinessBaseWithCache
 
 
 
-    protected internal override async Task InitChannelAsync(IChannel? channel, CancellationToken cancellationToken)
+    protected internal override async Task InitChannelAsync(ChannelObject channelObject, CancellationToken cancellationToken)
     {
         if (AlarmModelEnable)
         {
@@ -63,7 +63,7 @@ public abstract class BusinessBaseWithCacheInterval : BusinessBaseWithCache
             }
         }
 
-        await base.InitChannelAsync(channel, cancellationToken).ConfigureAwait(false);
+        await base.InitChannelAsync(channelObject, cancellationToken).ConfigureAwait(false);
     }
     public override async Task AfterVariablesChangedAsync(CancellationToken cancellationToken)
     {

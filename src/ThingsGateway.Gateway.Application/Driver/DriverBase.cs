@@ -182,7 +182,7 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
 
     #region 日志
 
-    private WaitLock SetLogLock = new(nameof(DriverBase));
+    private readonly WaitLock SetLogLock = new(nameof(DriverBase));
     public async Task SetLogAsync(LogLevel? logLevel = null, bool upDataBase = true)
     {
         try
@@ -441,18 +441,19 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
 
     public abstract bool IsConnected();
 
-    public IChannel? Channel { get; private set; }
+    public ChannelObject? ChannelObject { get; private set; }
+    public IChannel? Channel => ChannelObject?.Channel;
 
     /// <summary>
     /// 初始化，在开始前执行，异常时会标识重启
     /// </summary>
-    /// <param name="channel">通道，当通道类型为<see cref="ChannelTypeEnum.Other"/>时，传入null</param>
+    /// <param name="channelObject">通道</param>
     /// <param name="cancellationToken"></param>
-    internal protected virtual async Task InitChannelAsync(IChannel? channel, CancellationToken cancellationToken)
+    internal protected virtual async Task InitChannelAsync(ChannelObject channelObject, CancellationToken cancellationToken)
     {
-        Channel = channel;
-        if (channel != null && channel.PluginManager == null)
-            await channel.SetupAsync(channel.Config.Clone()).ConfigureAwait(false);
+        ChannelObject = channelObject;
+        if (Channel != null && Channel.PluginManager == null)
+            await Channel.SetupAsync(Channel.Config.CloneAndDispose()).ConfigureAwait(false);
         await AfterVariablesChangedAsync(cancellationToken).ConfigureAwait(false);
     }
 

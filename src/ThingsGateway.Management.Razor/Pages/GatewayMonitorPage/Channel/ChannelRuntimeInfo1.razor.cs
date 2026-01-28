@@ -44,12 +44,17 @@ public partial class ChannelRuntimeInfo1 : IDisposable
     }
 
     private bool Disposed;
+#if !Management
     private async Task RunTimerAsync()
     {
         while (!Disposed)
         {
             try
             {
+                if (!ChannelRuntime.Started)
+                {
+                    ChannelRuntime = GlobalData.ReadOnlyIdChannels.TryGetValue(ChannelRuntime.Id, out var channelRuntime) ? channelRuntime : ChannelRuntime;
+                }
                 await InvokeAsync(StateHasChanged);
 
             }
@@ -63,6 +68,7 @@ public partial class ChannelRuntimeInfo1 : IDisposable
             }
         }
     }
+#endif
 
     public void Dispose()
     {

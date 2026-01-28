@@ -28,11 +28,11 @@ public class MemoryDriver : CollectBase
 
 
 #if !Management
-    protected internal override async Task InitChannelAsync(IChannel? channel, CancellationToken cancellationToken)
+    protected internal override async Task InitChannelAsync(ChannelObject channelObject, CancellationToken cancellationToken)
     {
         GlobalData.VariableValueChangeEvent -= GlobalData_VariableValueChangeEvent;
         GlobalData.VariableValueChangeEvent += GlobalData_VariableValueChangeEvent;
-        await base.InitChannelAsync(channel, cancellationToken).ConfigureAwait(false);
+        await base.InitChannelAsync(channelObject, cancellationToken).ConfigureAwait(false);
     }
     protected override Task DisposeAsync(bool disposing)
     {
