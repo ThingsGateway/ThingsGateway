@@ -71,7 +71,9 @@ ThingsGateway 采用模块化与插件化架构，支持多种工业通信协议
   灵活的数据计算与逻辑处理，支持C#脚本扩展，支持内存变量
 - **结构化数据模型**  
   统一的数据抽象，便于后续北向传输、存储 
-
+- **规则引擎**  
+  支持基于条件的事件触发与动作执行，满足复杂业务需求
+  
 ---
 
 ### 📤 数据输出
@@ -118,6 +120,50 @@ PRO 插件主要面向对 **协议覆盖面、稳定性、现场兼容性** 要�
 
 ---
 
+
+
+## 🚀 快速开始（Quick Start）
+
+本节将引导你在最短时间内运行 ThingsGateway。
+
+---
+### 📦 环境要求
+
+- .NET: 8.0/10.0 或更高版本
+
+---
+### 方式一：下载发行版
+
+1. 从项目 Release 页面下载对应平台的可执行文件，解压即可使用。
+2. 运行 `ThingsGateway.Server.exe`（Windows）或 `dotnet ThingsGateway.Server.dll`（Linux）。
+3. 打开浏览器，访问 `http://localhost:5000` 进入管理界面。
+
+### 方式二：使用 Docker 部署
+1. 确保已安装 Docker。
+2. 拉取最新的 ThingsGateway 镜像：
+   ```bash
+   docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway:latest
+   ```
+3. 运行容器：
+   ```bash
+   docker run -d -p 5000:5000 --name thingsgateway registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway:latest
+   ```
+4. 打开浏览器，访问 `http://localhost:5000` 进入管理界面。
+
+### 方式三：从源码编译
+
+1. 克隆项目代码：
+   ```bash
+   git clone https://gitee.com/ThingsGateway/ThingsGateway.git
+   cd ThingsGateway
+   ```
+2. 运行应用：
+   ```bash
+   dotnet run --project src/ThingsGateway.Server/ThingsGateway.Server.csproj
+   ```
+3. 打开浏览器，访问 `http://localhost:5000` 进入管理界面。
+
+---
 
 ## 相关项目仓库
 
