@@ -2,8 +2,9 @@
     font-size: 1rem;
     font-weight: bold;
 }
-.variable{
-    min-height:700px;
+.variable {
+    min-height: 700px;
+    max-height: 700px;
 }
 .variable ::deep .bb-editor .row {
     --bs-gutter-y: 0.5rem;

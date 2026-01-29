@@ -5,7 +5,8 @@
 
 .device ::deep .tabs-body-content {
     overflow-x: hidden;
-    min-height: 500px;
+    min-height: 600px;
+    max-height: 600px;
 }
 
 .device ::deep .bb-editor .row {

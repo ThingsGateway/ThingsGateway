@@ -23,5 +23,5 @@
 }
 
 .tree-node-toolbar-edit {
-    background-color: white;
+    background-color: var(--bs-card-bg);
 }
