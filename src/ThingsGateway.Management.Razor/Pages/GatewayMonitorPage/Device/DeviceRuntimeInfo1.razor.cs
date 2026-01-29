@@ -12,7 +12,10 @@ using ThingsGateway.Foundation.Common.Log;
 
 namespace ThingsGateway.Gateway.Razor;
 
-public partial class DeviceRuntimeInfo1 : IDisposable
+public partial class DeviceRuntimeInfo1
+#if !Management
+    : IDisposable
+#endif
 {
     [Inject]
     IStringLocalizer<ThingsGateway.Gateway.Razor._Imports> GatewayLocalizer { get; set; }
@@ -141,8 +144,8 @@ public partial class DeviceRuntimeInfo1 : IDisposable
         base.OnInitialized();
     }
 
-    private bool Disposed;
 #if !Management
+    private bool Disposed;
     private async Task RunTimerAsync()
     {
         while (!Disposed)
@@ -169,11 +172,11 @@ public partial class DeviceRuntimeInfo1 : IDisposable
             }
         }
     }
-#endif
 
     public void Dispose()
     {
         Disposed = true;
         GC.SuppressFinalize(this);
     }
+#endif
 }

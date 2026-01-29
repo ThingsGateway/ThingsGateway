@@ -163,7 +163,7 @@ public partial class ManagementTask : AsyncDisposableObject
                                {
                                    return;
                                }
-                               if (client.PauseReconnection)
+                               if (client.GetPauseReconnection())
                                {
                                    continue;
                                }

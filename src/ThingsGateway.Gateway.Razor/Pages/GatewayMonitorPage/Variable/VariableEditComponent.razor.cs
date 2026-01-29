@@ -198,11 +198,13 @@ public partial class VariableEditComponent
             await ToastService.Warn(ex);
         }
     }
-    private async Task OnOtherMethodChanged(SelectedItem selectedItem)
+    private Task OnOtherMethodChanged(SelectedItem selectedItem)
     {
 
         if (OtherMethodRemarks.TryGetValue(selectedItem.Value, out var remark))
             AddressDesc = remark;
+
+        return Task.CompletedTask;
     }
     private BootstrapDynamicComponent AddressDynamicComponent;
     private Type AddressUIType;

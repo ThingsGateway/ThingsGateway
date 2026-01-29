@@ -233,9 +233,11 @@ public partial class MainLayout : IAsyncDisposable
     /// 释放资源
     /// </summary>
     /// <param name="disposing"></param>
-    private async ValueTask DisposeAsync(bool disposing)
+    private ValueTask DisposeAsync(bool disposing)
     {
         DispatchService.UnSubscribe(Dispatch);
+
+        return ValueTask.CompletedTask;
     }
 
     /// <summary>

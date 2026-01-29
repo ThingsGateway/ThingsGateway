@@ -141,13 +141,13 @@ internal sealed class MemoryVariableService : BaseService<MemoryVariable>, IMemo
     /// 报表查询
     /// </summary>
     /// <param name="exportFilter">查询条件</param>
-    public async Task<QueryData<MemoryVariable>> PageAsync(GatewayExportFilter exportFilter)
+    public Task<QueryData<MemoryVariable>> PageAsync(GatewayExportFilter exportFilter)
     {
-        var whereQuery = await GetWhereQueryFunc(exportFilter).ConfigureAwait(false);
+        var whereQuery = GetWhereQueryFunc(exportFilter);
 
-        return await QueryAsync(exportFilter.QueryPageOptions, whereQuery).ConfigureAwait(false);
+        return QueryAsync(exportFilter.QueryPageOptions, whereQuery);
     }
-    private async Task<Func<ISqlQueryable<MemoryVariable>, ISqlQueryable<MemoryVariable>>> GetWhereQueryFunc(GatewayExportFilter exportFilter)
+    private Func<ISqlQueryable<MemoryVariable>, ISqlQueryable<MemoryVariable>> GetWhereQueryFunc(GatewayExportFilter exportFilter)
     {
 
         var whereQuery = (ISqlQueryable<MemoryVariable> a) => a
@@ -157,7 +157,7 @@ internal sealed class MemoryVariableService : BaseService<MemoryVariable>, IMemo
         return whereQuery;
     }
 
-    private async Task<Func<IEnumerable<Variable>, IEnumerable<Variable>>> GetWhereEnumerableFunc(GatewayExportFilter exportFilter, bool sql = false)
+    private Func<IEnumerable<Variable>, IEnumerable<Variable>> GetWhereEnumerableFunc(GatewayExportFilter exportFilter, bool sql = false)
     {
 
         var whereQuery = (IEnumerable<Variable> a) => a
@@ -227,11 +227,11 @@ internal sealed class MemoryVariableService : BaseService<MemoryVariable>, IMemo
     /// 导出文件
     /// </summary>
     [OperDesc("ExportMemoryVariable", isRecordPar: false, localizerType: typeof(MemoryVariable))]
-    public async Task<Dictionary<string, object>> ExportVariableAsync(GatewayExportFilter exportFilter)
+    public Task<Dictionary<string, object>> ExportVariableAsync(GatewayExportFilter exportFilter)
     {
         if (GlobalData.HardwareJob.HardwareInfo.AvailableMemory < 2048)
         {
-            var whereQuery = await GetWhereEnumerableFunc(exportFilter).ConfigureAwait(false);
+            var whereQuery = GetWhereEnumerableFunc(exportFilter);
             //导出
             var variables = GlobalData.MemoryVariableRuntimes.Select(a => a.Value).GetQuery(exportFilter.QueryPageOptions, whereQuery, exportFilter.FilterKeyValueAction).Cast<MemoryVariableRuntime>();
 
@@ -250,27 +250,27 @@ internal sealed class MemoryVariableService : BaseService<MemoryVariable>, IMemo
 
             var sheets = MemoryVariableServiceHelpers.ExportSheets(variables, deviceDicts, channelDicts, pluginSheetNames, null); // IEnumerable 延迟执行
 
-            return sheets;
+            return Task.FromResult(sheets);
         }
         else
         {
-            var whereQuery = await GetWhereEnumerableFunc(exportFilter).ConfigureAwait(false);
+            var whereQuery = GetWhereEnumerableFunc(exportFilter);
             //导出
             var data = GlobalData.MemoryVariableRuntimes.Select(a => a.Value).GetQuery(exportFilter.QueryPageOptions, whereQuery, exportFilter.FilterKeyValueAction);
             //var data = (await PageAsync(exportFilter).ConfigureAwait(false));
             var sheets = MemoryVariableServiceHelpers.ExportCore(data, sortName: exportFilter.QueryPageOptions.SortName, sortOrder: exportFilter.QueryPageOptions.SortOrder);
-            return sheets;
+            return Task.FromResult(sheets);
         }
     }
-    private async Task<IAsyncEnumerable<MemoryVariable>> GetAsyncEnumerableData(GatewayExportFilter exportFilter)
+    private IAsyncEnumerable<MemoryVariable> GetAsyncEnumerableData(GatewayExportFilter exportFilter)
     {
-        var whereQuery = await GetEnumerableData(exportFilter).ConfigureAwait(false);
+        var whereQuery = GetEnumerableData(exportFilter);
         return whereQuery.ToAsyncEnumerable();
     }
-    private async Task<ISqlQueryable<MemoryVariable>> GetEnumerableData(GatewayExportFilter exportFilter)
+    private ISqlQueryable<MemoryVariable> GetEnumerableData(GatewayExportFilter exportFilter)
     {
         var db = GetDB();
-        var whereQuery = await GetWhereQueryFunc(exportFilter).ConfigureAwait(false);
+        var whereQuery = GetWhereQueryFunc(exportFilter);
 
         return GetQuery(db, exportFilter.QueryPageOptions, whereQuery, exportFilter.FilterKeyValueAction);
     }

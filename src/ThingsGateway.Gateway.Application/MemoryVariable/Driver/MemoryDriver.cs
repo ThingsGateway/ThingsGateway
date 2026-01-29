@@ -60,7 +60,7 @@ public class MemoryDriver : CollectBase
 
     }
 
-    protected override async ValueTask<OperResult<ReadOnlyMemory<byte>>> ReadSourceAsync(VariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
+    protected override ValueTask<OperResult<ReadOnlyMemory<byte>>> ReadSourceAsync(VariableSourceRead deviceVariableSourceRead, CancellationToken cancellationToken)
     {
         DateTime now = DateTime.Now;
         OperResult operResult = default;
@@ -74,9 +74,9 @@ public class MemoryDriver : CollectBase
         }
         if (operResult.IsSuccess == false)
         {
-            return new OperResult<ReadOnlyMemory<byte>>("One or more variables failed");
+            return ValueTask.FromResult(new OperResult<ReadOnlyMemory<byte>>("One or more variables failed"));
         }
-        return new OperResult<ReadOnlyMemory<byte>>();
+        return ValueTask.FromResult(new OperResult<ReadOnlyMemory<byte>>());
     }
     protected override ValueTask<Dictionary<string, OperResult>> WriteValuesAsync(Dictionary<VariableRuntime, JsonNode> writeInfoLists, CancellationToken cancellationToken)
     {
