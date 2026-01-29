@@ -17,7 +17,7 @@
 		<FoundationVersion>12.4.39</FoundationVersion>
 		<PluginVersion>12.4.38</PluginVersion>
 		<ProPluginVersion>12.4.34</ProPluginVersion>
-		<GatewayVersion>12.4.59</GatewayVersion>
+		<GatewayVersion>12.4.60</GatewayVersion>
 		<Version>$(GatewayVersion)</Version>
 		
 		<ManagementVersion>12.4.35</ManagementVersion>

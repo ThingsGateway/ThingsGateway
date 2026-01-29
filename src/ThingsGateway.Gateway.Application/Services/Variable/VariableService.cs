@@ -845,7 +845,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
                         variable.IsUp = false;
                     }
 
-                    if (variable.IsUp && (filterDeviceIds?.Contains(variable.DeviceId) != false))
+                    if (variable.IsUp && (filterDeviceIds?.Contains(variable.DeviceId) == true))
                     {
                         importPreviewOutput.Results.Add(new(Interlocked.Increment(ref row), false, "Operation not permitted"));
                     }
