@@ -250,6 +250,7 @@
   "ThingsGateway.Gateway.Application.BusinessPropertyWithCacheInterval": {
     "BusinessInterval": "BusinessInterval",
     "BusinessUpdateEnum": "BusinessUpdateEnum",
+    "EnableAtomicBatchEnqueue": "EnableAtomicBatchEnqueue",
     "IsAllVariable": "IsAllVariable"
   },
   "ThingsGateway.Gateway.Application.BusinessPropertyWithCacheIntervalScript": {
