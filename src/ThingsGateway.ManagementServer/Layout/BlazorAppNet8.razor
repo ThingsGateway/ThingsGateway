@@ -3,7 +3,7 @@
 @using Microsoft.Extensions.Localization
 @using ThingsGateway.Razor
 @inject IHostEnvironment Env
-@namespace ThingsGateway.Server
+@namespace ThingsGateway.ManagementServer
 <!DOCTYPE html>
 <html lang="en" data-bs-theme='light'>
 
@@ -15,26 +15,23 @@
     <meta name="keywords" content="thingsgateway,iot,netcore,blazor">
     <meta name="description" content="ThingsGateway边缘采集网关">
     <meta name="author" content="Diego">
-    <title>ThingsGateway</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="favicon.png">
     <base href="/" />
-    <ResourcePreloader />
-    <link rel="icon" href=@(Assets["favicon.ico"]) type="image/x-icon">
-    <link rel="shortcut icon" href=@(Assets["favicon.ico"]) type="image/x-icon">
-    <link rel="apple-touch-icon" href=@(Assets["favicon.png"])>
-    <link rel="stylesheet" href=@(Assets[$"_content/BootstrapBlazor.FontAwesome/css/font-awesome.min.css"]) />
-    <link rel="stylesheet" href=@(Assets[$"_content/BootstrapBlazor/css/bootstrap.blazor.bundle.min.css"]) />
-    <link rel="stylesheet" href=@(Assets[$"_content/BootstrapBlazor/css/motronic.min.css"]) />
-    <link rel="stylesheet" href=@(Assets[$"ThingsGateway.Server.styles.css"]) />
-    <link rel="stylesheet" href=@(Assets[$"{WebsiteConst.DefaultResourceUrl}css/site.css"]) />
-    <link rel="stylesheet" href=@(Assets[$"{WebsiteConst.DefaultResourceUrl}css/devui.css"]) />
+    <title>ThingsGateway</title>
 
-
-    <ImportMap />
+    <link rel="stylesheet" href=@($"_content/BootstrapBlazor.FontAwesome/css/font-awesome.min.css") />
+    <link rel="stylesheet" href=@($"_content/BootstrapBlazor/css/bootstrap.blazor.bundle.min.css") />
+    <link rel="stylesheet" href=@($"_content/BootstrapBlazor/css/motronic.min.css") />
+    <link rel="stylesheet" href=@($"ThingsGateway.Server.styles.css") />
+    <link rel="stylesheet" href=@($"{WebsiteConst.DefaultResourceUrl}css/site.css") />
+    <link rel="stylesheet" href=@($"{WebsiteConst.DefaultResourceUrl}css/devui.css") />
 
     @* <script src=@($"{WebsiteConst.DefaultResourceUrl}js/theme.js") type="module"></script><!-- 初始主题 --> *@
     <!-- PWA Manifest -->
 
-    <link rel="manifest" href=@(Assets["./manifest.json"]) />
+    <link rel="manifest" href="./manifest.json" />
     <HeadOutlet @rendermode="new InteractiveServerRenderMode(false)" />
 </head>
 

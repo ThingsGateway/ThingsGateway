@@ -4,7 +4,7 @@ namespace ThingsGateway.Gateway.Application;
 
 public class NodeOutput
 {
-    private dynamic output;
+    private object output;
     public JsonNode JToken
     {
         get
@@ -13,7 +13,7 @@ public class NodeOutput
         }
     }
 
-    public dynamic Value
+    public object Value
     {
         get
         {

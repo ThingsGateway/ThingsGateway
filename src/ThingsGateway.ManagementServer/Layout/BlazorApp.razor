@@ -16,23 +16,26 @@
     <meta name="keywords" content="thingsgateway,iot,netcore,blazor">
     <meta name="description" content="ThingsGateway边缘采集网关">
     <meta name="author" content="Diego">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" href="favicon.png">
-    <base href="/" />
     <title>ThingsGateway</title>
+    <base href="/" />
+    <ResourcePreloader />
+    <link rel="icon" href=@(Assets["favicon.ico"]) type="image/x-icon">
+    <link rel="shortcut icon" href=@(Assets["favicon.ico"]) type="image/x-icon">
+    <link rel="apple-touch-icon" href=@(Assets["favicon.png"])>
+    <link rel="stylesheet" href=@(Assets[$"_content/BootstrapBlazor.FontAwesome/css/font-awesome.min.css"]) />
+    <link rel="stylesheet" href=@(Assets[$"_content/BootstrapBlazor/css/bootstrap.blazor.bundle.min.css"]) />
+    <link rel="stylesheet" href=@(Assets[$"_content/BootstrapBlazor/css/motronic.min.css"]) />
+    <link rel="stylesheet" href=@(Assets[$"ThingsGateway.Server.styles.css"]) />
+    <link rel="stylesheet" href=@(Assets[$"{WebsiteConst.DefaultResourceUrl}css/site.css"]) />
+    <link rel="stylesheet" href=@(Assets[$"{WebsiteConst.DefaultResourceUrl}css/devui.css"]) />
 
-    <link rel="stylesheet" href=@($"_content/BootstrapBlazor.FontAwesome/css/font-awesome.min.css") />
-    <link rel="stylesheet" href=@($"_content/BootstrapBlazor/css/bootstrap.blazor.bundle.min.css") />
-    <link rel="stylesheet" href=@($"_content/BootstrapBlazor/css/motronic.min.css") />
-    <link rel="stylesheet" href=@($"ThingsGateway.ManagementServer.styles.css") />
-    <link rel="stylesheet" href=@($"{WebsiteConst.DefaultResourceUrl}css/site.css") />
-    <link rel="stylesheet" href=@($"{WebsiteConst.DefaultResourceUrl}css/devui.css") />
+
+    <ImportMap />
 
     @* <script src=@($"{WebsiteConst.DefaultResourceUrl}js/theme.js") type="module"></script><!-- 初始主题 --> *@
     <!-- PWA Manifest -->
 
-    <link rel="manifest" href="./manifest.json" />
+    <link rel="manifest" href=@(Assets["./manifest.json"]) />
     <HeadOutlet @rendermode="new InteractiveServerRenderMode(false)" />
 </head>
 
