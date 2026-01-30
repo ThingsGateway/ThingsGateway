@@ -15,14 +15,18 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public abstract class BusinessBaseWithCacheIntervalVariable : BusinessBaseWithCacheInterval
 {
-    protected override bool PluginEventDataModelEnable => false;
-    protected override bool AlarmModelEnable => false;
+    protected override bool PluginEventDataModelEnable { get; set; } = false;
+    protected override bool AlarmModelEnable { get; set; } = false;
 
-    protected override bool DevModelEnable => false;
+    protected override bool DevModelEnable { get; set; } = false;
 
-    protected override bool VarModelEnable => true;
+    protected override bool VarModelEnable { get; set; } = true;
 
     protected override ValueTask<OperResult> UpdateDevModel(List<CacheDBItem<DeviceBasicData>> item, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+    protected override ValueTask<OperResult> UpdateDevModels(List<DeviceBasicData> item, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
@@ -34,4 +38,6 @@ public abstract class BusinessBaseWithCacheIntervalVariable : BusinessBaseWithCa
     {
         throw new NotImplementedException();
     }
+
+
 }

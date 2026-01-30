@@ -14,7 +14,7 @@
 
 
     <ContextMenuZone>
-        <TreeView Id=@Id TItem="ChannelDeviceTreeItem" Items="Items" ShowIcon="false" ShowSearch IsAccordion=false IsVirtualize="true" OnTreeItemClick="OnTreeItemClick" OnSearchAsync="OnClickSearch" ModelEqualityComparer=ModelEqualityComparer ShowToolbar="true" >
+        <TreeView Id=@Id TItem="ChannelDeviceTreeItem" Items="Items" ShowIcon="false" ShowSearch IsAccordion=false IsVirtualize="true" OnTreeItemClick="OnTreeItemClick" OnSearchAsync="OnClickSearch" ModelEqualityComparer=ModelEqualityComparer ShowToolbar="true">
             <ToolbarTemplate>
 
                 <div class="tree-node-toolbar-edit" @onclick:preventDefault @onclick:stopPropagation>
@@ -22,13 +22,13 @@
                     @if (context.ChannelDevicePluginType < ChannelDevicePluginTypeEnum.Channel)
                     {
                         @* <Tooltip Title=@(GatewayLocalizer["AddChannel"]) Placement="Placement.Bottom"> *@
-                            <Button Size=Size.ExtraSmall Icon="fa-solid fa-plus" Color=Color.None OnClickWithoutRender=@(() => EditChannel(GatewayLocalizer["AddChannel"], context, ItemChangedType.Add))>
-                            </Button>
+                        <Button Size=Size.ExtraSmall Icon="fa-solid fa-plus" Color=Color.None OnClickWithoutRender=@(() => EditChannel(GatewayLocalizer["AddChannel"], context, ItemChangedType.Add))>
+                        </Button>
                         @* </Tooltip> *@
 
                         @* <Tooltip Title=@(GatewayLocalizer["DeleteChannel"]) Placement="Placement.Bottom"> *@
-                            <Button Size=Size.ExtraSmall Icon="fa-solid fa-xmark" Color=Color.None OnClickWithoutRender=@(() => DeleteCurrentChannel(context))>
-                            </Button>
+                        <Button Size=Size.ExtraSmall Icon="fa-solid fa-xmark" Color=Color.None OnClickWithoutRender=@(() => DeleteCurrentChannel(context))>
+                        </Button>
                         @* </Tooltip> *@
 
                     }
@@ -36,19 +36,22 @@
                     @* //更新通道 *@
                     @if (context.ChannelDevicePluginType == ChannelDevicePluginTypeEnum.Channel)
                     {
-                        @* <Tooltip Title=@(GatewayLocalizer["AddDevice"]) Placement="Placement.Bottom"> *@
                         <Button Size=Size.ExtraSmall Icon="fa-solid fa-circle-info" Color=Color.None OnClickWithoutRender=@(() => ShowLogInfo(context))>
-                            </Button>
+                        </Button>
+
+                        @* <Tooltip Title=@(GatewayLocalizer["AddDevice"]) Placement="Placement.Bottom"> *@
+                        <Button Size=Size.ExtraSmall Icon="fa-solid fa-plus" Color=Color.None OnClickWithoutRender=@(() => EditDevice(GatewayLocalizer["AddDevice"], context, ItemChangedType.Add))>
+                        </Button>
                         @* </Tooltip> *@
 
                         @* <Tooltip Title=@(GatewayLocalizer["UpdateChannel"]) Placement="Placement.Bottom"> *@
-                            <Button Size=Size.ExtraSmall Icon="fa-regular fa-pen-to-square" Color=Color.None OnClickWithoutRender=@(() => EditChannel(GatewayLocalizer["UpdateChannel"], context, ItemChangedType.Update))>
-                            </Button>
+                        <Button Size=Size.ExtraSmall Icon="fa-regular fa-pen-to-square" Color=Color.None OnClickWithoutRender=@(() => EditChannel(GatewayLocalizer["UpdateChannel"], context, ItemChangedType.Update))>
+                        </Button>
                         @* </Tooltip> *@
 
                         @* <Tooltip Title=@(GatewayLocalizer["DeleteChannel"]) Placement="Placement.Bottom"> *@
-                            <Button Size=Size.ExtraSmall Icon="fa-solid fa-xmark" Color=Color.None OnClickWithoutRender=@(() => DeleteCurrentChannel(context))>
-                            </Button>
+                        <Button Size=Size.ExtraSmall Icon="fa-solid fa-xmark" Color=Color.None OnClickWithoutRender=@(() => DeleteCurrentChannel(context))>
+                        </Button>
                         @* </Tooltip> *@
 
                     }
@@ -62,15 +65,15 @@
                         <Button Size=Size.ExtraSmall Icon="fa-solid fa-circle-info" Color=Color.None OnClickWithoutRender=@(() => ShowLogInfo(context))>
                         </Button>
                         if (context.DeviceRuntimeId != MemoryConst.MemoryDeviceId)
-                    {
-                        @* <Tooltip Title=@(GatewayLocalizer["UpdateDevice"]) Placement="Placement.Bottom"> *@
+                        {
+                            @* <Tooltip Title=@(GatewayLocalizer["UpdateDevice"]) Placement="Placement.Bottom"> *@
                             <Button Size=Size.ExtraSmall Icon="fa-regular fa-pen-to-square" Color=Color.None OnClickWithoutRender=@(() => EditDevice(GatewayLocalizer["UpdateDevice"], context, ItemChangedType.Update))>
                             </Button>
-                        @* </Tooltip> *@
-                        @* <Tooltip Title=@(GatewayLocalizer["DeleteDevice"]) Placement="Placement.Bottom"> *@
+                            @* </Tooltip> *@
+                            @* <Tooltip Title=@(GatewayLocalizer["DeleteDevice"]) Placement="Placement.Bottom"> *@
                             <Button Size=Size.ExtraSmall Icon="fa-solid fa-xmark" Color=Color.None OnClickWithoutRender=@(() => DeleteCurrentDevice(context))>
                             </Button>
-                        @* </Tooltip> *@
+                            @* </Tooltip> *@
                         }
                     }
 
@@ -80,13 +83,13 @@
         </TreeView>
 
         <ContextMenu style="max-height:800px" class="tgTree" OnBeforeShowCallback="OnBeforeShowCallback">
-            @if (SelectModel != null&&SelectModel.DeviceRuntimeId!=MemoryConst.MemoryDeviceId)
+            @if (SelectModel != null && SelectModel.DeviceRuntimeId != MemoryConst.MemoryDeviceId)
             {
                 <ContextMenuItem Icon="fa-solid fa-table" Text="@Localizer["ChannelTable"]" OnClick=@((a, b) => ShowChannelRuntimeTable(b as ChannelDeviceTreeItem))></ContextMenuItem>
                 <ContextMenuItem Icon="fa-solid fa-table" Text="@Localizer["DeviceTable"]" OnClick=@((a, b) => ShowDeviceRuntimeTable(b as ChannelDeviceTreeItem))></ContextMenuItem>
 
 
-                <ContextMenuItem Icon="fa-solid fa-circle-info" Disabled="SelectModel.ChannelDevicePluginType < ChannelDevicePluginTypeEnum.Channel" Text ="@Localizer["LogInfo"]" OnClick=@((a, b) => ShowLogInfo(b as ChannelDeviceTreeItem))></ContextMenuItem>
+                <ContextMenuItem Icon="fa-solid fa-circle-info" Disabled="SelectModel.ChannelDevicePluginType < ChannelDevicePluginTypeEnum.Channel" Text="@Localizer["LogInfo"]" OnClick=@((a, b) => ShowLogInfo(b as ChannelDeviceTreeItem))></ContextMenuItem>
 
                 <ContextMenuDivider></ContextMenuDivider>
 

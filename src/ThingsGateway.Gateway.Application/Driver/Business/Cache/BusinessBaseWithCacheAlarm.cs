@@ -17,17 +17,23 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public abstract class BusinessBaseWithCacheAlarm : BusinessBaseWithCache
 {
-    protected override bool PluginEventDataModelEnable => true;
-    protected override bool AlarmModelEnable => true;
+    protected override bool PluginEventDataModelEnable { get; set; } = true;
+    protected override bool AlarmModelEnable { get; set; } = true;
 
-    protected override bool DevModelEnable => false;
+    protected override bool DevModelEnable { get; set; } = false;
 
-    protected override bool VarModelEnable => false;
+    protected override bool VarModelEnable { get; set; } = false;
 
     protected override ValueTask<OperResult> UpdateDevModel(List<CacheDBItem<DeviceBasicData>> item, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
+
+    protected override ValueTask<OperResult> UpdateDevModels(List<DeviceBasicData> item, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
     protected override ValueTask<OperResult> UpdateVarModel(List<CacheDBItem<VariableBasicData>> item, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
@@ -37,6 +43,7 @@ public abstract class BusinessBaseWithCacheAlarm : BusinessBaseWithCache
     {
         throw new NotImplementedException();
     }
+
 
     public override async Task AfterVariablesChangedAsync(CancellationToken cancellationToken)
     {
@@ -107,7 +114,7 @@ public abstract class BusinessBaseWithCacheAlarm : BusinessBaseWithCache
         }
     }
     /// <summary>
-    /// 当报警状态变化时触发此方法。如果不需要进行报警上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCache.AddQueueAlarmModel"/> 方法。
+    /// 当报警状态变化时触发此方法。如果不需要进行报警上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCache.AddQueueAlarmModel(CacheDBItem{AlarmVariable})"/> 方法。
     /// </summary>
     /// <param name="alarmVariable">报警变量</param>
     protected virtual void AlarmChange(AlarmVariable alarmVariable)

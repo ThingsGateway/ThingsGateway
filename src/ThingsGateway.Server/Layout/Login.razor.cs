@@ -31,7 +31,7 @@ public partial class Login
 {
     private string _versionString = string.Empty;
     private LoginInput loginModel = new LoginInput();
-    
+
     [SupplyParameterFromQuery]
     [Parameter]
     public string? ReturnUrl { get; set; }

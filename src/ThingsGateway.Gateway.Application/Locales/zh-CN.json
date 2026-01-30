@@ -250,6 +250,7 @@
   "ThingsGateway.Gateway.Application.BusinessPropertyWithCacheInterval": {
     "BusinessInterval": "定时上传间隔",
     "BusinessUpdateEnum": "上传模式",
+    "EnableAtomicBatchEnqueue": "严格批量入队模式",
     "IsAllVariable": "选择全部变量"
   },
   "ThingsGateway.Gateway.Application.BusinessPropertyWithCacheIntervalScript": {

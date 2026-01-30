@@ -28,4 +28,11 @@ public class BusinessPropertyWithCacheInterval : BusinessPropertyWithCache, IBus
     /// </summary>
     [DynamicProperty]
     public virtual string BusinessInterval { get; set; } = "1000";
+
+    /// <summary>
+    /// 定时上传时，保证一组数据在同一时间点可见
+    /// </summary>
+    [DynamicProperty]
+    public virtual bool EnableAtomicBatchEnqueue { get; set; }
+
 }

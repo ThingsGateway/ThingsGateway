@@ -106,7 +106,7 @@ public abstract class BusinessBaseWithCacheInterval : BusinessBaseWithCache
     }
 
     /// <summary>
-    /// 当报警状态变化时触发此方法。如果不需要进行报警上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCache.AddQueueAlarmModel"/> 方法。
+    /// 当报警状态变化时触发此方法。如果不需要进行报警上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCache.AddQueueAlarmModel(CacheDBItem{AlarmVariable})"/> 方法。
     /// </summary>
     /// <param name="alarmVariable">报警变量</param>
     protected virtual void AlarmChange(AlarmVariable alarmVariable)
@@ -115,7 +115,7 @@ public abstract class BusinessBaseWithCacheInterval : BusinessBaseWithCache
     }
 
     /// <summary>
-    /// 当设备状态变化时触发此方法。如果不需要进行设备上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCache.AddQueueDevModel"/> 方法。
+    /// 当设备状态变化时触发此方法。如果不需要进行设备上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCache.AddQueueDevModel(CacheDBItem{DeviceBasicData})"/> 方法。
     /// </summary>
     /// <param name="deviceRuntime">设备运行时信息</param>
     /// <param name="deviceData">设备数据</param>
@@ -124,11 +124,11 @@ public abstract class BusinessBaseWithCacheInterval : BusinessBaseWithCache
         // 在设备状态变化时执行的自定义逻辑
     }
     /// <summary>
-    /// 当设备状态定时变化时触发此方法。如果不需要进行设备上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCache.AddQueueDevModel"/> 方法。
+    /// 当设备状态定时变化时触发此方法。如果不需要进行设备上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCache.AddQueueDevModels(CacheDBItem{List{DeviceBasicData}})"/> 方法。
     /// </summary>
     /// <param name="deviceRuntime">设备运行时信息</param>
     /// <param name="deviceData">设备数据</param>
-    protected virtual void DeviceTimeInterval(DeviceRuntime deviceRuntime, DeviceBasicData deviceData)
+    protected virtual void DeviceTimeInterval(IEnumerable<DeviceRuntime> deviceRuntime, List<DeviceBasicData> deviceData)
     {
         // 在设备状态变化时执行的自定义逻辑
     }
@@ -170,7 +170,7 @@ public abstract class BusinessBaseWithCacheInterval : BusinessBaseWithCache
                         LogMessage?.LogDebug($"Interval {typeof(VariableBasicData).Name} data, count {IdVariableRuntimes.Count}");
                     // 间隔推送全部变量
                     var variableRuntimes = IdVariableRuntimes.Select(a => a.Value);
-                    VariableTimeInterval(variableRuntimes, variableRuntimes.AdaptIEnumerableVariableBasicData());
+                    VariableTimeInterval(variableRuntimes, variableRuntimes.AdaptListVariableBasicData());
                 }
                 catch (Exception ex)
                 {
@@ -186,11 +186,9 @@ public abstract class BusinessBaseWithCacheInterval : BusinessBaseWithCache
                         if (LogMessage?.LogLevel <= TouchSocket.Core.LogLevel.Debug)
                             LogMessage?.LogDebug($"Interval {typeof(DeviceBasicData).Name} data, count {CollectDevices.Count}");
 
+                        var deviceRuntimes = CollectDevices.Select(a => a.Value);
                         // 间隔推送全部设备
-                        foreach (var deviceRuntime in CollectDevices.Select(a => a.Value))
-                        {
-                            DeviceTimeInterval(deviceRuntime, deviceRuntime.AdaptDeviceBasicData());
-                        }
+                        DeviceTimeInterval(deviceRuntimes, deviceRuntimes.AdaptListDeviceBasicData());
                     }
                 }
                 catch (Exception ex)
@@ -219,11 +217,11 @@ public abstract class BusinessBaseWithCacheInterval : BusinessBaseWithCache
     }
 
     /// <summary>
-    /// 当变量定时变化时触发此方法。如果不需要进行变量上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCache.AddQueueVarModel(CacheDBItem{VariableBasicData})"/> 方法。
+    /// 当变量定时变化时触发此方法。如果不需要进行变量上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCache.AddQueueVarModels(CacheDBItem{List{VariableBasicData}})"/> 方法。
     /// </summary>
     /// <param name="variableRuntimes">变量运行时信息</param>
     /// <param name="variables">变量数据</param>
-    protected virtual void VariableTimeInterval(IEnumerable<VariableRuntime> variableRuntimes, IEnumerable<VariableBasicData> variables)
+    protected virtual void VariableTimeInterval(IEnumerable<VariableRuntime> variableRuntimes, List<VariableBasicData> variables)
     {
         // 在变量状态变化时执行的自定义逻辑
     }
@@ -241,7 +239,7 @@ public abstract class BusinessBaseWithCacheInterval : BusinessBaseWithCache
         }
     }
     /// <summary>
-    /// 当报警状态变化时触发此方法。如果不需要进行报警上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCache.AddQueueAlarmModel"/> 方法。
+    /// 当报警状态变化时触发此方法。如果不需要进行报警上传，则可以忽略此方法。通常情况下，需要在此方法中执行 <see cref="BusinessBaseWithCache.AddQueuePluginDataModel(CacheDBItem{PluginEventData})"/> 方法。
     /// </summary>
     protected virtual void PluginChange(PluginEventData value)
     {

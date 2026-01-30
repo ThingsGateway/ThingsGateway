@@ -29,6 +29,7 @@ public abstract class BusinessBaseWithCache : BusinessBase
         _memoryPluginEventDataModelQueue.Clear();
         _memoryAlarmModelQueue.Clear();
         _memoryDevModelQueue.Clear();
+        _memoryDevModelsQueue.Clear();
         _memoryVarModelQueue.Clear();
         _memoryVarModelsQueue.Clear();
         return base.DisposeAsync(disposing);
@@ -36,21 +37,28 @@ public abstract class BusinessBaseWithCache : BusinessBase
 
     #region 条件
 
-    protected abstract bool PluginEventDataModelEnable { get; }
-    protected abstract bool AlarmModelEnable { get; }
-    protected abstract bool DevModelEnable { get; }
-    protected abstract bool VarModelEnable { get; }
+    protected abstract bool PluginEventDataModelEnable { get; set; }
+    protected abstract bool AlarmModelEnable { get; set; }
+    protected abstract bool DevModelEnable { get; set; }
+    protected abstract bool VarModelEnable { get; set; }
     protected internal override Task InitChannelAsync(ChannelObject channelObject, CancellationToken cancellationToken)
     {
         if (AlarmModelEnable)
+        {
             DBCacheAlarm = LocalDBCacheAlarmModel();
 
+        }
         if (PluginEventDataModelEnable)
+        {
             DBCachePluginEventData = LocalDBCachePluginEventDataModel();
+        }
 
 
         if (DevModelEnable)
+        {
             DBCacheDev = LocalDBCacheDevModel();
+            DBCacheDevs = LocalDBCacheDevModels();
+        }
 
         if (VarModelEnable)
         {
@@ -79,6 +87,7 @@ public abstract class BusinessBaseWithCache : BusinessBase
             if (@this.DevModelEnable)
             {
                 await @this.UpdateDevModelMemory(cancellationToken).ConfigureAwait(false);
+                await @this.UpdateDevModelsMemory(cancellationToken).ConfigureAwait(false);
             }
 
             if (@this.AlarmModelEnable)
@@ -98,6 +107,7 @@ public abstract class BusinessBaseWithCache : BusinessBase
             if (@this.DevModelEnable)
             {
                 await @this.UpdateDevModelCache(cancellationToken).ConfigureAwait(false);
+                await @this.UpdateDevModelsCache(cancellationToken).ConfigureAwait(false);
             }
 
             if (@this.AlarmModelEnable)
@@ -219,7 +229,6 @@ public abstract class BusinessBaseWithCache : BusinessBase
         }
     }
 
-
     /// <summary>
     /// 添加队列，超限后会入缓存
     /// </summary>
@@ -317,6 +326,7 @@ public abstract class BusinessBaseWithCache : BusinessBase
         }
         return cacheDb;
     }
+
     /// <summary>
     /// 获取缓存对象，注意每次获取的对象可能不一样，如顺序操作，需固定引用
     /// </summary>
@@ -577,10 +587,13 @@ public abstract class BusinessBaseWithCache : BusinessBase
     #region device
 
     protected ConcurrentQueue<CacheDBItem<DeviceBasicData>> _memoryDevModelQueue = new();
+    protected ConcurrentQueue<CacheDBItem<List<DeviceBasicData>>> _memoryDevModelsQueue = new();
 
     private volatile bool LocalDBCacheDevModelInited;
+    private volatile bool LocalDBCacheDevModelsInited;
 
     private CacheDB DBCacheDev;
+    private CacheDB DBCacheDevs;
 
     /// <summary>
     /// 入缓存
@@ -629,6 +642,230 @@ public abstract class BusinessBaseWithCache : BusinessBase
             }
         }
     }
+
+
+
+
+    /// <summary>
+    /// 入缓存
+    /// </summary>
+    /// <param name="data"></param>
+    protected virtual void AddCache(List<CacheDBItem<List<DeviceBasicData>>> data)
+    {
+        if (_businessPropertyWithCache.CacheEnable && data?.Count > 0)
+        {
+            try
+            {
+                foreach (var item in data)
+                {
+                    item.Id = CommonUtils.GetSingleId();
+                }
+                var dir = CacheDBUtil.GetCacheFilePath(CurrentDevice.Name);
+                var fileStart = CacheDBUtil.GetFileName($"{CurrentDevice.PluginName}_List_{typeof(DeviceBasicData).Name}");
+                var fullName = PathHelper.CombinePathReplace(dir, $"{fileStart}{CacheDBUtil.EX}");
+
+                lock (cacheLock)
+                {
+                    bool s = false;
+                    while (!s)
+                    {
+                        s = CacheDBUtil.DeleteCache(_businessPropertyWithCache.CacheFileMaxLength, fullName);
+                    }
+                    LocalDBCacheDevModelsInited = false;
+                    using var cache = LocalDBCacheDevModels();
+                    cache.DBProvider.Fastest<CacheDBItem<List<DeviceBasicData>>>().PageSize(50000).BulkCopy(data);
+                }
+            }
+            catch
+            {
+                try
+                {
+                    using var cache = LocalDBCacheDevModels();
+                    lock (cache.CacheDBOption)
+                    {
+                        cache.DBProvider.Fastest<CacheDBItem<List<DeviceBasicData>>>().PageSize(50000).BulkCopy(data);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogMessage?.LogWarning(ex, "Add cache fail");
+                }
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// 添加队列，超限后会入缓存
+    /// </summary>
+    /// <param name="data"></param>
+    protected virtual void AddQueueDevModels(CacheDBItem<List<DeviceBasicData>> data)
+    {
+        if (_businessPropertyWithCache.CacheEnable)
+        {
+            //检测队列长度，超限存入缓存数据库
+            if (_memoryDevModelsQueue.Count > _businessPropertyWithCache.QueueMaxCount)
+            {
+                List<CacheDBItem<List<DeviceBasicData>>> list = null;
+                lock (_memoryDevModelsQueue)
+                {
+                    if (_memoryDevModelsQueue.Count > _businessPropertyWithCache.QueueMaxCount)
+                    {
+                        list = _memoryDevModelsQueue.ToListWithDequeue();
+                    }
+                }
+                AddCache(list);
+            }
+        }
+        if (_memoryDevModelsQueue.Count > _businessPropertyWithCache.QueueMaxCount)
+        {
+            lock (_memoryDevModelsQueue)
+            {
+                if (_memoryDevModelsQueue.Count > _businessPropertyWithCache.QueueMaxCount)
+                {
+                    _memoryDevModelsQueue.Clear();
+                    _memoryDevModelsQueue.Enqueue(data);
+                    return;
+                }
+            }
+        }
+        else
+        {
+            _memoryDevModelsQueue.Enqueue(data);
+        }
+    }
+    /// <summary>
+    /// 需实现上传到通道
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    protected abstract ValueTask<OperResult> UpdateDevModels(List<DeviceBasicData> item, CancellationToken cancellationToken);
+
+
+    protected Task UpdateDevModelsCache(CancellationToken cancellationToken)
+    {
+        return UpdateDevModelsCache(this, cancellationToken);
+
+        static async PooledTask UpdateDevModelsCache(BusinessBaseWithCache @this, CancellationToken cancellationToken)
+        {
+            if (@this._businessPropertyWithCache.CacheEnable)
+            {
+                #region //成功上传时，补上传缓存数据
+
+                if (@this.IsConnected())
+                {
+                    try
+                    {
+                        while (!cancellationToken.IsCancellationRequested)
+                        {
+                            //循环获取
+                            var varList = await @this.DBCacheDevs.DBProvider.Queryable<CacheDBItem<List<DeviceBasicData>>>().FirstAsync(cancellationToken).ConfigureAwait(false);
+                            if (varList?.Value?.Count > 0)
+                            {
+                                try
+                                {
+                                    if (!cancellationToken.IsCancellationRequested)
+                                    {
+                                        var result = await @this.UpdateDevModels(varList.Value, cancellationToken).ConfigureAwait(false);
+                                        if (result.IsSuccess)
+                                        {
+                                            //删除缓存
+                                            await @this.DBCacheDevs.DBProvider.DeleteableT<CacheDBItem<List<DeviceBasicData>>>(varList).ExecuteCommandAsync(cancellationToken).ConfigureAwait(false);
+                                        }
+                                        else
+                                            break;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    if (@this.success)
+                                        @this.LogMessage?.LogWarning(ex);
+                                    @this.success = false;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        if (@this.success)
+                            @this.LogMessage?.LogWarning(ex);
+                        @this.success = false;
+                    }
+                }
+
+                #endregion //成功上传时，补上传缓存数据
+            }
+        }
+    }
+
+
+    protected Task UpdateDevModelsMemory(CancellationToken cancellationToken)
+    {
+        return UpdateDevModelsMemory(this, cancellationToken);
+
+        static async PooledTask UpdateDevModelsMemory(BusinessBaseWithCache @this, CancellationToken cancellationToken)
+        {
+            #region //上传变量内存队列中的数据
+
+            try
+            {
+                var queues = @this._memoryDevModelsQueue.ToListWithDequeue();
+                foreach (var cacheDBItem in queues)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        break;
+                    var list = cacheDBItem.Value;
+                    var data = list.ChunkBetter(@this._businessPropertyWithCache.SplitSize);
+                    foreach (var item in data)
+                    {
+                        try
+                        {
+                            if (!cancellationToken.IsCancellationRequested)
+                            {
+                                var result = await @this.UpdateDevModels(item, cancellationToken).ConfigureAwait(false);
+                                if (!result.IsSuccess)
+                                {
+                                    @this.AddCache(new List<CacheDBItem<List<DeviceBasicData>>>() { new CacheDBItem<List<DeviceBasicData>>(item) });
+                                }
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            if (@this.success)
+                                @this.LogMessage?.LogWarning(ex);
+                            @this.success = false;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (@this.success)
+                    @this.LogMessage?.LogWarning(ex);
+                @this.success = false;
+            }
+
+            #endregion //上传变量内存队列中的数据
+        }
+    }
+
+
+
+
 
     /// <summary>
     /// 添加队列，超限后会入缓存
@@ -684,7 +921,19 @@ public abstract class BusinessBaseWithCache : BusinessBase
         }
         return cacheDb;
     }
-
+    /// <summary>
+    /// 获取缓存对象，注意每次获取的对象可能不一样，如顺序操作，需固定引用
+    /// </summary>
+    protected virtual CacheDB LocalDBCacheDevModels()
+    {
+        var cacheDb = CacheDBUtil.GetCache(typeof(CacheDBItem<List<DeviceBasicData>>), CurrentDevice.Name, $"{CurrentDevice.PluginName}_List_{typeof(DeviceBasicData).Name}");
+        if (!LocalDBCacheDevModelsInited)
+        {
+            cacheDb.InitDb();
+            LocalDBCacheDevModelsInited = true;
+        }
+        return cacheDb;
+    }
     /// <summary>
     /// 需实现上传到通道
     /// </summary>
@@ -804,6 +1053,9 @@ public abstract class BusinessBaseWithCache : BusinessBase
             #endregion //上传设备内存队列中的数据
         }
     }
+
+
+
 
     #endregion
 
@@ -961,7 +1213,7 @@ public abstract class BusinessBaseWithCache : BusinessBase
     /// 添加队列，超限后会入缓存
     /// </summary>
     /// <param name="data"></param>
-    protected virtual void AddQueueVarModel(CacheDBItem<List<VariableBasicData>> data)
+    protected virtual void AddQueueVarModels(CacheDBItem<List<VariableBasicData>> data)
     {
         if (_businessPropertyWithCache.CacheEnable)
         {
@@ -1240,6 +1492,7 @@ public abstract class BusinessBaseWithCache : BusinessBase
                     {
                         try
                         {
+
                             if (!cancellationToken.IsCancellationRequested)
                             {
                                 var result = await @this.UpdateVarModels(item, cancellationToken).ConfigureAwait(false);
