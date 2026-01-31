@@ -21,4 +21,9 @@
 //        var result = await db.Fastest<SQLHistoryValue>().SplitTable().BulkCopyAsync(sQLHistoryValues).ConfigureAwait(false);
 //        Logger?.Trace($"InsertTable ,Count：{result}");
 //    }
+
+//    public override Task<int> DBDeleteable(ISqlOrmClient db, int days, CancellationToken cancellationToken)
+//    {
+//        return Task.FromResult(0);
+//    }
 //}
