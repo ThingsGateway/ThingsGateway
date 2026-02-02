@@ -34,7 +34,11 @@ public abstract class BusinessBaseWithCache : BusinessBase
         _memoryVarModelsQueue.Clear();
         return base.DisposeAsync(disposing);
     }
-
+    internal override Task OnProtectedStartError(CancellationToken cancellationToken)
+    {
+        success = false;
+        return base.OnProtectedStartError(cancellationToken);
+    }
     #region 条件
 
     protected abstract bool PluginEventDataModelEnable { get; set; }

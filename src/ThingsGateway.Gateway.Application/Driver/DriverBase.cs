@@ -316,6 +316,7 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
         }
         catch (Exception ex)
         {
+            await OnProtectedStartError(cancellationToken).ConfigureAwait(false);
             // 记录执行过程中的异常信息，并设置设备状态为异常
             LogMessage?.LogWarning(ex, "Before Start error");
             CurrentDevice.SetDeviceStatus(TimerX.Now, true, ex.Message);
@@ -412,6 +413,18 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
         pluginPropertyEditorItems = null;
         DeviceThreadManage = null;
     }
+
+
+    /// <summary>
+    /// 开始通讯执行的方法
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    internal virtual Task OnProtectedStartError(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
     #endregion 插件生命周期
 
     #region 插件重写
