@@ -64,6 +64,7 @@ public class Device : BaseDataEntity, IValidatableObject
     /// </summary>
     [OrmColumn(ColumnDescription = "默认执行间隔")]
     [AutoGenerateColumn(Visible = true, Filterable = true, Sortable = true)]
+    [RequiredNotWhiteSpace]
     public virtual string IntervalTime { get; set; } = "1000";
 
     /// <summary>

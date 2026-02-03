@@ -1,7 +1,4 @@
 {
-  "Debug": true,
-  "LogLevel": "Info",
-  "LogPath": "Logs/XTrace",
   "LogFileMaxMegabytes": "5",
   "LogFileBackups": "10",
   "LogFileFormat": "{0:yyyy_MM_dd}.log"
