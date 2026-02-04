@@ -26,7 +26,10 @@ public class MemoryDriver : CollectBase
     /// <inheritdoc/>
     public override CollectPropertyBase CollectProperties { get; } = new CollectPropertyNone();
 
-
+    protected override void SetDeviceStatus(object? state, CancellationToken cancellationToken)
+    {
+        CurrentDevice.SetDeviceStatus(TimerX.Now, false);
+    }
 #if !Management
     protected internal override async Task InitChannelAsync(ChannelObject channelObject, CancellationToken cancellationToken)
     {
