@@ -465,8 +465,25 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
     internal protected virtual async Task InitChannelAsync(ChannelObject channelObject, CancellationToken cancellationToken)
     {
         ChannelObject = channelObject;
+
         if (Channel != null && Channel.PluginManager == null)
-            await Channel.SetupAsync(Channel.Config.CloneAndDispose()).ConfigureAwait(false);
+        {
+            try
+            {
+                await Channel.Lock.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+                if (Channel != null && Channel.PluginManager == null)
+                {
+                    await Channel.SetupAsync(Channel.Config.CloneAndDispose()).ConfigureAwait(false);
+                }
+            }
+            finally
+            {
+                Channel.Lock.Release();
+            }
+        }
+
+
         await AfterVariablesChangedAsync(cancellationToken).ConfigureAwait(false);
     }
 

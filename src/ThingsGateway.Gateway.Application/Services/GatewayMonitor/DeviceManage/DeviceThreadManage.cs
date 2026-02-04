@@ -48,9 +48,10 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
         // 根据配置获取通道实例
         var driver = GlobalData.PluginService.GetDriver(channelRuntime.PluginName);
+
         if (driver is IReceivedFoundationDevice foundationDevice && foundationDevice.ReceivedFoundationDevice != null)
         {
-            ChannelObject.Reset(foundationDevice.ReceivedFoundationDevice.CreateChannel(config, channelRuntime));
+            ChannelObject.Reset(channelRuntime.GetChannel(config, foundationDevice.ReceivedFoundationDevice));
         }
         else
         {
@@ -823,14 +824,19 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
             CancellationTokenSource.SafeDispose();
             GlobalData.DeviceStatusChangeEvent -= GlobalData_DeviceStatusChangeEvent;
             await NewDeviceLock.WaitAsync().ConfigureAwait(false);
-            _logger?.TryDispose();
             await PrivateRemoveDevicesAsync(Drivers.Select(a => a.Key).ToArray()).ConfigureAwait(false);
             if (Channel?.ReadOnlyCollects.Count == 0)
+            {
                 Channel?.SafeDispose();
+            }
+            else
+            {
+                LogMessage?.LogInformation("通道管理器在释放时，仍然检测存在采集设备，无法释放通道对象，可能是因为共用了通道服务");
+            }
 
             LogMessage?.LogInformation(string.Format(AppResource.ChannelDispose, CurrentChannel?.Name ?? string.Empty));
 
-            await Task.Delay(50).ConfigureAwait(false);
+            await Task.Delay(1000).ConfigureAwait(false);
 
             if (LogMessage?.Logs != null)
             {
@@ -839,6 +845,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
                     item.TryDispose();
                 }
             }
+            _logger?.TryDispose();
         }
         finally
         {

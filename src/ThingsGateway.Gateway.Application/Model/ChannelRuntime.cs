@@ -190,7 +190,7 @@ public class ChannelRuntime : Channel
 
 
 
-    public IChannel GetChannel(TouchSocket.Core.TouchSocketConfig config)
+    public IChannel GetChannel(TouchSocket.Core.TouchSocketConfig config, IReceivedDevice receivedDevice = null)
     {
         lock (GlobalData.IdChannels)
         {
@@ -227,15 +227,23 @@ public class ChannelRuntime : Channel
 
                 if (same != null)
                 {
-                    return same.GetChannel(config);
+                    return same.GetChannel(config, receivedDevice);
                 }
             }
 
             if (DeviceThreadManage?.Channel?.DisposedValue == false)
                 return DeviceThreadManage?.Channel;
 
-            var ichannel = config.GetChannel(this);
-            return ichannel;
+            if (receivedDevice != null)
+            {
+                var ichannel = receivedDevice.CreateChannel(config, this);
+                return ichannel;
+            }
+            else
+            {
+                var ichannel = config.GetChannel(this);
+                return ichannel;
+            }
         }
     }
 
