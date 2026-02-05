@@ -59,10 +59,9 @@ public abstract class BusinessBase : DriverBase
         LogMessage?.LogInformation("Refresh variable");
         // 获取与当前设备相关的变量,CurrentDevice.VariableRuntimes并不适用于业务插件
 
-        var variableRuntimes = GlobalData.IdVariables.Where(a =>
+        var variableRuntimes = GlobalData.GetEnableVariables().Where(a =>
         {
-            if (!a.Value.Enable) return false;
-            if (a.Value.VariablePropertys?.TryGetValue(DeviceId, out var values) == true)
+            if (a.VariablePropertys?.TryGetValue(DeviceId, out var values) == true)
             {
                 if (values.TryGetValue("Enable", out var Enable))
                 {
@@ -83,7 +82,7 @@ public abstract class BusinessBase : DriverBase
             }
         }
        );
-        IdVariableRuntimes = variableRuntimes.ToFrozenDictionary();
+        IdVariableRuntimes = variableRuntimes.ToFrozenDictionary(a=>a.Id);
         CollectDevices = IdVariableRuntimes.Select(a => a.Value.DeviceRuntime).Where(a => !a.IsMemory && a.IsCollect == true).DistinctBy(a => a.Id).ToFrozenDictionary(a => a.Id, a => a);
 
         VariableRuntimeGroups = IdVariableRuntimes.Where(a => !a.Value.BusinessGroup.IsNullOrEmpty()).GroupBy(a => a.Value.BusinessGroup ?? string.Empty).ToFrozenDictionary(a => a.Key, a => a.Select(a => a.Value).ToList());
