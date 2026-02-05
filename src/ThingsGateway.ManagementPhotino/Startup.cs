@@ -177,10 +177,12 @@ public class Startup : AppStartup
 
         if (!Runtime.IsLegacyWindows)
         {
+#pragma warning disable CA2000 // 丢失范围之前释放对象
 #if NET9_0_OR_GREATER
             var certificate = X509CertificateLoader.LoadPkcs12FromFile("ThingsGateway.pfx", "ThingsGateway", X509KeyStorageFlags.EphemeralKeySet);
 #else
             var certificate = new X509Certificate2("ThingsGateway.pfx", "ThingsGateway", X509KeyStorageFlags.EphemeralKeySet);
+#pragma warning restore CA2000 // 丢失范围之前释放对象
 #endif
             services.AddDataProtection()
                 .PersistKeysToFileSystem(new DirectoryInfo("Keys"))

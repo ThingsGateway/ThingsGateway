@@ -13,7 +13,9 @@ namespace ThingsGateway.Gateway.Test
         {
             {
 
+#pragma warning disable CA2000 // 丢失范围之前释放对象
                 var rwLock = new AsyncReadWriteLock(writeReadRatio: 3, writePriority: true);
+#pragma warning restore CA2000 // 丢失范围之前释放对象
                 using var cts = new CancellationTokenSource();
                 var d = await rwLock.WriterLockAsync().ConfigureAwait(false);
                 List<Task> tasks = new();
@@ -57,7 +59,9 @@ namespace ThingsGateway.Gateway.Test
             }
 
 
+#pragma warning disable CA2000 // 丢失范围之前释放对象
             var rwLock1 = new AsyncReadWriteLock1(writeReadRatio: 3, writePriority: true);
+#pragma warning restore CA2000 // 丢失范围之前释放对象
             using var cts1 = new CancellationTokenSource();
             var d1 = await rwLock1.WriterLockAsync().ConfigureAwait(false);
             List<Task> tasks1 = new();

@@ -92,6 +92,7 @@ public partial class ManagementTask : AsyncDisposableObject
     private async Task<TcpDmtpClient> GetTcpDmtpClient()
     {
         var tcpDmtpClient = new TcpDmtpClient();
+#pragma warning disable CA2000 // 丢失范围之前释放对象
         var config = new TouchSocketConfig()
                .SetRemoteIPHost(_managementOptions.ServerUri)
                .SetAdapterOption(a => a.MaxPackageSize = 1024 * 1024 * 1024)
@@ -152,6 +153,7 @@ public partial class ManagementTask : AsyncDisposableObject
                        }
                    });
                });
+#pragma warning restore CA2000 // 丢失范围之前释放对象
 
         await tcpDmtpClient.SetupAsync(config).ConfigureAwait(false);
         return tcpDmtpClient;
@@ -160,6 +162,7 @@ public partial class ManagementTask : AsyncDisposableObject
     private async Task<TcpDmtpService> GetTcpDmtpService()
     {
         var tcpDmtpService = new TcpDmtpService();
+#pragma warning disable CA2000 // 丢失范围之前释放对象
         var config = new TouchSocketConfig()
                .SetListenIPHosts(_managementOptions.ServerUri)
                    .SetAdapterOption(a => a.MaxPackageSize = 1024 * 1024 * 1024)
@@ -206,6 +209,7 @@ public partial class ManagementTask : AsyncDisposableObject
                    a.Add<FilePlugin>();
 
                });
+#pragma warning restore CA2000 // 丢失范围之前释放对象
 
         await tcpDmtpService.SetupAsync(config).ConfigureAwait(false);
         return tcpDmtpService;

@@ -45,7 +45,9 @@ public static class PluginInfoUtil
                 // 获取主程序集文件流
                 using (var stream = plugin.MainFile.OpenReadStream(maxFileSize))
                 {
+#pragma warning disable CA2000 // 丢失范围之前释放对象
                     FileStream fs = new(fullPath, FileMode.Create);
+#pragma warning restore CA2000 // 丢失范围之前释放对象
 
                     await stream.CopyToAsync(fs).ConfigureAwait(false);
                     await fs.SafeDisposeAsync().ConfigureAwait(false);
@@ -59,7 +61,9 @@ public static class PluginInfoUtil
                     {
 
                         var otherFullPath = $"{PathHelper.CombinePathReplace(fullDir, item.Name)}";
+#pragma warning disable CA2000 // 丢失范围之前释放对象
                         FileStream otherFs = new(otherFullPath, FileMode.Create);
+#pragma warning restore CA2000 // 丢失范围之前释放对象
 
                         await otherStream.CopyToAsync(otherFs).ConfigureAwait(false);
                         await otherFs.SafeDisposeAsync().ConfigureAwait(false);

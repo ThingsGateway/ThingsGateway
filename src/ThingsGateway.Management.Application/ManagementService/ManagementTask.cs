@@ -121,6 +121,7 @@ public partial class ManagementTask : AsyncDisposableObject
     private async Task<TcpDmtpClient> GetTcpDmtpClient()
     {
         var tcpDmtpClient = new TcpDmtpClient();
+#pragma warning disable CA2000 // 丢失范围之前释放对象
         var config = new TouchSocketConfig()
                .SetRemoteIPHost(_managementConfig.ServerUri)
                .SetAdapterOption(a => a.MaxPackageSize = 1024 * 1024 * 1024)
@@ -245,6 +246,7 @@ public partial class ManagementTask : AsyncDisposableObject
                        return tcpDmtpClient.ResetIdAsync($"{_managementConfig.Name}:{ManagementGlobalData.HardwareJob.HardwareInfo.UUID}", tcpDmtpClient.ClosedToken);
                    });
                });
+#pragma warning restore CA2000 // 丢失范围之前释放对象
 
         await tcpDmtpClient.SetupAsync(config).ConfigureAwait(false);
         return tcpDmtpClient;
@@ -273,6 +275,7 @@ public partial class ManagementTask : AsyncDisposableObject
     private async Task<TcpDmtpService> GetTcpDmtpService()
     {
         var tcpDmtpService = new TcpDmtpService();
+#pragma warning disable CA2000 // 丢失范围之前释放对象
         var config = new TouchSocketConfig()
                .SetListenIPHosts(_managementConfig.ServerUri)
                    .SetAdapterOption(a => a.MaxPackageSize = 1024 * 1024 * 1024)
@@ -306,6 +309,7 @@ public partial class ManagementTask : AsyncDisposableObject
 
 
                });
+#pragma warning restore CA2000 // 丢失范围之前释放对象
 
         await tcpDmtpService.SetupAsync(config).ConfigureAwait(false);
         return tcpDmtpService;

@@ -77,6 +77,7 @@ public partial class WebApiTask : AsyncDisposableObject
     private async Task<HttpService> GetHttpService()
     {
         var httpService = new HttpService();
+#pragma warning disable CA2000 // 丢失范围之前释放对象
         var config = new TouchSocketConfig()
                .SetListenIPHosts(_webApiOptions.ServerUri)
                .ConfigureContainer(a =>
@@ -133,6 +134,7 @@ public partial class WebApiTask : AsyncDisposableObject
 
                    a.UseDefaultHttpServicePlugin();
                });
+#pragma warning restore CA2000 // 丢失范围之前释放对象
 
         await httpService.SetupAsync(config).ConfigureAwait(false);
         return httpService;

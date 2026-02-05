@@ -34,7 +34,9 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
     /// <param name="channelRuntime">通道表</param>
     public DeviceThreadManage(ChannelRuntime channelRuntime)
     {
+#pragma warning disable CA2000 // 丢失范围之前释放对象
         var config = new TouchSocketConfig();
+#pragma warning restore CA2000 // 丢失范围之前释放对象
         LogMessage = new LoggerGroup() { LogLevel = TouchSocket.Core.LogLevel.Warning };//不显示调试日志
         // 配置容器中注册日志记录器实例
         config.ConfigureContainer(a => a.RegisterSingleton<ILog>(LogMessage));

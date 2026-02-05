@@ -64,7 +64,9 @@ internal sealed class Program
                   }
               });
 
+#pragma warning disable CA2000 // 丢失范围之前释放对象
         Serve.BuildApplication(options, out var app);
+#pragma warning restore CA2000 // 丢失范围之前释放对象
 
         app.Start();
 

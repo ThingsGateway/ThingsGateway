@@ -330,6 +330,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
         log?.AddLogger(TextLogger);
         LogMessage = log;
         var tcpDmtpClient = new TcpDmtpClient();
+#pragma warning disable CA2000 // 丢失范围之前释放对象
         var config = new TouchSocketConfig()
                .SetRemoteIPHost(redundancy.MasterUri)
                .SetAdapterOption(a => a.MaxPackageSize = 0x20000000)
@@ -362,6 +363,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
 
 
                });
+#pragma warning restore CA2000 // 丢失范围之前释放对象
 
         await tcpDmtpClient.SetupAsync(config).ConfigureAwait(false);
         return tcpDmtpClient;
@@ -374,6 +376,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
         log?.AddLogger(TextLogger);
         LogMessage = log;
         var tcpDmtpService = new TcpDmtpService();
+#pragma warning disable CA2000 // 丢失范围之前释放对象
         var config = new TouchSocketConfig()
                .SetListenIPHosts(redundancy.MasterUri)
                .SetAdapterOption(a => a.MaxPackageSize = 0x20000000)
@@ -407,6 +410,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
                    }));
 
                });
+#pragma warning restore CA2000 // 丢失范围之前释放对象
 
         await tcpDmtpService.SetupAsync(config).ConfigureAwait(false);
         return tcpDmtpService;

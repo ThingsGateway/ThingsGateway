@@ -44,6 +44,7 @@ public static class FileServerHelpers
         fileOperator.MaxSpeed = MaxSpeed;//设置最大限速。
 
         //此处的作用相当于Timer，定时每秒输出当前的传输进度和速度。
+#pragma warning disable CA2000 // 丢失范围之前释放对象
         var loopAction = LoopAction.CreateLoopAction(-1, 1000, (loop) =>
         {
             if (fileOperator.IsEnd)
@@ -52,6 +53,7 @@ public static class FileServerHelpers
             }
             client.Logger.Info($"请求文件：{fileOperator.ResourcePath}，进度：{(fileOperator.Progress * 100).ToString("F2")}%，速度：{(fileOperator.Speed() / 1024).ToString("F2")} KB/s");
         });
+#pragma warning restore CA2000 // 丢失范围之前释放对象
 
         _ = loopAction.RunAsync();
 
@@ -90,6 +92,7 @@ public static class FileServerHelpers
         fileOperator.MaxSpeed = MaxSpeed;//设置最大限速。
 
         //此处的作用相当于Timer，定时每秒输出当前的传输进度和速度。
+#pragma warning disable CA2000 // 丢失范围之前释放对象
         var loopAction = LoopAction.CreateLoopAction(-1, 1000, (loop) =>
         {
             if (fileOperator.IsEnd)
@@ -98,6 +101,7 @@ public static class FileServerHelpers
             }
             client.Logger.Info($"进度：{(fileOperator.Progress * 100).ToString("F2")}%，速度：{(fileOperator.Speed() / 1024).ToString("F2")} KB/s");
         });
+#pragma warning restore CA2000 // 丢失范围之前释放对象
 
         _ = loopAction.RunAsync();
 
