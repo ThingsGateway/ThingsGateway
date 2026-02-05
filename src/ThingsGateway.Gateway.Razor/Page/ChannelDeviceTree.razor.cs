@@ -1592,7 +1592,7 @@ EventCallback.Factory.Create<MouseEventArgs>(this, async e =>
 
     private static bool ModelEqualityComparer(ChannelDeviceTreeItem x, ChannelDeviceTreeItem y)
     {
-        return x.Equals(x, y);
+        return x.Equals(y);
     }
 
     private bool Disposed;

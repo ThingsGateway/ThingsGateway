@@ -10,7 +10,7 @@
 
 namespace ThingsGateway.Management.Razor;
 
-public class ManagementTreeItem : IEqualityComparer<ManagementTreeItem>
+public class ManagementTreeItem : IEquatable<ManagementTreeItem>
 {
     public string Name { get; set; }
 
@@ -42,11 +42,20 @@ public class ManagementTreeItem : IEqualityComparer<ManagementTreeItem>
 
     public bool Equals(ManagementTreeItem? x, ManagementTreeItem? y)
     {
+        if ((x == null && y != null) || (x != null && y == null))
+        {
+            return false;
+        }
         return y.Name == x.Name && y.ParentName == x.ParentName && x.IsServer == y.IsServer;
     }
 
     public int GetHashCode([DisallowNull] ManagementTreeItem obj)
     {
         return HashCode.Combine(obj.Name, obj.ParentName, obj.IsServer);
+    }
+
+    public bool Equals(ManagementTreeItem? other)
+    {
+        return Equals(this, other);
     }
 }

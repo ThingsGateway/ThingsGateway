@@ -652,7 +652,7 @@ finally
 
     private static bool ModelEqualityComparer(ManagementTreeItem x, ManagementTreeItem y)
     {
-        return x.Equals(x, y);
+        return x.Equals(y);
     }
 
     private bool Disposed;

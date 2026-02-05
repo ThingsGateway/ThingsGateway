@@ -17,7 +17,7 @@ public enum ChannelDevicePluginTypeEnum
     Channel,
     Device
 }
-public class ChannelDeviceTreeItem : IEqualityComparer<ChannelDeviceTreeItem>
+public class ChannelDeviceTreeItem : IEquatable<ChannelDeviceTreeItem>
 {
     public long Id { get; set; }
     public ChannelDevicePluginTypeEnum ChannelDevicePluginType { get; set; }
@@ -123,6 +123,10 @@ public class ChannelDeviceTreeItem : IEqualityComparer<ChannelDeviceTreeItem>
 
     public bool Equals(ChannelDeviceTreeItem? x, ChannelDeviceTreeItem? item)
     {
+        if ((x == null && item != null) || (x != null && item == null))
+        {
+            return false;
+        }
         if (x.ChannelDevicePluginType != item.ChannelDevicePluginType)
             return false;
 
@@ -153,7 +157,10 @@ public class ChannelDeviceTreeItem : IEqualityComparer<ChannelDeviceTreeItem>
         return $"{channelDeviceTreeItem.ChannelDevicePluginType}.{channelDeviceTreeItem.DeviceRuntimeId}.{channelDeviceTreeItem.ChannelRuntimeId}.{channelDeviceTreeItem.PluginName}.{channelDeviceTreeItem.PluginType}";
     }
 
-
+    public bool Equals(ChannelDeviceTreeItem? other)
+    {
+        return Equals(this, other);
+    }
 }
 
 public struct ChannelDeviceTreeItemStruct
