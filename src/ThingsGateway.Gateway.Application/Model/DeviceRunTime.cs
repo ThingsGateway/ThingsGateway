@@ -353,9 +353,7 @@ public class DeviceRuntime : Device
         GlobalData.Devices.TryRemove(Name, out _);
 
         Driver = null;
-        VariableSourceReads?.Clear();
-        VariableScriptReads?.Clear();
-        ReadVariableMethods?.Clear();
+
 
         GC.SuppressFinalize(this);
     }
