@@ -340,12 +340,20 @@ public partial class VariableRuntimeInfo
     /// <returns></returns>
     private static Task<string> JsonFormatter(object? d)
     {
-        var ret = "";
-        if (d is TableColumnContext<VariableRuntime, object?> data && data?.Value != null)
+        try
         {
-            ret = data.Value.ToSystemTextJsonString();
+            var ret = "";
+            if (d is TableColumnContext<VariableRuntime, object?> data && data?.Value != null)
+            {
+                ret = data.Value.ToSystemTextJsonString();
+            }
+            return Task.FromResult(ret);
         }
-        return Task.FromResult(ret);
+        catch (Exception)
+        {
+            return Task.FromResult("");
+        }
+
     }
     [Inject]
     private IDispatchService<VariableRuntime> VariableRuntimeDispatchService { get; set; }

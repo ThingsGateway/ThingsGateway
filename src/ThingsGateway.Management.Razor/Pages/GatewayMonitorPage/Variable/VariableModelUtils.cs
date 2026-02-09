@@ -56,47 +56,57 @@ public static class VariableModelUtils
 
     public static string GetValue(VariableRuntime row, string fieldName)
     {
-        switch (fieldName)
+        try
         {
-            case nameof(VariableRuntime.Value):
-                return row.Value?.ToSystemTextJsonString(false) ?? string.Empty;
-            case nameof(VariableRuntime.RawValue):
-                return row.RawValue?.ToSystemTextJsonString(false) ?? string.Empty;
-            case nameof(VariableRuntime.LastSetValue):
-                return row.LastSetValue?.ToSystemTextJsonString(false) ?? string.Empty;
-            case nameof(VariableRuntime.ChangeTime):
-                return row.ChangeTime.ToString("MM-dd HH:mm:ss.fff");
 
-            case nameof(VariableRuntime.CollectTime):
-                return row.CollectTime.ToString("MM-dd HH:mm:ss.fff");
+            switch (fieldName)
+            {
+                case nameof(VariableRuntime.Value):
+                    return row.Value?.ToSystemTextJsonString(false) ?? string.Empty;
+                case nameof(VariableRuntime.RawValue):
+                    return row.RawValue?.ToSystemTextJsonString(false) ?? string.Empty;
+                case nameof(VariableRuntime.LastSetValue):
+                    return row.LastSetValue?.ToSystemTextJsonString(false) ?? string.Empty;
+                case nameof(VariableRuntime.ChangeTime):
+                    return row.ChangeTime.ToString("MM-dd HH:mm:ss.fff");
 
-            case nameof(VariableRuntime.IsOnline):
-                return row.IsOnline ? "Online" : "Offline";
+                case nameof(VariableRuntime.CollectTime):
+                    return row.CollectTime.ToString("MM-dd HH:mm:ss.fff");
 
-            case nameof(VariableRuntime.LastErrorMessage):
-                return row.LastErrorMessage;
+                case nameof(VariableRuntime.IsOnline):
+                    return row.IsOnline ? "Online" : "Offline";
+
+                case nameof(VariableRuntime.LastErrorMessage):
+                    return row.LastErrorMessage;
 
 
-            case nameof(VariableRuntime.RuntimeType):
-                return row.RuntimeType;
-            default:
+                case nameof(VariableRuntime.RuntimeType):
+                    return row.RuntimeType;
+                default:
 
-                var ret = VariableModelUtils.GetPropertyValue(row, fieldName);
+                    var ret = VariableModelUtils.GetPropertyValue(row, fieldName);
 
-                if (ret != null)
-                {
-                    var t = ret.GetType();
-                    if (t.IsEnum)
+                    if (ret != null)
                     {
-                        // 如果是枚举这里返回 枚举的描述信息
-                        var itemName = ret.ToString();
-                        if (!string.IsNullOrEmpty(itemName))
+                        var t = ret.GetType();
+                        if (t.IsEnum)
                         {
-                            ret = Utility.GetDisplayName(t, itemName);
+                            // 如果是枚举这里返回 枚举的描述信息
+                            var itemName = ret.ToString();
+                            if (!string.IsNullOrEmpty(itemName))
+                            {
+                                ret = Utility.GetDisplayName(t, itemName);
+                            }
                         }
                     }
-                }
-                return ret is string str ? str : ret?.ToString() ?? string.Empty;
+                    return ret is string str ? str : ret?.ToString() ?? string.Empty;
+            }
+
+
+        }
+        catch (Exception)
+        {
+            return string.Empty;
         }
     }
 

@@ -1,5 +1,5 @@
 {
-  "LogFileMaxMegabytes": "5",
-  "LogFileBackups": "10",
+  "LogFileMaxMegabytes": 5,
+  "LogFileBackups": 10,
   "LogFileFormat": "{0:yyyy_MM_dd}.log"
 }

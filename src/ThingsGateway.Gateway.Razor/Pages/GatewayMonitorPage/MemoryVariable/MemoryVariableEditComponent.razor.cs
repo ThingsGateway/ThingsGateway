@@ -33,11 +33,19 @@ public partial class MemoryVariableEditComponent
     private static string JsonFormatter(object? d)
     {
         var ret = "";
-        if (d != null)
+        try
         {
-            ret = d.ToSystemTextJsonString();
+            if (d != null)
+            {
+                ret = d.ToSystemTextJsonString();
+            }
+            return ret;
         }
-        return ret;
+        catch (Exception)
+        {
+            return ret;
+        }
+
     }
     public long ChoiceBusinessDeviceId;
 
