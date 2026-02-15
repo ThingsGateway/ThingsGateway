@@ -241,9 +241,17 @@ public partial class ManagementTask : AsyncDisposableObject
 
                    a.Add<FilePlugin>();
 
-                   a.AddDmtpCreatedChannelPlugin(() =>
+                   a.AddDmtpConnectedPlugin(async () =>
                    {
-                       return tcpDmtpClient.ResetIdAsync($"{_managementConfig.Name}:{ManagementGlobalData.HardwareJob.HardwareInfo.UUID}", tcpDmtpClient.ClosedToken);
+                       try
+                       {
+                           await tcpDmtpClient.ResetIdAsync($"{_managementConfig.Name}:{ManagementGlobalData.HardwareJob.HardwareInfo.UUID}", tcpDmtpClient.ClosedToken).ConfigureAwait(false);
+                       }
+                       catch (Exception)
+                       {
+                           await tcpDmtpClient.CloseAsync().ConfigureAwait(false);
+                       }
+
                    });
                });
 #pragma warning restore CA2000 // 丢失范围之前释放对象

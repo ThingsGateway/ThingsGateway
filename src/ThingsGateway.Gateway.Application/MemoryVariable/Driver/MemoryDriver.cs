@@ -12,7 +12,6 @@ using BootstrapBlazor.Components;
 using System.Collections.Concurrent;
 using System.Text.Json.Nodes;
 using ThingsGateway.Gateway.Application.Extensions;
-using TouchSocket.Core;
 
 namespace ThingsGateway.Gateway.Application;
 

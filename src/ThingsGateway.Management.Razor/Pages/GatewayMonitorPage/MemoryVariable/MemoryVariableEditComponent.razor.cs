@@ -16,7 +16,6 @@ using System.Text;
 using ThingsGateway.Foundation.Common.Json.Extension;
 using ThingsGateway.Foundation.Common.StringExtension;
 using ThingsGateway.Gateway.Application.Extensions;
-using TouchSocket.Sockets;
 
 
 

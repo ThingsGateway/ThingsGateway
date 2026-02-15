@@ -18,8 +18,6 @@ using System.Collections.Generic;
 using ThingsGateway.Gateway.Razor;
 using ThingsGateway.Management.Application;
 
-using TouchSocket.Core;
-
 public sealed class ManagementGatewayExportService(IJSRuntime jSRuntime, IChannelPageService channelPageService, IDevicePageService devicePageService, IVariablePageService variablePageService, IMemoryVariablePageService memoryVariablePageService) : IGatewayExportService
 {
 

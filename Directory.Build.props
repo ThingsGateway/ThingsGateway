@@ -13,14 +13,14 @@
 			CS8002;NU1510;SYSLIB5007;CS8603;CS8618;CS1591;CS8625;CS8602;CS8604;CS8600;CS8601;CS8714;CS8619;CS8629;CS8765;CS8634;CS8621;CS8767;CS8633;CS8620;CS8610;CS8631;CS8605;CS8622;CS8613;NU5100;NU5104;NU1903;NU1902;CA1863;CA1812;CA1805;CA1515;CA1508;CA1819;CA1852;CA5394;CA1822;CA1815;CA1813;CA5358;CA5384;CA5400;CA5401;CA1814;CA1835;CA5392;CA5350;CA2100;CA1848;CA1810;CA1513;CA5351;CA1510;CA1512;CA1823;RCS1102;RCS1194;NETSDK1206
 		</NoWarn>
 		<TouchSocketVersion>4.1.3</TouchSocketVersion>
-		<AdminVersion>12.4.47</AdminVersion>
-		<FoundationVersion>12.4.56</FoundationVersion>
-		<PluginVersion>12.4.52</PluginVersion>
-		<ProPluginVersion>12.4.40</ProPluginVersion>
-		<GatewayVersion>12.4.80</GatewayVersion>
+		<AdminVersion>12.4.48</AdminVersion>
+		<FoundationVersion>12.4.58</FoundationVersion>
+		<PluginVersion>12.4.53</PluginVersion>
+		<ProPluginVersion>12.4.41</ProPluginVersion>
+		<GatewayVersion>12.4.81</GatewayVersion>
 		<Version>$(GatewayVersion)</Version>
 		
-		<ManagementVersion>12.4.38</ManagementVersion>
+		<ManagementVersion>12.4.39</ManagementVersion>
 
 		
 		<LangVersion>preview</LangVersion>

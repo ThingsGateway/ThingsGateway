@@ -25,7 +25,7 @@
                             <CodeEditor ShowLineNo @bind-Value=@businessProperty.BigTextScriptDeviceModel Language="csharp" Theme="vs-dark" IsReadonly=@(!CanWrite) />
                             <div class="ms-2 d-flex justify-content-center align-items-center">
                                 <Button IsDisabled=@(!CanWrite) OnClick=@(() => CheckScript(businessProperty, nameof(businessProperty.BigTextScriptDeviceModel), "check", this, DialogService))>
-                                    "Check"
+                                    Check
                                 </Button>
                             </div>
                         </div>
@@ -35,7 +35,7 @@
 
                             <div class="ms-2 d-flex justify-content-center align-items-center">
                                 <Button IsDisabled=@(!CanWrite) OnClick=@(() => CheckScript(businessProperty, nameof(businessProperty.BigTextScriptVariableModel),"check", this, DialogService))>
-                                    "Check"
+                                    Check"
                                 </Button>
                             </div>
                         </div>
@@ -45,7 +45,7 @@
 
                             <div class="ms-2 d-flex justify-content-center align-items-center">
                                 <Button IsDisabled=@(!CanWrite) OnClick=@(() => CheckScript(businessProperty, nameof(businessProperty.BigTextScriptAlarmModel), "check", this, DialogService))>
-                                    "Check"
+                                    Check
                                 </Button>
                             </div>
 

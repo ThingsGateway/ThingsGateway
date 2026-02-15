@@ -141,7 +141,7 @@ public partial class ManagementTask : AsyncDisposableObject
                    a.Add<FilePlugin>();
 
 
-                   a.AddDmtpCreatedChannelPlugin(async () =>
+                   a.AddDmtpConnectedPlugin(async () =>
                    {
                        try
                        {
@@ -151,7 +151,9 @@ public partial class ManagementTask : AsyncDisposableObject
                        {
                            await tcpDmtpClient.CloseAsync().ConfigureAwait(false);
                        }
+
                    });
+
                });
 #pragma warning restore CA2000 // 丢失范围之前释放对象
 

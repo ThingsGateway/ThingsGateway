@@ -82,7 +82,7 @@ public abstract class BusinessBase : DriverBase
             }
         }
        );
-        IdVariableRuntimes = variableRuntimes.ToFrozenDictionary(a=>a.Id);
+        IdVariableRuntimes = variableRuntimes.ToFrozenDictionary(a => a.Id);
         CollectDevices = IdVariableRuntimes.Select(a => a.Value.DeviceRuntime).Where(a => !a.IsMemory && a.IsCollect == true).DistinctBy(a => a.Id).ToFrozenDictionary(a => a.Id, a => a);
 
         VariableRuntimeGroups = IdVariableRuntimes.Where(a => !a.Value.BusinessGroup.IsNullOrEmpty()).GroupBy(a => a.Value.BusinessGroup ?? string.Empty).ToFrozenDictionary(a => a.Key, a => a.Select(a => a.Value).ToList());

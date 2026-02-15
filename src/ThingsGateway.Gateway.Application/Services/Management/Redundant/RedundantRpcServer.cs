@@ -167,7 +167,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
     [DmtpRpc]
     public Task<IDictionary<string, IDictionary<string, OperResult<object>>>> RpcAsync(ICallContext callContext, Dictionary<string, Dictionary<string, string>> deviceDatas)
     {
-        return GlobalData.RpcService.InvokeDeviceMethodAsync($"Redundant[{(callContext.Caller is ITcpSession tcpSession ? tcpSession.GetIPPort() : string.Empty)}]", deviceDatas, callContext.Token);
+        return GlobalData.RpcService.InvokeDeviceMethodAsync($"Redundant[{(callContext.Caller is IIdClient idClient ? idClient.Id : string.Empty)}]", deviceDatas, callContext.Token);
     }
 
 

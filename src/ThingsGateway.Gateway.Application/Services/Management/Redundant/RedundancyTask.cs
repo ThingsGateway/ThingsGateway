@@ -97,7 +97,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
                             // 将 GlobalData.CollectDevices 和 GlobalData.Variables 同步到从站
                             await item.GetDmtpRpcActor().UpDataAsync(deviceDataWithValues.AdaptListDeviceDataWithValue(), waitInvoke).ConfigureAwait(false);
                         }
-                        LogMessage?.LogTrace($"{item.GetIPPort()} Update StandbyStation data success");
+                        LogMessage?.LogTrace($"{item.Id} Update StandbyStation data success");
                     }
                 }
             }

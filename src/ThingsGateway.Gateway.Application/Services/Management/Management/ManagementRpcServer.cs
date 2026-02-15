@@ -237,7 +237,7 @@ public partial class ManagementRpcServer : IRpcServer, IManagementRpcServer, IHa
 
     public Task<IDictionary<string, IDictionary<string, OperResult<object>>>> RpcAsync(ICallContext callContext, Dictionary<string, Dictionary<string, string>> deviceDatas)
     {
-        return GlobalData.RpcService.InvokeDeviceMethodAsync($"Management[{(callContext.Caller is ITcpSession tcpSession ? tcpSession.GetIPPort() : string.Empty)}]", deviceDatas, callContext.Token);
+        return GlobalData.RpcService.InvokeDeviceMethodAsync($"Management[{(callContext.Caller is IIdClient idClient ? idClient.Id : string.Empty)}]", deviceDatas, callContext.Token);
     }
     public Task<QueryData<RpcLog>> RpcLogPageAsync(QueryPageOptions option) => App.GetService<IRpcLogService>().RpcLogPageAsync(option);
 
