@@ -2,13 +2,13 @@
 using ThingsGateway.Foundation.Common.PooledAwait;
 using ThingsGateway.Gateway.Application;
 using TouchSocket.Core;
-[assembly: Parallelize]
+using Xunit;
 namespace ThingsGateway.Gateway.Test
 {
-    [TestClass]
+    using Xunit;
     public class AsyncReadWriteLockTest
     {
-        [TestMethod]
+        [Fact]
         public async Task Reader_Should_Not_Block_When_Writer_Releases_First()
         {
             {
@@ -17,12 +17,12 @@ namespace ThingsGateway.Gateway.Test
                 var rwLock = new AsyncReadWriteLock(writeReadRatio: 3, writePriority: true);
 #pragma warning restore CA2000 // 丢失范围之前释放对象
                 using var cts = new CancellationTokenSource();
-                var d = await rwLock.WriterLockAsync().ConfigureAwait(false);
+                var d = await rwLock.WriterLockAsync();
                 List<Task> tasks = new();
                 // 多读线程
                 for (int i = 0; i < 2000; i++)
                 {
-                    await Task.Delay(2).ConfigureAwait(false);
+                    await Task.Delay(2);
                     int idx = i;
                     var task = Task.Run(async () =>
                     {
@@ -36,7 +36,7 @@ namespace ThingsGateway.Gateway.Test
                     });
                     tasks.Add(task);
                 }
-                await Task.Delay(10).ConfigureAwait(false);
+                await Task.Delay(10);
                 d.Dispose();
                 // 多写线程
                 for (int i = 0; i < 20; i++)
@@ -53,9 +53,9 @@ namespace ThingsGateway.Gateway.Test
                 }
 
                 // 运行 5 秒
-                await Task.Delay(5000).ConfigureAwait(false);
-                await Task.WhenAll(tasks).ConfigureAwait(false);
-                Assert.IsFalse(rwLock.ReadWaited);
+                await Task.Delay(5000);
+                await Task.WhenAll(tasks);
+                Assert.False(rwLock.ReadWaited);
             }
 
 
@@ -63,12 +63,12 @@ namespace ThingsGateway.Gateway.Test
             var rwLock1 = new AsyncReadWriteLock1(writeReadRatio: 3, writePriority: true);
 #pragma warning restore CA2000 // 丢失范围之前释放对象
             using var cts1 = new CancellationTokenSource();
-            var d1 = await rwLock1.WriterLockAsync().ConfigureAwait(false);
+            var d1 = await rwLock1.WriterLockAsync();
             List<Task> tasks1 = new();
             // 多读线程
             for (int i = 0; i < 2000; i++)
             {
-                await Task.Delay(2).ConfigureAwait(false);
+                await Task.Delay(2);
                 int idx = i;
                 var task = Task.Run(async () =>
                 {
@@ -82,7 +82,7 @@ namespace ThingsGateway.Gateway.Test
                 });
                 tasks1.Add(task);
             }
-            await Task.Delay(10).ConfigureAwait(false);
+            await Task.Delay(10);
             d1.Dispose();
             // 多写线程
             for (int i = 0; i < 20; i++)
@@ -99,8 +99,8 @@ namespace ThingsGateway.Gateway.Test
             }
 
             // 运行 5 秒
-            await Task.Delay(5000).ConfigureAwait(false);
-            Assert.IsTrue(rwLock1.ReadWaited);
+            await Task.Delay(5000);
+            Assert.True(rwLock1.ReadWaited);
         }
 
     }

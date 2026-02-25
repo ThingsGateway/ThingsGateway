@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSTest.Sdk/4.1.0">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net8.0;$(OtherTargetFrameworks);</TargetFrameworks>
@@ -15,5 +15,13 @@
 	  <ProjectReference Include="..\..\src\ThingsGateway.Gateway.Application\ThingsGateway.Gateway.Application.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<PackageReference Include="xunit" Version="2.9.3" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+	</ItemGroup>
 
 </Project>
