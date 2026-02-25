@@ -2,7 +2,6 @@
 using ThingsGateway.Foundation.Common.PooledAwait;
 using ThingsGateway.Gateway.Application;
 using TouchSocket.Core;
-using Xunit;
 namespace ThingsGateway.Gateway.Test
 {
     using Xunit;
