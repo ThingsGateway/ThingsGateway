@@ -16,6 +16,7 @@ using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
 using ThingsGateway.Foundation.Common.Json.Extension;
 using ThingsGateway.Foundation.Common.LinqExtension;
+using ThingsGateway.Foundation.Common.Log;
 
 namespace ThingsGateway.Gateway.Razor;
 
@@ -421,6 +422,7 @@ public partial class VariableRuntimeInfo
             var data = await Task.Run(async () => await VariablePageService.OnWriteVariableAsync(variableRuntime.Id, WriteValue));
             if (!data.IsSuccess)
             {
+                XTrace.WriteLine($"Write variable failed: {data.ToString()}");
                 await ToastService.Warning(null, data.ErrorMessage);
             }
             else
