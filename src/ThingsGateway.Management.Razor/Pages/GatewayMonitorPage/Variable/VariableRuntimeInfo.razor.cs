@@ -14,6 +14,7 @@ using Microsoft.JSInterop;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
+using ThingsGateway.Blazor.Diagrams.Core.Models.Base;
 using ThingsGateway.Foundation.Common.Json.Extension;
 using ThingsGateway.Foundation.Common.LinqExtension;
 using ThingsGateway.Foundation.Common.Log;
@@ -535,7 +536,7 @@ public partial class VariableRuntimeInfo
             variable.VariablePropertyModels ??= new();
             foreach (var item in variable.VariablePropertyModels)
             {
-                var result = (!PluginServiceUtil.HasDynamicProperty(item.Value.Value)) || (await item.Value.ValidateForm?.ValidateAsync() != false);
+                var result = (!PluginServiceUtil.HasDynamicProperty(item.Value.Value)) || (item.Value.ValidateForm != null &&await item.Value.ValidateForm.ValidateAsync() != false);
                 if (result == false)
                 {
                     return false;
@@ -543,7 +544,7 @@ public partial class VariableRuntimeInfo
             }
 
             variable.AlarmPropertys ??= new();
-            if (await variable.AlarmPropertysValidateForm?.ValidateAsync() == false)
+            if (variable.AlarmPropertysValidateForm!=null&&await variable.AlarmPropertysValidateForm.ValidateAsync() == false)
             {
                 return false;
             }

@@ -58,7 +58,7 @@ public partial class DeviceEditComponent
     {
         try
         {
-            var result = (!PluginServiceUtil.HasDynamicProperty(Model.ModelValueValidateForm.Value)) || (await Model.ModelValueValidateForm.ValidateForm?.ValidateAsync() != false);
+            var result = (!PluginServiceUtil.HasDynamicProperty(Model.ModelValueValidateForm.Value)) || (Model.ModelValueValidateForm.ValidateForm!=null&&await Model.ModelValueValidateForm.ValidateForm.ValidateAsync() != false);
             if (!result)
             {
                 // 进行设备对象属性的验证
