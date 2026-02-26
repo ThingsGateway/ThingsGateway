@@ -536,7 +536,7 @@ public partial class VariableRuntimeInfo
             variable.VariablePropertyModels ??= new();
             foreach (var item in variable.VariablePropertyModels)
             {
-                var result = (!PluginServiceUtil.HasDynamicProperty(item.Value.Value)) || (item.Value.ValidateForm != null &&await item.Value.ValidateForm.ValidateAsync() != false);
+                var result = (!PluginServiceUtil.HasDynamicProperty(item.Value.Value)) || (item.Value.ValidateForm != null && await item.Value.ValidateForm.ValidateAsync() != false);
                 if (result == false)
                 {
                     return false;
@@ -544,7 +544,7 @@ public partial class VariableRuntimeInfo
             }
 
             variable.AlarmPropertys ??= new();
-            if (variable.AlarmPropertysValidateForm!=null&&await variable.AlarmPropertysValidateForm.ValidateAsync() == false)
+            if (variable.AlarmPropertysValidateForm != null && await variable.AlarmPropertysValidateForm.ValidateAsync() == false)
             {
                 return false;
             }

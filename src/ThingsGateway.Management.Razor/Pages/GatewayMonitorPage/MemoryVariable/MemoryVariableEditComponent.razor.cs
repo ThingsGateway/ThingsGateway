@@ -142,7 +142,7 @@ public partial class MemoryVariableEditComponent
     {
         try
         {
-            if (Model.AlarmPropertysValidateForm!=null&&await Model.AlarmPropertysValidateForm.ValidateAsync() == false)
+            if (Model.AlarmPropertysValidateForm != null && await Model.AlarmPropertysValidateForm.ValidateAsync() == false)
             {
                 return;
             }
