@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Runtime.Loader;
 using System.Text;
 using ThingsGateway.Foundation.Common.Caching;
@@ -156,7 +157,8 @@ public static class CSharpScriptEngineExtension
         Instance.SetExpire(exfield, timeSpan);
         if (runScript.Obj == null)
         {
-            throw (Instance.Get<Exception>(exfield) ?? new Exception("compilation error"));
+            var ex = ((Instance.Get<Exception>(exfield)) ?? new Exception("compilation error"));
+            ExceptionDispatchInfo.Capture(ex).Throw();
         }
         return (T)runScript.Obj;
     }

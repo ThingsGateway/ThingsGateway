@@ -8,6 +8,7 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.Runtime.ExceptionServices;
 using System.Runtime.Loader;
 using System.Text;
 using ThingsGateway.Foundation.Common.Caching;
@@ -22,7 +23,7 @@ namespace ThingsGateway.Gateway.Application.Extensions;
 public abstract class MemoryReadWriteExpressions
 {
     public WeakReference<TouchSocket.Core.ILog> Log { get; set; }
-    public TouchSocket.Core.ILog? Logger => Log.TryGetTarget(out var log) ? log : null;
+    public TouchSocket.Core.ILog? Logger => Log?.TryGetTarget(out var log) == true ? log : null;
     public VariableRuntime Tag(string device, string variable)
     {
         Tags.Add((device, variable));
@@ -170,7 +171,8 @@ public static class MemoryExpressionEvaluatorExtension
         if (runScript.Obj == null)
         {
             var exfield = $"Exception-{key}";
-            throw (Instance.Get<Exception>(exfield) ?? new Exception("compilation error"));
+            var ex = ((Instance.Get<Exception>(exfield)) ?? new Exception("compilation error"));
+            ExceptionDispatchInfo.Capture(ex).Throw();
         }
         return (MemoryReadWriteExpressions)runScript.Obj;
     }
