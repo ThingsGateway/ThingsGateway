@@ -83,7 +83,7 @@ public class AlarmChangedTriggerNode : VariableNode, ITriggerNode, IDisposable
                            {
                                if (FuncDict.TryGetValue(item, out var func))
                                {
-                                   item.Logger?.LogTrace($"Alarm changed: {item.Text}");
+                                   item.Logger?.LogDebug($"Alarm changed: {item.Text}");
                                    await func.Invoke(new NodeOutput() { Value = alarmVariable }, token).ConfigureAwait(false);
                                }
                            }

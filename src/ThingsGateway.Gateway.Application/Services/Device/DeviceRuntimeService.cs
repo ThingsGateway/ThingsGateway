@@ -155,7 +155,7 @@ public class DeviceRuntimeService : IDeviceRuntimeService
 
         Device Model = deviceRuntime.AdaptDevice();
         Model.Id = 0;
-        var Variables = deviceRuntime.ReadOnlyVariableRuntimes.Select(a => a.Value).AdaptListVariable();
+        var Variables = deviceRuntime.ReadOnlyVariableRuntimes.Select(a => a.Value).OrderBy(a=>a.Id).AdaptListVariable();
 
 
         Dictionary<Device, List<Variable>> devices = new();

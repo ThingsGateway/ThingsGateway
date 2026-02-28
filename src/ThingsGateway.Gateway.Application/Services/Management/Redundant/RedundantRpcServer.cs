@@ -161,7 +161,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
         await App.GetService<IMemoryVariableRuntimeService>().BatchSaveMemoryVariableAsync(addMemVars, BootstrapBlazor.Components.ItemChangedType.Add, false).ConfigureAwait(false);
         await App.GetService<IMemoryVariableRuntimeService>().BatchSaveMemoryVariableAsync(upMemVars, BootstrapBlazor.Components.ItemChangedType.Update, false).ConfigureAwait(false);
 
-        RedundancyTask.LogMessage?.LogTrace($"Sync data success");
+        RedundancyTask.LogMessage?.LogDebug($"Sync data success");
     }
 
     [DmtpRpc]

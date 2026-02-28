@@ -166,8 +166,8 @@ public abstract class BusinessBaseWithCacheInterval : BusinessBaseWithCache
             {
                 try
                 {
-                    if (LogMessage?.LogLevel <= TouchSocket.Core.LogLevel.Debug)
-                        LogMessage?.LogDebug($"Interval {typeof(VariableBasicData).Name} data, count {IdVariableRuntimes.Count}");
+                    if (LogMessage?.LogLevel <= TouchSocket.Core.LogLevel.Trace)
+                        LogMessage?.LogTrace($"Interval {typeof(VariableBasicData).Name} data, count {IdVariableRuntimes.Count}");
                     // 间隔推送全部变量
                     var variableRuntimes = IdVariableRuntimes.Select(a => a.Value);
                     VariableTimeInterval(variableRuntimes, variableRuntimes.AdaptListVariableBasicData());
@@ -183,8 +183,8 @@ public abstract class BusinessBaseWithCacheInterval : BusinessBaseWithCache
                 {
                     if (CollectDevices != null)
                     {
-                        if (LogMessage?.LogLevel <= TouchSocket.Core.LogLevel.Debug)
-                            LogMessage?.LogDebug($"Interval {typeof(DeviceBasicData).Name} data, count {CollectDevices.Count}");
+                        if (LogMessage?.LogLevel <= TouchSocket.Core.LogLevel.Trace)
+                            LogMessage?.LogTrace($"Interval {typeof(DeviceBasicData).Name} data, count {CollectDevices.Count}");
 
                         var deviceRuntimes = CollectDevices.Select(a => a.Value);
                         // 间隔推送全部设备

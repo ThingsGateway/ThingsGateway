@@ -114,7 +114,7 @@ public class ChannelRuntimeService : IChannelRuntimeService
         Channel Model = channelRuntime.AdaptChannel();
         Model.Id = 0;
 
-        var Devices = channelRuntime.ReadDeviceRuntimes.ToDictionary(a => a.Value.AdaptDevice(), a => a.Value.ReadOnlyVariableRuntimes.Select(a => a.Value).AdaptListVariable());
+        var Devices = channelRuntime.ReadDeviceRuntimes.OrderBy(a => a.Value.Id).ToDictionary(a => a.Value.AdaptDevice(), a => a.Value.ReadOnlyVariableRuntimes.Select(a => a.Value).OrderBy(a => a.Id).AdaptListVariable());
 
         List<Channel> channels = new();
         Dictionary<Device, List<Variable>> devices = new();

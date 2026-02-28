@@ -20,7 +20,7 @@ public class VariableRpcNode : VariableNode, IActuatorNode
                 {
                     var data = await value.RpcAsync(input.JToken.ToString(), $"RulesEngine: {RulesEngineName}", cancellationToken).ConfigureAwait(false);
                     if (data.IsSuccess)
-                        Logger?.LogTrace($" VariableRpcNode - VariableName {Text} : execute success");
+                        Logger?.LogDebug($" VariableRpcNode - VariableName {Text} : execute success");
                     else
                         Logger?.LogWarning($" VariableRpcNode - VariableName {Text} : {data.ErrorMessage}");
                     return new OperResult<NodeOutput>() { Content = new NodeOutput() { Value = data } };

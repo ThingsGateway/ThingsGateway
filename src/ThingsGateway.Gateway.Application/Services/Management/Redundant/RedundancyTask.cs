@@ -535,7 +535,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
             await client.GetDmtpRpcActor().SyncDataAsync(channelBatch.ToList(), deviceBatch.ToList(), variableBatch, invokeOption).ConfigureAwait(false);
         }
 
-        LogMessage?.LogTrace($"RedundancyForcedSync data success");
+        LogMessage?.LogDebug($"RedundancyForcedSync data success");
     }
 
     #endregion
@@ -596,7 +596,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
                 dataResult = await InvokeRpcClientAsync(deviceDatas, invokeOption).ConfigureAwait(false);
             }
 
-            LogMessage?.LogTrace("Rpc success");
+            LogMessage?.LogDebug("Rpc success");
             return dataResult;
         }
         catch (OperationCanceledException)
