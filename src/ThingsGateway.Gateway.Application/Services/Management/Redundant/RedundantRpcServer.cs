@@ -23,7 +23,6 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
         RedundancyTask = redundancyTask;
     }
 
-    [DmtpRpc]
     public void UpData(ICallContext callContext, List<DeviceDataWithValue> deviceDatas)
     {
         foreach (var deviceData in deviceDatas)
@@ -48,7 +47,6 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
         RedundancyTask.LogMessage?.Trace("RpcServer Update data success");
     }
 
-    [DmtpRpc]
     public async Task SyncData(List<Channel> channels, List<Device> devices, List<MemoryVariable> variables)
     {
         List<Channel> addChannels = new();
@@ -164,7 +162,6 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
         RedundancyTask.LogMessage?.LogDebug($"Sync data success");
     }
 
-    [DmtpRpc]
     public Task<IDictionary<string, IDictionary<string, OperResult<object>>>> RpcAsync(ICallContext callContext, Dictionary<string, Dictionary<string, string>> deviceDatas)
     {
         return GlobalData.RpcService.InvokeDeviceMethodAsync($"Redundant[{(callContext.Caller is IIdClient idClient ? idClient.Id : string.Empty)}]", deviceDatas, callContext.Token);

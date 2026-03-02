@@ -27,7 +27,6 @@ internal interface ITcpServiceComponentRpc : IRpcServer
 public partial class TcpServiceComponentRpc : SingletonRpcServer, IPluginRpcServer, ITcpServiceComponentRpc
 {
 
-    [DmtpRpc]
     public async Task<bool> OnDeleteAsync(long deviceId, List<TcpSessionClientDto> tcpSessionClientDtos)
     {
         ITcpServiceChannel? TcpServiceChannel = GlobalData.TryGetDeviceRuntime(deviceId, out DeviceRuntime deviceRuntime) ? deviceRuntime.Driver?.Channel as ITcpServiceChannel : null;
@@ -41,7 +40,6 @@ public partial class TcpServiceComponentRpc : SingletonRpcServer, IPluginRpcServ
 
     }
 
-    [DmtpRpc]
     public Task<QueryData<TcpSessionClientDto>> OnQueryAsync(long deviceId, QueryPageOptions options)
     {
         ITcpServiceChannel? TcpServiceChannel = GlobalData.TryGetDeviceRuntime(deviceId, out DeviceRuntime deviceRuntime) ? deviceRuntime.Driver?.Channel as ITcpServiceChannel : null;

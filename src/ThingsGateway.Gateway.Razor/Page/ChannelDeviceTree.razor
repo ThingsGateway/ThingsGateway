@@ -132,7 +132,10 @@
                 <ContextMenuItem Icon="fas fa-file-import" Disabled=@(!AuthorizeButton("导入")) Text="@GatewayLocalizer["ImportDevice"]" OnClick="ImportDevice"></ContextMenuItem>
 
             }
-
+            @if (SelectModel != null && SelectModel.DeviceRuntimeId == MemoryConst.MemoryDeviceId)
+            {
+                <ContextMenuItem Icon="fa-solid fa-circle-info" Disabled="SelectModel.ChannelDevicePluginType < ChannelDevicePluginTypeEnum.Channel" Text="@Localizer["LogInfo"]" OnClick=@((a, b) => ShowLogInfo(b as ChannelDeviceTreeItem))></ContextMenuItem>
+            }
         </ContextMenu>
 
     </ContextMenuZone>

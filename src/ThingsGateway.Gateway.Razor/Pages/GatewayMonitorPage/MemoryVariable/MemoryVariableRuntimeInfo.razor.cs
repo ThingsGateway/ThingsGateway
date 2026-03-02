@@ -321,7 +321,7 @@ public partial class MemoryVariableRuntimeInfo
         scheduler = new SmartTriggerScheduler(Notify, TimeSpan.FromMilliseconds(1000));
 
 #if Management
-        timer = new TimerX(RunTimer, null, 2000, 2000,nameof(MemoryVariableRuntimeInfo)) { Async = true };
+        timer = new TimerX(RunTimer, null, 2000, 2000) { Async = true };
 #endif
         base.OnInitialized();
     }

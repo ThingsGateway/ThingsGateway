@@ -36,7 +36,7 @@ public partial class LogConsole : IDisposable
         ExportText = RazorLocalizer["Export"];
         DeleteText = RazorLocalizer["Delete"];
 
-        _Timer = new TimerX(RunTimerAsync, null, 1_000, 1_000, nameof(LogConsole)) { Async = true };
+        _Timer = new TimerX(RunTimerAsync, null, 1_000, 1_000) { Async = true };
         base.OnInitialized();
     }
     private TimerX _Timer;

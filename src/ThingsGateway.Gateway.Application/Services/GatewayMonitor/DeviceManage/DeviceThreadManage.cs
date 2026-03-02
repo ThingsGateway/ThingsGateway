@@ -515,9 +515,9 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
     private async Task DriverStart(object? state, CancellationToken token)
     {
+        if (state is not DriverBase driver) return;
         try
         {
-            if (state is not DriverBase driver) return;
             token.ThrowIfCancellationRequested();
             // 只有当驱动成功初始化后才执行操作
             if (driver.IsInitSuccess)
@@ -543,6 +543,11 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
         }
         catch (ObjectDisposedException)
         {
+            return;
+        }
+        catch (Exception ex)
+        {
+            LogMessage?.LogWarning(ex, $"{driver.DeviceName} Driver Start Error");
             return;
         }
     }
