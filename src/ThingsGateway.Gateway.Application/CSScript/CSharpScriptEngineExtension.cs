@@ -94,7 +94,7 @@ public static class CSharpScriptEngineExtension
                 script.AlternateAssemblyLoadContext = context;
                 foreach (var item in assemblies)
                 {
-                    script.AddAssembly(item.Location);
+                    script.AddAssembly(item);
                 }
                 try
                 {

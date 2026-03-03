@@ -17,6 +17,7 @@
       "ThingsGateway.AspNetCore",
       "ThingsGateway.DB",
       "ThingsGateway.Gateway.Application",
+      "ThingsGateway.Gateway.Application.Common",
       "ThingsGateway.Gateway.Razor",
 
       "ThingsGateway.Foundation.Razor",

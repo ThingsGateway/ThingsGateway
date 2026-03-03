@@ -27,13 +27,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="README.md" />
-		<Content Include="logo.svg">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		  <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-		  <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		<None Update="logo.svg">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</None>
+		<None Remove="favicon.ico" />
+		<Content Include="favicon.ico">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-		<EmbeddedResource Include="README.md" />
 	</ItemGroup>
 
 
@@ -82,11 +84,7 @@
 		</Content>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <None Update="favicon.ico">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
+
 
 
  

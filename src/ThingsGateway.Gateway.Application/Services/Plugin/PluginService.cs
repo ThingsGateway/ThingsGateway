@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 
 using System.Collections.Concurrent;
 using System.Data;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.Loader;
 
@@ -49,8 +50,11 @@ internal sealed class PluginService : IPluginService
         Directory.CreateDirectory(PathHelper.CombinePathReplace(AppContext.BaseDirectory, PluginService.DirName));
         //主程序上下文驱动类字典
         _defaultDriverBaseDict = new(App.EffectiveTypes
+
+            //.Concat(AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.ExportedTypes)).Distinct()
+
      .Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(BusinessBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract)
-     .ToDictionary(a => $"{Path.GetFileNameWithoutExtension(new FileInfo(a.Assembly.Location).Name)}.{a.Name}"));
+     .ToDictionary(a => $"{a.Assembly.GetName().Name}.{a.Name}"));
 
         DeleteBackup(DirName);
         DeleteBackup(AppContext.BaseDirectory);
@@ -388,7 +392,7 @@ internal sealed class PluginService : IPluginService
             string fullDir = string.Empty;
             bool isDefaultDriver = false;
             //判定是否上下文程序集
-            var defaultDriver = _defaultDriverBaseDict.FirstOrDefault(a => Path.GetFileNameWithoutExtension(new FileInfo(a.Value.Assembly.Location).Name) == mainFileName);
+            var defaultDriver = _defaultDriverBaseDict.FirstOrDefault(a => a.Value.Assembly.GetName().Name == mainFileName);
             if (defaultDriver.Value != null)
             {
                 var filtResult = PluginInfoUtil.GetFileNameAndTypeName(defaultDriver.Key);
@@ -777,13 +781,25 @@ internal sealed class PluginService : IPluginService
             {
                 if (PluginServiceUtil.IsSupported(item.Value))
                 {
-                    FileInfo fileInfo = new FileInfo(item.Value.Assembly.Location); //文件信息
-                    DateTime lastWriteTime = fileInfo.LastWriteTime;//作为编译时间
+
+                    DateTime lastWriteTime = DateTime.Now;
+                    if (!item.Value.Assembly.Location.IsNullOrEmpty())
+                    {
+                        lastWriteTime = File.GetLastWriteTime(item.Value.Assembly.Location);
+                    }
+                    else
+                    {
+                        var exePath = Process.GetCurrentProcess().MainModule?.FileName;
+                        if (!string.IsNullOrEmpty(exePath) && File.Exists(exePath))
+                        {
+                            lastWriteTime = File.GetLastWriteTime(exePath);
+                        }
+                    }
 
                     var pluginInfo = new PluginInfo()
                     {
                         Name = item.Value.Name,//插件名称
-                        FileName = Path.GetFileNameWithoutExtension(fileInfo.Name),//插件文件名称（分类）
+                        FileName = item.Value.Assembly.GetName().Name,//插件文件名称（分类）
                         PluginType = (typeof(CollectBase).IsAssignableFrom(item.Value)) ? PluginTypeEnum.Collect : PluginTypeEnum.Business, //插件类型
                         EducationPlugin = PluginServiceUtil.IsEducation(item.Value),
                         Display = PluginServiceUtil.IsDisplay(item.Value),
@@ -793,7 +809,8 @@ internal sealed class PluginService : IPluginService
                     };
                     if (!item.Value.Assembly.Location.IsNullOrEmpty())
                         pluginInfo.Directory = Path.GetRelativePath(AppContext.BaseDirectory, Path.GetDirectoryName(item.Value.Assembly.Location));
-
+                    else
+                        pluginInfo.Directory = AppContext.BaseDirectory;
                     plugins.Add(pluginInfo);
                 }
             }

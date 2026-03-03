@@ -89,9 +89,6 @@
 		<None Update="ThingsGateway.pfx">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Update="WindowsService">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 		<None Update="Dockerfile">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>

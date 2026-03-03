@@ -73,9 +73,7 @@
 
 		<Content Include="..\ThingsGateway.Server\wwwroot\favicon.ico" Link="wwwroot\favicon.ico" />
 		<Content Include="..\ThingsGateway.Server\wwwroot\favicon.png" Link="wwwroot\favicon.png" />
-		<Content Include="..\ThingsGateway.Server\appsettings.Development.json" Link="appsettings.Development.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
+
 		<Content Include="..\ThingsGateway.Server\appsettings.json" Link="appsettings.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
