@@ -155,70 +155,9 @@ public partial class ManagementTask : AsyncDisposableObject
                        };
                        options.ConnectAction = async (client, cancellationToken) =>
                        {
-                           var attempts = 0;
-                           var currentInterval = options.BaseInterval;
 
-                           while (options.MaxRetryCount < 0 || attempts < options.MaxRetryCount)
-                           {
-                               if (cancellationToken.IsCancellationRequested)
-                               {
-                                   return;
-                               }
-                               if (client.GetPauseReconnection())
-                               {
-                                   continue;
-                               }
-
-                               attempts++;
-
-                               try
-                               {
-                                   if (client.Online)
-                                   {
-                                       options.OnSuccessed?.Invoke(client);
-                                       return;
-                                   }
-
-                                   await client.ConnectAsync(cancellationToken).ConfigureAwait(EasyTask.ContinueOnCapturedContext);
-                                   options.OnSuccessed?.Invoke(client);
-
-                                   if (options.LogReconnection)
-                                   {
-                                       client.Logger?.Info(options, $"重连成功，尝试次数: {attempts}");
-                                   }
-                                   return;
-                               }
-                               catch (Exception ex)
-                               {
-                                   if (cancellationToken.IsCancellationRequested)
-                                   {
-                                       return;
-                                   }
-                                   options.OnFailed?.Invoke(client, attempts, ex);
-
-                                   if (options.LogReconnection)
-                                   {
-                                       client.Logger?.Warning(options, $"重连失败，尝试次数: {attempts}，错误: {ex.Message}");
-                                   }
-
-                                   if (options.MaxRetryCount > 0 && attempts >= options.MaxRetryCount)
-                                   {
-                                       options.OnGiveUp?.Invoke(client, attempts);
-                                       if (options.LogReconnection)
-                                       {
-                                           client.Logger?.Error(options, $"达到最大重连次数 {options.MaxRetryCount}，放弃重连");
-                                       }
-                                       return;
-                                   }
-
-                                   // 计算下次重连间隔
-                                   currentInterval = CalculateNextInterval(options, attempts, currentInterval);
-
-                                   await Task.Delay(currentInterval, CancellationToken.None).ConfigureAwait(EasyTask.ContinueOnCapturedContext);
-                               }
-                           }
+                           await client.ConnectAsync(cancellationToken).ConfigureAwait(EasyTask.ContinueOnCapturedContext);
                        };
-
 
                    });
 
