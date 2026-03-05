@@ -339,7 +339,6 @@ public partial class VariableRuntime : Variable
     {
         DateTime time = dateTime != default ? dateTime : DateTime.Now;
         CollectTime = time;
-
         bool changed = false;
         if (data == null)
         {

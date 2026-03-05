@@ -14,7 +14,6 @@ using Microsoft.JSInterop;
 
 using ThingsGateway.Admin.Application;
 using ThingsGateway.Admin.Razor;
-using ThingsGateway.Blazor.Diagrams.Core.Models.Base;
 using ThingsGateway.Foundation.Common.Json.Extension;
 using ThingsGateway.Foundation.Common.LinqExtension;
 using ThingsGateway.Foundation.Common.Log;

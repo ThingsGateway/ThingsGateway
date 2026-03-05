@@ -75,13 +75,13 @@ public abstract class CollectReceivedFoundationBase : CollectBase, IReceivedFoun
             {
                 if (!@this.ReceivedFoundationDevice.OnLine)
                 {
-                    if (!@this.ReceivedFoundationDevice.DisposedValue || @this.ReceivedFoundationDevice.Channel?.DisposedValue != false) return;
+                    if (@this.ReceivedFoundationDevice.DisposedValue || @this.ReceivedFoundationDevice.Channel?.DisposedValue != false) return;
                     Exception exception = null;
                     try
                     {
                         if (!cancellationToken.IsCancellationRequested)
                         {
-                            if (!@this.ReceivedFoundationDevice.DisposedValue || @this.ReceivedFoundationDevice.Channel?.DisposedValue != false) return;
+                            if (@this.ReceivedFoundationDevice.DisposedValue || @this.ReceivedFoundationDevice.Channel?.DisposedValue != false) return;
 
                             await @this.ReceivedFoundationDevice.ConnectAsync(cancellationToken).ConfigureAwait(false);
 

@@ -52,14 +52,14 @@
 	</ItemGroup>
 
 
-	<ItemGroup Condition=" ! $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))  OR '$(Configuration)' == 'Release' ">
+	<ItemGroup Condition=" ! $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))">
 		<PackageReference Include="ThingsGateway.Admin.Application" Version="$(AdminVersion)" />
 		<PackageReference Include="ThingsGateway.Blazor.Diagrams.Core" Version="$(AdminVersion)" />
 		<PackageReference Include="ThingsGateway.CSScript" Version="$(FoundationVersion)" />
 		<PackageReference Include="ThingsGateway.Foundation" Version="$(FoundationVersion)" />
 	</ItemGroup>
 
-	<ItemGroup Condition=" $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))  AND '$(Configuration)' != 'Release' ">
+	<ItemGroup Condition=" $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))">
 		<ProjectReference Include="..\..\..\ThingsGateway.Foundation\src\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
 		<ProjectReference Include="..\..\..\ThingsGateway.Foundation\src\ThingsGateway.CSScript\ThingsGateway.CSScript.csproj" />
 		<ProjectReference Include="..\..\..\ThingsGateway.Admin\src\ThingsGateway.Admin.Application\ThingsGateway.Admin.Application.csproj" />
@@ -67,10 +67,10 @@
 	</ItemGroup>
 
 
-	<ItemGroup Condition="'$(SolutionName)' != 'ThingsGatewayAll'  OR '$(Configuration)' == 'Release' ">
+	<ItemGroup Condition="'$(SolutionName)' != 'ThingsGatewayAll'">
 		<PackageReference Include="ThingsGateway.Authentication" Version="$(ManagementVersion)" />
 	</ItemGroup>
-	<ItemGroup Condition="'$(SolutionName)' == 'ThingsGatewayAll'  AND '$(Configuration)' != 'Release' ">
+	<ItemGroup Condition="'$(SolutionName)' == 'ThingsGatewayAll'">
 		<ProjectReference Include="..\..\..\ThingsGateway.Management\src\ThingsGateway.Authentication\ThingsGateway.Authentication.csproj" />
 	</ItemGroup>
 

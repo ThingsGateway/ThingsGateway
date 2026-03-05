@@ -433,7 +433,8 @@
     "PluginName": "插件名称",
     "PluginName.Required": "{0} 插件名称不可为空",
     "RedundantType": "冗余状态",
-    "SourceVariableCount": "打包数量"
+    "SourceVariableCount": "打包数量",
+    "MaxPerSecondCount": "每秒采集次数峰值"
   },
 
   "ThingsGateway.Management.Application.DeviceRuntime": {
@@ -450,7 +451,8 @@
     "PluginName": "插件名称",
     "PluginName.Required": "{0} 插件名称不可为空",
     "RedundantType": "冗余状态",
-    "SourceVariableCount": "打包数量"
+    "SourceVariableCount": "打包数量",
+    "MaxPerSecondCount": "每秒采集次数峰值"
   },
 
   "ThingsGateway.Gateway.Application.DriverBase": {

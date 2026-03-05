@@ -187,7 +187,9 @@ public class DeviceRuntime : Device
     /// 设备读取打包数量
     /// </summary>
     public int SourceVariableCount { get; set; }
-
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    [IgnoreExcel]
+    public long MaxPerSecondCount { get; set; }
 
 #endif
 
@@ -330,6 +332,15 @@ public class DeviceRuntime : Device
     [Newtonsoft.Json.JsonIgnore]
     [AutoGenerateColumn(Ignore = true)]
     public string? Tag { get; set; }
+
+    [MapperIgnore]
+    [Newtonsoft.Json.JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public PerSecondCounter PerSecondCounter = new();
+
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    [IgnoreExcel]
+    public long MaxPerSecondCount => PerSecondCounter.MaxPerSecondCount;
 
     public virtual void Init(ChannelRuntime channelRuntime)
     {

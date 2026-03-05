@@ -323,6 +323,7 @@ public abstract partial class CollectBase : DriverBase, IRpcDriver
                 // 方法调用成功时记录日志并增加成功计数器
                 if (@this.LogMessage?.LogLevel <= TouchSocket.Core.LogLevel.Trace)
                     @this.LogMessage?.LogTrace(string.Format("{0} - Execute method [{1}] - Succeeded {2}", @this.DeviceName, readVariableMethods.MethodInfo.Name, readResult.Content?.ToSystemTextJsonString()));
+                @this.CurrentDevice.PerSecondCounter.Increment();
                 @this.CurrentDevice.SetDeviceStatus(TimerX.Now, null);
             }
             else
@@ -346,7 +347,7 @@ public abstract partial class CollectBase : DriverBase, IRpcDriver
                 }
 
                 readVariableMethods.LastErrorMessage = readResult.ErrorMessage;
-                @this.CurrentDevice.SetDeviceStatus(TimerX.Now, null);
+                @this.CurrentDevice.SetDeviceStatus(TimerX.Now, null, readResult.ErrorMessage);
             }
 
             return;
@@ -439,6 +440,7 @@ public abstract partial class CollectBase : DriverBase, IRpcDriver
                 // 读取成功时记录日志并增加成功计数器
                 if (@this.LogMessage?.LogLevel <= TouchSocket.Core.LogLevel.Trace)
                     @this.LogMessage?.LogTrace(string.Format("{0} - Collected [{1} - {2}] data successfully {3}", @this.DeviceName, variableSourceRead?.RegisterAddress, variableSourceRead?.Length, readResult.Content.Span.ToHexString(' ')));
+                @this.CurrentDevice.PerSecondCounter.Increment();
                 @this.CurrentDevice.SetDeviceStatus(TimerX.Now, null);
             }
             else

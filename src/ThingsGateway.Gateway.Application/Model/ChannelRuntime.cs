@@ -43,7 +43,7 @@ public class ChannelRuntime : Channel
     [Newtonsoft.Json.JsonIgnore]
     [MapperIgnore]
     [AutoGenerateColumn(Ignore = true)]
-    public WaitLock WaitLock { get; private set; } = new WaitLock(nameof(ChannelRuntime));
+    public AsyncConcurrencyLimiter WaitLock { get; private set; } = new AsyncConcurrencyLimiter(1);
 
     /// <inheritdoc/>
     [MinValue(1)]
@@ -62,7 +62,7 @@ public class ChannelRuntime : Channel
                 if (WaitLock?.MaxCount != MaxConcurrentCount)
                 {
                     var _lock = WaitLock;
-                    WaitLock = new WaitLock(nameof(ChannelRuntime), _maxConcurrentCount);
+                    WaitLock = new AsyncConcurrencyLimiter(_maxConcurrentCount);
                     _lock?.TryDispose();
                 }
             }
@@ -200,7 +200,7 @@ public class ChannelRuntime : Channel
                 )
             {
                 //获取相同配置的Tcp服务或Udp服务或COM
-                var same = GlobalData.IdChannels.FirstOrDefault(a =>
+                var same = GlobalData.IdChannels.Where(a =>
                  {
                      if (a.Value == this)
                          return false;
@@ -220,7 +220,7 @@ public class ChannelRuntime : Channel
                                  return true;
                      }
                      return false;
-                 }).Value;
+                 }).FirstOrDefault(a => a.Value.IsCollect == true).Value;
 
                 if (same != null)
                 {

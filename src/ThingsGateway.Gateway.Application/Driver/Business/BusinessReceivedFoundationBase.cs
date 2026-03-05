@@ -65,12 +65,12 @@ public abstract class BusinessReceivedFoundationBase : BusinessBase, IReceivedFo
             {
                 if (!@this.ReceivedFoundationDevice.OnLine)
                 {
-                    if (!@this.ReceivedFoundationDevice.DisposedValue || @this.ReceivedFoundationDevice.Channel?.DisposedValue != false) return;
+                    if (@this.ReceivedFoundationDevice.DisposedValue || @this.ReceivedFoundationDevice.Channel?.DisposedValue != false) return;
                     try
                     {
                         if (!cancellationToken.IsCancellationRequested)
                         {
-                            if (!@this.ReceivedFoundationDevice.DisposedValue || @this.ReceivedFoundationDevice.Channel?.DisposedValue != false) return;
+                            if (@this.ReceivedFoundationDevice.DisposedValue || @this.ReceivedFoundationDevice.Channel?.DisposedValue != false) return;
 
                             await @this.ReceivedFoundationDevice.ConnectAsync(cancellationToken).ConfigureAwait(false);
 

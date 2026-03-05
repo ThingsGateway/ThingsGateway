@@ -5,10 +5,10 @@
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net10.0' ">
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="$(NET10Version)" />
 	</ItemGroup>
-	<ItemGroup Condition=" ! $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))  OR '$(Configuration)' == 'Release' ">
+	<ItemGroup Condition=" ! $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))">
 		<PackageReference Include="ThingsGateway.Photino.Blazor" Version="$(AdminVersion)" />
 	</ItemGroup>
-	<ItemGroup Condition=" $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))  AND '$(Configuration)' != 'Release' ">
+	<ItemGroup Condition=" $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))">
 		<ProjectReference Include="..\..\..\ThingsGateway.Admin\src\ThingsGateway.Photino.Blazor\ThingsGateway.Photino.Blazor.csproj" />
 	</ItemGroup>
 

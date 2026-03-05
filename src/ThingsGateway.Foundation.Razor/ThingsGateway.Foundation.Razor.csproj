@@ -9,13 +9,13 @@
 
 	</ItemGroup>
 
-	<ItemGroup Condition=" ! $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))  OR '$(Configuration)' == 'Release' ">
+	<ItemGroup Condition=" ! $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))">
 		<PackageReference Include="BlazorSetParametersAsyncGenerator"  Version="$(AdminVersion)" PrivateAssets="all" OutputItemType="Analyzer" />
 		<PackageReference Include="ThingsGateway.Razor" Version="$(AdminVersion)" />
 		<PackageReference Include="ThingsGateway.Foundation" Version="$(FoundationVersion)" />
 	</ItemGroup>
 
-	<ItemGroup Condition=" $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))  AND '$(Configuration)' != 'Release' ">
+	<ItemGroup Condition=" $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))">
 		<ProjectReference Include="..\..\..\ThingsGateway.Foundation\src\ThingsGateway.Foundation\ThingsGateway.Foundation.csproj" />
 		<ProjectReference Include="..\..\..\ThingsGateway.Admin\src\ThingsGateway.Razor\ThingsGateway.Razor.csproj" />
 		<ProjectReference Include="..\..\..\ThingsGateway.Admin\src\BlazorSetParametersAsyncGenerator\BlazorSetParametersAsyncGenerator.csproj" PrivateAssets="all" OutputItemType="Analyzer" />

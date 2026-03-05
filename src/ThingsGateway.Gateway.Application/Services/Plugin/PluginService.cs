@@ -51,7 +51,7 @@ internal sealed class PluginService : IPluginService
         //主程序上下文驱动类字典
         _defaultDriverBaseDict = new(App.EffectiveTypes
 
-            //.Concat(AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.ExportedTypes)).Distinct()
+     //.Concat(AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.ExportedTypes)).Distinct()
 
      .Where(x => (typeof(CollectBase).IsAssignableFrom(x) || typeof(BusinessBase).IsAssignableFrom(x)) && x.IsClass && !x.IsAbstract)
      .ToDictionary(a => $"{a.Assembly.GetName().Name}.{a.Name}"));

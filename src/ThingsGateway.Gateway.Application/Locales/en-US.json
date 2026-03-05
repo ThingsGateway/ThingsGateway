@@ -431,7 +431,8 @@
     "PluginName": "PluginName",
     "PluginName.Required": "{0} cannot be empty",
     "RedundantType": "RedundantType",
-    "SourceVariableCount": "SourceVariableCount"
+    "SourceVariableCount": "SourceVariableCount",
+    "MaxPerSecondCount": "MaxPerSecondCount"
   },
   "ThingsGateway.Management.Application.DeviceRuntime": {
     "ActiveTime": "ActiveTime",
@@ -445,7 +446,8 @@
     "PluginName": "PluginName",
     "PluginName.Required": "{0} cannot be empty",
     "RedundantType": "RedundantType",
-    "SourceVariableCount": "SourceVariableCount"
+    "SourceVariableCount": "SourceVariableCount",
+    "MaxPerSecondCount": "MaxPerSecondCount"
   },
 
   "ThingsGateway.Gateway.Application.DriverBase": {
