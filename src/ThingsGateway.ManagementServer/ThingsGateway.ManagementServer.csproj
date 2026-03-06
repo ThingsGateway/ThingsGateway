@@ -91,9 +91,6 @@
 		<None Update="WindowsService">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Update="Dockerfile">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 
 		<None Update="pm2-windows.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -114,15 +111,6 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 
-	</ItemGroup>
-
-
-
-
-	<ItemGroup>
-		<Content Include="DockerPush.ps1">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 	</ItemGroup>
 
 

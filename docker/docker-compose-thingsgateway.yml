@@ -1,0 +1,81 @@
+services:
+  # ---------- 构建阶段容器 ----------
+  builder_x64:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    container_name: tg-builder-x64
+    working_dir: /src
+    volumes:
+      - ..:/src            # 本地代码挂载
+      - ./publish/x64:/src/publish/x64 # 发布产物挂载到宿主机
+    command: >
+      bash -c "
+      rm -rf /src/publish/x64/* &&
+      dotnet build  src/ThingsGateway.Server/ThingsGateway.Server.csproj  -c Release --force &&
+      dotnet publish src/ThingsGateway.Server/ThingsGateway.Server.csproj   -c Release -r linux-x64 --framework net10.0 --self-contained false -o /src/publish/x64  -p:PublishReadyToRun=false"
+    restart: "no"
+
+  builder_arm64:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    container_name: tg-builder-arm64
+    working_dir: /src
+    volumes:
+      - ..:/src            # 本地代码挂载
+      - ./publish/arm64:/src/publish/arm64 # 发布产物挂载到宿主机
+    command: >
+      bash -c "
+      rm -rf /src/publish/arm64/* &&
+      dotnet build  src/ThingsGateway.Server/ThingsGateway.Server.csproj  -c Release --force &&
+      dotnet publish src/ThingsGateway.Server/ThingsGateway.Server.csproj   -c Release -r linux-arm64 --framework net10.0 --self-contained false -o /src/publish/arm64  -p:PublishReadyToRun=false"
+    restart: "no"
+
+  thingsgateway: #服务名称
+    build:
+      dockerfile_inline: |
+        # ---------- runtime stage ----------
+        FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-amd64
+        WORKDIR /app
+        COPY ./publish/x64 /app
+        EXPOSE 5000
+        ENV TimeZone=Asia/Shanghai
+        ENV TZ=Asia/Shanghai
+        ENV ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+        ENTRYPOINT ["dotnet", "ThingsGateway.Server.dll","--urls","http://*:5000"]
+    image: registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway:latest
+    container_name: tg
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+
+      - /thingsgateway/Keys:/app/Keys
+      - /thingsgateway/DB:/app/DB
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    restart: always   # 容器异常退出自动重启
+
+  thingsgateway_arm64: #服务名称
+    build:
+      dockerfile_inline: |
+        # ---------- runtime stage ----------
+        FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-arm64v8
+        WORKDIR /app
+        COPY ./publish/arm64 /app
+        EXPOSE 5000
+        ENV TimeZone=Asia/Shanghai
+        ENV TZ=Asia/Shanghai
+        ENV ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
+        ENTRYPOINT ["dotnet", "ThingsGateway.Server.dll","--urls","http://*:5000"]
+    image: registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway_arm64:latest
+    container_name: tg
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+
+      - /thingsgateway/Keys:/app/Keys
+      - /thingsgateway/DB:/app/DB
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    restart: always   # 容器异常退出自动重启

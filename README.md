@@ -140,13 +140,18 @@ PRO 插件主要面向对 **协议覆盖面、稳定性、现场兼容性** 要�
 
 ### 方式二：使用 Docker 部署
 1. 确保已安装 Docker。
-2. 拉取最新的 ThingsGateway 镜像：
+2. 拉取最新的 ThingsGateway 镜像，官方提供x64和arm64镜像：
    ```bash
    docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway:latest
+  
+   docker pull registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway_arm64:latest
    ```
 3. 运行容器：
    ```bash
    docker run -d -p 5000:5000 --name thingsgateway registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway:latest
+
+   docker run -d -p 5000:5000 --name thingsgateway_arm64 registry.cn-shenzhen.aliyuncs.com/thingsgateway/thingsgateway_arm64:latest
+
    ```
 4. 打开浏览器，访问 `http://localhost:5000` 进入管理界面。
 

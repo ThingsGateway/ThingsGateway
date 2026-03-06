@@ -89,12 +89,6 @@
 		<None Update="ThingsGateway.pfx">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
-		<None Update="Dockerfile">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="Dockerfile_arm64">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
 
 		<None Update="pm2-windows.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -115,18 +109,6 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 
-	</ItemGroup>
-
-
-
-
-	<ItemGroup>
-		<Content Include="DockerPush.ps1">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
-		<Content Include="DockerPush_arm64.ps1">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</Content>
 	</ItemGroup>
 
 
