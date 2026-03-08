@@ -149,7 +149,18 @@ public class Channel : ChannelOptionsBase, IPrimaryIdEntity, IBaseDataEntity, IB
     [OrmColumn(ColumnDescription = "Handshake", IsNullable = true)]
     [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
     public override Handshake Handshake { get; set; }
-
+    /// <summary>
+    /// 串口输入缓冲区的大小
+    /// </summary>
+    [OrmColumn(ColumnDescription = "串口输入缓冲区大小", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public override int SerialPortReadBufferSize { get; set; } = 4096;
+    /// <summary>
+    /// 串口输出缓冲区的大小
+    /// </summary>
+    [OrmColumn(ColumnDescription = "串口输出缓冲区大小", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public override int SerialPortWriteBufferSize { get; set; } = 2048;
     /// <summary>
     /// 缓存超时
     /// </summary>

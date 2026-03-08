@@ -84,7 +84,8 @@
                         <EditorItem @bind-Field="@context.RtsEnable" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
                         <EditorItem @bind-Field="@context.StreamAsync" Ignore=@(context.ChannelType != ChannelTypeEnum.SerialPort) />
                         <EditorItem @bind-Field="@context.Handshake" Ignore=@(context.ChannelType!=ChannelTypeEnum.SerialPort) />
-
+                        <EditorItem @bind-Field="@context.SerialPortReadBufferSize" Ignore=@(context.ChannelType != ChannelTypeEnum.SerialPort) />
+                        <EditorItem @bind-Field="@context.SerialPortWriteBufferSize" Ignore=@(context.ChannelType != ChannelTypeEnum.SerialPort) />
 
                         <EditorItem @bind-Field="@context.CacheTimeout" Ignore=@(context.ChannelType==ChannelTypeEnum.UdpSession||context.ChannelType==ChannelTypeEnum.Other) />
                         <EditorItem @bind-Field="@context.ConnectTimeout" Ignore=@(context.ChannelType==ChannelTypeEnum.UdpSession||context.ChannelType==ChannelTypeEnum.TcpService||context.ChannelType==ChannelTypeEnum.Other) />

@@ -43,6 +43,8 @@
     "RemoteUrl": "Remote IP Address",
     "RtsEnable": "Rts",
     "StreamAsync": "StreamAsync",
+    "SerialPortReadBufferSize": "SerialPortReadBufferSize",
+    "SerialPortWriteBufferSize": "SerialPortWriteBufferSize",
     "Handshake": "Handshake",
     "SaveChannel": "Add/Modify Channel",
     "StopBits": "Stop Bits"
@@ -104,6 +106,8 @@
     "RemoteUrl": "RemoteUrl",
     "RtsEnable": "RtsEnable",
     "StreamAsync": "StreamAsync",
+    "SerialPortReadBufferSize": "SerialPortReadBufferSize",
+    "SerialPortWriteBufferSize": "SerialPortWriteBufferSize",
     "Handshake": "Handshake",
     "StopBits": "StopBits"
   }

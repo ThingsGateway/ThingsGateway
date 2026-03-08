@@ -320,6 +320,8 @@
     "RemoteUrl": "远程url",
     "RtsEnable": "Rts",
     "StreamAsync": "流读写",
+    "SerialPortReadBufferSize": "串口输入缓冲区大小",
+    "SerialPortWriteBufferSize": "串口输出缓冲区大小",
     "Handshake": "Handshake",
     "SaveChannel": "添加/修改通道",
     "SortCode": "排序",
