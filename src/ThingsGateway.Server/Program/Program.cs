@@ -9,11 +9,9 @@
 //------------------------------------------------------------------------------
 
 using Microsoft.AspNetCore.ResponseCompression;
-
 using System.Runtime.InteropServices;
 using System.Text;
-
-using ThingsGateway.Admin.Application;
+using ThingsGateway.Common;
 using ThingsGateway.DB;
 using ThingsGateway.Foundation.Common;
 using ThingsGateway.Foundation.Common.Json.Extension;
@@ -51,8 +49,6 @@ public class Program
         // 增加中文编码支持
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-        ClaimConst.Scheme = $"{typeof(Program).Assembly.GetName().Name}{SchemeHelper.GetOrCreate()}";
-
         Runtime.CreateConfigOnMissing = true;
 
         #region 控制台输出Logo
@@ -84,6 +80,7 @@ public class Program
 
             await Serve.RunAsync(RunOptions.Default.ConfigureFirstActionBuilder(builder =>
             {
+                ClaimConst.Scheme = $"{typeof(Program).Assembly.GetName().Name}{AspNetPortResolver.GetPort(builder)}";
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     builder.Host.UseWindowsService();
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
