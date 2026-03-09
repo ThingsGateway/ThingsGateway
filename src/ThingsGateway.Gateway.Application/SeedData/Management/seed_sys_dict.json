@@ -71,7 +71,15 @@
       "Code": "3000",
       "IsDelete": "0",
       "SortCode": 99
+    },
+    {
+      "Id": 234511701160015,
+      "DictType": "System",
+      "Category": "RedundancyOptions",
+      "Name": "SyncEnable",
+      "Code": "true",
+      "IsDelete": "0",
+      "SortCode": 99
     }
-  
   ]
 }

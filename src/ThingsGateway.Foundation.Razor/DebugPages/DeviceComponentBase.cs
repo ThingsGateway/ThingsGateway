@@ -15,7 +15,6 @@ using Microsoft.Extensions.Localization;
 
 using ThingsGateway.Foundation;
 using ThingsGateway.Foundation.Common;
-using ThingsGateway.Foundation.Common.Extension;
 using ThingsGateway.Foundation.Common.Json.Extension;
 
 using TouchSocket.Core;

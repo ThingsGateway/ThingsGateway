@@ -1,4 +1,9 @@
 <Project>
+	<PropertyGroup Condition="'$(DisableDebugSymbols)' != 'true'">
+		<DebugSymbols>True</DebugSymbols>
+		<DebugType>Embedded</DebugType>
+		<EmbedAllSources>True</EmbedAllSources>
+	</PropertyGroup>
 
 	<PropertyGroup>
 
@@ -11,16 +16,30 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 
-
 		<SignAssembly>True</SignAssembly>
 		<AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)ThingsGateway.snk</AssemblyOriginatorKeyFile>
-		
+
+
+
+
 	</PropertyGroup>
-	
+
 	<!--Condition="'$(Configuration)' == 'Release'"-->
 	<PropertyGroup>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
+
+
+	<ItemGroup>
+		<None Include="$(MSBuildThisFileDirectory)PackNuget.props" Pack="false" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
+		<None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath="\" />
+		<None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" PackagePath="\" />
+		<None Include="$(MSBuildThisFileDirectory)logo.svg" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 
 	<ItemGroup>
@@ -35,16 +54,15 @@
 		</PackageReference>
 
 	</ItemGroup>
-	
-	
-	<ItemGroup>
-		<None Include="$(MSBuildThisFileDirectory)PackNuget.props" Pack="true" PackagePath="\" />
-	</ItemGroup>
 
-	<ItemGroup>
-		<None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
-		<None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath="\" />
-		<None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" PackagePath="\" />
-		<None Include="$(MSBuildThisFileDirectory)logo.svg" Pack="true" PackagePath="\" />
-	</ItemGroup>
+
+
+
+
+
+
+
+
+
+
 </Project>

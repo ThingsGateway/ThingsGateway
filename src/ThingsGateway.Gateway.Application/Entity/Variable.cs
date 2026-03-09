@@ -14,6 +14,7 @@ using Riok.Mapperly.Abstractions;
 
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
+using ThingsGateway.Foundation.Common.Json.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 

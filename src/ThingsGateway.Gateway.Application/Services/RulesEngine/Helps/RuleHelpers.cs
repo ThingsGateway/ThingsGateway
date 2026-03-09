@@ -18,6 +18,7 @@ using ThingsGateway.Blazor.Diagrams.Core;
 using ThingsGateway.Blazor.Diagrams.Core.Anchors;
 using ThingsGateway.Blazor.Diagrams.Core.Geometry;
 using ThingsGateway.Blazor.Diagrams.Core.Models;
+using ThingsGateway.Foundation.Common.Json.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 

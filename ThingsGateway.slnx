@@ -1,5 +1,5 @@
 <Solution>
-  <Folder Name="/Benchmark/" />
+  <Folder Name="/benchmark/" />
   <Folder Name="/src/">
     <Project Path="src/ThingsGateway.Foundation.Razor/ThingsGateway.Foundation.Razor.csproj" />
     <Project Path="src/ThingsGateway.Gateway.Application/ThingsGateway.Gateway.Application.csproj" />
@@ -8,10 +8,10 @@
     <Project Path="src/ThingsGateway.Management.Application/ThingsGateway.Management.Application.csproj" />
     <Project Path="src/ThingsGateway.Management.Razor/ThingsGateway.Management.Razor.csproj" />
   </Folder>
-  <Folder Name="/Test/">
+  <Folder Name="/test/">
     <Project Path="test/ThingsGateway.Gateway.Test/ThingsGateway.Gateway.Test.csproj" />
   </Folder>
-  <Folder Name="/解决方案项/">
+  <Folder Name="/props/">
     <File Path=".gitignore" />
     <File Path="Directory.Build.props" />
     <File Path="PackNuget.props" />

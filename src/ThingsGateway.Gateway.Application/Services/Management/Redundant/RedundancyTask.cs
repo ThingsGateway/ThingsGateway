@@ -66,6 +66,26 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
             ? highMemorySize
             : defaultSize;
     }
+
+    private IEnumerable<DeviceDataWithValue> GetDeviceDataWithValues(IEnumerable<VariableRuntime> variableBasicDatas)
+    {
+        foreach (var item in variableBasicDatas.GroupBy(a => a.DeviceId))
+        {
+            if (GlobalData.IdDevices.TryGetValue(item.Key, out var device))
+            {
+                DeviceDataWithValue deviceDataWithValue = new();
+                deviceDataWithValue.ActiveTime = device.ActiveTime;
+                deviceDataWithValue.DeviceStatus = device.DeviceStatus;
+                deviceDataWithValue.LastErrorMessage = device.LastErrorMessage;
+                deviceDataWithValue.Name = device.Name;
+
+                deviceDataWithValue.ReadOnlyVariableRuntimes = item.ToDictionary(a => a.Name, a => a.AdaptVariableDataWithValue());
+
+                yield return deviceDataWithValue;
+            }
+        }
+    }
+
     /// <summary>
     /// 主站
     /// </summary>
@@ -73,6 +93,8 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
     {
         try
         {
+            if (!RedundancyOptions.SyncEnable) return;
+
             bool online = false;
 
             var waitInvoke = CreateDmtpInvokeOption(stoppingToken);
@@ -86,16 +108,22 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
                 // 如果 online 为 true，表示设备在线
                 if (online)
                 {
-                    int batchSize = 50;
 
-                    var deviceRunTimes = GlobalData.ReadOnlyIdDevices.Where(a => a.Value.IsCollect == true).Select(a => a.Value).Concat([GlobalData.MemoryDeviceRuntime]).Batch(batchSize);
+                    var batchSize = GetBatchSize();
+                    var variableBasicDatas = GlobalData.GetEnableVariables();
+                    var deviceRunTimes = variableBasicDatas.ChunkBetter(batchSize);
+
+                    var dataChunks = deviceRunTimes
+                        .Select(chunk => GetDeviceDataWithValues(chunk).ToList())
+                        .Where(data => data.Count > 0)
+                        ;
 
                     foreach (var item in _tcpDmtpService.Clients)
                     {
-                        foreach (var deviceDataWithValues in deviceRunTimes)
+                        foreach (var deviceDataWithValues in dataChunks)
                         {
                             // 将 GlobalData.CollectDevices 和 GlobalData.Variables 同步到从站
-                            await item.GetDmtpRpcActor().UpDataAsync(deviceDataWithValues.AdaptListDeviceDataWithValue(), waitInvoke).ConfigureAwait(false);
+                            await item.GetDmtpRpcActor().UpDataAsync(deviceDataWithValues, waitInvoke).ConfigureAwait(false);
                         }
                         LogMessage?.LogTrace($"{item.Id} Update StandbyStation data success");
                     }

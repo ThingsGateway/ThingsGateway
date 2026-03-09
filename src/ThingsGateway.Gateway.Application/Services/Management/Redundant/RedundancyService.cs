@@ -39,6 +39,7 @@ internal sealed class RedundancyService : BaseService<SysDict>, IRedundancyServi
             new SysDict() { DictType = DictTypeEnum.System, Category = nameof(RedundancyOptions), Name = nameof(RedundancyOptions.MaxErrorCount), Code = input.MaxErrorCount.ToString() },
             new SysDict() { DictType = DictTypeEnum.System, Category = nameof(RedundancyOptions), Name = nameof(RedundancyOptions.IsStartBusinessDevice), Code = input.IsStartBusinessDevice.ToString() },
             new SysDict() { DictType = DictTypeEnum.System, Category = nameof(RedundancyOptions), Name = nameof(RedundancyOptions.SyncInterval), Code = input.SyncInterval.ToString() },
+            new SysDict() { DictType = DictTypeEnum.System, Category = nameof(RedundancyOptions), Name = nameof(RedundancyOptions.SyncEnable), Code = input.SyncEnable.ToString() },
          };
         var storageable = await db.Storageable(dicts).WhereColumns(it => new { it.DictType, it.Category, it.Name }).ToStorageAsync().ConfigureAwait(false);
 
@@ -77,6 +78,7 @@ internal sealed class RedundancyService : BaseService<SysDict>, IRedundancyServi
             redundancy.MaxErrorCount = sysDicts.FirstOrDefault(a => a.Category == nameof(RedundancyOptions) && a.Name == nameof(RedundancyOptions.MaxErrorCount))?.Code.ToInt() ?? 3000;
             redundancy.IsStartBusinessDevice = sysDicts.FirstOrDefault(a => a.Category == nameof(RedundancyOptions) && a.Name == nameof(RedundancyOptions.IsStartBusinessDevice))?.Code.ToBoolean() ?? false;
             redundancy.SyncInterval = sysDicts.FirstOrDefault(a => a.Category == nameof(RedundancyOptions) && a.Name == nameof(RedundancyOptions.SyncInterval))?.Code.ToInt() ?? 30000;
+            redundancy.SyncEnable = sysDicts.FirstOrDefault(a => a.Category == nameof(RedundancyOptions) && a.Name == nameof(RedundancyOptions.SyncEnable))?.Code.ToBoolean() ?? true;
 
             App.CacheService.Set(key, redundancy);
         }

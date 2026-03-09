@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Nodes;
+using ThingsGateway.Foundation.Common.Json.Extension;
 
 namespace ThingsGateway.Gateway.Application;
 

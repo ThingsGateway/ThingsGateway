@@ -63,4 +63,9 @@ public class RedundancyOptions
     /// </summary>
     [MinValue(1000)]
     public int SyncInterval { get; set; }
+
+    /// <summary>
+    /// 获取或设置开启冗余数据同步。
+    /// </summary>
+    public bool SyncEnable { get; set; } = true;
 }

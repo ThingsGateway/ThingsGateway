@@ -1,0 +1,76 @@
+<Project>
+
+
+	<ItemGroup>
+		<None Include="$(MSBuildThisFileDirectory)Directory.Build.targets" Pack="false" PackagePath="\" />
+	</ItemGroup>
+
+
+	<PropertyGroup Condition="($([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0')) OR $([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0'))) AND '$(EnableAot)' == 'true'">
+
+		<!--AOT 兼容性分析器-->
+		<IsAotCompatible>true</IsAotCompatible>
+		<IsTrimmable>true</IsTrimmable>
+		<EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+		<EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
+		<EnableAotAnalyzer>true</EnableAotAnalyzer>
+
+		<!--本机调试信息-->
+		<StripSymbols>true</StripSymbols>
+
+		<!--编译器选择混合方法：生成快速代码，或优先考虑可执行文件的大小-->
+		<!--<OptimizationPreference>Speed</OptimizationPreference>-->
+		<OptimizationPreference>Speed</OptimizationPreference>
+
+		<!--设置为 false时，将删除对解析非文件 URL System.Xml的支持。 仅支持文件系统解析。-->
+		<XmlResolverIsNetworkingEnabledByDefault>false</XmlResolverIsNetworkingEnabledByDefault>
+
+		<!--设置为 true时，将去除程序集的 System.* 异常消息。 从 System.* 程序集引发异常时，该消息是简化的资源 ID，而不是完整消息-->
+		<UseSystemResourceKeys>true</UseSystemResourceKeys>
+
+		<!--设置为 true时，使用 Android 和 iOS 的默认平台实现 HttpMessageHandler 并删除托管实现。-->
+		<UseNativeHttpHandler>true</UseNativeHttpHandler>
+
+		<!--如果设置为true ，则删除 LINQ 中的某些吞吐量优化，以免对应用程序的大小产生不利影响-->
+		<UseSizeOptimizedLinq>false</UseSizeOptimizedLinq>
+
+		<!--设置为 false时，删除运行时生成堆栈跟踪（例如或 Environment.StackTraceException.ToString）的支持。 从堆栈跟踪字符串中删除的信息量可能取决于其他部署选项。 此选项不会影响调试器生成的堆栈跟踪。-->
+		<StackTraceSupport>true</StackTraceSupport>
+
+		<!--设置为 false时，删除对检测的支持 System.Diagnostics.Metrics 。-->
+		<MetricsSupport>false</MetricsSupport>
+
+		<!--设置为 false时，删除与热重载相关的元数据更新特定逻辑。-->
+		<MetadataUpdaterSupport>false</MetadataUpdaterSupport>
+
+		<!--设置为 true时，删除特定于全球化的代码和数据。 有关详细信息，请参阅固定模式。-->
+		<InvariantGlobalization>false</InvariantGlobalization>
+
+		<!--设置为 false时，删除与诊断支持 System.Net.Http相关的代码。-->
+		<HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+
+		<!--设置为 false时，删除与对 HTTP/3 的支持 System.Net.Http相关的代码。-->
+		<Http3Support>false</Http3Support>
+
+		<!--设置为 false时，删除与 EventSource 相关的代码和逻辑。-->
+		<EventSourceSupport>false</EventSourceSupport>
+
+		<!--设置为 false后，删除不安全的 UTF-7 编码代码。 有关详细信息，请参阅 UTF-7 代码路径已过时。-->
+		<EnableUnsafeUTF7Encoding>false</EnableUnsafeUTF7Encoding>
+
+		<!--设置为 false时，删除 BinaryFormatter 序列化支持。 有关详细信息，请参阅 BinaryFormatter 序列化方法已过时 ， 并且已删除内置 BinaryFormatter 实现，并且始终引发。-->
+		<EnableUnsafeBinaryFormatterSerialization>false</EnableUnsafeBinaryFormatterSerialization>
+
+		<!--设置为 false时，删除支持更好的调试体验的代码。 此设置还会删除符号。-->
+		<DebuggerSupport>false</DebuggerSupport>
+
+		<!--设置为 false时，删除在受支持的平台上创建 自动发布池 的代码。 false 是 .NET SDK 的默认值。-->
+		<AutoreleasePoolSupport>false</AutoreleasePoolSupport>
+
+
+
+	</PropertyGroup>
+
+
+
+</Project>

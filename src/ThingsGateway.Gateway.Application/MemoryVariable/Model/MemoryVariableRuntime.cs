@@ -14,6 +14,7 @@ using Riok.Mapperly.Abstractions;
 using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Nodes;
+using ThingsGateway.Foundation.Common.Json.Extension;
 using ThingsGateway.Gateway.Application.Extensions;
 
 #if !Management
