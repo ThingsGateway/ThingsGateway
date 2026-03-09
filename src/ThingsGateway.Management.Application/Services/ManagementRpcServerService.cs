@@ -95,6 +95,7 @@ public partial class ManagementRpcServerService(DmtpActorContext dmtpActorContex
     public Task DeleteLogDataAsync(string path) => dmtpActorContext.Current.GetDmtpRpcActor().DeleteLogDataAsync(path, invokeOption);
 
     public Task<List<PluginInfo>> GetPluginsAsync(PluginTypeEnum? pluginType = null) => dmtpActorContext.Current.GetDmtpRpcActor().GetPluginsAsync(pluginType, invokeOption);
+    public Task<List<ChannelTypeEnum>> OnChannelTypeQueryAsync(string pluginName) => dmtpActorContext.Current.GetDmtpRpcActor().OnChannelTypeQueryAsync(pluginName);
 
     public Task<QueryData<PluginInfo>> PluginPageAsync(QueryPageOptions options, PluginTypeEnum? pluginTypeEnum = null) => dmtpActorContext.Current.GetDmtpRpcActor().PluginPageAsync(options, pluginTypeEnum, invokeOption);
 

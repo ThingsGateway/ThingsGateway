@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 using Microsoft.AspNetCore.Components.Forms;
+using ThingsGateway.Foundation.Common.StringExtension;
 
 namespace ThingsGateway.Gateway.Razor;
 
@@ -47,6 +48,45 @@ public partial class ChannelEditComponent
         {
             await ToastService.Warn(ex);
         }
+    }
+
+
+    private string ChannelTypeName;
+    private bool _initialized;
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        await base.SetParametersAsync(parameters);
+        if (ChannelTypeName.IsNullOrEmpty())
+        {
+            var channelTypes = (await OnChannelTypeQueryAsync(Model.PluginName)).Select(a => a.ToString()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            ChannelTypeItems = typeof(ChannelTypeEnum).ToSelectList().Where(a => channelTypes.Contains(a.Value)).ToList();
+
+            ChannelTypeName = Model.ChannelType.ToString();
+            if (!_initialized)
+            {
+                _initialized = true;
+
+                OnInitialized();
+                await OnInitializedAsync();
+                OnParametersSet();
+                StateHasChanged();
+                await OnParametersSetAsync();
+            }
+            else
+            {
+                OnParametersSet();
+                StateHasChanged();
+                await OnParametersSetAsync();
+            }
+        }
+
+    }
+
+    public List<SelectedItem> ChannelTypeItems;
+
+    private Task<List<ChannelTypeEnum>> OnChannelTypeQueryAsync(string pluginName)
+    {
+        return PluginService.OnChannelTypeQueryAsync(pluginName);
     }
 
     public Dictionary<string, PluginInfo> PluginDcit { get; set; }

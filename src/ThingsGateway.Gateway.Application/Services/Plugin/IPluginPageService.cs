@@ -25,6 +25,7 @@ public interface IPluginPageService
     /// <param name="pluginType"></param>
     /// <returns></returns>
     Task<List<PluginInfo>> GetPluginsAsync(PluginTypeEnum? pluginType = null);
+    Task<List<ChannelTypeEnum>> OnChannelTypeQueryAsync(string pluginName);
 
     /// <summary>
     /// 分页显示插件

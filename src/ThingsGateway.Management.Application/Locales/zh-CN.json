@@ -134,6 +134,7 @@
     "Status": "当前站点状态",
     "Switch": "切换",
     "SyncInterval": "数据同步间隔",
+    "SyncEnable": "数据同步使能",
     "VerifyToken": "验证令牌"
   },
   "ThingsGateway.Gateway.Application.RedundancyService": {

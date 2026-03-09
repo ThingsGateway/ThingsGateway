@@ -140,6 +140,7 @@ public partial class ManagementRpcServer : IRpcServer, IManagementRpcServer, IHa
     public Task<string> GetPluginNameAsync(long channelId) => App.GetService<IChannelPageService>().GetPluginNameAsync(channelId);
 
     public Task<List<PluginInfo>> GetPluginsAsync(PluginTypeEnum? pluginType = null) => App.GetService<IPluginPageService>().GetPluginsAsync(pluginType);
+    public Task<List<ChannelTypeEnum>> OnChannelTypeQueryAsync(string pluginName) => App.GetService<IPluginPageService>().OnChannelTypeQueryAsync(pluginName);
 
     public Task<RedundancyOptions> GetRedundancyAsync() => App.GetService<IRedundancyService>().GetRedundancyAsync();
 

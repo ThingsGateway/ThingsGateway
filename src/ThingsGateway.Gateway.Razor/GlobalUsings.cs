@@ -17,7 +17,6 @@ global using System.Diagnostics.CodeAnalysis;
 
 global using ThingsGateway.Common;
 global using ThingsGateway.Foundation;
-global using ThingsGateway.Foundation.Common;
 global using ThingsGateway.Foundation.Common.Extension;
 global using ThingsGateway.Gateway.Application;
 global using ThingsGateway.Razor;

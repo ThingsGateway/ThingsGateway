@@ -41,7 +41,10 @@ public abstract partial class CollectBase : DriverBase, IRpcDriver
     {
         return string.Empty;
     }
-
+    public override ChannelTypeEnum[] SupportedChannelTypes()
+    {
+        return [ChannelTypeEnum.Other];
+    }
 
     /// <summary>
     /// 特殊方法

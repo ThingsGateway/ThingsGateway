@@ -278,7 +278,13 @@ internal sealed class ManagementPluginService : IPluginService
 
         return Task.FromResult(filteredPlugins);
     }
+    public Task<List<ChannelTypeEnum>> OnChannelTypeQueryAsync(string pluginName)
+    {
+        var driver = GetDriver(pluginName);
+        var channelTypes = (driver?.SupportedChannelTypes() ?? [ChannelTypeEnum.Other]);
 
+        return Task.FromResult(channelTypes.ToList());
+    }
     /// <summary>
     /// 获取插件信息的方法，可以根据插件类型筛选插件列表。
     /// </summary>

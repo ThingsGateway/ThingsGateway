@@ -191,6 +191,8 @@ internal interface IManagementRpcServer : IRpcServer
     /// <returns></returns>
     [DmtpRpc]
     Task<List<PluginInfo>> GetPluginsAsync(PluginTypeEnum? pluginType = null);
+    [DmtpRpc]
+    Task<List<ChannelTypeEnum>> OnChannelTypeQueryAsync(string pluginName);
 
     /// <summary>
     /// 获取冗余设置

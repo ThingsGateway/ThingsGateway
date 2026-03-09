@@ -78,7 +78,10 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
 
     #endregion 属性
 
-
+    public abstract ChannelTypeEnum[] SupportedChannelTypes();
+    //{
+    //    return [ChannelTypeEnum.Other];
+    //}
     public virtual bool GetAuthentication(out DateTime? expireTime)
     {
         expireTime = null;

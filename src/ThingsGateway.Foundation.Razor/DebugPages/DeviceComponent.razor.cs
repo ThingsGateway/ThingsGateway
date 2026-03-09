@@ -9,7 +9,6 @@
 //------------------------------------------------------------------------------
 
 using ThingsGateway.Foundation;
-using ThingsGateway.Foundation.Common;
 
 using TouchSocket.Core;
 

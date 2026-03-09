@@ -168,6 +168,11 @@ public class MemoryDriver : CollectBase
 
     public override bool IsConnected() => true;
 
+    public override ChannelTypeEnum[] SupportedChannelTypes()
+    {
+        return [ChannelTypeEnum.Other];
+    }
+
 
 #endif
 }

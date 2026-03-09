@@ -92,7 +92,13 @@ internal sealed class PluginService : IPluginService
         var driver = GetDriver(pluginName);
         return driver?.DriverVariableAddressUIType;
     }
+    public Task<List<ChannelTypeEnum>> OnChannelTypeQueryAsync(string pluginName)
+    {
+        var driver = GetDriver(pluginName);
+        var channelTypes = (driver?.SupportedChannelTypes() ?? [ChannelTypeEnum.Other]);
 
+        return Task.FromResult(channelTypes.ToList());
+    }
     /// <summary>
     /// 根据插件名称获取对应的驱动程序。
     /// </summary>

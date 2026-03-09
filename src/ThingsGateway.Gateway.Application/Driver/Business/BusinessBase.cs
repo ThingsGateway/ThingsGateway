@@ -18,6 +18,10 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public abstract class BusinessBase : DriverBase
 {
+    public override ChannelTypeEnum[] SupportedChannelTypes()
+    {
+        return [ChannelTypeEnum.Other];
+    }
     public virtual bool RefreshRuntimeAlways { get; set; } = false;
     /// <summary>
     /// 当前关联的采集设备

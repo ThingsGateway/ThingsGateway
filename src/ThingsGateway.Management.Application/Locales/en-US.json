@@ -135,6 +135,7 @@
     "Status": "Current Site Status",
     "Switch": "Switch",
     "SyncInterval": "Data Synchronization Interval",
+    "SyncEnable": "Enable Data Synchronization",
     "VerifyToken": "Verification Token"
   },
   "ThingsGateway.Gateway.Application.RedundancyService": {

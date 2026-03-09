@@ -49,10 +49,23 @@
                 <EditTemplate Context="value">
                     <div class="col-12  col-md-6">
                         <Select @bind-Value="@value.PluginName"
-                                Items="@PluginNames" IsDisabled=BatchEditEnable
-                                ShowSearch="true">
-                            <ItemTemplate Context="name">
-                                @if (PluginDcit.TryGetValue(name.Value, out var pluginOutput))
+                                Items="@PluginNames" IsDisabled=BatchEditEnable OnSelectedItemChanged=@(async(a)=>
+                                                                                                            {
+                                                                                                                var types=await OnChannelTypeQueryAsync(a.Value);
+                                                                                                                var names = types.Select(a => a.ToString()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                                                                                                                 ChannelTypeItems = typeof(ChannelTypeEnum).ToSelectList().Where(a => names.Contains(a.Value)).ToList();
+
+                                                                                                                if (!types.Contains(Model.ChannelType))
+                                                                                                                {
+                                                                                                                    Model.ChannelType = types.FirstOrDefault();
+                                                                                                                }
+                                                                                                                await InvokeAsync(StateHasChanged);
+                                                                                                                await Task.Delay(100);
+                                                                                                                await InvokeAsync(StateHasChanged);
+                                                                                                            })
+                            ShowSearch="true">
+                        <ItemTemplate Context="name">
+                            @if (PluginDcit.TryGetValue(name.Value, out var pluginOutput))
                                 {
                                     if (pluginOutput.EducationPlugin)
                                     {
@@ -92,14 +105,16 @@
 
                 <EditTemplate Context="value">
                     <div class="col-12 col-sm-6 col-md-6">
-                        <Select SkipValidate="true" @bind-Value="@value.ChannelType" OnSelectedItemChanged=@(async(a)=>
-                                                                                                                 {
-                                                                                                                     await InvokeAsync(StateHasChanged);
-                                                                                                                     await Task.Delay(100);
-                                                                                                                     await InvokeAsync(StateHasChanged);
-                                                                                                                 }) />
-                </div>
-            </EditTemplate>
+                        <Select @bind-Value="@value.ChannelType" class="w-100" Items="ChannelTypeItems" DefaultVirtualizeItemText=@ChannelTypeName OnSelectedItemChanged=@(async(a)=>
+                                                                                                                                                                               {
+                                                                                                                                                                                   await InvokeAsync(StateHasChanged);
+                                                                                                                                                                                   await Task.Delay(100);
+                                                                                                                                                                                   await InvokeAsync(StateHasChanged);
+                                                                                                                                                                               })>
+                    </Select>
+
+                                                </div>
+                                            </EditTemplate>
 
                                         </EditorItem>
 

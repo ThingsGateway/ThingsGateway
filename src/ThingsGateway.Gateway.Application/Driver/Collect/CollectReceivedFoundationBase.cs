@@ -23,7 +23,10 @@ public abstract class CollectReceivedFoundationBase : CollectBase, IReceivedFoun
     /// 底层驱动，有可能为null
     /// </summary>
     public abstract IReceivedDevice? ReceivedFoundationDevice { get; }
-
+    public override ChannelTypeEnum[] SupportedChannelTypes()
+    {
+        return ReceivedFoundationDevice?.SupportedChannelTypes();
+    }
     public override string ToString()
     {
         return ReceivedFoundationDevice?.ToString() ?? base.ToString();

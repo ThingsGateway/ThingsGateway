@@ -15,7 +15,10 @@ namespace ThingsGateway.Gateway.Application;
 /// </summary>
 public abstract class BusinessReceivedFoundationBase : BusinessBase, IReceivedFoundationDevice
 {
-
+    public override ChannelTypeEnum[] SupportedChannelTypes()
+    {
+        return ReceivedFoundationDevice?.SupportedChannelTypes();
+    }
     /// <summary>
     /// 底层驱动，有可能为null
     /// </summary>
