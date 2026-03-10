@@ -1,4 +1,4 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 @layout BaseLayout
 @namespace ThingsGateway.Server
 @using BootstrapBlazor.Components
@@ -42,6 +42,9 @@
 
                     <div class="flex-fill"></div>
 
+                    @* 硬件信息 *@
+                    <HardwareInfoTip />
+
                     @* 搜索框 *@
                     <GlobalSearch Menus=@(MenuService.SameLevelMenuItems) />
 
@@ -70,7 +73,7 @@
                         <Button @onclick="ShowAbout" class="layout-header-bar d-none d-lg-flex px-2" Icon="fa fa-info" Color="Color.None" TooltipText="@Localizer[nameof(About)]" />
                     }
                     @* 版本号 *@
-                    <div class="px-1 navbar-header-text text-nowrap text-nowrap d-none d-lg-block">@_versionString</div>
+                    <div class="px-1 navbar-header-text text-nowrap d-none d-lg-block">@_versionString</div>
 
                     @* 主题切换 *@
                     @* <ThemeToggle /> *@
