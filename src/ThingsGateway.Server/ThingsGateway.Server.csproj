@@ -86,6 +86,9 @@
 		<Content Include="Dockerfile">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+		<Content Include="MinimumCompatibleVersion">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 		<Content Include="Dockerfile_arm64">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
