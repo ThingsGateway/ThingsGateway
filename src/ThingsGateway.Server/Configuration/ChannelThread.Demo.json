@@ -3,6 +3,6 @@
     "CheckInterval": 1800000, //检查间隔
     "MaxChannelCount": 50, //最大通道数量
     "MaxDeviceCount": 50, //最大设备数量
-    "MaxVariableCount": 5000 //最大变量数量
+    "MaxVariableCount": 50000 //最大变量数量
   }
 }

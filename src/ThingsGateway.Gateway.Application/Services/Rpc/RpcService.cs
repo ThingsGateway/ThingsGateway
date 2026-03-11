@@ -12,8 +12,6 @@ using Microsoft.Extensions.Hosting;
 
 using System.Collections.Concurrent;
 using System.Text.Json.Nodes;
-
-using ThingsGateway.Common.Extension;
 using ThingsGateway.Foundation.Common.Json.Extension;
 
 namespace ThingsGateway.Gateway.Application;
@@ -192,62 +190,63 @@ internal sealed class RpcService : IRpcService
 
         // 使用并行方式写入变量
         var writeVariableArrays = writeVariables;
-        await writeVariableArrays.ParallelForEachAsync(async (driverData, cancellationToken) =>
+        var writeVariableArraysTasks = writeVariableArrays.Select(async driverData =>
+    {
+        try
         {
-            try
+            var start = DateTime.Now;
+            var result = await driverData.Key.InVokeWriteAsync(driverData.Value, cancellationToken).ConfigureAwait(false);
+            var end = DateTime.Now;
+
+            foreach (var resultItem in result)
             {
-                var start = DateTime.Now;
-                var result = await driverData.Key.InVokeWriteAsync(driverData.Value, cancellationToken).ConfigureAwait(false);
-                var end = DateTime.Now;
-
-                foreach (var resultItem in result)
+                foreach (var variableResult in resultItem.Value)
                 {
-                    foreach (var variableResult in resultItem.Value)
+                    string operObj = variableResult.Key;
+                    string parJson = deviceDatas[resultItem.Key][variableResult.Key];
+
+                    if (!variableResult.Value.IsSuccess || _rpcLogOptions.SuccessLog)
                     {
-                        string operObj = variableResult.Key;
-                        string parJson = deviceDatas[resultItem.Key][variableResult.Key];
-
-                        if (!variableResult.Value.IsSuccess || _rpcLogOptions.SuccessLog)
-                        {
-                            _logQueues.Enqueue(
-                                new RpcLog()
-                                {
-                                    LogTime = start,
-                                    ExecutionTime = (int)(end - start).TotalMilliseconds,
-                                    OperateMessage = variableResult.Value.IsSuccess ? null : variableResult.Value.ToString(),
-                                    IsSuccess = variableResult.Value.IsSuccess,
-                                    OperateMethod = AppResource.WriteVariable,
-                                    OperateDevice = resultItem.Key,
-                                    OperateObject = operObj,
-                                    OperateSource = sourceDes,
-                                    ParamJson = parJson,
-                                    ResultJson = null
-                                });
-                        }
-
-                        if (!variableResult.Value.IsSuccess)
-                        {
-                            var result1 = variableResult.Value;
-                            result1.Exception = null;
-                            resultItem.Value[variableResult.Key] = result1;
-                        }
+                        _logQueues.Enqueue(
+                            new RpcLog()
+                            {
+                                LogTime = start,
+                                ExecutionTime = (int)(end - start).TotalMilliseconds,
+                                OperateMessage = variableResult.Value.IsSuccess ? null : variableResult.Value.ToString(),
+                                IsSuccess = variableResult.Value.IsSuccess,
+                                OperateMethod = AppResource.WriteVariable,
+                                OperateDevice = resultItem.Key,
+                                OperateObject = operObj,
+                                OperateSource = sourceDes,
+                                ParamJson = parJson,
+                                ResultJson = null
+                            });
                     }
 
-                    results[resultItem.Key].AddRange(resultItem.Value);
+                    if (!variableResult.Value.IsSuccess)
+                    {
+                        var result1 = variableResult.Value;
+                        result1.Exception = null;
+                        resultItem.Value[variableResult.Key] = result1;
+                    }
                 }
+
+                results[resultItem.Key].AddRange(resultItem.Value);
             }
-            catch (Exception ex)
+        }
+        catch (Exception ex)
+        {
+            foreach (var item in driverData.Value)
             {
-                foreach (var item in driverData.Value)
-                {
-                    results[item.Key.DeviceName].Add(item.Key.Name, new OperResult<object>(ex));
-                }
+                results[item.Key.DeviceName].Add(item.Key.Name, new OperResult<object>(ex));
             }
-        }, cancellationToken).ConfigureAwait(false);
+        }
+    }).ToArray();
+        await Task.WhenAll(writeVariableArraysTasks).ConfigureAwait(false);
 
         // 使用并行方式执行方法
         var writeMethodArrays = writeMethods;
-        await writeMethodArrays.ParallelForEachAsync(async (driverData, cancellationToken) =>
+        var writeMethodArraysTasks = writeMethodArrays.Select(async driverData =>
         {
             try
             {
@@ -305,7 +304,9 @@ internal sealed class RpcService : IRpcService
                     results[item.Key.DeviceName].Add(item.Key.Name, new OperResult<object>(ex));
                 }
             }
-        }, cancellationToken).ConfigureAwait(false);
+        }).ToArray();
+
+        await Task.WhenAll(writeMethodArraysTasks).ConfigureAwait(false);
 
         // 返回结果字典
         return results;
@@ -467,7 +468,7 @@ internal sealed class RpcService : IRpcService
 
         // 使用并行方式写入变量
         var writeVariableArrays = writeVariables;
-        await writeVariableArrays.ParallelForEachAsync(async (driverData, cancellationToken) =>
+        var writeVariableArraysTasks = writeVariableArrays.Select(async driverData =>
         {
             try
             {
@@ -518,11 +519,13 @@ internal sealed class RpcService : IRpcService
                     results[item.Key.DeviceName].Add(item.Key.Name, new OperResult<object>(ex));
                 }
             }
-        }, cancellationToken).ConfigureAwait(false);
+        }).ToArray();
+
+        await Task.WhenAll(writeVariableArraysTasks).ConfigureAwait(false);
 
         // 使用并行方式执行方法
         var writeMethodArrays = writeMethods;
-        await writeMethodArrays.ParallelForEachAsync(async (driverData, cancellationToken) =>
+        var writeMethodArraysTasks = writeMethodArrays.Select(async driverData =>
         {
             try
             {
@@ -580,7 +583,9 @@ internal sealed class RpcService : IRpcService
                     results[item.Key.DeviceName].Add(item.Key.Name, new OperResult<object>(ex));
                 }
             }
-        }, cancellationToken).ConfigureAwait(false);
+        }).ToArray();
+
+        await Task.WhenAll(writeMethodArraysTasks).ConfigureAwait(false);
 
         // 返回结果字典
         return results;

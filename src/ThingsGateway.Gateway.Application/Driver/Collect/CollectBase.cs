@@ -371,16 +371,23 @@ public abstract partial class CollectBase : DriverBase, IRpcDriver
             if (@this.Pause) return;
             if (cancellationToken.IsCancellationRequested) return;
             CancellationToken readToken = default;
-            var readerLockTask = @this.ReadWriteLock.ReaderLockAsync(cancellationToken);
-            if (!readerLockTask.IsCompletedSuccessfully)
+            try
             {
-                readToken = await readerLockTask.ConfigureAwait(false);
-            }
-            else
-            {
-                readToken = readerLockTask.Result;
-            }
+                var readerLockTask = @this.ReadWriteLock.ReaderLockAsync(cancellationToken);
+                if (!readerLockTask.IsCompletedSuccessfully)
+                {
+                    readToken = await readerLockTask.ConfigureAwait(false);
+                }
+                else
+                {
+                    readToken = readerLockTask.Result;
+                }
 
+            }
+            catch (ObjectDisposedException)
+            {
+                return;
+            }
             if (readToken.IsCancellationRequested)
             {
                 await @this.ReadVariableSource(state, cancellationToken).ConfigureAwait(false);
@@ -552,43 +559,45 @@ public abstract partial class CollectBase : DriverBase, IRpcDriver
 
                 var groups = writeInfoLists.Select(a => a.Key).Where(a => a.RpcWriteCheck && a.ProtectType != ProtectTypeEnum.WriteOnly && successfulWriteNames.Contains(a.Name) && a.VariableSource != null).GroupBy(a => a.VariableSource as VariableSourceRead).Where(a => a.Key != null).ToArray();
 
-                await groups.ParallelForEachAsync(async (varRead, token) =>
-                {
-                    var result = await @this.ReadSourceAsync(varRead.Key, token).ConfigureAwait(false);
-                    if (result.IsSuccess)
-                    {
-                        foreach (var item in varRead)
-                        {
-                            var cValue = writeInfoLists[item].Deserialize(item.RawValue?.GetType());
-                            if (!item.RawValue.Equals(cValue))
-                            {
-                                // 如果写入值与读取值不同，则更新操作结果为失败
-                                if (cValue is IComparable)
-                                {
-                                    operResults[item.Name] = new OperResult($"The write value is inconsistent with the read value,  Write value: {writeInfoLists[item].Deserialize(item.Value?.GetType())}, read value: {item.Value}");
-                                }
-                                else
-                                {
-                                    if (cValue != null)
-                                    {
-                                        if (item.RawValue.ToSystemTextJsonString(false) != cValue.ToSystemTextJsonString(false))
-                                            operResults[item.Name] = new OperResult($"The write value is inconsistent with the read value,  Write value: {writeInfoLists[item].Deserialize(item.Value?.GetType())}, read value: {item.Value}");
-                                    }
-                                    else
-                                        operResults[item.Name] = new OperResult($"The write value is inconsistent with the read value,  Write value: {writeInfoLists[item].Deserialize(item.Value?.GetType())}, read value: {item.Value}");
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        foreach (var item in varRead)
-                        {
-                            // 如果写入值与读取值不同，则更新操作结果为失败
-                            operResults[item.Name] = new OperResult($"Reading and rechecking resulted in an error: {result.ErrorMessage}", result.Exception);
-                        }
-                    }
-                }, cancellationToken).ConfigureAwait(false);
+                var tasks = groups.Select(async (varRead) =>
+                       {
+                           var result = await @this.ReadSourceAsync(varRead.Key, cancellationToken).ConfigureAwait(false);
+                           if (result.IsSuccess)
+                           {
+                               foreach (var item in varRead)
+                               {
+                                   var cValue = writeInfoLists[item].Deserialize(item.RawValue?.GetType());
+                                   if (!item.RawValue.Equals(cValue))
+                                   {
+                                       // 如果写入值与读取值不同，则更新操作结果为失败
+                                       if (cValue is IComparable)
+                                       {
+                                           operResults[item.Name] = new OperResult($"The write value is inconsistent with the read value,  Write value: {writeInfoLists[item].Deserialize(item.Value?.GetType())}, read value: {item.Value}");
+                                       }
+                                       else
+                                       {
+                                           if (cValue != null)
+                                           {
+                                               if (item.RawValue.ToSystemTextJsonString(false) != cValue.ToSystemTextJsonString(false))
+                                                   operResults[item.Name] = new OperResult($"The write value is inconsistent with the read value,  Write value: {writeInfoLists[item].Deserialize(item.Value?.GetType())}, read value: {item.Value}");
+                                           }
+                                           else
+                                               operResults[item.Name] = new OperResult($"The write value is inconsistent with the read value,  Write value: {writeInfoLists[item].Deserialize(item.Value?.GetType())}, read value: {item.Value}");
+                                       }
+                                   }
+                               }
+                           }
+                           else
+                           {
+                               foreach (var item in varRead)
+                               {
+                                   // 如果写入值与读取值不同，则更新操作结果为失败
+                                   operResults[item.Name] = new OperResult($"Reading and rechecking resulted in an error: {result.ErrorMessage}", result.Exception);
+                               }
+                           }
+                       }).ToArray();
+
+                await Task.WhenAll(tasks).ConfigureAwait(false);
             }
         }
     }
@@ -641,22 +650,22 @@ public abstract partial class CollectBase : DriverBase, IRpcDriver
             .Where(a => !results.Any(b => b.Key == a.Key.Name))
             .ToArray();
             // 使用并发方式遍历写入信息列表，并进行异步写入操作
-            await list.ParallelForEachAsync(async (writeInfo, cancellationToken) =>
-            {
-                try
-                {
-                    // 调用协议的写入方法，将写入信息中的数据写入到对应的寄存器地址，并获取操作结果
-                    var result = await @this.InvokeMethodAsync(writeInfo.Key.VariableMethod, writeInfo.Value?.ToString(), false, cancellationToken).ConfigureAwait(false);
+            var tasks = list.Select(async (writeInfo) =>
+               {
+                   try
+                   {
+                       // 调用协议的写入方法，将写入信息中的数据写入到对应的寄存器地址，并获取操作结果
+                       var result = await @this.InvokeMethodAsync(writeInfo.Key.VariableMethod, writeInfo.Value?.ToString(), false, cancellationToken).ConfigureAwait(false);
 
-                    // 将操作结果添加到结果字典中，使用变量名称作为键
-                    operResults.TryAdd(writeInfo.Key.Name, result);
-                }
-                catch (Exception ex)
-                {
-                    operResults.TryAdd(writeInfo.Key.Name, new(ex));
-                }
-            }, @this.CollectProperties.MaxConcurrentCount, cancellationToken).ConfigureAwait(false);
-
+                       // 将操作结果添加到结果字典中，使用变量名称作为键
+                       operResults.TryAdd(writeInfo.Key.Name, result);
+                   }
+                   catch (Exception ex)
+                   {
+                       operResults.TryAdd(writeInfo.Key.Name, new(ex));
+                   }
+               }).ToArray();
+            await Task.WhenAll(tasks).ConfigureAwait(false);
             // 将转换失败的变量和写入成功的变量的操作结果合并到结果字典中
             return new Dictionary<string, IDictionary<string, OperResult<object>>>()
         {

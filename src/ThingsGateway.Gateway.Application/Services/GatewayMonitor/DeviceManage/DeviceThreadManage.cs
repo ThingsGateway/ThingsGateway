@@ -248,128 +248,131 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
             var idSet = GlobalData.GetRedundantDeviceIds();
 
-            await deviceRuntimes.ParallelForEachAsync(async (deviceRuntime, cancellationToken) =>
-            {
-                if (App.HostApplicationLifetime.ApplicationStopping.IsCancellationRequested)
+            var tasks = deviceRuntimes.Select(async deviceRuntime =>
                 {
-                    return;
-                }
-                if (Disposed)
-                {
-                    return;
-                }
-
-                //备用设备实时取消
-                var redundantDeviceId = deviceRuntime.RedundantDeviceId;
-                if (GlobalData.TryGetDeviceRuntime(redundantDeviceId ?? 0, out var redundantDeviceRuntime))
-                {
-                    if (GlobalData.TryGetDeviceThreadManage(redundantDeviceRuntime, out var redundantDeviceThreadManage))
+                    if (App.HostApplicationLifetime.ApplicationStopping.IsCancellationRequested)
                     {
-                        if (redundantDeviceThreadManage != this)
+                        return;
+                    }
+                    if (Disposed)
+                    {
+                        return;
+                    }
+
+                    //备用设备实时取消
+                    var redundantDeviceId = deviceRuntime.RedundantDeviceId;
+                    if (GlobalData.TryGetDeviceRuntime(redundantDeviceId ?? 0, out var redundantDeviceRuntime))
+                    {
+                        if (GlobalData.TryGetDeviceThreadManage(redundantDeviceRuntime, out var redundantDeviceThreadManage))
                         {
-                            await redundantDeviceThreadManage.RemoveDeviceAsync(redundantDeviceRuntime.Id).ConfigureAwait(false);
+                            if (redundantDeviceThreadManage != this)
+                            {
+                                await redundantDeviceThreadManage.RemoveDeviceAsync(redundantDeviceRuntime.Id).ConfigureAwait(false);
+                            }
+                            else
+                            {
+                                await PrivateRemoveDevicesAsync([redundantDeviceRuntime.Id]).ConfigureAwait(false);
+                            }
+                            redundantDeviceThreadManage.LogMessage?.LogInformation($"The device {redundantDeviceRuntime.Name} is standby and no communication tasks are created");
+
+                            if (redundantDeviceRuntime.RedundantType == RedundantTypeEnum.Primary)
+                                SetRedundantDevice(redundantDeviceRuntime, deviceRuntime);
                         }
-                        else
+                    }
+
+                    if (deviceRuntime.IsCollect == true)
+                    {
+                        if (!GlobalData.StartCollectChannelEnable)
                         {
-                            await PrivateRemoveDevicesAsync([redundantDeviceRuntime.Id]).ConfigureAwait(false);
+                            return;
                         }
-                        redundantDeviceThreadManage.LogMessage?.LogInformation($"The device {redundantDeviceRuntime.Name} is standby and no communication tasks are created");
-
-                        if (redundantDeviceRuntime.RedundantType == RedundantTypeEnum.Primary)
-                            SetRedundantDevice(redundantDeviceRuntime, deviceRuntime);
                     }
-                }
-
-                if (deviceRuntime.IsCollect == true)
-                {
-                    if (!GlobalData.StartCollectChannelEnable)
+                    else
                     {
-                        return;
+                        if (!GlobalData.StartBusinessChannelEnable)
+                        {
+                            return;
+                        }
                     }
-                }
-                else
-                {
-                    if (!GlobalData.StartBusinessChannelEnable)
-                    {
-                        return;
-                    }
-                }
 
-                if (!deviceRuntime.Enable) return;
-                if (Disposed) return;
-                if (idSet.Contains(deviceRuntime.Id) && deviceRuntime.RedundantType != RedundantTypeEnum.Primary)
-                {
-                    var pDevice = GlobalData.IdDevices.FirstOrDefault(a => a.Value.RedundantDeviceId == deviceRuntime.Id);
-                    if (pDevice.Value?.RedundantType != RedundantTypeEnum.Standby)
+                    if (!deviceRuntime.Enable) return;
+                    if (Disposed) return;
+                    if (idSet.Contains(deviceRuntime.Id) && deviceRuntime.RedundantType != RedundantTypeEnum.Primary)
                     {
-                        LogMessage?.LogInformation($"The device {deviceRuntime.Name} is standby and no communication tasks are created");
-                        return;
+                        var pDevice = GlobalData.IdDevices.FirstOrDefault(a => a.Value.RedundantDeviceId == deviceRuntime.Id);
+                        if (pDevice.Value?.RedundantType != RedundantTypeEnum.Standby)
+                        {
+                            LogMessage?.LogInformation($"The device {deviceRuntime.Name} is standby and no communication tasks are created");
+                            return;
+                        }
                     }
-                }
-                DriverBase driver = null;
+                    DriverBase driver = null;
 
-                // 创建令牌并与驱动程序对象的设备ID关联，用于取消操作
-                var cts = new CancellationTokenSource();
-                var token = cts.Token;
-                try
-                {
-                    driver = CreateDriver(deviceRuntime);
+                    // 创建令牌并与驱动程序对象的设备ID关联，用于取消操作
+                    var cts = new CancellationTokenSource();
+                    var token = cts.Token;
+                    try
+                    {
+                        driver = CreateDriver(deviceRuntime);
+                        if (driver == null)
+                        {
+                            LogMessage?.LogWarning(string.Format(AppResource.InitFail, CurrentChannel.PluginName, driver?.DeviceName));
+                            return;
+                        }
+                        //初始状态
+                        deviceRuntime.DeviceStatus = DeviceStatusEnum.Default;
+
+                        Drivers.TryRemove(deviceRuntime.Id, out _);
+
+                        // 将驱动程序对象添加到驱动程序集合中
+                        Drivers.TryAdd(driver.DeviceId, driver);
+
+                        // 将当前通道线程分配给驱动程序对象
+                        driver.DeviceThreadManage = this;
+
+                        // 初始化驱动程序对象，并加载源读取
+                        await driver.InitChannelAsync(ChannelObject, token).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        // 如果初始化过程中发生异常，设置初始化状态为失败，并记录警告日志
+                        if (driver != null)
+                            driver.IsInitSuccess = false;
+                        LogMessage?.LogWarning(ex, string.Format(AppResource.InitFail, CurrentChannel.PluginName, driver?.DeviceName));
+                    }
                     if (driver == null)
                     {
                         LogMessage?.LogWarning(string.Format(AppResource.InitFail, CurrentChannel.PluginName, driver?.DeviceName));
                         return;
                     }
-                    //初始状态
-                    deviceRuntime.DeviceStatus = DeviceStatusEnum.Default;
 
-                    Drivers.TryRemove(deviceRuntime.Id, out _);
-
-                    // 将驱动程序对象添加到驱动程序集合中
-                    Drivers.TryAdd(driver.DeviceId, driver);
-
-                    // 将当前通道线程分配给驱动程序对象
-                    driver.DeviceThreadManage = this;
-
-                    // 初始化驱动程序对象，并加载源读取
-                    await driver.InitChannelAsync(ChannelObject, token).ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    // 如果初始化过程中发生异常，设置初始化状态为失败，并记录警告日志
-                    if (driver != null)
-                        driver.IsInitSuccess = false;
-                    LogMessage?.LogWarning(ex, string.Format(AppResource.InitFail, CurrentChannel.PluginName, driver?.DeviceName));
-                }
-                if (driver == null)
-                {
-                    LogMessage?.LogWarning(string.Format(AppResource.InitFail, CurrentChannel.PluginName, driver?.DeviceName));
-                    return;
-                }
-
-                if (driver?.DeviceId > 0)
-                {
-                    if (CancellationTokenSources.TryGetValue(driver.DeviceId, out var oldCts))
+                    if (driver?.DeviceId > 0)
                     {
-                        try
+                        if (CancellationTokenSources.TryGetValue(driver.DeviceId, out var oldCts))
                         {
-                            await oldCts.SafeCancelAsync().ConfigureAwait(false);
-                            oldCts.SafeDispose();
-                        }
-                        catch
-                        {
+                            try
+                            {
+                                await oldCts.SafeCancelAsync().ConfigureAwait(false);
+                                oldCts.SafeDispose();
+                            }
+                            catch
+                            {
+                            }
                         }
                     }
-                }
 
-                foreach (var item in driver.IdVariableRuntimes)
-                {
-                    item.Value.SetErrorMessage(null);
-                }
+                    foreach (var item in driver.IdVariableRuntimes)
+                    {
+                        item.Value.SetErrorMessage(null);
+                    }
 
-                CancellationTokenSources.TryAdd(driver.DeviceId, cts);
+                    CancellationTokenSources.TryAdd(driver.DeviceId, cts);
 
-                _ = Task.Factory.StartNew((state) => DriverStart(state, token), driver, token, TaskCreationOptions.None, TaskScheduler.Default);
-            }, App.HostApplicationLifetime.ApplicationStopping).ConfigureAwait(false);
+                    _ = Task.Factory.StartNew((state) => DriverStart(state, token), driver, token, TaskCreationOptions.None, TaskScheduler.Default);
+                }).ToArray();
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+
         }
         catch (Exception ex)
         {
@@ -422,7 +425,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
         try
         {
             ConcurrentList<VariableRuntime> saveVariableRuntimes = new();
-            await deviceIds.ParallelForEachAsync(async (deviceId, cancellationToken) =>
+            var tasks = deviceIds.Select(async deviceId =>
              {
                  var now = DateTime.Now;
                  // 查找具有指定设备ID的驱动程序对象
@@ -463,7 +466,8 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
                  {
                      task.Stop();
                  }
-             }).ConfigureAwait(false);
+             }).ToArray();
+            await Task.WhenAll(tasks).ConfigureAwait(false);
 
             await Task.Delay(100).ConfigureAwait(false);
 
@@ -681,20 +685,21 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
 
             //需要重启业务线程
             var businessDeviceRuntimes = GlobalData.IdDevices.Where(a => a.Value.Driver is BusinessBase && ((BusinessBase)a.Value.Driver).CollectDevices.ContainsKey(a.Key) == true).Select(a => a.Value).ToArray();
-            await businessDeviceRuntimes.ParallelForEachAsync(async (businessDeviceRuntime, token) =>
+            var tasks = businessDeviceRuntimes.Select(async businessDeviceRuntime =>
               {
                   if (businessDeviceRuntime.Driver != null)
                   {
                       try
                       {
-                          await businessDeviceRuntime.Driver.AfterVariablesChangedAsync(token).ConfigureAwait(false);
+                          await businessDeviceRuntime.Driver.AfterVariablesChangedAsync(cancellationToken).ConfigureAwait(false);
                       }
                       catch (Exception ex)
                       {
                           LogMessage?.LogWarning(ex);
                       }
                   }
-              }, cancellationToken).ConfigureAwait(false);
+              }).ToArray();
+            await Task.WhenAll(tasks).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

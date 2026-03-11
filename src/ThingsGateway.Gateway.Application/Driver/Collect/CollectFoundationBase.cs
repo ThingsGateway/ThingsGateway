@@ -13,8 +13,6 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Text.Json.Nodes;
 
-using ThingsGateway.Common.Extension;
-
 namespace ThingsGateway.Gateway.Application;
 
 /// <summary>
@@ -98,32 +96,34 @@ public abstract class CollectFoundationBase : CollectReceivedFoundationBase, IFo
             // 创建用于存储操作结果的并发字典
             NonBlockingDictionary<string, OperResult> operResults = new();
             // 使用并发方式遍历写入信息列表，并进行异步写入操作
-            await writeInfoLists.ParallelForEachAsync(async (writeInfo, cancellationToken) =>
-            {
-                try
-                {
 
-                    // 调用协议的写入方法，将写入信息中的数据写入到对应的寄存器地址，并获取操作结果
-                    var result = await @this.FoundationDevice.WriteJsonNodeAsync(writeInfo.Key.RegisterAddress, writeInfo.Value, writeInfo.Key.DataType, writeInfo.Key.BitConverter, cancellationToken).ConfigureAwait(false);
 
-                    if (result.IsSuccess)
-                    {
-                        if (@this.LogMessage?.LogLevel <= TouchSocket.Core.LogLevel.Debug)
-                            @this.LogMessage?.LogDebug(string.Format("{0} - Write [{1} - {2} - {3}] data succeeded", @this.DeviceName, writeInfo.Key.RegisterAddress, writeInfo.Value, writeInfo.Key.DataType));
-                    }
-                    else
-                    {
-                        @this.LogMessage?.LogWarning(string.Format("{0} - Write [{1} - {2} - {3}] data failed {4}", @this.DeviceName, writeInfo.Key.RegisterAddress, writeInfo.Value, writeInfo.Key.DataType, result.ToString()));
-                    }
-                    // 将操作结果添加到结果字典中，使用变量名称作为键
-                    operResults.TryAdd(writeInfo.Key.Name, result);
-                }
-                catch (Exception ex)
-                {
-                    operResults.TryAdd(writeInfo.Key.Name, new(ex));
-                }
-            }, @this.CollectProperties.MaxConcurrentCount, cancellationToken).ConfigureAwait(false);
+            var task = writeInfoLists.Select(async (writeInfo) =>
+               {
+                   try
+                   {
 
+                       // 调用协议的写入方法，将写入信息中的数据写入到对应的寄存器地址，并获取操作结果
+                       var result = await @this.FoundationDevice.WriteJsonNodeAsync(writeInfo.Key.RegisterAddress, writeInfo.Value, writeInfo.Key.DataType, writeInfo.Key.BitConverter, cancellationToken).ConfigureAwait(false);
+
+                       if (result.IsSuccess)
+                       {
+                           if (@this.LogMessage?.LogLevel <= TouchSocket.Core.LogLevel.Debug)
+                               @this.LogMessage?.LogDebug(string.Format("{0} - Write [{1} - {2} - {3}] data succeeded", @this.DeviceName, writeInfo.Key.RegisterAddress, writeInfo.Value, writeInfo.Key.DataType));
+                       }
+                       else
+                       {
+                           @this.LogMessage?.LogWarning(string.Format("{0} - Write [{1} - {2} - {3}] data failed {4}", @this.DeviceName, writeInfo.Key.RegisterAddress, writeInfo.Value, writeInfo.Key.DataType, result.ToString()));
+                       }
+                       // 将操作结果添加到结果字典中，使用变量名称作为键
+                       operResults.TryAdd(writeInfo.Key.Name, result);
+                   }
+                   catch (Exception ex)
+                   {
+                       operResults.TryAdd(writeInfo.Key.Name, new(ex));
+                   }
+               }).ToArray();
+            await Task.WhenAll(task).ConfigureAwait(false);
             await @this.Check(writeInfoLists, operResults, cancellationToken).ConfigureAwait(false);
 
             // 返回包含操作结果的字典

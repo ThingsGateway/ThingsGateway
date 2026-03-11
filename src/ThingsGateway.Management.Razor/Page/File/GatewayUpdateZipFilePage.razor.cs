@@ -29,16 +29,12 @@ public partial class GatewayUpdateZipFilePage
         await base.OnInitializedAsync();
     }
 
-
-
     #endregion 查询
 
-    private Task Upgrade(UpdateZipFile updateZipFile)
+    private async Task Upgrade(UpdateZipFile updateZipFile)
     {
-        _ = Task.Run(() =>
-        {
-            UpgradeRpcServer.UpgradeAsync(null, updateZipFile);
-        });
-        return Task.CompletedTask;
+        await ToastService.Success(title: "正在升级中，请稍后...", content: "详细可查看日志");
+        await UpgradeRpcServer.UpgradeAsync(null, updateZipFile);
+
     }
 }

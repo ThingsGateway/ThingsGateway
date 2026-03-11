@@ -57,59 +57,7 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
         ManageHelper.CheckDeviceCount(deviceCount);
         ManageHelper.CheckVariableCount(variableCount);
 
-        for (int i = 0; i < deviceCount; i++)
-        {
-            Channel channel = new Channel();
-            Device device = new Device();
-            {
-                var id = CommonUtils.GetSingleId();
-                var name = $"modbusChannel{id}";
-                channel.ChannelType = ChannelTypeEnum.TcpClient;
-                channel.Name = name;
-                channel.Id = id;
-                channel.CreateUserId = UserManager.UserId;
-                channel.CreateOrgId = UserManager.OrgId;
-                channel.RemoteUrl = slaveUrl;
-                channel.PluginName = "ThingsGateway.Plugin.Modbus.ModbusMaster";
-                //动态插件属性默认
-                newChannels.Add(channel);
-            }
-            {
-                var id = CommonUtils.GetSingleId();
-                var name = $"modbusDevice{id}";
-                device.Name = name;
-                device.Id = id;
-                device.ChannelId = channel.Id;
-                device.CreateUserId = UserManager.UserId;
-                device.CreateOrgId = UserManager.OrgId;
-                device.IntervalTime = "1000";
-                //动态插件属性默认
-                newDevices.Add(device);
-            }
 
-            // 计算当前设备应该分配的变量数量
-            int currentGroupVariableCount = (i == deviceCount - 1)
-                ? variableCount - (deviceCount - 1) * groupVariableCount // 最后一个设备分配剩余的变量
-                : groupVariableCount;
-
-            var addressNum = 1;
-
-            for (int i1 = 0; i1 < currentGroupVariableCount; i1++)
-            {
-                if (addressNum > 65535) addressNum = 1;
-                var address = $"4{addressNum}";
-                addressNum++;
-                var id = CommonUtils.GetSingleId();
-                var name = $"modbus{address}";
-                Variable variable = new Variable();
-                variable.DataType = DataTypeEnum.Int16;
-                variable.Name = name;
-                variable.Id = id;
-                variable.DeviceId = device.Id;
-                variable.RegisterAddress = address;
-                newVariables.Add(variable);
-            }
-        }
 
         if (businessEnable)
         {
@@ -171,6 +119,61 @@ internal sealed class VariableService : BaseService<Variable>, IVariableService
                 newDevices.Add(mqttDevice);
             }
         }
+
+        for (int i = 0; i < deviceCount; i++)
+        {
+            Channel channel = new Channel();
+            Device device = new Device();
+            {
+                var id = CommonUtils.GetSingleId();
+                var name = $"modbusChannel{id}";
+                channel.ChannelType = ChannelTypeEnum.TcpClient;
+                channel.Name = name;
+                channel.Id = id;
+                channel.CreateUserId = UserManager.UserId;
+                channel.CreateOrgId = UserManager.OrgId;
+                channel.RemoteUrl = slaveUrl;
+                channel.PluginName = "ThingsGateway.Plugin.Modbus.ModbusMaster";
+                //动态插件属性默认
+                newChannels.Add(channel);
+            }
+            {
+                var id = CommonUtils.GetSingleId();
+                var name = $"modbusDevice{id}";
+                device.Name = name;
+                device.Id = id;
+                device.ChannelId = channel.Id;
+                device.CreateUserId = UserManager.UserId;
+                device.CreateOrgId = UserManager.OrgId;
+                device.IntervalTime = "1000";
+                //动态插件属性默认
+                newDevices.Add(device);
+            }
+
+            // 计算当前设备应该分配的变量数量
+            int currentGroupVariableCount = (i == deviceCount - 1)
+                ? variableCount - (deviceCount - 1) * groupVariableCount // 最后一个设备分配剩余的变量
+                : groupVariableCount;
+
+            var addressNum = 1;
+
+            for (int i1 = 0; i1 < currentGroupVariableCount; i1++)
+            {
+                if (addressNum > 65535) addressNum = 1;
+                var address = $"4{addressNum}";
+                addressNum++;
+                var id = CommonUtils.GetSingleId();
+                var name = $"modbus{address}";
+                Variable variable = new Variable();
+                variable.DataType = DataTypeEnum.Int16;
+                variable.Name = name;
+                variable.Id = id;
+                variable.DeviceId = device.Id;
+                variable.RegisterAddress = address;
+                newVariables.Add(variable);
+            }
+        }
+
 
         //Channel opcuaChannel = new Channel();
         //Device opcuaDevice = new Device();

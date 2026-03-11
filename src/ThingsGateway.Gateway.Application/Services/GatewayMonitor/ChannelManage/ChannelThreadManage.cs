@@ -12,8 +12,6 @@ using Microsoft.Extensions.Logging;
 
 using System.Collections.Concurrent;
 
-using ThingsGateway.Common.Extension;
-
 namespace ThingsGateway.Gateway.Application;
 
 public sealed class ChannelThreadManage : IChannelThreadManage
@@ -36,19 +34,20 @@ public sealed class ChannelThreadManage : IChannelThreadManage
     /// <param name="channelIds">要移除的通道ID</param>
     private async Task PrivateRemoveChannelsAsync(IList<long> channelIds)
     {
-        await channelIds.ParallelForEachAsync(async (channelId, token) =>
-          {
-              try
-              {
-                  if (!DeviceThreadManages.TryRemove(channelId, out var deviceThreadManage)) return;
+        var tasks = channelIds.Select(async channelId =>
+        {
+            try
+            {
+                if (!DeviceThreadManages.TryRemove(channelId, out var deviceThreadManage)) return;
 
-                  await deviceThreadManage.SafeDisposeAsync().ConfigureAwait(false);
-              }
-              catch (Exception ex)
-              {
-                  _logger.LogWarning(ex, nameof(PrivateRemoveChannelsAsync));
-              }
-          }).ConfigureAwait(false);
+                await deviceThreadManage.SafeDisposeAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, nameof(PrivateRemoveChannelsAsync));
+            }
+        }).ToArray();
+        await Task.WhenAll(tasks).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -90,8 +89,7 @@ public sealed class ChannelThreadManage : IChannelThreadManage
     private async Task PrivateRestartChannelAsync(IList<ChannelRuntime> channelRuntimes)
     {
         await PrivateRemoveChannelsAsync(channelRuntimes.Select(a => a.Id).ToArray()).ConfigureAwait(false);
-
-        await channelRuntimes.ParallelForEachAsync(async (channelRuntime, token) =>
+        var tasks = channelRuntimes.Select(async channelRuntime =>
         {
             try
             {
@@ -132,7 +130,9 @@ public sealed class ChannelThreadManage : IChannelThreadManage
             {
                 _logger.LogWarning(ex, nameof(PrivateRestartChannelAsync));
             }
-        }).ConfigureAwait(false);
+        }).ToArray();
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+
     }
 
     /// <summary>

@@ -233,16 +233,18 @@ public static class RuntimeServiceHelper
     public static async Task RestartDeviceAsync(List<DeviceRuntime> newDeviceRuntimes)
     {
         var groups = GlobalData.GetDeviceThreadManages(newDeviceRuntimes);
-        await groups.ParallelForEachAsync(async (group, token) =>
+        var tasks1 = groups.Select(async group =>
         {
             if (group.Key != null)
                 await group.Key.RestartDeviceAsync(group.Value, false).ConfigureAwait(false);
-        }).ConfigureAwait(false);
-        await GlobalData.GetAllVariableBusinessDeviceRuntime().Where(a => !newDeviceRuntimes.Contains(a)).Where(a => a.Driver?.DeviceThreadManage != null).GroupBy(a => a.Driver.DeviceThreadManage).ParallelForEachAsync(async (group, token) =>
+        }).ToArray();
+        await Task.WhenAll(tasks1).ConfigureAwait(false);
+        var task2 = GlobalData.GetAllVariableBusinessDeviceRuntime().Where(a => !newDeviceRuntimes.Contains(a)).Where(a => a.Driver?.DeviceThreadManage != null).GroupBy(a => a.Driver.DeviceThreadManage).Select(async (group, token) =>
         {
             if (group.Key != null)
                 await group.Key.RestartDeviceAsync(group.ToArray(), false).ConfigureAwait(false);
-        }).ConfigureAwait(false);
+        }).ToArray();
+        await Task.WhenAll(task2).ConfigureAwait(false);
     }
     public static async Task RemoveDeviceAsync(HashSet<long> newDeciceIds)
     {
@@ -253,17 +255,18 @@ public static class RuntimeServiceHelper
     public static async Task RemoveDeviceAsync(IEnumerable<DeviceRuntime> deviceRuntimes)
     {
         var groups = GlobalData.GetDeviceThreadManages(deviceRuntimes);
-        await groups.ParallelForEachAsync(async (group, token) =>
+        var tasks1 = groups.Select(async group =>
          {
              if (group.Key != null)
                  await group.Key.RemoveDeviceAsync(group.Value.Select(a => a.Id).ToArray()).ConfigureAwait(false);
-         }).ConfigureAwait(false);
-
-        await GlobalData.GetAllVariableBusinessDeviceRuntime().Where(a => !deviceRuntimes.Contains(a)).Where(a => a.Driver?.DeviceThreadManage != null).GroupBy(a => a.Driver.DeviceThreadManage).ParallelForEachAsync(async (group, token) =>
-        {
-            if (group.Key != null)
-                await group.Key.RestartDeviceAsync(group.ToArray(), false).ConfigureAwait(false);
-        }).ConfigureAwait(false);
+         }).ToArray();
+        await Task.WhenAll(tasks1).ConfigureAwait(false);
+        var task2 = GlobalData.GetAllVariableBusinessDeviceRuntime().Where(a => !deviceRuntimes.Contains(a)).Where(a => a.Driver?.DeviceThreadManage != null).GroupBy(a => a.Driver.DeviceThreadManage).Select(async (group, token) =>
+           {
+               if (group.Key != null)
+                   await group.Key.RestartDeviceAsync(group.ToArray(), false).ConfigureAwait(false);
+           }).ToArray();
+        await Task.WhenAll(task2).ConfigureAwait(false);
 
     }
 
