@@ -58,8 +58,15 @@ public partial class ChannelEditComponent
         await base.SetParametersAsync(parameters);
         if (ChannelTypeName.IsNullOrEmpty())
         {
-            var channelTypes = (await OnChannelTypeQueryAsync(Model.PluginName)).Select(a => a.ToString()).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            ChannelTypeItems = typeof(ChannelTypeEnum).ToSelectList().Where(a => channelTypes.Contains(a.Value)).ToList();
+            if (!Model.PluginName.IsNullOrEmpty())
+            {
+                var channelTypes = (await OnChannelTypeQueryAsync(Model.PluginName)).Select(a => a.ToString()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                ChannelTypeItems = typeof(ChannelTypeEnum).ToSelectList().Where(a => channelTypes.Contains(a.Value)).ToList();
+            }
+            else
+            {
+                ChannelTypeItems = typeof(ChannelTypeEnum).ToSelectList();
+            }
 
             ChannelTypeName = Model.ChannelType.ToString();
             if (!_initialized)
