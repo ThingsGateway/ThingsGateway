@@ -240,7 +240,7 @@ public class Startup : AppStartup
         app.UseScheduleUI(options =>
         {
             options.RequestPath = "/schedule";  // 必须以 / 开头且不以 / 结尾
-            options.DisableOnProduction = true; // 生产环境关闭
+            options.DisableOnProduction = false; // 生产环境关闭
             options.DisplayEmptyTriggerJobs = true; // 是否显示空作业触发器的作业
             options.DisplayHead = false; // 是否显示页头
             options.DefaultExpandAllJobs = false; // 是否默认展开所有作业
@@ -303,7 +303,7 @@ public class Startup : AppStartup
         app.UseScheduleUI(options =>
         {
             options.RequestPath = "/schedule";  // 必须以 / 开头且不以 / 结尾
-            options.DisableOnProduction = true; // 生产环境关闭
+            options.DisableOnProduction = false; // 生产环境关闭
             options.DisplayEmptyTriggerJobs = true; // 是否显示空作业触发器的作业
             options.DisplayHead = false; // 是否显示页头
             options.DefaultExpandAllJobs = false; // 是否默认展开所有作业

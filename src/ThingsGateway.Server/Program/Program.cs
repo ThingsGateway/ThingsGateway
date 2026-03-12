@@ -145,8 +145,8 @@ public class Program
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                     builder.UseSystemd();
 
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    builder.ConfigureLogging(logging =>
+                if (Runtime.IsLegacyWindows)
+                        builder.ConfigureLogging(logging =>
                     {
                         //去除默认的事件日志提供者，某些情况下会日志输出异常，导致程序崩溃
                         foreach (var provider in logging.Services.Where(s => s.ImplementationType?.Name == "EventLogLoggerProvider").ToList())
