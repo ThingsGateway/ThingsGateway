@@ -47,7 +47,7 @@ public static class RuntimeServiceHelper
     public static void Init(List<ChannelRuntime> newChannelRuntimes)
     {
         //批量修改之后，需要重新加载通道
-        foreach (var newChannelRuntime in newChannelRuntimes)
+        newChannelRuntimes.ParallelForEach((newChannelRuntime) =>
         {
             if (GlobalData.IdChannels.TryGetValue(newChannelRuntime.Id, out var channelRuntime))
             {
@@ -60,7 +60,7 @@ public static class RuntimeServiceHelper
             {
                 newChannelRuntime.Init();
             }
-        }
+        });
         GlobalData.ChannelDeviceRuntimeDispatchService.Dispatch(null);
     }
 
@@ -117,7 +117,7 @@ public static class RuntimeServiceHelper
     }
     public static void Init(List<VariableRuntime> newVariableRuntimes)
     {
-        foreach (var newVariableRuntime in newVariableRuntimes)
+        newVariableRuntimes.ParallelForEach((newVariableRuntime) =>
         {
             if (GlobalData.IdVariables.TryGetValue(newVariableRuntime.Id, out var variableRuntime))
             {
@@ -131,7 +131,7 @@ public static class RuntimeServiceHelper
             {
                 newVariableRuntime.Init(GlobalData.MemoryDeviceRuntime);
             }
-        }
+        });
         GlobalData.VariableRuntimeDispatchService.Dispatch(null);
     }
 

@@ -41,26 +41,26 @@ internal sealed class GatewayMonitorHostedService : BackgroundService
 
             var variableRuntimes = GlobalData.VariableService.GetAllVariableRuntime();
 
-            foreach (var channelRuntime in channelRuntimes)
-            {
-                try
-                {
-                    channelRuntime.Init();
-                    var devRuntimes = deviceRuntimes.Where(x => x.ChannelId == channelRuntime.Id);
-                    foreach (var item in devRuntimes)
-                    {
-                        item.Init(channelRuntime);
+            channelRuntimes.ParallelForEach(channelRuntime =>
+{
+    try
+    {
+        channelRuntime.Init();
+        var devRuntimes = deviceRuntimes.Where(x => x.ChannelId == channelRuntime.Id);
+        foreach (var item in devRuntimes)
+        {
+            item.Init(channelRuntime);
 
-                        var varRuntimes = variableRuntimes.Where(x => x.DeviceId == item.Id);
+            var varRuntimes = variableRuntimes.Where(x => x.DeviceId == item.Id);
 
-                        varRuntimes.ParallelForEach(varItem => varItem.Init(item));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogWarning(ex, "Init Channel");
-                }
-            }
+            varRuntimes.ParallelForEach(varItem => varItem.Init(item));
+        }
+    }
+    catch (Exception ex)
+    {
+        Logger.LogWarning(ex, "Init Channel");
+    }
+});
 
             GlobalData.ChannelDeviceRuntimeDispatchService.Dispatch(null);
             GlobalData.VariableRuntimeDispatchService.Dispatch(null);
