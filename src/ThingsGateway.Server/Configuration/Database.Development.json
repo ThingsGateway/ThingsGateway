@@ -9,7 +9,7 @@
       "ConfigId": "DB_Admin", //ID
       //"ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
       //"DatabaseType": "MySql", //数据库类型
-      "ConnectionString": "Data Source=./DB/Admin.db;", //连接字符串
+      "ConnectionString": "Data Source=../../../DB/Admin.db;", //连接字符串
       "DatabaseType": "Sqlite", //数据库类型
       "IsAutoCloseConnection": true, //是否自动释放
       "InitDatabase": true, //是否初始化数据库,适用于codefirst
@@ -22,7 +22,7 @@
       "ConfigId": "DB_Log", //ID
       //"ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
       //"DatabaseType": "MySql", //数据库类型
-      "ConnectionString": "Data Source=./DB/Log.db", //连接字符串
+      "ConnectionString": "Data Source=../../../DB/Log.db", //连接字符串
       "DatabaseType": "Sqlite", //数据库类型
       "IsAutoCloseConnection": true, //是否自动释放
       "InitDatabase": true, //是否初始化数据库,适用于codefirst
@@ -35,7 +35,7 @@
       "ConfigId": "DB_TokenCache", //ID
       //"ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
       //"DatabaseType": "MySql", //数据库类型
-      "ConnectionString": "Data Source=./DB/TokenCache.db", //连接字符串
+      "ConnectionString": "Data Source=../../../DB/TokenCache.db", //连接字符串
       "DatabaseType": "Sqlite", //数据库类型
       "IsAutoCloseConnection": true, //是否自动释放
       "InitDatabase": true, //是否初始化数据库,适用于codefirst
@@ -48,7 +48,7 @@
       "ConfigId": "DB_HardwareInfo", //ID
       //"ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
       //"DatabaseType": "MySql", //数据库类型
-      "ConnectionString": "Data Source=./DB/HardwareInfo.db", //连接字符串
+      "ConnectionString": "Data Source=../../../DB/HardwareInfo.db", //连接字符串
       "DatabaseType": "Sqlite", //数据库类型
       "IsAutoCloseConnection": true, //是否自动释放
       "InitDatabase": true, //是否初始化数据库,适用于codefirst
@@ -61,7 +61,7 @@
       "ConfigId": "DB_Custom", //ID
       //"ConnectionString": "server=localhost;Database=test;Uid=root;Pwd=111111;AllowLoadLocalInfile=true;", //连接字符串
       //"DatabaseType": "MySql", //数据库类型
-      "ConnectionString": "Data Source=./DB/ThingsGateway.db", //连接字符串
+      "ConnectionString": "Data Source=../../../DB/ThingsGateway.db", //连接字符串
       "DatabaseType": "Sqlite", //数据库类型
       "IsAutoCloseConnection": true, //是否自动释放
       "InitDatabase": true, //是否初始化数据库,适用于codefirst

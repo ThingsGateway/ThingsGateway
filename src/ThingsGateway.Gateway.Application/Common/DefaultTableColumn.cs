@@ -128,4 +128,5 @@ public sealed class DefaultTableColumn(string fieldName, Type fieldType, string?
     public int Cols { get; set; }
 
     public bool? IgnoreWhenExport { get; set; }
+    public ISearchFormItemMetaData? SearchFormItemMetaData { get; set; }
 }

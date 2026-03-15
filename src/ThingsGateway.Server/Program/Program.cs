@@ -146,14 +146,14 @@ public class Program
                     builder.UseSystemd();
 
                 if (Runtime.IsLegacyWindows)
-                        builder.ConfigureLogging(logging =>
+                    builder.ConfigureLogging(logging =>
+                {
+                    //去除默认的事件日志提供者，某些情况下会日志输出异常，导致程序崩溃
+                    foreach (var provider in logging.Services.Where(s => s.ImplementationType?.Name == "EventLogLoggerProvider").ToList())
                     {
-                        //去除默认的事件日志提供者，某些情况下会日志输出异常，导致程序崩溃
-                        foreach (var provider in logging.Services.Where(s => s.ImplementationType?.Name == "EventLogLoggerProvider").ToList())
-                        {
-                            logging.Services.Remove(provider);
-                        }
-                    });
+                        logging.Services.Remove(provider);
+                    }
+                });
 
 
 
