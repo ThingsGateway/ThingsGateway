@@ -7,14 +7,14 @@
 
 
 	<!--nuget包解压复制文件，上下文动态加载-->
-	<Import Project="targets\PluginContext.targets" Condition=" ! $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))  OR '$(Configuration)' == 'Release' " />
+	<Import Project="targets\PluginContext.targets" Condition=" ! $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))" />
 
 	<!--nuget包解压复制文件，上下文动态加载，Pro插件-->
 	<Import Project="targets\Pro2.targets" Condition=" '$(SolutionName)' != 'ThingsGatewayAll'  OR '$(Configuration)' == 'Release' " />
 
 
 	<!--nuget包解压复制文件，上下文动态加载-->
-	<Import Project="targets\PluginDebug.targets" Condition=" $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))  AND '$(Configuration)' != 'Release' " />
+	<Import Project="targets\PluginDebug.targets" Condition=" $([System.String]::Copy('$(SolutionName)').StartsWith('ThingsGatewayAll'))" />
 
 	<!--nuget包解压复制文件，上下文动态加载，Pro插件-->
 	<Import Project="targets\ProPluginDebug.targets" Condition=" '$(SolutionName)' == 'ThingsGatewayAll'  AND '$(Configuration)' != 'Release' " />
