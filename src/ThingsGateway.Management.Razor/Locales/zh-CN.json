@@ -164,7 +164,11 @@
     "Unknown": "未知",
     "UpdateChannel": "编辑通道",
     "UpdateDevice": "编辑设备",
-    "VariableInformation": "变量信息"
+    "VariableInformation": "变量信息",
+    "OutlierFilterInformation": "异常值过滤",
+    "RangeFilter": "合理范围过滤",
+    "AmplitudeFilter": "变化幅度过滤",
+    "ContinuousFilter": "连续异常过滤"
   },
   "ThingsGateway.Gateway.Razor.BackendLogPage": {
     "BackendLog": "网关后台日志",

@@ -269,6 +269,11 @@ public partial class VariableRuntime : Variable
 #pragma warning disable CS0649
     protected string _lastErrorMessage;
 
+    /// <summary>
+    /// 连续异常计数器
+    /// </summary>
+    private int _continuousAnomalyCount;
+
 
     /// <summary>
     /// 设置变量值与时间/质量戳
@@ -279,6 +284,7 @@ public partial class VariableRuntime : Variable
         RawValue = value;
         if (IsOnline == false)
         {
+            _continuousAnomalyCount = 0;
             Set(value, dateTime, setChanged);
             return new();
         }
@@ -287,7 +293,17 @@ public partial class VariableRuntime : Variable
             try
             {
                 var data = ReadExpressions.GetExpressionsResult(RawValue, LogMessage);
-                Set(data, dateTime, setChanged);
+                if (!Set(data, dateTime, setChanged))
+                {
+                    var oldMessage = _lastErrorMessage;
+                    _lastErrorMessage = $"{Name} Outlier filter rejected value";
+                    if (oldMessage != _lastErrorMessage)
+                    {
+                        LogMessage?.LogWarning(_lastErrorMessage);
+                    }
+
+                    return new($"{Name} Outlier filter rejected value");
+                }
             }
             catch (Exception ex)
             {
@@ -312,9 +328,106 @@ public partial class VariableRuntime : Variable
         }
         else
         {
-            Set(value, dateTime, setChanged);
+            if (!Set(value, dateTime, setChanged))
+            {
+                return new($"{Name} Outlier filter rejected value");
+            }
         }
         return new();
+    }
+
+    /// <summary>
+    /// 应用异常值过滤，返回true表示值通过过滤，返回false表示值被拒绝
+    /// </summary>
+    private bool ApplyOutlierFilter(object data)
+    {
+        bool anyEnabled = RangeFilterEnable || AmplitudeFilterEnable || ContinuousFilterEnable;
+        if (!anyEnabled || data == null)
+        {
+            _continuousAnomalyCount = 0;
+            return true;
+        }
+
+        if (!TryConvertToDecimal(data, out var numericValue))
+        {
+            _continuousAnomalyCount = 0;
+            return true;
+        }
+
+        bool isAnomaly = false;
+
+        // 合理范围过滤
+        if (RangeFilterEnable)
+        {
+            if (numericValue < RangeFilterMinValue || numericValue > RangeFilterMaxValue)
+            {
+                isAnomaly = true;
+                LogMessage?.LogTrace($"{Name} Outlier filter: value {numericValue} out of range [{RangeFilterMinValue}, {RangeFilterMaxValue}]");
+            }
+        }
+
+        // 变化幅度过滤
+        if (!isAnomaly && AmplitudeFilterEnable && Value != null)
+        {
+            if (TryConvertToDecimal(Value, out var lastNumeric))
+            {
+                var absoluteAmplitude = Math.Abs(numericValue - lastNumeric);
+                if (MaxAmplitude > 0 && absoluteAmplitude > MaxAmplitude)
+                {
+                    isAnomaly = true;
+                    LogMessage?.LogTrace($"{Name} Outlier filter: amplitude {absoluteAmplitude} exceeds max {MaxAmplitude}");
+                }
+
+                if (!isAnomaly && lastNumeric != 0 && MaxAmplitudePercent > 0)
+                {
+                    var amplitudePercent = absoluteAmplitude / Math.Abs(lastNumeric) * 100;
+                    if (amplitudePercent > MaxAmplitudePercent)
+                    {
+                        isAnomaly = true;
+                        LogMessage?.LogTrace($"{Name} Outlier filter: amplitude {amplitudePercent:F2}% exceeds max {MaxAmplitudePercent}%");
+                    }
+                }
+            }
+        }
+
+        if (!isAnomaly)
+        {
+            _continuousAnomalyCount = 0;
+            return true;
+        }
+
+        // 连续异常过滤
+        if (ContinuousFilterEnable)
+        {
+            _continuousAnomalyCount++;
+            if (_continuousAnomalyCount >= MaxContinuousCount)
+            {
+                // 连续异常次数已达上限，接受该值
+                _continuousAnomalyCount = 0;
+                LogMessage?.LogInformation($"{Name} Outlier filter: continuous anomaly count reached {MaxContinuousCount}, accepting value {data.ToSystemTextJsonString()}");
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// 尝试将对象转换为decimal
+    /// </summary>
+    private static bool TryConvertToDecimal(object value, out decimal result)
+    {
+        result = 0;
+        if (value == null) return false;
+        try
+        {
+            result = Convert.ToDecimal(value);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     /// <summary>
@@ -335,7 +448,7 @@ public partial class VariableRuntime : Variable
         }
     }
 
-    protected void Set(object data, DateTime dateTime, bool setChanged)
+    protected bool Set(object data, DateTime dateTime, bool setChanged)
     {
         DateTime time = dateTime != default ? dateTime : DateTime.Now;
         CollectTime = time;
@@ -378,6 +491,14 @@ public partial class VariableRuntime : Variable
                 changed = false;
             }
         }
+
+        // 异常值过滤：仅在值变化且在线时检查
+        if ((changed || setChanged) && _isOnline && !ApplyOutlierFilter(data))
+        {
+            GlobalData.VariableCollectChange(this);
+            return false;
+        }
+
         if (changed || _isOnlineChanged == true || setChanged)
         {
             ChangeTime = time;
@@ -394,6 +515,7 @@ public partial class VariableRuntime : Variable
             GlobalData.VariableValueChange(this);
         }
         GlobalData.VariableCollectChange(this);
+        return true;
     }
 
     public void Init(DeviceRuntime deviceRuntime)

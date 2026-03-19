@@ -571,7 +571,15 @@
     "SaveVariable": "Add/Modify Variable",
     "Unit": "Unit",
     "VariableNotNull": "Variable name does not exist",
-    "WriteExpressions": "WriteExpressions"
+    "WriteExpressions": "WriteExpressions",
+    "RangeFilterEnable": "RangeFilterEnable",
+    "RangeFilterMinValue": "RangeFilterMinValue",
+    "RangeFilterMaxValue": "RangeFilterMaxValue",
+    "AmplitudeFilterEnable": "AmplitudeFilterEnable",
+    "MaxAmplitude": "MaxAmplitude",
+    "MaxAmplitudePercent": "MaxAmplitude%",
+    "ContinuousFilterEnable": "ContinuousFilterEnable",
+    "MaxContinuousCount": "MaxContinuousCount"
   },
 
   "ThingsGateway.Gateway.Application.AlarmPropertys": {

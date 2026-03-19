@@ -165,7 +165,11 @@
     "Unknown": "Unknown",
     "UpdateChannel": "Edit Channel",
     "UpdateDevice": "Edit Device",
-    "VariableInformation": "Variable Information"
+    "VariableInformation": "Variable Information",
+    "OutlierFilterInformation": "Outlier Filter",
+    "RangeFilter": "Range Filter",
+    "AmplitudeFilter": "Amplitude Filter",
+    "ContinuousFilter": "Continuous Anomaly Filter"
   },
   "ThingsGateway.Gateway.Razor.BackendLogPage": {
     "BackendLog": "Gateway Backend Log",

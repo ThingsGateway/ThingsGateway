@@ -1,4 +1,4 @@
-﻿@namespace ThingsGateway.Gateway.Razor
+@namespace ThingsGateway.Gateway.Razor
 @using ThingsGateway.Admin.Application
 @using ThingsGateway.Admin.Razor
 @using ThingsGateway.Foundation
@@ -190,6 +190,43 @@
         </EditorForm>
 
         </ValidateForm>
+    </TabItem>
+
+    <TabItem Text=@GatewayLocalizer["OutlierFilterInformation"]>
+        <EditorForm class="p-2" AutoGenerateAllItem="false" RowType=RowType.Inline ItemsPerRow=3 LabelWidth=250 Model="Model">
+            <FieldItems>
+
+                <EditorItem TValue="string" TModel="Variable" @bind-Field="@context.Name">
+                    <EditTemplate Context="value">
+                        <div class="col-12">
+                        </div>
+                    </EditTemplate>
+                </EditorItem>
+                <EditorItem @bind-Field="@context.RangeFilterEnable" />
+                <EditorItem @bind-Field="@context.RangeFilterMinValue" />
+                <EditorItem @bind-Field="@context.RangeFilterMaxValue" />
+
+                <EditorItem TValue="string" TModel="Variable" @bind-Field="@context.Name">
+                    <EditTemplate Context="value">
+                        <div class="col-12">
+                        </div>
+                    </EditTemplate>
+                </EditorItem>
+                <EditorItem @bind-Field="@context.AmplitudeFilterEnable" />
+                <EditorItem @bind-Field="@context.MaxAmplitude" />
+                <EditorItem @bind-Field="@context.MaxAmplitudePercent" />
+
+                <EditorItem TValue="string" TModel="Variable" @bind-Field="@context.Name">
+                    <EditTemplate Context="value">
+                        <div class="col-12">
+                        </div>
+                    </EditTemplate>
+                </EditorItem>
+                <EditorItem @bind-Field="@context.ContinuousFilterEnable" />
+                <EditorItem @bind-Field="@context.MaxContinuousCount" />
+
+            </FieldItems>
+        </EditorForm>
     </TabItem>
 @if (!BatchEditEnable)
 {

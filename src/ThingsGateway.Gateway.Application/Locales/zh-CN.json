@@ -597,7 +597,15 @@
     "SaveVariable": "添加/修改变量",
     "Unit": "单位",
     "VariableNotNull": "变量名称不存在",
-    "WriteExpressions": "写入表达式"
+    "WriteExpressions": "写入表达式",
+    "RangeFilterEnable": "合理范围过滤使能",
+    "RangeFilterMinValue": "范围最小值",
+    "RangeFilterMaxValue": "范围最大值",
+    "AmplitudeFilterEnable": "变化幅度过滤使能",
+    "MaxAmplitude": "最大变化幅度",
+    "MaxAmplitudePercent": "最大变化幅度%",
+    "ContinuousFilterEnable": "连续异常过滤使能",
+    "MaxContinuousCount": "连续异常最大次数"
   },
 
   "ThingsGateway.Gateway.Application.AlarmPropertys": {

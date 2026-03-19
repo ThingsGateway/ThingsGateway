@@ -240,6 +240,65 @@ public class Variable : PrimaryKeyEntity, IValidatableObject
     [AutoGenerateColumn(Ignore = true)]
     public AlarmPropertys? AlarmPropertys { get; set; }
 
+    #region 异常值过滤
+
+    /// <summary>
+    /// 合理范围过滤使能
+    /// </summary>
+    [OrmColumn(ColumnDescription = "合理范围过滤使能", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public virtual bool RangeFilterEnable { get; set; }
+
+    /// <summary>
+    /// 最小值
+    /// </summary>
+    [OrmColumn(ColumnDescription = "最小值", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public virtual decimal RangeFilterMinValue { get; set; }
+
+    /// <summary>
+    /// 最大值
+    /// </summary>
+    [OrmColumn(ColumnDescription = "最大值", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public virtual decimal RangeFilterMaxValue { get; set; } = 100;
+
+    /// <summary>
+    /// 变化幅度过滤使能
+    /// </summary>
+    [OrmColumn(ColumnDescription = "变化幅度过滤使能", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public virtual bool AmplitudeFilterEnable { get; set; }
+
+    /// <summary>
+    /// 最大变化幅度（与上次值的绝对差值上限）
+    /// </summary>
+    [OrmColumn(ColumnDescription = "最大变化幅度", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public virtual decimal MaxAmplitude { get; set; } = 100;
+
+    /// <summary>
+    /// 最大变化幅度百分比（与上次值的变化比例上限，单位%）
+    /// </summary>
+    [OrmColumn(ColumnDescription = "最大变化幅度%", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public virtual decimal MaxAmplitudePercent { get; set; } = 100;
+
+    /// <summary>
+    /// 连续异常过滤使能
+    /// </summary>
+    [OrmColumn(ColumnDescription = "连续异常过滤使能", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public virtual bool ContinuousFilterEnable { get; set; }
+
+    /// <summary>
+    /// 连续异常最大次数，超过此次数后接受该值
+    /// </summary>
+    [OrmColumn(ColumnDescription = "连续异常最大次数", IsNullable = true)]
+    [AutoGenerateColumn(Visible = false, Filterable = true, Sortable = true)]
+    public virtual int MaxContinuousCount { get; set; } = 3;
+
+    #endregion 异常值过滤
 
     #region 备用字段
 
