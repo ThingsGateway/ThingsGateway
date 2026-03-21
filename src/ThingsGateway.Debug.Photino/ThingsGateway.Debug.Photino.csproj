@@ -53,6 +53,11 @@
 	<ItemGroup Condition="'$(SolutionName)' == 'ThingsGatewayAll'">
 		<ProjectReference Include="..\..\..\ThingsGateway.ProPlugin\src\ThingsGateway.Debug.ProRazor\ThingsGateway.Debug.ProRazor.csproj" />
 	</ItemGroup>
+	
+	<ItemGroup>
+		<None Remove="README.md" />
+		<EmbeddedResource Include="README.md" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="BootstrapBlazor.CherryMarkdown" Version="10.0.1" />
@@ -71,21 +76,11 @@
 			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 		</Content>
 		<Content Update="Configuration\Menu.json">
-		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
-		<Content Update="Configuration\MenuPro.json">
-			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
-		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
 		<Content Update="Configuration\MenuPro.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
 
-
-
-
- 
 </Project>
