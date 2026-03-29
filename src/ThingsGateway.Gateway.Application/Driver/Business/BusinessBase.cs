@@ -65,7 +65,7 @@ public abstract class BusinessBase : DriverBase
 
         var variableRuntimes = GlobalData.GetEnableVariables().Where(a =>
         {
-            if (a.VariablePropertys?.TryGetValue(DeviceId, out var values) == true)
+            if (a.Value.VariablePropertys?.TryGetValue(DeviceId, out var values) == true)
             {
                 if (values.TryGetValue("Enable", out var Enable))
                 {
@@ -86,7 +86,7 @@ public abstract class BusinessBase : DriverBase
             }
         }
        );
-        IdVariableRuntimes = variableRuntimes.ToFrozenDictionary(a => a.Id);
+        IdVariableRuntimes = variableRuntimes.ToFrozenDictionary();
         CollectDevices = IdVariableRuntimes.Select(a => a.Value.DeviceRuntime).Where(a => !a.IsMemory && a.IsCollect == true).DistinctBy(a => a.Id).ToFrozenDictionary(a => a.Id, a => a);
 
         VariableRuntimeGroups = IdVariableRuntimes.Where(a => !a.Value.BusinessGroup.IsNullOrEmpty()).GroupBy(a => a.Value.BusinessGroup ?? string.Empty).ToFrozenDictionary(a => a.Key, a => a.Select(a => a.Value).ToList());

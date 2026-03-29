@@ -353,9 +353,9 @@ public static class GlobalData
         }
         return false;
     }
-    public static IEnumerable<VariableRuntime> GetEnableVariables()
+    public static IEnumerable<KeyValuePair<long, VariableRuntime>> GetEnableVariables()
     {
-        return IdVariables.Where(a => a.Value.DeviceRuntime?.Enable != false && a.Value.DeviceRuntime?.ChannelRuntime?.Enable != false && a.Value?.Enable == true).Select(a => a.Value);
+        return IdVariables.Where(a => a.Value.DeviceRuntime?.Enable != false && a.Value.DeviceRuntime?.ChannelRuntime?.Enable != false && a.Value?.Enable == true);
     }
 
     public static bool TryGetDeviceThreadManage(DeviceRuntime deviceRuntime, out IDeviceThreadManage deviceThreadManage)

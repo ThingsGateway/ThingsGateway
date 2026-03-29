@@ -110,7 +110,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
                 {
 
                     var batchSize = GetBatchSize();
-                    var variableBasicDatas = GlobalData.GetEnableVariables();
+                    var variableBasicDatas = GlobalData.GetEnableVariables().Select(a=>a.Value);
                     var deviceRunTimes = variableBasicDatas.ChunkBetter(batchSize);
 
                     var dataChunks = deviceRunTimes

@@ -12,7 +12,7 @@ using BootstrapBlazor.Components;
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
+using System.Collections.Concurrent;
 using ThingsGateway.Blazor.Diagrams.Core;
 using ThingsGateway.Blazor.Diagrams.Core.Models;
 
@@ -42,7 +42,7 @@ internal sealed class RulesEngineHostedService : BackgroundService, IRulesEngine
     /// </summary>
     private WaitLock RestartLock { get; } = new(nameof(RulesEngineHostedService));
     private List<Rules> Rules { get; set; } = new();
-    public Dictionary<RulesLog, Diagram> Diagrams { get; private set; } = new();
+    public NonBlockingDictionary<RulesLog, Diagram> Diagrams { get; private set; } = new();
     public Task<RulesLog> GetRulesLogAsync(long rulesId)
     {
         var data = Diagrams.Select(a => a.Key).FirstOrDefault(a => a.Rules.Id == rulesId);
@@ -104,7 +104,7 @@ internal sealed class RulesEngineHostedService : BackgroundService, IRulesEngine
                         nodeModel.TryDispose();
                     }
                     del.Value.TryDispose();
-                    Diagrams.Remove(del.Key);
+                    Diagrams.TryRemove(del.Key, out _);
                 }
             }
             dispatchService.Dispatch(null);
@@ -124,7 +124,7 @@ internal sealed class RulesEngineHostedService : BackgroundService, IRulesEngine
         DefaultDiagram blazorDiagram = new();
         RuleHelpers.Load(blazorDiagram, rules.RulesJson ?? new());
         var result = (new RulesLog(rules, log), blazorDiagram);
-        Diagrams.Add(result.Item1, blazorDiagram);
+        Diagrams.TryAdd(result.Item1, blazorDiagram);
 
         return result;
     }

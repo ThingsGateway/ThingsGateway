@@ -41,10 +41,13 @@ public static class CSharpScriptEngineExtension
         {
             if (Instance.GetAll().TryGetValue(e.Key, out var item))
             {
-                var data = (CacheItem)item?.Value;
-                data.Obj?.TryDispose();
-                data.ALC?.Unload();
-                CSharpScriptExecution.MarkDelete(data.Path);
+                if (item.Expired)
+                {
+                    var data = (CacheItem)item?.Value;
+                    data.Obj?.TryDispose();
+                    data.ALC?.Unload();
+                    CSharpScriptExecution.MarkDelete(data.Path);
+                }
             }
         }
         catch
@@ -58,7 +61,7 @@ public static class CSharpScriptEngineExtension
     }
 
     private static MemoryCache Instance { get; } = new MemoryCache();
-    static TimeSpan time = TimeSpan.FromHours(1);
+    static TimeSpan time = TimeSpan.FromDays(7);
 
     /// <summary>
     /// 执行脚本获取返回值

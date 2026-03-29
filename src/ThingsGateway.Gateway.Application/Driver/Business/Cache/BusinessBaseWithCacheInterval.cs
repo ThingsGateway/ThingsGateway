@@ -73,7 +73,7 @@ public abstract class BusinessBaseWithCacheInterval : BusinessBaseWithCache
             if (_businessPropertyWithCacheInterval.IsAllVariable)
             {
                 LogMessage?.LogInformation("Refresh variable");
-                IdVariableRuntimes = GlobalData.GetEnableVariables().ToFrozenDictionary(a => a.Id);
+                IdVariableRuntimes = GlobalData.GetEnableVariables().ToFrozenDictionary();
                 CollectDevices = IdVariableRuntimes.Select(a => a.Value.DeviceRuntime).Where(a => !a.IsMemory && a.IsCollect == true).DistinctBy(a => a.Id).ToFrozenDictionary(a => a.Id, a => a);
 
 
