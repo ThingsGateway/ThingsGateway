@@ -150,7 +150,7 @@ public partial class VariableRuntime : Variable
         {
             return _isOnline;
         }
-        protected set
+        set
         {
             if (IsOnline != value)
             {
@@ -448,7 +448,7 @@ public partial class VariableRuntime : Variable
         }
     }
 
-    protected bool Set(object data, DateTime dateTime, bool setChanged)
+    public bool Set(object data, DateTime dateTime, bool setChanged)
     {
         DateTime time = dateTime != default ? dateTime : DateTime.Now;
         CollectTime = time;

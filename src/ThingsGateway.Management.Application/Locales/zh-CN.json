@@ -135,6 +135,7 @@
     "Switch": "切换",
     "SyncInterval": "数据同步间隔",
     "SyncEnable": "数据同步使能",
+    "EnablePrimaryAfterBackupStop": "主站启用前等待备用站停止",
     "VerifyToken": "验证令牌"
   },
   "ThingsGateway.Gateway.Application.RedundancyService": {

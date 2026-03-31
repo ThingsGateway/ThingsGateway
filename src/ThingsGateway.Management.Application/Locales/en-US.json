@@ -136,6 +136,7 @@
     "Switch": "Switch",
     "SyncInterval": "Data Synchronization Interval",
     "SyncEnable": "Enable Data Synchronization",
+    "EnablePrimaryAfterBackupStop": "EnablePrimaryAfterBackupStop",
     "VerifyToken": "Verification Token"
   },
   "ThingsGateway.Gateway.Application.RedundancyService": {

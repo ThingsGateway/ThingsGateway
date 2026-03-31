@@ -120,7 +120,6 @@ public partial class ManagementTask : AsyncDisposableObject
                })
                .ConfigurePlugins(a =>
                {
-                   a.UseTcpSessionCheckClear();
 
                    a.UseDmtpRpc(a => a.ConfigureDefaultSerializationSelector(b =>
                    {

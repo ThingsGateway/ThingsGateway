@@ -24,12 +24,14 @@ internal sealed class RedundancyHostedService : BackgroundService, IRedundancyHo
     }
     private RedundancyTask RedundancyTask;
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override  Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Yield();
+        return Task.CompletedTask;
+    }
+    public override async Task StartAsync(CancellationToken cancellationToken)
+    {
         await RedundancyTask.StartRedundancyTaskAsync().ConfigureAwait(false);
     }
-
     public Task StartRedundancyTaskAsync() => RedundancyTask.StartRedundancyTaskAsync();
 
     public Task StopRedundancyTaskAsync() => RedundancyTask.StopRedundancyTaskAsync();

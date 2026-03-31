@@ -143,7 +143,7 @@ public partial class ManagementTask : AsyncDisposableObject
                        options.UseDmtpCheckAction();
                        options.CheckAction = async (c) =>
                        {
-                           using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                           using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
                            if ((await c.PingAsync(cts.Token).ConfigureAwait(false)).IsSuccess)
                            {
                                return ConnectionCheckResult.Alive;
@@ -198,27 +198,7 @@ public partial class ManagementTask : AsyncDisposableObject
         await tcpDmtpClient.SetupAsync(config).ConfigureAwait(false);
         return tcpDmtpClient;
     }
-    /// <summary>
-    /// 计算下次重连间隔
-    /// </summary>
-    /// <param name="reconnectionOption">option</param>
-    /// <param name="attemptCount">当前尝试次数</param>
-    /// <param name="currentInterval">当前间隔</param>
-    /// <returns>下次重连间隔</returns>
-    private static TimeSpan CalculateNextInterval(ReconnectionOption<TcpDmtpClient> reconnectionOption, int attemptCount, TimeSpan currentInterval)
-    {
-        return reconnectionOption.Strategy switch
-        {
-            ReconnectionStrategy.Simple => reconnectionOption.BaseInterval,
-            ReconnectionStrategy.ExponentialBackoff => TimeSpan.FromMilliseconds(Math.Min(
-                reconnectionOption.BaseInterval.TotalMilliseconds * Math.Pow(reconnectionOption.BackoffMultiplier, attemptCount - 1),
-                reconnectionOption.MaxInterval.TotalMilliseconds)),
-            ReconnectionStrategy.LinearBackoff => TimeSpan.FromMilliseconds(Math.Min(
-                reconnectionOption.BaseInterval.TotalMilliseconds + (attemptCount - 1) * reconnectionOption.BackoffMultiplier,
-                reconnectionOption.MaxInterval.TotalMilliseconds)),
-            _ => reconnectionOption.BaseInterval
-        };
-    }
+
     private async Task<TcpDmtpService> GetTcpDmtpService()
     {
         var tcpDmtpService = new TcpDmtpService();

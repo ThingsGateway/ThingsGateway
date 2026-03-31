@@ -22,6 +22,19 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
         RedundancyTask = redundancyTask;
     }
 
+    public async Task<bool> GetState()
+    {
+        await RedundancyTask._switchLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            return GlobalData.StartCollectChannelEnable;
+        }
+        finally
+        {
+            RedundancyTask._switchLock.Release();
+        }
+    }
+
     public void UpData(ICallContext callContext, List<DeviceDataWithValue> deviceDatas)
     {
         foreach (var deviceData in deviceDatas)
@@ -37,7 +50,9 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
                 {
                     if (device.ReadOnlyVariableRuntimes.TryGetValue(variableData.Key, out var value))
                     {
-                        value.SetValue(variableData.Value.RawValue, variableData.Value.CollectTime, variableData.Value.IsOnline);
+                        value.RawValue = variableData.Value.RawValue;
+                        value.IsOnline = variableData.Value.IsOnline;
+                        value.Set(variableData.Value.Value, variableData.Value.CollectTime,false);
                         value.SetErrorMessage(variableData.Value.LastErrorMessage);
                     }
                 }

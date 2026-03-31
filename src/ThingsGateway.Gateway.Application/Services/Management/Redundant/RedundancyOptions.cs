@@ -68,4 +68,9 @@ public class RedundancyOptions
     /// 获取或设置开启冗余数据同步。
     /// </summary>
     public bool SyncEnable { get; set; } = true;
+
+    /// <summary>
+    /// 获取或设置开启主站启用前等待备用站停止。
+    /// </summary>
+    public bool EnablePrimaryAfterBackupStop { get; set; } = false;
 }

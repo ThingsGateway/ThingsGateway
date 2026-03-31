@@ -17,6 +17,8 @@ namespace ThingsGateway.Gateway.Application;
 internal interface IRedundantRpcServer : IRpcServer
 {
     [DmtpRpc]
+    Task<bool> GetState();
+    [DmtpRpc]
     Task<IDictionary<string, IDictionary<string, OperResult<object>>>> RpcAsync(ICallContext callContext, Dictionary<string, Dictionary<string, string>> deviceDatas);
 
     [DmtpRpc]

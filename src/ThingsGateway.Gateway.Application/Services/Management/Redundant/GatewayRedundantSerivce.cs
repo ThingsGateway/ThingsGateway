@@ -12,7 +12,7 @@ namespace ThingsGateway.Gateway.Application;
 
 public class GatewayRedundantSerivce : IGatewayRedundantSerivce
 {
-    public bool StartCollectChannelEnable { get; set; } = true;
+    public bool StartCollectChannelEnable { get; set; } = false;
 
-    public bool StartBusinessChannelEnable { get; set; } = true;
+    public bool StartBusinessChannelEnable { get; set; } = false;
 }

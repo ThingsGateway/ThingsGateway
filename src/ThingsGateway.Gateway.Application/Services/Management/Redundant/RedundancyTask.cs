@@ -110,7 +110,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
                 {
 
                     var batchSize = GetBatchSize();
-                    var variableBasicDatas = GlobalData.GetEnableVariables().Select(a=>a.Value);
+                    var variableBasicDatas = GlobalData.GetEnableVariables().Select(a => a.Value);
                     var deviceRunTimes = variableBasicDatas.ChunkBetter(batchSize);
 
                     var dataChunks = deviceRunTimes
@@ -166,21 +166,21 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
                 {
                     try
                     {
-                        using var cts = new CancellationTokenSource(10000);
+                        using var cts = new CancellationTokenSource(1000);
                         online = (await _tcpDmtpClient.PingAsync(cts.Token).ConfigureAwait(false)).IsSuccess;
                         if (online)
                             break;
                         else
                         {
                             readErrorCount++;
-                            await Task.Delay(RedundancyOptions.SyncInterval, stoppingToken).ConfigureAwait(false);
+                            await Task.Delay(RedundancyOptions.HeartbeatInterval, stoppingToken).ConfigureAwait(false);
                         }
                     }
                     catch
                     {
                         // 捕获异常，增加读取错误计数器
                         readErrorCount++;
-                        await Task.Delay(RedundancyOptions.SyncInterval, stoppingToken).ConfigureAwait(false);
+                        await Task.Delay(RedundancyOptions.HeartbeatInterval, stoppingToken).ConfigureAwait(false);
                     }
                 }
             }
@@ -210,7 +210,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
         }
     }
 
-    private WaitLock _switchLock = new(nameof(RedundancyTask));
+    internal WaitLock _switchLock = new(nameof(RedundancyTask));
 
     private bool first;
     private async Task StandbyAsync()
@@ -277,6 +277,47 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
                 _tcpDmtpService = await GetTcpDmtpService(RedundancyOptions).ConfigureAwait(false);
 
                 await _tcpDmtpService.StartAsync().ConfigureAwait(false);//启动
+
+                //启动前，先获取备用站状态，如果备用站在线，则先停止,再启用
+                if (RedundancyOptions.EnablePrimaryAfterBackupStop)
+                {
+                    bool start = true;
+                    int waitTime = 0;
+                    while (start)
+                    {
+                        if (_tcpDmtpService.Clients.Count > 0)
+                        {
+                            LogMessage?.LogInformation($"StandbyStation online, try to stop standby station");
+                            foreach (var item in _tcpDmtpService.Clients)
+                            {
+                                try
+                                {
+                                    start = await item.GetDmtpRpcActor().GetStateAsync().ConfigureAwait(false);
+                                    if (!start)
+                                    {
+                                        LogMessage?.LogInformation($"Stop StandbyStation success");
+                                        break;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    LogMessage?.LogWarning(ex, $"Stop StandbyStation {item.Id} error");
+                                }
+                            }
+
+                        }
+                        else
+                        {
+                            await Task.Delay(1000).ConfigureAwait(false);
+                            waitTime++;
+                        }
+                        if(waitTime > 10)
+                        {
+                            LogMessage?.LogWarning($"Wait standby station stop timeout");
+                            start = false;
+                        }
+                    }
+                }
                 await ActiveAsync().ConfigureAwait(false);
             }
             else
@@ -299,7 +340,7 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
             }
             else
             {
-                scheduledTask = new ScheduledAsyncTask(5000, DoSlaveWork, null, null, CancellationToken.None);
+                scheduledTask = new ScheduledAsyncTask(RedundancyOptions.HeartbeatInterval, DoSlaveWork, null, null, CancellationToken.None);
             }
 
             scheduledTask.Start();
@@ -374,7 +415,6 @@ internal sealed class RedundancyTask : IRpcDriver, IAsyncDisposable
                })
                .ConfigurePlugins(a =>
                {
-                   a.UseTcpSessionCheckClear();
                    a.UseDmtpRpc(a => a.ConfigureDefaultSerializationSelector(b =>
                    {
                        b.UseSystemTextJson(json =>

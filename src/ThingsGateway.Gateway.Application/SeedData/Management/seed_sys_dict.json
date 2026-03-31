@@ -77,7 +77,7 @@
       "DictType": "System",
       "Category": "RedundancyOptions",
       "Name": "SyncEnable",
-      "Code": "true",
+      "Code": "false",
       "IsDelete": "0",
       "SortCode": 99
     }
