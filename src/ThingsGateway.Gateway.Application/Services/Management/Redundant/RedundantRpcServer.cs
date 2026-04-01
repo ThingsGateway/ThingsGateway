@@ -80,7 +80,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
             {
                 channelNewId.TryAdd(channel.Id, channelRuntime.Id);
                 channel.Id = channelRuntime.Id;
-                channel.Enable = false;
+                channel.Enable = true;
                 upChannels.Add(channel);
             }
             else if (channel.Id != MemoryConst.MemoryChannelId)
@@ -88,7 +88,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
                 var id = CommonUtils.GetSingleId();
                 channelNewId.TryAdd(channel.Id, id);
                 channel.Id = id;
-                channel.Enable = false;
+                channel.Enable = true;
                 addChannels.Add(channel);
             }
         }
@@ -103,7 +103,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
                 channelNewId.TryGetValue(device.ChannelId, out var newid);
                 device.ChannelId = newid;
 
-                device.Enable = false;
+                device.Enable = true;
                 upDevices.Add(device);
             }
             else if (device.Id != MemoryConst.MemoryDeviceId)
@@ -114,7 +114,7 @@ internal sealed partial class RedundantRpcServer : SingletonRpcServer, IRedundan
 
                 channelNewId.TryGetValue(device.ChannelId, out var newid);
                 device.ChannelId = newid;
-                device.Enable = false;
+                device.Enable = true;
                 addDevices.Add(device);
             }
         }
