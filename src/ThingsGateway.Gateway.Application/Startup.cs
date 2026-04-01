@@ -33,7 +33,7 @@ public class Startup : AppStartup
         #region M
 
         services.AddSingleton<IRedundancyService, RedundancyService>();
-        services.AddGatewayHostedService<IRedundancyHostedService, RedundancyHostedService>();
+        services.AddGatewayHostedService<IRedundancyHostedService, GatewayMonitorHostedService>();
 
         services.AddHostedService<ManagementHostedService>();
         services.AddHostedService<WebApiHostedService>();
@@ -106,7 +106,6 @@ public class Startup : AppStartup
         services.AddHostedService<MemoryMonitorHostedService>();
 
         services.AddGatewayHostedService<IAlarmHostedService, AlarmHostedService>();
-        services.AddHostedService<GatewayMonitorHostedService>();
 
     }
 

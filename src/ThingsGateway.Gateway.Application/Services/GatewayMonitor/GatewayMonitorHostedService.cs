@@ -18,7 +18,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 通道后台服务
 /// </summary>
-internal sealed class GatewayMonitorHostedService : BackgroundService
+internal sealed class GatewayMonitorHostedService : BackgroundService,IRedundancyHostedService
 {
     public ILogger Logger { get; }
     /// <inheritdoc cref="AlarmHostedService"/>
@@ -26,13 +26,42 @@ internal sealed class GatewayMonitorHostedService : BackgroundService
     {
         Logger = logger;
         ChannelThreadManage = channelThreadManage;
+        RedundancyTask = new RedundancyTask(Logger);
     }
 
     private IChannelThreadManage ChannelThreadManage { get; }
+    private RedundancyTask RedundancyTask;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Yield();
+        await RestartAll().ConfigureAwait(false);
+        await RedundancyTask.StartRedundancyTaskAsync().ConfigureAwait(false);
+
+    }
+    public Task StartRedundancyTaskAsync() => RedundancyTask.StartRedundancyTaskAsync();
+
+    public Task StopRedundancyTaskAsync() => RedundancyTask.StopRedundancyTaskAsync();
+
+    public Task RedundancyForcedSync() => RedundancyTask.RedundancyForcedSync();
+    public Task<TouchSocket.Core.LogLevel> RedundancyLogLevelAsync()
+    {
+        return Task.FromResult(RedundancyTask.TextLogger.LogLevel);
+    }
+
+    public Task SetRedundancyLogLevelAsync(TouchSocket.Core.LogLevel logLevel)
+    {
+        RedundancyTask.TextLogger.LogLevel = logLevel;
+        return Task.CompletedTask;
+    }
+
+    public Task<string> RedundancyLogPathAsync()
+    {
+        return Task.FromResult(RedundancyTask.LogPath);
+    }
+
+    private async Task RestartAll()
+    {
         try
         {
             //网关启动时，获取所有通道
@@ -42,25 +71,25 @@ internal sealed class GatewayMonitorHostedService : BackgroundService
             var variableRuntimes = GlobalData.VariableService.GetAllVariableRuntime();
 
             channelRuntimes.ParallelForEach(channelRuntime =>
-{
-    try
-    {
-        channelRuntime.Init();
-        var devRuntimes = deviceRuntimes.Where(x => x.ChannelId == channelRuntime.Id);
-        foreach (var item in devRuntimes)
-        {
-            item.Init(channelRuntime);
+            {
+                try
+                {
+                    channelRuntime.Init();
+                    var devRuntimes = deviceRuntimes.Where(x => x.ChannelId == channelRuntime.Id);
+                    foreach (var item in devRuntimes)
+                    {
+                        item.Init(channelRuntime);
 
-            var varRuntimes = variableRuntimes.Where(x => x.DeviceId == item.Id);
+                        var varRuntimes = variableRuntimes.Where(x => x.DeviceId == item.Id);
 
-            varRuntimes.ParallelForEach(varItem => varItem.Init(item));
-        }
-    }
-    catch (Exception ex)
-    {
-        Logger.LogWarning(ex, "Init Channel");
-    }
-});
+                        varRuntimes.ParallelForEach(varItem => varItem.Init(item));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogWarning(ex, "Init Channel");
+                }
+            });
 
             GlobalData.ChannelDeviceRuntimeDispatchService.Dispatch(null);
             GlobalData.VariableRuntimeDispatchService.Dispatch(null);
@@ -76,6 +105,7 @@ internal sealed class GatewayMonitorHostedService : BackgroundService
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         await ChannelThreadManage.SafeDisposeAsync().ConfigureAwait(false);
+        await RedundancyTask.DisposeAsync().ConfigureAwait(false);
         await base.StopAsync(cancellationToken).ConfigureAwait(false);
     }
 }

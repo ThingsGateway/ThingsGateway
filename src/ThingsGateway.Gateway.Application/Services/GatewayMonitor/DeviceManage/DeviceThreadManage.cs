@@ -284,6 +284,8 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
                     {
                         if (!GlobalData.StartCollectChannelEnable)
                         {
+                            LogMessage?.LogInformation($"The gateway is standby ");
+
                             return;
                         }
                     }
@@ -291,6 +293,7 @@ internal sealed class DeviceThreadManage : IAsyncDisposable, IDeviceThreadManage
                     {
                         if (!GlobalData.StartBusinessChannelEnable)
                         {
+                            LogMessage?.LogInformation($"The gateway is standby ");
                             return;
                         }
                     }
