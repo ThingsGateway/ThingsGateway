@@ -18,7 +18,7 @@ namespace ThingsGateway.Gateway.Application;
 /// <summary>
 /// 通道后台服务
 /// </summary>
-internal sealed class GatewayMonitorHostedService : BackgroundService,IRedundancyHostedService
+internal sealed class GatewayMonitorHostedService : BackgroundService, IRedundancyHostedService
 {
     public ILogger Logger { get; }
     /// <inheritdoc cref="AlarmHostedService"/>
@@ -36,7 +36,11 @@ internal sealed class GatewayMonitorHostedService : BackgroundService,IRedundanc
     {
         await Task.Yield();
         await RestartAll().ConfigureAwait(false);
-        await RedundancyTask.StartRedundancyTaskAsync().ConfigureAwait(false);
+
+        _ = Task.Run(async () =>
+         {
+             await RedundancyTask.StartRedundancyTaskAsync().ConfigureAwait(false);
+         }, stoppingToken);
 
     }
     public Task StartRedundancyTaskAsync() => RedundancyTask.StartRedundancyTaskAsync();
