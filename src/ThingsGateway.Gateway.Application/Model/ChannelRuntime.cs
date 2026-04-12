@@ -43,7 +43,7 @@ public class ChannelRuntime : Channel
     [Newtonsoft.Json.JsonIgnore]
     [MapperIgnore]
     [AutoGenerateColumn(Ignore = true)]
-    public AsyncConcurrencyLimiter WaitLock { get; private set; } = new AsyncConcurrencyLimiter(1);
+    public WaitLock WaitLock { get; private set; } = new WaitLock(maxCount:1);
 
     /// <inheritdoc/>
     [MinValue(1)]
@@ -62,7 +62,7 @@ public class ChannelRuntime : Channel
                 if (WaitLock?.MaxCount != MaxConcurrentCount)
                 {
                     var _lock = WaitLock;
-                    WaitLock = new AsyncConcurrencyLimiter(_maxConcurrentCount);
+                    WaitLock = new WaitLock(maxCount:_maxConcurrentCount);
                     _lock?.TryDispose();
                 }
             }
