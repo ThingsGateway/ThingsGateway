@@ -68,42 +68,45 @@ public static class CSharpScriptEngineExtension
     /// </summary>
     public static T Do<T>(string source, TimeSpan timeSpan, params Assembly[] assemblies) where T : class
     {
-        if (source.IsNullOrEmpty()) return null;
-        var key = source.GetHashCode().ToString();
-        var exfield = $"Exception-{key}";
-        var runScript = Instance.Get<CacheItem>(key);
-        if (runScript.Obj == null)
+        lock (m_waiterLock)
         {
-            var hasValue = Instance.TryGetValue<CacheItem>(key, out runScript);
-            if (!hasValue)
-            {
-                var src = source.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                using var _using = new ValueStringBuilder();
-                using var _body = new ValueStringBuilder();
-                foreach (var item in src)
-                {
-                    if (item.StartsWith("using "))
-                    {
-                        _using.AppendLine(item);
-                    }
-                    else
-                    {
-                        _body.AppendLine(item);
-                    }
-                }
 
-                var context = new AssemblyLoadContext(YitIdHelper.NextId().ToString(), true);
-                var script = new CSharpScriptExecution();
-                script.AlternateAssemblyLoadContext = context;
-                foreach (var item in assemblies)
+            if (source.IsNullOrEmpty()) return null;
+            var key = source.GetHashCode().ToString();
+            var exfield = $"Exception-{key}";
+            var runScript = Instance.Get<CacheItem>(key);
+            if (runScript.Obj == null)
+            {
+                var hasValue = Instance.TryGetValue<CacheItem>(key, out runScript);
+                if (!hasValue)
                 {
-                    script.AddAssembly(item);
-                }
-                try
-                {
-                    // 动态加载并执行代码
-                    var code =
-                               $@"
+                    var src = source.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                    using var _using = new ValueStringBuilder();
+                    using var _body = new ValueStringBuilder();
+                    foreach (var item in src)
+                    {
+                        if (item.StartsWith("using "))
+                        {
+                            _using.AppendLine(item);
+                        }
+                        else
+                        {
+                            _body.AppendLine(item);
+                        }
+                    }
+
+                    var context = new AssemblyLoadContext(YitIdHelper.NextId().ToString(), true);
+                    var script = new CSharpScriptExecution();
+                    script.AlternateAssemblyLoadContext = context;
+                    foreach (var item in assemblies)
+                    {
+                        script.AddAssembly(item);
+                    }
+                    try
+                    {
+                        // 动态加载并执行代码
+                        var code =
+                                   $@"
         using System;
         using System.Linq;
         using System.Threading.Tasks;
@@ -122,48 +125,49 @@ public static class CSharpScriptEngineExtension
     ";
 
 
-                    var readWriteExpressions = script.CompileClassWithFile(code) as T;
-                    if (readWriteExpressions == null)
-                    {
-                        CSharpScriptExecution.MarkDelete(script.OutputAssembly);
-                        throw new Exception("compilation error");
+                        var readWriteExpressions = script.CompileClassWithFile(code) as T;
+                        if (readWriteExpressions == null)
+                        {
+                            CSharpScriptExecution.MarkDelete(script.OutputAssembly);
+                            throw new Exception("compilation error");
+                        }
+                        runScript.Obj = readWriteExpressions;
+                        runScript.ALC = context;
+                        runScript.Path = script.OutputAssembly;
+
+                        Instance.Set(key, runScript);
+
                     }
-                    runScript.Obj = readWriteExpressions;
-                    runScript.ALC = context;
-                    runScript.Path = script.OutputAssembly;
+                    catch (NullReferenceException)
+                    {
+                        //如果编译失败，应该不重复编译，避免oom
+                        Instance.Set<CacheItem>(key, default, timeSpan);
 
-                    Instance.Set(key, runScript);
+                        string exString = string.Format("无法识别正确的接口类，需要实现 {0} 类型", typeof(T).FullName);
+                        throw new(exString);
+                    }
+                    catch (Exception ex)
+                    {
+                        //如果编译失败，应该不重复编译，避免oom
+                        Instance.Set<CacheItem>(key, default, timeSpan);
+                        Instance.Set(exfield, ex, timeSpan);
+                        throw;
+                    }
 
+
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
                 }
-                catch (NullReferenceException)
-                {
-                    //如果编译失败，应该不重复编译，避免oom
-                    Instance.Set<CacheItem>(key, default, timeSpan);
-
-                    string exString = string.Format("无法识别正确的接口类，需要实现 {0} 类型", typeof(T).FullName);
-                    throw new(exString);
-                }
-                catch (Exception ex)
-                {
-                    //如果编译失败，应该不重复编译，避免oom
-                    Instance.Set<CacheItem>(key, default, timeSpan);
-                    Instance.Set(exfield, ex, timeSpan);
-                    throw;
-                }
-
-
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
             }
+            Instance.SetExpire(key, timeSpan);
+            Instance.SetExpire(exfield, timeSpan);
+            if (runScript.Obj == null)
+            {
+                var ex = ((Instance.Get<Exception>(exfield)) ?? new Exception("compilation error"));
+                ExceptionDispatchInfo.Capture(ex).Throw();
+            }
+            return (T)runScript.Obj;
         }
-        Instance.SetExpire(key, timeSpan);
-        Instance.SetExpire(exfield, timeSpan);
-        if (runScript.Obj == null)
-        {
-            var ex = ((Instance.Get<Exception>(exfield)) ?? new Exception("compilation error"));
-            ExceptionDispatchInfo.Capture(ex).Throw();
-        }
-        return (T)runScript.Obj;
     }
     /// <summary>
     /// 执行脚本获取返回值

@@ -73,7 +73,7 @@ public abstract partial class CollectBase : DriverBase, IRpcDriver
              {
                  try
                  {
-                     _ = ExpressionEvaluatorExtension.GetOrAddScript(script);
+                     _ = ExpressionEvaluatorExtension.GetReadWriteExpressions(script);
                  }
                  catch
                  {
