@@ -19,7 +19,7 @@ using TouchSocket.Rpc;
 namespace ThingsGateway.Gateway.Application;
 
 #if Management
-[GeneratorRpcProxy(GeneratorFlag = GeneratorFlag.ExtensionAsync)]
+[GeneratorRpcProxy(GeneratorFlag = CodeGeneratorFlag.ExtensionAsync)]
 #endif
 internal interface IManagementRpcServer : IRpcServer
 {

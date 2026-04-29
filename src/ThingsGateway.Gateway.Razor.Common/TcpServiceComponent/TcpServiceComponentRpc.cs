@@ -16,7 +16,7 @@ using TouchSocket.Rpc;
 
 namespace ThingsGateway.Gateway.Razor;
 
-[GeneratorRpcProxy(GeneratorFlag = GeneratorFlag.ExtensionAsync)]
+[GeneratorRpcProxy(GeneratorFlag = CodeGeneratorFlag.ExtensionAsync)]
 internal interface ITcpServiceComponentRpc : IRpcServer
 {
     [DmtpRpc]
