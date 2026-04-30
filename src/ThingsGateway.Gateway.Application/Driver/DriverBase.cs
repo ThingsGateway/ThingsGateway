@@ -473,7 +473,7 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
         {
             try
             {
-                await Channel.Lock.WaitAsync(cancellationToken).ConfigureAwait(false);
+                await ChannelObject.WaitLock.WaitAsync(cancellationToken).ConfigureAwait(false);
 
                 if (Channel != null && Channel.PluginManager == null)
                 {
@@ -482,7 +482,7 @@ public abstract class DriverBase : AsyncDisposableObject, IDriver
             }
             finally
             {
-                Channel.Lock.Release();
+                ChannelObject.WaitLock.Release();
             }
         }
 
