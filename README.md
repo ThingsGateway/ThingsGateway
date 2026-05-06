@@ -21,6 +21,7 @@ ThingsGateway 采用模块化与插件化架构，支持多种工业通信协议
 
 
 
+- [前后端分离版本官网地址](https://runtime.thingsgateway.cn/)
 - [官网地址](https://thingsgateway.cn/)
 - [演示地址](https://demo.thingsgateway.cn/)
 - [版权声明](https://thingsgateway.cn/docs/1)

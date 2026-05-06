@@ -35,7 +35,8 @@ ThingsGateway 是一个开源的工业物联网边缘计算网关，致力于为
 
 ## 文档
 
-[官网地址](https://thingsgateway.cn/)
+- [前后端分离版本官网地址](https://runtime.thingsgateway.cn/)
+- [官网地址](https://thingsgateway.cn/)
 
 ## 演示
 
