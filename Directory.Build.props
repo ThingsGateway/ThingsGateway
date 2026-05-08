@@ -14,10 +14,10 @@
 		</NoWarn>
 		<TouchSocketVersion>4.2.8</TouchSocketVersion>
 		<AdminVersion>12.5.19</AdminVersion>
-		<FoundationVersion>12.5.24</FoundationVersion>
+		<FoundationVersion>12.5.25</FoundationVersion>
 		<PluginVersion>12.5.18</PluginVersion>
 		<ProPluginVersion>12.5.15</ProPluginVersion>
-		<GatewayVersion>12.5.29</GatewayVersion>
+		<GatewayVersion>12.5.30</GatewayVersion>
 		<Version>$(GatewayVersion)</Version>
 
 		<ManagementVersion>12.5.5</ManagementVersion>
