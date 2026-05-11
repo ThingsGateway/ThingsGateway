@@ -419,7 +419,7 @@ public partial class VariableRuntimeInfo
     {
         try
         {
-            var data = await Task.Run(async () => await VariablePageService.OnWriteVariableAsync(variableRuntime.Id, WriteValue));
+            var data = await Task.Run(async () => await VariablePageService.OnWriteVariableAsync(variableRuntime.Id, WriteValue??string.Empty));
             if (!data.IsSuccess)
             {
                 XTrace.WriteLine($"Write variable failed: {data.ToString()}");
