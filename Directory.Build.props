@@ -15,9 +15,9 @@
 		<TouchSocketVersion>4.2.9</TouchSocketVersion>
 		<AdminVersion>12.5.19</AdminVersion>
 		<FoundationVersion>12.5.28</FoundationVersion>
-		<PluginVersion>12.5.18</PluginVersion>
+		<PluginVersion>12.5.19</PluginVersion>
 		<ProPluginVersion>12.5.15</ProPluginVersion>
-		<GatewayVersion>12.5.33</GatewayVersion>
+		<GatewayVersion>12.5.34</GatewayVersion>
 		<Version>$(GatewayVersion)</Version>
 
 		<ManagementVersion>12.5.5</ManagementVersion>
