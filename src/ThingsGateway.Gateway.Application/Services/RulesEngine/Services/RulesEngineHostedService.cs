@@ -243,17 +243,7 @@ internal sealed class RulesEngineHostedService : BackgroundService, IRulesEngine
 
         await RestartRuleRuntimeAsync().ConfigureAwait(false);
 
-        while (!cancellationToken.IsCancellationRequested)
-        {
-            foreach (var item in Diagrams?.Values?.SelectMany(a => a.Nodes) ?? new List<NodeModel>())
-            {
-                if (item is IExexcuteExpressionsBase)
-                {
-                    CSharpScriptEngineExtension.SetExpire((item as TextNode).Text);
-                }
-            }
-            await Task.Delay(60000, cancellationToken).ConfigureAwait(false);
-        }
+
     }
 
     public async Task RestartRuleRuntimeAsync()

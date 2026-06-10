@@ -78,7 +78,7 @@ public partial class PropertyComponent : IPropertyUIBase
                 var type=  script == businessProperty.BigTextScriptDeviceModel?typeof(List<DeviceBasicData>):script ==businessProperty.BigTextScriptAlarmModel?typeof(List<AlarmVariable>):typeof(List<VariableBasicData>);
 
                 var  data = (IEnumerable<object>)Newtonsoft.Json.JsonConvert.DeserializeObject(input, type);
-                var value = data.GetDynamicModel(script,logger,TimeSpan.FromHours(1));
+                var value = data.GetDynamicModel(script,logger);
                 stringBuilder.AppendLine(value.ToSystemTextJsonString());
               return Task.FromResult( stringBuilder.ToString());
         }},

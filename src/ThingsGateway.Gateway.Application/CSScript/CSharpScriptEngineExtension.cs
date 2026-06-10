@@ -8,11 +8,11 @@
 //  QQ群：605534569
 //------------------------------------------------------------------------------
 
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Runtime.Loader;
 using System.Text;
-using ThingsGateway.Foundation.Common.Caching;
 using ThingsGateway.Gateway.Application.Extensions;
 using Westwind.Scripting;
 using Yitter.IdGenerator;
@@ -32,41 +32,23 @@ public static class CSharpScriptEngineExtension
     static CSharpScriptEngineExtension()
     {
         Directory.CreateDirectory(ExpressionEvaluatorExtensionDir);
-        Instance.KeyExpired += Instance_KeyExpired;
     }
 
-    private static void Instance_KeyExpired(object sender, KeyEventArgs e)
-    {
-        try
-        {
-            if (Instance.GetAll().TryGetValue(e.Key, out var item))
-            {
-                if (item.Expired)
-                {
-                    var data = (CacheItem)item?.Value;
-                    data.Obj?.TryDispose();
-                    data.ALC?.Unload();
-                    CSharpScriptExecution.MarkDelete(data.Path);
-                }
-            }
-        }
-        catch
-        {
-        }
-    }
 
     public static void Remove(string source)
     {
-        Instance.Remove($"{CacheKey}-{source}");
+        Instance.TryRemove($"{CacheKey}-{source}", out var data);
+        data.Obj?.TryDispose();
+        data.ALC?.Unload();
+        CSharpScriptExecution.MarkDelete(data.Path);
     }
 
-    private static MemoryCache Instance { get; } = new MemoryCache();
-    static TimeSpan time = TimeSpan.FromDays(7);
+    private static NonBlockingDictionary<string, CacheItem> Instance { get; } = new();
 
     /// <summary>
     /// 执行脚本获取返回值
     /// </summary>
-    public static T Do<T>(string source, TimeSpan timeSpan, params Assembly[] assemblies) where T : class
+    public static T Do<T>(string source, params Assembly[] assemblies) where T : class
     {
         lock (m_waiterLock)
         {
@@ -74,10 +56,10 @@ public static class CSharpScriptEngineExtension
             if (source.IsNullOrEmpty()) return null;
             var key = source.GetHashCode().ToString();
             var exfield = $"Exception-{key}";
-            var runScript = Instance.Get<CacheItem>(key);
+            Instance.TryGetValue(key, out var runScript);
             if (runScript.Obj == null)
             {
-                var hasValue = Instance.TryGetValue<CacheItem>(key, out runScript);
+                var hasValue = Instance.TryGetValue(key, out runScript);
                 if (!hasValue)
                 {
                     var src = source.Split(Environment.NewLine.ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -135,22 +117,21 @@ public static class CSharpScriptEngineExtension
                         runScript.ALC = context;
                         runScript.Path = script.OutputAssembly;
 
-                        Instance.Set(key, runScript);
+                        Instance[key] = runScript;
 
                     }
                     catch (NullReferenceException)
                     {
                         //如果编译失败，应该不重复编译，避免oom
-                        Instance.Set<CacheItem>(key, default, timeSpan);
+                        Instance[key] = default;
 
                         string exString = string.Format("无法识别正确的接口类，需要实现 {0} 类型", typeof(T).FullName);
                         throw new(exString);
                     }
-                    catch (Exception ex)
+                    catch
                     {
                         //如果编译失败，应该不重复编译，避免oom
-                        Instance.Set<CacheItem>(key, default, timeSpan);
-                        Instance.Set(exfield, ex, timeSpan);
+                        Instance[key] = default;
                         throw;
                     }
 
@@ -159,27 +140,14 @@ public static class CSharpScriptEngineExtension
                     GC.WaitForPendingFinalizers();
                 }
             }
-            Instance.SetExpire(key, timeSpan);
-            Instance.SetExpire(exfield, timeSpan);
             if (runScript.Obj == null)
             {
-                var ex = ((Instance.Get<Exception>(exfield)) ?? new Exception("compilation error"));
+                var ex = new Exception("compilation error");
                 ExceptionDispatchInfo.Capture(ex).Throw();
             }
             return (T)runScript.Obj;
         }
     }
-    /// <summary>
-    /// 执行脚本获取返回值
-    /// </summary>
-    public static T Do<T>(string source, params Assembly[] assemblies) where T : class
-    {
-        return Do<T>(source, TimeSpan.FromDays(7), assemblies);
-    }
 
-    public static void SetExpire(string source, TimeSpan? timeSpan = null)
-    {
-        var field = $"{CacheKey}-{source}";
-        Instance.SetExpire(field, timeSpan ?? time);
-    }
+
 }

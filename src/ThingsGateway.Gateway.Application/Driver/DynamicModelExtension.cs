@@ -21,12 +21,12 @@ public static class DynamicModelExtension
     /// <summary>
     /// GetDynamicModel
     /// </summary>
-    public static IEnumerable<object> GetDynamicModel<T>(this IEnumerable<T> datas, string script, TouchSocket.Core.ILog log, TimeSpan? timeSpan = null)
+    public static IEnumerable<object> GetDynamicModel<T>(this IEnumerable<T> datas, string script, TouchSocket.Core.ILog log)
     {
         if (!string.IsNullOrEmpty(script))
         {
             //执行脚本，获取新实体
-            var getDeviceModel = CSharpScriptEngineExtension.Do<IDynamicModel>(script, timeSpan ?? TimeSpan.FromDays(7));
+            var getDeviceModel = CSharpScriptEngineExtension.Do<IDynamicModel>(script);
             if (getDeviceModel is DynamicModelBase dynamicModelBase)
             {
                 dynamicModelBase.Logger = log;
